@@ -40,6 +40,7 @@ config("warnings_config") {
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
     "-Wno-unused-function",
+    "-Wno-unused-private-field",
   ]
   if (is_win) {
     # Override warnings in litert_shared_library.cc.
@@ -61,6 +62,7 @@ tflite_group("litert") {
     ":litert_c",
     ":litert_compiler",
     ":litert_core",
+    ":litert_options_encoder",
     ":litert_runtime",
     ":litert_runtime_accelerators",
     ":litert_toml_parser",
@@ -314,6 +316,7 @@ source_set("litert_headers") {
     "src/litert/c/litert_model.h",
     "src/litert/c/litert_op_code.h",
     "src/litert/c/litert_op_options.h",
+    "src/litert/c/litert_op_resolver.h",
     "src/litert/c/litert_opaque_options.h",
     "src/litert/c/litert_options.h",
     "src/litert/c/litert_profiler.h",
@@ -339,6 +342,7 @@ source_set("litert_headers") {
     "src/litert/cc/internal/scoped_file.h",
     "src/litert/cc/internal/scoped_weight_source.h",
     "src/litert/cc/litert_buffer_ref.h",
+    "src/litert/cc/litert_common.h",
     "src/litert/cc/litert_compiled_model.h",
     "src/litert/cc/litert_element_type.h",
     "src/litert/cc/litert_environment.h",
@@ -369,6 +373,7 @@ source_set("litert_headers") {
     "src/litert/core/environment_options.h",
     "src/litert/core/error_reporter.h",
     "src/litert/core/filesystem.h",
+    "src/litert/core/litert_options_encoder.h",
     "src/litert/core/litert_toml_parser.h",
     "src/litert/core/model/flatbuffer_to_litert.h",
     "src/litert/core/model/litert_to_flatbuffer.h",
@@ -396,6 +401,7 @@ source_set("litert_headers") {
     "src/litert/runtime/litert_cpu_options.h",
     "src/litert/runtime/litert_runtime_options.h",
     "src/litert/runtime/magic_number_utils.h",
+    "src/litert/runtime/model_buffer_writes.h",
     "src/litert/runtime/profiler.h",
     "src/litert/runtime/profiler_summarizer.h",
     "src/litert/runtime/tensor_buffer.h",
@@ -456,6 +462,17 @@ copy("litert_build_config") {
   outputs = [ "$target_gen_dir/src/litert/build_common/build_config.h" ]
 }
 
+tflite_static_library("litert_options_encoder") {
+  sources = [
+    "src/litert/core/litert_options_encoder.cc",
+    "src/litert/core/litert_options_encoder.h",
+  ]
+  deps = [ ":litert_headers" ]
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":*" ]
+}
+
 tflite_static_library("litert_toml_parser") {
   sources = [
     "src/litert/core/litert_toml_parser.cc",
@@ -509,7 +526,10 @@ tflite_static_library("litert_c") {
     "src/litert/c/options/litert_webnn_options.cc",
   ]
   deps = [ ":litert_headers" ]
-  conditional_deps = [ ":litert_toml_parser" ]
+  conditional_deps = [
+    ":litert_options_encoder",
+    ":litert_toml_parser",
+  ]
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
   visibility = [
@@ -646,6 +666,7 @@ tflite_static_library("litert_runtime") {
     "src/litert/runtime/litert_cpu_options.cc",
     "src/litert/runtime/litert_runtime_options.cc",
     "src/litert/runtime/magic_number_utils.cc",
+    "src/litert/runtime/model_buffer_writes.cc",
     "src/litert/runtime/profiler.cc",
     "src/litert/runtime/profiler_summarizer.cc",
     "src/litert/runtime/tensor_buffer.cc",
@@ -896,6 +917,8 @@ if (build_with_chromium && build_litert_with_ml_drift) {
       "src/ml_drift_delegate/delegate/composite/moe_experts_parser.cc",
       "src/ml_drift_delegate/delegate/composite/qkv_norm_rope_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/qkv_norm_rope_parser.cc",
+      "src/ml_drift_delegate/delegate/composite/qsa_indexer_update_kernel.cc",
+      "src/ml_drift_delegate/delegate/composite/qsa_indexer_update_parser.cc",
       "src/ml_drift_delegate/delegate/composite/rope_parser.cc",
       "src/ml_drift_delegate/delegate/composite/runtime_batched_matmul_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/runtime_batched_matmul_parser.cc",
@@ -905,6 +928,9 @@ if (build_with_chromium && build_litert_with_ml_drift) {
       "src/ml_drift_delegate/delegate/composite/sdpa_transposed_support.cc",
       "src/ml_drift_delegate/delegate/composite/short_conv_step_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/short_conv_step_parser.cc",
+      "src/ml_drift_delegate/delegate/composite/sparse_sdpa_transposed_kernel.cc",
+      "src/ml_drift_delegate/delegate/composite/sparse_sdpa_transposed_parser.cc",
+      "src/ml_drift_delegate/delegate/composite/symmetric_quantized_fully_connected.cc",
     ]
     deps = [
       ":ml_drift_delegate_composite_ir",
@@ -923,10 +949,12 @@ if (build_with_chromium && build_litert_with_ml_drift) {
       "src/ml_drift_delegate/delegate/composite/ir/litert_op_selector.cc",
       "src/ml_drift_delegate/delegate/composite/ir/moe_experts_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/qkv_norm_rope_parser.cc",
+      "src/ml_drift_delegate/delegate/composite/ir/qsa_indexer_update_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/rope_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/runtime_batched_matmul_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/sdpa_transposed_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/short_conv_step_parser.cc",
+      "src/ml_drift_delegate/delegate/composite/ir/sparse_sdpa_transposed_parser.cc",
     ]
     deps = [ ":ml_drift_delegate_tflite" ]
     visibility = [ ":*" ]
@@ -2070,6 +2098,8 @@ if (use_litert_tflite) {
         "src/tflite/delegates/xnnpack/mmap_handle.h",
         "src/tflite/delegates/xnnpack/moe_delegate_kernel.cc",
         "src/tflite/delegates/xnnpack/moe_delegate_kernel.h",
+        "src/tflite/delegates/xnnpack/qsa_delegate_kernel.cc",
+        "src/tflite/delegates/xnnpack/qsa_delegate_kernel.h",
         "src/tflite/delegates/xnnpack/quantization_util.cc",
         "src/tflite/delegates/xnnpack/quantization_util.h",
         "src/tflite/delegates/xnnpack/weight_cache.cc",
