@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_image_view.h"
@@ -25,6 +26,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,6 +40,9 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -1857,6 +1862,145 @@ TEST_F(DragDropControllerDlpTest, DlpDisallowAsyncDrop) {
       });
 
   PerformDlpDragAndDrop(CreateDragData(/*with_image=*/true));
+}
+
+// Tests that file paths carried in the Files app file system sources storage
+// location are forwarded to the data transfer policy controller, even when the
+// drag data has no entries in the filenames storage location (as when dragging
+// a directory).
+TEST_F(DragDropControllerDlpTest, ForwardsFileSystemSourcesPaths) {
+  const base::FilePath kFolderPath("/path/to/folder");
+  static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate())
+      ->SetCrackFileSystemUrlCallback(base::BindRepeating(
+          [](const base::FilePath& path, const GURL&) { return path; },
+          kFolderPath));
+
+  auto drag_data = std::make_unique<ui::OSExchangeData>();
+  drag_data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      GURL("chrome://file-manager/")));
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(
+      std::unordered_map<std::u16string, std::u16string>(
+          {{u"fs/sources",
+            u"filesystem:chrome://file-manager/external/Downloads/folder"}}),
+      &pickle);
+  drag_data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
+                            pickle);
+  ASSERT_FALSE(drag_data->GetFilenames().has_value());
+
+  std::optional<std::vector<ui::FileInfo>> received_filenames;
+  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _, _))
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
+                    base::OnceClosure drop_cb) {
+        received_filenames = std::move(filenames);
+        std::move(drop_cb).Run();
+      });
+
+  PerformDlpDragAndDrop(std::move(drag_data));
+
+  ASSERT_TRUE(received_filenames.has_value());
+  EXPECT_THAT(*received_filenames, testing::ElementsAre(testing::Field(
+                                       &ui::FileInfo::path, kFolderPath)));
+}
+
+// Tests that file paths present in both filenames and file system sources
+// (as occurs on normal resolved file drags from the Files app) are
+// deduplicated while preserving additional entries only in file system sources.
+TEST_F(DragDropControllerDlpTest, DeduplicatesFileSystemSourcesPaths) {
+  const base::FilePath kFilePath("/path/to/file.txt");
+  const base::FilePath kFolderPath("/path/to/folder");
+  static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate())
+      ->SetCrackFileSystemUrlCallback(base::BindRepeating(
+          [](const base::FilePath& file_path, const base::FilePath& folder_path,
+             const GURL& url) {
+            return url.possibly_invalid_spec().ends_with("file.txt")
+                       ? file_path
+                       : folder_path;
+          },
+          kFilePath, kFolderPath));
+
+  auto drag_data = std::make_unique<ui::OSExchangeData>();
+  drag_data->SetFilename(kFilePath);
+  drag_data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      GURL("chrome://file-manager/")));
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(
+      std::unordered_map<std::u16string, std::u16string>(
+          {{u"fs/sources",
+            u"filesystem:chrome://file-manager/external/Downloads/file.txt\n"
+            u"filesystem:chrome://file-manager/external/Downloads/folder"}}),
+      &pickle);
+  drag_data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
+                            pickle);
+
+  std::optional<std::vector<ui::FileInfo>> received_filenames;
+  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _, _))
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
+                    base::OnceClosure drop_cb) {
+        received_filenames = std::move(filenames);
+        std::move(drop_cb).Run();
+      });
+
+  PerformDlpDragAndDrop(std::move(drag_data));
+
+  ASSERT_TRUE(received_filenames.has_value());
+  EXPECT_THAT(
+      *received_filenames,
+      testing::ElementsAre(testing::Field(&ui::FileInfo::path, kFilePath),
+                           testing::Field(&ui::FileInfo::path, kFolderPath)));
+}
+
+// Tests that spoofed "fs/sources" custom data from untrusted web origins,
+// other WebUIs, or non-URL endpoints is ignored and not forwarded to the
+// policy controller as local file paths.
+TEST_F(DragDropControllerDlpTest, IgnoresFileSystemSourcesFromUntrustedOrigin) {
+  const base::FilePath kSecretPath("/path/to/secret");
+  static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate())
+      ->SetCrackFileSystemUrlCallback(base::BindRepeating(
+          [](const base::FilePath& path, const GURL&) { return path; },
+          kSecretPath));
+
+  const ui::DataTransferEndpoint kUntrustedSources[] = {
+      ui::DataTransferEndpoint(GURL("https://evil.example.com/")),
+      ui::DataTransferEndpoint(GURL("chrome://settings/")),
+      ui::DataTransferEndpoint(ui::EndpointType::kCrostini),
+  };
+
+  for (const auto& untrusted_source : kUntrustedSources) {
+    delegate_ = std::make_unique<EventTargetTestDelegate>(window_.get());
+    aura::client::SetDragDropDelegate(window_.get(), delegate_.get());
+
+    auto drag_data = std::make_unique<ui::OSExchangeData>();
+    drag_data->SetString(u"dragged text");
+    drag_data->SetSource(
+        std::make_unique<ui::DataTransferEndpoint>(untrusted_source));
+    base::Pickle pickle;
+    ui::WriteCustomDataToPickle(
+        std::unordered_map<std::u16string, std::u16string>(
+            {{u"fs/sources",
+              u"filesystem:chrome://file-manager/external/Downloads/secret"}}),
+        &pickle);
+    drag_data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
+                              pickle);
+
+    std::optional<std::vector<ui::FileInfo>> received_filenames;
+    EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _, _))
+        .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                      std::optional<ui::DataTransferEndpoint> data_dst,
+                      std::optional<std::vector<ui::FileInfo>> filenames,
+                      base::OnceClosure drop_cb) {
+          received_filenames = std::move(filenames);
+          std::move(drop_cb).Run();
+        });
+
+    PerformDlpDragAndDrop(std::move(drag_data));
+
+    EXPECT_FALSE(received_filenames.has_value());
+  }
 }
 
 class MouseOrTouchDragDropControllerTest

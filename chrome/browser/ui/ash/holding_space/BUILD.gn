@@ -157,6 +157,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//ui/aura",
     "//ui/base",
+    "//ui/base/data_transfer_policy",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/events:test_support",
@@ -164,6 +165,7 @@ source_set("browser_tests") {
     "//ui/views",
     "//ui/wm/public",
     "//ui/wm/public:test_support",
+    "//url",
   ]
 }
 

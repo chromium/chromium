@@ -18,6 +18,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
@@ -50,6 +51,15 @@ std::vector<base::FilePath> ExtractFilePathsFromFilenames(
 std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
     const ui::OSExchangeData& data) {
   std::vector<base::FilePath> paths;
+
+  // Only trust custom "fs/sources" data when the drag originated from the
+  // ChromeOS Files app.
+  const ui::DataTransferEndpoint* const data_src = data.GetSource();
+  if (!data_src || !data_src->IsUrlType() ||
+      !data_src->GetURL()->SchemeIs("chrome") ||
+      data_src->GetURL()->GetHost() != "file-manager") {
+    return paths;
+  }
 
   std::optional<base::Pickle> pickle =
       data.GetPickledData(ui::ClipboardFormatType::DataTransferCustomType());

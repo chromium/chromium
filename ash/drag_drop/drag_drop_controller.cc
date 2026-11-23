@@ -7,12 +7,15 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "ash/drag_drop/drag_drop_util.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_util.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +26,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -89,12 +93,26 @@ void DropIfAllowed(const ui::OSExchangeData* drag_data,
   DCHECK(drag_data);
 
   if (ui::DataTransferPolicyController::HasInstance()) {
+    // The Files app encodes dragged entries as file system sources and only
+    // populates the filenames storage location for resolved file selections
+    // without directories, so collect unique file paths from both storage
+    // locations before forwarding to the policy controller.
+    std::optional<std::vector<ui::FileInfo>> filenames =
+        drag_data->GetFilenames();
+    for (const base::FilePath& path : drag_drop::ExtractFilePaths(
+             *drag_data, /*fallback_to_filenames=*/false)) {
+      if (!filenames.has_value()) {
+        filenames.emplace();
+      }
+      if (!std::ranges::contains(*filenames, path, &ui::FileInfo::path)) {
+        filenames->emplace_back(path, base::FilePath());
+      }
+    }
     ui::DataTransferPolicyController::Get()->DropIfAllowed(
         (drag_data->GetSource() ? std::make_optional<ui::DataTransferEndpoint>(
                                       *drag_data->GetSource())
                                 : std::nullopt),
-        {drag_info.data_endpoint}, drag_data->GetFilenames(),
-        std::move(drop_cb));
+        {drag_info.data_endpoint}, std::move(filenames), std::move(drop_cb));
   } else {
     std::move(drop_cb).Run();
   }

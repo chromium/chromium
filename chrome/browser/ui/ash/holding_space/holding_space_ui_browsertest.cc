@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <set>
 #include <tuple>
 #include <unordered_map>
@@ -75,6 +76,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -99,6 +101,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/public/activation_client.h"
 #include "ui/wm/public/mock_activation_change_observer.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -344,6 +347,8 @@ class DropSenderView : public views::WidgetDelegateView,
       data->provider().SetFilenames(filenames_data_.value());
     }
     if (file_system_sources_data_) {
+      data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+          GURL("chrome://file-manager/")));
       data->provider().SetPickledData(
           ui::ClipboardFormatType::DataTransferCustomType(),
           file_system_sources_data_.value());
