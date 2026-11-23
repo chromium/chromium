@@ -6,6 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -18,6 +21,7 @@
 #include "extensions/common/features/feature_test_util.h"
 #include "extensions/common/features/json_feature_provider_source.h"
 #include "extensions/test/test_extensions_client.h"
+#include "printing/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -54,6 +58,36 @@ IN_PROC_BROWSER_TEST_F(FeatureProviderBrowserTest,
   }
 }
 
+// Matches the `required_buildflags` values supported by
+// tools/json_schema_compiler/feature_compiler.py.
+bool AreRequiredBuildflagsSatisfied(const base::DictValue& feature_definition) {
+  const base::ListValue* required_buildflags =
+      feature_definition.FindList("required_buildflags");
+  if (!required_buildflags) {
+    return true;
+  }
+  static constexpr std::pair<std::string_view, bool> kSupportedBuildflags[] = {
+      {"use_cups", BUILDFLAG(USE_CUPS)},
+  };
+  for (const base::Value& flag : *required_buildflags) {
+    const std::string* flag_name = flag.GetIfString();
+    if (!flag_name) {
+      ADD_FAILURE() << "Non-string required_buildflags entry";
+      return false;
+    }
+    auto it = std::ranges::find(kSupportedBuildflags, *flag_name,
+                                &std::pair<std::string_view, bool>::first);
+    if (it == std::ranges::end(kSupportedBuildflags)) {
+      ADD_FAILURE() << "Unknown required_buildflags entry: " << *flag_name;
+      return false;
+    }
+    if (!it->second) {
+      return false;
+    }
+  }
+  return true;
+}
+
 IN_PROC_BROWSER_TEST_F(FeatureProviderBrowserTest,
                        VerifyAPIJSONSourceHasFeatureTableEntries) {
   std::unique_ptr<JSONFeatureProviderSource> source =
@@ -63,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(FeatureProviderBrowserTest,
   for (const auto item : source->dictionary()) {
     const base::DictValue* feature_definition = item.second.GetIfDict();
     if (feature_definition) {
-      if (feature_definition->FindBool("nocompile").value_or(false)) {
+      if (feature_definition->FindBool("nocompile").value_or(false) ||
+          !AreRequiredBuildflagsSatisfied(*feature_definition)) {
         EXPECT_FALSE(api_provider->GetFeature(item.first)) << item.first;
       } else {
         EXPECT_TRUE(api_provider->GetFeature(item.first)) << item.first;
