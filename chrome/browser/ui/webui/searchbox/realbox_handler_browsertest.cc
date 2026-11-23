@@ -138,6 +138,8 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
   void UpdateProfileInfo(const GURL& avatar_url,
                          const std::string& name,
                          const std::string& email) override {}
+  void SetSearchEngineInfo(
+      searchbox::mojom::SearchEngineInfoPtr info) override {}
 
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();

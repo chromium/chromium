@@ -28,8 +28,10 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_hotkey_bubble_view.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/searchbox.mojom-shared.h"
@@ -189,6 +191,7 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
         &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   }
   PushFreState();
+  PushSearchEngineInfo();
 
   // Explicitly initialize the `InputStateModel` for the standalone Omnibox
   // Everywhere searchbox. This ensures that dynamic context menu items and
@@ -356,6 +359,11 @@ bool OmniboxEverywhereHandler::SupportsKeywordMode() const {
   return true;
 }
 
+void OmniboxEverywhereHandler::OnTemplateURLServiceChanged() {
+  ContextualSearchboxHandler::OnTemplateURLServiceChanged();
+  PushSearchEngineInfo();
+}
+
 void OmniboxEverywhereHandler::DismissFre(searchbox::mojom::FreStage stage) {
   if (service_ && service_->fre_controller()) {
     service_->fre_controller()->OnStageDismissed(MojoFreStageToFreStage(stage));
@@ -513,6 +521,35 @@ void OmniboxEverywhereHandler::PushProfileInfo() {
   page()->UpdateProfileInfo(GURL(profile_avatar_url),
                             base::UTF16ToUTF8(display_name),
                             base::UTF16ToUTF8(entry->GetUserName()));
+}
+
+// static
+searchbox::mojom::SearchEngineInfoPtr
+OmniboxEverywhereHandler::GetSearchEngineInfo(
+    const TemplateURLService* template_url_service) {
+  const TemplateURL* default_provider =
+      template_url_service ? template_url_service->GetDefaultSearchProvider()
+                           : nullptr;
+  if (!default_provider) {
+    return nullptr;
+  }
+  auto info = searchbox::mojom::SearchEngineInfo::New();
+  info->placeholder_text = l10n_util::GetStringFUTF8(
+      IDS_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name());
+  // TODO(crbug.com/588549745): Move GetDefaultSearchProviderIcon() to a shared
+  // component so omnibox_everywhere does not depend on omnibox_popup.
+  info->icon_path = GetDefaultSearchProviderIcon(template_url_service,
+                                                 /*is_dark_mode=*/false);
+  info->dark_mode_icon_path =
+      GetDefaultSearchProviderIcon(template_url_service, /*is_dark_mode=*/true);
+  return info;
+}
+
+void OmniboxEverywhereHandler::PushSearchEngineInfo() {
+  if (!page_.is_bound()) {
+    return;
+  }
+  page()->SetSearchEngineInfo(GetSearchEngineInfo(GetTemplateURLService()));
 }
 
 void OmniboxEverywhereHandler::AddFileContextToPage(

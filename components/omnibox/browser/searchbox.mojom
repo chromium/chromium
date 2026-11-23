@@ -284,6 +284,19 @@ struct FreState {
   array<string> current_hotkey_tokens;
 };
 
+// Branding for the default search engine (DSE), computed in the browser so
+// the page never decides which engine is in use.
+struct SearchEngineInfo {
+  // Localized placeholder, e.g. "Search Bing or type a URL".
+  string placeholder_text;
+  // WebUI resource path (e.g. the Google G) or a chrome://favicon2 URL. A
+  // string rather than url.mojom.Url because resource paths are relative
+  // (e.g. "//resources/...").
+  string icon_path;
+  // Dark-mode variant of `icon_path` (e.g. the monochrome Google G).
+  string dark_mode_icon_path;
+};
+
 // Information about a contextual input.
 struct SelectedFileInfo {
   // Name of the file.
@@ -822,4 +835,9 @@ interface Page {
 
   // Notifies the page of updated profile information (avatar URL, name, email).
   UpdateProfileInfo(url.mojom.Url avatar_url, string name, string email);
+
+  // Notifies the page of the default search engine's branding. `info` is null
+  // when there is no default search engine (e.g. disabled by policy). Used by
+  // Omnibox Everywhere.
+  SetSearchEngineInfo(SearchEngineInfo? info);
 };

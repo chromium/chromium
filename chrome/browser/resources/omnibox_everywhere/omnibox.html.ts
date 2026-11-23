@@ -24,7 +24,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
       .singleLineOnInlineAutocomplete="${this.singleLineOnInlineAutocomplete}"
       placeholder-text="${this.computePlaceholderText_()}"
       searchbox-aria-description="${this.searchboxAriaDescription}"
-      searchbox-icon="${this.searchboxIcon_}"
+      searchbox-icon="${this.searchboxIcon_()}"
       .selectedMatch="${this.selectedMatch}"
       .inputKeywordModel="${this.inputKeywordModel}"
       ?input-has-matches="${this.hasMatches()}"

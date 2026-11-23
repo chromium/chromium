@@ -32,7 +32,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, DriveUploadError, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface, SelectionDirection, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, DriveUploadError, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface, SearchEngineInfo, SelectionDirection, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
@@ -42,16 +42,15 @@ import {getHtml} from './omnibox.html.js';
 import {browserProxyFactory} from './omnibox_everywhere.mojom-webui.js';
 import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 
+// Generic search icon, used until the browser pushes the default search
+// engine's icon and when there is no default search engine.
+const LOUPE_ICON = '//resources/cr_components/searchbox/icons/search_cr23.svg';
+
 // Default hold and cross-fade durations for rotating placeholder hints,
 // matching `NTPComposeboxConfig_PlaceholderConfig` defaults (4000ms hold, 250ms
 // fade).
 const DEFAULT_PLACEHOLDER_CHANGE_INTERVAL_MS = 4000;
 const DEFAULT_PLACEHOLDER_FADE_DURATION_MS = 250;
-
-const GOOGLE_G_CR23_ICON =
-    '//resources/cr_components/searchbox/icons/google_g_cr23.svg';
-const GOOGLE_G_GRADIENT_ICON =
-    '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
 
 export interface OmniboxEverywhereOmniboxElement {
   $: {
@@ -121,7 +120,8 @@ export class OmniboxEverywhereOmniboxElement extends
         type: Boolean,
         reflect: true,
       },
-      searchboxIcon_: {type: String},
+      searchEngineInfo: {type: Object},
+      isDarkMode_: {type: Boolean},
       searchboxVoiceSearchEnabled_: {
         type: Boolean,
         reflect: true,
@@ -210,8 +210,12 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor contextManagementInComposeboxEnabled: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
-  protected accessor searchboxIcon_: string =
-      '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
+  // Default search engine branding, bound by `OmniboxEverywhereAppElement`.
+  // Undefined until the browser first pushes it, so branding starts neutral
+  // (loupe, no placeholder) and voice search stays available. Null when there
+  // is no default search engine (e.g. disabled by policy).
+  accessor searchEngineInfo: SearchEngineInfo|null|undefined = undefined;
+  private accessor isDarkMode_: boolean = false;
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
@@ -274,9 +278,9 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    this.updateSearchboxIcon_();
+    this.updateDarkMode_();
     this.eventTracker_.add(
-        this.darkModeMediaQuery_, 'change', () => this.updateSearchboxIcon_());
+        this.darkModeMediaQuery_, 'change', () => this.updateDarkMode_());
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged.bind(this));
@@ -541,18 +545,24 @@ export class OmniboxEverywhereOmniboxElement extends
     return super.handleVirtualFocusEnter(e);
   }
 
+  protected searchboxIcon_(): string {
+    if (!this.searchEngineInfo) {
+      return LOUPE_ICON;
+    }
+    return this.isDarkMode_ ? this.searchEngineInfo.darkModeIconPath :
+                              this.searchEngineInfo.iconPath;
+  }
+
   protected showVoiceSearchButton_(): boolean {
-    return this.searchboxVoiceSearchEnabled_;
+    return this.searchboxVoiceSearchEnabled_ && this.searchEngineInfo !== null;
   }
 
   protected showLensSearchButton_(): boolean {
     return this.isFuseboxEnabled && this.searchboxLensSearchEnabled_;
   }
 
-  private updateSearchboxIcon_() {
-    this.searchboxIcon_ = this.darkModeMediaQuery_.matches ?
-        GOOGLE_G_CR23_ICON :
-        GOOGLE_G_GRADIENT_ICON;
+  private updateDarkMode_() {
+    this.isDarkMode_ = this.darkModeMediaQuery_.matches;
   }
 
   protected computePlaceholderText_(): string {
@@ -562,7 +572,7 @@ export class OmniboxEverywhereOmniboxElement extends
     if (this.isFuseboxEnabled) {
       return this.i18n('searchBoxHintAskOrType');
     }
-    return this.i18n('searchBoxHint');
+    return this.searchEngineInfo?.placeholderText ?? '';
   }
 
   protected onSearchboxInputEmptyChanged_(e: CustomEvent<{value: boolean}>) {

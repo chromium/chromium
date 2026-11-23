@@ -19,6 +19,7 @@
 
 class MetricsReporter;
 class OmniboxEverywhereService;
+class TemplateURLService;
 
 namespace content {
 class WebUI;
@@ -43,6 +44,13 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
   OmniboxEverywhereHandler& operator=(const OmniboxEverywhereHandler&) = delete;
 
   ~OmniboxEverywhereHandler() override;
+
+  // Returns the default search engine's branding, or null if there is no
+  // default search engine (e.g. disabled by policy). Used both to seed
+  // `loadTimeData` on initial WebUI creation and to push live updates over
+  // Mojo.
+  static searchbox::mojom::SearchEngineInfoPtr GetSearchEngineInfo(
+      const TemplateURLService* template_url_service);
 
   // searchbox::mojom::PageHandler:
   void ActivateKeyword(
@@ -72,6 +80,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
 
   // SearchboxHandler:
   bool SupportsKeywordMode() const override;
+  void OnTemplateURLServiceChanged() override;
 
   // Overridden to intercept the Drive upload request, dynamically associate the
   // standalone WebContents with the latest active BrowserWindowInterface, and
@@ -117,6 +126,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
   void OnHotkeyDropdownClosed(ShowHotkeyDropdownCallback callback);
   void PushFreState();
   void PushProfileInfo();
+  void PushSearchEngineInfo();
 
   raw_ptr<OmniboxEverywhereService> service_;
   base::CallbackListSubscription aim_eligibility_subscription_;

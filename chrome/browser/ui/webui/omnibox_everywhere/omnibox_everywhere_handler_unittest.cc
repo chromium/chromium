@@ -22,6 +22,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/webui/omnibox_everywhere/mojom/omnibox_everywhere.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_page_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -1077,6 +1079,72 @@ TEST_F(OmniboxEverywhereHandlerTest,
   EXPECT_EQ(kScreenshotUrl, captured_url);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(captured_transition,
                                            ui::PAGE_TRANSITION_GENERATED));
+}
+
+TEST_F(OmniboxEverywhereHandlerTest, PushesSearchEngineInfoOnConstruction) {
+  const std::string expected_icon_path = GetDefaultSearchProviderIcon(
+      template_url_service(), /*is_dark_mode=*/false);
+  const std::string expected_dark_mode_icon_path = GetDefaultSearchProviderIcon(
+      template_url_service(), /*is_dark_mode=*/true);
+  EXPECT_CALL(page_, SetSearchEngineInfo(testing::_))
+      .WillOnce([&](searchbox::mojom::SearchEngineInfoPtr info) {
+        ASSERT_TRUE(info);
+        // Matches the text Omnibox Everywhere showed before the placeholder
+        // became DSE-specific.
+        EXPECT_EQ("Search Google or type a URL", info->placeholder_text);
+        EXPECT_EQ(expected_icon_path, info->icon_path);
+        EXPECT_EQ(expected_dark_mode_icon_path, info->dark_mode_icon_path);
+      });
+  page_.FlushForTesting();
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       PushesSearchEngineInfoWhenDefaultSearchEngineChanges) {
+  // Drain the push from construction.
+  page_.FlushForTesting();
+
+  searchbox::mojom::SearchEngineInfoPtr last_info;
+  EXPECT_CALL(page_, SetSearchEngineInfo(testing::_))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly([&](searchbox::mojom::SearchEngineInfoPtr info) {
+        last_info = std::move(info);
+      });
+  EXPECT_CALL(page_, SetAvailableKeywordModels(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(page_, SetAvailableKeywordModels(testing::_, "example.com"))
+      .Times(testing::AtLeast(1));
+
+  TemplateURLData data;
+  data.SetShortName(u"Example");
+  data.SetKeyword(u"example.com");
+  data.SetURL("https://example.com/search?q={searchTerms}");
+  data.favicon_url = GURL("https://example.com/favicon.ico");
+  template_url_service()->SetUserSelectedDefaultSearchProvider(
+      template_url_service()->Add(std::make_unique<TemplateURL>(data)));
+  page_.FlushForTesting();
+
+  ASSERT_TRUE(last_info);
+  EXPECT_EQ("Search Example or type a URL", last_info->placeholder_text);
+  EXPECT_THAT(last_info->icon_path,
+              testing::StartsWith(
+                  "chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com%2F"
+                  "favicon.ico"));
+  EXPECT_EQ(last_info->icon_path, last_info->dark_mode_icon_path);
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       PushesNullSearchEngineInfoWhenNoDefaultSearchEngine) {
+  // Drain the push from construction.
+  page_.FlushForTesting();
+
+  EXPECT_CALL(page_, SetSearchEngineInfo(testing::IsFalse()))
+      .Times(testing::AtLeast(1));
+
+  // Equivalent to the DefaultSearchProviderEnabled=false policy.
+  SetManagedDefaultSearchPreferences(TemplateURLData(), /*enabled=*/false,
+                                     profile());
+  ASSERT_FALSE(template_url_service()->GetDefaultSearchProvider());
+  page_.FlushForTesting();
 }
 
 }  // namespace

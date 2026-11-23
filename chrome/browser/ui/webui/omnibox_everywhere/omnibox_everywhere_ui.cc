@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -224,6 +225,18 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   bool is_enterprise_profile =
       enterprise_util::CanShowEnterpriseBadgingForAvatar(profile_);
   source->AddBoolean("isEnterpriseProfile", is_enterprise_profile);
+
+  auto search_engine_info = OmniboxEverywhereHandler::GetSearchEngineInfo(
+      TemplateURLServiceFactory::GetForProfile(profile_));
+  source->AddBoolean("hasDefaultSearchEngine", !!search_engine_info);
+  source->AddString(
+      "searchEnginePlaceholderText",
+      search_engine_info ? search_engine_info->placeholder_text : "");
+  source->AddString("searchEngineIconPath",
+                    search_engine_info ? search_engine_info->icon_path : "");
+  source->AddString(
+      "searchEngineDarkModeIconPath",
+      search_engine_info ? search_engine_info->dark_mode_icon_path : "");
   static constexpr webui::LocalizedString kStrings[] = {
       {"loomniboxFreChangeShortcutIn", IDS_LOOMNIBOX_FRE_CHANGE_SHORTCUT_IN},
       {"loomniboxFreCloseButtonAria", IDS_LOOMNIBOX_FRE_CLOSE_BUTTON_ARIA},

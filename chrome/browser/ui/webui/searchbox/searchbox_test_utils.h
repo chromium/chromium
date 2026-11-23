@@ -149,6 +149,10 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               UpdateProfileInfo,
               (const GURL&, const std::string&, const std::string&),
               (override));
+  MOCK_METHOD(void,
+              SetSearchEngineInfo,
+              (searchbox::mojom::SearchEngineInfoPtr info),
+              (override));
 };
 
 #if !BUILDFLAG(IS_ANDROID)

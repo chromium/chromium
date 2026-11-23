@@ -27,7 +27,7 @@ import {getDeepActiveElement} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {FreStage, TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {FreState, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {FreState, PageCallbackRouter, SearchEngineInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -47,6 +47,20 @@ const VOICE_QUERY_LENGTH_LIMIT = 120;
 // this only needs to absorb that delay while staying well below the
 // timescale of a deliberate follow-up interaction.
 const ACTIVATION_CLICK_WINDOW_MS = 300;
+
+function getInitialSearchEngineInfo(): SearchEngineInfo|null|undefined {
+  if (!loadTimeData.valueExists('hasDefaultSearchEngine')) {
+    return undefined;
+  }
+  if (!loadTimeData.getBoolean('hasDefaultSearchEngine')) {
+    return null;
+  }
+  return {
+    placeholderText: loadTimeData.getString('searchEnginePlaceholderText'),
+    iconPath: loadTimeData.getString('searchEngineIconPath'),
+    darkModeIconPath: loadTimeData.getString('searchEngineDarkModeIconPath'),
+  };
+}
 
 export interface OmniboxEverywhereAppElement {
   $: {
@@ -89,6 +103,7 @@ export class OmniboxEverywhereAppElement extends
     return {
       isComposeboxMode_: {type: Boolean},
       searchboxLayoutMode_: {type: String},
+      searchEngineInfo_: {type: Object},
       showVoiceSearchOverlay_: {
         type: Boolean,
         reflect: true,
@@ -147,6 +162,11 @@ export class OmniboxEverywhereAppElement extends
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
   protected readonly contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
+  // The latest default search engine branding from the browser, seeded from
+  // `loadTimeData` so the initial render avoids a loupe flash. Kept here
+  // because the omnibox element is re-created on every mode switch.
+  protected accessor searchEngineInfo_: SearchEngineInfo|null|undefined =
+      getInitialSearchEngineInfo();
   protected accessor showVoiceSearchOverlay_: boolean = false;
   protected accessor hasVoiceSearchError_: boolean = false;
   protected accessor voiceSearchTranscript_: string = '';
@@ -324,6 +344,10 @@ export class OmniboxEverywhereAppElement extends
               if (!aiModePrefEnabled && this.isComposeboxMode_) {
                 this.onCloseComposebox_();
               }
+            }),
+        this.callbackRouter_.setSearchEngineInfo.addListener(
+            (info: SearchEngineInfo|null) => {
+              this.searchEngineInfo_ = info;
             }),
     );
 

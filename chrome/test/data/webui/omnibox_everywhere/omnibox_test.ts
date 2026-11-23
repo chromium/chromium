@@ -441,6 +441,53 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   });
 
   test(
+      'searchEngineInfo sets icon, placeholder, and mic visibility',
+      async () => {
+        testProxy.page.updateAimPopupEligibility(false);
+        await microtasksFinished();
+
+        // Neutral until the browser pushes the default search engine.
+        assertEquals(
+            '//resources/cr_components/searchbox/icons/search_cr23.svg',
+            omnibox.$.input.searchboxIcon);
+        assertEquals('', omnibox.$.input.placeholderText);
+        assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+
+        // No default search engine hides the mic.
+        omnibox.searchEngineInfo = null;
+        await microtasksFinished();
+        assertFalse(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+        assertEquals('', omnibox.$.input.placeholderText);
+        assertEquals(
+            '//resources/cr_components/searchbox/icons/search_cr23.svg',
+            omnibox.$.input.searchboxIcon);
+
+        omnibox.searchEngineInfo = {
+          placeholderText: 'Search Example or type a URL',
+          iconPath: 'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com',
+          darkModeIconPath:
+              'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com',
+        };
+        await microtasksFinished();
+        assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+        assertEquals(
+            'Search Example or type a URL', omnibox.$.input.placeholderText);
+        assertEquals(
+            'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com',
+            omnibox.$.input.searchboxIcon);
+
+        // With AI Mode available, its placeholder wins over the engine's.
+        testProxy.page.updateAimPopupEligibility(true);
+        await microtasksFinished();
+        assertEquals(
+            loadTimeData.getString('searchBoxHintAskOrType'),
+            omnibox.$.input.placeholderText);
+        assertEquals(
+            'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com',
+            omnibox.$.input.searchboxIcon);
+      });
+
+  test(
       'updateAimPopupEligibility toggles compose button and plus button',
       async () => {
         assertTrue(!!omnibox.shadowRoot.querySelector('#composeButton'));
@@ -1664,7 +1711,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         await advanceToNextPlaceholder(filteredInput);
         assertEquals('Ask Google or type a URL', filteredInput.placeholder);
 
-        // Disabling Fusebox falls back to static searchBoxHint without cycling.
+        // Disabling Fusebox shows the static default search engine placeholder
+        // without cycling. It stays empty until the browser pushes one.
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({
           isFuseboxEnabled: false,
@@ -1677,9 +1725,18 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         const nonFuseboxInput = nonFuseboxOmnibox.$.input.inputElement;
         assertEquals(0, getPlaceholderAnimations(nonFuseboxInput).length);
         assertTrue(nonFuseboxOmnibox.$.lensPlaceholder.hidden);
+        assertEquals('', nonFuseboxInput.placeholder);
+
+        nonFuseboxOmnibox.searchEngineInfo = {
+          placeholderText: 'Search Example or type a URL',
+          iconPath: 'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com',
+          darkModeIconPath:
+              'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com',
+        };
+        await microtasksFinished();
+        assertEquals(0, getPlaceholderAnimations(nonFuseboxInput).length);
         assertEquals(
-            loadTimeData.getString('searchBoxHint'),
-            nonFuseboxInput.placeholder);
+            'Search Example or type a URL', nonFuseboxInput.placeholder);
       });
 
   test('switches searchboxIcon between light and dark mode', async () => {
@@ -1700,6 +1757,13 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       const themedOmnibox =
           document.createElement('omnibox-everywhere-omnibox');
       document.body.appendChild(themedOmnibox);
+      themedOmnibox.searchEngineInfo = {
+        placeholderText: 'Search Google or type a URL',
+        iconPath:
+            '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+        darkModeIconPath:
+            '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
+      };
       await microtasksFinished();
 
       assertEquals(
@@ -2577,6 +2641,12 @@ suite('OmniboxEverywhereAppTest', () => {
       omniboxEverywhereMostVisitedHideTitle: true,
       draggableEmptyInput: true,
       initialFreStage: 0,
+      hasDefaultSearchEngine: true,
+      searchEnginePlaceholderText: 'Search Google or type a URL',
+      searchEngineIconPath:
+          '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+      searchEngineDarkModeIconPath:
+          '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
     });
@@ -2643,6 +2713,65 @@ suite('OmniboxEverywhereAppTest', () => {
     assertFalse(mousedown(composebox.$.composeboxInput.inputElement));
   });
 
+  test('search engine info initializes from loadTimeData', async () => {
+    const iconPath = 'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com';
+    const darkModeIconPath =
+        '//resources/cr_components/searchbox/icons/google_g_cr23.svg';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      hasDefaultSearchEngine: true,
+      searchEnginePlaceholderText: 'Search Example or type a URL',
+      searchEngineIconPath: iconPath,
+      searchEngineDarkModeIconPath: darkModeIconPath,
+    });
+    const seededApp = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(seededApp);
+    await microtasksFinished();
+    const seededSearchbox =
+        seededApp.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    assertDeepEquals(
+        {
+          placeholderText: 'Search Example or type a URL',
+          iconPath,
+          darkModeIconPath,
+        },
+        seededSearchbox.searchEngineInfo);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({hasDefaultSearchEngine: false});
+    const noDseApp = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(noDseApp);
+    await microtasksFinished();
+    const noDseSearchbox =
+        noDseApp.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    assertEquals(null, noDseSearchbox.searchEngineInfo);
+  });
+
+  test('search engine info persists across mode switches', async () => {
+    const iconPath = 'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com';
+    testProxy.page.setSearchEngineInfo({
+      placeholderText: 'Search Example or type a URL',
+      iconPath,
+      darkModeIconPath: iconPath,
+    });
+    await testProxy.page.$.flushForTesting();
+    await microtasksFinished();
+    const searchbox =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    assertEquals(iconPath, searchbox.searchEngineInfo?.iconPath);
+
+    // The omnibox is re-created after the composebox closes and must not fall
+    // back to neutral branding.
+    searchbox.fire('open-composebox', {text: '', files: [], mode: 0, model: 0});
+    await microtasksFinished();
+    app.shadowRoot.querySelector('omnibox-everywhere-composebox')!.fire(
+        'close-composebox');
+    await microtasksFinished();
+    const recreated =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    assertNotEquals(searchbox, recreated);
+    assertEquals(iconPath, recreated.$.input.searchboxIcon);
+  });
 
   test('open-voice-search opens voice search dialog overlay', async () => {
     const searchbox =

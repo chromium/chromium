@@ -31,7 +31,8 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
         @open-voice-search="${this.onOpenVoiceSearch_}"
         .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"
         .contextManagementInComposeboxEnabled="${
-            this.contextManagementInComposeboxEnabled_}">
+            this.contextManagementInComposeboxEnabled_}"
+        .searchEngineInfo="${this.searchEngineInfo_}">
     </omnibox-everywhere-omnibox>
   `}
   ${this.mostVisitedEnabled_ ? html`
