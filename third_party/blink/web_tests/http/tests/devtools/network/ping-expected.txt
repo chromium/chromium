@@ -1,4 +1,0 @@
-Tests that hyperlink auditing (ping) requests appear in network panel
-http://127.0.0.1:8000/devtools/network/ping.js
-resource.requestContentType: text/ping
-
