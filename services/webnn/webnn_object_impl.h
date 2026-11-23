@@ -55,6 +55,12 @@ class WebNNObjectBase : public MojoInterface {
     return task_runner_;
   }
 
+  // Returns true if this object has been disconnected from the client.
+  bool is_disconnected() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return !mojo_receiver_.is_bound();
+  }
+
   // Closes the pipe to the renderer process and cancels pending callbacks
   // responses.
   void ResetMojoReceiver() {

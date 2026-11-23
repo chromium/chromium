@@ -278,7 +278,12 @@ void WebNNTensorImpl::OnDisconnect() {
                        context_->AsWeakPtr(), handle()));
     return;
   }
-  context_->RemoveWebNNTensorImpl(handle());
+  // Queue removal on the GPU sequence to preserve FIFO order with pending
+  // operations (e.g. `Dispatch()`, `WriteTensor()`). Running inline would
+  // destroy shared-image backing before queued tasks finish executing.
+  context_->RunOrScheduleTask(
+      base::BindOnce(&WebNNContextImpl::RemoveWebNNTensorImpl,
+                     context_->AsWeakPtr(), handle()));
 }
 
 bool WebNNTensorImpl::ImportTensorInternal() {

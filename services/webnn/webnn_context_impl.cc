@@ -814,7 +814,10 @@ void WebNNContextImpl::RunOrScheduleTask(base::OnceClosure task,
 scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
     const blink::WebNNTensorToken& tensor_handle) {
   const auto it = tensor_impls_.find(tensor_handle);
-  if (it == tensor_impls_.end()) {
+  // `WebNNTensor` shares `WebNNContext`'s pipe, so `Dispatch()` and
+  // `OnDisconnect()` arrive in FIFO order. A valid client never dispatches
+  // after disconnect, so `is_disconnected()` indicates a bad message.
+  if (it == tensor_impls_.end() || it->get()->is_disconnected()) {
     ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return nullptr;
   }
