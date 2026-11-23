@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "popup_blocker_tab_helper_unittest.cc",
     "safe_browsing_triggered_popup_blocker_unittest.cc",
     "subresource_filter_abusive_unittest.cc",
+    "url_list_manager_unittest.cc",
   ]
   deps = [
     ":blocked_content",
@@ -100,6 +101,7 @@ source_set("unit_tests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
   if (is_android) {
     sources += [ "android/popup_blocked_message_delegate_unittest.cc" ]
