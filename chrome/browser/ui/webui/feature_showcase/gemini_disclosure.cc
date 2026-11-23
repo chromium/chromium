@@ -16,8 +16,10 @@ namespace {
 
 constexpr char16_t kGeminiAppsActivityUrl[] =
     u"https://myactivity.google.com/product/gemini";
-constexpr char16_t kGeminiActivitySettingsUrl[] =
-    u"https://support.google.com/gemini/?p=activity_settings";
+constexpr char16_t kGeminiLocationInfoUrl[] =
+    u"https://support.google.com/gemini?p=gemini_mobile_app_location_info";
+constexpr char16_t kGeminiChoicesUrl[] =
+    u"https://support.google.com/gemini?p=your_choices";
 
 constexpr char16_t kGoogleTermsUrl[] = u"https://policies.google.com/terms";
 constexpr char16_t kGeminiPrivacyNoticeUrl[] =
@@ -43,7 +45,7 @@ std::u16string GetFirstParagraph(std::string_view country_code,
   const int message_id = is_us ? IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_US
                                : IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ROW;
   return l10n_util::GetStringFUTF16(message_id, kGeminiAppsActivityUrl,
-                                    kGeminiActivitySettingsUrl);
+                                    kGeminiLocationInfoUrl, kGeminiChoicesUrl);
 }
 
 std::u16string GetSecondParagraph(std::string_view country_code) {

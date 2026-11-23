@@ -21,11 +21,12 @@ TEST(GeminiDisclosureTest, UsRegion) {
                 u"Gemini is AI and can make mistakes. Some content may not be "
                 u"suitable for everyone. You can <a "
                 u"href=\"https://myactivity.google.com/product/gemini\" "
-                u"target=\"_blank\">manage your history</a>, including info "
-                u"about your location. <a "
-                u"href=\"https://support.google.com/gemini/"
-                u"?p=activity_settings\" target=\"_blank\">Learn more about "
-                u"your choices</a>"),
+                u"target=\"_blank\">manage your history</a>, including <a "
+                u"href=\"https://support.google.com/gemini"
+                u"?p=gemini_mobile_app_location_info\" "
+                u"target=\"_blank\">info about your location</a>. <a "
+                u"href=\"https://support.google.com/gemini?p=your_choices\" "
+                u"target=\"_blank\">Learn more about your choices</a>"),
           Field(&GeminiDisclosure::second_paragraph,
                 u"<a href=\"https://policies.google.com/terms\" "
                 u"target=\"_blank\">Google Terms</a> and the <a "
@@ -65,11 +66,12 @@ TEST(GeminiDisclosureTest, KrRegion) {
                 u"Chats are reviewed and used to train generative AI models. "
                 u"Gemini is AI and can make mistakes. You can <a "
                 u"href=\"https://myactivity.google.com/product/gemini\" "
-                u"target=\"_blank\">manage your history</a>, including info "
-                u"about your location. <a "
-                u"href=\"https://support.google.com/gemini/"
-                u"?p=activity_settings\" target=\"_blank\">Learn more about "
-                u"your choices</a>"),
+                u"target=\"_blank\">manage your history</a>, including <a "
+                u"href=\"https://support.google.com/gemini"
+                u"?p=gemini_mobile_app_location_info\" "
+                u"target=\"_blank\">info about your location</a>. <a "
+                u"href=\"https://support.google.com/gemini?p=your_choices\" "
+                u"target=\"_blank\">Learn more about your choices</a>"),
           Field(
               &GeminiDisclosure::second_paragraph,
               u"Our <a href=\"https://policies.google.com/terms\" "
@@ -109,21 +111,21 @@ TEST(GeminiDisclosureTest, RowRegion) {
       GetGeminiDisclosure(/*country_code=*/"gb", /*is_managed=*/false);
   EXPECT_THAT(
       disclosure,
-      AllOf(
-          Field(&GeminiDisclosure::first_paragraph,
-                u"Chats are reviewed and used to train generative AI models. "
-                u"Gemini is AI and can make mistakes. You can <a "
-                u"href=\"https://myactivity.google.com/product/gemini\" "
-                u"target=\"_blank\">manage your history</a>, including info "
-                u"about your location. <a "
-                u"href=\"https://support.google.com/gemini/"
-                u"?p=activity_settings\" target=\"_blank\">Learn more about "
-                u"your choices</a>"),
-          Field(&GeminiDisclosure::second_paragraph,
-                u"<a href=\"https://policies.google.com/terms\" "
-                u"target=\"_blank\">Google Terms</a> and the <a "
-                u"href=\"https://support.google.com/gemini/answer/13594961\" "
-                u"target=\"_blank\">Gemini Apps Privacy Notice</a> apply")));
+      AllOf(Field(&GeminiDisclosure::first_paragraph,
+                  u"Chats are reviewed and used to train generative AI models. "
+                  u"Gemini is AI and can make mistakes. You can <a "
+                  u"href=\"https://myactivity.google.com/product/gemini\" "
+                  u"target=\"_blank\">manage your history</a>, including <a "
+                  u"href=\"https://support.google.com/gemini"
+                  u"?p=gemini_mobile_app_location_info\" "
+                  u"target=\"_blank\">info about your location</a>. <a "
+                  u"href=\"https://support.google.com/gemini?p=your_choices\" "
+                  u"target=\"_blank\">Learn more about your choices</a>"),
+            Field(&GeminiDisclosure::second_paragraph,
+                  u"<a href=\"https://policies.google.com/terms\" "
+                  u"target=\"_blank\">Google Terms</a> and the <a "
+                  u"href=\"https://support.google.com/gemini/answer/13594961\" "
+                  u"target=\"_blank\">Gemini Apps Privacy Notice</a> apply")));
 }
 
 TEST(GeminiDisclosureTest, RowRegionManaged) {
