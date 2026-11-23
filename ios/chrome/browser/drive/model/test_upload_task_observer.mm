@@ -35,6 +35,9 @@ void TestUploadTaskObserver::OnUploadUpdated(UploadTask* task) {
 }
 
 void TestUploadTaskObserver::OnUploadDestroyed(UploadTask* task) {
+  if (updated_upload_ == task) {
+    updated_upload_ = nullptr;
+  }
   destroyed_upload_ = task;
   task->RemoveObserver(this);
 }
