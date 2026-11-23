@@ -305,6 +305,8 @@ target(link_target_type, "gles2_sources") {
     "shared_memory_region_wrapper.cc",
     "shared_memory_region_wrapper.h",
     "single_task_sequence.h",
+    "skia_readback_source.cc",
+    "skia_readback_source.h",
     "skia_utils.cc",
     "skia_utils.h",
     "texture_manager.cc",

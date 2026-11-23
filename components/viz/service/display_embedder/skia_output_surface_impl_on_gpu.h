@@ -70,6 +70,7 @@ namespace gpu {
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
 class SharedImageRepresentationFactory;
 class SharedImageFactory;
+class SkiaReadbackSource;
 class VulkanContextProvider;
 }  // namespace gpu
 
@@ -367,7 +368,7 @@ class SkiaOutputSurfaceImplOnGpu
   }
 
   // Helper for `CopyOutput()` method, handles the RGBA format.
-  void CopyOutputRGBA(SkSurface* surface,
+  void CopyOutputRGBA(const gpu::SkiaReadbackSource& source,
                       copy_output::RenderPassGeometry geometry,
                       const gfx::ColorSpace& color_space,
                       const SkIRect& src_rect,
@@ -376,7 +377,7 @@ class SkiaOutputSurfaceImplOnGpu
                       std::unique_ptr<CopyOutputRequest> request,
                       ReleaseCallback blit_release_callback);
 
-  void CopyOutputRGBAInMemory(SkSurface* surface,
+  void CopyOutputRGBAInMemory(const gpu::SkiaReadbackSource& source,
                               copy_output::RenderPassGeometry geometry,
                               const gfx::ColorSpace& color_space,
                               const SkIRect& src_rect,
@@ -384,7 +385,7 @@ class SkiaOutputSurfaceImplOnGpu
                               bool is_downscale_or_identity_in_both_dimensions,
                               std::unique_ptr<CopyOutputRequest> request);
 
-  void CopyOutputRGBAInTexture(SkSurface* surface,
+  void CopyOutputRGBAInTexture(const gpu::SkiaReadbackSource& source,
                                copy_output::RenderPassGeometry geometry,
                                const gfx::ColorSpace& color_space,
                                const SkIRect& src_rect,
@@ -393,7 +394,7 @@ class SkiaOutputSurfaceImplOnGpu
                                std::unique_ptr<CopyOutputRequest> request,
                                ReleaseCallback blit_release_callback);
 
-  void CopyOutputNV12(SkSurface* surface,
+  void CopyOutputNV12(const gpu::SkiaReadbackSource& source,
                       copy_output::RenderPassGeometry geometry,
                       const gfx::ColorSpace& color_space,
                       const SkIRect& src_rect,
@@ -410,10 +411,10 @@ class SkiaOutputSurfaceImplOnGpu
                                       std::string_view debug_label);
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, renders
-  // |surface| into |dest_surface|'s canvas, cropping and scaling the results
-  // appropriately. |source_selection| is the area of the |surface| that will be
+  // |source| into |dest_surface|'s canvas, cropping and scaling the results
+  // appropriately. |source_selection| is the area of the |source| that will be
   // rendered to the destination.
-  void RenderSurface(SkSurface* surface,
+  void RenderSurface(const gpu::SkiaReadbackSource& source,
                      const SkIRect& source_selection,
                      std::optional<SkVector> scaling,
                      bool is_downscale_or_identity_in_both_dimensions,

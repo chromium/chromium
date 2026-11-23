@@ -62,6 +62,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/skia_readback_source.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -841,7 +842,7 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
-    SkSurface* surface,
+    const gpu::SkiaReadbackSource& source,
     copy_output::RenderPassGeometry geometry,
     const gfx::ColorSpace& color_space,
     const SkIRect& src_rect,
@@ -883,14 +884,29 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
           context_state_->graphite_shared_context()) {
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
-    graphite_shared_context->asyncRescaleAndReadPixels(
-        surface, dst_info, src_rect, SkSurface::RescaleGamma::kSrc,
-        rescale_mode, base::BindOnce(&CopyOutputResultSkiaRGBA::OnReadbackDone),
-        context.release());
+    if (SkSurface* surface = source.surface()) {
+      graphite_shared_context->asyncRescaleAndReadPixels(
+          surface, dst_info, src_rect, SkSurface::RescaleGamma::kSrc,
+          rescale_mode,
+          base::BindOnce(&CopyOutputResultSkiaRGBA::OnReadbackDone),
+          context.release());
+    } else {
+      graphite_shared_context->asyncRescaleAndReadPixels(
+          source.image(), dst_info, src_rect, SkSurface::RescaleGamma::kSrc,
+          rescale_mode,
+          base::BindOnce(&CopyOutputResultSkiaRGBA::OnReadbackDone),
+          context.release());
+    }
   } else {
-    surface->asyncRescaleAndReadPixels(
-        dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
-        &CopyOutputResultSkiaRGBA::OnReadbackDone, context.release());
+    if (SkSurface* surface = source.surface()) {
+      surface->asyncRescaleAndReadPixels(
+          dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
+          &CopyOutputResultSkiaRGBA::OnReadbackDone, context.release());
+    } else {
+      source.image()->asyncRescaleAndReadPixels(
+          dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
+          &CopyOutputResultSkiaRGBA::OnReadbackDone, context.release());
+    }
   }
 }
 
@@ -927,7 +943,7 @@ bool IsValidInTextureCopyOutputRequest(
 }  // namespace
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
-    SkSurface* surface,
+    const gpu::SkiaReadbackSource& source,
     copy_output::RenderPassGeometry geometry,
     const gfx::ColorSpace& color_space,
     const SkIRect& src_rect,
@@ -939,12 +955,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
     case CopyOutputRequest::ResultDestination::kSystemMemory:
       DCHECK(!blit_release_callback);
       CopyOutputRGBAInMemory(
-          surface, geometry, color_space, src_rect, rescale_mode,
+          source, geometry, color_space, src_rect, rescale_mode,
           is_downscale_or_identity_in_both_dimensions, std::move(request));
       break;
     case CopyOutputRequest::ResultDestination::kSharedImage: {
       CopyOutputRGBAInTexture(
-          surface, geometry, color_space, src_rect, rescale_mode,
+          source, geometry, color_space, src_rect, rescale_mode,
           is_downscale_or_identity_in_both_dimensions, std::move(request),
           std::move(blit_release_callback));
       break;
@@ -953,7 +969,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
-    SkSurface* surface,
+    const gpu::SkiaReadbackSource& source,
     copy_output::RenderPassGeometry geometry,
     const gfx::ColorSpace& color_space,
     const SkIRect& src_rect,
@@ -1055,7 +1071,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     }
   }
 
-  RenderSurface(surface, src_rect, scaling,
+  RenderSurface(source, src_rect, scaling,
                 is_downscale_or_identity_in_both_dimensions,
                 scoped_write->surface(), dest_origin);
 
@@ -1126,7 +1142,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
 }
 
 void SkiaOutputSurfaceImplOnGpu::RenderSurface(
-    SkSurface* surface,
+    const gpu::SkiaReadbackSource& source,
     const SkIRect& source_selection,
     std::optional<SkVector> scaling,
     bool is_downscale_or_identity_in_both_dimensions,
@@ -1148,7 +1164,7 @@ void SkiaOutputSurfaceImplOnGpu::RenderSurface(
   // but for some reason, this triggers some antialiasing code that causes
   // various Vulkan tests to fail. We should investigate this and replace
   // this clear with blend mode.
-  if (surface->imageInfo().alphaType() != kOpaque_SkAlphaType) {
+  if (source.GetAlphaType() != kOpaque_SkAlphaType) {
     dest_canvas->clear(SK_ColorTRANSPARENT);
   }
 
@@ -1156,8 +1172,13 @@ void SkiaOutputSurfaceImplOnGpu::RenderSurface(
       is_downscale_or_identity_in_both_dimensions
           ? SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear)
           : SkSamplingOptions({1.0f / 3, 1.0f / 3});
-  surface->draw(dest_canvas, -source_selection.x(), -source_selection.y(),
-                sampling, /*paint=*/nullptr);
+  if (SkSurface* surface = source.surface()) {
+    surface->draw(dest_canvas, -source_selection.x(), -source_selection.y(),
+                  sampling, /*paint=*/nullptr);
+  } else {
+    dest_canvas->drawImage(source.image(), -source_selection.x(),
+                           -source_selection.y(), sampling, /*paint=*/nullptr);
+  }
 
   dest_canvas->restoreToCount(state_depth);
 }
@@ -1354,7 +1375,7 @@ void SkiaOutputSurfaceImplOnGpu::BlendBitmapOverlays(
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
-    SkSurface* surface,
+    const gpu::SkiaReadbackSource& source,
     copy_output::RenderPassGeometry geometry,
     const gfx::ColorSpace& color_space,
     const SkIRect& src_rect,
@@ -1438,7 +1459,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                                  request->scale_from().y());
   }
 
-  RenderSurface(surface, src_rect, scaling,
+  RenderSurface(source, src_rect, scaling,
                 is_downscale_or_identity_in_both_dimensions,
                 intermediate_surface.get(), gfx::Point());
 
@@ -1662,18 +1683,22 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   bool from_framebuffer = mailbox.IsZero();
   DCHECK(scoped_output_device_paint_ || !from_framebuffer);
 
-  SkSurface* surface;
   std::unique_ptr<gpu::SkiaImageRepresentation> backing_representation;
   std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
       scoped_access;
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
+
+  std::optional<gpu::SkiaReadbackSource> source;
   if (from_framebuffer) {
-    surface = scoped_output_device_paint_->sk_surface();
+    // Vulkan secondary command buffer doesn't support readback.
+    if (SkSurface* surface = scoped_output_device_paint_->sk_surface()) {
+      source.emplace(surface);
+    }
   } else {
     auto overlay_pass_access = overlay_pass_accesses_.find(mailbox);
     if (overlay_pass_access != overlay_pass_accesses_.end()) {
-      surface = overlay_pass_access->second->surface();
+      source.emplace(overlay_pass_access->second->surface());
     } else {
       backing_representation =
           shared_image_representation_factory_->ProduceSkia(
@@ -1690,18 +1715,17 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         DLOG(ERROR) << "Failed begin access to CopyOutputRequest source";
         return;
       }
-      surface = scoped_access->surface();
+      source.emplace(scoped_access->surface());
       if (!begin_semaphores.empty()) {
-        auto result =
-            surface->wait(begin_semaphores.size(), begin_semaphores.data(),
-                          /*deleteSemaphoresAfterWait=*/false);
+        auto result = source->surface()->wait(
+            begin_semaphores.size(), begin_semaphores.data(),
+            /*deleteSemaphoresAfterWait=*/false);
         DCHECK(result);
       }
     }
   }
 
-  // Do not support reading back from vulkan secondary command buffer.
-  if (!surface) {
+  if (!source) {
     return;
   }
 
@@ -1719,8 +1743,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     SkPaint paint;
     paint.setColor(SK_ColorBLACK);
     paint.setBlendMode(SkBlendMode::kDstATop);
-    surface->getCanvas()->drawPaint(paint);
-    if (!FlushSurface(surface, end_semaphores, scoped_access.get())) {
+    source->surface()->getCanvas()->drawPaint(paint);
+    if (!FlushSurface(source->surface(), end_semaphores, nullptr)) {
       FailedSkiaFlush("CopyOutputRGBA need_discard_alpha flush");
       return;
     }
@@ -1786,35 +1810,51 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be
         // implemented for Graphite. Instead the equivalent methods will be on
         // Graphite Context.
-        graphite_shared_context->asyncRescaleAndReadPixelsYUV420(
-            surface, kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
-            src_rect, dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
-            base::BindOnce(CopyOutputResultSkiaYUV::OnReadbackDone),
-            context.release());
+        if (SkSurface* surface = source->surface()) {
+          graphite_shared_context->asyncRescaleAndReadPixelsYUV420(
+              surface, kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
+              src_rect, dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
+              base::BindOnce(CopyOutputResultSkiaYUV::OnReadbackDone),
+              context.release());
+        } else {
+          graphite_shared_context->asyncRescaleAndReadPixelsYUV420(
+              source->image(), kRec709_SkYUVColorSpace,
+              SkColorSpace::MakeSRGB(), src_rect, dst_size,
+              SkSurface::RescaleGamma::kSrc, rescale_mode,
+              base::BindOnce(CopyOutputResultSkiaYUV::OnReadbackDone),
+              context.release());
+        }
       } else {
-        surface->asyncRescaleAndReadPixelsYUV420(
-            kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
-            dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
-            &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
+        if (SkSurface* surface = source->surface()) {
+          surface->asyncRescaleAndReadPixelsYUV420(
+              kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
+              dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
+              &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
+        } else {
+          source->image()->asyncRescaleAndReadPixelsYUV420(
+              kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
+              dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
+              &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
+        }
       }
       break;
     }
     case CopyOutputRequest::ResultFormat::NV12: {
-      CopyOutputNV12(surface, geometry, color_space, src_rect, rescale_mode,
+      CopyOutputNV12(*source, geometry, color_space, src_rect, rescale_mode,
                      is_downscale_or_identity_in_both_dimensions,
                      std::move(request), std::move(blit_release_callback));
       break;
     }
     case CopyOutputRequest::ResultFormat::RGBA:
     case CopyOutputRequest::ResultFormat::RGBAF16: {
-      CopyOutputRGBA(surface, geometry, color_space, src_rect, rescale_mode,
+      CopyOutputRGBA(*source, geometry, color_space, src_rect, rescale_mode,
                      is_downscale_or_identity_in_both_dimensions,
                      std::move(request), std::move(blit_release_callback));
       break;
     }
   }
 
-  if (!FlushSurface(surface, end_semaphores, scoped_access.get())) {
+  if (!FlushSurface(source->surface(), end_semaphores, scoped_access.get())) {
     // TODO(penghuang): handle vulkan device lost.
     FailedSkiaFlush("surface->flush() failed.");
     return;
