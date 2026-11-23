@@ -11,11 +11,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -30,6 +35,9 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
+#include "components/autofill/core/browser/logging/log_receiver.h"
+#include "components/autofill/core/browser/logging/log_router.h"
+#include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
@@ -54,6 +62,7 @@ using ::autofill::test::FormDescription;
 using ::autofill::test::GetServerTypes;
 using ::one_time_tokens::OneTimeToken;
 using ::one_time_tokens::OneTimeTokenType;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Property;
@@ -93,6 +102,25 @@ class FakeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
                                VerdictCallback callback) override {
     std::move(callback).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   }
+};
+
+class RecordingLogReceiver : public LogReceiver {
+ public:
+  explicit RecordingLogReceiver(LogRouter& log_router) {
+    observation_.Observe(&log_router);
+  }
+
+  void LogEntry(const base::DictValue& entry) override {
+    entries_.push_back(TextLogReceiver().LogEntryToText(entry));
+  }
+
+  const std::vector<std::string>& entries() const LIFETIME_BOUND {
+    return entries_;
+  }
+
+ private:
+  std::vector<std::string> entries_;
+  base::ScopedObservation<LogRouter, LogReceiver> observation_{this};
 };
 
 class OtpTabToFrameOrchestratorTest
@@ -463,6 +491,20 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   EXPECT_THAT(autofill_driver().triggered_fields(),
               ElementsAre(field->global_id()));
   EXPECT_THAT(QuerySuggestions(form, *field), HasValue("654321"));
+}
+
+// Tests that detecting an OTP form logs to chrome://autofill-internals that the
+// form is handled by `OtpCoordinator`.
+TEST_F(OtpTabToFrameOrchestratorTest,
+       LogsOtpCoordinatorStatusOnOtpFormDetection) {
+  RecordingLogReceiver log_receiver(autofill_client().log_router());
+  const FormStructure& form = AddOtpForm();
+
+  EXPECT_THAT(
+      log_receiver.entries(),
+      Contains(base::StrCat({"OTP field detected in web form.\nForm ID: ",
+                             base::ToString(form.global_id()),
+                             "\nHandled by OtpCoordinator.\n"})));
 }
 
 }  // namespace

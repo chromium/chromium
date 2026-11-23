@@ -106,7 +106,7 @@ void OtpTabToFrameOrchestrator::OnFieldTypesDetermined(
 
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens << "OTP field detected in web form."
-      << Br{} << "Form ID: " << form_id;
+      << Br{} << "Form ID: " << form_id << Br{} << "Handled by OtpCoordinator.";
 
   std::vector<FieldGlobalId> otp_field_ids;
   for (const auto& field : form->fields()) {
