@@ -380,6 +380,7 @@ ci.thin_tester(
         browser_config = targets.browser_config.CROS_CHROME,
         os_type = targets.os_type.CROS,
     ),
+    ssd = None,
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
     gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
