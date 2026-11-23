@@ -361,6 +361,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable TabGroupSyncController mTabGroupSyncController;
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<Boolean> mTabGroupSyncReadySupplier =
+            new OneshotSupplierImpl<>();
+
     private @Nullable StatusIndicatorCoordinator mStatusIndicatorCoordinator;
     private @Nullable StatusIndicatorObserver mStatusIndicatorObserver;
     private @Nullable OfflineIndicatorControllerV2 mOfflineIndicatorController;
@@ -1613,24 +1616,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ExtensionsUrlOverrideRegistryManagerFactory.getForProfile(originalProfile);
         }
 
-        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.asNonNull().get();
-        if (!(tabModelSelector.getModel(false) instanceof StubTabModel)
-                && TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)) {
-            var tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(originalProfile);
-            assert tabGroupSyncService != null;
-            mTabGroupSyncController =
-                    new TabGroupSyncControllerImpl(
-                            tabModelSelector,
-                            tabGroupSyncService,
-                            UserPrefs.get(originalProfile),
-                            () -> {
-                                return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY)
-                                                <= 1
-                                        || ApplicationStatus.getLastTrackedFocusedActivity()
-                                                == mActivity;
-                            });
-            mTabGroupUiActionHandlerSupplier.set(mTabGroupSyncController);
-        }
+        initTabGroupSyncController(originalProfile);
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         boolean isNtpThemeCustomizationEnabled =
@@ -1687,6 +1673,35 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             AiOverlayDialogBridge::new);
         }
         maybeInitIncognitoHistoryDisclaimerCoordinator();
+    }
+
+    @VisibleForTesting
+    void initTabGroupSyncController(Profile originalProfile) {
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.asNonNull().get();
+        if (!(tabModelSelector.getModel(false) instanceof StubTabModel)
+                && TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)) {
+            var tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(originalProfile);
+            assert tabGroupSyncService != null;
+            mTabGroupSyncController =
+                    new TabGroupSyncControllerImpl(
+                            tabModelSelector,
+                            tabGroupSyncService,
+                            UserPrefs.get(originalProfile),
+                            () -> {
+                                return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY)
+                                                <= 1
+                                        || ApplicationStatus.getLastTrackedFocusedActivity()
+                                                == mActivity;
+                            });
+            mTabGroupUiActionHandlerSupplier.set(mTabGroupSyncController);
+            mTabGroupSyncController
+                    .getStartupSyncInitializedSupplier()
+                    .runSyncOrOnAvailable(
+                            mCallbackController.makeCancelable(
+                                    ignored -> mTabGroupSyncReadySupplier.set(true)));
+            return;
+        }
+        mTabGroupSyncReadySupplier.set(true);
     }
 
     /** Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity. */
@@ -2966,6 +2981,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public TabGroupSyncController getTabGroupSyncController() {
         assert mTabGroupSyncController != null;
         return mTabGroupSyncController;
+    }
+
+    /**
+     * Returns a supplier fulfilled with {@code true} once tab group sync initialization and startup
+     * group reconciliation have completed for this activity, or once setup finishes if tab group
+     * sync is disabled or not used.
+     */
+    public OneshotSupplier<Boolean> getTabGroupSyncReadySupplier() {
+        return mTabGroupSyncReadySupplier;
     }
 
     @Override

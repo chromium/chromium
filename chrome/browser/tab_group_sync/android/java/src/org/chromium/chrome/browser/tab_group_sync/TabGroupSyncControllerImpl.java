@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -75,6 +77,8 @@ public final class TabGroupSyncControllerImpl
     private final TabCreationDelegate mTabCreationDelegate;
     private final LocalTabGroupMutationHelper mLocalMutationHelper;
     private final RemoteTabGroupMutationHelper mRemoteMutationHelper;
+    private final OneshotSupplierImpl<Boolean> mStartupSyncInitializedSupplier =
+            new OneshotSupplierImpl<>();
     private @MonotonicNonNull TabGroupSyncLocalObserver mLocalObserver;
     private @MonotonicNonNull TabGroupSyncRemoteObserver mRemoteObserver;
     private @MonotonicNonNull StartupHelper mStartupHelper;
@@ -160,6 +164,11 @@ public final class TabGroupSyncControllerImpl
         mLocalObserver.enableObservers(true);
     }
 
+    @Override
+    public OneshotSupplier<Boolean> getStartupSyncInitializedSupplier() {
+        return mStartupSyncInitializedSupplier;
+    }
+
     private void onTabStateInitialized() {
         mTabGroupSyncService.addObserver(mSyncInitObserver);
     }
@@ -195,5 +204,6 @@ public final class TabGroupSyncControllerImpl
 
         mStartupHelper.initializeTabGroupSync();
         mLocalObserver.enableObservers(true);
+        mStartupSyncInitializedSupplier.set(true);
     }
 }

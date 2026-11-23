@@ -4,17 +4,22 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.os.Looper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,10 +28,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -70,6 +79,8 @@ public class TabGroupSyncControllerImplUnitTest {
     private @Captor ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     private @Captor ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncServiceObserverCaptor;
     private @Mock Tab mTab1;
+    @Spy private Callback<Boolean> mStartupCallback;
+    @Spy private Callback<Boolean> mPostInitCallback;
 
     @Before
     public void setUp() {
@@ -96,7 +107,7 @@ public class TabGroupSyncControllerImplUnitTest {
 
     @After
     public void tearDown() {
-        mController.destroy();
+        if (mController != null) mController.destroy();
         for (TabGroupSyncService.Observer observer :
                 mTabGroupSyncServiceObserverCaptor.getAllValues()) {
             verify(mTabGroupSyncService, atLeastOnce()).removeObserver(observer);
@@ -154,5 +165,42 @@ public class TabGroupSyncControllerImplUnitTest {
         when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
         mController.openTabGroup(savedTabGroup.syncId);
         verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testGetStartupSyncInitializedSupplier_fulfilledAfterSyncBackendInitialized() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
+        createController();
+
+        assertNull(mController.getStartupSyncInitializedSupplier().get());
+        mController.getStartupSyncInitializedSupplier().runSyncOrOnAvailable(mStartupCallback);
+        verify(mStartupCallback, never()).onResult(any());
+
+        mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertTrue(Boolean.TRUE.equals(mController.getStartupSyncInitializedSupplier().get()));
+        InOrder inOrder = inOrder(mTabGroupSyncService, mStartupCallback);
+        inOrder.verify(mTabGroupSyncService).getDeletedGroupIds();
+        inOrder.verify(mStartupCallback).onResult(true);
+
+        mController.getStartupSyncInitializedSupplier().runSyncOrOnAvailable(mPostInitCallback);
+        verify(mPostInitCallback, times(1)).onResult(true);
+    }
+
+    @Test
+    public void testGetStartupSyncInitializedSupplier_unfulfilledOnDestroy() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        createController();
+
+        mController.getStartupSyncInitializedSupplier().runSyncOrOnAvailable(mStartupCallback);
+
+        mController.destroy();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        verify(mTabGroupSyncService).removeObserver(mTabGroupSyncServiceObserverCaptor.getValue());
+        assertNull(mController.getStartupSyncInitializedSupplier().get());
+        verify(mStartupCallback, never()).onResult(any());
+        mController = null;
     }
 }

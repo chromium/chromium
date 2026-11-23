@@ -4,6 +4,7 @@
 
 package org.chromium.components.tab_group_sync;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -20,4 +21,10 @@ import org.chromium.build.annotations.NullMarked;
 public interface TabGroupSyncController extends TabGroupUiActionHandler {
     /** Called when the activity is getting destroyed. */
     void destroy();
+
+    /**
+     * Returns a supplier fulfilled with {@code true} once startup tab group sync initialization and
+     * local tab group reconciliation have completed.
+     */
+    OneshotSupplier<Boolean> getStartupSyncInitializedSupplier();
 }

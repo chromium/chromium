@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Looper;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
@@ -32,16 +34,20 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -77,6 +83,12 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -91,6 +103,10 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -100,6 +116,7 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -134,8 +151,18 @@ public class TabbedRootUiCoordinatorUnitTest {
     @Mock private DeferredStartupHandler mDeferredStartupHandler;
     @Mock private Tracker mTracker;
     @Mock private MockTab mTab;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private TabCreator mTabCreator;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJni;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private PrefService mPrefService;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
+    @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
+    @Spy private Callback<Boolean> mSyncReadyCallback;
+    @Spy private Callback<Boolean> mPostSyncReadyCallback;
 
     private AppCompatActivity mActivity;
     private TabbedRootUiCoordinator mCoordinator;
@@ -165,7 +192,9 @@ public class TabbedRootUiCoordinatorUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         mProfileSupplier.set(mCurrentProfile);
-        mCoordinator = createCoordinator(/* bottomBarHostManager= */ null);
+        mCoordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null, ObservableSuppliers.alwaysNull());
         mCoordinator.setScrimManagerForTesting(mScrimManager);
     }
 
@@ -443,8 +472,90 @@ public class TabbedRootUiCoordinatorUnitTest {
         mCoordinator.onDestroy();
     }
 
+    @Test
+    public void testGetTabGroupSyncReadySupplier_deferredUntilStartupSyncInitialized() {
+        setUpTabGroupSyncEnabled();
+
+        TabbedRootUiCoordinator coordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null,
+                        ObservableSuppliers.createNonNull(mTabModelSelector));
+        coordinator.getTabGroupSyncReadySupplier().runSyncOrOnAvailable(mSyncReadyCallback);
+        verify(mSyncReadyCallback, never()).onResult(any());
+
+        coordinator.initTabGroupSyncController(mOriginalProfile);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        verify(mSyncReadyCallback, never()).onResult(any());
+        assertNull(coordinator.getTabGroupSyncReadySupplier().get());
+
+        mTabGroupSyncObserverCaptor.getAllValues().get(0).onInitialized();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertTrue(Boolean.TRUE.equals(coordinator.getTabGroupSyncReadySupplier().get()));
+        verify(mSyncReadyCallback).onResult(true);
+
+        coordinator.getTabGroupSyncReadySupplier().runSyncOrOnAvailable(mPostSyncReadyCallback);
+        verify(mPostSyncReadyCallback).onResult(true);
+    }
+
+    @Test
+    public void testGetTabGroupSyncReadySupplier_syncDisabled_fulfilledAfterSetup() {
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJni);
+        when(mTabGroupSyncFeaturesJni.isTabGroupSyncEnabled(mOriginalProfile)).thenReturn(false);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+
+        TabbedRootUiCoordinator coordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null,
+                        ObservableSuppliers.createNonNull(mTabModelSelector));
+        coordinator.getTabGroupSyncReadySupplier().runSyncOrOnAvailable(mSyncReadyCallback);
+        verify(mSyncReadyCallback, never()).onResult(any());
+
+        coordinator.initTabGroupSyncController(mOriginalProfile);
+        assertTrue(Boolean.TRUE.equals(coordinator.getTabGroupSyncReadySupplier().get()));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        verify(mSyncReadyCallback).onResult(true);
+
+        coordinator.getTabGroupSyncReadySupplier().runSyncOrOnAvailable(mPostSyncReadyCallback);
+        verify(mPostSyncReadyCallback).onResult(true);
+    }
+
+    @Test
+    public void testGetTabGroupSyncReadySupplier_notFulfilledWhenDestroyedBeforeSyncInit() {
+        setUpTabGroupSyncEnabled();
+
+        TabbedRootUiCoordinator coordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null,
+                        ObservableSuppliers.createNonNull(mTabModelSelector));
+        coordinator.getTabGroupSyncReadySupplier().runSyncOrOnAvailable(mSyncReadyCallback);
+        coordinator.initTabGroupSyncController(mOriginalProfile);
+
+        mTabGroupSyncObserverCaptor.getAllValues().get(0).onInitialized();
+        coordinator.onDestroy();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertNull(coordinator.getTabGroupSyncReadySupplier().get());
+        verify(mSyncReadyCallback, never()).onResult(any());
+    }
+
+    private void setUpTabGroupSyncEnabled() {
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJni);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncFeaturesJni.isTabGroupSyncEnabled(mOriginalProfile)).thenReturn(true);
+        when(mUserPrefsJni.get(mOriginalProfile)).thenReturn(mPrefService);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mTabModel));
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyIterator());
+        doNothing().when(mTabGroupSyncService).addObserver(mTabGroupSyncObserverCaptor.capture());
+    }
+
     private TabbedRootUiCoordinator createCoordinator(
-            @Nullable BottomBarHostManager bottomBarHostManager) {
+            @Nullable BottomBarHostManager bottomBarHostManager,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         return new TabbedRootUiCoordinator(
                 mActivity,
                 /* onOmniboxFocusChangedListener= */ null,
@@ -453,7 +564,7 @@ public class TabbedRootUiCoordinatorUnitTest {
                 mProfileSupplier,
                 /* bookmarkModelSupplier= */ ObservableSuppliers.alwaysNull(),
                 /* tabBookmarkerSupplier= */ ObservableSuppliers.alwaysNull(),
-                /* tabModelSelectorSupplier= */ ObservableSuppliers.alwaysNull(),
+                tabModelSelectorSupplier,
                 /* tabSwitcherSupplier= */ new OneshotSupplierImpl<>(),
                 /* incognitoTabSwitcherSupplier= */ new OneshotSupplierImpl<>(),
                 /* hubManagerSupplier= */ new OneshotSupplierImpl<>(),
@@ -474,7 +585,7 @@ public class TabbedRootUiCoordinatorUnitTest {
                 /* tabCreatorManagerSupplier= */ ObservableSuppliers.alwaysNull(),
                 mFullscreenManager,
                 /* compositorViewHolderSupplier= */ ObservableSuppliers.alwaysNull(),
-                /* tabContentManagerSupplier= */ () -> null,
+                /* tabContentManagerSupplier= */ ObservableSuppliers.alwaysNull(),
                 /* snackbarManagerSupplier= */ ObservableSuppliers.alwaysNull(),
                 /* edgeToEdgeSupplier= */ ObservableSuppliers.createMonotonic(),
                 mTopInsetProvider,
@@ -511,7 +622,9 @@ public class TabbedRootUiCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testActionRegistry_nullHostManager_settingEnabled_noRegistry() {
         BottomBarConfigUtils.setBottomBarUserEnabled(true);
-        mCoordinator = createCoordinator(/* bottomBarHostManager= */ null);
+        mCoordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null, ObservableSuppliers.alwaysNull());
 
         assertNull(mCoordinator.getActionRegistryForTesting());
     }

@@ -15,14 +15,17 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.Window;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
@@ -31,7 +34,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
@@ -55,12 +60,16 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.ui.RootUiCoordinator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +130,10 @@ public class ChromeTabbedActivityUnitTest {
         public void setProfileProviderSupplierForTesting(
                 OneshotSupplier<ProfileProvider> profileProviderSupplier) {
             mProfileProviderSupplier = profileProviderSupplier;
+        }
+
+        public void setRootUiCoordinatorForTesting(RootUiCoordinator rootUiCoordinator) {
+            mRootUiCoordinator = rootUiCoordinator;
         }
 
         public boolean wasTerminateIncognitoSessionCalled() {
@@ -792,5 +805,184 @@ public class ChromeTabbedActivityUnitTest {
         when(incognitoUtilsJni.getIncognitoModeForced(regularProfile)).thenReturn(true);
         activity.setSupportedProfileTypeForTesting(SupportedProfileType.MIXED);
         assertTrue(activity.shouldIgnoreRegularFiles());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testMaybeScheduleTabGroupMerge_regularTab_waitsForTabGroupSyncReady() {
+        int destTabId = 42;
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        Tab destTab = mock(Tab.class);
+        Tab pushedTab = mock(Tab.class);
+        TabbedRootUiCoordinator tabbedRootUiCoordinator = mock(TabbedRootUiCoordinator.class);
+        OneshotSupplierImpl<Boolean> tabGroupSyncReadySupplier = new OneshotSupplierImpl<>();
+        when(tabbedRootUiCoordinator.getTabGroupSyncReadySupplier())
+                .thenReturn(tabGroupSyncReadySupplier);
+        when(tabModelSelector.isTabStateInitialized()).thenReturn(false);
+        when(tabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getTabById(destTabId)).thenReturn(destTab);
+        when(tabModel.indexOf(pushedTab)).thenReturn(0);
+        ArgumentCaptor<TabModelSelectorObserver> observerCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+        doNothing().when(tabModelSelector).addObserver(observerCaptor.capture());
+
+        TestChromeTabbedActivity activity =
+                createTabMergeActivity(tabModelSelector, tabbedRootUiCoordinator);
+        Intent intent = createTabMergeIntent(destTabId);
+        activity.maybeScheduleTabGroupMerge(intent, List.of(pushedTab));
+
+        assertFalse(intent.hasExtra(IntentHandler.EXTRA_DEST_TAB_ID));
+        verify(tabbedRootUiCoordinator, never()).getTabGroupSyncReadySupplier();
+        verify(tabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+
+        when(tabModelSelector.isTabStateInitialized()).thenReturn(true);
+        observerCaptor.getValue().onTabStateInitialized();
+
+        verify(tabbedRootUiCoordinator).getTabGroupSyncReadySupplier();
+        verify(tabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+
+        tabGroupSyncReadySupplier.set(true);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        verify(tabModel)
+                .mergeListOfTabsToGroup(
+                        eq(List.of(pushedTab)),
+                        eq(destTab),
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testMaybeScheduleTabGroupMerge_whenTabStateAlreadyInitialized_waitsForSync() {
+        int destTabId = 42;
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        Tab destTab = mock(Tab.class);
+        Tab pushedTab = mock(Tab.class);
+        TabbedRootUiCoordinator tabbedRootUiCoordinator = mock(TabbedRootUiCoordinator.class);
+        OneshotSupplierImpl<Boolean> tabGroupSyncReadySupplier = new OneshotSupplierImpl<>();
+        when(tabbedRootUiCoordinator.getTabGroupSyncReadySupplier())
+                .thenReturn(tabGroupSyncReadySupplier);
+        when(tabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(tabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getTabById(destTabId)).thenReturn(destTab);
+        when(tabModel.indexOf(pushedTab)).thenReturn(0);
+
+        TestChromeTabbedActivity activity =
+                createTabMergeActivity(tabModelSelector, tabbedRootUiCoordinator);
+        activity.maybeScheduleTabGroupMerge(createTabMergeIntent(destTabId), List.of(pushedTab));
+
+        verify(tabbedRootUiCoordinator).getTabGroupSyncReadySupplier();
+        verify(tabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+
+        tabGroupSyncReadySupplier.set(true);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        verify(tabModel)
+                .mergeListOfTabsToGroup(
+                        eq(List.of(pushedTab)),
+                        eq(destTab),
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testMaybeScheduleTabGroupMerge_whenSyncAlreadyReady_mergesSynchronously() {
+        int destTabId = 42;
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        Tab destTab = mock(Tab.class);
+        Tab pushedTab = mock(Tab.class);
+        TabbedRootUiCoordinator tabbedRootUiCoordinator = mock(TabbedRootUiCoordinator.class);
+        OneshotSupplierImpl<Boolean> tabGroupSyncReadySupplier = new OneshotSupplierImpl<>();
+        tabGroupSyncReadySupplier.set(true);
+        when(tabbedRootUiCoordinator.getTabGroupSyncReadySupplier())
+                .thenReturn(tabGroupSyncReadySupplier);
+        when(tabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(tabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getTabById(destTabId)).thenReturn(destTab);
+        when(tabModel.indexOf(pushedTab)).thenReturn(0);
+
+        TestChromeTabbedActivity activity =
+                createTabMergeActivity(tabModelSelector, tabbedRootUiCoordinator);
+        activity.maybeScheduleTabGroupMerge(createTabMergeIntent(destTabId), List.of(pushedTab));
+
+        verify(tabModel)
+                .mergeListOfTabsToGroup(
+                        eq(List.of(pushedTab)),
+                        eq(destTab),
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testMaybeScheduleTabGroupMerge_incognitoTab_mergesWithoutWaitingForSync() {
+        int destTabId = 42;
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        Tab destTab = mock(Tab.class);
+        Tab pushedTab = mock(Tab.class);
+        TabbedRootUiCoordinator tabbedRootUiCoordinator = mock(TabbedRootUiCoordinator.class);
+        when(pushedTab.isIncognito()).thenReturn(true);
+        when(tabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(tabModelSelector.getModel(true)).thenReturn(tabModel);
+        when(tabModel.getTabById(destTabId)).thenReturn(destTab);
+        when(tabModel.indexOf(pushedTab)).thenReturn(0);
+
+        TestChromeTabbedActivity activity =
+                createTabMergeActivity(tabModelSelector, tabbedRootUiCoordinator);
+        activity.maybeScheduleTabGroupMerge(createTabMergeIntent(destTabId), List.of(pushedTab));
+
+        verify(tabbedRootUiCoordinator, never()).getTabGroupSyncReadySupplier();
+        verify(tabModel)
+                .mergeListOfTabsToGroup(
+                        eq(List.of(pushedTab)),
+                        eq(destTab),
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testMaybeScheduleTabGroupMerge_activityDestroyedBeforeSyncReady_doesNotMerge() {
+        int destTabId = 42;
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        Tab destTab = mock(Tab.class);
+        Tab pushedTab = mock(Tab.class);
+        TabbedRootUiCoordinator tabbedRootUiCoordinator = mock(TabbedRootUiCoordinator.class);
+        OneshotSupplierImpl<Boolean> tabGroupSyncReadySupplier = new OneshotSupplierImpl<>();
+        when(tabbedRootUiCoordinator.getTabGroupSyncReadySupplier())
+                .thenReturn(tabGroupSyncReadySupplier);
+        when(tabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(tabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getTabById(destTabId)).thenReturn(destTab);
+        when(tabModel.indexOf(pushedTab)).thenReturn(0);
+
+        TestChromeTabbedActivity activity =
+                createTabMergeActivity(tabModelSelector, tabbedRootUiCoordinator);
+        activity.maybeScheduleTabGroupMerge(createTabMergeIntent(destTabId), List.of(pushedTab));
+        activity.setIsActivityFinishingOrDestroyed(true);
+        tabGroupSyncReadySupplier.set(true);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(tabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+    }
+
+    private static TestChromeTabbedActivity createTabMergeActivity(
+            TabModelSelectorBase tabModelSelector,
+            TabbedRootUiCoordinator tabbedRootUiCoordinator) {
+        TabModelOrchestrator orchestrator = mock(TabModelOrchestrator.class);
+        when(orchestrator.getTabModelSelector()).thenReturn(tabModelSelector);
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        activity.setAreTabModelsInitialized(true);
+        activity.setTabModelOrchestratorForTesting(orchestrator);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
+        activity.setRootUiCoordinatorForTesting(tabbedRootUiCoordinator);
+        return activity;
+    }
+
+    private static Intent createTabMergeIntent(int destTabId) {
+        Intent intent = new Intent();
+        IntentHandler.setDestTabId(intent, destTabId);
+        return intent;
     }
 }

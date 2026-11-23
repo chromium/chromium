@@ -2216,10 +2216,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     /**
      * Merges incoming reparented tabs into their destination tab group. When {@link
      * ChromeFeatureList#CROSS_WINDOW_TAB_GROUP_OPERATIONS} is enabled, schedules a deferred merge
-     * once tab state restoration has completed on cold start. Otherwise, performs an immediate
-     * merge.
+     * once tab state restoration and startup tab group sync reconciliation have completed on cold
+     * start. Otherwise, performs an immediate merge.
      */
-    private void maybeScheduleTabGroupMerge(Intent intent, List<Tab> tabs) {
+    @VisibleForTesting
+    void maybeScheduleTabGroupMerge(Intent intent, List<Tab> tabs) {
         @TabId int destTabId = IntentHandler.getDestTabId(intent);
         IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
         if (destTabId == Tab.INVALID_TAB_ID || tabs.isEmpty()) {
@@ -2239,7 +2240,31 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         TabModelUtils.runOnTabStateInitialized(
                 getTabModelSelector(),
                 mCallbackController.makeCancelable(
-                        selector -> mergeValidTabsToDest(selector, tabs, destTabId, isIncognito)));
+                        selector ->
+                                mergeValidTabsToDestAfterSyncInit(
+                                        selector, tabs, destTabId, isIncognito)));
+    }
+
+    private void mergeValidTabsToDestAfterSyncInit(
+            TabModelSelector selector, List<Tab> tabs, @TabId int destTabId, boolean isIncognito) {
+        if (isActivityFinishingOrDestroyed()) {
+            return;
+        }
+        if (!isIncognito
+                && mRootUiCoordinator instanceof TabbedRootUiCoordinator tabbedRootUiCoordinator) {
+            tabbedRootUiCoordinator
+                    .getTabGroupSyncReadySupplier()
+                    .runSyncOrOnAvailable(
+                            mCallbackController.makeCancelable(
+                                    ignored -> {
+                                        if (!isActivityFinishingOrDestroyed()) {
+                                            mergeValidTabsToDest(
+                                                    selector, tabs, destTabId, isIncognito);
+                                        }
+                                    }));
+            return;
+        }
+        mergeValidTabsToDest(selector, tabs, destTabId, isIncognito);
     }
 
     private static void mergeValidTabsToDest(
