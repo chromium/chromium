@@ -550,7 +550,7 @@ TEST_F(
 
 // Tests that media capture request is auto-declined when the tab is
 // prerendering.
-TEST_F(PermissionsInttest, TestsThatCancelllingPrerenderDeniesPermission) {
+TEST_F(PermissionsInttest, TestsThatCancellingPrerenderDeniesPermission) {
   ScopedTestingWebClient scoped_testing_web_client(
       std::make_unique<TestPrerenderWebClient>(this, web_state()));
 

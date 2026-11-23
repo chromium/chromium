@@ -341,14 +341,14 @@ TEST_P(NavigationManagerTest, GetPendingItemWithIndexedPendingEntry) {
 
 // Tests that going back or negative offset is not possible without a committed
 // item.
-TEST_P(NavigationManagerTest, CanGoBackWithoutCommitedItem) {
+TEST_P(NavigationManagerTest, CanGoBackWithoutCommittedItem) {
   EXPECT_FALSE(navigation_manager()->CanGoBack());
   EXPECT_FALSE(navigation_manager()->CanGoToOffset(-1));
 }
 
-// Tests that going back or negative offset is not possible if there is ony one
+// Tests that going back or negative offset is not possible if there is only one
 // committed item.
-TEST_P(NavigationManagerTest, CanGoBackWithSingleCommitedItem) {
+TEST_P(NavigationManagerTest, CanGoBackWithSingleCommittedItem) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
       web::NavigationInitiationType::BROWSER_INITIATED,
@@ -363,7 +363,7 @@ TEST_P(NavigationManagerTest, CanGoBackWithSingleCommitedItem) {
 }
 
 // Tests going back possibility with multiple committed items.
-TEST_P(NavigationManagerTest, CanGoBackWithMultipleCommitedItems) {
+TEST_P(NavigationManagerTest, CanGoBackWithMultipleCommittedItems) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
       web::NavigationInitiationType::BROWSER_INITIATED,
@@ -413,14 +413,14 @@ TEST_P(NavigationManagerTest, CanGoBackWithMultipleCommitedItems) {
 
 // Tests that going forward or positive offset is not possible without a
 // committed item.
-TEST_P(NavigationManagerTest, CanGoForwardWithoutCommitedItem) {
+TEST_P(NavigationManagerTest, CanGoForwardWithoutCommittedItem) {
   EXPECT_FALSE(navigation_manager()->CanGoForward());
   EXPECT_FALSE(navigation_manager()->CanGoToOffset(1));
 }
 
-// Tests that going forward or positive offset is not possible if there is ony
+// Tests that going forward or positive offset is not possible if there is only
 // one committed item.
-TEST_P(NavigationManagerTest, CanGoForwardWithSingleCommitedItem) {
+TEST_P(NavigationManagerTest, CanGoForwardWithSingleCommittedItem) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
       web::NavigationInitiationType::BROWSER_INITIATED,
@@ -434,7 +434,7 @@ TEST_P(NavigationManagerTest, CanGoForwardWithSingleCommitedItem) {
 }
 
 // Tests going forward possibility with multiple committed items.
-TEST_P(NavigationManagerTest, CanGoForwardWithMultipleCommitedEntries) {
+TEST_P(NavigationManagerTest, CanGoForwardWithMultipleCommittedEntries) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
       web::NavigationInitiationType::BROWSER_INITIATED,
@@ -814,7 +814,7 @@ TEST_P(NavigationManagerTest, ReplaceSameUrlPendingItemFromDesktop) {
 
 // Tests that when the last committed item exists, adding a pending item
 // succeeds if the new item's URL is different from the last committed item.
-TEST_P(NavigationManagerTest, AddPendingItemIfDiffernetURL) {
+TEST_P(NavigationManagerTest, AddPendingItemIfDifferentURL) {
   GURL existing_url = GURL("http://www.existing.com");
   navigation_manager()->AddPendingItem(
       existing_url, Referrer(), ui::PAGE_TRANSITION_TYPED,

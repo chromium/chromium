@@ -179,7 +179,7 @@ TEST_F(HistoryStateOperationsTest, NoOpPushDifferentScheme) {
 
 // Tests that calling window.history.replaceState() is a no-op for URLs with a
 // different scheme.
-TEST_F(HistoryStateOperationsTest, NoOpRelaceDifferentScheme) {
+TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentScheme) {
   // Perform a window.history.replaceState() with a URL with a different scheme.
   // This will clear the OnLoad and NoOp text, so checking below that the NoOp
   // text is displayed and the OnLoad text is empty ensures that no navigation

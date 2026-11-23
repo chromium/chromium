@@ -4,6 +4,7 @@
 
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 
+#import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
 #import "base/test/task_environment.h"
@@ -252,8 +253,8 @@ TEST_F(CRWWKNavigationStatesTest, PendingNavigations) {
   EXPECT_TRUE([[states_ pendingNavigations] containsObject:[NSNull null]]);
 
   // Provisionally fail null navigation.
-  [states_ setState:WKNavigationState::PROVISIONALY_FAILED forNavigation:nil];
-  ASSERT_EQ(WKNavigationState::PROVISIONALY_FAILED,
+  [states_ setState:WKNavigationState::PROVISIONALLY_FAILED forNavigation:nil];
+  ASSERT_EQ(WKNavigationState::PROVISIONALLY_FAILED,
             [states_ stateForNavigation:nil]);
   ASSERT_EQ(3U, [states_ pendingNavigations].count);
   EXPECT_TRUE([[states_ pendingNavigations] containsObject:navigation1_]);
@@ -371,7 +372,7 @@ TEST_F(CRWWKNavigationStatesTest, TracingTransitionsProvisionalFailed) {
   {
     [states_ setState:WKNavigationState::REQUESTED forNavigation:navigation1_];
     [states_ setState:WKNavigationState::STARTED forNavigation:navigation1_];
-    [states_ setState:WKNavigationState::PROVISIONALY_FAILED
+    [states_ setState:WKNavigationState::PROVISIONALLY_FAILED
         forNavigation:navigation1_];
   }
 

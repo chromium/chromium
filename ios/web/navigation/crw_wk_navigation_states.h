@@ -29,7 +29,7 @@ enum class WKNavigationState : int {
   // `webView:didReceiveServerRedirectForProvisionalNavigation:`.
   REDIRECTED,
   // WKNavigation passed to `webView:didFailProvisionalNavigation:`.
-  PROVISIONALY_FAILED,
+  PROVISIONALLY_FAILED,
   // WKNavigation passed to `webView:didCommitNavigation:`.
   COMMITTED,
   // WKNavigation passed to `webView:didFinishNavigation:`.

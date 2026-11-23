@@ -200,8 +200,8 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   const GURL infinitePendingURL =
       self.testServer->GetURL(kInfinitePendingPageURL);
 
-  // EG synchronizes with WKWebView. Disable synchronization for EG interation
-  // during when page is loading.
+  // EG synchronizes with `WKWebView`. Disable synchronization for EG
+  // interaction during when page is loading.
   ScopedSynchronizationDisabler disabler;
 
   // The page being loaded never completes, so call the LoadUrl helper that
@@ -228,8 +228,8 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
   // Add responseProvider for page that never finishes loading.
 
-  // EG synchronizes with WKWebView. Disable synchronization for EG interation
-  // during when page is loading.
+  // EG synchronizes with `WKWebView`. Disable synchronization for EG
+  // interaction during when page is loading.
   ScopedSynchronizationDisabler disabler;
 
   // Load form first.

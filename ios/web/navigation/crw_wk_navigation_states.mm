@@ -16,7 +16,7 @@
 namespace {
 bool IsTerminalState(web::WKNavigationState state) {
   return state == web::WKNavigationState::FINISHED ||
-         state == web::WKNavigationState::PROVISIONALY_FAILED ||
+         state == web::WKNavigationState::PROVISIONALLY_FAILED ||
          state == web::WKNavigationState::FAILED ||
          state == web::WKNavigationState::NONE;
 }
@@ -31,7 +31,7 @@ const char* NavigationStateToString(web::WKNavigationState state) {
       return "Started";
     case web::WKNavigationState::REDIRECTED:
       return "Redirected";
-    case web::WKNavigationState::PROVISIONALY_FAILED:
+    case web::WKNavigationState::PROVISIONALLY_FAILED:
       return "ProvisionalyFailed";
     case web::WKNavigationState::COMMITTED:
       return "Committed";
@@ -348,7 +348,7 @@ const char* NavigationStateToString(web::WKNavigationState state) {
 
   switch (newState) {
     case web::WKNavigationState::NONE:
-    case web::WKNavigationState::PROVISIONALY_FAILED:
+    case web::WKNavigationState::PROVISIONALLY_FAILED:
     case web::WKNavigationState::FINISHED:
     case web::WKNavigationState::FAILED:
       break;  // Terminal states should not begin a PageLoad event.

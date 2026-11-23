@@ -11,6 +11,7 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
@@ -40,7 +41,7 @@ class HttpAuthTest : public WebTestWithWebState {
 };
 
 // Tests successful basic authentication.
-TEST_F(HttpAuthTest, SuccessfullBasicAuth) {
+TEST_F(HttpAuthTest, SuccessfulBasicAuth) {
   // Load the page which requests basic HTTP authentication.
   GURL url = server_.GetURL("/auth-basic?password=goodpass&realm=Realm1");
   test::LoadUrl(web_state(), url);
@@ -74,7 +75,7 @@ TEST_F(HttpAuthTest, SuccessfullBasicAuth) {
 }
 
 // Tests unsuccessful basic authentication.
-TEST_F(HttpAuthTest, UnsucessfulBasicAuth) {
+TEST_F(HttpAuthTest, UnsuccessfulBasicAuth) {
   // Load the page which requests basic HTTP authentication.
   GURL url = server_.GetURL("/auth-basic?password=goodpass&realm=Realm2");
   test::LoadUrl(web_state(), url);

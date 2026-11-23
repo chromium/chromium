@@ -4,6 +4,7 @@
 
 #import "ios/web/web_state/ui/crw_web_controller.h"
 
+#import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
 #import <optional>
@@ -209,7 +210,7 @@ JavaScriptCompletionBlock WrapCompletionBlock(
   // YES if the current URL load was triggered in Web Controller. NO by default
   // and after web usage was disabled. Used by `-loadCurrentURLIfNecessary` to
   // prevent extra loads.
-  BOOL _currentURLLoadWasTrigerred;
+  BOOL _currentURLLoadWasTriggered;
   BOOL _isBeingDestroyed;  // YES if in the process of closing.
   // The actual URL of the document object (i.e., the last committed URL).
   // TODO(crbug.com/41213672): Remove this in favor of just updating the
@@ -399,7 +400,7 @@ JavaScriptCompletionBlock WrapCompletionBlock(
         _touchTrackingRecognizer.touchTrackingDelegate = nil;
         _touchTrackingRecognizer = nil;
       }
-      _currentURLLoadWasTrigerred = NO;
+      _currentURLLoadWasTriggered = NO;
     }
   }
 }
@@ -725,7 +726,7 @@ JavaScriptCompletionBlock WrapCompletionBlock(
     return;
   }
 
-  _currentURLLoadWasTrigerred = YES;
+  _currentURLLoadWasTriggered = YES;
 
   [_requestController
       loadCurrentURLWithRendererInitiatedNavigation:rendererInitiated];
@@ -737,7 +738,7 @@ JavaScriptCompletionBlock WrapCompletionBlock(
     base::RecordAction(
         base::UserMetricsAction("IOSMobileReloadCrashedRenderer"));
     [self loadCurrentURLWithRendererInitiatedNavigation:NO];
-  } else if (!_currentURLLoadWasTrigerred) {
+  } else if (!_currentURLLoadWasTriggered) {
     [self ensureContainerViewCreated];
 
     // TODO(crbug.com/41361784): end the practice of calling `loadCurrentURL`
@@ -993,7 +994,7 @@ JavaScriptCompletionBlock WrapCompletionBlock(
   self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
   [self.webView setInteractionState:interactionState];
   if (!base::FeatureList::IsEnabled(kIOSSessionRestoreLoadTriggerKillSwitch)) {
-    _currentURLLoadWasTrigerred = YES;
+    _currentURLLoadWasTriggered = YES;
   }
   return YES;
 }
@@ -2116,7 +2117,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 #pragma mark - Testing-Only Methods
 
 - (void)injectWebViewContentView:(CRWWebViewContentView*)webViewContentView {
-  _currentURLLoadWasTrigerred = NO;
+  _currentURLLoadWasTriggered = NO;
   [self removeWebView];
 
   [_containerView displayWebViewContentView:webViewContentView];
@@ -2124,7 +2125,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)resetInjectedWebViewContentView {
-  _currentURLLoadWasTrigerred = NO;
+  _currentURLLoadWasTriggered = NO;
   [self setWebView:nil];
   [_containerView removeFromSuperview];
   _containerView = nil;

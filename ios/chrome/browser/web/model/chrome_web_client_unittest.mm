@@ -93,6 +93,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -111,7 +112,7 @@ const char kExampleSearchEngineTemplateURL[] =
     "https://www.exampleSE.com/search?q={searchTerms}";
 const char kExampleSearchEngineSearchURL[] =
     "https://www.exampleSE.com/search?q=test";
-const char kExampleSearcheEngineRootURL[] = "https://www.exampleSE.com/";
+const char kExampleSearchEngineRootURL[] = "https://www.exampleSE.com/";
 const char kNonDSEURL[] = "https://www.example.com/";
 
 // Error used to test PrepareErrorPage method.
@@ -1011,7 +1012,7 @@ TEST_F(ChromeWebClientTest, ShouldBlockUniversalLinksForURL) {
   EXPECT_TRUE(web_client.ShouldBlockUniversalLinksForURL(
       profile(), GURL(kExampleSearchEngineSearchURL)));
   EXPECT_TRUE(web_client.ShouldBlockUniversalLinksForURL(
-      profile(), GURL(kExampleSearcheEngineRootURL)));
+      profile(), GURL(kExampleSearchEngineRootURL)));
   EXPECT_FALSE(web_client.ShouldBlockUniversalLinksForURL(
       profile(), GURL(kGoogleSearchURL)));
 }

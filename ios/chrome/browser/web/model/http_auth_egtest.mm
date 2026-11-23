@@ -138,11 +138,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 // Tests Basic HTTP Authentication with correct username and password.
-- (void)testSuccessfullBasicAuth {
+- (void)testSuccessfulBasicAuth {
   // EG synchronization disabled block.
   {
-    // EG synchronizes with WKWebView. Disable synchronization for EG interation
-    // during when page is loading.
+    // EG synchronizes with `WKWebView`. Disable synchronization for EG
+    // interaction during when page is loading.
     ScopedSynchronizationDisabler disabler;
     GURL URL = self.testServer->GetURL("/good-auth");
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
@@ -168,11 +168,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 // Tests Basic HTTP Authentication with incorrect username and password.
-- (void)testUnsuccessfullBasicAuth {
+- (void)testUnsuccessfulBasicAuth {
   // EG synchronization disabled block.
   {
-    // EG synchronizes with WKWebView. Disable synchronization for EG interation
-    // during when page is loading.
+    // EG synchronizes with `WKWebView`. Disable synchronization for EG
+    // interaction during when page is loading.
     ScopedSynchronizationDisabler disabler;
     GURL URL = self.testServer->GetURL("/bad-auth");
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
@@ -204,8 +204,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 - (void)testCancellingBasicAuth {
   // EG synchronization disabled block.
   {
-    // EG synchronizes with WKWebView. Disable synchronization for EG interation
-    // during when page is loading.
+    // EG synchronizes with `WKWebView`. Disable synchronization for EG
+    // interaction during when page is loading.
     ScopedSynchronizationDisabler disabler;
     GURL URL = self.testServer->GetURL("/cancel-auth");
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];

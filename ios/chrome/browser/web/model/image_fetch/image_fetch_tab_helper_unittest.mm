@@ -311,7 +311,7 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateNavigate) {
 // Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
 // with an opaque initiator when the origin is mismatched (wrong domain).
 TEST_F(ImageFetchTabHelperTest,
-       GetImageDataWithMismatchedOriginFallsbackToImageFetcher) {
+       GetImageDataWithMismatchedOriginFallsBackToImageFetcher) {
   base::test::TestFuture<const network::ResourceRequest&> future;
   test_url_loader_factory_.SetInterceptor(future.GetRepeatingCallback());
   url::Origin mismatched_origin =
@@ -340,7 +340,7 @@ TEST_F(ImageFetchTabHelperTest,
 // Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
 // when the frame is null.
 TEST_F(ImageFetchTabHelperTest,
-       GetImageDataWithNullFrameFallsbackToImageFetcher) {
+       GetImageDataWithNullFrameFallsBackToImageFetcher) {
   base::test::TestFuture<const network::ResourceRequest&> future;
   test_url_loader_factory_.SetInterceptor(future.GetRepeatingCallback());
   base::RunLoop run_loop;
@@ -459,7 +459,7 @@ TEST_F(ImageFetchTabHelperTest,
 // Tests that ImageFetchTabHelper::GetImageData with fallback correctly handles
 // custom referrer policies.
 TEST_F(ImageFetchTabHelperTest,
-       GetImageDataWithCustomReferrerPolicyFallsbackToImageFetcher) {
+       GetImageDataWithCustomReferrerPolicyFallsBackToImageFetcher) {
   base::RunLoop run_loop;
   __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   web::Referrer referrer(GURL("https://source.example.com/page?query=secret"),

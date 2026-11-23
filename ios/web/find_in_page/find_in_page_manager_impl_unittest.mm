@@ -280,7 +280,7 @@ TEST_F(FindInPageManagerImplTest,
 
 // Tests that Find in Page does not respond to a FindInPageNext or a
 // FindInPagePrevious call if no FindInPageSearch find was executed beforehand.
-TEST_F(FindInPageManagerImplTest, FindDidNotRepondToNextOrPrevIfNoSearch) {
+TEST_F(FindInPageManagerImplTest, FindDidNotRespondToNextOrPrevIfNoSearch) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
 

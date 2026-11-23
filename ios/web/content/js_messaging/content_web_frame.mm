@@ -4,6 +4,8 @@
 
 #import "ios/web/content/js_messaging/content_web_frame.h"
 
+#import <string>
+
 #import "base/feature_list.h"
 #import "base/json/json_writer.h"
 #import "base/strings/string_util.h"
@@ -36,9 +38,9 @@ std::u16string CreateFunctionCallWithParameters(
   for (size_t i = 0; i < parameters.size(); ++i) {
     parameter_strings[i] = base::WriteJson(parameters[i]).value_or("");
   }
-  std::string joined_paramters = base::JoinString(parameter_strings, ",");
+  std::string joined_parameters = base::JoinString(parameter_strings, ",");
   return base::UTF8ToUTF16(base::StringPrintf("__gCrWeb.%s(%s)", name.c_str(),
-                                              joined_paramters.c_str()));
+                                              joined_parameters.c_str()));
 }
 
 }  // namespace

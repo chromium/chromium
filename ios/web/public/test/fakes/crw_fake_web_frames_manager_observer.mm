@@ -4,12 +4,14 @@
 
 #import "ios/web/public/test/fakes/crw_fake_web_frames_manager_observer.h"
 
+#import <string>
+
 #import "base/memory/raw_ptr.h"
 
 @implementation CRWFakeWebFramesManagerObserver {
   raw_ptr<web::WebFrame> _lastAvailableFrame;
   raw_ptr<web::WebFramesManager> _lastWebFramesManager;
-  std::string _lastUnvailableFrameId;
+  std::string _lastUnavailableFrameId;
 }
 
 - (void)webFramesManager:(web::WebFramesManager*)webFramesManager
@@ -21,7 +23,7 @@
 - (void)webFramesManager:(web::WebFramesManager*)webFramesManager
     frameBecameUnavailable:(const std::string&)frameId {
   _lastWebFramesManager = webFramesManager;
-  _lastUnvailableFrameId = frameId;
+  _lastUnavailableFrameId = frameId;
 }
 
 - (web::WebFrame*)lastAvailableFrame {
@@ -33,7 +35,7 @@
 }
 
 - (const std::string&)lastUnavailableFrameId {
-  return _lastUnvailableFrameId;
+  return _lastUnavailableFrameId;
 }
 
 @end

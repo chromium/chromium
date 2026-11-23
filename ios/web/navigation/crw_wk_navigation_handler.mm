@@ -798,7 +798,7 @@ NSError* SanitizeNavigationError(
                        withError:(NSError*)error {
   [self didReceiveWKNavigationDelegateCallback];
 
-  [self.navigationStates setState:web::WKNavigationState::PROVISIONALY_FAILED
+  [self.navigationStates setState:web::WKNavigationState::PROVISIONALLY_FAILED
                     forNavigation:navigation];
 
   // Ignore provisional navigation failure if a new navigation has been started,

@@ -21,7 +21,7 @@ constexpr char kUppercaseFrameId[] = "ABBA1234BEEF1234CAFE1234DEED1234";
 
 class FakeWebFramesManagerObserver : public WebFramesManagerImpl::Observer {
  public:
-  // The current available frames as tracked by the WebFramesManage Observer
+  // The current available frames as tracked by the `WebFramesManager::Observer`
   // calls.
   const std::map<std::string, WebFrame*> frames() const { return frames_; }
 
@@ -192,7 +192,7 @@ TEST_F(WebFramesManagerImplTest, RemoveAllWebFrames) {
 }
 
 // Tests removing a frame which doesn't exist.
-TEST_F(WebFramesManagerImplTest, RemoveNonexistantFrame) {
+TEST_F(WebFramesManagerImplTest, RemoveNonexistentFrame) {
   auto frame = FakeWebFrame::Create(kMainFakeFrameId,
                                     /*is_main_frame=*/true,
                                     GURL("https://www.main.test"));

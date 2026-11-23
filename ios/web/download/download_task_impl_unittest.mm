@@ -27,7 +27,7 @@ namespace {
 
 const char kUrl[] = "chromium://download.test/";
 const char kUrlRedirected[] = "chromium://redirected.test/";
-NSString* const kOrigninatingHost = @"host.test";
+NSString* const kOriginatingHost = @"host.test";
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
 const base::FilePath::CharType kTestFileName[] = FILE_PATH_LITERAL("file.test");
@@ -74,7 +74,7 @@ class DownloadTaskImplTest : public PlatformTest {
       : task_(std::make_unique<FakeDownloadTaskImpl>(
             &web_state_,
             GURL(kUrl),
-            kOrigninatingHost,
+            kOriginatingHost,
             kHttpMethod,
             kContentDisposition,
             /*total_bytes=*/-1,
@@ -95,7 +95,7 @@ TEST_F(DownloadTaskImplTest, DefaultState) {
   EXPECT_NSNE(@"", task_->GetIdentifier());
   EXPECT_EQ(kUrl, task_->GetOriginalUrl());
   EXPECT_EQ(kUrl, task_->GetRedirectedUrl());
-  EXPECT_NSEQ(kOrigninatingHost, task_->GetOriginatingHost());
+  EXPECT_NSEQ(kOriginatingHost, task_->GetOriginatingHost());
   EXPECT_FALSE(task_->IsDone());
   EXPECT_EQ(0, task_->GetErrorCode());
   EXPECT_EQ(-1, task_->GetHttpCode());
@@ -134,7 +134,7 @@ TEST_F(DownloadTaskImplTest, RedirectURL) {
 TEST_F(DownloadTaskImplTest, GenerateFileNameTest) {
   task_ = std::make_unique<FakeDownloadTaskImpl>(
       &web_state_, GURL(std::string(kUrl) + kNoExtensionFileName),
-      kOrigninatingHost, kHttpMethod, "",
+      kOriginatingHost, kHttpMethod, "",
       /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
@@ -159,7 +159,7 @@ TEST_F(DownloadTaskImplTest, GenerateFileNameSanitization) {
   std::string nfd_filename = "a\xCC\x88.txt";
 
   task_ = std::make_unique<FakeDownloadTaskImpl>(
-      &web_state_, GURL(kUrl), kOrigninatingHost, kHttpMethod,
+      &web_state_, GURL(kUrl), kOriginatingHost, kHttpMethod,
       content_disposition,
       /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -182,7 +182,7 @@ TEST_F(DownloadTaskImplTest, GenerateFileNameNoSanitization) {
       "attachment; filename=\"" + nfc_filename + "\"";
 
   task_ = std::make_unique<FakeDownloadTaskImpl>(
-      &web_state_, GURL(kUrl), kOrigninatingHost, kHttpMethod,
+      &web_state_, GURL(kUrl), kOriginatingHost, kHttpMethod,
       content_disposition,
       /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
       base::ThreadPool::CreateSequencedTaskRunner(

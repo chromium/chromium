@@ -38,6 +38,7 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "ui/gfx/image/image_unittest_util.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -101,12 +102,12 @@ TEST_F(WebStateTest, UserScriptExecution) {
   web_state()->ExecuteUserJavaScript(@"window.open('', target='_blank');");
 
   web::FakeWebStateDelegate* delegate_ptr = &delegate;
-  bool suceess = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+  bool success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     // Child window can only be open if the user interaction was registered.
     return delegate_ptr->child_windows().size() == 1;
   });
 
-  ASSERT_TRUE(suceess);
+  ASSERT_TRUE(success);
   EXPECT_TRUE(delegate.child_windows()[0]);
 }
 

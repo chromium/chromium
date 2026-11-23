@@ -662,7 +662,7 @@ void NavigationManagerImpl::GoTo(GoToParams params) {
   if (index < 0 || index >= GetItemCount()) {
     // Button actions are executed asynchronously, so it is possible for the
     // client to call this with an invalid index if the user quickly taps the
-    // back or foward button mulitple times. See crbug.com/1407244.
+    // back or forward button multiple times. See crbug.com/1407244.
     return;
   }
 
@@ -882,7 +882,7 @@ NavigationItemImpl* NavigationManagerImpl::GetLastCommittedItemImpl() const {
   if (last_committed_item && GetWebState() &&
       !CanTrustLastCommittedItem(last_committed_item)) {
     // Don't check trust level here, as at this point it's expected
-    // the _documentURL and the last_commited_item URL have an origin
+    // the `_documentURL` and the `last_committed_item` URL have an origin
     // mismatch.
     GURL document_url = delegate_->GetCurrentURL();
     if (!last_committed_web_view_item_) {

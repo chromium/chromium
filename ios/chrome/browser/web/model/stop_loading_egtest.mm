@@ -63,8 +63,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleInfiniteRequest(
   // Load a page which never finishes loading.
   GURL infinitePendingURL = self.testServer->GetURL("/infinite");
 
-  // EG synchronizes with WKWebView. Disable synchronization for EG interation
-  // during when page is loading.
+  // EG synchronizes with `WKWebView`. Disable synchronization for EG
+  // interaction during when page is loading.
   ScopedSynchronizationDisabler disabler;
 
   [ChromeEarlGrey loadURL:infinitePendingURL waitForCompletion:NO];

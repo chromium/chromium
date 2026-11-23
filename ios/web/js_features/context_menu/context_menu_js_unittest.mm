@@ -1039,10 +1039,10 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutNone) {
   CheckElementResult(@"link", expected_value, ignored_keys);
 }
 
-// Tests that -webkit-touch-callout property can be inherited from ancester
+// Tests that `-webkit-touch-callout` property can be inherited from ancestor
 // if it's not specified. Please see:
 // https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-touch-callout
-TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutFromAncester) {
+TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutFromAncestor) {
   NSString* const head = @"<style>body { -webkit-touch-callout:none; }</style>";
   const char link[] = "http://destination/";
   NSString* html = GetHtmlForPage(head, GetHtmlForLink(link, @"link"));
@@ -1062,8 +1062,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutFromAncester) {
   CheckElementResult(@"link", expected_value, ignored_keys);
 }
 
-// Tests that setting -webkit-touch-callout property can override the value
-// inherited from ancester. Please see:
+// Tests that setting `-webkit-touch-callout` property can override the value
+// inherited from ancestor. Please see:
 // https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-touch-callout
 TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutOverride) {
   NSString* head = @"<style>body { -webkit-touch-callout:none; }</style>";
