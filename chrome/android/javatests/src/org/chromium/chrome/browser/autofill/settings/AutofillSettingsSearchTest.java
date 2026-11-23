@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for searching autofill settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -150,6 +152,7 @@ public class AutofillSettingsSearchTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_BUY_NOW_PAY_LATER)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/581959711
     public void testSearchBuyNowPayLater_noMatchWithFlagOff() {
         mSettingsActivityTestRule.startSettingsActivity();
 
