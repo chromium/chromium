@@ -212,8 +212,9 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private populateList_() {
     this.browserProxy.getAllSites().then((response) => {
-      // Create a new map to make an observable change.
-      const newMap = new Map(this.siteGroupMap);
+      // Start from an empty map so sites whose permissions and storage were
+      // cleared on another page do not remain in the list when reloading.
+      const newMap = new Map<string, SiteGroup>();
       response.forEach(siteGroup => {
         newMap.set(siteGroup.groupingKey, siteGroup);
       });

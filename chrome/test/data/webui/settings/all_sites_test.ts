@@ -1047,6 +1047,40 @@ suite('AllSites', function() {
     assertEquals(scrollTarget, testElement.subpageScrollTarget);
     assertEquals(scrollTarget, getAllSitesList().scrollTarget);
   });
+
+  test('reloading route removes stale deleted sites', async function() {
+    setUpAllSites(createPrefsVarious());
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+    testElement.onStorageListFetched([
+      createSiteGroup(
+          'storage-only.com', 'storage-only.com',
+          ['https://storage-only.com'], 200),
+    ]);
+    await microtasksFinished();
+    assertEquals(4, testElement.siteGroupMap.size);
+    assertEquals(4, getAllSitesList().items.length);
+
+    // Simulate clearing bar.com, google.com, and storage-only.com on another
+    // subpage (such as Site Details) and navigating back to All Sites.
+    browserProxy.resetResolver('getAllSites');
+    browserProxy.setPrefs(createSiteSettingsPrefs([], [
+      createContentSettingTypeToValuePair(
+          ContentSettingsTypes.GEOLOCATION,
+          [createRawSiteException('https://foo.com')]),
+    ]));
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DETAILS);
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+    testElement.onStorageListFetched([]);
+    await microtasksFinished();
+
+    assertEquals(1, testElement.siteGroupMap.size);
+    assertTrue(testElement.siteGroupMap.has(groupingKey('foo.com')));
+    assertFalse(testElement.siteGroupMap.has(groupingKey('bar.com')));
+    assertFalse(testElement.siteGroupMap.has(groupingKey('storage-only.com')));
+    assertEquals(1, getAllSitesList().items.length);
+  });
 });
 
 suite('AllSitesFocus', function() {
