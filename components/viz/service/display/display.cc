@@ -1464,6 +1464,12 @@ base::ScopedClosureRunner Display::GetCacheBackBufferCb() {
 }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+void Display::SetVSyncDisplayID(int64_t display_id, bool force_update) {
+  output_surface_->SetVSyncDisplayID(display_id, force_update);
+}
+#endif
+
 void Display::DisableGPUAccessByDefault() {
   DCHECK(resource_provider_);
   resource_provider_->SetAllowAccessToGPUThread(false);

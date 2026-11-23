@@ -129,9 +129,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #if BUILDFLAG(IS_ANDROID)
   base::ScopedClosureRunner GetCacheBackBufferCb();
 #endif
-  ExternalBeginFrameSource* external_begin_frame_source() {
-    return external_begin_frame_source_.get();
-  }
+
+#if BUILDFLAG(IS_MAC)
+  void UpdateVSyncDisplay(int64_t display_id);
+#endif
 
   void SetHwSupportForMultipleRefreshRates(bool support);
 
@@ -181,6 +182,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 
   void UpdateVSyncParameters();
   BeginFrameSource* begin_frame_source();
+
+  ExternalBeginFrameSource* external_begin_frame_source() {
+    return external_begin_frame_source_.get();
+  }
 
   base::flat_set<base::TimeDelta> GetSupportedFrameIntervals();
 
@@ -260,6 +265,9 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
 
   bool enable_video_conference_matcher_ = false;
+#if BUILDFLAG(IS_MAC)
+  bool is_external_begin_frame_source_mac_ = false;
+#endif
 };
 
 }  // namespace viz

@@ -66,16 +66,16 @@ void RecordVSyncCallbackDelay(base::TimeDelta delay) {
 ///////////////////////////////////////////////////////////////////////////////
 // ExternalBeginFrameSourceMac
 
-ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
-    uint32_t restart_id,
-    int64_t display_id,
-    float refresh_rate,
-    OutputSurface* output_surface)
+ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(uint32_t restart_id,
+                                                         int64_t display_id,
+                                                         float refresh_rate)
     : ExternalBeginFrameSource(this, restart_id),
-      create_time_(base::TimeTicks::Now()),
-      output_surface_(output_surface) {
+      create_time_(base::TimeTicks::Now()) {
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                      << "::ExternalBeginFrameSourceMac() ID:" << display_id;
+
+  TRACE_EVENT("viz", "ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac",
+              "display_id", display_id);
 
   // Set the default refresh interval.
   min_refresh_interval_ = (refresh_rate > 0)
@@ -117,25 +117,6 @@ void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
   time_source_->SetTimebaseAndInterval(last_frame_time_, preferred_interval_);
 }
 
-// Forces this frame sink to destroy and recreate its DisplayLinkMac. Called by
-// FrameSinkManagerImpl::UpdateVSyncDisplays() in two cases:
-// (1) The browser-side CADisplayLink for `display_id` changed validity (e.g.
-//     a display was added or removed). Only the frame sink on that display
-//     needs to update. (This will be removed with the feature flag
-//     kCADisplayLinkInBrowser.)
-// (2) The GPU-side WindowServerEventPumpThread failed and CADisplayLink can
-//     no longer be used. In this case `display_id` is meaningless and every
-//     frame sink must update so that it falls back to a timer.
-void ExternalBeginFrameSourceMac::UpdateVSyncDisplay(int64_t display_id) {
-  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
-    if (display_id_ != display_id) {
-      return;
-    }
-  }
-
-  SetVSyncDisplayID(display_id_, /*force_update=*/true);
-}
-
 void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
                                                     bool force_update) {
   TRACE_EVENT2("viz", "ExternalBeginFrameSourceMac::SetVSyncDisplayID",
@@ -144,9 +125,6 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
   if (display_id_ == display_id && !force_update) {
     return;
   }
-
-  // Forward the |display_id| to output surface for frame presentation.
-  output_surface_->SetVSyncDisplayID(display_id, force_update);
 
   // Remove the current callback from display_link_mac_ or from the timer.
   if (needs_begin_frames_ || vsync_callback_mac_) {
@@ -659,6 +637,10 @@ void ExternalBeginFrameSourceMac::UpdateRefreshRate(float refresh_rate) {
   if (update_vsync_params_callback_) {
     update_vsync_params_callback_.Run(last_frame_time_, min_refresh_interval_);
   }
+}
+
+int64_t ExternalBeginFrameSourceMac::display_id() const {
+  return display_id_;
 }
 
 }  // namespace viz

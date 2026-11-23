@@ -8,18 +8,15 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
-#include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/display/mac/display_link_mac.h"
 #include "ui/display/types/display_constants.h"
 
 namespace viz {
-class OutputSurface;
 class ExternalBeginFrameSourceMacWrapper;
 
 // An external begin frame source for use on macOS. This listens to a
@@ -34,18 +31,16 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   ExternalBeginFrameSourceMac(uint32_t restart_id,
                               int64_t display_id,
-                              float refresh_rate,
-                              OutputSurface* output_surface);
+                              float refresh_rate);
 
   ExternalBeginFrameSourceMac(const ExternalBeginFrameSourceMac&) = delete;
   ExternalBeginFrameSourceMac& operator=(const ExternalBeginFrameSourceMac&) =
       delete;
   ~ExternalBeginFrameSourceMac() override;
 
-  // BeginFrameSource implementation.
+  // ExternalBeginFrameSource implementation.
   void SetVSyncDisplayID(int64_t display_id, bool force_update) override;
-
-  void UpdateVSyncDisplay(int64_t display_id) override;
+  int64_t display_id() const override;
 
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
@@ -126,8 +121,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // needed.
   constexpr static int kMaxKeepAliveCount = 20;
   int vsync_callback_keep_alive_counter_ = 0;
-
-  const raw_ptr<OutputSurface, DanglingUntriaged> output_surface_;
 
   // When `min_refresh_interval_` changes, this callback is called and
   // FrameIntervalDecider is updated.

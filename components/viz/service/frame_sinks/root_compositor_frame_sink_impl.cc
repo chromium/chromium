@@ -225,7 +225,7 @@ RootCompositorFrameSinkImpl::Create(
       external_begin_frame_source =
           std::make_unique<ExternalBeginFrameSourceMac>(
               restart_id, params->renderer_settings.display_id,
-              params->refresh_rate, output_surface.get());
+              params->refresh_rate);
       created_external_begin_frame_source_mac = true;
 #endif
       if (!external_begin_frame_source && !synthetic_begin_frame_source) {
@@ -312,6 +312,7 @@ RootCompositorFrameSinkImpl::Create(
             base::Unretained(impl.get())));
 
     if (created_external_begin_frame_source_mac) {
+      impl->is_external_begin_frame_source_mac_ = true;
       static_cast<ExternalBeginFrameSourceMac*>(
           impl->external_begin_frame_source())
           ->SetMultipleHWRefreshRatesCallback(base::BindRepeating(
@@ -386,7 +387,46 @@ void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
 
 #if BUILDFLAG(IS_MAC)
 void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
-  begin_frame_source()->SetVSyncDisplayID(display_id, /*force_update=*/false);
+  if (!is_external_begin_frame_source_mac_) {
+    return;
+  }
+
+  // Forward it to output_surface then ImageTransportSurfaceOverlayMacEGL for
+  // presentation.
+  display_->SetVSyncDisplayID(display_id, /*force_update=*/false);
+
+  external_begin_frame_source_->SetVSyncDisplayID(display_id,
+                                                  /*force_update=*/false);
+}
+
+// Forces this frame sink to destroy and recreate its DisplayLinkMac. Called by
+// FrameSinkManagerImpl::UpdateVSyncDisplays() in two cases:
+// (1) The browser-side CADisplayLink for `display_id` changed validity (e.g.
+//     a display was added or removed). Only the frame sink on that display
+//     needs to update. (This will be removed with the feature flag
+//     kCADisplayLinkInBrowser.)
+// (2) The GPU-side WindowServerEventPumpThread failed and CADisplayLink can
+//     no longer be used. In this case `display_id` is meaningless and every
+//     frame sink must update so that it falls back to a timer.
+void RootCompositorFrameSinkImpl::UpdateVSyncDisplay(int64_t display_id) {
+  if (!is_external_begin_frame_source_mac_) {
+    return;
+  }
+
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    if (external_begin_frame_source_->display_id() != display_id) {
+      return;
+    }
+  }
+
+  // Force to recreate a DisplayLink with the current display_id().
+  // When CADisplayLinkInGpu is enabled, the display_id arg is 0 and should be
+  // ignored.
+  display_->SetVSyncDisplayID(external_begin_frame_source_->display_id(),
+                              /*force_update=*/true);
+  external_begin_frame_source_->SetVSyncDisplayID(
+      external_begin_frame_source_->display_id(),
+      /*force_update=*/true);
 }
 #endif
 

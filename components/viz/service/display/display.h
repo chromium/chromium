@@ -239,6 +239,10 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // calls.
   OverdrawTracker::OverdrawTimeSeries StopTrackingOverdraw();
 
+#if BUILDFLAG(IS_MAC)
+  void SetVSyncDisplayID(int64_t display_id, bool force_update);
+#endif
+
  protected:
   friend class DisplayTest;
   // PresentationGroupTiming stores rendering pipeline stage timings associated

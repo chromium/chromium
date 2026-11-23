@@ -238,18 +238,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
       perfetto::EventContext& ctx,
       perfetto::protos::pbzero::BeginFrameSourceStateV2* state) const;
 
-  // Update the display ID for the source. This can change, e.g, as a window
-  // moves across displays.
-  virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
-
-#if BUILDFLAG(IS_MAC)
-  // Notifies the source that it may need to reconnect to a VSync source (e.g.,
-  // DisplayLinkMac) for the specified display. This is typically triggered by
-  // display configuration changes in the browser process.
-  virtual void UpdateVSyncDisplay(int64_t display_id) {}
-
-#endif
-
   virtual void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) {}
 
@@ -499,6 +487,14 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
   virtual base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval);
+
+#if BUILDFLAG(IS_MAC)
+  // Update the display ID for the source. This can change, e.g, as a window
+  // moves across displays.
+  virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
+
+  virtual int64_t display_id() const;
+#endif
 
  protected:
   // Called on AddObserver and gets missed BeginFrameArgs for the given

@@ -13,7 +13,6 @@
 #include "components/viz/common/features.h"
 #include "components/viz/test/begin_frame_source_test.h"
 #include "components/viz/test/fake_delay_based_time_source.h"
-#include "components/viz/test/fake_skia_output_surface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
@@ -122,7 +121,7 @@ class ExternalBeginFrameSourceMacWrapper : public ExternalBeginFrameSourceMac {
 
   int& vsync_subsampling_factor() { return vsync_subsampling_factor_; }
 
-  int64_t& display_id() { return display_id_; }
+  void set_display_id(int64_t display_id) { display_id_ = display_id; }
 
   scoped_refptr<ui::DisplayLinkMac>& display_link_mac() {
     return display_link_mac_;
@@ -146,14 +145,12 @@ class ExternalBeginFrameSourceMacTest : public testing::Test {
   ExternalBeginFrameSourceMacTest() {
     enable_feature.InitAndEnableFeature(
         features::kUseDisplayRefreshRateForTimer);
-    output_surface_ = FakeSkiaOutputSurface::Create3d();
   }
 
   void SetUp() override {
     // Start with an invalid display ID because override does not work in Ctor.
     source_ = std::make_unique<ExternalBeginFrameSourceMacWrapper>(
-        0, display::kInvalidDisplayId, /*refresh_rate=*/60.f,
-        output_surface_.get());
+        0, display::kInvalidDisplayId, /*refresh_rate=*/60.f);
     source_->SetUpdateVSyncParametersCallback(
         update_vsync_callback_.GetCallback());
 
@@ -165,7 +162,6 @@ class ExternalBeginFrameSourceMacTest : public testing::Test {
 
   testing::NiceMock<MockUpdateVSyncParametersCallback> update_vsync_callback_;
   base::test::ScopedFeatureList enable_feature;
-  std::unique_ptr<OutputSurface> output_surface_;
   std::unique_ptr<ExternalBeginFrameSourceMacWrapper> source_;
 };
 
@@ -278,17 +274,17 @@ TEST_F(ExternalBeginFrameSourceMacTest, SendBeginFrame) {
 }
 
 // Verifies transitioning from timer fallback back to a valid DisplayLink
-// representation upon receiving CALayer updates.
-TEST_F(ExternalBeginFrameSourceMacTest, UpdateVSyncDisplay) {
+// representation when forcing a VSync display ID update.
+TEST_F(ExternalBeginFrameSourceMacTest, SetVSyncDisplayIDForceUpdate) {
   // Start with DisplayLink failure and recreate a DisplayLinkMac after
-  // UpdateVSyncDisplay.
+  // SetVSyncDisplayID with force_update=true.
   source_->SetVSyncDisplayID(display::kInvalidDisplayId,
                              /*force_update=*/false);
-  source_->display_id() = 1;
+  source_->set_display_id(1);
   EXPECT_FALSE(source_->display_link_mac());
   EXPECT_TRUE(source_->time_source());
 
-  source_->UpdateVSyncDisplay(/*display_id=*/1);
+  source_->SetVSyncDisplayID(/*display_id=*/1, /*force_update=*/true);
   EXPECT_TRUE(source_->display_link_mac());
   EXPECT_FALSE(source_->time_source());
 }
@@ -349,14 +345,13 @@ class ExternalBeginFrameSourceMacTimerTest
 
     // Start with an invalid display ID to force fallback to timer.
     source_ = std::make_unique<ExternalBeginFrameSourceMacWrapper>(
-        0, display::kInvalidDisplayId, /*refresh_rate=*/60.f,
-        output_surface_.get());
+        0, display::kInvalidDisplayId, /*refresh_rate=*/60.f);
 
     // Simulate a failing ExternalBeginFrameSourceMac case with a valid
     // display ID, 100. We cannot use `SetVSyncDisplayID(kInvalidDisplayId
     // /*force_update=*/true)` because GetMinimumFrameInterval() returns the
     // refresh rate from the display id and we don't have a valid id here.
-    source_->display_id() = 100;
+    source_->set_display_id(100);
     base::TimeDelta min_interval = source_->GetMinimumFrameInterval();
     source_->preferred_interval() = source_->min_refresh_interval() =
         min_interval;

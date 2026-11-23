@@ -7,4 +7,5 @@ include_rules = [
   "+third_party/angle/include/GLES2",
   "+third_party/libyuv",
   "+third_party/skia",
+  "+ui/display/types/display_constants.h",
 ]

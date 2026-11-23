@@ -25,6 +25,10 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/types/display_constants.h"
+#endif
+
 namespace viz {
 
 namespace {
@@ -662,5 +666,12 @@ base::flat_set<base::TimeDelta>
 ExternalBeginFrameSource::GetSupportedFrameIntervals(base::TimeDelta interval) {
   return GetDefaultSupportedFrameIntervals(interval);
 }
+
+#if BUILDFLAG(IS_MAC)
+int64_t ExternalBeginFrameSource::display_id() const {
+  return display::kInvalidDisplayId;
+}
+
+#endif
 
 }  // namespace viz
