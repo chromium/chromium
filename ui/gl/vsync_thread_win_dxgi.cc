@@ -53,7 +53,7 @@ Microsoft::WRL::ComPtr<IDXGIOutput> DXGIOutputFromMonitor(
     }
   }
 
-  DLOG(ERROR) << "Failed to find DXGI output with matching monitor";
+  DVLOG(1) << "Failed to find DXGI output with matching monitor";
   return nullptr;
 }
 
@@ -86,7 +86,7 @@ Microsoft::WRL::ComPtr<IDXGIOutput> FindDXGIOutputForMonitor(HMONITOR monitor) {
     }
   }
 
-  DLOG(ERROR) << "Failed to find DXGI output on monitor";
+  DVLOG(1) << "Failed to find DXGI output on monitor";
   return nullptr;
 }
 
