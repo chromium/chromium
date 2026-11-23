@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -466,7 +467,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
 
 std::vector<Suggestion> GetSuggestionsForBnpl(
     std::vector<payments::BnplIssuerContext> issuer_contexts,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const bool is_card_number_field_empty) {
   std::vector<Suggestion> bnpl_suggestions;
   bnpl_suggestions.reserve(issuer_contexts.size());
@@ -483,7 +484,8 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
               : Suggestion::Acceptability::kUnselectableAndUnacceptable;
       bnpl_suggestion.labels = {
           {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
-              issuer_context.issuer.issuer_id(), app_locale,
+              issuer_context.issuer.issuer_id(),
+              std::string(app_locale.tag_string()),
               base::span_from_ref(issuer_context)))}};
     } else {
       bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(

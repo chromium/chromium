@@ -25,6 +25,10 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/common/form_data.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace autofill {
 
 namespace payments {
@@ -55,7 +59,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
 
 std::vector<Suggestion> GetSuggestionsForBnpl(
     std::vector<payments::BnplIssuerContext> issuer_contexts,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const bool is_card_number_field_empty);
 
 Suggestion GetLoadingSuggestionForPayLaterTab(

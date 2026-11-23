@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind_internal.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
@@ -58,7 +59,8 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     const FormFieldData& trigger_field,
-    const std::string& app_locale = "en-US",
+    const base::i18n::LanguageTag& app_locale =
+        base::i18n::GetKnownLanguageTag("en-US"),
     const std::string& gaia_email = "");
 
 // Returns true if a suggestion for an `AutofillProfile` with record type equal

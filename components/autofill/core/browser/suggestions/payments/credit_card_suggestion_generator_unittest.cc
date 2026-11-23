@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1888,9 +1889,10 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
       payments::BnplIssuerEligibilityForPage::
           kNotEligibleAmountExtractionErrorUnsupportedCurrency);
 
-  std::vector<Suggestion> suggestions =
-      GetSuggestionsForBnpl({issuer_context}, /*app_locale=*/"en-US",
-                            /*is_card_number_field_empty=*/true);
+  std::vector<Suggestion> suggestions = GetSuggestionsForBnpl(
+      {issuer_context},
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
+      /*is_card_number_field_empty=*/true);
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0].acceptability,

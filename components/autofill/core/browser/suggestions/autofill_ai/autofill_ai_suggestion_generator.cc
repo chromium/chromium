@@ -30,6 +30,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -278,17 +279,17 @@ std::vector<std::u16string> GetLabelsForSuggestions(
     base::span<const EntityInstance> entities_to_suggest,
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     DenseSet<AttributeType> trigger_field_attributes,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   std::vector<const EntityInstance*> entities =
       base::ToVector(entities_to_suggest,
                      [](const EntityInstance& entity) { return &entity; });
   entities.insert(entities.end(), other_entities_that_can_fill_section.begin(),
                   other_entities_that_can_fill_section.end());
 
-  std::vector<EntityLabel> labels =
-      GetLabelsForEntities(entities, trigger_field_attributes,
-                           /*only_disambiguating_types=*/true,
-                           /*obfuscate_sensitive_types=*/false, app_locale);
+  std::vector<EntityLabel> labels = GetLabelsForEntities(
+      entities, trigger_field_attributes,
+      /*only_disambiguating_types=*/true,
+      /*obfuscate_sensitive_types=*/false, app_locale.tag_string());
 
   // Drop the labels for the `other_entities_that_can_fill_section`.
   if (labels.size() > entities_to_suggest.size()) {
@@ -339,7 +340,7 @@ absl::flat_hash_map<AttributeType, size_t> GetAttributeMaskLengths(
 std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
     const std::vector<const EntityInstance*>& entities,
     const AttributeTypeAssignment& type_assignment,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   // If any of the attributes are masked, only compare the suffixes or the
   // minimum length of the attributes.
   const absl::flat_hash_map<AttributeType, size_t> mask_lengths =
@@ -369,7 +370,7 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
       }
       std::u16string attribute_value =
           attribute->GetInfo(field->Type().GetAutofillAiType(entity->type()),
-                             app_locale, field->format_string());
+                             app_locale.tag_string(), field->format_string());
       if (attribute_value.empty()) {
         continue;
       }
@@ -478,7 +479,7 @@ AutofillAiUiSection GetAutofillAiUiSection(EntityType trigger_entity_type) {
 bool EntityShouldProduceSuggestion(
     const EntityInstance& entity,
     const AutofillFieldWithAttributeType& trigger_field,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   DCHECK_EQ(entity.type(), trigger_field.type.entity_type());
   base::optional_ref<const AttributeInstance> trigger_attribute =
       entity.attribute(trigger_field.type);
@@ -487,8 +488,8 @@ bool EntityShouldProduceSuggestion(
     return false;
   }
   std::u16string trigger_value = trigger_attribute->GetInfo(
-      trigger_field.field->Type().GetAutofillAiType(entity.type()), app_locale,
-      trigger_field.field->format_string());
+      trigger_field.field->Type().GetAutofillAiType(entity.type()),
+      app_locale.tag_string(), trigger_field.field->format_string());
   if (trigger_value.empty()) {
     return false;
   }
@@ -513,7 +514,7 @@ bool EntityShouldProduceSuggestion(
 // The AttributeTypes of `fields` must all belong to `entity`.
 bool CanFillSomeField(const EntityInstance& entity,
                       base::span<const AutofillFieldWithAttributeType> fields,
-                      const std::string& app_locale) {
+                      const base::i18n::LanguageTag& app_locale) {
   return std::ranges::any_of(
       fields, [&](const AutofillFieldWithAttributeType& f) {
         DCHECK_EQ(entity.type(), f.type.entity_type());
@@ -522,7 +523,7 @@ bool CanFillSomeField(const EntityInstance& entity,
         return attribute &&
                !attribute
                     ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
-                              app_locale, f.field->format_string())
+                              app_locale.tag_string(), f.field->format_string())
                     .empty();
       });
 }
@@ -752,14 +753,14 @@ Suggestion GetSuggestionForEntity(
     base::span<const AutofillFieldWithAttributeType> fields,
     const AutofillFieldWithAttributeType& trigger_field,
     std::u16string label,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   // The dereference is guaranteed by EntityShouldProduceSuggestion().
   const AttributeInstance& trigger_attribute =
       *entity.attribute(trigger_field.type);
   std::u16string main_text = trigger_attribute.GetInfo(
       trigger_field.field->Type().GetAutofillAiType(
           trigger_attribute.type().entity_type()),
-      app_locale, trigger_field.field->format_string());
+      app_locale.tag_string(), trigger_field.field->format_string());
   if (trigger_attribute.type().is_obfuscated()) {
     main_text = GetObfuscatedValue(main_text, /*visible_suffix_length=*/4);
   }
@@ -774,7 +775,7 @@ Suggestion GetSuggestionForEntity(
 #endif
 
   const bool requires_server_fetch = WillRequireServerFetch(
-      entity, form, trigger_field.field->section(), app_locale);
+      entity, form, trigger_field.field->section(), app_locale.tag_string());
   suggestion.payload =
       Suggestion::AutofillAiPayload(entity.guid(), requires_server_fetch);
   suggestion.icon = GetSuggestionIcon(entity.type(), entity.record_type());
@@ -944,14 +945,13 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
         trigger_field_with_type = FindField(assignment.Find(entity->type()),
                                             trigger_field.global_id());
     return !trigger_field_with_type ||
-           !EntityShouldProduceSuggestion(
-               *entity, *trigger_field_with_type,
-               std::string(client.GetAppLocale().tag_string())) ||
+           !EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
+                                          client.GetAppLocale()) ||
            !IsAllowedForPageUrl(*entity, client, trigger_field.origin());
   });
   return DedupedEntitiesForSuggestions(
       OrderedEntitiesForSuggestion(std::move(entities)), assignment,
-      std::string(client.GetAppLocale().tag_string()));
+      client.GetAppLocale());
 }
 
 std::vector<Suggestion> CreateFetchingAmbientSuggestions() {
@@ -1009,7 +1009,7 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
   for (const EntityInstance& entity : all_entities) {
     if (!entities_to_suggest_ids.contains(entity.guid()) &&
         CanFillSomeField(entity, assignment.Find(entity.type()),
-                         std::string(client.GetAppLocale().tag_string()))) {
+                         client.GetAppLocale())) {
       other_entities_that_can_fill_section.push_back(&entity);
     }
   }
@@ -1017,7 +1017,7 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
   std::vector<std::u16string> labels = GetLabelsForSuggestions(
       entities_to_suggest, other_entities_that_can_fill_section,
       FindAttributesForField(assignment, trigger_field.global_id()),
-      std::string(client.GetAppLocale().tag_string()));
+      client.GetAppLocale());
 
   std::vector<Suggestion> suggestions;
 
@@ -1034,7 +1034,7 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
             FindField(fields_with_types, trigger_field.global_id());
     suggestions.push_back(GetSuggestionForEntity(
         form, entity, fields_with_types, *trigger_field_with_type,
-        std::move(label), client.GetAppLocale().tag_string()));
+        std::move(label), client.GetAppLocale()));
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1181,7 +1181,7 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
 
   fallback_entities = DedupedEntitiesForSuggestions(
       OrderedEntitiesForSuggestion(std::move(fallback_entities)), assignment,
-      std::string(client.GetAppLocale().tag_string()));
+      client.GetAppLocale());
 
   if (fallback_entities.empty()) {
     return std::nullopt;

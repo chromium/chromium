@@ -708,8 +708,7 @@ std::vector<Suggestion> BnplManager::GetBnplSuggestions(
                                      /*checkout_amount=*/std::nullopt,
                                      /*amount_extraction_error=*/std::nullopt,
                                      std::move(enforced_order)),
-          std::string(
-              browser_autofill_manager_->client().GetAppLocale().tag_string()),
+          browser_autofill_manager_->client().GetAppLocale(),
           is_card_number_field_empty));
     }
   }
@@ -1294,9 +1293,7 @@ void BnplManager::ReplaceLoadingThrobberWithIssuerSuggestions(
   }
 
   std::vector<Suggestion> bnpl_suggestions = GetSuggestionsForBnpl(
-      issuer_contexts,
-      std::string(
-          browser_autofill_manager_->client().GetAppLocale().tag_string()),
+      issuer_contexts, browser_autofill_manager_->client().GetAppLocale(),
       /*is_card_number_field_empty=*/true);
 
   // Replace the loading throbber suggestion with the BNPL suggestions. This

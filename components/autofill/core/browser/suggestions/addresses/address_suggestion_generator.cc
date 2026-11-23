@@ -151,11 +151,12 @@ bool ShouldUseNationalFormatPhoneNumber(FieldType trigger_field_type) {
          trigger_field_type != PHONE_HOME_COUNTRY_CODE;
 }
 
-std::u16string GetFormattedPhoneNumber(const AutofillProfile& profile,
-                                       const std::string& app_locale,
-                                       FieldType trigger_field_type) {
-  const std::string phone_home_whole_number =
-      base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
+std::u16string GetFormattedPhoneNumber(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& app_locale,
+    FieldType trigger_field_type) {
+  const std::string phone_home_whole_number = base::UTF16ToUTF8(
+      profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale.tag_string()));
   const std::string address_home_country =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
@@ -196,23 +197,24 @@ bool ShouldTransliterateMainTextToKatakana(
 // handles type-specific formatting.
 std::u16string GetProfileSuggestionMainText(
     const AutofillProfile& profile,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const FormFieldData& trigger_field,
     const FieldType trigger_field_type) {
   if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
     std::string street_address_line;
     ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
-        *i18n::CreateAddressDataFromAutofillProfile(profile, app_locale),
+        *i18n::CreateAddressDataFromAutofillProfile(profile,
+                                                    app_locale.tag_string()),
         &street_address_line);
     return base::UTF8ToUTF16(street_address_line);
   }
   if (ShouldTransliterateMainTextToKatakana(profile, trigger_field,
                                             trigger_field_type)) {
     return TransliterateAlternativeName(
-        profile.GetInfo(trigger_field_type, app_locale),
+        profile.GetInfo(trigger_field_type, app_locale.tag_string()),
         /*inverse_transliteration=*/true);
   }
-  return profile.GetInfo(trigger_field_type, app_locale);
+  return profile.GetInfo(trigger_field_type, app_locale.tag_string());
 }
 
 // Returns for each profile in `profiles` a differentiating label string to be
@@ -222,13 +224,13 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
     FieldType trigger_field_type,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   // Generate disambiguating labels based on the list of matches.
   std::vector<const AutofillProfile*> profile_ptrs = base::ToVector(
       profiles, [](const AutofillProfile& profile) { return &profile; });
   return AutofillProfile::CreateInferredLabels(
       profile_ptrs, field_types, {trigger_field_type},
-      /*minimal_fields_shown=*/1, app_locale);
+      /*minimal_fields_shown=*/1, app_locale.tag_string());
 }
 
 // For each profile in `profiles`, returns a vector of `Suggestion::labels` to
@@ -239,7 +241,7 @@ std::vector<std::vector<Suggestion::Text>> CreateSuggestionLabels(
     const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
     FieldType trigger_field_type,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   // Suggestions for filling only one field (field-by-field filling) should not
   // have labels because they are guaranteed to be unique, see
   // `DeduplicatedProfilesForSuggestions()`.
@@ -285,7 +287,7 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
 
 std::optional<Suggestion> GetSuggestionForTestAddresses(
     base::span<const AutofillProfile> test_addresses,
-    const std::string& locale) {
+    const base::i18n::LanguageTag& locale) {
   if (test_addresses.empty()) {
     return std::nullopt;
   }
@@ -304,7 +306,7 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   for (const AutofillProfile& test_address : test_addresses) {
     CHECK(test_address.is_devtools_testing_profile());
     const std::u16string test_address_country =
-        test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
+        test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale.tag_string());
     suggestion.children.emplace_back(test_address_country,
                                      SuggestionType::kDevtoolsTestAddressEntry);
     suggestion.children.back().payload = Suggestion::AutofillProfilePayload(
@@ -460,8 +462,8 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
       address_data.GetProfilesToSuggest(),
       [&](const AutofillProfile* profile) -> ProfileWithText {
         return {profile, GetProfileSuggestionMainText(
-                             *profile, address_data.app_locale().tag_string(),
-                             trigger_field, trigger_field_type)};
+                             *profile, address_data.app_locale(), trigger_field,
+                             trigger_field_type)};
       });
 
   // Erase profiles which has empty value for the trigger field type.
@@ -543,7 +545,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     const FormFieldData& trigger_field,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   if (profiles.empty()) {
     return {};
   }
@@ -859,14 +861,14 @@ std::vector<Suggestion> GenerateAddressSuggestions(
           .email,
       field_types, GetSuggestionType(trigger_field),
       trigger_autofill_field->Type().GetAddressType(), trigger_field,
-      std::string(client.GetAppLocale().tag_string()));
+      client.GetAppLocale());
 
   // Add devtools test addresses suggestion if it exists.
   if (std::optional<Suggestion> test_addresses_suggestion =
           GetSuggestionForTestAddresses(
               std::vector(std::make_move_iterator(partition_it),
                           std::make_move_iterator(profiles_to_suggest.end())),
-              std::string(client.GetAppLocale().tag_string()))) {
+              client.GetAppLocale())) {
     suggestions.push_back(std::move(*test_addresses_suggestion));
   }
   if (suggestions.empty()) {
@@ -979,7 +981,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     const FormFieldData& trigger_field,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::string& gaia_email) {
   return CreateSuggestionsFromProfiles(
       std::move(profiles), gaia_email, field_types, suggestion_type,
