@@ -736,6 +736,9 @@ inline constexpr char kAgeMismatchSignoutTimestamp[] =
 inline constexpr char kAllowChromeDataInBackups[] =
     "ios.allow_chrome_data_in_backups";
 
+// A boolean specifying whether the dinosaur easter egg game is enabled.
+inline constexpr char kAllowDinosaurEasterEgg[] = "allow_dinosaur_easter_egg";
+
 // Preference that holds the string value indicating the NTP URL to use for the
 // NTP Location policy.
 inline constexpr char kNewTabPageLocationOverride[] =

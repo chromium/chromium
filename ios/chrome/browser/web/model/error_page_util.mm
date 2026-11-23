@@ -17,19 +17,32 @@
 #import "components/error_page/common/error.h"
 #import "components/error_page/common/localized_error.h"
 #import "components/grit/components_resources.h"
+#import "components/prefs/pref_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
 #import "ui/base/webui/web_ui_util.h"
 #import "url/gurl.h"
 
+bool IsDinoEasterEggEnabled(web::WebState* web_state) {
+  return ProfileIOS::FromBrowserState(web_state->GetBrowserState())
+      ->GetPrefs()
+      ->GetBoolean(prefs::kAllowDinosaurEasterEgg);
+}
+
 NSString* GetErrorPage(const GURL& url,
                        NSError* error,
                        bool is_post,
-                       bool is_off_the_record) {
+                       bool is_off_the_record,
+                       bool is_dino_easter_egg_enabled) {
   DCHECK_EQ(url,
             net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey]));
   NSError* final_error = base::ios::GetFinalUnderlyingErrorFromError(error);
@@ -62,6 +75,12 @@ NSString* GetErrorPage(const GURL& url,
                           .tag_string()),
           /*is_blocked_by_extension=*/false,
           /*error_page_params=*/nullptr);
+
+  if (!is_dino_easter_egg_enabled) {
+    page_state.strings.Set(
+        "disabledEasterEgg",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_FUN_DISABLED));
+  }
 
   ui::ResourceScaleFactor scale_factor =
       ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor();

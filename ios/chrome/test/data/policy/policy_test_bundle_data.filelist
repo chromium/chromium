@@ -7,6 +7,7 @@
 //ios/chrome/test/data/policy/pref_mapping/AIModeSettings.json
 //ios/chrome/test/data/policy/pref_mapping/AllowChromeDataInBackups.json
 //ios/chrome/test/data/policy/pref_mapping/AllowDeletingBrowserHistory.json
+//ios/chrome/test/data/policy/pref_mapping/AllowDinosaurEasterEgg.json
 //ios/chrome/test/data/policy/pref_mapping/AppStoreRatingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/AutoSelectCertificateForUrls.json
 //ios/chrome/test/data/policy/pref_mapping/AutofillAddressEnabled.json

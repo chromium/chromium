@@ -577,8 +577,8 @@ void ChromeWebClient::PrepareErrorPage(
         ssl_info.value(), url, ssl_info.value().is_fatal_cert_error,
         navigation_id, std::move(callback));
   } else {
-    std::move(callback).Run(
-        GetErrorPage(url, error, is_post, is_off_the_record));
+    std::move(callback).Run(GetErrorPage(url, error, is_post, is_off_the_record,
+                                         IsDinoEasterEggEnabled(web_state)));
   }
 }
 

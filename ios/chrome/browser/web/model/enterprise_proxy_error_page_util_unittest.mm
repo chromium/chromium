@@ -19,10 +19,12 @@
 #import "components/enterprise/net/core/features.h"
 #import "components/enterprise/net/core/mock_enterprise_proxy_service.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/error_page_util.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -122,7 +124,8 @@ class EnterpriseProxyErrorPageUtilTest : public PlatformTest {
     return GetErrorPage(GURL(kTestUrl),
                         CreateTestUrlError(net::kNSErrorDomain,
                                            net::ERR_TUNNEL_CONNECTION_FAILED),
-                        /*is_post=*/false, /*is_off_the_record=*/false);
+                        /*is_post=*/false, /*is_off_the_record=*/false,
+                        /*is_dino_easter_egg_enabled=*/true);
   }
 
   // Declared first so that the feature state is set before any other member
@@ -165,4 +168,22 @@ TEST_F(EnterpriseProxyErrorPageUtilTest, GenericPageWithErrorHandlingDisabled) {
 
   EXPECT_NSEQ(GetTunnelConnectionFailedPageHtml(), GetErrorPageHtml());
   EXPECT_FALSE(error_service_->TakeDisguisedError(kNavigationId).has_value());
+}
+
+// Tests that the generic error page disables the dinosaur easter egg when
+// `prefs::kAllowDinosaurEasterEgg` is `false`.
+TEST_F(EnterpriseProxyErrorPageUtilTest, GenericPageWithDinoDisabled) {
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowDinosaurEasterEgg, false);
+
+  NSString* page = GetErrorPageHtml();
+
+  EXPECT_NSEQ(
+      GetErrorPage(GURL(kTestUrl),
+                   CreateTestUrlError(net::kNSErrorDomain,
+                                      net::ERR_TUNNEL_CONNECTION_FAILED),
+                   /*is_post=*/false, /*is_off_the_record=*/false,
+                   /*is_dino_easter_egg_enabled=*/false),
+      page);
+  EXPECT_TRUE(
+      [page containsString:l10n_util::GetNSString(IDS_ERRORPAGE_FUN_DISABLED)]);
 }

@@ -49,7 +49,8 @@ TEST_F(ErrorPageUtilTest, NonPostNonOtrError) {
   NSString* html = GetErrorPage(GURL(base::SysNSStringToUTF8(kTestUrl)),
                                 CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/false,
-                                /*is_off_the_record=*/false);
+                                /*is_off_the_record=*/false,
+                                /*is_dino_easter_egg_enabled=*/true);
 
   // Make sure gzipped HTML is successfully decompressed.
   EXPECT_TRUE([html containsString:@"<head>"]);
@@ -66,7 +67,8 @@ TEST_F(ErrorPageUtilTest, PostNonOtrError) {
   GURL test_url = GURL(base::SysNSStringToUTF8(kTestUrl));
   NSString* html = GetErrorPage(test_url, CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/true,
-                                /*is_off_the_record=*/false);
+                                /*is_off_the_record=*/false,
+                                /*is_dino_easter_egg_enabled=*/true);
 
   // Make sure gzipped HTML is successfully decompressed.
   EXPECT_TRUE([html containsString:@"<head>"]);
@@ -84,7 +86,8 @@ TEST_F(ErrorPageUtilTest, NonPostOtrError) {
   NSString* html = GetErrorPage(GURL(base::SysNSStringToUTF8(kTestUrl)),
                                 CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/false,
-                                /*is_off_the_record=*/true);
+                                /*is_off_the_record=*/true,
+                                /*is_dino_easter_egg_enabled=*/true);
 
   // Make sure gzipped HTML is successfully decompressed.
   EXPECT_TRUE([html containsString:@"<head>"]);
@@ -101,7 +104,8 @@ TEST_F(ErrorPageUtilTest, PostOtrError) {
   GURL test_url = GURL(base::SysNSStringToUTF8(kTestUrl));
   NSString* html = GetErrorPage(test_url, CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/true,
-                                /*is_off_the_record=*/true);
+                                /*is_off_the_record=*/true,
+                                /*is_dino_easter_egg_enabled=*/true);
 
   // Make sure gzipped HTML is successfully decompressed.
   EXPECT_TRUE([html containsString:@"<head>"]);
@@ -121,11 +125,34 @@ TEST_F(ErrorPageUtilTest, NoUrlSpec) {
              userInfo:nil]);
   NSString* html = GetErrorPage(GURL(), error,
                                 /*is_post=*/false,
-                                /*is_off_the_record=*/false);
+                                /*is_off_the_record=*/false,
+                                /*is_dino_easter_egg_enabled=*/true);
 
   // Make sure gzipped HTML is successfully decompressed.
   EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
   EXPECT_TRUE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
+}
+
+// Tests that error page contains `IDS_ERRORPAGE_FUN_DISABLED` when the dinosaur
+// easter egg is disabled.
+TEST_F(ErrorPageUtilTest, DinoEasterEggDisabled) {
+  NSString* html = GetErrorPage(GURL(base::SysNSStringToUTF8(kTestUrl)),
+                                CreateTestError(NSURLErrorTimedOut),
+                                /*is_post=*/false,
+                                /*is_off_the_record=*/false,
+                                /*is_dino_easter_egg_enabled=*/false);
+  EXPECT_TRUE([html containsString:GetNSString(IDS_ERRORPAGE_FUN_DISABLED)]);
+}
+
+// Tests that error page does not contain `IDS_ERRORPAGE_FUN_DISABLED` when the
+// dinosaur easter egg is enabled.
+TEST_F(ErrorPageUtilTest, DinoEasterEggEnabled) {
+  NSString* html = GetErrorPage(GURL(base::SysNSStringToUTF8(kTestUrl)),
+                                CreateTestError(NSURLErrorTimedOut),
+                                /*is_post=*/false,
+                                /*is_off_the_record=*/false,
+                                /*is_dino_easter_egg_enabled=*/true);
+  EXPECT_FALSE([html containsString:GetNSString(IDS_ERRORPAGE_FUN_DISABLED)]);
 }

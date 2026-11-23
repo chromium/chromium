@@ -647,6 +647,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kPrintingEnabled, true);
 
   registry->RegisterBooleanPref(prefs::kAllowChromeDataInBackups, true);
+  registry->RegisterBooleanPref(prefs::kAllowDinosaurEasterEgg, true);
 
   // Register HTTPS related settings.
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);

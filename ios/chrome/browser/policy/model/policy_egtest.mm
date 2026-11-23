@@ -1193,4 +1193,54 @@ constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
       @"is false.");
 }
 
+// Tests that the dinosaur game is playable on `chrome://dino/` when the
+// `AllowDinosaurEasterEgg` enterprise policy is set to `true`.
+- (void)testAllowDinosaurEasterEggEnabled {
+  SetPolicy(true, policy::key::kAllowDinosaurEasterEgg);
+  [ChromeEarlGrey loadURL:GURL(kChromeDinoGameURL)
+              withTimeout:kInitialPageLoadTimeout];
+  ElementSelector* containerSelector =
+      [ElementSelector selectorWithCSSSelector:".runner-container"];
+  [ChromeEarlGrey waitForWebStateContainingElement:containerSelector];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithCSSSelector:".runner-canvas"]];
+  [ChromeEarlGrey waitForWebStateNotContainingElement:
+                      [ElementSelector selectorWithCSSSelector:".snackbar"]];
+  [ChromeEarlGrey
+      waitForWebStateNotContainingText:l10n_util::GetStringUTF8(
+                                           IDS_ERRORPAGE_FUN_DISABLED)];
+
+  // Tapping the runner container starts the game.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementUnverified(
+                        containerSelector)];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithCSSSelector:".controller"]];
+}
+
+// Tests that `chrome://dino/` shows the disabled page instead of the dinosaur
+// game when the `AllowDinosaurEasterEgg` enterprise policy is set to `false`.
+- (void)testAllowDinosaurEasterEggDisabled {
+  SetPolicy(false, policy::key::kAllowDinosaurEasterEgg);
+  [ChromeEarlGrey loadURL:GURL(kChromeDinoGameURL)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_ERRORPAGE_FUN_DISABLED)];
+  [ChromeEarlGrey
+      waitForWebStateNotContainingElement:
+          [ElementSelector selectorWithCSSSelector:".runner-canvas"]];
+
+  // Pressing space on the disabled page shows the disabled message and icon.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@" " flags:0];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithCSSSelector:".snackbar.snackbar-show"]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:
+          [ElementSelector selectorWithCSSSelector:".icon.icon-disabled"]];
+}
+
 @end

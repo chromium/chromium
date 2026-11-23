@@ -65,7 +65,8 @@ NSString* GetSecureGatewayErrorPageHtml(web::WebState* web_state,
 // managed proxy didn't let the request through, so the page reports a failed
 // tunnel connection. That net error is appended as the final underlying error
 // because `GetErrorPage()` only renders net errors.
-NSString* GetGenericErrorPageHtml(const GURL& url,
+NSString* GetGenericErrorPageHtml(web::WebState* web_state,
+                                  const GURL& url,
                                   NSError* error,
                                   bool is_post,
                                   bool is_off_the_record) {
@@ -75,7 +76,7 @@ NSString* GetGenericErrorPageHtml(const GURL& url,
                       userInfo:nil];
   return GetErrorPage(
       url, base::ios::ErrorWithAppendedUnderlyingError(error, tunnel_error),
-      is_post, is_off_the_record);
+      is_post, is_off_the_record, IsDinoEasterEggEnabled(web_state));
 }
 
 }  // namespace
@@ -93,5 +94,6 @@ NSString* GetEnterpriseProxyErrorPageHtml(web::WebState* web_state,
   }
   // Falls back to a generic error page, e.g. when no disguised error was
   // recorded for the navigation.
-  return GetGenericErrorPageHtml(url, error, is_post, is_off_the_record);
+  return GetGenericErrorPageHtml(web_state, url, error, is_post,
+                                 is_off_the_record);
 }
