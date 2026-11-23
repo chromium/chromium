@@ -268,9 +268,13 @@ public class EdgeToEdgeUtils {
      */
     public static boolean doAllInsetsIndicateGestureNavigation(
             @Nullable WindowInsetsCompat insets) {
-        return insets != null
-                && isInGestureNavigationMode(insets)
-                && !hasTappableBarIgnoringTop(() -> insets);
+        if (insets == null) {
+            return false;
+        }
+        if (sHas3ButtonNavBarForTesting != null) {
+            return !sHas3ButtonNavBarForTesting;
+        }
+        return isInGestureNavigationMode(insets) && !hasTappableBarIgnoringTop(() -> insets);
     }
 
     /** Whether the edge-to-edge feature is enabled on tablet. */

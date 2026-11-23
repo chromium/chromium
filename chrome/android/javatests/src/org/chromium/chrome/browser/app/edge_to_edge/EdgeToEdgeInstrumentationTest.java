@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -92,7 +93,19 @@ import java.io.IOException;
 @EnableFeatures(ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE)
 public class EdgeToEdgeInstrumentationTest {
 
-    @Rule
+    @Rule(order = 0)
+    public final ExternalResource mOverrideNavBarRule =
+            new ExternalResource() {
+                @Override
+                protected void before() {
+                    // Must be set before mActivityTestRule launches ChromeTabbedActivity so
+                    // startup eligibility histograms and EdgeToEdgeController creation observe
+                    // gesture navigation even on 3-button-nav emulators (Android 11 & 12).
+                    EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
+                }
+            };
+
+    @Rule(order = 1)
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
@@ -147,7 +160,6 @@ public class EdgeToEdgeInstrumentationTest {
         assertFalse(
                 "Setup error, all tests start not opted into edge-to-edge!",
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
-        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
     }
 
     @After
@@ -217,6 +229,9 @@ public class EdgeToEdgeInstrumentationTest {
     /** Tests a failure case when rotating while ToNormal after going ToEdge. */
     @Test
     @MediumTest
+    // Bots <= VERSION_CODES.S use 3-button nav bar, which moves to the side in landscape and
+    // leaves bottomInset == 0 (disallowing the bottom chin). See crbug.com/352402600.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S_V2)
     public void testRotationToLandscape_WhileNotOptedIntoE2E() {
         // We must activate ToEdge to test the closure capturing the local toEdge value instead of
         // the updated private member and passing that to adjustEdges.
@@ -463,10 +478,10 @@ public class EdgeToEdgeInstrumentationTest {
     }
 
     private void assertDrawingToEdge() {
-        assertTrue(
+        CriteriaHelper.pollUiThread(
+                () -> mEdgeToEdgeController.isDrawingToEdge(),
                 "Rotation did not preserve ToEdge setting. The device should still be drawing"
-                        + " ToEdge for the bottom chin.",
-                mEdgeToEdgeController.isDrawingToEdge());
+                        + " ToEdge for the bottom chin.");
     }
 
     private void assertNavigationBarColor(int color) {

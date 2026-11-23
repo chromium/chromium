@@ -1267,6 +1267,7 @@ public class EdgeToEdgeControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS)
     public void handleWindowInsets_useTappableElementForBackupInsets() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(null);
         TestChangeObserver changeObserver = new TestChangeObserver();
         mEdgeToEdgeControllerImpl.registerObserver(changeObserver);
 
