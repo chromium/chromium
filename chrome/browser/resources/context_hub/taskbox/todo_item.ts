@@ -302,6 +302,12 @@ export class TodoItemElement extends CrLitElement {
       } else if (item.chromeHistoryEntry) {
         url = item.chromeHistoryEntry.url;
         label = item.chromeHistoryEntry.title.trim() || url;
+      } else if (item.searchQuery) {
+        // The browser only surfaces search references it could build a
+        // search URL for (Google is the default search provider). A blank
+        // query has nothing to show, so leave `url` empty to drop it below.
+        label = item.searchQuery.query.trim();
+        url = label ? item.searchQuery.searchUrl : '';
       }
       if (isWebUrl(url)) {
         references.push({label, url});

@@ -40,6 +40,17 @@ function createGmailRef(messageUrl: string, subject = 'Mail'): SourceReference {
   };
 }
 
+function createSearchQueryRef(
+    query: string, searchUrl: string = ''): SourceReference {
+  return {
+    searchQuery: {
+      query,
+      searchUrl,
+      timestamp: {internalValue: 0n},
+    },
+  };
+}
+
 suite('TodoItem', () => {
   let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   let openWindowProxy: TestOpenWindowProxy;
@@ -102,6 +113,35 @@ suite('TodoItem', () => {
     assertEquals('Related Tabs', label);
     assertDeepEquals(['https://example.com/a'], urls);
   });
+
+  test(
+      'search query references render as inline links to the browser-provided search URL',
+      async () => {
+        const searchUrl =
+            'https://www.google.com/search?q=renew+passport+online&sourceid=chrome';
+        await createItem([
+          createSearchQueryRef('renew passport online', searchUrl),
+          // Empty queries have nothing to show and are dropped.
+          createSearchQueryRef('   ', 'https://www.google.com/search?q='),
+          // References without a search URL have nothing to open and are
+          // dropped.
+          createSearchQueryRef('passport photo requirements'),
+        ]);
+
+        const links = item.shadowRoot.querySelectorAll<HTMLAnchorElement>(
+            '.todo-metadata .reference-link');
+        assertEquals(1, links.length);
+        assertEquals('renew passport online', links[0]!.textContent.trim());
+        // The URL comes from the browser as-is; the WebUI never builds one.
+        assertEquals(searchUrl, links[0]!.getAttribute('href'));
+
+        const openTabButton = query<CrButtonElement>('#openTabButton')!;
+        assertFalse(openTabButton.disabled);
+        openTabButton.click();
+
+        const [, urls] = await handler.whenCalled('openUrlsInTabGroup');
+        assertDeepEquals([searchUrl], urls);
+      });
 
   test(
       'open tab falls back to opening individual tabs on failure', async () => {
