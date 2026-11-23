@@ -994,12 +994,18 @@ void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned autofill_type) {
   field->set_signature(signature);
   field->add_autofill_type(autofill_type);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  field->set_did_trigger_javascript_autofill(false);
+#endif
 }
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
                      const std::vector<unsigned>& autofill_types) {
   field->set_signature(signature);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  field->set_did_trigger_javascript_autofill(false);
+#endif
 
   for (unsigned i = 0; i < autofill_types.size(); ++i) {
     field->add_autofill_type(autofill_types[i]);

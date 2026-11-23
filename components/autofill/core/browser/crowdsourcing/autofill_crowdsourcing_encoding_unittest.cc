@@ -19,6 +19,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
@@ -178,6 +179,7 @@ Matcher<AutofillUploadContents> EqualsIgnoringMetadataValues(
         PROPERTY_EQ(single_username_vote_type),
         PROPERTY_EQ(is_most_recent_single_username_candidate),
         PROPERTY_EQ(initial_value_changed),
+        PROPERTY_EQ(did_trigger_javascript_autofill),
         Property("autofill_type", &AutofillUploadContents::Field::autofill_type,
                  ElementsAreArray(
                      base::ToVector(expected.autofill_type(), Eq<int32_t>))),
@@ -515,11 +517,17 @@ TEST_F(AutofillCrowdsourcingEncoding,
         upload.add_field_data();
     upload_firstname_field->set_signature(
         *form_structure->field(0)->GetFieldSignature());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    upload_firstname_field->set_did_trigger_javascript_autofill(false);
+#endif
   }
   {
     AutofillUploadContents::Field* upload_date_field = upload.add_field_data();
     upload_date_field->set_signature(
         *form_structure->field(1)->GetFieldSignature());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    upload_date_field->set_did_trigger_javascript_autofill(false);
+#endif
   }
 
   // Without encoder.
@@ -575,12 +583,18 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
         upload.add_field_data();
     upload_firstname_field->set_signature(
         *form_structure->field(0)->GetFieldSignature());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    upload_firstname_field->set_did_trigger_javascript_autofill(false);
+#endif
   }
 
   {
     AutofillUploadContents::Field* upload_date_field = upload.add_field_data();
     upload_date_field->set_signature(
         *form_structure->field(1)->GetFieldSignature());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    upload_date_field->set_did_trigger_javascript_autofill(false);
+#endif
     {
       auto* added_format_string = upload_date_field->add_format_string();
       added_format_string->set_type(FormatString_Type_DATE);
@@ -597,6 +611,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
     AutofillUploadContents::Field* upload_date_field = upload.add_field_data();
     upload_date_field->set_signature(
         *form_structure->field(2)->GetFieldSignature());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    upload_date_field->set_did_trigger_javascript_autofill(false);
+#endif
     {
       auto* added_format_string = upload_date_field->add_format_string();
       added_format_string->set_type(FormatString_Type_AFFIX);
@@ -2179,6 +2196,37 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_TRUE(upload.field_data(2).initial_value_changed());
   // Field 4.
   EXPECT_FALSE(upload.field_data(3).has_initial_value_changed());
+}
+
+TEST_F(AutofillCrowdsourcingEncoding,
+       EncodeUploadRequest_SetsDidTriggerJavaScriptAutofill) {
+  FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                                {.role = ADDRESS_HOME_CITY},
+                                                {.role = ADDRESS_HOME_ZIP}}});
+  FormStructure form_structure(form);
+  form_structure.field(0)->set_did_trigger_javascript_autofill(true);
+
+  EncodeUploadRequestOptions options;
+  options.observed_submission = true;
+
+  const std::vector<AutofillUploadContents> uploads =
+      EncodeUploadRequest(form_structure, options);
+  ASSERT_EQ(uploads.size(), 1u);
+  const AutofillUploadContents& upload = uploads[0];
+
+  ASSERT_EQ(upload.field_data_size(), 3);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(upload.field_data(0).has_did_trigger_javascript_autofill());
+  EXPECT_TRUE(upload.field_data(0).did_trigger_javascript_autofill());
+  EXPECT_TRUE(upload.field_data(1).has_did_trigger_javascript_autofill());
+  EXPECT_FALSE(upload.field_data(1).did_trigger_javascript_autofill());
+  EXPECT_TRUE(upload.field_data(2).has_did_trigger_javascript_autofill());
+  EXPECT_FALSE(upload.field_data(2).did_trigger_javascript_autofill());
+#else
+  EXPECT_FALSE(upload.field_data(0).has_did_trigger_javascript_autofill());
+  EXPECT_FALSE(upload.field_data(1).has_did_trigger_javascript_autofill());
+  EXPECT_FALSE(upload.field_data(2).has_did_trigger_javascript_autofill());
+#endif
 }
 
 // Tests that Autofill does send votes for a field that was filled with

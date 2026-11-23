@@ -55,7 +55,9 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_submission_tracker.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
+#endif
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
@@ -563,11 +565,15 @@ AutofillAgent::AutofillAgent(
       password_generation_agent_(std::move(password_generation_agent)),
       replace_form_element_observer_(base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)),
-      email_verification_handler_(this),
+      email_verification_handler_(this)
+#if !BUILDFLAG(IS_ANDROID)
+      ,
       javascript_autofill_tracker_(
           render_frame->GetWebFrame(),
           base::BindRepeating(&AutofillAgent::OnJavaScriptAutofillDetected,
-                              base::Unretained(this))) {
+                              base::Unretained(this)))
+#endif
+{
   render_frame->GetWebFrame()->SetAutofillClient(this);
   if (password_autofill_agent_) {
     password_autofill_agent_->Init(this);
@@ -640,7 +646,9 @@ void AutofillAgent::Reset() {
   input_warnings_.has_warned = false;
   input_warnings_.remove_listeners.clear();
   email_verification_handler_.Reset();
+#if !BUILDFLAG(IS_ANDROID)
   javascript_autofill_tracker_.Reset();
+#endif
   // Runs Blink's observer disconnection closure
   // (`VisibilityObserver::Disconnect()`) before being reset.
   form_element_intersection_observer_.RunAndReset();
@@ -937,7 +945,9 @@ void AutofillAgent::OnDestruct() {
     custom_form_control_agent_->OnDestruct();
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
+#if !BUILDFLAG(IS_ANDROID)
   javascript_autofill_tracker_.Reset();
+#endif
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 this);
 }
@@ -2256,7 +2266,9 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
 
 void AutofillAgent::DidReceiveLeftPointerDownBeforeDispatch(
     const blink::WebNode& target_node) {
+#if !BUILDFLAG(IS_ANDROID)
   javascript_autofill_tracker_.HandlePointerdown(target_node);
+#endif
 }
 
 void AutofillAgent::SelectControlSelectionChanged(
@@ -2419,7 +2431,9 @@ void AutofillAgent::JavaScriptSetValue(WebFormControlElement element,
                                        const WebString& old_value,
                                        bool was_autofilled,
                                        bool value_changed) {
+#if !BUILDFLAG(IS_ANDROID)
   javascript_autofill_tracker_.OnJavaScriptSetValue(element, old_value);
+#endif
 
   if (!form_util::IsAccessible(element) || !value_changed) {
     return;
@@ -2480,6 +2494,7 @@ mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {
   return autofill_driver_.get();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void AutofillAgent::OnJavaScriptAutofillDetected(
     blink::WebFormControlElement trigger_field,
     std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
@@ -2496,5 +2511,6 @@ void AutofillAgent::OnJavaScriptAutofillDetected(
     }
   }
 }
+#endif
 
 }  // namespace autofill

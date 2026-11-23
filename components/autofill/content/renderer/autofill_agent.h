@@ -24,13 +24,16 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/email_verification_handler.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_submission_tracker.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
+#endif
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -491,12 +494,14 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BatchSelectOptionChange(FieldRendererId element_id);
   void BatchDataListOptionChange(FieldRendererId element_id);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Called when a custom JavaScript autofill is detected by
   // `JavaScriptAutofillTracker`.
   void OnJavaScriptAutofillDetected(
       blink::WebFormControlElement trigger_field,
       std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
       base::TimeTicks detection_start_timestamp);
+#endif
 
   // Stores immutable configuration this agent was created with. It contains
   // features and settings that are specific to the client using this agent.
@@ -653,9 +658,11 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   EmailVerificationHandler email_verification_handler_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Tracks when an autofill operation is performed on a form via JavaScript,
   // and not via regular Chrome Autofill.
   JavaScriptAutofillTracker javascript_autofill_tracker_;
+#endif
 
   base::ScopedClosureRunner form_element_intersection_observer_;
 

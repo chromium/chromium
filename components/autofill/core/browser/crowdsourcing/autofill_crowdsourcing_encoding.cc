@@ -41,6 +41,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
@@ -540,6 +541,11 @@ void EncodeFormFieldsForUpload(
       added_field->set_initial_value_changed(field->initial_value() !=
                                              field->value());
     }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    added_field->set_did_trigger_javascript_autofill(
+        field->did_trigger_javascript_autofill());
+#endif
 
     if (field_options) {
       for (const auto& [type, string] : field_options->format_strings) {

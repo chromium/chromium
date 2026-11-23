@@ -279,18 +279,21 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       semantics {
         sender: "Autofill"
         description:
-          "Chromium relies on crowd-sourced field type classifications to "
-          "help it automatically fill in web forms. If the feature is "
-          "enabled, Chromium will send a non-identifying description of the "
-          "form to Google's servers along with the type of data Chromium "
-          "observed being given to the form. I.e., if you entered your first "
-          "name into a form field, Chromium will 'vote' for that form field "
-          "being a first name field."
+          "Chromium relies on crowd-sourced field classifications and "
+          "interaction signals to help it automatically fill in web forms. If "
+          "the feature is enabled, Chromium will send a non-identifying "
+          "description of the form to Google's servers along with the type of "
+          "data Chromium observed being given to the form (e.g., if you "
+          "entered your first name into a form field, Chromium will 'vote' for "
+          "that form field being a first name field) and whether fields "
+          "triggered custom JavaScript autofill dropdowns."
         trigger: "User submits a web form."
         data:
           "Hashed descriptions of the form and its fields along with type of "
           "data given to each field, if recognized from the user's "
-          "profile(s). User data is not sent."
+          "profile(s), and field-level metadata (such as whether a field "
+          "triggered a custom JavaScript autofill dropdown). User data is not "
+          "sent."
         destination: GOOGLE_OWNED_SERVICE
         api_service_name: "autofill.googleapis.com"
         internal {
@@ -301,7 +304,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         user_data {
           type: NONE
         }
-        last_reviewed: "2023-07-31"
+        last_reviewed: "2026-11-23"
       }
       policy {
         cookies_allowed: NO
@@ -420,6 +423,10 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     if (field.has_initial_value_changed()) {
       out << Tr{} << "initial_value_changed:"
           << static_cast<int>(field.initial_value_changed());
+    }
+    if (field.has_did_trigger_javascript_autofill()) {
+      out << Tr{} << "did_trigger_javascript_autofill:"
+          << field.did_trigger_javascript_autofill();
     }
   }
   out << CTag{"table"};

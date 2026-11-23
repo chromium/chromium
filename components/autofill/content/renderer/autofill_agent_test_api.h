@@ -7,8 +7,11 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
+#include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
+#endif
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 
@@ -106,9 +109,11 @@ class AutofillAgentTestApi {
     return agent_->email_verification_handler_;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   JavaScriptAutofillTracker& javascript_autofill_tracker() {
     return agent_->javascript_autofill_tracker_;
   }
+#endif
 
   base::WeakPtr<AutofillAgent> GetWeakPtr() {
     return agent_->weak_ptr_factory_.GetWeakPtr();
