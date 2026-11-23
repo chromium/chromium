@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.download.items;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -35,6 +38,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 
 import java.util.List;
@@ -296,24 +300,25 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
     }
 
     @Test
-    public void testVisualsAreCachedForInterestingItems() {
+    public void testVisualsAreCachedOnlyForInProgressStates() {
         OfflineContentAggregatorNotificationBridgeUi bridge =
                 new OfflineContentAggregatorNotificationBridgeUi(mProvider, mNotifier);
         verify(mProvider, times(1)).addObserver(bridge);
 
-        List<OfflineItem> interestingItems =
+        List<OfflineItem> cachedStates =
                 List.of(
                         buildOfflineItem(new ContentId("1", "A"), OfflineItemState.IN_PROGRESS),
                         buildOfflineItem(new ContentId("2", "B"), OfflineItemState.PENDING),
-                        buildOfflineItem(new ContentId("3", "C"), OfflineItemState.COMPLETE),
                         buildOfflineItem(new ContentId("5", "E"), OfflineItemState.INTERRUPTED),
                         buildOfflineItem(new ContentId("7", "G"), OfflineItemState.PAUSED));
 
-        List<OfflineItem> uninterestingItems =
-                List.of(buildOfflineItem(new ContentId("6", "F"), OfflineItemState.FAILED));
+        List<OfflineItem> uncachedStates =
+                List.of(
+                        buildOfflineItem(new ContentId("3", "C"), OfflineItemState.COMPLETE),
+                        buildOfflineItem(new ContentId("6", "F"), OfflineItemState.FAILED));
 
-        for (int i = 0; i < interestingItems.size(); i++) {
-            OfflineItem item = interestingItems.get(i);
+        for (int i = 0; i < cachedStates.size(); i++) {
+            OfflineItem item = cachedStates.get(i);
             bridge.onItemUpdated(item, null);
             bridge.onVisualsAvailable(item.id, null);
             bridge.onItemUpdated(item, null);
@@ -325,8 +330,8 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
                             ArgumentMatchers.anyBoolean());
         }
 
-        for (int i = 0; i < uninterestingItems.size(); i++) {
-            OfflineItem item = uninterestingItems.get(i);
+        for (int i = 0; i < uncachedStates.size(); i++) {
+            OfflineItem item = uncachedStates.get(i);
             bridge.onItemUpdated(item, null);
             bridge.onVisualsAvailable(item.id, null);
             bridge.onItemUpdated(item, null);
@@ -357,5 +362,77 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
 
         bridge.destroy();
         verify(mProvider, times(1)).removeObserver(bridge);
+    }
+
+    @Test
+    public void testCompletedItemUsesCachedVisualsAndEvictsFromCache() {
+        OfflineContentAggregatorNotificationBridgeUi bridge =
+                new OfflineContentAggregatorNotificationBridgeUi(mProvider, mNotifier);
+
+        ContentId id = new ContentId("1", "A");
+        OfflineItem inProgress = buildOfflineItem(id, OfflineItemState.IN_PROGRESS);
+        OfflineItemVisuals visuals = new OfflineItemVisuals();
+        visuals.icon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
+
+        bridge.onItemUpdated(inProgress, null);
+        bridge.onVisualsAvailable(id, visuals);
+        verify(mProvider, times(1)).getVisualsForItem(id, bridge);
+
+        OfflineItem completed = buildOfflineItem(id, OfflineItemState.COMPLETE);
+        UpdateDelta stateChangedDelta = new UpdateDelta();
+        stateChangedDelta.stateChanged = true;
+        bridge.onItemUpdated(completed, stateChangedDelta);
+
+        verify(mProvider, times(1)).getVisualsForItem(id, bridge);
+        ArgumentCaptor<DownloadInfo> infoCaptor = ArgumentCaptor.forClass(DownloadInfo.class);
+        verify(mNotifier, times(1))
+                .notifyDownloadSuccessful(
+                        infoCaptor.capture(), anyLong(), anyBoolean(), anyBoolean());
+        assertEquals(
+                "Completed notification should receive the cached icon.",
+                visuals.icon,
+                infoCaptor.getValue().getIcon());
+
+        // Steady-state COMPLETE updates with no state or visuals change are ignored.
+        UpdateDelta unchangedDelta = new UpdateDelta();
+        unchangedDelta.stateChanged = false;
+        bridge.onItemUpdated(completed, unchangedDelta);
+        verify(mProvider, times(1)).getVisualsForItem(id, bridge);
+
+        // A non-ignored update must re-fetch visuals because completion evicted the cache entry.
+        bridge.onItemUpdated(completed, null);
+        verify(mProvider, times(2)).getVisualsForItem(id, bridge);
+
+        bridge.destroy();
+    }
+
+    @Test
+    public void testDestroyClearsCachedVisualsAndOutstandingRequests() {
+        OfflineContentAggregatorNotificationBridgeUi bridge =
+                new OfflineContentAggregatorNotificationBridgeUi(mProvider, mNotifier);
+
+        OfflineItem cachedItem = buildOfflineItem(new ContentId("1", "A"), OfflineItemState.PAUSED);
+        OfflineItem pendingItem =
+                buildOfflineItem(new ContentId("2", "B"), OfflineItemState.IN_PROGRESS);
+
+        bridge.onItemUpdated(cachedItem, null);
+        bridge.onVisualsAvailable(cachedItem.id, new OfflineItemVisuals());
+        verify(mNotifier, times(1))
+                .notifyDownloadPaused(argThat(new DownloadInfoIdMatcher(cachedItem.id)));
+
+        bridge.onItemUpdated(pendingItem, null);
+        verify(mProvider, times(1)).getVisualsForItem(pendingItem.id, bridge);
+
+        bridge.destroy();
+
+        bridge.onVisualsAvailable(pendingItem.id, new OfflineItemVisuals());
+        verify(mNotifier, never())
+                .notifyDownloadProgress(
+                        argThat(new DownloadInfoIdMatcher(pendingItem.id)),
+                        anyLong(),
+                        anyBoolean());
+
+        bridge.onItemUpdated(cachedItem, null);
+        verify(mProvider, times(2)).getVisualsForItem(cachedItem.id, bridge);
     }
 }

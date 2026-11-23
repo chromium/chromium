@@ -866,9 +866,14 @@ android_library("chrome_test_java_org.chromium.chrome.browser.download") {
     "src/org/chromium/chrome/browser/download/DownloadTest.java",
     "src/org/chromium/chrome/browser/download/ServicificationDownloadTest.java",
     "src/org/chromium/chrome/browser/download/dialogs/DownloadDialogIncognitoTest.java",
+    "src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiLeakTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
+    "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.feedback") {

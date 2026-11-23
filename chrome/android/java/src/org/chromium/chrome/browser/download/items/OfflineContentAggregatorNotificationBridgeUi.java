@@ -69,6 +69,8 @@ public class OfflineContentAggregatorNotificationBridgeUi
     public void destroy() {
         mProvider.removeObserver(this);
         destroyServiceDelegate();
+        mOutstandingRequests.clear();
+        mVisualsCache.clear();
     }
 
     /** @see OfflineContentProvider#openItem(OpenParams, ContentId) */
@@ -230,10 +232,10 @@ public class OfflineContentAggregatorNotificationBridgeUi
             case OfflineItemState.PENDING:
             case OfflineItemState.INTERRUPTED:
             case OfflineItemState.PAUSED:
-            case OfflineItemState.COMPLETE:
                 return true;
-                // OfflineItemState.FAILED,
-                // OfflineItemState.CANCELLED
+            // OfflineItemState.COMPLETE,
+            // OfflineItemState.FAILED,
+            // OfflineItemState.CANCELLED
             default:
                 return false;
         }
