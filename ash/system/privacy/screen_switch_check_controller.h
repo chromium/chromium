@@ -5,8 +5,12 @@
 #ifndef ASH_SYSTEM_PRIVACY_SCREEN_SWITCH_CHECK_CONTROLLER_H_
 #define ASH_SYSTEM_PRIVACY_SCREEN_SWITCH_CHECK_CONTROLLER_H_
 
+#include <memory>
+#include <vector>
+
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/privacy/screen_security_observer.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -44,9 +48,14 @@ class ScreenSwitchCheckController : public ScreenSecurityObserver,
   void OnRemotingScreenShareStart(base::OnceClosure stop_callback) override;
   void OnRemotingScreenShareStop() override;
 
+  // Removes `widget` from `dialog_widgets_`, which destroys it.
+  void OnDialogWidgetClosed(views::Widget* widget,
+                            views::Widget::ClosedReason reason);
+
   bool is_screen_accessed_ = false;
   bool is_remoting_share_ = false;
   bool skip_cancel_dialog_for_testing_ = false;
+  std::vector<std::unique_ptr<views::Widget>> dialog_widgets_;
 };
 
 }  // namespace ash
