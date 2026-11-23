@@ -123,6 +123,16 @@ TEST_F(ListFormatterTest, Arabic) {
   EXPECT_EQ(list_formatter->FormatUnitList(kItems), u"A، وB، وC");
 }
 
+// Tests that a formatter requested for an explicit locale uses that locale
+// rather than the default ICU locale.
+TEST_F(ListFormatterTest, ExplicitLocale) {
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en-US"));
+  scoped_refptr<IcuBridge::ListFormatter> list_formatter =
+      IcuBridge::GetInstance().list_formatter(GetKnownLanguageTag("zh-CN"));
+  const std::u16string kItems[] = {u"A", u"B", u"C"};
+  EXPECT_EQ(list_formatter->FormatStandardList(kItems), u"A、B和C");
+}
+
 class IcuBridgeListFormatterCacheTest : public testing::Test {
  public:
   void SetUp() override { InitializeICU(); }
