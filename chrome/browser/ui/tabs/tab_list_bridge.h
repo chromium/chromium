@@ -109,6 +109,7 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
   void WillCloseAllTabs(TabStripModel* model) override;
 
   // The underlying TabStripModel that this serves as a bridge for.

@@ -6,6 +6,9 @@
 
 #include <deque>
 #include <optional>
+#include <utility>
+#include <variant>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
@@ -47,15 +50,51 @@ struct Event {
     TAB_REMOVED,
     TAB_MOVED,
     TAB_REPLACED,
+    SPLIT_TAB_ADDED,
+    SPLIT_TAB_REMOVED,
+    SPLIT_TAB_VISUALS_CHANGED,
+    SPLIT_TAB_CONTENTS_CHANGED,
   };
+
+  struct SplitTabAddedEvent {
+    split_tabs::SplitTabId split_id;
+    std::vector<raw_ptr<tabs::TabInterface>> tabs;
+    split_tabs::SplitTabVisualData visual_data;
+  };
+
+  struct SplitTabRemovedEvent {
+    split_tabs::SplitTabId split_id;
+    std::vector<raw_ptr<tabs::TabInterface>> tabs;
+  };
+
+  struct SplitTabVisualsChangedEvent {
+    split_tabs::SplitTabId split_id;
+    split_tabs::SplitTabVisualData old_visual_data;
+    split_tabs::SplitTabVisualData new_visual_data;
+  };
+
+  struct SplitTabContentsChangedEvent {
+    split_tabs::SplitTabId split_id;
+    std::vector<raw_ptr<tabs::TabInterface>> prev_tabs;
+    std::vector<raw_ptr<tabs::TabInterface>> new_tabs;
+  };
+
+  using SplitTabChangedEvent = std::variant<std::monostate,
+                                            SplitTabAddedEvent,
+                                            SplitTabRemovedEvent,
+                                            SplitTabVisualsChangedEvent,
+                                            SplitTabContentsChangedEvent>;
 
   Event(Type type, raw_ptr<tabs::TabInterface> tab)
       : type(type),
         tab(tab),
         tab_url(tab->GetContents()->GetLastCommittedURL()) {}
+  Event(Type type, SplitTabChangedEvent split_tab_changed_event)
+      : type(type),
+        split_tab_changed_event(std::move(split_tab_changed_event)) {}
 
   Type type;
-  raw_ptr<tabs::TabInterface> tab;
+  raw_ptr<tabs::TabInterface> tab = nullptr;
 
   // The URL of the tab at the time of the event. This is stored separately
   // because `tab` may be null (for removed tabs) or destroyed later.
@@ -68,6 +107,9 @@ struct Event {
   // Used for TAB_REPLACED events.
   raw_ptr<content::WebContents> old_contents = nullptr;
   raw_ptr<content::WebContents> new_contents = nullptr;
+
+  // Used for SPLIT_TAB_* events.
+  SplitTabChangedEvent split_tab_changed_event;
 };
 
 // A fake implementation of TabListInterfaceObserver that records callback
@@ -131,6 +173,48 @@ class FakeObserver : public TabListInterfaceObserver {
     event.old_contents = old_contents;
     event.new_contents = new_contents;
     events_.push_back(std::move(event));
+  }
+
+  void OnSplitTabAdded(
+      TabListInterface& tab_list,
+      split_tabs::SplitTabId split_id,
+      const std::vector<tabs::TabInterface*>& tabs,
+      const split_tabs::SplitTabVisualData& visual_data) override {
+    events_.emplace_back(
+        Event::Type::SPLIT_TAB_ADDED,
+        Event::SplitTabAddedEvent{
+            split_id, {tabs.begin(), tabs.end()}, visual_data});
+  }
+
+  void OnSplitTabRemoved(
+      TabListInterface& tab_list,
+      split_tabs::SplitTabId split_id,
+      const std::vector<tabs::TabInterface*>& tabs) override {
+    events_.emplace_back(
+        Event::Type::SPLIT_TAB_REMOVED,
+        Event::SplitTabRemovedEvent{split_id, {tabs.begin(), tabs.end()}});
+  }
+
+  void OnSplitTabVisualsChanged(
+      TabListInterface& tab_list,
+      split_tabs::SplitTabId split_id,
+      const split_tabs::SplitTabVisualData& old_visual_data,
+      const split_tabs::SplitTabVisualData& new_visual_data) override {
+    events_.emplace_back(Event::Type::SPLIT_TAB_VISUALS_CHANGED,
+                         Event::SplitTabVisualsChangedEvent{
+                             split_id, old_visual_data, new_visual_data});
+  }
+
+  void OnSplitTabContentsChanged(
+      TabListInterface& tab_list,
+      split_tabs::SplitTabId split_id,
+      const std::vector<tabs::TabInterface*>& prev_tabs,
+      const std::vector<tabs::TabInterface*>& new_tabs) override {
+    events_.emplace_back(Event::Type::SPLIT_TAB_CONTENTS_CHANGED,
+                         Event::SplitTabContentsChangedEvent{
+                             split_id,
+                             {prev_tabs.begin(), prev_tabs.end()},
+                             {new_tabs.begin(), new_tabs.end()}});
   }
 
  private:
@@ -1383,6 +1467,178 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Observer_OnTabMoved) {
   EXPECT_EQ(url1, event.tab_url);
   EXPECT_EQ(0, event.from_index);
   EXPECT_EQ(2, event.to_index);
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Observer_OnSplitTabAdded) {
+  // Arrange:
+  SetupTabs(browser(), 3);
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  tabs::TabInterface* tab0 = tab_list_interface->GetTab(/*index=*/0);
+  tabs::TabInterface* tab1 = tab_list_interface->GetTab(/*index=*/1);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+
+  FakeObserver observer(tab_list_interface);
+
+  const split_tabs::SplitTabVisualData expected_visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.4);
+
+  // Act:
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list_interface->CreateSplit({tab0->GetHandle(), tab1->GetHandle()},
+                                      expected_visual_data);
+
+  // Assert:
+  ASSERT_TRUE(split_id.has_value());
+  Event event = observer.ReadEvent(Event::Type::SPLIT_TAB_ADDED);
+  const auto* split_added_event =
+      std::get_if<Event::SplitTabAddedEvent>(&event.split_tab_changed_event);
+  ASSERT_TRUE(split_added_event);
+  EXPECT_EQ(split_added_event->split_id, *split_id);
+  EXPECT_THAT(split_added_event->tabs, testing::ElementsAre(tab0, tab1));
+  EXPECT_EQ(split_added_event->visual_data, expected_visual_data);
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Observer_OnSplitTabRemoved) {
+  // Arrange:
+  SetupTabs(browser(), 3);
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  tabs::TabInterface* tab0 = tab_list_interface->GetTab(/*index=*/0);
+  tabs::TabInterface* tab1 = tab_list_interface->GetTab(/*index=*/1);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list_interface->CreateSplit({tab0->GetHandle(), tab1->GetHandle()},
+                                      split_tabs::SplitTabVisualData());
+  ASSERT_TRUE(split_id.has_value());
+
+  FakeObserver observer(tab_list_interface);
+
+  // Act:
+  tab_list_interface->Unsplit(*split_id);
+
+  // Assert:
+  Event event = observer.ReadEvent(Event::Type::SPLIT_TAB_REMOVED);
+  const auto* split_removed_event =
+      std::get_if<Event::SplitTabRemovedEvent>(&event.split_tab_changed_event);
+  ASSERT_TRUE(split_removed_event);
+  EXPECT_EQ(split_removed_event->split_id, *split_id);
+  EXPECT_THAT(split_removed_event->tabs, testing::ElementsAre(tab0, tab1));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       Observer_OnSplitTabVisualsChanged_SplitRatio) {
+  // Arrange:
+  SetupTabs(browser(), 3);
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  const split_tabs::SplitTabVisualData initial_visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.5);
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list_interface->CreateSplit(
+          {tab_list_interface->GetTab(/*index=*/0)->GetHandle(),
+           tab_list_interface->GetTab(/*index=*/1)->GetHandle()},
+          initial_visual_data);
+  ASSERT_TRUE(split_id.has_value());
+
+  FakeObserver observer(tab_list_interface);
+
+  // Act:
+  tab_strip_model->UpdateSplitRatio(*split_id, /*start_content_ratio=*/0.3);
+
+  // Assert:
+  Event event = observer.ReadEvent(Event::Type::SPLIT_TAB_VISUALS_CHANGED);
+  const auto* visuals_changed_event =
+      std::get_if<Event::SplitTabVisualsChangedEvent>(
+          &event.split_tab_changed_event);
+  ASSERT_TRUE(visuals_changed_event);
+  EXPECT_EQ(visuals_changed_event->split_id, *split_id);
+  EXPECT_EQ(visuals_changed_event->old_visual_data, initial_visual_data);
+  EXPECT_EQ(visuals_changed_event->new_visual_data,
+            split_tabs::SplitTabVisualData(
+                split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.3));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       Observer_OnSplitTabVisualsChanged_SplitLayout) {
+  // Arrange:
+  SetupTabs(browser(), 3);
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  const split_tabs::SplitTabVisualData initial_visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.5);
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list_interface->CreateSplit(
+          {tab_list_interface->GetTab(/*index=*/0)->GetHandle(),
+           tab_list_interface->GetTab(/*index=*/1)->GetHandle()},
+          initial_visual_data);
+  ASSERT_TRUE(split_id.has_value());
+
+  FakeObserver observer(tab_list_interface);
+
+  // Act:
+  tab_strip_model->UpdateSplitLayout(*split_id,
+                                     split_tabs::SplitTabLayout::kStacked);
+
+  // Assert:
+  Event event = observer.ReadEvent(Event::Type::SPLIT_TAB_VISUALS_CHANGED);
+  const auto* visuals_changed_event =
+      std::get_if<Event::SplitTabVisualsChangedEvent>(
+          &event.split_tab_changed_event);
+  ASSERT_TRUE(visuals_changed_event);
+  EXPECT_EQ(visuals_changed_event->split_id, *split_id);
+  EXPECT_EQ(visuals_changed_event->old_visual_data, initial_visual_data);
+  EXPECT_EQ(visuals_changed_event->new_visual_data,
+            split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kStacked,
+                                           /*split_ratio=*/0.5));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       Observer_OnSplitTabContentsChanged) {
+  // Arrange:
+  SetupTabs(browser(), 3);
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  tabs::TabInterface* tab0 = tab_list_interface->GetTab(/*index=*/0);
+  tabs::TabInterface* tab1 = tab_list_interface->GetTab(/*index=*/1);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list_interface->CreateSplit({tab0->GetHandle(), tab1->GetHandle()},
+                                      split_tabs::SplitTabVisualData());
+  ASSERT_TRUE(split_id.has_value());
+
+  FakeObserver observer(tab_list_interface);
+
+  // Act:
+  tab_strip_model->ReverseTabsInSplit(*split_id);
+
+  // Assert:
+  Event event = observer.ReadEvent(Event::Type::SPLIT_TAB_CONTENTS_CHANGED);
+  const auto* contents_changed_event =
+      std::get_if<Event::SplitTabContentsChangedEvent>(
+          &event.split_tab_changed_event);
+  ASSERT_TRUE(contents_changed_event);
+  EXPECT_EQ(contents_changed_event->split_id, *split_id);
+  EXPECT_THAT(contents_changed_event->prev_tabs,
+              testing::ElementsAre(tab0, tab1));
+  EXPECT_THAT(contents_changed_event->new_tabs,
+              testing::ElementsAre(tab1, tab0));
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, IsTabListEditable) {

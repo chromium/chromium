@@ -6,8 +6,11 @@
 
 #include <cstddef>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -636,6 +639,58 @@ void TabListBridge::OnTabStripModelChanged(
         tab_strip_->selection_model().selected_tabs().end());
     for (auto& observer : observers_) {
       observer.OnHighlightedTabsChanged(*this, selected_tabs);
+    }
+  }
+}
+
+void TabListBridge::OnSplitTabChanged(const SplitTabChange& change) {
+  // Extracts the ordered `TabInterface` pointers from `(tab, index)` pairs.
+  auto extract_tabs = [](const std::vector<std::pair<tabs::TabInterface*, int>>&
+                             tabs_with_indices) {
+    return base::ToVector(tabs_with_indices,
+                          &std::pair<tabs::TabInterface*, int>::first);
+  };
+
+  switch (change.type) {
+    case SplitTabChange::Type::kAdded: {
+      const auto* added_change = change.GetAddedChange();
+      std::vector<tabs::TabInterface*> tabs =
+          extract_tabs(added_change->tabs());
+      for (auto& observer : observers_) {
+        observer.OnSplitTabAdded(*this, change.split_id, tabs,
+                                 added_change->visual_data());
+      }
+      break;
+    }
+    case SplitTabChange::Type::kVisualsChanged: {
+      const auto* visuals_change = change.GetVisualsChange();
+      for (auto& observer : observers_) {
+        observer.OnSplitTabVisualsChanged(*this, change.split_id,
+                                          visuals_change->old_visual_data(),
+                                          visuals_change->new_visual_data());
+      }
+      break;
+    }
+    case SplitTabChange::Type::kContentsChanged: {
+      const auto* contents_change = change.GetContentsChange();
+      std::vector<tabs::TabInterface*> prev_tabs =
+          extract_tabs(contents_change->prev_tabs());
+      std::vector<tabs::TabInterface*> new_tabs =
+          extract_tabs(contents_change->new_tabs());
+      for (auto& observer : observers_) {
+        observer.OnSplitTabContentsChanged(*this, change.split_id, prev_tabs,
+                                           new_tabs);
+      }
+      break;
+    }
+    case SplitTabChange::Type::kRemoved: {
+      const auto* removed_change = change.GetRemovedChange();
+      std::vector<tabs::TabInterface*> tabs =
+          extract_tabs(removed_change->tabs());
+      for (auto& observer : observers_) {
+        observer.OnSplitTabRemoved(*this, change.split_id, tabs);
+      }
+      break;
     }
   }
 }

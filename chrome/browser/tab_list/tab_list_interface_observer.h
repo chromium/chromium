@@ -6,16 +6,22 @@
 #define CHROME_BROWSER_TAB_LIST_TAB_LIST_INTERFACE_OBSERVER_H_
 
 #include <set>
+#include <vector>
 
 #include "base/observer_list_types.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
-
-namespace tabs {
-class TabInterface;
-}
+#include "components/split_tabs/split_tab_id.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace split_tabs {
+class SplitTabVisualData;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 class TabListInterface;
@@ -81,6 +87,68 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // switching between standard and incognito tab models).
   virtual void OnTabListActiveChanged(TabListInterface& tab_list,
                                       bool is_active) {}
+
+  // Called when a Split View is added.
+  //
+  // `tab_list`: The tab list to which the Split View was added.
+  // `split_id`: Identifies the newly-added Split View.
+  // `tabs`: The tabs in the Split View, ordered by pane position (matching
+  //     their contiguous index order in `tab_list`).
+  // `visual_data`: The initial `SplitTabVisualData`.
+  //
+  // TODO(crbug.com/585322669): Support this notification on Android.
+  virtual void OnSplitTabAdded(
+      TabListInterface& tab_list,
+      split_tabs::SplitTabId split_id,
+      const std::vector<tabs::TabInterface*>& tabs,
+      const split_tabs::SplitTabVisualData& visual_data) {}
+
+  // Called when a Split View is removed.
+  //
+  // `tab_list`: The tab list from which the Split View was removed.
+  // `split_id`: Identifies the removed Split View.
+  // `tabs`: The tabs that belonged to the Split View, ordered by their pane
+  //     position prior to removal (matching their contiguous index order in
+  //     `tab_list`).
+  //
+  // TODO(crbug.com/585322669): Support this notification on Android.
+  virtual void OnSplitTabRemoved(TabListInterface& tab_list,
+                                 split_tabs::SplitTabId split_id,
+                                 const std::vector<tabs::TabInterface*>& tabs) {
+  }
+
+  // Called when the visual data of a Split View changes.
+  //
+  // `tab_list`: The tab list containing the Split View.
+  // `split_id`: Identifies the Split View whose visual data changed.
+  // `old_visual_data`: The visual data before the change.
+  // `new_visual_data`: The visual data after the change.
+  //
+  // TODO(crbug.com/585322669): Support this notification on Android.
+  virtual void OnSplitTabVisualsChanged(
+      TabListInterface& tab_list,
+      split_tabs::SplitTabId split_id,
+      const split_tabs::SplitTabVisualData& old_visual_data,
+      const split_tabs::SplitTabVisualData& new_visual_data) {}
+
+  // Called when the tabs inside an existing Split View change
+  // (e.g., when panes are reversed or swapped).
+  //
+  // `tab_list`: The tab list containing the Split View.
+  // `split_id`: Identifies the Split View whose contents changed.
+  // `prev_tabs`: The Split View's tabs before the change, ordered by pane
+  //     position (matching their contiguous index order in `tab_list` before
+  //     the change).
+  // `new_tabs`: The Split View's tabs after the change, ordered by pane
+  //     position (matching their contiguous index order in `tab_list` after the
+  //     change).
+  //
+  // TODO(crbug.com/585322669): Support this notification on Android.
+  virtual void OnSplitTabContentsChanged(
+      TabListInterface& tab_list,
+      split_tabs::SplitTabId split_id,
+      const std::vector<tabs::TabInterface*>& prev_tabs,
+      const std::vector<tabs::TabInterface*>& new_tabs) {}
 };
 
 #endif  // CHROME_BROWSER_TAB_LIST_TAB_LIST_INTERFACE_OBSERVER_H_
