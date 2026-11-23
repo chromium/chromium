@@ -6,17 +6,38 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/table_view/favicon_table_view_cell.h"
+#import "ios/chrome/credential_provider_extension/favicon_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
 
-// Returns a password credential for `service_name` and `username` with
-// placeholder values for the remaining fields.
+NSString* const kFaviconKey = @"favicon_key";
+NSString* const kMonogram = @"E";
+
+// Returns the monogram currently displayed by `favicon_view`, if any.
+NSString* DisplayedMonogram(FaviconView* favicon_view) {
+  for (UIView* subview in favicon_view.subviews) {
+    if ([subview isKindOfClass:[UILabel class]] && !subview.hidden) {
+      return base::apple::ObjCCastStrict<UILabel>(subview).text;
+    }
+  }
+  return nil;
+}
+
+// Returns a password credential for `service_name`, `username`, and `favicon`
+// with placeholder values for the remaining fields.
 ArchivableCredential* MakeCredential(NSString* service_name,
-                                     NSString* username = @"user") {
-  return [[ArchivableCredential alloc] initWithFavicon:nil
+                                     NSString* username = @"user",
+                                     NSString* favicon = nil) {
+  return [[ArchivableCredential alloc] initWithFavicon:favicon
                                                   gaia:nil
                                               password:@"password"
                                                   rank:1
@@ -33,12 +54,48 @@ class CredentialListViewControllerTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
+    ASSERT_TRUE(favicon_folder_.CreateUniqueTempDir());
+    SetFaviconFolderForTesting(
+        base::apple::FilePathToNSURL(favicon_folder_.GetPath()));
     controller_ = [[CredentialListViewController alloc] init];
     controller_.view.frame = CGRectMake(0, 0, 400, 800);
     first_row_ = [NSIndexPath indexPathForRow:0 inSection:0];
   }
 
+  void TearDown() override {
+    SetFaviconFolderForTesting(nil);
+    PlatformTest::TearDown();
+  }
+
  protected:
+  // Writes a monogram favicon to the favicon folder and loads it into the
+  // in-memory favicon cache.
+  void WriteAndCacheFavicon() {
+    FaviconAttributes* attributes =
+        [FaviconAttributes attributesWithMonogram:kMonogram
+                                        textColor:UIColor.whiteColor
+                                  backgroundColor:UIColor.blackColor
+                           defaultBackgroundColor:NO];
+    NSData* data = [NSKeyedArchiver archivedDataWithRootObject:attributes
+                                         requiringSecureCoding:YES
+                                                         error:nil];
+    NSURL* file_url = [base::apple::FilePathToNSURL(favicon_folder_.GetPath())
+        URLByAppendingPathComponent:kFaviconKey
+                        isDirectory:NO];
+    ASSERT_TRUE([data writeToURL:file_url atomically:YES]);
+
+    __block bool done = false;
+    FetchFaviconAsync(kFaviconKey, ^(FaviconAttributes*) {
+      done = true;
+    });
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForFileOperationTimeout, ^{
+          return done;
+        }));
+    ASSERT_TRUE(CachedFaviconAttributes(kFaviconKey));
+  }
+
+  base::ScopedTempDir favicon_folder_;
   CredentialListViewController* controller_;
   NSIndexPath* first_row_;
 };
@@ -136,6 +193,56 @@ TEST_F(CredentialListViewControllerTest, ReloadsWhenDataOrOptionsChange) {
                      showNewPasswordOption:NO];
   EXPECT_EQ([controller_.tableView numberOfSections], 1);
   EXPECT_EQ([controller_.tableView numberOfRowsInSection:0], 0);
+}
+
+// Tests that a cached favicon is displayed as soon as the cell is configured,
+// without first showing the default world icon.
+TEST_F(CredentialListViewControllerTest, CachedFaviconIsShownSynchronously) {
+  ASSERT_NO_FATAL_FAILURE(WriteAndCacheFavicon());
+
+  [controller_
+      presentSuggestedCredentials:@[]
+                   allCredentials:@[ MakeCredential(@"example.com", @"user",
+                                                    kFaviconKey) ]
+                    showSearchBar:NO
+            showNewPasswordOption:NO];
+
+  UITableViewCell* cell = [controller_ tableView:controller_.tableView
+                           cellForRowAtIndexPath:first_row_];
+  FaviconTableViewCell* favicon_cell =
+      base::apple::ObjCCastStrict<FaviconTableViewCell>(cell);
+
+  EXPECT_NSEQ(DisplayedMonogram(favicon_cell.faviconView), kMonogram);
+}
+
+// Tests that a cell showing a cached favicon falls back to the default world
+// icon when it is reused for a credential whose favicon isn't cached.
+TEST_F(CredentialListViewControllerTest, ReusedCellDropsCachedFavicon) {
+  ASSERT_NO_FATAL_FAILURE(WriteAndCacheFavicon());
+
+  [controller_
+      presentSuggestedCredentials:@[]
+                   allCredentials:@[ MakeCredential(@"example.com", @"user",
+                                                    kFaviconKey) ]
+                    showSearchBar:NO
+            showNewPasswordOption:NO];
+  FaviconTableViewCell* cached_cell =
+      base::apple::ObjCCastStrict<FaviconTableViewCell>(
+          [controller_.tableView cellForRowAtIndexPath:first_row_]);
+  ASSERT_NSEQ(DisplayedMonogram(cached_cell.faviconView), kMonogram);
+
+  [controller_
+      presentSuggestedCredentials:@[]
+                   allCredentials:@[ MakeCredential(@"other.com", @"user",
+                                                    @"uncached_favicon_key") ]
+                    showSearchBar:NO
+            showNewPasswordOption:NO];
+  FaviconTableViewCell* reused_cell =
+      base::apple::ObjCCastStrict<FaviconTableViewCell>(
+          [controller_.tableView cellForRowAtIndexPath:first_row_]);
+  ASSERT_EQ(reused_cell, cached_cell);
+
+  EXPECT_FALSE(DisplayedMonogram(reused_cell.faviconView));
 }
 
 }  // namespace

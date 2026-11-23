@@ -204,6 +204,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
+    "//ios/chrome/common/ui/table_view",
     "//ios/chrome/credential_provider_extension:favicon_util",
     "//ios/chrome/credential_provider_extension:font_provider_header",
     "//ios/chrome/credential_provider_extension:generated_strings",

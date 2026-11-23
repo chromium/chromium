@@ -232,6 +232,15 @@ bool AreCredentialArraysEqual(NSArray<id<Credential>>* first,
   credentialCell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   credentialCell.accessibilityTraits |= UIAccessibilityTraitButton;
 
+  // Show the cached favicon right away, so that reloading the table (e.g. on
+  // every search keystroke) doesn't flash the default world icon.
+  FaviconAttributes* cachedAttributes =
+      CachedFaviconAttributes(credential.favicon);
+  if (cachedAttributes) {
+    [credentialCell.faviconView configureWithAttributes:cachedAttributes];
+    return credentialCell;
+  }
+
   // Load favicon.
   if (credential.favicon.length) {
     // Load the favicon from disk.
