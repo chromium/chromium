@@ -999,9 +999,20 @@ void OpenscreenSessionHost::SetConstraints(
     video_config->min_playout_delay =
         std::min(video_config->max_playout_delay,
                  base::Milliseconds(video.max_delay.count()));
-    video_config->max_frame_rate =
-        std::min(video_config->max_frame_rate,
-                 static_cast<double>(video.maximum.frame_rate));
+    // `recommendations` is derived from the receiver's ANSWER; ignore
+    // non-positive values (for example when `display.dimensions` omits
+    // `frameRate` and defaults to 0).
+    const double recommended_frame_rate =
+        static_cast<double>(video.maximum.frame_rate);
+    if (recommended_frame_rate > 0.0) {
+      video_config->max_frame_rate =
+          std::min(video_config->max_frame_rate, recommended_frame_rate);
+      // Prioritize the stricter of the sender's and receiver's frame rate
+      // constraints so video capture matches the negotiated sender and encoder
+      // frame rate.
+      mirror_settings_.set_max_frame_rate(std::min(
+          mirror_settings_.max_frame_rate(), video_config->max_frame_rate));
+    }
 
     // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
     if (session_params_.force_letterboxing) {
