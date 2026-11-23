@@ -23,4 +23,10 @@ void InitializeIsolatedWebAppRuntime(
       pass_key, base::BindRepeating(&WebAppIsolationDelegateImpl::Create));
 }
 
+void ShutdownIsolatedWebAppRuntimeForTesting(
+    base::PassKey<TestingBrowserProcess> pass_key) {
+  IwaRuntimeDataProvider::SetInstance(pass_key, nullptr);
+  IwaKeyDistributionInfoProvider::DestroyInstanceForTesting();  // IN-TEST
+}
+
 }  // namespace web_app

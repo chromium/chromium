@@ -230,6 +230,11 @@ TestingBrowserProcess::~TestingBrowserProcess() {
     content::SetNetworkConnectionTrackerForTesting(nullptr);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  web_app::ShutdownIsolatedWebAppRuntimeForTesting(
+      base::PassKey<TestingBrowserProcess>());
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Destroy objects in the same way as BrowserProcessImpl does.
   serial_policy_allowed_ports_.reset();
   testing_local_state_.reset();

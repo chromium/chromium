@@ -17,6 +17,11 @@ namespace web_app {
 void InitializeIsolatedWebAppRuntime(
     base::PassKey<BrowserProcessImpl, TestingBrowserProcess>);
 
+// Tears down test-scoped IWA runtime singletons so state does not leak across
+// unit tests in the same process. Safe to call even if not initialized.
+void ShutdownIsolatedWebAppRuntimeForTesting(
+    base::PassKey<TestingBrowserProcess>);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_RUNTIME_INIT_H_
