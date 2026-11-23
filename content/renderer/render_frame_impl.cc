@@ -3293,11 +3293,12 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
 
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
-  document_state->set_navigation_state(
+  document_state->set_same_document_navigation_state(
       NavigationState::CreateForSameDocumentCommitFromBrowser(
           std::move(common_params), std::move(commit_params),
           std::move(callback)));
-  NavigationState* navigation_state = document_state->navigation_state();
+  NavigationState* navigation_state =
+      document_state->same_document_navigation_state();
 
   blink::mojom::CommitResult commit_status = blink::mojom::CommitResult::Ok;
   WebHistoryItem item_for_history_navigation;
@@ -3391,13 +3392,13 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // with the WebDocumentLoader. It may have been preempted by a navigation
     // started by an event handler.
     if (!weak_this || !weak_document_state ||
-        document_state->navigation_state() != navigation_state) {
+        document_state->same_document_navigation_state() != navigation_state) {
       return;
     }
   }
 
   DCHECK_NE(commit_status, blink::mojom::CommitResult::Ok);
-  document_state->TakeNavigationState()
+  document_state->TakeSameDocumentNavigationState()
       ->RunCommitSameDocumentNavigationCallback(commit_status);
 
   // The browser expects the frame to be loading this navigation. Inform it
@@ -3946,6 +3947,10 @@ void RenderFrameImpl::DidCommitNavigation(
   DCHECK(loader_factories_);
   DCHECK(loader_factories_->HasBoundDefaultFactory());
 
+  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
+  base::WeakPtr<DocumentState> weak_document_state =
+      document_state->GetWeakPtr();
+
   // TODO(dgozman): call DidStartNavigation in various places where we call
   // CommitNavigation() on the frame.
   if (!navigation_state->was_initiated_in_this_frame()) {
@@ -3963,6 +3968,10 @@ void RenderFrameImpl::DidCommitNavigation(
   for (auto& observer : observers_) {
     observer.DidCreateNewDocument();
   }
+
+  CHECK(weak_this);
+  CHECK(weak_document_state);
+  CHECK_EQ(document_state->navigation_state(), navigation_state);
 
   DVLOG(1) << "Committed provisional load: "
            << TrimURL(GetLoadingUrl().possibly_invalid_spec());
@@ -4240,7 +4249,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   if (is_synchronously_committed) {
     navigation_state = NavigationState::CreateForSynchronousCommit();
   } else {
-    navigation_state = document_state->TakeNavigationState();
+    navigation_state = document_state->TakeSameDocumentNavigationState();
   }
   navigation_state->set_was_within_same_document(true);
 
@@ -4287,7 +4296,8 @@ void RenderFrameImpl::DidFailAsyncSameDocumentCommit() {
   }
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
-  if (auto navigation_state = document_state->TakeNavigationState()) {
+  if (auto navigation_state =
+          document_state->TakeSameDocumentNavigationState()) {
     navigation_state->RunCommitSameDocumentNavigationCallback(
         blink::mojom::CommitResult::Aborted);
   }

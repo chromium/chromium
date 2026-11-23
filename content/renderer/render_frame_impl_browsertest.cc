@@ -31,6 +31,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/local_frame_host_interceptor.h"
 #include "content/public/test/policy_container_utils.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_observer.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/display/screen_info.h"
@@ -1417,14 +1419,132 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
   EXPECT_TRUE(HasText(GetMainFrame(), "JS_ENABLED"));
 }
 
+namespace {
+
+class ReadyToCommitCallbackObserver : public RenderFrameObserver {
+ public:
+  ReadyToCommitCallbackObserver(RenderFrame* render_frame,
+                                base::RepeatingClosure callback)
+      : RenderFrameObserver(render_frame), callback_(std::move(callback)) {}
+
+  void ReadyToCommitNavigation(
+      blink::WebDocumentLoader* document_loader) override {
+    if (callback_) {
+      callback_.Run();
+    }
+  }
+
+  void OnDestruct() override {}
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/568719363: if script runs inside a
+// RenderFrameObserver during DidCommitNavigation and rejects a same-document
+// navigation's precommitHandler (or triggers DidFailAsyncSameDocumentCommit),
+// the in-flight cross-document NavigationState must not be destroyed.
+TEST_F(RenderFrameImplTest,
+       SameDocumentPrecommitFailureDuringCrossDocumentCommit) {
+  TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  bool observer_ran = false;
+  ReadyToCommitCallbackObserver observer(
+      frame, base::BindLambdaForTesting([&]() {
+        observer_ran = true;
+        GetMainFrame()->ExecuteScript(
+            blink::WebScriptSource(blink::WebString::FromUtf8(
+                "window.precommitRan = false;"
+                "navigation.addEventListener('navigate', e => {"
+                "  e.intercept({"
+                "    precommitHandler: () => {"
+                "      window.precommitRan = true;"
+                "      return Promise.reject(new Error('abort'));"
+                "    }"
+                "  });"
+                "}, { once: true });"
+                "history.pushState(null, '', '#rejected');")));
+        // Also exercise RenderFrameImpl::DidFailAsyncSameDocumentCommit()
+        // directly while the cross-document commit is still on the stack.
+        frame->DidFailAsyncSameDocumentCommit();
+      }));
+
+  auto common_params = blink::CreateCommonNavigationParams();
+  common_params->url = GURL("https://example.com/");
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  auto commit_params = blink::CreateCommitNavigationParams();
+  commit_params->origin_to_commit = url::Origin::Create(common_params->url);
+  const base::UnguessableToken expected_token =
+      base::UnguessableToken::Create();
+  commit_params->navigation_token = expected_token;
+
+  NavigateAndWait(frame, std::move(common_params), std::move(commit_params),
+                  web_view_);
+
+  EXPECT_TRUE(observer_ran);
+  int precommit_ran = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"Number(window.precommitRan === true)", &precommit_ran));
+  EXPECT_EQ(1, precommit_ran);
+  auto last_commit_params = frame->TakeLastCommitParams();
+  ASSERT_TRUE(last_commit_params);
+  EXPECT_EQ(expected_token, last_commit_params->navigation_token);
+}
+
+TEST_F(RenderFrameImplTest, BrowserInitiatedAsyncSameDocumentPrecommitFailure) {
+  TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  auto common_params = blink::CreateCommonNavigationParams();
+  common_params->url = GURL("https://example.com/");
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  auto commit_params = blink::CreateCommitNavigationParams();
+  commit_params->origin_to_commit = url::Origin::Create(common_params->url);
+  NavigateAndWait(frame, std::move(common_params), std::move(commit_params),
+                  web_view_);
+
+  ExecuteJavaScriptForTests(
+      "window.rejectPrecommit = null;"
+      "navigation.addEventListener('navigate', e => {"
+      "  e.intercept({"
+      "    precommitHandler: () => new Promise((_, reject) => {"
+      "      window.rejectPrecommit = reject;"
+      "    })"
+      "  });"
+      "}, { once: true });");
+
+  auto same_doc_common = blink::CreateCommonNavigationParams();
+  same_doc_common->url = GURL("https://example.com/#hash");
+  same_doc_common->navigation_type =
+      blink::mojom::NavigationType::SAME_DOCUMENT;
+  same_doc_common->should_replace_current_entry = false;
+  auto same_doc_commit = blink::CreateCommitNavigationParams();
+  same_doc_commit->is_browser_initiated = true;
+
+  std::optional<blink::mojom::CommitResult> callback_result;
+  static_cast<mojom::Frame*>(frame)->CommitSameDocumentNavigation(
+      std::move(same_doc_common), std::move(same_doc_commit),
+      base::BindLambdaForTesting([&](blink::mojom::CommitResult result) {
+        callback_result = result;
+      }));
+
+  // Deferred by precommitHandler, so the callback should not have run yet.
+  EXPECT_FALSE(callback_result.has_value());
+
+  ExecuteJavaScriptForTests("window.rejectPrecommit(new Error('abort'));");
+  EXPECT_EQ(blink::mojom::CommitResult::Aborted, callback_result);
+}
+
 TEST_F(RenderFrameImplTest, SubframeMojoJSDisabledByDefault) {
   v8::Isolate* isolate = Isolate();
   v8::HandleScope handle_scope(isolate);
 
   v8::Local<v8::Context> child_context =
       child_frame().GetWebFrame()->MainWorldScriptContext();
-  EXPECT_FALSE(
-      blink::WebV8Features::IsMojoJSEnabledForTesting(child_context));
+  EXPECT_FALSE(blink::WebV8Features::IsMojoJSEnabledForTesting(child_context));
 }
 
 TEST_F(RenderFrameImplTest, SubframeMojoJSEnabled) {
@@ -1436,8 +1556,7 @@ TEST_F(RenderFrameImplTest, SubframeMojoJSEnabled) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> child_context =
       child_frame().GetWebFrame()->MainWorldScriptContext();
-  EXPECT_TRUE(
-      blink::WebV8Features::IsMojoJSEnabledForTesting(child_context));
+  EXPECT_TRUE(blink::WebV8Features::IsMojoJSEnabledForTesting(child_context));
 }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

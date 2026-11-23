@@ -68,10 +68,25 @@ class CONTENT_EXPORT DocumentState
   int request_id() const { return request_id_; }
   void set_request_id(int request_id) { request_id_ = request_id; }
 
+  // Holds the NavigationState for the initial/cross-document navigation commit
+  // associated with this WebDocumentLoader until DidCommitNavigation finishes.
   NavigationState* navigation_state() { return navigation_state_.get(); }
   void set_navigation_state(std::unique_ptr<NavigationState> navigation_state);
   std::unique_ptr<NavigationState> TakeNavigationState() {
     return std::move(navigation_state_);
+  }
+
+  // Holds the NavigationState for an in-flight browser-initiated same-document
+  // navigation commit separately from `navigation_state_`, so async
+  // same-document commit failures cannot consume an active cross-document
+  // commit's NavigationState.
+  NavigationState* same_document_navigation_state() {
+    return same_document_navigation_state_.get();
+  }
+  void set_same_document_navigation_state(
+      std::unique_ptr<NavigationState> navigation_state);
+  std::unique_ptr<NavigationState> TakeSameDocumentNavigationState() {
+    return std::move(same_document_navigation_state_);
   }
 
   base::WeakPtr<DocumentState> GetWeakPtr() {
@@ -84,6 +99,7 @@ class CONTENT_EXPORT DocumentState
   bool is_overriding_user_agent_ = false;
   int request_id_ = -1;
   std::unique_ptr<NavigationState> navigation_state_;
+  std::unique_ptr<NavigationState> same_document_navigation_state_;
   base::WeakPtrFactory<DocumentState> weak_factory_{this};
 };
 

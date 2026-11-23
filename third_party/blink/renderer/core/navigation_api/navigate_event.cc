@@ -527,7 +527,9 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
 
   if (intercept_state_ == InterceptState::kIntercepted) {
     CHECK(!did_fulfill);
-    window->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
+    if (!dispatch_params_->is_synchronously_committed_same_document) {
+      window->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
+    }
   }
 
   if (intercept_state_ >= InterceptState::kCommitted) {
@@ -576,7 +578,9 @@ void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
         if (frame->IsLoading()) {
           frame->Loader().Progress().ProgressCompleted();
         }
-        frame->Client()->DidFailAsyncSameDocumentCommit();
+        if (!dispatch_params_->is_synchronously_committed_same_document) {
+          frame->Client()->DidFailAsyncSameDocumentCommit();
+        }
         break;
       }
       case InterceptState::kCommitted:
@@ -607,8 +611,9 @@ void NavigateEvent::FinalizeNavigationActionPromisesList() {
     TaskAttributionTopLevelOverrideScope override_scope(
         DomWindow(), GetTaskAttributionScopeType(dispatch_params_),
         TaskAttributionTopLevelOverrideScope::PassKeyType{});
-    if (function->Invoke(this).To(&result))
+    if (function->Invoke(this).To(&result)) {
       navigation_action_promises_list_.push_back(result);
+    }
   }
 }
 
@@ -620,8 +625,9 @@ void NavigateEvent::PotentiallyResetTheFocus() {
 
   // If focus has changed since intercept() was invoked, don't reset
   // focus.
-  if (did_change_focus_during_intercept_)
+  if (did_change_focus_during_intercept_) {
     return;
+  }
 
   // If we're in "navigation API mode" per the above, then either leaving focus
   // reset behavior as the default, or setting it to "after-transition"

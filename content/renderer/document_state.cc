@@ -4,6 +4,7 @@
 
 #include "content/renderer/document_state.h"
 
+#include "base/check.h"
 #include "content/renderer/navigation_state.h"
 
 namespace content {
@@ -25,7 +26,13 @@ std::unique_ptr<blink::WebDocumentLoader::ExtraData> DocumentState::Clone() {
 
 void DocumentState::set_navigation_state(
     std::unique_ptr<NavigationState> navigation_state) {
+  CHECK(!navigation_state_);
   navigation_state_ = std::move(navigation_state);
+}
+
+void DocumentState::set_same_document_navigation_state(
+    std::unique_ptr<NavigationState> navigation_state) {
+  same_document_navigation_state_ = std::move(navigation_state);
 }
 
 }  // namespace content
