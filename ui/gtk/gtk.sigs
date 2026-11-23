@@ -113,6 +113,7 @@ void gtk_file_chooser_set_filter(GtkFileChooser* chooser, GtkFileFilter* filter)
 void gtk_file_chooser_set_select_multiple(GtkFileChooser* chooser, gboolean select_multiple);
 void gtk_file_filter_add_mime_type(GtkFileFilter* filter, const gchar* mime_type);
 void gtk_file_filter_add_pattern(GtkFileFilter* filter, const gchar* pattern);
+const gchar* gtk_file_filter_get_name(GtkFileFilter* filter);
 GtkFileFilter* gtk_file_filter_new(void);
 void gtk_file_filter_set_name(GtkFileFilter* filter, const gchar* name);
 GtkWidget* gtk_image_new(void);

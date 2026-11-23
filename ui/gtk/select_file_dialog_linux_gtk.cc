@@ -283,6 +283,14 @@ int SelectFileDialogLinuxGtk::GetFilterCountForTesting(GtkWidget* dialog) {
 }
 
 // static
+std::string SelectFileDialogLinuxGtk::GetSelectedFilterNameForTesting(
+    GtkWidget* dialog) {
+  GtkFileFilter* filter = gtk_file_chooser_get_filter(GTK_FILE_CHOOSER(dialog));
+  const char* name = filter ? gtk_file_filter_get_name(filter) : nullptr;
+  return name ? std::string(name) : base::EmptyString();
+}
+
+// static
 void SelectFileDialogLinuxGtk::DispatchKeyEventForTesting(ui::KeyEvent* event) {
   ui::ActivationKeyTracker::GetInstance()->OnKeyEvent(event);
 }
@@ -476,22 +484,20 @@ void SelectFileDialogLinuxGtk::AddFilters(GtkFileChooser* chooser) {
     if (!filter)
       continue;
 
-    // The description vector may be blank, in which case we are supposed to
-    // use some sort of default description based on the filter.
+    // The description vector or its entries may be blank, in which case use a
+    // default description based on the filter.
+    std::string name;
     if (i < file_types().extension_description_overrides.size()) {
-      gtk_file_filter_set_name(
-          filter,
-          base::UTF16ToUTF8(file_types().extension_description_overrides[i])
-              .c_str());
-    } else {
-      // There is no system default filter description so we use
-      // the extensions themselves if the description is blank.
-      std::vector<std::string> fallback_labels_vector(fallback_labels.begin(),
-                                                      fallback_labels.end());
-      std::string fallback_label =
-          base::JoinString(fallback_labels_vector, ",");
-      gtk_file_filter_set_name(filter, fallback_label.c_str());
+      name = base::UTF16ToUTF8(file_types().extension_description_overrides[i]);
     }
+    if (name.empty()) {
+      // There is no system default filter description so use the extensions
+      // themselves if the description is blank.
+      name = base::JoinString(std::vector<std::string>(fallback_labels.begin(),
+                                                       fallback_labels.end()),
+                              ",");
+    }
+    gtk_file_filter_set_name(filter, name.c_str());
 
     gtk_file_chooser_add_filter(chooser, filter);
     if (i == file_type_index() - 1)

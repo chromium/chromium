@@ -279,4 +279,21 @@ TEST_F(SelectFileDialogLinuxGtkTest, SelectFolderHasNoUserSelectableFilters) {
   g_object_unref(filter);
 }
 
+// Tests that a filter with an empty description falls back to a name built
+// from its extensions instead of being left unnamed.
+TEST_F(SelectFileDialogLinuxGtkTest, EmptyFilterDescriptionUsesExtensions) {
+  ui::SelectFileDialog::FileTypeInfo file_types({{"txt"}, {"png"}},
+                                                {u"", u"Image"});
+  dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, u"Open File",
+                      base::FilePath(), &file_types, 1,
+                      base::FilePath::StringType(), nullptr);
+
+  GtkWidget* widget = GetDialogWidget();
+  ASSERT_TRUE(widget);
+  // The 1st filter (selected by index 1) is named from its extension instead
+  // of its empty description.
+  EXPECT_EQ(SelectFileDialogLinuxGtk::GetSelectedFilterNameForTesting(widget),
+            "*.txt");
+}
+
 }  // namespace gtk

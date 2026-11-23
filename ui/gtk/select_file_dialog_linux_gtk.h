@@ -6,6 +6,7 @@
 #define UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -39,6 +40,8 @@ class COMPONENT_EXPORT(GTK) SelectFileDialogLinuxGtk
   static void DispatchCancelModeForTesting();
   // Returns the number of user-selectable filters in `dialog`.
   static int GetFilterCountForTesting(GtkWidget* dialog);
+  // Returns the name of the selected filter in `dialog`.
+  static std::string GetSelectedFilterNameForTesting(GtkWidget* dialog);
 
  protected:
   ~SelectFileDialogLinuxGtk() override;
