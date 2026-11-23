@@ -9364,6 +9364,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FirstRunDesktopRevamp"
+                    ],
+                    "disable_features": [
+                        "FirstRunDesktopRevampSound"
                     ]
                 }
             ]
