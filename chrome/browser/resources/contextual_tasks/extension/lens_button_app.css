@@ -30,7 +30,7 @@
   --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button,
       rgba(10, 10, 10, 1));
   --cr-icon-button-focus-outline-color:
-      var(--color-searchbox-results-icon-focused-outline, #0b57d0);
+      var(--color-searchbox-results-icon-focused-outline, #336ef3);
   --cr-icon-button-hover-background-color:
       var(--color-composebox-lens-button-hover-background,
           rgba(31, 31, 31, 0.06));
@@ -45,8 +45,6 @@
   --cr-icon-button-active-background-color: rgba(227, 227, 227, 0.12);
   --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button,
       rgba(230, 232, 240, 1));
-  --cr-icon-button-focus-outline-color:
-      var(--color-searchbox-results-icon-focused-outline, #a8c7fa);
   --cr-icon-button-hover-background-color:
       var(--color-composebox-lens-button-hover-background,
           rgba(66, 68, 77, 1));
@@ -67,13 +65,8 @@
 
 #lensButton:focus-visible:focus {
   box-shadow: none;
-  outline: 2px solid var(--color-searchbox-results-icon-focused-outline,
-      #0b57d0);
+  outline: 2px solid var(--cr-icon-button-focus-outline-color);
   outline-offset: 2px;
-}
-
-:host([dark-mode]) #lensButton:focus-visible:focus {
-  outline-color: var(--color-searchbox-results-icon-focused-outline, #a8c7fa);
 }
 
 @media (forced-colors: active) {

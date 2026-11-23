@@ -173,6 +173,20 @@ suite('LensButtonTest', () => {
     assertEquals('light', getComputedStyle(app).colorScheme);
   });
 
+  test('Focus outline color uses #336ef3 in light and dark modes', async () => {
+    const probe = document.createElement('div');
+    probe.style.outlineColor = 'var(--cr-icon-button-focus-outline-color)';
+    app.$.lensButton.shadowRoot.appendChild(probe);
+
+    assertFalse(app.darkMode);
+    assertEquals('rgb(51, 110, 243)', getComputedStyle(probe).outlineColor);
+
+    app.darkMode = true;
+    await microtasksFinished();
+    assertTrue(app.hasAttribute('dark-mode'));
+    assertEquals('rgb(51, 110, 243)', getComputedStyle(probe).outlineColor);
+  });
+
   test('Initializes darkMode from cs=1 URL query param', async () => {
     const originalUrl = window.location.href;
     let lightApp;
