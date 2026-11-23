@@ -39,6 +39,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/language_tag.h"
 #include "base/immediate_crash.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
@@ -303,7 +304,8 @@ class SwitchLanguageWaiter {
  private:
   void OnLanguageSwitch(const ash::locale_util::LanguageSwitchResult& result) {
     CHECK(result.success);
-    CHECK_EQ(result.requested_locale, result.loaded_locale)
+    CHECK(result.loaded_locale);
+    CHECK_EQ(result.requested_locale, result.loaded_locale->tag_string())
         << "Requested " << result.requested_locale << " but "
         << result.loaded_locale << " is loaded.";
 

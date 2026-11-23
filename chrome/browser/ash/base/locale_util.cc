@@ -45,7 +45,7 @@ struct SwitchLanguageData {
                      locale_util::SwitchLanguageCallback callback,
                      Profile* profile)
       : callback(std::move(callback)),
-        result(locale, std::string(), false),
+        result(locale, std::nullopt, false),
         enable_locale_keyboard_layouts(enable_locale_keyboard_layouts),
         login_layouts_only(login_layouts_only),
         profile(profile) {}
@@ -65,11 +65,11 @@ std::unique_ptr<SwitchLanguageData> SwitchLanguageDoReloadLocale(
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
         base::NotFatalUntil::M160);
 
-  data->result.loaded_locale =
+  data->result.loaded_locale = base::i18n::GetLanguageTagFromString(
       ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
-          data->result.requested_locale);
+          data->result.requested_locale));
 
-  data->result.success = !data->result.loaded_locale.empty();
+  data->result.success = data->result.loaded_locale.has_value();
 
   return data;
 }
@@ -79,15 +79,13 @@ void FinishSwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
                           std::unique_ptr<SwitchLanguageData> data) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (data->result.success) {
-    if (std::optional<base::i18n::LanguageTag> loaded_locale_tag =
-            base::i18n::GetLanguageTagFromString(data->result.loaded_locale)) {
-      CHECK_DEREF(application_locale_storage)
-          .SetTag(*std::move(loaded_locale_tag));
-    }
+    CHECK(data->result.loaded_locale);
+    CHECK_DEREF(application_locale_storage).SetTag(*data->result.loaded_locale);
 
     // Ensure chrome app names are localized. Note that the user might prefer
     // a different locale than was actually loaded (e.g. "en-CA" vs. "en-US").
-    extension_l10n_util::SetProcessLocale(data->result.loaded_locale);
+    extension_l10n_util::SetProcessLocale(
+        std::string(data->result.loaded_locale->tag_string()));
     extension_l10n_util::SetPreferredLocale(data->result.requested_locale);
 
     if (data->enable_locale_keyboard_layouts) {
@@ -111,8 +109,8 @@ void FinishSwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
         // Enable all locale-specific layouts.
         std::vector<std::string> input_methods;
         manager->GetInputMethodUtil()->GetInputMethodIdsFromLanguageCode(
-            data->result.loaded_locale, input_method::kKeyboardLayoutsOnly,
-            &input_methods);
+            data->result.loaded_locale->tag_string(),
+            input_method::kKeyboardLayoutsOnly, &input_methods);
         for (std::vector<std::string>::const_iterator it =
                 input_methods.begin(); it != input_methods.end(); ++it) {
           ime_state->EnableInputMethod(*it);
@@ -147,13 +145,21 @@ namespace locale_util {
 
 constexpr const char* kAllowedUILanguageFallback = "en-US";
 
-LanguageSwitchResult::LanguageSwitchResult(const std::string& requested_locale,
-                                           const std::string& loaded_locale,
-                                           bool success)
+LanguageSwitchResult::LanguageSwitchResult(
+    const std::string& requested_locale,
+    std::optional<base::i18n::LanguageTag> loaded_locale,
+    bool success)
     : requested_locale(requested_locale),
-      loaded_locale(loaded_locale),
-      success(success) {
-}
+      loaded_locale(std::move(loaded_locale)),
+      success(success) {}
+
+LanguageSwitchResult::LanguageSwitchResult(const LanguageSwitchResult&) =
+    default;
+
+LanguageSwitchResult& LanguageSwitchResult::operator=(
+    const LanguageSwitchResult&) = default;
+
+LanguageSwitchResult::~LanguageSwitchResult() = default;
 
 void SwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
                     const std::string& locale,
@@ -172,10 +178,13 @@ void SwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
       loaded_locale == locale) {
     // Use resolved locale to match `ResourceBundle::LoadLocaleResources`
     // behavior. And skip reloading if locale is resolved successfully.
-    if (std::optional<std::string> resolved_locale =
+    if (std::optional<base::i18n::LanguageTag> resolved =
             l10n_util::CheckAndResolveLocale(
-                locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList)) {
-      data->result.loaded_locale = std::move(*resolved_locale);
+                locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList)
+                .and_then([](const std::string& resolved_locale) {
+                  return base::i18n::GetLanguageTagFromString(resolved_locale);
+                })) {
+      data->result.loaded_locale = std::move(resolved);
       data->result.success = true;
       data->keep_cached_fonts = true;
       FinishSwitchLanguage(application_locale_storage, std::move(data));

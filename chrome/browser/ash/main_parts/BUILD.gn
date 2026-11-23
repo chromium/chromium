@@ -25,6 +25,7 @@ static_library("main_parts") {
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//ash/webui/camera_app_ui:document_scanning",
+    "//base/i18n:language_tag",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/cuttlefish:buildflags",

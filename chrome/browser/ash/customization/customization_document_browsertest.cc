@@ -109,7 +109,9 @@ void VerifyLanguageSwitched(const LanguageSwitchResult& result) {
                               << result.requested_locale << "', actual='"
                               << result.loaded_locale
                               << "', success=" << result.success;
-  EXPECT_EQ(GetExpectedLanguage(result.requested_locale), result.loaded_locale)
+  EXPECT_EQ(base::i18n::GetLanguageTagFromString(
+                GetExpectedLanguage(result.requested_locale)),
+            result.loaded_locale)
       << "SwitchLanguage failed: required='" << result.requested_locale
       << "', actual='" << result.loaded_locale
       << "', success=" << result.success;

@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -348,19 +349,20 @@ void GetKeyboardLayoutsForResolvedLocale(
 // entry to mark "selected". If user has just selected "requested_locale",
 // but "loaded_locale" was actually loaded, we mark original user choice
 // "selected" only if loaded_locale is a backup for "requested_locale".
-std::string CalculateSelectedLanguage(const std::string& requested_locale,
-                                      const std::string& loaded_locale) {
+std::string CalculateSelectedLanguage(
+    const std::string& requested_locale,
+    const base::i18n::LanguageTag& loaded_locale) {
   const std::optional<std::string> resolved_locale =
       l10n_util::CheckAndResolveLocale(requested_locale);
   if (!resolved_locale) {
-    return loaded_locale;
+    return std::string(loaded_locale.tag_string());
   }
 
-  if (resolved_locale == loaded_locale) {
+  if (resolved_locale == loaded_locale.tag_string()) {
     return requested_locale;
   }
 
-  return loaded_locale;
+  return std::string(loaded_locale.tag_string());
 }
 
 void ResolveLanguageListInThreadPool(
@@ -374,17 +376,19 @@ void ResolveLanguageListInThreadPool(
 
   std::string selected_language;
   if (language_switch_result) {
-    if (language_switch_result->success) {
+    if (language_switch_result->success &&
+        language_switch_result->loaded_locale) {
       if (language_switch_result->requested_locale ==
-          language_switch_result->loaded_locale) {
+          language_switch_result->loaded_locale->tag_string()) {
         selected_language = language_switch_result->requested_locale;
       } else {
         selected_language =
             CalculateSelectedLanguage(language_switch_result->requested_locale,
-                                      language_switch_result->loaded_locale);
+                                      *language_switch_result->loaded_locale);
       }
-    } else {
-      selected_language = language_switch_result->loaded_locale;
+    } else if (language_switch_result->loaded_locale) {
+      selected_language =
+          std::string(language_switch_result->loaded_locale->tag_string());
     }
   } else {
     selected_language = locale.tag_string();
@@ -396,9 +400,13 @@ void ResolveLanguageListInThreadPool(
                                         ? std::string(locale.tag_string())
                                         : selected_language;
 
-  const std::string list_locale = language_switch_result
-                                      ? language_switch_result->loaded_locale
-                                      : std::string(locale.tag_string());
+  const std::string list_locale =
+      language_switch_result
+          ? (language_switch_result->loaded_locale
+                 ? std::string(
+                       language_switch_result->loaded_locale->tag_string())
+                 : std::string())
+          : std::string(locale.tag_string());
   base::ListValue language_list(
       GetUILanguageList(locale, nullptr, selected_code, descriptors));
 

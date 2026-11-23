@@ -182,13 +182,13 @@ TEST_F(L10nUtilTest, ResolveUILanguageListWithSwitchResult) {
   base::test::TestFuture<base::ListValue, const std::string&,
                          const std::string&>
       future;
-  ResolveUILanguageList(
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage()
-          ->GetTag(),
-      std::make_unique<locale_util::LanguageSwitchResult>("fr", "fr", true),
-      input_manager_, future.GetCallback());
+  ResolveUILanguageList(TestingBrowserProcess::GetGlobal()
+                            ->GetFeatures()
+                            ->application_locale_storage()
+                            ->GetTag(),
+                        std::make_unique<locale_util::LanguageSwitchResult>(
+                            "fr", GetKnownLanguageTag("fr"), true),
+                        input_manager_, future.GetCallback());
 
   auto [language_list, language_list_locale, selected_language] = future.Take();
   VerifyOnlyUILanguages(language_list);

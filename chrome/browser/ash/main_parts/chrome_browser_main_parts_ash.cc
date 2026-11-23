@@ -33,6 +33,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/linux_util.h"
@@ -1293,8 +1294,11 @@ void GuestLanguageSetCallbackData::Callback(
   // This is to keep consistency with UserSessionManager::SetFirstLoginPrefs().
   // See crbug.com/40435445.
   std::vector<std::string> input_methods;
+  const std::string loaded_locale =
+      result.loaded_locale ? std::string(result.loaded_locale->tag_string())
+                           : std::string();
   manager->GetInputMethodUtil()->GetFirstLoginInputMethodIds(
-      result.loaded_locale, ime_state->GetCurrentInputMethod(), &input_methods);
+      loaded_locale, ime_state->GetCurrentInputMethod(), &input_methods);
   ime_state->ReplaceEnabledInputMethods(input_methods);
 
   // Active layout must be hardware "login layout".
@@ -1308,7 +1312,7 @@ void GuestLanguageSetCallbackData::Callback(
   // Second, enable locale based input methods.
   const std::string locale_default_input_method =
       manager->GetInputMethodUtil()->GetLanguageDefaultInputMethodId(
-          result.loaded_locale);
+          loaded_locale);
   if (!locale_default_input_method.empty()) {
     PrefService* user_prefs = self->profile->GetPrefs();
     user_prefs->SetString(ash::prefs::kLanguagePreviousInputMethod,

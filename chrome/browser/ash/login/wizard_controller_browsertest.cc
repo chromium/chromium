@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "ash/constants/ash_features.h"
@@ -21,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -319,7 +321,7 @@ class ScopedEnrollmentStateFetcherFactory {
 };
 
 struct SwitchLanguageTestData {
-  SwitchLanguageTestData() : result("", "", false), done(false) {}
+  SwitchLanguageTestData() : result("", std::nullopt, false), done(false) {}
 
   locale_util::LanguageSwitchResult result;
   bool done;
@@ -346,7 +348,8 @@ void RunSwitchLanguageTest(const std::string& locale,
 
   EXPECT_EQ(data.done, true);
   EXPECT_EQ(data.result.requested_locale, locale);
-  EXPECT_EQ(data.result.loaded_locale, expected_locale);
+  EXPECT_EQ(data.result.loaded_locale,
+            base::i18n::GetLanguageTagFromString(expected_locale));
   EXPECT_EQ(data.result.success, expect_success);
 }
 

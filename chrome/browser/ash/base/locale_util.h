@@ -8,10 +8,12 @@
 #define CHROME_BROWSER_ASH_BASE_LOCALE_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
+#include "base/i18n/language_tag.h"
 
 class ApplicationLocaleStorage;
 class Profile;
@@ -22,11 +24,14 @@ namespace locale_util {
 
 struct LanguageSwitchResult {
   LanguageSwitchResult(const std::string& requested_locale,
-                       const std::string& loaded_locale,
+                       std::optional<base::i18n::LanguageTag> loaded_locale,
                        bool success);
+  LanguageSwitchResult(const LanguageSwitchResult&);
+  LanguageSwitchResult& operator=(const LanguageSwitchResult&);
+  ~LanguageSwitchResult();
 
   std::string requested_locale;
-  std::string loaded_locale;
+  std::optional<base::i18n::LanguageTag> loaded_locale;
   bool success;
 };
 
@@ -34,7 +39,7 @@ struct LanguageSwitchResult {
 // completed on BlockingPool.
 // |result| contains:
 //   locale - (copy of) locale argument to SwitchLanguage(). Expected locale.
-//   loaded_locale - actual locale name loaded.
+//   loaded_locale - actual locale loaded, or std::nullopt on failure.
 //   success - if locale load succeeded.
 // (const std::string* locale, const std::string* loaded_locale, bool success)
 using SwitchLanguageCallback =
