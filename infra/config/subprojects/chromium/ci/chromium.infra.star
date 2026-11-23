@@ -236,6 +236,23 @@ packager_builder(
     },
 )
 
+def _android_sdk_system_image(sdk_version, image_type, arch, *, sdk_channel = None):
+    pkg = {
+        "sdk_package_name": "system-images/{}/{}/{}".format(
+            sdk_version,
+            image_type,
+            arch,
+        ),
+        "cipd_yaml": "third_party/android_sdk/cipd/system_images/{}/{}/{}.yaml".format(
+            sdk_version,
+            image_type,
+            arch,
+        ),
+    }
+    if sdk_channel:
+        pkg["sdk_channel"] = sdk_channel
+    return pkg
+
 packager_builder(
     name = "android-sdk-packager",
     description_html = "Packages Android SDK tools and platforms for Chromium Android builds.",
@@ -300,79 +317,24 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/platform-tools/mac.yaml",
                 "target_os": "mac",
             },
-            {
-                "sdk_package_name": "system-images/android-29/google_apis/x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-30/google_apis/x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis/x86.yaml",
-            },
-            # use x86_64 since sdkmanager don't ship x86 for android-31 and above.
-            {
-                "sdk_package_name": "system-images/android-31/google_apis/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-32/google_apis/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-32/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-33/google_apis/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-34/google_apis/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-34-ext9/android-automotive/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/android-automotive/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-35/google_apis/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-35/google_apis_tablet/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis_tablet/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-36/google_apis/arm64-v8a",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/arm64-v8a.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-36/google_apis/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-37.1/android-desktop/arm64-v8a",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.1/android-desktop/arm64-v8a.yaml",
-                "sdk_channel": "BETA",
-            },
-            {
-                "sdk_package_name": "system-images/android-37.1/android-desktop/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.1/android-desktop/x86_64.yaml",
-                "sdk_channel": "BETA",
-            },
-            {
-                "sdk_package_name": "system-images/android-37.2/google_apis_ps16k/arm64-v8a",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.2/google_apis_ps16k/arm64-v8a.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-37.2/google_apis_ps16k/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.2/google_apis_ps16k/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-canary-20261104/google_apis_ps16k/arm64-v8a",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-canary-20261104/google_apis_ps16k/arm64-v8a.yaml",
-                "sdk_channel": "CANARY",
-            },
-            {
-                "sdk_package_name": "system-images/android-canary-20261104/google_apis_ps16k/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-canary-20261104/google_apis_ps16k/x86_64.yaml",
-                "sdk_channel": "CANARY",
-            },
+            _android_sdk_system_image("android-29", "google_apis", "x86"),
+            _android_sdk_system_image("android-30", "google_apis", "x86"),
+            # Use x86_64 since sdkmanager doesn't ship x86 for android-31 and above.
+            _android_sdk_system_image("android-31", "google_apis", "x86_64"),
+            _android_sdk_system_image("android-32", "google_apis", "x86_64"),
+            _android_sdk_system_image("android-33", "google_apis", "x86_64"),
+            _android_sdk_system_image("android-34", "google_apis", "x86_64"),
+            _android_sdk_system_image("android-34-ext9", "android-automotive", "x86_64"),
+            _android_sdk_system_image("android-35", "google_apis", "x86_64"),
+            _android_sdk_system_image("android-35", "google_apis_tablet", "x86_64"),
+            _android_sdk_system_image("android-36", "google_apis", "arm64-v8a"),
+            _android_sdk_system_image("android-36", "google_apis", "x86_64"),
+            _android_sdk_system_image("android-37.1", "android-desktop", "arm64-v8a", sdk_channel = "BETA"),
+            _android_sdk_system_image("android-37.1", "android-desktop", "x86_64", sdk_channel = "BETA"),
+            _android_sdk_system_image("android-37.2", "google_apis_ps16k", "arm64-v8a"),
+            _android_sdk_system_image("android-37.2", "google_apis_ps16k", "x86_64"),
+            _android_sdk_system_image("android-canary-20261104", "google_apis_ps16k", "arm64-v8a", sdk_channel = "CANARY"),
+            _android_sdk_system_image("android-canary-20261104", "google_apis_ps16k", "x86_64", sdk_channel = "CANARY"),
         ],
     },
 )
