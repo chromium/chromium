@@ -111,8 +111,7 @@ class NetErrorAutoReloader
 
   raw_ptr<network::NetworkConnectionTracker> connection_tracker_;
   bool is_online_ = true;
-  std::map<raw_ptr<content::NavigationHandle, SetExperimental>,
-           IsSuppressedErrorPage>
+  std::map<raw_ptr<content::NavigationHandle>, IsSuppressedErrorPage>
       pending_navigations_;
   std::optional<base::OneShotTimer> next_reload_timer_;
   std::optional<ErrorPageInfo> current_reloadable_error_page_info_;

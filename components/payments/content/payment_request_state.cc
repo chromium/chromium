@@ -592,8 +592,7 @@ void PaymentRequestState::PopulateProfileCache() {
     return profile->IsHomeAndWorkProfile();
   });
 
-  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
-      raw_profiles_for_filtering;
+  std::vector<raw_ptr<autofill::AutofillProfile>> raw_profiles_for_filtering;
   raw_profiles_for_filtering.reserve(profiles.size());
 
   // PaymentRequest may outlive the Profiles returned by the Data Manager.

@@ -39,8 +39,7 @@ struct Metadata {
       Platforms::kWindows, Platforms::kMac, Platforms::kLinux,
       Platforms::kChromeOS};
 
-  using FeatureSet =
-      base::flat_set<raw_ptr<const base::Feature, CtnExperimental>>;
+  using FeatureSet = base::flat_set<raw_ptr<const base::Feature>>;
   using PlatformSet = base::flat_set<Platforms>;
 
   Metadata(int launch_milestone,

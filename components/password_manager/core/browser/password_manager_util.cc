@@ -522,7 +522,7 @@ const PasswordForm* FindFormByUsername(base::span<const PasswordForm> forms,
 }
 
 const PasswordForm* FindFormByUsername(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms,
+    const std::vector<raw_ptr<const PasswordForm>>& forms,
     const std::u16string& username_value) {
   for (const PasswordForm* form : forms) {
     if (form->username_value == username_value) {
@@ -544,8 +544,7 @@ const StoredCredential* FindCredentialByUsername(
 }
 
 const StoredCredential* FindCredentialByUsername(
-    const std::vector<raw_ptr<const StoredCredential, VectorExperimental>>&
-        forms,
+    const std::vector<raw_ptr<const StoredCredential>>& forms,
     const std::u16string& username_value) {
   for (const StoredCredential* form : forms) {
     if (form->username_value == username_value) {
@@ -570,8 +569,7 @@ const password_manager::StoredCredential* FindChangedPasswordLoginWithBackup(
 
 const StoredCredential* GetMatchForUpdating(
     const PasswordForm& submitted_form,
-    const std::vector<raw_ptr<const StoredCredential, VectorExperimental>>&
-        credentials,
+    const std::vector<raw_ptr<const StoredCredential>>& credentials,
     bool username_updated_in_bubble) {
   // This is the case for the credential management API. It should not depend on
   // form managers. Once that's the case, this should be turned into a DCHECK.

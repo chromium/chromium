@@ -77,7 +77,7 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
   gfx::Size GetMaxViewportSize() const;
 
  private:
-  std::vector<raw_ptr<Client, VectorExperimental>> clients_;
+  std::vector<raw_ptr<Client>> clients_;
   base::UnsafeSharedMemoryRegion region_;
   size_t created_shm_bytes_ = 0;
 

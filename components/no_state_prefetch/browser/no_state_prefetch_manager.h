@@ -469,8 +469,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   const std::unique_ptr<NoStatePrefetchHistograms> histograms_;
 
   // Set of process hosts being prerendered.
-  using PrerenderProcessSet =
-      std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>;
+  using PrerenderProcessSet = std::set<raw_ptr<content::RenderProcessHost>>;
   PrerenderProcessSet prerender_process_hosts_;
 
   raw_ptr<const base::TickClock> tick_clock_;

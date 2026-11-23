@@ -69,8 +69,8 @@ class PdfAccessibilityTreeBuilderStructure {
   ui::AXNodeData* CreateNodeWithTextContent(
       ui::AXNodeData* parent_node,
       ax::mojom::Role role,
-      base::span<const raw_ptr<chrome_pdf::AccessibilityTextRunInfo,
-                               VectorExperimental>> text_runs);
+      base::span<const raw_ptr<chrome_pdf::AccessibilityTextRunInfo>>
+          text_runs);
 
   // Creates an accessibility node with image content. Returns the created image
   // node.

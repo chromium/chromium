@@ -164,31 +164,25 @@ class MockFormSaver : public StubFormSaver {
   // FormSaver:
   MOCK_METHOD(PasswordForm, Blocklist, (PasswordFormDigest), (override));
   MOCK_METHOD(void, Unblocklist, (const PasswordFormDigest&), (override));
-  MOCK_METHOD(
-      void,
-      Save,
-      (PasswordForm pending,
-       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&)
-           matches,
-       const std::u16string& old_password),
-      (override));
-  MOCK_METHOD(
-      void,
-      Update,
-      (PasswordForm pending,
-       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&)
-           matches,
-       const std::u16string& old_password),
-      (override));
-  MOCK_METHOD(
-      void,
-      UpdateReplace,
-      (PasswordForm pending,
-       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&)
-           matches,
-       const std::u16string& old_password,
-       const PasswordForm& old_unique_key),
-      (override));
+  MOCK_METHOD(void,
+              Save,
+              (PasswordForm pending,
+               (const std::vector<raw_ptr<const PasswordForm>>&)matches,
+               const std::u16string& old_password),
+              (override));
+  MOCK_METHOD(void,
+              Update,
+              (PasswordForm pending,
+               (const std::vector<raw_ptr<const PasswordForm>>&)matches,
+               const std::u16string& old_password),
+              (override));
+  MOCK_METHOD(void,
+              UpdateReplace,
+              (PasswordForm pending,
+               (const std::vector<raw_ptr<const PasswordForm>>&)matches,
+               const std::u16string& old_password,
+               const PasswordForm& old_unique_key),
+              (override));
   MOCK_METHOD(void, Remove, (const PasswordForm&), (override));
 
   std::unique_ptr<FormSaver> Clone() override {
@@ -828,16 +822,14 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
   PasswordForm saved_form;
   std::vector<PasswordForm> best_matches;
   EXPECT_CALL(*mock_profile_form_saver(), Save)
-      .WillOnce(
-          [&](PasswordForm pending,
-              const std::vector<
-                  raw_ptr<const PasswordForm, VectorExperimental>>& matches,
-              const std::u16string& old_password) {
-            saved_form = std::move(pending);
-            for (const auto& match : matches) {
-              best_matches.push_back(*match);
-            }
-          });
+      .WillOnce([&](PasswordForm pending,
+                    const std::vector<raw_ptr<const PasswordForm>>& matches,
+                    const std::u16string& old_password) {
+        saved_form = std::move(pending);
+        for (const auto& match : matches) {
+          best_matches.push_back(*match);
+        }
+      });
 
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 
@@ -897,16 +889,14 @@ TEST_P(PasswordSaveManagerImplTest, SavePSLToAlreadySaved) {
   PasswordForm saved_form;
   std::vector<PasswordForm> best_matches;
   EXPECT_CALL(*mock_profile_form_saver(), Save)
-      .WillOnce(
-          [&](PasswordForm pending,
-              const std::vector<
-                  raw_ptr<const PasswordForm, VectorExperimental>>& matches,
-              const std::u16string& old_password) {
-            saved_form = std::move(pending);
-            for (const auto& match : matches) {
-              best_matches.push_back(*match);
-            }
-          });
+      .WillOnce([&](PasswordForm pending,
+                    const std::vector<raw_ptr<const PasswordForm>>& matches,
+                    const std::u16string& old_password) {
+        saved_form = std::move(pending);
+        for (const auto& match : matches) {
+          best_matches.push_back(*match);
+        }
+      });
 
   password_save_manager_impl()->Save(&observed_form_, Parse(submitted_form));
 

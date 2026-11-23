@@ -86,7 +86,7 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   void Reset();
 
   // Embedded render passes that contribute pixels to this render pass.
-  base::flat_set<raw_ptr<ResolvedPassData, CtnExperimental>> embedded_passes;
+  base::flat_set<raw_ptr<ResolvedPassData>> embedded_passes;
 
   // True if there were any CopyOutputRequest(s) on this render pass. This is
   // set after CheckCopyOutputRequests() is called. This value should be
@@ -418,8 +418,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes_;
 
   std::vector<ResolvedPassData> resolved_passes_;
-  base::flat_map<CompositorRenderPassId,
-                 raw_ptr<ResolvedPassData, CtnExperimental>>
+  base::flat_map<CompositorRenderPassId, raw_ptr<ResolvedPassData>>
       render_pass_id_map_;
   base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
       aggregated_id_map_;

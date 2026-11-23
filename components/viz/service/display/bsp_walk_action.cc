@@ -40,7 +40,7 @@ void BspWalkActionDrawPolygon::operator()(DrawPolygon* item) {
 }
 
 BspWalkActionToVector::BspWalkActionToVector(
-    std::vector<raw_ptr<DrawPolygon, VectorExperimental>>* in_list)
+    std::vector<raw_ptr<DrawPolygon>>* in_list)
     : list_(in_list) {}
 
 void BspWalkActionToVector::operator()(DrawPolygon* item) {

@@ -186,7 +186,7 @@ class MockDataTypeProcessor : public DataTypeProcessor {
 
   // Latest responses received, indexed by tag_hash.
   std::map<ClientTagHash, CommitResponseData> commit_response_items_;
-  std::map<ClientTagHash, raw_ptr<const UpdateResponseData, CtnExperimental>>
+  std::map<ClientTagHash, raw_ptr<const UpdateResponseData>>
       update_response_items_;
 
   // The per-item state maps.

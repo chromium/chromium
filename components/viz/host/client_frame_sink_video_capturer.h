@@ -169,7 +169,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   std::optional<float> majority_damaged_pixel_min_ratio_;
   uint32_t sub_capture_version_ = 0;
   // Overlays are owned by the callers of CreateOverlay().
-  std::vector<raw_ptr<Overlay, VectorExperimental>> overlays_;
+  std::vector<raw_ptr<Overlay>> overlays_;
   bool is_started_ = false;
   // Buffer format preference of our consumer.
   mojom::BufferFormatPreference buffer_format_preference_;

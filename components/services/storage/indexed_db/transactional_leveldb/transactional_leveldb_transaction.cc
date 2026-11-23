@@ -141,8 +141,8 @@ void TransactionalLevelDBTransaction::EvictLoadedIterators() {
   if (loaded_iterators_.empty())
     return;
   is_evicting_all_loaded_iterators_ = true;
-  base::flat_set<raw_ptr<TransactionalLevelDBIterator, CtnExperimental>>
-      to_be_evicted = std::move(loaded_iterators_);
+  base::flat_set<raw_ptr<TransactionalLevelDBIterator>> to_be_evicted =
+      std::move(loaded_iterators_);
   for (TransactionalLevelDBIterator* iter : to_be_evicted) {
     iter->EvictLevelDBIterator();
   }

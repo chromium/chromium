@@ -186,8 +186,7 @@ bool PdfAccessibilityTreeBuilderStructure::StructureTreeHasContent(
 ui::AXNodeData* PdfAccessibilityTreeBuilderStructure::CreateNodeWithTextContent(
     ui::AXNodeData* parent_node,
     ax::mojom::Role role,
-    base::span<const raw_ptr<chrome_pdf::AccessibilityTextRunInfo,
-                             VectorExperimental>> text_runs) {
+    base::span<const raw_ptr<chrome_pdf::AccessibilityTextRunInfo>> text_runs) {
   // Create container node with the specified role (e.g., kParagraph, kHeading).
   ui::AXNodeData* container_node =
       builder_->CreateAndAppendNode(role, ax::mojom::Restriction::kReadOnly);

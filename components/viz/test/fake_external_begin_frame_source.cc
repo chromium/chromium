@@ -30,8 +30,7 @@ FakeExternalBeginFrameSource::~FakeExternalBeginFrameSource() {
 void FakeExternalBeginFrameSource::SetPaused(bool paused) {
   if (paused != paused_) {
     paused_ = paused;
-    std::set<raw_ptr<BeginFrameObserver, SetExperimental>> observers(
-        observers_);
+    std::set<raw_ptr<BeginFrameObserver>> observers(observers_);
     for (BeginFrameObserver* obs : observers) {
       obs->OnBeginFrameSourcePausedChanged(paused_);
     }
@@ -104,7 +103,7 @@ void FakeExternalBeginFrameSource::TestOnBeginFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_args_ = args;
   IssueBeginFrameToInputClient(args);
-  std::set<raw_ptr<BeginFrameObserver, SetExperimental>> observers(observers_);
+  std::set<raw_ptr<BeginFrameObserver>> observers(observers_);
   for (BeginFrameObserver* obs : observers) {
     pending_frames_[obs]++;
     obs->OnBeginFrame(current_args_);

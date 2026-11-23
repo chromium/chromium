@@ -195,8 +195,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
       manager_mojo_;
 
   // Holds all locked and unlocked instances which have not yet been purged.
-  std::set<raw_ptr<DiscardableMemoryImpl, SetExperimental>> allocated_memory_
-      GUARDED_BY(lock_);
+  std::set<raw_ptr<DiscardableMemoryImpl>> allocated_memory_ GUARDED_BY(lock_);
   size_t bytes_allocated_limit_for_testing_ = 0;
 
   base::AsyncMemoryConsumerRegistration memory_consumer_registration_;

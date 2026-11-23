@@ -151,8 +151,7 @@ const password_manager::StoredCredential* FindCredentialByUsername(
     base::span<const password_manager::StoredCredential> forms,
     const std::u16string& username_value);
 const password_manager::StoredCredential* FindCredentialByUsername(
-    const std::vector<raw_ptr<const password_manager::StoredCredential,
-                              VectorExperimental>>& forms,
+    const std::vector<raw_ptr<const password_manager::StoredCredential>>& forms,
     const std::u16string& username_value);
 
 // Returns a form from |submitted_manager|'s best matches with
@@ -174,8 +173,8 @@ const password_manager::StoredCredential* FindChangedPasswordLoginWithBackup(
 // updated during the save prompt bubble.
 const password_manager::StoredCredential* GetMatchForUpdating(
     const password_manager::PasswordForm& submitted_form,
-    const std::vector<raw_ptr<const password_manager::StoredCredential,
-                              VectorExperimental>>& credentials,
+    const std::vector<raw_ptr<const password_manager::StoredCredential>>&
+        credentials,
     bool username_updated_in_bubble = false);
 
 // This method creates a blocklisted form with |digests|'s scheme, signon_realm

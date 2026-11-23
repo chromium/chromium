@@ -28,15 +28,14 @@ class FakeEventDrivenTelemetryCollectorPool
   ~FakeEventDrivenTelemetryCollectorPool() override;
 
   // EventDrivenTelemetryCollectorPool:
-  std::vector<raw_ptr<CollectorBase, VectorExperimental>>
-  GetTelemetryCollectors(MetricEventType event_type) override;
+  std::vector<raw_ptr<CollectorBase>> GetTelemetryCollectors(
+      MetricEventType event_type) override;
 
   void AddEventTelemetryCollector(MetricEventType event_type,
                                   CollectorBase* collector);
 
  private:
-  base::flat_map<MetricEventType,
-                 std::vector<raw_ptr<CollectorBase, VectorExperimental>>>
+  base::flat_map<MetricEventType, std::vector<raw_ptr<CollectorBase>>>
       event_telemetry_map_;
 };
 

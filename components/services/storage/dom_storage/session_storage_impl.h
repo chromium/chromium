@@ -220,8 +220,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // The removal of items from this map is managed by the refcounting in
   // SessionStorageDataMap.
   // Populated after the database is connected.
-  std::map</*map_id=*/int64_t, raw_ptr<SessionStorageDataMap, CtnExperimental>>
-      data_maps_;
+  std::map</*map_id=*/int64_t, raw_ptr<SessionStorageDataMap>> data_maps_;
   // Populated in CreateNamespace, CloneNamespace, and sometimes
   // RegisterShallowClonedNamespace. Items are removed in
   // DeleteNamespace.

@@ -100,8 +100,7 @@ class PasswordProtectionRequestContent final
   // associated modal warning dialog.
   void ResumeDeferredNavigations();
 
-  std::set<
-      raw_ptr<PasswordProtectionCommitDeferringCondition, SetExperimental>>&
+  std::set<raw_ptr<PasswordProtectionCommitDeferringCondition>>&
   get_deferred_navigations_for_testing() {
     return deferred_navigations_;
   }
@@ -164,7 +163,7 @@ class PasswordProtectionRequestContent final
 
   // Tracks navigations that are deferred on this request and any associated
   // modal dialog.
-  std::set<raw_ptr<PasswordProtectionCommitDeferringCondition, SetExperimental>>
+  std::set<raw_ptr<PasswordProtectionCommitDeferringCondition>>
       deferred_navigations_;
 
   // If a request is sent, this is the token returned by the WebUI.

@@ -123,7 +123,7 @@ class FormStructure {
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
   static std::vector<FieldGlobalId> FindFieldsEligibleForManualFilling(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+      const std::vector<raw_ptr<FormStructure>>& forms);
 
   // See FormFieldData::fields.
   const std::vector<std::unique_ptr<AutofillField>>& fields() const {

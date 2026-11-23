@@ -141,7 +141,7 @@ struct AccessibilityStructureElement {
   std::string abbreviation_expansion;   // /E
   std::string actual_text;              // /ActualText
 
-  std::vector<raw_ptr<AccessibilityTextRunInfo, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityTextRunInfo>>
       associated_text_runs_if_available;
   std::unique_ptr<AccessibilityImageInfo> associated_image_if_available;
 

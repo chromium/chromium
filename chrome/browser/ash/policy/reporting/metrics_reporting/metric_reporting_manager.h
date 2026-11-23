@@ -185,8 +185,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void DeviceSettingsUpdated() override;
 
   // EventDrivenTelemetryCollectorPool:
-  std::vector<raw_ptr<CollectorBase, VectorExperimental>>
-  GetTelemetryCollectors(MetricEventType event_type) override;
+  std::vector<raw_ptr<CollectorBase>> GetTelemetryCollectors(
+      MetricEventType event_type) override;
 
   // Can be nullptr of the feature flag is not enabled.
   FatalCrashEventsObserver* fatal_crash_events_observer();
@@ -398,8 +398,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   base::TimeDelta GetUploadDelay() const;
 
-  std::vector<raw_ptr<CollectorBase, VectorExperimental>>
-  GetTelemetryCollectorsFromSetting(std::string_view setting_name);
+  std::vector<raw_ptr<CollectorBase>> GetTelemetryCollectorsFromSetting(
+      std::string_view setting_name);
 
   const raw_ref<::network::NetworkQualityTracker> network_quality_tracker_;
 

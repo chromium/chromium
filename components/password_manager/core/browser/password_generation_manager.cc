@@ -29,7 +29,7 @@ namespace password_manager {
 namespace {
 
 std::vector<StoredCredential> DeepCopyToStoredVector(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms) {
+    const std::vector<raw_ptr<const PasswordForm>>& forms) {
   std::vector<PasswordForm> result;
   result.reserve(forms.size());
   for (const PasswordForm* form : forms) {
@@ -42,15 +42,12 @@ std::vector<StoredCredential> DeepCopyToStoredVector(
 // a conflict in generation.
 class PasswordDataForUI : public PasswordFormManagerForUI {
  public:
-  PasswordDataForUI(
-      PasswordForm pending_form,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          federated,
-      PasswordForm::Store store_for_saving,
-      base::RepeatingCallback<void(bool, const PasswordForm&)>
-          bubble_interaction);
+  PasswordDataForUI(PasswordForm pending_form,
+                    const std::vector<raw_ptr<const PasswordForm>>& matches,
+                    const std::vector<raw_ptr<const PasswordForm>>& federated,
+                    PasswordForm::Store store_for_saving,
+                    base::RepeatingCallback<void(bool, const PasswordForm&)>
+                        bubble_interaction);
   ~PasswordDataForUI() override = default;
   PasswordDataForUI(const PasswordDataForUI&) = delete;
   PasswordDataForUI& operator=(const PasswordDataForUI&) = delete;
@@ -98,9 +95,8 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
 
 PasswordDataForUI::PasswordDataForUI(
     PasswordForm pending_form,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated,
+    const std::vector<raw_ptr<const PasswordForm>>& matches,
+    const std::vector<raw_ptr<const PasswordForm>>& federated,
     PasswordForm::Store store_for_saving,
     base::RepeatingCallback<void(bool, const PasswordForm&)> bubble_interaction)
     : pending_form_(std::move(pending_form)),
@@ -217,8 +213,7 @@ PasswordForm::Store PasswordDataForUI::GetPasswordStoreForSaving(
 // Returns a form from |matches| that causes a name conflict with |generated|.
 const PasswordForm* FindUsernameConflict(
     const PasswordForm& generated,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        matches) {
+    const std::vector<raw_ptr<const PasswordForm>>& matches) {
   for (const password_manager::PasswordForm* form : matches) {
     if (form->username_value == generated.username_value) {
       return form;
@@ -362,10 +357,8 @@ std::unique_ptr<PasswordGenerationManager> PasswordGenerationManager::Clone()
 
 void PasswordGenerationManager::GeneratedPasswordAccepted(
     PasswordForm generated,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        non_federated_matches,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated_matches,
+    const std::vector<raw_ptr<const PasswordForm>>& non_federated_matches,
+    const std::vector<raw_ptr<const PasswordForm>>& federated_matches,
     PasswordForm::Store store_for_saving,
     base::WeakPtr<PasswordManagerDriver> driver) {
   // Clear the username value if there are already saved credentials with
@@ -390,7 +383,7 @@ void PasswordGenerationManager::GeneratedPasswordAccepted(
 
 void PasswordGenerationManager::PresaveGeneratedPassword(
     PasswordForm generated,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    const std::vector<raw_ptr<const PasswordForm>>& matches,
     FormSaver* form_saver) {
   if (auto logger = password_manager_util::GetLoggerIfAvailable(client_)) {
     logger->LogMessage(

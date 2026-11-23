@@ -66,18 +66,15 @@ class PasswordGenerationManager {
   // - The actual form submission doesn't succeed for some reason.
   void GeneratedPasswordAccepted(
       PasswordForm generated,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          non_federated_matches,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          federated_matches,
+      const std::vector<raw_ptr<const PasswordForm>>& non_federated_matches,
+      const std::vector<raw_ptr<const PasswordForm>>& federated_matches,
       PasswordForm::Store store_for_saving,
       base::WeakPtr<PasswordManagerDriver> driver);
 
   // Called when generated password is accepted or changed by user.
   void PresaveGeneratedPassword(
       PasswordForm generated,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches,
+      const std::vector<raw_ptr<const PasswordForm>>& matches,
       FormSaver* form_saver);
 
   // Signals that the user cancels password generation.

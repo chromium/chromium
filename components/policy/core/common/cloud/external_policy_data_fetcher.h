@@ -107,7 +107,7 @@ class POLICY_EXPORT ExternalPolicyDataFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> cloned_url_loader_factory_;
 
   // Set that owns all currently running Jobs.
-  typedef std::set<raw_ptr<Job, SetExperimental>> JobSet;
+  typedef std::set<raw_ptr<Job>> JobSet;
   JobSet jobs_;
 
   base::WeakPtrFactory<ExternalPolicyDataFetcher> weak_factory_{this};

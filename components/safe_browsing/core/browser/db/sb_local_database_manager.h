@@ -246,8 +246,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
                            TimeSinceLastUpdateResponseHistograms);
 
   // The checks awaiting a full hash response from SafeBrowsing service.
-  typedef std::unordered_set<raw_ptr<PendingCheck, CtnExperimental>>
-      PendingChecks;
+  typedef std::unordered_set<raw_ptr<PendingCheck>> PendingChecks;
 
   // Called when all the stores managed by the database have been read
   // from disk after startup and the database is ready for checking

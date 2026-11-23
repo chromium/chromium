@@ -103,8 +103,8 @@ class RegisteredObjects {
   };
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::flat_set<raw_ptr<RegisteredType, CtnExperimental>, RegisteredComparator>
-      objects_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_set<raw_ptr<RegisteredType>, RegisteredComparator> objects_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace performance_manager

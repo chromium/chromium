@@ -72,7 +72,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AllDownloadEventNotifier
 
   raw_ptr<SimpleDownloadManagerCoordinator>
       simple_download_manager_coordinator_;
-  std::set<raw_ptr<DownloadItem, SetExperimental>> observing_;
+  std::set<raw_ptr<DownloadItem>> observing_;
 
   bool download_initialized_;
 

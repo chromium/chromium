@@ -339,9 +339,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   base::flat_map<base::UnguessableToken,
                  std::unique_ptr<SurfaceAllocationGroup>>
       embed_token_to_allocation_group_;
-  base::flat_map<
-      FrameSinkId,
-      std::vector<raw_ptr<SurfaceAllocationGroup, VectorExperimental>>>
+  base::flat_map<FrameSinkId, std::vector<raw_ptr<SurfaceAllocationGroup>>>
       frame_sink_id_to_allocation_groups_;
   base::flat_map<SurfaceId, std::unique_ptr<Surface>> surface_map_;
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.

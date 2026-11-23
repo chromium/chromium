@@ -63,8 +63,7 @@ class ExternalPolicyDataFetcherTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<ExternalPolicyDataFetcher> fetcher_;
 
-  std::map<int, raw_ptr<ExternalPolicyDataFetcher::Job, CtnExperimental>>
-      jobs_;  // Not owned.
+  std::map<int, raw_ptr<ExternalPolicyDataFetcher::Job>> jobs_;  // Not owned.
 
   int callback_count_;
   int callback_job_index_;

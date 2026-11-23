@@ -78,7 +78,7 @@ class WaylandDisplayOutput {
   const int64_t id_;
   OutputMetrics metrics_;
   raw_ptr<wl_global, DanglingUntriaged> global_ = nullptr;
-  base::flat_set<raw_ptr<wl_resource, CtnExperimental>> output_resources_;
+  base::flat_set<raw_ptr<wl_resource>> output_resources_;
   bool had_registered_output_ = false;
   bool is_destructing_ = false;
 };

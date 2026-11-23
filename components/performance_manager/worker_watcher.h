@@ -263,8 +263,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       frame_node_child_worker_connections_;
 
   // Maps each dedicated worker to all its child workers.
-  using WorkerNodeSet =
-      base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>;
+  using WorkerNodeSet = base::flat_set<raw_ptr<WorkerNodeImpl>>;
   base::flat_map<blink::DedicatedWorkerToken, WorkerNodeSet>
       dedicated_worker_child_workers_;
 

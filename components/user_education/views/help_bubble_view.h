@@ -139,11 +139,10 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   std::optional<gfx::Rect> local_anchor_bounds_;
 
   raw_ptr<views::ImageView> icon_view_ = nullptr;
-  std::vector<raw_ptr<views::Label, VectorExperimental>> labels_;
+  std::vector<raw_ptr<views::Label>> labels_;
 
   // If the bubble has buttons, it must be focusable.
-  std::vector<raw_ptr<views::MdTextButton, VectorExperimental>>
-      non_default_buttons_;
+  std::vector<raw_ptr<views::MdTextButton>> non_default_buttons_;
   raw_ptr<views::MdTextButton> default_button_ = nullptr;
   raw_ptr<views::Button> close_button_ = nullptr;
 

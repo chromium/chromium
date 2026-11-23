@@ -43,7 +43,7 @@ class PolicyDetailsMap {
   void SetDetails(const std::string& policy, const PolicyDetails* details);
 
  private:
-  typedef std::map<std::string, raw_ptr<const PolicyDetails, CtnExperimental>>
+  typedef std::map<std::string, raw_ptr<const PolicyDetails>>
       PolicyDetailsMapping;
 
   const PolicyDetails* Lookup(const std::string& policy) const;

@@ -608,7 +608,7 @@ void Surface::ClearNonRootCopyRequests() {
 
 void Surface::UpdateReferencedAllocationGroups(
     std::vector<SurfaceAllocationGroup*> new_referenced_allocation_groups) {
-  base::flat_set<raw_ptr<SurfaceAllocationGroup, CtnExperimental>> new_set(
+  base::flat_set<raw_ptr<SurfaceAllocationGroup>> new_set(
       new_referenced_allocation_groups.begin(),
       new_referenced_allocation_groups.end());
 
@@ -898,7 +898,7 @@ void Surface::UpdateActivationDependencies(
   // Now that all surface activations have happened, inspect which
   // dependencies remain unresolved and register as a blocked embedder only for
   // those.
-  base::flat_set<raw_ptr<SurfaceAllocationGroup, CtnExperimental>>
+  base::flat_set<raw_ptr<SurfaceAllocationGroup>>
       new_blocking_allocation_groups;
   std::vector<SurfaceId> new_activation_dependencies;
   bool bypass_outdated_surface_activation =

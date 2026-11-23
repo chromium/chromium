@@ -252,8 +252,7 @@ class Pointer : public SurfaceTreeHost,
 
   // All delegates currently requesting a pointer locks, whether granted or
   // not. Only one such request may exist per surface; others will be denied.
-  base::flat_map<Surface*, raw_ptr<PointerConstraintDelegate, CtnExperimental>>
-      constraints_;
+  base::flat_map<Surface*, raw_ptr<PointerConstraintDelegate>> constraints_;
 
   // The delegate instance that stylus/pen events are dispatched to.
   raw_ptr<PointerStylusDelegate> stylus_delegate_ = nullptr;

@@ -63,7 +63,7 @@ class TabHelperFrameNodeSource : public FrameNodeSource,
   // Maps each tab helper to the set of observed frame nodes that belongs to
   // that tab helper.
   base::flat_map<PerformanceManagerTabHelper*,
-                 base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>>
+                 base::flat_set<raw_ptr<FrameNodeImpl>>>
       observed_frame_nodes_;
 
   // Observes frame node deletions.

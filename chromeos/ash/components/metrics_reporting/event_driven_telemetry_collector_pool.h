@@ -20,8 +20,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
   virtual ~EventDrivenTelemetryCollectorPool() = default;
 
   // Get the telemetry collectors associated with `event_type`.
-  virtual std::vector<raw_ptr<CollectorBase, VectorExperimental>>
-  GetTelemetryCollectors(MetricEventType event_type) = 0;
+  virtual std::vector<raw_ptr<CollectorBase>> GetTelemetryCollectors(
+      MetricEventType event_type) = 0;
 };
 
 }  // namespace reporting

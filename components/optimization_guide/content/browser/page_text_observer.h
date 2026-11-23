@@ -108,7 +108,7 @@ class PageTextObserver : public content::WebContentsObserver,
   void DispatchResponses();
 
   // All registered consumers.
-  std::set<raw_ptr<Consumer, SetExperimental>> consumers_;
+  std::set<raw_ptr<Consumer>> consumers_;
 
   // A persisted set of consumer requests.
   std::vector<std::unique_ptr<ConsumerTextDumpRequest>> requests_;

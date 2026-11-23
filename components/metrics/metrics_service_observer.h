@@ -162,7 +162,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
 
   // An overlay on |logs_| that allows for a log to be located based on its
   // hash.
-  base::flat_map<std::string_view, raw_ptr<Log, CtnExperimental>> indexed_logs_;
+  base::flat_map<std::string_view, raw_ptr<Log>> indexed_logs_;
 
   // Keeps track of the type of UMA logs (ongoing, stability, independent) that
   // are being created. This should only be set for UMA logs, since the concept

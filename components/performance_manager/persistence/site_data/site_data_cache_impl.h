@@ -33,8 +33,7 @@ class SiteDataCacheImpl : public SiteDataCache,
                           public internal::SiteDataImpl::OnDestroyDelegate {
  public:
   using SiteDataMap =
-      base::flat_map<url::Origin,
-                     raw_ptr<internal::SiteDataImpl, CtnExperimental>>;
+      base::flat_map<url::Origin, raw_ptr<internal::SiteDataImpl>>;
 
   SiteDataCacheImpl(const base::UnguessableToken& browser_context_id,
                     const base::FilePath& browser_context_path);

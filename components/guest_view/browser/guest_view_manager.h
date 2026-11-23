@@ -239,13 +239,11 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   bool CanUseGuestInstanceID(int guest_instance_id);
 
   // Contains guests, mapping from their instance ids.
-  using GuestInstanceMap =
-      std::map<int, raw_ptr<GuestViewBase, CtnExperimental>>;
+  using GuestInstanceMap = std::map<int, raw_ptr<GuestViewBase>>;
   GuestInstanceMap guests_by_instance_id_;
 
   using WebContentsGuestViewMap =
-      std::map<const content::WebContents*,
-               raw_ptr<GuestViewBase, CtnExperimental>>;
+      std::map<const content::WebContents*, raw_ptr<GuestViewBase>>;
   WebContentsGuestViewMap webcontents_guestview_map_;
 
   // Maps the FTN ID of a guest's main frame to the associated `GuestViewBase`.

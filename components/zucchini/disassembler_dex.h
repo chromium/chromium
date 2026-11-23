@@ -255,8 +255,7 @@ class DisassemblerDex : public Disassembler {
 
  private:
   friend Disassembler;
-  using MapItemMap =
-      std::map<uint16_t, raw_ptr<const dex::MapItem, CtnExperimental>>;
+  using MapItemMap = std::map<uint16_t, raw_ptr<const dex::MapItem>>;
 
   // Disassembler:
   bool Parse(ConstBufferView image) override;

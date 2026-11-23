@@ -94,7 +94,7 @@ class MockPermissionPromptFactory : PermissionRequestManager::Observer {
   std::vector<RequestType> request_types_seen_;
   std::vector<GURL> request_origins_seen_;
 
-  std::vector<raw_ptr<MockPermissionPrompt, VectorExperimental>> prompts_;
+  std::vector<raw_ptr<MockPermissionPrompt>> prompts_;
   PermissionRequestManager::AutoResponseType response_type_;
   std::optional<PromptOptions> response_prompt_options_;
 

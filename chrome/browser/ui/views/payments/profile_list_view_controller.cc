@@ -165,8 +165,7 @@ class ShippingProfileViewController : public ProfileListViewController,
     return state()->profile_comparator()->IsShippingComplete(&profile);
   }
 
-  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
-  GetProfiles() override {
+  std::vector<raw_ptr<autofill::AutofillProfile>> GetProfiles() override {
     return state()->shipping_profiles();
   }
 
@@ -290,8 +289,7 @@ class ContactProfileViewController : public ProfileListViewController {
     return state()->profile_comparator()->IsContactInfoComplete(&profile);
   }
 
-  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
-  GetProfiles() override {
+  std::vector<raw_ptr<autofill::AutofillProfile>> GetProfiles() override {
     return state()->contact_profiles();
   }
 

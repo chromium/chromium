@@ -67,7 +67,7 @@ class InfoBarContainer : public InfoBarManager::Observer {
   void OnInfoBarStateChanged(bool is_animating);
 
  protected:
-  typedef std::vector<raw_ptr<InfoBar, VectorExperimental>> InfoBars;
+  typedef std::vector<raw_ptr<InfoBar>> InfoBars;
 
   // InfoBarManager::Observer:
   void OnInfoBarAdded(InfoBar* infobar) override;

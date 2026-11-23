@@ -12,7 +12,7 @@ namespace performance_manager {
 
 template <typename PublicNodeClass, typename NodeImplClass>
 base::flat_set<const PublicNodeClass*> UpcastNodeSet(
-    const base::flat_set<raw_ptr<NodeImplClass, CtnExperimental>>& node_set) {
+    const base::flat_set<raw_ptr<NodeImplClass>>& node_set) {
   // As node_set is a flat_set, its contents are sorted and unique already.
   return base::flat_set<const PublicNodeClass*>(
       base::sorted_unique, node_set.begin(), node_set.end());

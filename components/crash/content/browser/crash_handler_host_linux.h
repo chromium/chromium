@@ -174,7 +174,7 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   void WillDestroyCurrentMessageLoop() override;
 
   base::Lock observers_lock_;
-  std::set<raw_ptr<Observer, SetExperimental>> observers_;
+  std::set<raw_ptr<Observer>> observers_;
   base::MessagePumpForIO::FdWatchController fd_watch_controller_;
   base::ScopedFD process_socket_;
   base::ScopedFD browser_socket_;

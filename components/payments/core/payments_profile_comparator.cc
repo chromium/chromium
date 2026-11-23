@@ -52,13 +52,11 @@ PaymentsProfileComparator::GetMissingProfileFields(
   return it->second;
 }
 
-std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
+std::vector<raw_ptr<autofill::AutofillProfile>>
 PaymentsProfileComparator::FilterProfilesForContact(
-    const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
-        profiles) const {
+    const std::vector<raw_ptr<autofill::AutofillProfile>>& profiles) const {
   // We will be removing profiles, so we operate on a copy.
-  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
-      processed = profiles;
+  std::vector<raw_ptr<autofill::AutofillProfile>> processed = profiles;
 
   // Stable sort, since profiles are expected to be passed in frecency order.
   std::stable_sort(
@@ -155,14 +153,12 @@ bool PaymentsProfileComparator::IsContactInfoComplete(
            GetRequiredProfileFieldsForContact());
 }
 
-std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
+std::vector<raw_ptr<autofill::AutofillProfile>>
 PaymentsProfileComparator::FilterProfilesForShipping(
-    const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
-        profiles) const {
+    const std::vector<raw_ptr<autofill::AutofillProfile>>& profiles) const {
   // Since we'll be changing the order/contents of the const input vector,
   // we make a copy.
-  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
-      processed = profiles;
+  std::vector<raw_ptr<autofill::AutofillProfile>> processed = profiles;
 
   std::stable_sort(
       processed.begin(), processed.end(),

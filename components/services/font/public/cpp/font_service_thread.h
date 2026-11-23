@@ -199,8 +199,7 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   // gets an error during this time all events in |pending_waitable_events_| are
   // signaled. This is necessary as when the pipe is closed the callbacks are
   // never received.
-  std::set<raw_ptr<base::WaitableEvent, SetExperimental>>
-      pending_waitable_events_;
+  std::set<raw_ptr<base::WaitableEvent>> pending_waitable_events_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };

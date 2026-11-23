@@ -17,8 +17,7 @@ using UrlTypedCountMap = BookmarkClient::UrlTypedCountMap;
 
 namespace {
 
-using UrlNodeMap =
-    std::map<const GURL*, raw_ptr<const TitledUrlNode, CtnExperimental>>;
+using UrlNodeMap = std::map<const GURL*, raw_ptr<const TitledUrlNode>>;
 using UrlTypedCountPair = std::pair<const GURL*, int>;
 using UrlTypedCountPairs = std::vector<UrlTypedCountPair>;
 

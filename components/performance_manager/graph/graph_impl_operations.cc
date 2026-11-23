@@ -75,23 +75,22 @@ bool VisitWorkerAndClients(
 }  // namespace
 
 // static
-base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>
+base::flat_set<raw_ptr<PageNodeImpl>>
 GraphImplOperations::GetAssociatedPageNodes(const ProcessNodeImpl* process) {
-  std::vector<raw_ptr<PageNodeImpl, CtnExperimental>> page_nodes;
+  std::vector<raw_ptr<PageNodeImpl>> page_nodes;
   page_nodes.reserve(process->frame_nodes().size());
 
   for (FrameNodeImpl* frame_node : process->frame_nodes()) {
     page_nodes.push_back(frame_node->page_node());
   }
 
-  return base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>(
-      std::move(page_nodes));
+  return base::flat_set<raw_ptr<PageNodeImpl>>(std::move(page_nodes));
 }
 
 // static
-base::flat_set<raw_ptr<ProcessNodeImpl, CtnExperimental>>
+base::flat_set<raw_ptr<ProcessNodeImpl>>
 GraphImplOperations::GetAssociatedProcessNodes(const PageNodeImpl* page) {
-  std::vector<raw_ptr<ProcessNodeImpl, CtnExperimental>> process_nodes;
+  std::vector<raw_ptr<ProcessNodeImpl>> process_nodes;
   process_nodes.reserve(10);  // Avoid resizing in most cases.
 
   VisitFrameTreePreOrder(page,
@@ -100,8 +99,7 @@ GraphImplOperations::GetAssociatedProcessNodes(const PageNodeImpl* page) {
                            return true;
                          });
 
-  return base::flat_set<raw_ptr<ProcessNodeImpl, CtnExperimental>>(
-      std::move(process_nodes));
+  return base::flat_set<raw_ptr<ProcessNodeImpl>>(std::move(process_nodes));
 }
 
 // static

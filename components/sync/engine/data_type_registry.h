@@ -27,10 +27,9 @@ class DataTypeWorker;
 class RequiredPassphraseVerifier;
 class UpdateHandler;
 
-using UpdateHandlerMap =
-    base::flat_map<DataType, raw_ptr<UpdateHandler, CtnExperimental>>;
+using UpdateHandlerMap = base::flat_map<DataType, raw_ptr<UpdateHandler>>;
 using CommitContributorMap =
-    base::flat_map<DataType, raw_ptr<CommitContributor, CtnExperimental>>;
+    base::flat_map<DataType, raw_ptr<CommitContributor>>;
 
 // Keeps track of the sets of active update handlers and commit contributors.
 // Lives on the sync sequence.

@@ -73,7 +73,7 @@ class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
 
   // Tracks speculative frames that are currently in-flight. Speculative frames
   // are inactive frames that have never been active.
-  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>> speculative_frames_;
+  base::flat_set<raw_ptr<const FrameNode>> speculative_frames_;
 };
 
 }  // namespace priority

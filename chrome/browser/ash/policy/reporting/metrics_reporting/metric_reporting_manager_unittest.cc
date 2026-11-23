@@ -1092,7 +1092,7 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
-  std::vector<raw_ptr<CollectorBase, VectorExperimental>> event_telemetry =
+  std::vector<raw_ptr<CollectorBase>> event_telemetry =
       metric_reporting_manager->GetTelemetryCollectors(test_case.event_type);
 
   ASSERT_TRUE(event_telemetry.empty());

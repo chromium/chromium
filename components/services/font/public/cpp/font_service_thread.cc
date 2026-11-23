@@ -421,7 +421,7 @@ void FontServiceThread::OnMatchFontWithFallbackComplete(
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 void FontServiceThread::OnFontServiceDisconnected() {
-  std::set<raw_ptr<base::WaitableEvent, SetExperimental>> events;
+  std::set<raw_ptr<base::WaitableEvent>> events;
   events.swap(pending_waitable_events_);
   for (base::WaitableEvent* event : events)
     event->Signal();

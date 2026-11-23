@@ -274,15 +274,14 @@ class SyncedBookmarkTracker {
   // pointers which get assigned when loading the bookmark model. This map is
   // first initialized in the constructor.
   absl::flat_hash_map<const bookmarks::BookmarkNode*,
-                      raw_ptr<SyncedBookmarkTrackerEntity, CtnExperimental>>
+                      raw_ptr<SyncedBookmarkTrackerEntity>>
       bookmark_node_to_entities_map_;
 
   // A list of pending local bookmark deletions. They should be sent to the
   // server in the same order as stored in the list. The same order should also
   // be maintained across browser restarts (i.e. across calls to the ctor() and
   // BuildBookmarkModelMetadata().
-  std::vector<raw_ptr<SyncedBookmarkTrackerEntity, VectorExperimental>>
-      ordered_local_tombstones_;
+  std::vector<raw_ptr<SyncedBookmarkTrackerEntity>> ordered_local_tombstones_;
 
   // The model metadata (progress marker, initial sync done, etc).
   sync_pb::DataTypeState data_type_state_;

@@ -26,7 +26,7 @@
 
 namespace performance_manager {
 
-using WorkerNodeSet = base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>;
+using WorkerNodeSet = base::flat_set<raw_ptr<WorkerNodeImpl>>;
 
 namespace {
 

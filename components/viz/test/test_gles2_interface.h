@@ -190,7 +190,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   unsigned next_framebuffer_id_ = 1;
   std::unordered_set<unsigned> framebuffer_set_;
   unsigned current_framebuffer_ = 0;
-  std::vector<raw_ptr<TestGLES2Interface, VectorExperimental>> shared_contexts_;
+  std::vector<raw_ptr<TestGLES2Interface>> shared_contexts_;
   raw_ptr<TestContextSupport> test_support_ = nullptr;
   const uint64_t test_command_buffer_id_ = 1u;
   gfx::Rect update_rect_;

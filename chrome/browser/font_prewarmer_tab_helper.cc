@@ -153,8 +153,7 @@ class FontPrewarmerCoordinator : public base::SupportsUserData::Data,
 
   raw_ptr<Profile> profile_;
   // Set of hosts that were requested to be prewarmed.
-  std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>
-      prewarmed_hosts_;
+  std::set<raw_ptr<content::RenderProcessHost>> prewarmed_hosts_;
   base::WeakPtrFactory<FontPrewarmerCoordinator> weak_factory_{this};
 };
 

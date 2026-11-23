@@ -96,9 +96,9 @@ class StorageServiceImpl : public mojom::StorageService {
   // The pointers in these maps are not owned by the map and must be removed
   // when removed from `local_storages_` or `session_storages_`. Only persistent
   // storages have entries in these maps.
-  std::map<base::FilePath, raw_ptr<LocalStorageImpl, CtnExperimental>>
+  std::map<base::FilePath, raw_ptr<LocalStorageImpl>>
       persistent_local_storage_map_;
-  std::map<base::FilePath, raw_ptr<SessionStorageImpl, CtnExperimental>>
+  std::map<base::FilePath, raw_ptr<SessionStorageImpl>>
       persistent_session_storage_map_;
 
   base::WeakPtrFactory<StorageServiceImpl> weak_ptr_factory_{this};

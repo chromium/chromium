@@ -442,8 +442,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // The video capture clients hooking into this instance to observe frame
   // begins and damage, and then make CopyOutputRequests on the appropriate
   // frames.
-  std::vector<raw_ptr<CapturableFrameSink::Client, VectorExperimental>>
-      capture_clients_;
+  std::vector<raw_ptr<CapturableFrameSink::Client>> capture_clients_;
 
   // These are the CopyOutputRequests made on the frame sink (as opposed to
   // being included as a part of a CompositorFrame). They stay here until a
@@ -542,7 +541,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   FrameSinkThrottler throttler_;
 
   // The set of surfaces owned by this frame sink that have pending frame.
-  base::flat_set<raw_ptr<Surface, CtnExperimental>> pending_surfaces_;
+  base::flat_set<raw_ptr<Surface>> pending_surfaces_;
 
   // This is the last known frame interval for this sink used to decide
   // when to throttle begin frames.

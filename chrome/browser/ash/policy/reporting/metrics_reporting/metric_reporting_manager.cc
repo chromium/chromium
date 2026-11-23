@@ -350,7 +350,7 @@ void MetricReportingManager::DeviceSettingsUpdated() {
   }
 }
 
-std::vector<raw_ptr<CollectorBase, VectorExperimental>>
+std::vector<raw_ptr<CollectorBase>>
 MetricReportingManager::GetTelemetryCollectors(MetricEventType event_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (event_type) {
@@ -973,7 +973,7 @@ void MetricReportingManager::InitKioskHeartbeatTelemetryCollector() {
   samplers_.push_back(std::move(heartbeat_sampler));
 }
 
-std::vector<raw_ptr<CollectorBase, VectorExperimental>>
+std::vector<raw_ptr<CollectorBase>>
 MetricReportingManager::GetTelemetryCollectorsFromSetting(
     std::string_view setting_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -985,7 +985,7 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
     return {};
   }
 
-  std::vector<raw_ptr<CollectorBase, VectorExperimental>> samplers;
+  std::vector<raw_ptr<CollectorBase>> samplers;
   for (const base::Value& telemetry : *telemetry_list) {
     if (samplers.size() == telemetry_collectors_.size()) {
       // All samplers are already used, remaining telemetry names would be

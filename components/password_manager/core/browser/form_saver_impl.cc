@@ -46,11 +46,10 @@ void SanitizeFormData(FormData* form) {
 }
 
 // Do the clean up of |matches| after |pending| was just pushed to the store.
-void PostProcessMatches(
-    const PasswordForm& pending,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
-    const std::u16string& old_password,
-    PasswordStoreInterface* store) {
+void PostProcessMatches(const PasswordForm& pending,
+                        const std::vector<raw_ptr<const PasswordForm>>& matches,
+                        const std::u16string& old_password,
+                        PasswordStoreInterface* store) {
   DCHECK(!pending.blocked_by_user);
 
   // Update existing matches in the password store.
@@ -121,7 +120,7 @@ void FormSaverImpl::Unblocklist(const PasswordFormDigest& digest) {
 
 void FormSaverImpl::Save(
     PasswordForm pending,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    const std::vector<raw_ptr<const PasswordForm>>& matches,
     const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
   pending.date_password_modified = base::Time::Now();
@@ -132,7 +131,7 @@ void FormSaverImpl::Save(
 
 void FormSaverImpl::Update(
     PasswordForm pending,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    const std::vector<raw_ptr<const PasswordForm>>& matches,
     const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
   if (old_password != pending.password_value) {
@@ -150,7 +149,7 @@ void FormSaverImpl::UpdateWithoutPostProcessing(PasswordForm pending) {
 
 void FormSaverImpl::UpdateReplace(
     PasswordForm pending,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    const std::vector<raw_ptr<const PasswordForm>>& matches,
     const std::u16string& old_password,
     const PasswordForm& old_unique_key) {
   SanitizeFormData(&pending.form_data);

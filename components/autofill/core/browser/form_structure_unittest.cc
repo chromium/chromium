@@ -2118,7 +2118,7 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
       .SetFieldTypes(
           {CREDIT_CARD_NAME_FULL, ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE});
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
+  std::vector<raw_ptr<FormStructure>> forms;
   forms.push_back(&form_structure);
 
   test_api(form_structure).AssignSections();

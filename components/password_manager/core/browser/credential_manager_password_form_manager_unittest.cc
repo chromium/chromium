@@ -40,18 +40,14 @@ class MockFormSaver : public StubFormSaver {
   ~MockFormSaver() override = default;
 
   // FormSaver:
-  MOCK_METHOD3(
-      Save,
-      void(PasswordForm pending,
-           const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-               matches,
-           const std::u16string& old_password));
-  MOCK_METHOD3(
-      Update,
-      void(PasswordForm pending,
-           const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-               matches,
-           const std::u16string& old_password));
+  MOCK_METHOD3(Save,
+               void(PasswordForm pending,
+                    const std::vector<raw_ptr<const PasswordForm>>& matches,
+                    const std::u16string& old_password));
+  MOCK_METHOD3(Update,
+               void(PasswordForm pending,
+                    const std::vector<raw_ptr<const PasswordForm>>& matches,
+                    const std::u16string& old_password));
   MOCK_METHOD1(UpdateWithoutPostProcessing, void(PasswordForm pending));
 
   // Convenience downcasting method.

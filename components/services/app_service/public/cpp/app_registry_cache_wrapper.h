@@ -53,8 +53,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCacheWrapper {
   void RemoveObserver(Observer* observer);
 
  private:
-  std::map<AccountId, raw_ptr<AppRegistryCache, CtnExperimental>>
-      app_registry_caches_;
+  std::map<AccountId, raw_ptr<AppRegistryCache>> app_registry_caches_;
 
   base::ObserverList<Observer> observers_;
 };

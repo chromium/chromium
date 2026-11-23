@@ -87,8 +87,7 @@ class SiteDataCacheFactory {
       data_cache_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A map that associates a BrowserContext's ID with a SiteDataCacheInspector.
-  base::flat_map<base::UnguessableToken,
-                 raw_ptr<SiteDataCacheInspector, CtnExperimental>>
+  base::flat_map<base::UnguessableToken, raw_ptr<SiteDataCacheInspector>>
       data_cache_inspector_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

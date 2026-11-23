@@ -34,9 +34,8 @@ class PresentationServiceDelegateObservers {
   virtual void RemoveObserver(int render_process_id, int render_frame_id);
 
  private:
-  std::map<
-      content::GlobalRenderFrameHostId,
-      raw_ptr<content::PresentationServiceDelegate::Observer, CtnExperimental>>
+  std::map<content::GlobalRenderFrameHostId,
+           raw_ptr<content::PresentationServiceDelegate::Observer>>
       observers_;
 };
 

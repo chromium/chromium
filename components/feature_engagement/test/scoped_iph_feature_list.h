@@ -88,7 +88,7 @@ class ScopedIphFeatureList {
 
   bool active_ = false;
   base::test::ScopedFeatureList feature_list_;
-  std::set<raw_ptr<const base::Feature, SetExperimental>> added_features_;
+  std::set<raw_ptr<const base::Feature>> added_features_;
 };
 
 }  // namespace feature_engagement::test

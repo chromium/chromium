@@ -102,7 +102,7 @@ class SimulatedCPUMeasurementDelegateFactory final
   // The delegates are owned by `pending_cpu_delegates_` when they're created,
   // then ownership is passed to the caller of TakeDelegate().
   std::map<const performance_manager::ProcessNode*,
-           raw_ptr<SimulatedCPUMeasurementDelegate, CtnExperimental>>
+           raw_ptr<SimulatedCPUMeasurementDelegate>>
       simulated_cpu_delegates_;
 
   // CPUMeasurementDelegates that have been created but not passed to the caller

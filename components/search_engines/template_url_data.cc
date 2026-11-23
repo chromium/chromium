@@ -136,11 +136,11 @@ TemplateURLData::TemplateURLData(
   }
   regulatory_extensions = base::MakeFlatMap<
       RegulatoryExtensionType,
-      raw_ptr<const TemplateURLData::RegulatoryExtension, CtnExperimental>>(
+      raw_ptr<const TemplateURLData::RegulatoryExtension>>(
       reg_extensions, {}, [](const TemplateURLData::RegulatoryExtension& a) {
         return std::pair<RegulatoryExtensionType,
-                         raw_ptr<const TemplateURLData::RegulatoryExtension,
-                                 CtnExperimental>>(a.variant, &a);
+                         raw_ptr<const TemplateURLData::RegulatoryExtension>>(
+            a.variant, &a);
       });
   DCHECK_EQ(regulatory_extensions.size(), reg_extensions.size());
 }

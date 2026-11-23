@@ -1627,8 +1627,7 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
   if (pending_surfaces_.empty()) {
     return;
   }
-  base::flat_set<raw_ptr<Surface, CtnExperimental>> pending_surfaces(
-      pending_surfaces_);
+  base::flat_set<raw_ptr<Surface>> pending_surfaces(pending_surfaces_);
   for (Surface* surface : pending_surfaces) {
     surface->ActivateIfDeadlinePassed();
   }

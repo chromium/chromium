@@ -344,7 +344,7 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
 
 // static
 std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
+    const std::vector<raw_ptr<FormStructure>>& forms) {
   std::vector<FieldGlobalId> fields_eligible_for_manual_filling;
   for (const FormStructure* form : forms) {
     for (const std::unique_ptr<AutofillField>& field : form->fields_) {

@@ -59,10 +59,8 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
   // complete or more frecent profile. Completeness here refers only to the
   // presence of the fields requested per the request_payer_* fields in
   // |options|.
-  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
-  FilterProfilesForContact(
-      const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
-          profiles) const;
+  std::vector<raw_ptr<autofill::AutofillProfile>> FilterProfilesForContact(
+      const std::vector<raw_ptr<autofill::AutofillProfile>>& profiles) const;
 
   // Returns true iff all of the contact info in |sub| also appears in |super|.
   // Only operates on fields requested in |options|.
@@ -81,10 +79,8 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
   // Returns profiles for shipping, ordered by completeness. |profiles| should
   // be passed in order of frecency, and this order will be preserved among
   // equally-complete profiles.
-  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
-  FilterProfilesForShipping(
-      const std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>&
-          profiles) const;
+  std::vector<raw_ptr<autofill::AutofillProfile>> FilterProfilesForShipping(
+      const std::vector<raw_ptr<autofill::AutofillProfile>>& profiles) const;
 
   int GetShippingCompletenessScore(
       const autofill::AutofillProfile* profile) const;

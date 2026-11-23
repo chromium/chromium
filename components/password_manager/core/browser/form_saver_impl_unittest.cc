@@ -104,16 +104,14 @@ class FormSaverImplSaveTest
       public ::testing::WithParamInterface<SaveOperation> {
  protected:
   // Either saves, updates or replaces |pending| according to the test param.
-  void SaveCredential(
-      PasswordForm pending,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches,
-      const std::u16string& old_password);
+  void SaveCredential(PasswordForm pending,
+                      const std::vector<raw_ptr<const PasswordForm>>& matches,
+                      const std::u16string& old_password);
 };
 
 void FormSaverImplSaveTest::SaveCredential(
     PasswordForm pending,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    const std::vector<raw_ptr<const PasswordForm>>& matches,
     const std::u16string& old_password) {
   PasswordForm expected = pending;
   switch (GetParam()) {
@@ -175,8 +173,8 @@ TEST_P(FormSaverImplSaveTest, Write_AndDeleteEmptyUsernameCredentials) {
 
   PasswordForm no_username = pending;
   no_username.username_value.clear();
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
-      &non_empty_username, &no_username};
+  const std::vector<raw_ptr<const PasswordForm>> matches = {&non_empty_username,
+                                                            &no_username};
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_, EqStoredCredential(no_username)));
   SaveCredential(pending, matches, std::u16string());
@@ -220,8 +218,8 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteEmptyUsernamePSLCredentials) {
   PasswordForm no_username_psl = pending;
   no_username_psl.username_value.clear();
   no_username_psl.match_type = affiliations::MatchType::kPSL;
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
-      &stored, &no_username_psl};
+  const std::vector<raw_ptr<const PasswordForm>> matches = {&stored,
+                                                            &no_username_psl};
 
   EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, matches, std::u16string());
@@ -392,7 +390,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValues_IgnoreNonMatches) {
 
   PasswordForm empty_username = pending;
   empty_username.username_value.clear();
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
+  const std::vector<raw_ptr<const PasswordForm>> matches = {
       &different_username, &different_password, &empty_username};
 
   pending.password_value = PasswordString(kNewPassword);

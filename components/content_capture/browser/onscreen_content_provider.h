@@ -99,8 +99,8 @@ class OnscreenContentProvider
     return ContentCaptureReceiverForFrame(render_frame_host);
   }
 
-  const std::vector<raw_ptr<ContentCaptureConsumer, VectorExperimental>>&
-  GetConsumersForTesting() const {
+  const std::vector<raw_ptr<ContentCaptureConsumer>>& GetConsumersForTesting()
+      const {
     return consumers_;
   }
 #endif
@@ -142,7 +142,7 @@ class OnscreenContentProvider
            std::unique_ptr<ContentCaptureReceiver>>
       frame_map_;
 
-  std::vector<raw_ptr<ContentCaptureConsumer, VectorExperimental>> consumers_;
+  std::vector<raw_ptr<ContentCaptureConsumer>> consumers_;
 
   base::WeakPtrFactory<OnscreenContentProvider> weak_ptr_factory_{this};
 };

@@ -120,10 +120,10 @@ class PerformanceManagerRegistryImpl
 
   // Tracks WebContents and RenderProcessHost for which we have created user
   // data. Used to destroy all user data when the registry is destroyed.
-  base::flat_set<raw_ptr<content::WebContents, CtnExperimental>> web_contents_
+  base::flat_set<raw_ptr<content::WebContents>> web_contents_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::flat_set<raw_ptr<content::RenderProcessHost, CtnExperimental>>
-      render_process_hosts_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_set<raw_ptr<content::RenderProcessHost>> render_process_hosts_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Maps each browser context to its ServiceWorkerContextAdapterImpl.
   base::flat_map<content::BrowserContext*,

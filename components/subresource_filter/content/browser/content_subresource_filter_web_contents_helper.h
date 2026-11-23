@@ -133,8 +133,7 @@ class ContentSubresourceFilterWebContentsHelper
   // Keep track of all active throttle managers. Unowned as a throttle manager
   // will notify this class when it's destroyed so we can remove it from this
   // set.
-  base::flat_set<
-      raw_ptr<ContentSubresourceFilterThrottleManager, CtnExperimental>>
+  base::flat_set<raw_ptr<ContentSubresourceFilterThrottleManager>>
       throttle_managers_;
 };
 

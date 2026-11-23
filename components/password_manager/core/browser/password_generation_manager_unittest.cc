@@ -471,7 +471,7 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenUpdate) {
   unrelated_psl_password.match_type = affiliations::MatchType::kPSL;
 
   EXPECT_CALL(store(), AddLogin);
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
+  const std::vector<raw_ptr<const PasswordForm>> matches = {
       &related_password, &related_psl_password, &unrelated_password,
       &unrelated_psl_password};
   manager().PresaveGeneratedPassword(generated, matches, &form_saver());

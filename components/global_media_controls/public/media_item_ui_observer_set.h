@@ -38,8 +38,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIObserverSet
 
  private:
   const raw_ptr<MediaItemUIObserver> owner_;
-  std::map<std::string, raw_ptr<MediaItemUI, CtnExperimental>>
-      observed_item_uis_;
+  std::map<std::string, raw_ptr<MediaItemUI>> observed_item_uis_;
 };
 
 }  // namespace global_media_controls

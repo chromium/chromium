@@ -180,8 +180,7 @@ class FileTypePolicies {
 
   // This references entries in config_.
   // Protected by lock_.
-  std::map<std::string, raw_ptr<const DownloadFileType, CtnExperimental>>
-      file_type_by_ext_;
+  std::map<std::string, raw_ptr<const DownloadFileType>> file_type_by_ext_;
 
   // Type used if we can't load from disk.
   // Written only in the constructor.

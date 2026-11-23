@@ -135,7 +135,7 @@ class MaxVoteAggregator : public VoteObserver {
 
     // Maps each voting channel to the HeapHandle to their associated vote in
     // |votes_|.
-    std::map<VoterId, raw_ptr<base::HeapHandle, CtnExperimental>> heap_handles_;
+    std::map<VoterId, raw_ptr<base::HeapHandle>> heap_handles_;
   };
 
   using VoteDataMap = std::map<VoteContext, VoteData>;

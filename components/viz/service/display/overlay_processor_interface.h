@@ -60,8 +60,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   using PlatformOverlayCandidate = OverlayCandidate;
   using CandidateList = OverlayCandidateList;
   using FilterOperationsMap =
-      base::flat_map<AggregatedRenderPassId,
-                     raw_ptr<cc::FilterOperations, CtnExperimental>>;
+      base::flat_map<AggregatedRenderPassId, raw_ptr<cc::FilterOperations>>;
 
   virtual bool DisableSplittingQuads() const;
 

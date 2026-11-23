@@ -26,14 +26,14 @@ struct GraphImplOperations {
   // Returns the collection of page nodes that are associated with the given
   // |process|. A page is associated with a process if the page's frame tree
   // contains 1 or more frames hosted in the given |process|.
-  static base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>
-  GetAssociatedPageNodes(const ProcessNodeImpl* process);
+  static base::flat_set<raw_ptr<PageNodeImpl>> GetAssociatedPageNodes(
+      const ProcessNodeImpl* process);
 
   // Returns the collection of process nodes associated with the given |page|.
   // A |process| is associated with a page if the page's frame tree contains 1
   // or more frames hosted in that |process|.
-  static base::flat_set<raw_ptr<ProcessNodeImpl, CtnExperimental>>
-  GetAssociatedProcessNodes(const PageNodeImpl* page);
+  static base::flat_set<raw_ptr<ProcessNodeImpl>> GetAssociatedProcessNodes(
+      const PageNodeImpl* page);
 
   // Returns the collection of frame nodes associated with a page. This is
   // returned in level order, with main frames first (level 0), main frame

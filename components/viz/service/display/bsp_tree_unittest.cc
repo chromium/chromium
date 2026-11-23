@@ -41,7 +41,7 @@ class BspTreeTest {
       const std::vector<int>& compare_list) {
     BspTree bsp_tree(test_polygons);
 
-    std::vector<raw_ptr<DrawPolygon, VectorExperimental>> sorted_list;
+    std::vector<raw_ptr<DrawPolygon>> sorted_list;
     BspWalkActionToVector action_handler(&sorted_list);
     bsp_tree.TraverseWithActionHandler(&action_handler);
 

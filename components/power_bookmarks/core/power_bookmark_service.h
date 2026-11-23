@@ -53,8 +53,7 @@ class PowerBookmarkService : public KeyedService,
 
  private:
   raw_ptr<bookmarks::BookmarkModel> model_;
-  std::vector<raw_ptr<PowerBookmarkDataProvider, VectorExperimental>>
-      data_providers_;
+  std::vector<raw_ptr<PowerBookmarkDataProvider>> data_providers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::ScopedObservation<bookmarks::BookmarkModel,

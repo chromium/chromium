@@ -90,9 +90,8 @@ void MetricEventObserverManager::OnEventObserved(MetricData metric_data) {
   metric_report_queue_->Enqueue(std::move(metric_data));
 
   if (collector_pool_) {
-    std::vector<raw_ptr<CollectorBase, VectorExperimental>>
-        telemetry_collectors =
-            collector_pool_->GetTelemetryCollectors(event_type);
+    std::vector<raw_ptr<CollectorBase>> telemetry_collectors =
+        collector_pool_->GetTelemetryCollectors(event_type);
     for (CollectorBase* telemetry_collector : telemetry_collectors) {
       telemetry_collector->Collect(/*is_event_driven=*/true);
     }

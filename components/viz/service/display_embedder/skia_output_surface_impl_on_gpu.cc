@@ -207,7 +207,7 @@ SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::
 }
 
 void SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::BeginAccess(
-    std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
+    std::vector<raw_ptr<ImageContextImpl>> image_contexts,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
   // Only Vulkan needs semaphores.
@@ -466,7 +466,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     sk_sp<GrDeferredDisplayList> ddl,
     sk_sp<GrDeferredDisplayList> overdraw_ddl,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
-    std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
+    std::vector<raw_ptr<ImageContextImpl>> image_contexts,
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
@@ -619,7 +619,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     sk_sp<GrDeferredDisplayList> ddl,
     sk_sp<GrDeferredDisplayList> overdraw_ddl,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
-    std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
+    std::vector<raw_ptr<ImageContextImpl>> image_contexts,
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
     const gfx::Rect& update_rect,
@@ -1826,8 +1826,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
 DBG_FLAG_FBOOL("skia_gpu.buffer_capture.enable", buffer_capture)
 
 void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
-    const std::vector<raw_ptr<ImageContextImpl, VectorExperimental>>&
-        image_contexts,
+    const std::vector<raw_ptr<ImageContextImpl>>& image_contexts,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::BeginAccessImages");
@@ -1868,8 +1867,7 @@ void SkiaOutputSurfaceImplOnGpu::ResetStateOfImages() {
 }
 
 void SkiaOutputSurfaceImplOnGpu::EndAccessImages(
-    const base::flat_set<raw_ptr<ImageContextImpl, CtnExperimental>>&
-        image_contexts) {
+    const base::flat_set<raw_ptr<ImageContextImpl>>& image_contexts) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::EndAccessImages");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(image_contexts_to_apply_end_state_.empty());

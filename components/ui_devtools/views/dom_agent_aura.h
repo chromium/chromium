@@ -46,7 +46,7 @@ class DOMAgentAura : public DOMAgentViews,
  private:
   static DOMAgentAura* dom_agent_aura_;
 
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> roots_;
+  std::vector<raw_ptr<aura::Window>> roots_;
 };
 }  // namespace ui_devtools
 

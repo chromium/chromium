@@ -134,8 +134,7 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer {
   void OnClose(int connection_id);
 
   using ClientsList = std::vector<std::unique_ptr<UiDevToolsClient>>;
-  using ConnectionsMap =
-      std::map<uint32_t, raw_ptr<UiDevToolsClient, CtnExperimental>>;
+  using ConnectionsMap = std::map<uint32_t, raw_ptr<UiDevToolsClient>>;
   ClientsList clients_ GUARDED_BY_CONTEXT(main_sequence_);
   ConnectionsMap connections_ GUARDED_BY_CONTEXT(main_sequence_);
 

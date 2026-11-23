@@ -37,7 +37,7 @@ static const uint64_t BIT_FILTER_LAST32 = 0xffffffffULL;
 
 struct SourceData {
   raw_ptr<UkmSource> source;
-  std::vector<raw_ptr<mojom::UkmEntry, VectorExperimental>> entries;
+  std::vector<raw_ptr<mojom::UkmEntry>> entries;
 #if BUILDFLAG(USE_BLINK)
   raw_ptr<const BitSet> webdx_features;
 #endif

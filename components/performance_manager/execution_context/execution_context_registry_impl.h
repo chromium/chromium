@@ -92,7 +92,7 @@ class ExecutionContextRegistryImpl
     bool operator()(const blink::ExecutionContextToken& token,
                     const ExecutionContext* ec) const;
   };
-  std::unordered_set<raw_ptr<const ExecutionContext, CtnExperimental>,
+  std::unordered_set<raw_ptr<const ExecutionContext>,
                      ExecutionContextHash,
                      ExecutionContextKeyEqual>
       execution_contexts_ GUARDED_BY_CONTEXT(sequence_checker_);

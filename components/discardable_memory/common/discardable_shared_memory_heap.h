@@ -189,7 +189,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
   // Span instance.
   using SpanMap =
       std::map<std::pair<const base::DiscardableSharedMemory*, size_t>,
-               raw_ptr<Span, CtnExperimental>>;
+               raw_ptr<Span>>;
   SpanMap spans_;
 
   // Array of linked-lists with free discardable memory regions. For i < 256,
