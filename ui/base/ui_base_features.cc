@@ -550,6 +550,15 @@ BASE_FEATURE(kColorIdCssStyleSheetCache, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmitNativeFrameOnShadowlessMenus,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, DesktopNativeWidgetTopLevelHandler observes the hosting
+// top-level Widget via WidgetObserver (realigning the owned child window to
+// (0, 0) on both moves and resizes, and clearing its Widget pointer in
+// OnWidgetDestroying) instead of observing the Widget's aura::Window via
+// WindowObserver (which only fires on resizes and clears the Widget pointer in
+// OnWindowDestroying).
+BASE_FEATURE(kChildWindowRealignedOnWidgetMove,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGlassFrameEnabled() {
 #if BUILDFLAG(IS_MAC)
   return base::mac::MacOSMajorVersion() >= 26 &&

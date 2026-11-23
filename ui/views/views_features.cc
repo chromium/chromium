@@ -25,15 +25,6 @@ BASE_FEATURE(kAllowWindowCaptureExclusionInRemoteSessions,
 // stable.
 BASE_FEATURE(kApplyInitialUrlToWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, DesktopNativeWidgetTopLevelHandler observes the hosting
-// top-level Widget via WidgetObserver (realigning the owned child window to
-// (0, 0) on both moves and resizes, and clearing its Widget pointer in
-// OnWidgetDestroying) instead of observing the Widget's aura::Window via
-// WindowObserver (which only fires on resizes and clears the Widget pointer in
-// OnWindowDestroying).
-BASE_FEATURE(kChildWindowRealignedOnWidgetMove,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, drag and drop is only enabled for widgets that accept drag and
 // drop and require drag and drop support (e.g. not tooltips, popups, or
 // widgets where accept_events is false).

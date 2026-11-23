@@ -61,6 +61,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -82,7 +83,16 @@ namespace content {
 
 class UnboundedElementBrowserTestBase : public ContentBrowserTest {
  public:
-  UnboundedElementBrowserTestBase() = default;
+  UnboundedElementBrowserTestBase() {
+#if defined(USE_AURA)
+    // Top-level owned Aura popup realignment on pure moves is gated behind
+    // `features::kChildWindowRealignedOnWidgetMove`, which is off by default
+    // and only enabled via `fieldtrial_testing_config.json` in unbranded
+    // builds.
+    aura_feature_list_.InitAndEnableFeature(
+        features::kChildWindowRealignedOnWidgetMove);
+#endif
+  }
   ~UnboundedElementBrowserTestBase() override = default;
 
  protected:
@@ -222,6 +232,11 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
         primary_main_frame_host()->GetRenderWidgetHost());
     frame_observer.Wait();
   }
+
+#if defined(USE_AURA)
+ private:
+  base::test::ScopedFeatureList aura_feature_list_;
+#endif
 };
 
 class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase,

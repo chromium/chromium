@@ -14,7 +14,6 @@ namespace views::features {
 // Please keep alphabetized.
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kAllowWindowCaptureExclusionInRemoteSessions);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kApplyInitialUrlToWebContents);
-VIEWS_EXPORT BASE_DECLARE_FEATURE(kChildWindowRealignedOnWidgetMove);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kDisableDragDropForUnneededWidgets);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableInputProtection);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableTouchDragCursorSync);

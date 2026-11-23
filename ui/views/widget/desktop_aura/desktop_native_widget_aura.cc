@@ -190,7 +190,7 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver,
     // realign `child_window_` back to (0, 0). Otherwise preserve the legacy
     // `native_window` `WindowObserver` path.
     if (base::FeatureList::IsEnabled(
-            views::features::kChildWindowRealignedOnWidgetMove)) {
+            ::features::kChildWindowRealignedOnWidgetMove)) {
       top_level_handler->top_level_widget_observation_.Observe(
           top_level_handler->top_level_widget_);
     } else {

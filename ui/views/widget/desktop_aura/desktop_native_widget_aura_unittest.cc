@@ -1054,8 +1054,7 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupKeepsSizeOnHostResize) {
     SCOPED_TRACE(realign_on_widget_move);
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatureState(
-        views::features::kChildWindowRealignedOnWidgetMove,
-        realign_on_widget_move);
+        ::features::kChildWindowRealignedOnWidgetMove, realign_on_widget_move);
 
     DesktopAuraTopLevelWindowTest popup_window;
 
@@ -1083,7 +1082,7 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupKeepsSizeOnHostResize) {
 // window back to (0, 0) inside the hosting widget instead of leaving it offset.
 TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRealignedOnPureMove) {
   base::test::ScopedFeatureList feature_list(
-      views::features::kChildWindowRealignedOnWidgetMove);
+      ::features::kChildWindowRealignedOnWidgetMove);
   DesktopAuraTopLevelWindowTest popup_window;
 
   popup_window.set_use_async_mode(false);
