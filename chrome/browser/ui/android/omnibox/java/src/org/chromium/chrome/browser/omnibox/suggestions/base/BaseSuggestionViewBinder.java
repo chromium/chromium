@@ -96,6 +96,8 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         } else if (SuggestionCommonProperties.DEVICE_FORM_FACTOR == propertyKey) {
             view.setActionChipsHorizontalFadingEdgeEnabled(
                     model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR) == FormFactor.TABLET);
+        } else if (BaseSuggestionViewProperties.END_ICON == propertyKey) {
+            bindEndIcon(model, view);
         } else if (SuggestionCommonProperties.FUSEBOX_LAYOUT_MODE == propertyKey
                 || SuggestionCommonProperties.GROUP_SEPARATOR_TYPE == propertyKey
                 || SuggestionCommonProperties.HEADER_TITLE == propertyKey
@@ -262,6 +264,18 @@ public abstract class BaseSuggestionViewBinder<T extends View>
             actionView.enableShowOnlyOnFocus(action.showOnlyOnFocus);
             updateIcon(actionView, action.icon, primaryIconTint);
         }
+    }
+
+    /** Binds the non-interactive icon at the end of the suggestion. */
+    private static <T extends View> void bindEndIcon(
+            PropertyModel model, BaseSuggestionView<T> view) {
+        OmniboxDrawableState icon = model.get(BaseSuggestionViewProperties.END_ICON);
+        // Nothing to hide if the icon was never created for this view.
+        if (icon == null && view.endIcon == null) return;
+
+        ImageView endIcon = view.ensureEndIcon();
+        endIcon.setVisibility(icon == null ? View.GONE : View.VISIBLE);
+        updateIcon(endIcon, icon, getResourceProvider(model).getPrimaryIconTintList());
     }
 
     private void updateColorScheme(PropertyModel model, BaseSuggestionView<T> view) {

@@ -148,6 +148,44 @@ public class BaseSuggestionViewBinderUnitTest {
     }
 
     @Test
+    public void endIcon_showAndHideIcon() {
+        assertNull(mBaseView.endIcon);
+        OmniboxDrawableState state = OmniboxDrawableState.forColor(0);
+        mModel.set(BaseSuggestionViewProperties.END_ICON, state);
+
+        ImageView endIcon = mBaseView.endIcon;
+        assertNotNull(endIcon);
+        assertEquals(mBaseView, endIcon.getParent());
+        assertEquals(View.VISIBLE, endIcon.getVisibility());
+        assertEquals(state.drawable, endIcon.getDrawable());
+        // Taps on the icon go to the suggestion.
+        assertFalse(endIcon.isClickable());
+        assertFalse(endIcon.isFocusable());
+
+        mModel.set(BaseSuggestionViewProperties.END_ICON, null);
+        assertEquals(View.GONE, endIcon.getVisibility());
+        assertNull(endIcon.getDrawable());
+    }
+
+    @Test
+    public void endIcon_staysAfterActionButtons() {
+        // The end icon is created before the action button here.
+        mModel.set(BaseSuggestionViewProperties.END_ICON, OmniboxDrawableState.forColor(0));
+        mModel.set(
+                BaseSuggestionViewProperties.ACTION_BUTTONS,
+                Arrays.asList(
+                        new Action(
+                                OmniboxDrawableState.forColor(0),
+                                mContext.getString(R.string.accessibility_omnibox_btn_refine),
+                                mRunnable)));
+
+        // The dot still ends up at the end of the suggestion.
+        View actionButton = mBaseView.getActionButtons().get(0);
+        assertTrue(
+                mBaseView.indexOfChild(actionButton) < mBaseView.indexOfChild(mBaseView.endIcon));
+    }
+
+    @Test
     public void actionIcon_showIcon() {
         List<Action> list =
                 Arrays.asList(

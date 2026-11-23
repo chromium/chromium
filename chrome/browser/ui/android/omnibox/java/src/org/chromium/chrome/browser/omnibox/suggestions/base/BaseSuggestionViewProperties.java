@@ -97,6 +97,12 @@ public @interface BaseSuggestionViewProperties {
     /** {@link BaseSuggestionView#setActionChipLeadInSpacing(int)} */
     WritableIntPropertyKey ACTION_CHIP_LEAD_IN_SPACING = new WritableIntPropertyKey();
 
+    /**
+     * Icon to show at the end of the suggestion, in the action button area. Unlike an action
+     * button, it can't be clicked or focused, so taps on it activate the suggestion.
+     */
+    WritableObjectPropertyKey<OmniboxDrawableState> END_ICON = new WritableObjectPropertyKey<>();
+
     /** OmniboxDrawableState to show as a suggestion icon. */
     @VisibleForTesting
     WritableObjectPropertyKey<OmniboxDrawableState> ICON = new WritableObjectPropertyKey<>();
@@ -138,6 +144,7 @@ public @interface BaseSuggestionViewProperties {
                 ACTION_BUTTONS,
                 ACTION_CHIPS,
                 ACTION_CHIP_LEAD_IN_SPACING,
+                END_ICON,
                 ICON,
                 ON_ACTIVATE,
                 ON_FOCUS_VIA_SELECTION,
