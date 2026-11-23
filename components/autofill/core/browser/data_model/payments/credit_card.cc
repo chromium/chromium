@@ -914,9 +914,9 @@ bool CreditCard::operator==(const CreditCard& credit_card) const {
          Compare(credit_card) == 0;
 }
 
-bool CreditCard::IsEmpty(const std::string& app_locale) const {
+bool CreditCard::IsEmpty(const base::i18n::LanguageTag& app_locale) const {
   FieldTypeSet types;
-  GetNonEmptyTypes(app_locale, &types);
+  GetNonEmptyTypes(app_locale.tag_string(), &types);
   return types.empty();
 }
 

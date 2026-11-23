@@ -1494,7 +1494,7 @@ void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
     return;
   }
 
-  if (credit_card.IsEmpty(std::string(app_locale_.tag_string()))) {
+  if (credit_card.IsEmpty(app_locale_)) {
     return;
   }
 
@@ -1559,7 +1559,7 @@ void PaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
     return;
   }
 
-  if (credit_card.IsEmpty(std::string(app_locale_.tag_string()))) {
+  if (credit_card.IsEmpty(app_locale_)) {
     RemoveByGUID(credit_card.guid());
     return;
   }

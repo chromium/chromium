@@ -15,8 +15,7 @@ void PaymentsDataManagerTestApi::AddServerCreditCard(
     const CreditCard& credit_card) {
   CHECK_EQ(CreditCard::RecordType::kMaskedServerCard,
            credit_card.record_type());
-  CHECK(!credit_card.IsEmpty(
-      std::string(payments_data_manager_->app_locale_.tag_string())));
+  CHECK(!credit_card.IsEmpty(payments_data_manager_->app_locale_));
   CHECK(!credit_card.server_id().empty());
   CHECK(payments_data_manager_->GetServerDatabase())
       << "Adding server card without server storage.";

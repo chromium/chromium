@@ -288,7 +288,7 @@ class CreditCard : public FormGroup {
   void set_record_type(RecordType rt) { record_type_ = rt; }
 
   // Returns true if there are no values (field types) set.
-  bool IsEmpty(const std::string& app_locale) const;
+  bool IsEmpty(const base::i18n::LanguageTag& app_locale) const;
 
   // Returns true if the card is enrolled in card info retrieval.
   bool IsEnrolledInCardInfoRetrieval() const;

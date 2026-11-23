@@ -178,9 +178,6 @@ class Iban {
   PaymentsMetadata GetMetadata() const;
   bool SetMetadata(const PaymentsMetadata& metadata);
 
-  // Returns true if there are no values (field types) set.
-  bool IsEmpty(const std::string& app_locale) const;
-
   // Returns 0 if `iban` is the same as this, or < 0, or > 0 if it is different.
   // It compares `identifier_`, `value_`, `prefix_`, `suffix_`, `nickname_`,
   // `length_` and `record_type_`. The implied ordering can be used for culling
