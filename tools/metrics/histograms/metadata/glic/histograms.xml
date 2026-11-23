@@ -2016,7 +2016,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Api.GetImageBytesFromTab.Error"
-    enum="GlicGetContextFromTabError" expires_after="2026-11-29">
+    enum="GlicGetContextFromTabError" expires_after="2027-05-17">
   <owner>linnan@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
