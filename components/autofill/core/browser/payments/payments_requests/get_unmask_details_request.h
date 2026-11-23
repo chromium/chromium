@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
@@ -23,7 +24,7 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
   GetUnmaskDetailsRequest(
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               UnmaskDetails&)> callback,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       const bool full_sync_enabled);
   GetUnmaskDetailsRequest(const GetUnmaskDetailsRequest&) = delete;
   GetUnmaskDetailsRequest& operator=(const GetUnmaskDetailsRequest&) = delete;
@@ -42,7 +43,7 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
   base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           UnmaskDetails&)>
       callback_;
-  std::string app_locale_;
+  base::i18n::LanguageTag app_locale_;
   const bool full_sync_enabled_;
 
   // Suggested authentication method and other information to facilitate card

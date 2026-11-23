@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,7 +59,7 @@ std::unique_ptr<GetCardUploadDetailsRequest> CreateGetCardUploadDetailsRequest(
   return std::make_unique<GetCardUploadDetailsRequest>(
       BuildTestProfiles(), kAllDetectableValues,
       get_card_upload_details_options.client_behavior_signals,
-      /*full_sync_enabled=*/true, "language-LOCALE",
+      /*full_sync_enabled=*/true, base::i18n::GetKnownLanguageTag("en-US"),
       /*callback=*/base::DoNothing(),
       /*billable_service_number=*/12345,
       get_card_upload_details_options.billing_customer_number,

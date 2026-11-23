@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -23,7 +24,7 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
  public:
   GetIbanUploadDetailsRequest(
       const bool full_sync_enabled,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       int64_t billing_customer_number,
       const std::string& country_code,
@@ -56,7 +57,7 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
 
  private:
   const bool full_sync_enabled_;
-  std::string app_locale_;
+  base::i18n::LanguageTag app_locale_;
   const std::vector<ClientBehaviorConstants> client_behavior_signals_;
   std::u16string context_token_;
   std::u16string validation_regex_;

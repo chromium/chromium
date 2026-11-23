@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -28,7 +29,7 @@ const char kGetIbanUploadDetailsRequestPath[] =
 
 GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(
     const bool full_sync_enabled,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     int64_t billing_customer_number,
     const std::string& country_code,
@@ -56,7 +57,7 @@ std::string GetIbanUploadDetailsRequest::GetRequestContentType() {
 std::string GetIbanUploadDetailsRequest::GetRequestContent() {
   base::DictValue request_dict;
   base::DictValue context;
-  context.Set("language_code", app_locale_);
+  context.Set("language_code", app_locale_.tag_string());
   context.Set("billable_service", kUploadPaymentMethodBillableServiceNumber);
   if (billing_customer_number_ != 0) {
     context.Set("customer_context",

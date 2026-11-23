@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -29,7 +30,7 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       const bool full_sync_enabled,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string&,
                               std::unique_ptr<base::DictValue>,
@@ -56,7 +57,7 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
   const int detected_values_;
   const std::vector<ClientBehaviorConstants> client_behavior_signals_;
   const bool full_sync_enabled_;
-  std::string app_locale_;
+  base::i18n::LanguageTag app_locale_;
   base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           const std::u16string&,
                           std::unique_ptr<base::DictValue>,

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/get_iban_upload_details_request.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -13,7 +14,8 @@
 namespace autofill::payments {
 namespace {
 
-constexpr char kAppLocale[] = "dummy_locale";
+constexpr base::i18n::LanguageTag kAppLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 constexpr char kCountryCode[] = "FR";
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr char16_t kCapitalizedIbanRegex[] =
@@ -63,7 +65,7 @@ TEST_F(GetIbanUploadDetailsRequestTest,
   EXPECT_FALSE(GetRequest()->GetRequestContent().empty());
   EXPECT_NE(GetRequest()->GetRequestContent().find("language_code"),
             std::string::npos);
-  EXPECT_NE(GetRequest()->GetRequestContent().find(kAppLocale),
+  EXPECT_NE(GetRequest()->GetRequestContent().find(kAppLocale.tag_string()),
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("billable_service"),
             std::string::npos);

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,7 +30,7 @@ const char kGetUnmaskDetailsRequestPath[] =
 GetUnmaskDetailsRequest::GetUnmaskDetailsRequest(
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             UnmaskDetails&)> callback,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const bool full_sync_enabled)
     : callback_(std::move(callback)),
       app_locale_(app_locale),
@@ -48,7 +49,7 @@ std::string GetUnmaskDetailsRequest::GetRequestContentType() {
 std::string GetUnmaskDetailsRequest::GetRequestContent() {
   base::DictValue request_dict;
   base::DictValue context;
-  context.Set("language_code", app_locale_);
+  context.Set("language_code", app_locale_.tag_string());
   context.Set("billable_service", kUnmaskPaymentMethodBillableServiceNumber);
   request_dict.Set("context", std::move(context));
 
