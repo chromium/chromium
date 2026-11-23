@@ -354,6 +354,24 @@ message ContentAnalysisResponse {
       }
 
       optional ForceSaveToCloudDestination force_save_to_cloud_destination = 7;
+
+      // The customer's logo, uploaded by admins in the Deep scanning protection
+      // settings.
+      message Logo {
+        // Public URL of the stored logo (PNG or JPEG, at most 256 x 256 px).
+        optional string url = 1;
+
+        // SHA-256 of the image bytes. Chrome checks it before decoding and
+        // uses it as the cache key.
+        optional bytes sha256 = 2;
+
+        // Alt text for screen readers.
+        optional string alt_text = 3;
+      }
+
+      // Set only if the rule's action has show_logo and the customer uploaded
+      // a logo.
+      optional Logo logo = 9;
     }
 
     repeated TriggeredRule triggered_rules = 3;
