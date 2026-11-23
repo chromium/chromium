@@ -1,5 +1,6 @@
 file://chrome/browser/resources/settings/OWNERS
 file://ui/webui/PLATFORM_OWNERS
 
-rainhard@chromium.org
+fsenra@google.com
 sideyilmaz@chromium.org
+tommasin@chromium.org
