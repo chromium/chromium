@@ -12,10 +12,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/pdf/common/pdf_accessibility.mojom.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -141,6 +143,14 @@ class PDFDocumentHelper
   void GetPageText(int32_t page_index,
                    pdf::mojom::PdfListener::GetPageTextCallback callback);
 
+  // Requests the decoded bitmap for an accessibility image node. Runs
+  // `callback` with an empty bitmap if the document isn't loaded yet, the
+  // image can't be found, or the renderer goes away.
+  void GetImageForNode(
+      int32_t ax_node_id,
+      pdf::mojom::PdfAccessibilityImageProvider::GetImageForNodeCallback
+          callback);
+
   void GetMostVisiblePageIndex(
       pdf::mojom::PdfListener::GetMostVisiblePageIndexCallback callback);
 
@@ -214,6 +224,8 @@ class PDFDocumentHelper
 #endif
 
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
+  mojo::AssociatedRemote<mojom::PdfAccessibilityImageProvider>
+      remote_pdf_accessibility_image_provider_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 };

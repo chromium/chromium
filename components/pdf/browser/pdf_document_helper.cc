@@ -13,15 +13,19 @@
 #include "components/pdf/browser/pdf_first_content_paint_registry.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/constants.h"
+#include "components/pdf/common/pdf_accessibility.mojom.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/referrer_type_converters.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -333,6 +337,23 @@ void PDFDocumentHelper::GetPageText(
     return;
   }
   remote_pdf_client_->GetPageText(page_index, std::move(callback));
+}
+
+void PDFDocumentHelper::GetImageForNode(
+    int32_t ax_node_id,
+    pdf::mojom::PdfAccessibilityImageProvider::GetImageForNodeCallback
+        callback) {
+  if (!is_document_load_complete_) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+  if (!remote_pdf_accessibility_image_provider_) {
+    render_frame_host().GetRemoteAssociatedInterfaces()->GetInterface(
+        &remote_pdf_accessibility_image_provider_);
+  }
+  remote_pdf_accessibility_image_provider_->GetImageForNode(
+      ax_node_id, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                      std::move(callback), SkBitmap()));
 }
 
 void PDFDocumentHelper::GetMostVisiblePageIndex(

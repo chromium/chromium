@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 
 # enable_pdf is not required. Some platforms may not have PDF enabled, but some
@@ -46,4 +47,12 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+if (enable_pdf) {
+  mojom("mojom") {
+    sources = [ "pdf_accessibility.mojom" ]
+
+    public_deps = [ "//skia/public/mojom" ]
+  }
 }

@@ -12,8 +12,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/pdf/common/pdf_accessibility.mojom.h"
 #include "content/public/renderer/plugin_ax_tree_action_target_adapter.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
 #include "pdf/pdf_accessibility_data_handler.h"
@@ -54,7 +57,8 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
                              public content::PluginAXTreeActionTargetAdapter,
                              public content::RenderFrameObserver,
                              public blink::WebLocalFrameObserver,
-                             public chrome_pdf::PdfAccessibilityDataHandler {
+                             public chrome_pdf::PdfAccessibilityDataHandler,
+                             public mojom::PdfAccessibilityImageProvider {
  public:
   PdfAccessibilityTree(
       content::RenderFrame* render_frame,
@@ -100,6 +104,10 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnHasSearchifyText() override;
 #endif
+
+  // mojom::PdfAccessibilityImageProvider:
+  void GetImageForNode(int32_t ax_node_id,
+                       GetImageForNodeCallback callback) override;
 
   void HandleAction(const chrome_pdf::AccessibilityActionData& action_data);
   std::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
@@ -239,6 +247,10 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // Returns true on successful update.
   bool UpdateDependentObjects(bool set_this);
 
+  void BindAccessibilityImageProvider(
+      mojo::PendingAssociatedReceiver<mojom::PdfAccessibilityImageProvider>
+          receiver);
+
   // Returns a weak pointer for an instance of this class.
   base::WeakPtr<PdfAccessibilityTree> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -325,6 +337,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // Flag indicating that searchify (OCR) ran on some pages.
   bool did_searchify_run_ = false;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+  mojo::AssociatedReceiver<mojom::PdfAccessibilityImageProvider>
+      image_provider_receiver_{this};
 
   base::WeakPtrFactory<PdfAccessibilityTree> weak_ptr_factory_{this};
 };

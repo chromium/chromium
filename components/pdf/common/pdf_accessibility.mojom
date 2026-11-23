@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pdf.mojom;
+
+import "skia/public/mojom/bitmap.mojom";
+
+// Renderer-side accessibility interface used by the browser to fetch decoded
+// image bitmaps.
+interface PdfAccessibilityImageProvider {
+  // Requests the decoded SkBitmap for an accessibility image node.
+  // Returns a null/empty bitmap if the node or image cannot be resolved.
+  GetImageForNode(int32 ax_node_id) => (skia.mojom.BitmapN32? bitmap);
+};

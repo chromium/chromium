@@ -19,6 +19,7 @@ source_set("browser") {
 
   public_deps = [
     "//base",
+    "//components/pdf/common:mojom",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//pdf/mojom",

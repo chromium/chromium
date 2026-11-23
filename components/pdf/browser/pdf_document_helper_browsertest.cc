@@ -4,10 +4,15 @@
 
 #include "components/pdf/browser/pdf_document_helper.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
+#include "components/pdf/common/pdf_accessibility.mojom.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -15,10 +20,15 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/touch_selection/touch_editing_controller.h"
 
@@ -71,6 +81,41 @@ class FakePdfListener : public pdf::mojom::PdfListener {
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 };
 
+class FakePdfAccessibilityImageProvider
+    : public pdf::mojom::PdfAccessibilityImageProvider {
+ public:
+  FakePdfAccessibilityImageProvider() = default;
+  FakePdfAccessibilityImageProvider(const FakePdfAccessibilityImageProvider&) =
+      delete;
+  FakePdfAccessibilityImageProvider& operator=(
+      const FakePdfAccessibilityImageProvider&) = delete;
+  ~FakePdfAccessibilityImageProvider() override = default;
+
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.reset();
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<
+            pdf::mojom::PdfAccessibilityImageProvider>(std::move(handle)));
+  }
+
+  void ResetReceiver() { receiver_.reset(); }
+
+  base::WeakPtr<FakePdfAccessibilityImageProvider> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  MOCK_METHOD(void,
+              GetImageForNode,
+              (int32_t, GetImageForNodeCallback callback),
+              (override));
+
+ private:
+  mojo::AssociatedReceiver<pdf::mojom::PdfAccessibilityImageProvider> receiver_{
+      this};
+  base::WeakPtrFactory<FakePdfAccessibilityImageProvider> weak_ptr_factory_{
+      this};
+};
+
 class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
  public:
   TestPDFDocumentHelperClient() = default;
@@ -112,9 +157,12 @@ class PDFDocumentHelperTest : public content::ContentBrowserTest {
                                             right_height);
   }
 
+  content::RenderFrameHost* GetPrimaryMainFrame() {
+    return shell()->web_contents()->GetPrimaryMainFrame();
+  }
+
   PDFDocumentHelper* pdf_document_helper() {
-    return PDFDocumentHelper::GetForCurrentDocument(
-        shell()->web_contents()->GetPrimaryMainFrame());
+    return PDFDocumentHelper::GetForCurrentDocument(GetPrimaryMainFrame());
   }
 
   content::RenderWidgetHostView* GetRenderWidgetHostView() {
@@ -123,6 +171,17 @@ class PDFDocumentHelperTest : public content::ContentBrowserTest {
 
   TestPDFDocumentHelperClient* client() { return client_; }
 
+  void SetAccessibilityImageProvider(
+      FakePdfAccessibilityImageProvider& image_provider) {
+    GetPrimaryMainFrame()
+        ->GetRemoteAssociatedInterfaces()
+        ->OverrideBinderForTesting(
+            pdf::mojom::PdfAccessibilityImageProvider::Name_,
+            base::BindRepeating(
+                &FakePdfAccessibilityImageProvider::BindReceiver,
+                image_provider.GetWeakPtr()));
+  }
+
   // content::ContentBrowserTest:
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
@@ -130,11 +189,16 @@ class PDFDocumentHelperTest : public content::ContentBrowserTest {
     ASSERT_TRUE(content::NavigateToURL(shell(), GURL("about:blank")));
     auto client = std::make_unique<TestPDFDocumentHelperClient>();
     client_ = client.get();
-    PDFDocumentHelper::CreateForCurrentDocument(
-        shell()->web_contents()->GetPrimaryMainFrame(), std::move(client));
+    PDFDocumentHelper::CreateForCurrentDocument(GetPrimaryMainFrame(),
+                                                std::move(client));
   }
 
   void TearDownOnMainThread() override {
+    GetPrimaryMainFrame()
+        ->GetRemoteAssociatedInterfaces()
+        ->OverrideBinderForTesting(
+            pdf::mojom::PdfAccessibilityImageProvider::Name_,
+            base::NullCallback());
     client_ = nullptr;
     content::ContentBrowserTest::TearDownOnMainThread();
   }
@@ -386,6 +450,57 @@ IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest,
   base::test::TestFuture<bool> future;
   pdf_document_helper()->IsPasswordProtected(future.GetCallback());
   EXPECT_TRUE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest,
+                       GetImageForNodeReturnsEmptyBeforeLoad) {
+  base::test::TestFuture<const SkBitmap&> future;
+  pdf_document_helper()->GetImageForNode(/*ax_node_id=*/42,
+                                         future.GetCallback());
+  EXPECT_TRUE(future.Get().drawsNothing());
+}
+
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest, GetImageForNodeAfterLoad) {
+  NiceMock<FakePdfAccessibilityImageProvider> image_provider;
+  SetAccessibilityImageProvider(image_provider);
+
+  EXPECT_CALL(image_provider, GetImageForNode(42, testing::_))
+      .WillOnce([](int32_t ax_node_id,
+                   FakePdfAccessibilityImageProvider::GetImageForNodeCallback
+                       callback) {
+        SkBitmap bitmap;
+        bitmap.allocN32Pixels(10, 20);
+        std::move(callback).Run(bitmap);
+      });
+
+  pdf_document_helper()->OnDocumentLoadComplete();
+
+  base::test::TestFuture<const SkBitmap&> future;
+  pdf_document_helper()->GetImageForNode(/*ax_node_id=*/42,
+                                         future.GetCallback());
+  const SkBitmap& result = future.Get();
+  EXPECT_FALSE(result.drawsNothing());
+  EXPECT_EQ(10, result.width());
+  EXPECT_EQ(20, result.height());
+}
+
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest,
+                       GetImageForNodeReturnsEmptyWhenDisconnected) {
+  NiceMock<FakePdfAccessibilityImageProvider> image_provider;
+  SetAccessibilityImageProvider(image_provider);
+
+  EXPECT_CALL(image_provider, GetImageForNode(42, testing::_))
+      .WillOnce([&image_provider](
+                    int32_t ax_node_id,
+                    FakePdfAccessibilityImageProvider::GetImageForNodeCallback
+                        callback) { image_provider.ResetReceiver(); });
+
+  pdf_document_helper()->OnDocumentLoadComplete();
+
+  base::test::TestFuture<const SkBitmap&> future;
+  pdf_document_helper()->GetImageForNode(/*ax_node_id=*/42,
+                                         future.GetCallback());
+  EXPECT_TRUE(future.Get().drawsNothing());
 }
 
 }  // namespace pdf

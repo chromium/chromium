@@ -38,10 +38,13 @@
 #include "content/public/renderer/render_thread.h"
 #include "pdf/page_character_index.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_accessibility_image_fetcher.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -63,6 +66,11 @@
 namespace pdf {
 
 namespace {
+
+// Maximum width or height (in pixels) for bitmaps returned by
+// GetImageForNode(). Caps the memory sent over IPC per image while keeping
+// good resolution for Reading Mode.
+constexpr uint32_t kMaxImageDimension = 4096;
 
 // Returns the character offset within the text run if `page_char_index` falls
 // within [start_char_index, start_char_index + len], or std::nullopt otherwise.
@@ -331,10 +339,18 @@ PdfAccessibilityTree::PdfAccessibilityTree(
   DCHECK(render_frame);
   DCHECK(action_handler_);
   CHECK(image_fetcher_);
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::PdfAccessibilityImageProvider>(base::BindRepeating(
+          &PdfAccessibilityTree::BindAccessibilityImageProvider,
+          weak_ptr_factory_.GetWeakPtr()));
   MaybeHandleAccessibilityChange(/*always_load_or_reload_accessibility=*/false);
 }
 
 PdfAccessibilityTree::~PdfAccessibilityTree() {
+  if (render_frame()) {
+    render_frame()->GetAssociatedInterfaceRegistry()->RemoveInterface(
+        mojom::PdfAccessibilityImageProvider::Name_);
+  }
   UpdateDependentObjects(/*set_this=*/false);
 }
 
@@ -589,6 +605,17 @@ void PdfAccessibilityTree::OnHasSearchifyText() {
       screen_reader_mode);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+void PdfAccessibilityTree::GetImageForNode(int32_t ax_node_id,
+                                           GetImageForNodeCallback callback) {
+  std::optional<ImageInfo> info = GetImageInfo(ax_node_id);
+  if (!info) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+  std::move(callback).Run(image_fetcher_->GetImageBitmap(
+      info->page_index, info->page_object_index, kMaxImageDimension));
+}
 
 void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     const chrome_pdf::AccessibilityPageInfo& page_info,
@@ -1230,6 +1257,13 @@ bool PdfAccessibilityTree::UpdateDependentObjects(bool set_this) {
   }
 
   return success;
+}
+
+void PdfAccessibilityTree::BindAccessibilityImageProvider(
+    mojo::PendingAssociatedReceiver<mojom::PdfAccessibilityImageProvider>
+        receiver) {
+  image_provider_receiver_.reset();
+  image_provider_receiver_.Bind(std::move(receiver));
 }
 
 void PdfAccessibilityTree::ForcePluginAXObjectForTesting(
