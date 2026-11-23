@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
+#import <set>
+#import <string>
+
+#import "base/notreached.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -27,6 +31,7 @@ class MockObserver : public SystemIdentityManagerObserver {
 // Subclass to be able to instantiate `SystemIdentityManager`.
 class TestSystemIdentityManager : public SystemIdentityManager {
  public:
+  // SystemIdentityManager:
   bool IsSigninSupported() final { NOTREACHED(); }
   bool HandleSessionOpenURLContexts(
       UIScene* scene,
@@ -70,6 +75,17 @@ class TestSystemIdentityManager : public SystemIdentityManager {
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final {
+    NOTREACHED();
+  }
+  void GetAccessToken(id<SystemIdentity> identity,
+                      const std::string& client_id,
+                      const std::set<std::string>& scopes,
+                      AccessTokenRequestCallback callback) final {
+    NOTREACHED();
+  }
+  void GetAccessToken(id<SystemIdentity> identity,
+                      const std::set<std::string>& scopes,
+                      AccessTokenRequestCallback callback) final {
     NOTREACHED();
   }
   void FetchAvatarForIdentity(id<SystemIdentity> identity) final {

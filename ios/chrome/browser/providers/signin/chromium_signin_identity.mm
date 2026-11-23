@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <set>
+#import <string>
+
 #import "base/notreached.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
@@ -48,6 +51,13 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final;
+  void GetAccessToken(id<SystemIdentity> identity,
+                      const std::string& client_id,
+                      const std::set<std::string>& scopes,
+                      AccessTokenRequestCallback callback) final;
+  void GetAccessToken(id<SystemIdentity> identity,
+                      const std::set<std::string>& scopes,
+                      AccessTokenRequestCallback callback) final;
   void FetchAvatarForIdentity(id<SystemIdentity> identity) final;
   UIImage* GetCachedAvatarForIdentity(id<SystemIdentity> identity) final;
   void GetHostedDomain(id<SystemIdentity> identity,
@@ -155,6 +165,21 @@ void ChromiumSystemIdentityManager::GetAccessToken(
     const std::string& client_id,
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {
+  NOTREACHED();
+}
+
+void ChromiumSystemIdentityManager::GetAccessToken(
+    id<SystemIdentity> identity,
+    const std::string& client_id,
+    const std::set<std::string>& scopes,
+    AccessTokenRequestCallback callback) {
+  NOTREACHED();
+}
+
+void ChromiumSystemIdentityManager::GetAccessToken(
+    id<SystemIdentity> identity,
+    const std::set<std::string>& scopes,
+    AccessTokenRequestCallback callback) {
   NOTREACHED();
 }
 

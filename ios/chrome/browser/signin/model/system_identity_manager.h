@@ -243,21 +243,17 @@ class SystemIdentityManager {
 
   // Asynchronously retrieves access tokens for `identity` with `scopes`. The
   // callback is invoked on the calling sequence when the operation completes.
-  // TODO(crbug.com/502440730): make this method pure virtual after updating the
-  // internal implementation.
   virtual void GetAccessToken(id<SystemIdentity> identity,
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
-                              AccessTokenRequestCallback callback) {}
+                              AccessTokenRequestCallback callback) = 0;
 
   // Asynchronously retrieves access tokens for `identity` with `scopes`. The
   // callback is invoked on the calling sequence when the operation completes.
   // Uses the default client id and client secret.
-  // TODO(crbug.com/502440730): make this method pure virtual after updating the
-  // internal implementation.
   virtual void GetAccessToken(id<SystemIdentity> identity,
                               const std::set<std::string>& scopes,
-                              AccessTokenRequestCallback callback) {}
+                              AccessTokenRequestCallback callback) = 0;
 
   // Asynchronously fetches the avatar for `identity` from the network and
   // store it in the cache. The image can be large to avoid pixelation on
