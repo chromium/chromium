@@ -12,13 +12,18 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//chrome/browser/enterprise",
     "//chrome/browser/enterprise:impl",
     "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/net",
     "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_profile",
+    "//components/device_signals/core/browser",
+    "//components/enterprise/device_trust",
+    "//components/enterprise/device_trust/core:device_trust_connector_service",
     "//components/enterprise/device_trust/core:test_support",
     "//components/keyed_service/core",
+    "//components/policy/core/common:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
@@ -31,6 +36,9 @@ source_set("unit_tests") {
       "//chrome/browser/ash/profiles",
       "//chromeos/ash/components/browser_context_helper",
     ]
+  } else {
+    # ChromeOS uses `UserPermissionServiceAsh`, which has its own rules.
+    sources += [ "user_permission_service_factory_unittest.cc" ]
   }
 
   if (!is_android) {

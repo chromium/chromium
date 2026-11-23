@@ -43,6 +43,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "base/test/bind.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/keyed_service/core/keyed_service.h"
 #else
 #include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -158,6 +162,17 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
     // non-desktop form factor so that these tests behave the same on all
     // Android devices.
     base::android::device_info::set_is_desktop_for_testing(false);
+
+    // `CountCreatedThrottles()` goes through the real
+    // `UserPermissionServiceFactory`, which needs a
+    // `DeviceTrustConnectorService`, and `TestingProfile` doesn't create one.
+    DeviceTrustConnectorServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_,
+        base::BindLambdaForTesting([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          return std::make_unique<DeviceTrustConnectorService>(
+              Profile::FromBrowserContext(context)->GetPrefs());
+        }));
   }
 
   void TearDown() override {

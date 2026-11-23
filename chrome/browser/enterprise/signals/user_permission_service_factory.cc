@@ -10,12 +10,14 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/device_signals/core/browser/user_delegate.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
+#include "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -25,11 +27,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/device_signals/core/browser/ash/user_permission_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
-#include "components/enterprise/device_trust/core/device_trust_connector_service.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_signals {
 
@@ -62,10 +59,8 @@ UserPermissionServiceFactory::UserPermissionServiceFactory()
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
-#if !BUILDFLAG(IS_ANDROID)
   DependsOn(
       enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance());
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 UserPermissionServiceFactory::~UserPermissionServiceFactory() = default;
@@ -76,18 +71,13 @@ UserPermissionServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* profile = Profile::FromBrowserContext(context);
 
   device_signals::UserDelegate::SignalsDependencyDelegate*
-      signals_dependency_delegate = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-  signals_dependency_delegate =
-      enterprise_connectors::DeviceTrustConnectorServiceFactory::GetForProfile(
-          profile);
-
+      signals_dependency_delegate = enterprise_connectors::
+          DeviceTrustConnectorServiceFactory::GetForProfile(profile);
   if (!signals_dependency_delegate) {
     // Unsupported configuration (e.g. CrOS login Profile supported, but not
     // incognito).
     return nullptr;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);
