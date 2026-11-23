@@ -288,8 +288,10 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
       kSuccessfulModelVersion, 1);
 }
 
-// TODO(crbug.com/41490438): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/41490438): Re-enable this test on ChromeOS ASan.
+// TODO(crbug.com/589760347): Flaky on Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) || \
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_TestIncognitoProfile DISABLED_TestIncognitoProfile
 #else
 #define MAYBE_TestIncognitoProfile TestIncognitoProfile
