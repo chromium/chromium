@@ -331,10 +331,6 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
   AppRegistry activity_registry_;
 
-  // Newly installed applications which have not yet been added to the user
-  // pref.
-  std::vector<AppId> newly_installed_apps_;
-
   // Repeating timer to trigger saving app activity to pref service.
   base::RepeatingTimer save_data_to_pref_service_;
 

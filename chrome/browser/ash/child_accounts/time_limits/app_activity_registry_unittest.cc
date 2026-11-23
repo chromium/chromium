@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -23,6 +24,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -988,6 +990,45 @@ TEST_F(AppActivityRegistryTest, AppReinstallations) {
       .Times(1);
 
   registry().OnAppAvailable(app1_);
+}
+
+TEST_F(AppActivityRegistryTest, ReinstalledAppIsStoredOnce) {
+  // app1_ has no running active time. After it is uninstalled, its entry stays
+  // in user pref, but it is not restored in the next session.
+  registry().OnAppUninstalled(app1_);
+  registry().SaveAppActivity();
+  ReInitializeRegistry();
+  EXPECT_FALSE(registry().IsAppInstalled(app1_));
+
+  // app1_ is installed again in the new session.
+  registry().OnAppInstalled(app1_);
+  registry().SaveAppActivity();
+
+  const std::vector<PersistedAppInfo> app_infos =
+      PersistedAppInfo::PersistedAppInfosFromList(
+          prefs()->GetList(ash::prefs::kPerAppTimeLimitsAppActivities),
+          /* include_app_activity_array */ false);
+  EXPECT_EQ(1, std::ranges::count(app_infos, app1_, &PersistedAppInfo::app_id));
+
+  ReInitializeRegistry();
+  EXPECT_TRUE(registry().IsAppInstalled(app1_));
+}
+
+TEST_F(AppActivityRegistryTest, DuplicateEntriesInPref) {
+  registry().SaveAppActivity();
+  {
+    // Add a second entry for app1_, as SaveAppActivity() used to do.
+    ScopedListPrefUpdate update(prefs(),
+                                ash::prefs::kPerAppTimeLimitsAppActivities);
+    base::DictValue duplicate;
+    PersistedAppInfo(app1_, AppState::kAvailable, base::TimeDelta(), {})
+        .UpdateAppActivityPreference(duplicate, /* replace */ true);
+    update->Append(std::move(duplicate));
+  }
+
+  ReInitializeRegistry();
+  EXPECT_TRUE(registry().IsAppAvailable(app1_));
+  registry().SaveAppActivity();
 }
 
 TEST_F(AppActivityRegistryTest, LimitSetAfterActivity) {
