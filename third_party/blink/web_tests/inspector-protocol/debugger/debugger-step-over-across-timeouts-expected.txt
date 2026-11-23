@@ -1,0 +1,20 @@
+Tests that debugger StepOver will stop inside next timeout handler.
+Call stack:
+callback1 at :9:10
+--setTimeout--
+testFunction at debugger-step-over-across-timeouts.js:3:10
+--setTimeout--
+scheduleTestFunction at debugger-step-over-across-timeouts.js:20:10
+(anonymous) at :0:0
+Executing StepOver...
+Executing StepOver...
+Call stack:
+callback2 at :14:22
+--setTimeout--
+callback1 at debugger-step-over-across-timeouts.js:8:10
+--setTimeout--
+testFunction at debugger-step-over-across-timeouts.js:3:10
+--setTimeout--
+scheduleTestFunction at debugger-step-over-across-timeouts.js:20:10
+(anonymous) at :0:0
+
