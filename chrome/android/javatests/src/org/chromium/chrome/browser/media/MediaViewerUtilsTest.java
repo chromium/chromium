@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -82,6 +83,7 @@ public class MediaViewerUtilsTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/589759487
     public void testCustomTabActivityInDarkMode() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(
