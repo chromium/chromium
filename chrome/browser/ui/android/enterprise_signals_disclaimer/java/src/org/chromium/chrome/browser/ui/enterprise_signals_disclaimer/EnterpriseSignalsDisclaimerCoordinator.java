@@ -105,6 +105,19 @@ public class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStat
         return mView.getScrollViewScrollY();
     }
 
+    /**
+     * Puts the disclaimer in the loading state: both buttons are disabled and the accept button
+     * shows a spinner in place of its text. Embedders can use it, e.g., while processing the user's
+     * decision. The loading state is final and can't be exited; embedders that need to show the
+     * disclaimer again should create a new coordinator.
+     */
+    public void showLoading() {
+        if (mIsDestroyed) {
+            return;
+        }
+        mMediator.showLoading();
+    }
+
     /** Destroys the coordinator, cleaning up resources. Does not affect the hosting UI. */
     public void destroy() {
         if (mIsDestroyed) {

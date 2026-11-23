@@ -11,4 +11,5 @@ found in the LICENSE file.
     <dimen name="enterprise_signals_disclaimer_badge_border_size">0dp</dimen>
     <dimen name="enterprise_signals_disclaimer_badge_x_position">49.5dp</dimen>
     <dimen name="enterprise_signals_disclaimer_badge_y_position">49.5dp</dimen>
+    <dimen name="enterprise_signals_disclaimer_button_spinner_size">24dp</dimen>
 </resources>

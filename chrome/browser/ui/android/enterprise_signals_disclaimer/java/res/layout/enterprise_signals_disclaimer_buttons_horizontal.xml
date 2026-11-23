@@ -19,10 +19,25 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp" />
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/disclaimer_accept_button"
-        style="@style/FilledButton"
+    <!-- The spinner is drawn on top of the accept button in the loading state. -->
+    <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/disclaimer_accept_button"
+            style="@style/FilledButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ProgressBar
+            android:id="@+id/disclaimer_accept_button_spinner"
+            android:layout_width="@dimen/enterprise_signals_disclaimer_button_spinner_size"
+            android:layout_height="@dimen/enterprise_signals_disclaimer_button_spinner_size"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:importantForAccessibility="no"
+            android:visibility="gone" />
+    </FrameLayout>
 
 </LinearLayout>

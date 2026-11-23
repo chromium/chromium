@@ -256,4 +256,45 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         verify(mDelegate, times(1)).onDecline();
         verify(mDelegate, never()).onAccept();
     }
+
+    @Test
+    public void loading_isInitiallyFalse() {
+        PropertyModel model = createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT).getModel();
+
+        Assert.assertFalse(model.get(EnterpriseSignalsDisclaimerProperties.IS_LOADING));
+    }
+
+    @Test
+    public void showLoading_updatesModel() {
+        EnterpriseSignalsDisclaimerMediator mediator =
+                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
+        PropertyModel model = mediator.getModel();
+
+        mediator.showLoading();
+        Assert.assertTrue(model.get(EnterpriseSignalsDisclaimerProperties.IS_LOADING));
+    }
+
+    @Test
+    public void onAcceptButtonClicked_whileLoading_isIgnored() {
+        EnterpriseSignalsDisclaimerMediator mediator =
+                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
+        PropertyModel model = mediator.getModel();
+
+        mediator.showLoading();
+        model.get(EnterpriseSignalsDisclaimerProperties.ON_ACCEPT_CLICKED).onClick(null);
+
+        verify(mDelegate, never()).onAccept();
+    }
+
+    @Test
+    public void onCancelButtonClicked_whileLoading_isIgnored() {
+        EnterpriseSignalsDisclaimerMediator mediator =
+                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
+        PropertyModel model = mediator.getModel();
+
+        mediator.showLoading();
+        model.get(EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED).onClick(null);
+
+        verify(mDelegate, never()).onDecline();
+    }
 }

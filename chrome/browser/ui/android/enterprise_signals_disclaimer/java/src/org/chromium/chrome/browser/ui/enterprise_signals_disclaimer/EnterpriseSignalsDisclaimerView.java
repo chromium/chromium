@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
 import android.view.FocusFinder;
@@ -15,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -45,6 +47,7 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
     private final TextView mDeviceInformationTitle;
     private final TextViewWithLeading mDeviceInformationDetails;
     private final ButtonCompat mAcceptButton;
+    private final ProgressBar mAcceptButtonSpinner;
     private final ButtonCompat mCancelButton;
     private final TextViewWithClickableSpans mFooterView;
 
@@ -79,6 +82,7 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
                         true);
 
         mAcceptButton = findViewById(R.id.disclaimer_accept_button);
+        mAcceptButtonSpinner = findViewById(R.id.disclaimer_accept_button_spinner);
         mCancelButton = findViewById(R.id.disclaimer_cancel_button);
 
         ContainmentItemController controller = new ContainmentItemController(context);
@@ -229,6 +233,25 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
     public void setFooter(@Nullable CharSequence footer) {
         mFooterView.setText(footer);
         mFooterView.setVisibility(footer == null ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * Puts the view in the loading state: both buttons are disabled and the accept button's text is
+     * replaced with a spinner. The loading state is final and can't be exited.
+     */
+    public void showLoading() {
+        // This will cause TalkBack to announce that the button state has changed.
+        mAcceptButton.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+
+        mAcceptButton.setEnabled(false);
+        mCancelButton.setEnabled(false);
+
+        // Hide the text by making it transparent rather than removing it, so the button keeps its
+        // size while the spinner is shown.
+        mAcceptButton.setTextColor(Color.TRANSPARENT);
+        mAcceptButton.setContentDescription(
+                getContext().getString(R.string.enterprise_signals_disclaimer_loading));
+        mAcceptButtonSpinner.setVisibility(View.VISIBLE);
     }
 
     /**

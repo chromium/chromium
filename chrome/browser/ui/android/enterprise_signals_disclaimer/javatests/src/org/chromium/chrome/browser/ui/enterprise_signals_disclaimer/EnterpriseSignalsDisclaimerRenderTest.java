@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
 
 import android.app.Activity;
@@ -163,6 +164,68 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                 insetObserver);
     }
 
+    private void renderFre(boolean isLoading, String goldenId) throws IOException {
+        BlankUiTestActivity activity = mActivityTestRule.getActivity();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContainer = activity.findViewById(android.R.id.content);
+                    mContainer.setLayoutDirection(
+                            mUseRtlLayout ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+                    mContainer.removeAllViews();
+                    EnterpriseSignalsDisclaimerCoordinator coordinator =
+                            createCoordinator(activity, PresentationMode.FIRST_RUN_EXPERIENCE);
+                    if (isLoading) coordinator.showLoading();
+                    // Mirror FirstRunActivity, which wraps the FRE pages in a DialogWhenLarge
+                    // layout. On large form factors this renders the content as a centered card.
+                    mContainer.addView(
+                            DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(
+                                    coordinator.getView(),
+                                    SemanticColorUtils.getColorSurfaceContainerLow(activity)));
+                });
+        waitForView(withId(R.id.disclaimer_footer));
+        if (isLoading) hideLoadingSpinner();
+        waitForStableView(mContainer);
+        ChromeRenderTestRule.sanitize(mContainer);
+        mRenderTestRule.render(mContainer, goldenId);
+    }
+
+    private void hideLoadingSpinner() {
+        // Make sure the spinner is actually displayed in the loading state before hiding it.
+        waitForView(withId(R.id.disclaimer_accept_button_spinner));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View spinner =
+                            assumeNonNull(mCoordinator)
+                                    .getView()
+                                    .findViewById(R.id.disclaimer_accept_button_spinner);
+                    spinner.setVisibility(View.INVISIBLE);
+                });
+    }
+
+    private EnterpriseSignalsDisclaimerCoordinator createCoordinator(
+            Activity activity, @PresentationMode int presentationMode) {
+        mCoordinator =
+                new EnterpriseSignalsDisclaimerCoordinator(
+                        activity,
+                        mAccountManagerTestRule.getIdentityManager(),
+                        mAccountInfo,
+                        presentationMode,
+                        new EnterpriseSignalsDisclaimerCoordinator.Delegate() {
+                            @Override
+                            public void showInfoPage(String url) {}
+
+                            @Override
+                            public void onAccept() {}
+
+                            @Override
+                            public void onDecline() {}
+
+                            @Override
+                            public void onShown() {}
+                        });
+        return mCoordinator;
+    }
+
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -242,7 +305,15 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     @Feature({"RenderTest"})
     @Restriction({DeviceFormFactor.PHONE})
     public void testFreOnPhone() throws IOException {
-        renderFre("fre_phone");
+        renderFre(/* isLoading= */ false, "fre_phone");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testFreOnPhone_loading() throws IOException {
+        renderFre(/* isLoading= */ true, "fre_phone_loading");
     }
 
     @Test
@@ -250,53 +321,14 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     @Feature({"RenderTest"})
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
     public void testFreOnLargeFormFactor() throws IOException {
-        renderFre("fre_large_form_factor");
+        renderFre(/* isLoading= */ false, "fre_large_form_factor");
     }
 
-    private void renderFre(String goldenId) throws IOException {
-        BlankUiTestActivity activity = mActivityTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainer = activity.findViewById(android.R.id.content);
-                    mContainer.setLayoutDirection(
-                            mUseRtlLayout ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
-                    mContainer.removeAllViews();
-                    EnterpriseSignalsDisclaimerCoordinator coordinator =
-                            createCoordinator(activity, PresentationMode.FIRST_RUN_EXPERIENCE);
-                    // Mirror FirstRunActivity, which wraps the FRE pages in a DialogWhenLarge
-                    // layout. On large form factors this renders the content as a centered card.
-                    mContainer.addView(
-                            DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(
-                                    coordinator.getView(),
-                                    SemanticColorUtils.getColorSurfaceContainerLow(activity)));
-                });
-        waitForView(withId(R.id.disclaimer_footer));
-        waitForStableView(mContainer);
-        ChromeRenderTestRule.sanitize(mContainer);
-        mRenderTestRule.render(mContainer, goldenId);
-    }
-
-    private EnterpriseSignalsDisclaimerCoordinator createCoordinator(
-            Activity activity, @PresentationMode int presentationMode) {
-        mCoordinator =
-                new EnterpriseSignalsDisclaimerCoordinator(
-                        activity,
-                        mAccountManagerTestRule.getIdentityManager(),
-                        mAccountInfo,
-                        presentationMode,
-                        new EnterpriseSignalsDisclaimerCoordinator.Delegate() {
-                            @Override
-                            public void showInfoPage(String url) {}
-
-                            @Override
-                            public void onAccept() {}
-
-                            @Override
-                            public void onDecline() {}
-
-                            @Override
-                            public void onShown() {}
-                        });
-        return mCoordinator;
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    public void testFreOnLargeFormFactor_loading() throws IOException {
+        renderFre(/* isLoading= */ true, "fre_large_form_factor_loading");
     }
 }

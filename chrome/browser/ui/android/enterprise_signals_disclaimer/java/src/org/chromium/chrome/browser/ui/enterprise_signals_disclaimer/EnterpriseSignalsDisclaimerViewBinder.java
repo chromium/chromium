@@ -55,6 +55,11 @@ class EnterpriseSignalsDisclaimerViewBinder {
                     model.get(EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED));
         } else if (propertyKey == EnterpriseSignalsDisclaimerProperties.FOOTER) {
             view.setFooter(model.get(EnterpriseSignalsDisclaimerProperties.FOOTER));
+        } else if (propertyKey == EnterpriseSignalsDisclaimerProperties.IS_LOADING) {
+            // The loading state is final, so setting this property to false does nothing.
+            if (model.get(EnterpriseSignalsDisclaimerProperties.IS_LOADING)) {
+                view.showLoading();
+            }
         }
     }
 

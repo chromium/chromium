@@ -152,7 +152,8 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                                 v -> onAcceptButtonClicked())
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED,
-                                v -> onCancelButtonClicked());
+                                v -> onCancelButtonClicked())
+                        .with(EnterpriseSignalsDisclaimerProperties.IS_LOADING, false);
         if (isFre) {
             builder.with(
                     EnterpriseSignalsDisclaimerProperties.FOOTER,
@@ -173,16 +174,28 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
         return mModel;
     }
 
+    /**
+     * Puts the disclaimer in the loading state: both buttons are disabled and the accept button
+     * shows a spinner. The loading state is final and can't be exited.
+     */
+    void showLoading() {
+        mModel.set(EnterpriseSignalsDisclaimerProperties.IS_LOADING, true);
+    }
+
+    private boolean isLoading() {
+        return mModel.get(EnterpriseSignalsDisclaimerProperties.IS_LOADING);
+    }
+
     /** Dismisses the dialog and marks the device signals collection consent as granted. */
     private void onAcceptButtonClicked() {
-        if (mIsDecisionHandled) return;
+        if (mIsDecisionHandled || isLoading()) return;
         mIsDecisionHandled = true;
         mDelegate.onAccept();
     }
 
     /** Called when the user explicitly clicks the Cancel button in the UI. */
     private void onCancelButtonClicked() {
-        if (mIsDecisionHandled) return;
+        if (mIsDecisionHandled || isLoading()) return;
         mIsDecisionHandled = true;
         mDelegate.onDecline();
     }

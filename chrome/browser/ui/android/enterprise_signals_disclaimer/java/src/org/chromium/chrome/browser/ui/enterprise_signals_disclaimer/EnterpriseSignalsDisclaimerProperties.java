@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties defined for the enterprise signals disclaimer. */
@@ -39,6 +40,8 @@ class EnterpriseSignalsDisclaimerProperties {
     // Optional footer shown below the buttons. The footer is hidden when null.
     public static final WritableObjectPropertyKey<CharSequence> FOOTER =
             new WritableObjectPropertyKey<>("footer");
+    public static final WritableBooleanPropertyKey IS_LOADING =
+            new WritableBooleanPropertyKey("is_loading");
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -54,6 +57,7 @@ class EnterpriseSignalsDisclaimerProperties {
                 ON_ACCEPT_CLICKED,
                 ON_CANCEL_CLICKED,
                 FOOTER,
+                IS_LOADING,
             };
 
     private EnterpriseSignalsDisclaimerProperties() {}
