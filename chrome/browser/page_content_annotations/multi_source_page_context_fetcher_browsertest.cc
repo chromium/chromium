@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
@@ -23,6 +24,9 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
@@ -138,6 +142,31 @@ class MultiSourcePageContextFetcherBrowserTest : public InProcessBrowserTest {
                    R"(");)",
                })));
   }
+
+  void NavigateToURLAndWaitForCopyableView(const GURL& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::WaitForCopyableViewInWebContents(web_contents());
+  }
+
+  void NavigateToURLAndWaitForAutofillForms(const GURL& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    // Payment and OTP redaction rely on
+    // `AutofillManager::FindCachedFormById()`, which is populated
+    // asynchronously after form parsing completes.
+    auto* autofill_driver =
+        autofill::ContentAutofillDriver::GetForRenderFrameHost(
+            web_contents()->GetPrimaryMainFrame());
+    ASSERT_NE(autofill_driver, nullptr);
+    ASSERT_NE(autofill::WaitForMatchingForm(
+                  &autofill_driver->GetAutofillManager(),
+                  base::BindRepeating(
+                      [](const autofill::FormStructure&) { return true; })),
+              nullptr);
+    content::WaitForCopyableViewInWebContents(web_contents());
+  }
+
+ private:
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
 };
 
 class ScreenshotBackendMultiSourcePageContextFetcherBrowserTest
@@ -623,8 +652,8 @@ IN_PROC_BROWSER_TEST_P(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
     BasicRedaction) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GetURL(kHostA, "/password.html")));
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToURLAndWaitForCopyableView(GetURL(kHostA, "/password.html")));
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
@@ -662,8 +691,8 @@ IN_PROC_BROWSER_TEST_P(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
     DownscaledScreenshotRedaction) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GetURL(kHostA, "/password.html")));
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToURLAndWaitForCopyableView(GetURL(kHostA, "/password.html")));
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
@@ -775,9 +804,8 @@ IN_PROC_BROWSER_TEST_P(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
     MAYBE_RedactionWhenScreenshotReceivedFirst) {
   base::HistogramTester histograms;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GetURL(kHostA, "/password.html")));
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToURLAndWaitForCopyableView(GetURL(kHostA, "/password.html")));
 
   optimization_guide::NoResponseAIPageContentAgent interceptor(
       web_contents()->GetPrimaryMainFrame());
@@ -880,8 +908,8 @@ IN_PROC_BROWSER_TEST_P(
     SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
     BasicRedaction) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURL(kHostA, "/optimization_guide/credit_card.html")));
+  ASSERT_NO_FATAL_FAILURE(NavigateToURLAndWaitForAutofillForms(
+      GetURL(kHostA, "/optimization_guide/credit_card.html")));
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
@@ -923,8 +951,8 @@ IN_PROC_BROWSER_TEST_P(
     SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
     DownscaledScreenshotRedaction) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURL(kHostA, "/optimization_guide/credit_card.html")));
+  ASSERT_NO_FATAL_FAILURE(NavigateToURLAndWaitForAutofillForms(
+      GetURL(kHostA, "/optimization_guide/credit_card.html")));
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
@@ -1044,9 +1072,8 @@ IN_PROC_BROWSER_TEST_P(
     SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
     MAYBE_RedactionWhenScreenshotReceivedFirst) {
   base::HistogramTester histograms;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURL(kHostA, "/optimization_guide/credit_card.html")));
+  ASSERT_NO_FATAL_FAILURE(NavigateToURLAndWaitForAutofillForms(
+      GetURL(kHostA, "/optimization_guide/credit_card.html")));
 
   optimization_guide::NoResponseAIPageContentAgent interceptor(
       web_contents()->GetPrimaryMainFrame());
@@ -1193,10 +1220,8 @@ IN_PROC_BROWSER_TEST_P(
     ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest,
     BasicRedaction) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GetURL(kHostA,
-             "/optimization_guide/div_with_webkit_text_security.html")));
+  ASSERT_NO_FATAL_FAILURE(NavigateToURLAndWaitForCopyableView(GetURL(
+      kHostA, "/optimization_guide/div_with_webkit_text_security.html")));
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
@@ -1230,10 +1255,8 @@ IN_PROC_BROWSER_TEST_P(
     ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest,
     DownscaledScreenshotRedaction) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GetURL(kHostA,
-             "/optimization_guide/div_with_webkit_text_security.html")));
+  ASSERT_NO_FATAL_FAILURE(NavigateToURLAndWaitForCopyableView(GetURL(
+      kHostA, "/optimization_guide/div_with_webkit_text_security.html")));
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
@@ -1508,9 +1531,8 @@ class OtpRedactionMultiSourcePageContextFetcherBrowserTest
 IN_PROC_BROWSER_TEST_F(OtpRedactionMultiSourcePageContextFetcherBrowserTest,
                        BasicRedaction) {
   base::HistogramTester histograms;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURL(kHostA, "/optimization_guide/otp_redaction.html")));
+  ASSERT_NO_FATAL_FAILURE(NavigateToURLAndWaitForAutofillForms(
+      GetURL(kHostA, "/optimization_guide/otp_redaction.html")));
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
