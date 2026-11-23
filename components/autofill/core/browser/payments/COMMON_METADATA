@@ -1,0 +1,10 @@
+monorail: {
+  component: "UI>Browser>Autofill>Payments"
+}
+team_email: "payments-autofill-team@google.com"
+buganizer_public: {
+  component_id: 1457039
+}
+
+# Opt-in to the Chromium AI Code Review Agent without custom capabilities.
+agentic_review {}

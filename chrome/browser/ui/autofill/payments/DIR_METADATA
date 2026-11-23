@@ -1,6 +1,1 @@
-monorail: {
-  component: "UI>Browser>Autofill>Payments"
-}
-buganizer_public: {
-  component_id: 1457039
-}
+mixins: "//components/autofill/core/browser/payments/COMMON_METADATA"
