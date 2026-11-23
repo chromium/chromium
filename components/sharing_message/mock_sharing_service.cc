@@ -4,10 +4,10 @@
 
 #include "components/sharing_message/mock_sharing_service.h"
 
-#include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_device_source.h"
 #include "components/sharing_message/sharing_fcm_handler.h"
 #include "components/sharing_message/sharing_handler_registry.h"
+#include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,8 +52,7 @@ MockSharingService::MockSharingService()
           /*handler_registry=*/nullptr,
           std::make_unique<SharingFCMHandler>(
               /*gcm_driver=*/nullptr,
-              /*device_info_tracker=*/nullptr,
-              /*sharing_channel_sender=*/nullptr,
+              /*message_sender=*/nullptr,
               /*handler_registry=*/nullptr),
           /*sync_service=*/nullptr,
           /*send_tab_model=*/nullptr,

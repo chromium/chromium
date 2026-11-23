@@ -11,15 +11,12 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/gcm_driver/gcm_driver.h"
-#include "components/sharing_message/features.h"
 #include "components/sharing_message/proto/sharing_message_type.pb.h"
-#include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_handler_registry.h"
 #include "components/sharing_message/sharing_message_handler.h"
+#include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_metrics.h"
-#include "components/sharing_message/sharing_utils.h"
-#include "components/sync_device_info/device_info_tracker.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -52,14 +49,11 @@ std::string GetStrippedMessageId(const std::string& message_id) {
 
 }  // namespace
 
-SharingFCMHandler::SharingFCMHandler(
-    gcm::GCMDriver* gcm_driver,
-    syncer::DeviceInfoTracker* device_info_tracker,
-    SharingChannelSender* sharing_channel_sender,
-    SharingHandlerRegistry* handler_registry)
+SharingFCMHandler::SharingFCMHandler(gcm::GCMDriver* gcm_driver,
+                                     SharingMessageSender* message_sender,
+                                     SharingHandlerRegistry* handler_registry)
     : gcm_driver_(gcm_driver),
-      device_info_tracker_(device_info_tracker),
-      sharing_channel_sender_(sharing_channel_sender),
+      message_sender_(message_sender),
       handler_registry_(handler_registry) {}
 
 SharingFCMHandler::~SharingFCMHandler() {
@@ -123,8 +117,7 @@ void SharingFCMHandler::OnMessage(const std::string& app_id,
       done_callback = base::BindOnce(
           &SharingFCMHandler::SendAckMessage, weak_ptr_factory_.GetWeakPtr(),
           std::move(message_id), message_type, GetFCMChannel(sharing_message),
-          GetServerChannel(sharing_message),
-          GetSenderPlatform(sharing_message));
+          GetServerChannel(sharing_message));
     }
 
     handler->OnMessage(std::move(sharing_message), std::move(done_callback));
@@ -164,17 +157,6 @@ SharingFCMHandler::GetServerChannel(
   return original_message.server_channel_configuration();
 }
 
-SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
-    const components_sharing_message::SharingMessage& original_message) {
-  const syncer::DeviceInfo* device_info =
-      device_info_tracker_->GetChromeDeviceInfo(original_message.sender_guid());
-  if (!device_info) {
-    return SharingDevicePlatform::kUnknown;
-  }
-
-  return GetDevicePlatform(*device_info);
-}
-
 void SharingFCMHandler::SendAckMessage(
     std::string original_message_id,
     sharing_message::MessageType original_message_type,
@@ -182,7 +164,6 @@ void SharingFCMHandler::SendAckMessage(
         fcm_channel,
     std::optional<components_sharing_message::ServerChannelConfiguration>
         server_channel,
-    SharingDevicePlatform sender_device_type,
     std::unique_ptr<components_sharing_message::ResponseMessage> response) {
   // Some SharingMessage types do not require ack messages. Skip in that case.
   if (!fcm_channel && !server_channel) {
@@ -194,40 +175,25 @@ void SharingFCMHandler::SendAckMessage(
                     perfetto::Track(trace_id), "original_message_type",
                     SharingMessageTypeToString(original_message_type));
 
-  components_sharing_message::SharingMessage sharing_message;
-  components_sharing_message::AckMessage* ack_message =
-      sharing_message.mutable_ack_message();
-  ack_message->set_original_message_id(original_message_id);
-  if (response) {
-    ack_message->set_allocated_response_message(response.release());
-  }
+  SharingMessageSender::SendAckCallback on_ack_sent = base::BindOnce(
+      &SharingFCMHandler::OnAckMessageSent, weak_ptr_factory_.GetWeakPtr(),
+      original_message_id, trace_id);
 
   if (server_channel) {
-    sharing_channel_sender_->SendMessageToServerTarget(
-        *server_channel, std::move(sharing_message),
-        base::BindOnce(&SharingFCMHandler::OnAckMessageSent,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(original_message_id), original_message_type,
-                       SharingDevicePlatform::kServer, trace_id));
+    message_sender_->SendAckMessageToServerTarget(
+        *server_channel, std::move(original_message_id), std::move(response),
+        std::move(on_ack_sent));
     return;
   }
 
-  sharing_channel_sender_->SendMessageToFcmTarget(
-      *fcm_channel, kSharingAckMessageTTL, std::move(sharing_message),
-      base::BindOnce(&SharingFCMHandler::OnAckMessageSent,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(original_message_id), original_message_type,
-                     sender_device_type, trace_id));
+  message_sender_->SendAckMessageToFcmTarget(
+      *fcm_channel, std::move(original_message_id), std::move(response),
+      std::move(on_ack_sent));
 }
 
-void SharingFCMHandler::OnAckMessageSent(
-    std::string original_message_id,
-    sharing_message::MessageType original_message_type,
-    SharingDevicePlatform sender_device_type,
-    int trace_id,
-    SharingSendMessageResult result,
-    std::optional<std::string> message_id,
-    SharingChannelType channel_type) {
+void SharingFCMHandler::OnAckMessageSent(std::string original_message_id,
+                                         int trace_id,
+                                         SharingSendMessageResult result) {
   if (result != SharingSendMessageResult::kSuccessful) {
     LOG(ERROR) << "Failed to send ack mesage for " << original_message_id;
   }

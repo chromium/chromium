@@ -99,8 +99,7 @@ class MockSharingFCMHandler : public SharingFCMHandler {
  public:
   MockSharingFCMHandler()
       : SharingFCMHandler(/*gcm_driver=*/nullptr,
-                          /*device_info_tracker=*/nullptr,
-                          /*sharing_channel_sender=*/nullptr,
+                          /*message_sender=*/nullptr,
                           /*handler_registry=*/nullptr) {}
   ~MockSharingFCMHandler() override = default;
 

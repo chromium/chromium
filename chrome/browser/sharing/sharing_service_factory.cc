@@ -152,7 +152,6 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE});
-  SharingChannelSender* channel_sender_ptr = channel_sender.get();
   auto sharing_message_sender = std::make_unique<SharingMessageSender>(
       std::move(channel_sender), local_device_info_provider, task_runner);
 
@@ -167,8 +166,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
       device_source.get(), sms_fetcher, gmail_otp_backend);
 
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
-      gcm_driver, device_info_tracker, channel_sender_ptr,
-      handler_registry.get());
+      gcm_driver, sharing_message_sender.get(), handler_registry.get());
 
   send_tab_to_self::SendTabToSelfModel* send_tab_model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)

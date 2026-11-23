@@ -11,37 +11,27 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_send_message_result.h"
-#include "components/sync_device_info/device_info.h"
 
 namespace gcm {
 class GCMDriver;
 }  // namespace gcm
 
-namespace syncer {
-class DeviceInfoTracker;
-}  // namespace syncer
-
 namespace sharing_message {
 enum MessageType : int;
 }  // namespace sharing_message
 
-enum class SharingChannelType;
-class SharingChannelSender;
 class SharingHandlerRegistry;
-
-enum class SharingDevicePlatform;
+class SharingMessageSender;
 
 // SharingFCMHandler is responsible for receiving SharingMessage from GCMDriver
 // and delegate it to the payload specific handler.
 class SharingFCMHandler : public gcm::GCMAppHandler {
  public:
   SharingFCMHandler(gcm::GCMDriver* gcm_driver,
-                    syncer::DeviceInfoTracker* device_info_tracker,
-                    SharingChannelSender* sharing_channel_sender,
+                    SharingMessageSender* message_sender,
                     SharingHandlerRegistry* handler_registry);
 
   SharingFCMHandler(const SharingFCMHandler&) = delete;
@@ -79,9 +69,6 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
   GetServerChannel(
       const components_sharing_message::SharingMessage& original_message);
 
-  SharingDevicePlatform GetSenderPlatform(
-      const components_sharing_message::SharingMessage& original_message);
-
   // Ack message sent back to the original sender of message.
   void SendAckMessage(
       std::string original_message_id,
@@ -90,20 +77,14 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
           fcm_channel,
       std::optional<components_sharing_message::ServerChannelConfiguration>
           server_channel,
-      SharingDevicePlatform sender_device_type,
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
   void OnAckMessageSent(std::string original_message_id,
-                        sharing_message::MessageType original_message_type,
-                        SharingDevicePlatform sender_device_type,
                         int trace_id,
-                        SharingSendMessageResult result,
-                        std::optional<std::string> message_id,
-                        SharingChannelType channel_type);
+                        SharingSendMessageResult result);
 
   const raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
-  raw_ptr<syncer::DeviceInfoTracker, DanglingUntriaged> device_info_tracker_;
-  raw_ptr<SharingChannelSender, DanglingUntriaged> sharing_channel_sender_;
+  const raw_ptr<SharingMessageSender> message_sender_;
   raw_ptr<SharingHandlerRegistry, DanglingUntriaged> handler_registry_;
 
   bool is_listening_ = false;

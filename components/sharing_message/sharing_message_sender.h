@@ -44,6 +44,7 @@ class SharingMessageSender {
   using ResponseCallback = base::OnceCallback<void(
       SharingSendMessageResult,
       std::unique_ptr<components_sharing_message::ResponseMessage>)>;
+  using SendAckCallback = base::OnceCallback<void(SharingSendMessageResult)>;
 
   SharingMessageSender(
       std::unique_ptr<SharingChannelSender> channel_sender,
@@ -70,6 +71,21 @@ class SharingMessageSender {
       base::TimeDelta response_timeout,
       components_sharing_message::SharingMessage message,
       ResponseCallback callback);
+
+  // Sends an ack for `original_message_id` over `fcm_channel`.
+  virtual void SendAckMessageToFcmTarget(
+      const components_sharing_message::FCMChannelConfiguration& fcm_channel,
+      std::string original_message_id,
+      std::unique_ptr<components_sharing_message::ResponseMessage> response,
+      SendAckCallback callback);
+
+  // Sends an ack for `original_message_id` over `server_channel`.
+  virtual void SendAckMessageToServerTarget(
+      const components_sharing_message::ServerChannelConfiguration&
+          server_channel,
+      std::string original_message_id,
+      std::unique_ptr<components_sharing_message::ResponseMessage> response,
+      SendAckCallback callback);
 
   virtual void OnAckReceived(
       const std::string& message_id,

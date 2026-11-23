@@ -43,7 +43,6 @@
 #include "components/stream_transport/public/transport_session_registry.h"
 #include "components/stream_transport/test_support/mock_transport_service.h"
 #include "components/stream_transport/test_support/proto_stream/wait_for.h"
-#include "components/sync_device_info/fake_device_info_tracker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/data_element.h"
@@ -390,8 +389,7 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
         components_sharing_message::SharingMessage::kActuatorDownstreamMessage,
         handler_.get());
     fcm_handler_ = std::make_unique<SharingFCMHandler>(
-        /*gcm_driver=*/nullptr, &device_info_tracker_,
-        /*sharing_channel_sender=*/nullptr, &handler_registry_);
+        /*gcm_driver=*/nullptr, /*message_sender=*/nullptr, &handler_registry_);
   }
 
   void TearDown() override {
@@ -447,7 +445,6 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> identity_adaptor_;
-  syncer::FakeDeviceInfoTracker device_info_tracker_;
   FakeSharingHandlerRegistry handler_registry_;
   std::unique_ptr<BrowserActuatorMessageHandler> handler_;
   std::unique_ptr<SharingFCMHandler> fcm_handler_;

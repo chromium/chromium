@@ -37,6 +37,25 @@ class MockSharingMessageSender : public SharingMessageSender {
           components_sharing_message::SharingMessage,
           ResponseCallback));
 
+  MOCK_METHOD(
+      void,
+      SendAckMessageToFcmTarget,
+      (const components_sharing_message::FCMChannelConfiguration& fcm_channel,
+       std::string original_message_id,
+       std::unique_ptr<components_sharing_message::ResponseMessage> response,
+       SendAckCallback callback),
+      (override));
+
+  MOCK_METHOD(
+      void,
+      SendAckMessageToServerTarget,
+      (const components_sharing_message::ServerChannelConfiguration&
+           server_channel,
+       std::string original_message_id,
+       std::unique_ptr<components_sharing_message::ResponseMessage> response,
+       SendAckCallback callback),
+      (override));
+
   MOCK_METHOD2(OnAckReceived,
                void(const std::string& fcm_message_id,
                     std::unique_ptr<components_sharing_message::ResponseMessage>

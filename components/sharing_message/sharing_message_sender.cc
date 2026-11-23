@@ -26,6 +26,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
+
 bool MessageTypeExpectsAck(sharing_message::MessageType message_type) {
   switch (message_type) {
     case sharing_message::SEND_TAB_TO_SELF_PUSH_NOTIFICATION:
@@ -34,6 +35,29 @@ bool MessageTypeExpectsAck(sharing_message::MessageType message_type) {
       return true;
   }
 }
+
+components_sharing_message::SharingMessage CreateAckSharingMessage(
+    std::string original_message_id,
+    std::unique_ptr<components_sharing_message::ResponseMessage> response) {
+  components_sharing_message::SharingMessage sharing_message;
+  components_sharing_message::AckMessage* ack_message =
+      sharing_message.mutable_ack_message();
+  ack_message->set_original_message_id(std::move(original_message_id));
+  if (response) {
+    ack_message->set_allocated_response_message(response.release());
+  }
+  return sharing_message;
+}
+
+SharingChannelSender::SendMessageCallback WrapSendAckCallback(
+    SharingMessageSender::SendAckCallback callback) {
+  return base::BindOnce(
+      [](SharingMessageSender::SendAckCallback callback,
+         SharingSendMessageResult result, std::optional<std::string> message_id,
+         SharingChannelType channel_type) { std::move(callback).Run(result); },
+      std::move(callback));
+}
+
 }  // namespace
 
 SharingMessageSender::SharingMessageSender(
@@ -111,6 +135,31 @@ base::OnceClosure SharingMessageSender::SendMessageToServerTarget(
     ResponseCallback callback) {
   return SendMessageToTarget(response_timeout, std::move(message),
                              server_channel, std::move(callback));
+}
+
+void SharingMessageSender::SendAckMessageToFcmTarget(
+    const components_sharing_message::FCMChannelConfiguration& fcm_channel,
+    std::string original_message_id,
+    std::unique_ptr<components_sharing_message::ResponseMessage> response,
+    SendAckCallback callback) {
+  channel_sender_->SendMessageToFcmTarget(
+      fcm_channel, kSharingAckMessageTTL,
+      CreateAckSharingMessage(std::move(original_message_id),
+                              std::move(response)),
+      WrapSendAckCallback(std::move(callback)));
+}
+
+void SharingMessageSender::SendAckMessageToServerTarget(
+    const components_sharing_message::ServerChannelConfiguration&
+        server_channel,
+    std::string original_message_id,
+    std::unique_ptr<components_sharing_message::ResponseMessage> response,
+    SendAckCallback callback) {
+  channel_sender_->SendMessageToServerTarget(
+      server_channel,
+      CreateAckSharingMessage(std::move(original_message_id),
+                              std::move(response)),
+      WrapSendAckCallback(std::move(callback)));
 }
 
 void SharingMessageSender::OnMessageSent(

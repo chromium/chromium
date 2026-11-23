@@ -106,7 +106,6 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       message_bridge, gcm_driver, device_info_tracker,
       local_device_info_provider, sync_service,
       ios::sync_start_util::GetFlareForSyncableService(&profile));
-  SharingChannelSender* channel_sender_ptr = channel_sender.get();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       web::GetUIThreadTaskRunner({});
@@ -120,8 +119,7 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       sharing_message_sender.get());
 
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
-      gcm_driver, device_info_tracker, channel_sender_ptr,
-      handler_registry.get());
+      gcm_driver, sharing_message_sender.get(), handler_registry.get());
 
   send_tab_to_self::SendTabToSelfModel* send_tab_model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)

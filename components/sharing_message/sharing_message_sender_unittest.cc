@@ -9,12 +9,15 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_channel_sender.h"
+#include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -560,4 +563,73 @@ TEST_F(SharingMessageSenderTest,
 
   EXPECT_CALL(mock_callback, Run).Times(0);
   fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(true);
+}
+
+// Tests that `SendAckMessageToFcmTarget()` builds an `AckMessage` and sends it
+// immediately with `kSharingAckMessageTTL` without waiting for
+// `LocalDeviceInfo` or logging `Sharing.SendMessageResult`.
+TEST_F(SharingMessageSenderTest, SendAckMessageToFcmTarget) {
+  base::HistogramTester histogram_tester;
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
+  fcm_channel.set_sender_id_fcm_token("ack_fcm_token");
+  fcm_channel.set_sender_id_p256dh("ack_p256dh");
+  fcm_channel.set_sender_id_auth_secret("ack_auth_secret");
+
+  components_sharing_message::SharingMessage actual_sent_message;
+  EXPECT_CALL(*mock_sharing_channel_sender_,
+              SendMessageToFcmTarget(testing::_, kSharingAckMessageTTL,
+                                     testing::_, testing::_))
+      .WillOnce(testing::DoAll(
+          MoveArg<2>(&actual_sent_message),
+          base::test::RunOnceCallback<3>(SharingSendMessageResult::kSuccessful,
+                                         kSenderMessageID,
+                                         SharingChannelType::kFcmSenderId)));
+
+  base::test::TestFuture<SharingSendMessageResult> result_future;
+  sharing_message_sender_->SendAckMessageToFcmTarget(
+      fcm_channel, "original_message_id",
+      std::make_unique<components_sharing_message::ResponseMessage>(),
+      result_future.GetCallback());
+
+  EXPECT_EQ(SharingSendMessageResult::kSuccessful, result_future.Get());
+  ASSERT_TRUE(actual_sent_message.has_ack_message());
+  EXPECT_EQ("original_message_id",
+            actual_sent_message.ack_message().original_message_id());
+  EXPECT_TRUE(actual_sent_message.ack_message().has_response_message());
+  histogram_tester.ExpectTotalCount("Sharing.SendMessageResult", 0);
+}
+
+// Tests that `SendAckMessageToServerTarget()` builds an `AckMessage` and sends
+// it immediately without waiting for `LocalDeviceInfo` or logging
+// `Sharing.SendMessageResult`.
+TEST_F(SharingMessageSenderTest, SendAckMessageToServerTarget) {
+  base::HistogramTester histogram_tester;
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+
+  components_sharing_message::ServerChannelConfiguration server_channel;
+  server_channel.set_configuration("test_configuration");
+  server_channel.set_p256dh("test_p256dh");
+  server_channel.set_auth_secret("test_auth_secret");
+
+  components_sharing_message::SharingMessage actual_sent_message;
+  EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToServerTarget)
+      .WillOnce(testing::DoAll(
+          MoveArg<1>(&actual_sent_message),
+          base::test::RunOnceCallback<2>(SharingSendMessageResult::kSuccessful,
+                                         kSenderMessageID,
+                                         SharingChannelType::kServer)));
+
+  base::test::TestFuture<SharingSendMessageResult> result_future;
+  sharing_message_sender_->SendAckMessageToServerTarget(
+      server_channel, "original_message_id", /*response=*/nullptr,
+      result_future.GetCallback());
+
+  EXPECT_EQ(SharingSendMessageResult::kSuccessful, result_future.Get());
+  ASSERT_TRUE(actual_sent_message.has_ack_message());
+  EXPECT_EQ("original_message_id",
+            actual_sent_message.ack_message().original_message_id());
+  EXPECT_FALSE(actual_sent_message.ack_message().has_response_message());
+  histogram_tester.ExpectTotalCount("Sharing.SendMessageResult", 0);
 }
