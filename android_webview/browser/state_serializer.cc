@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -339,9 +340,10 @@ bool RestoreNavigationEntryFromPickle(
 
   GURL deserialized_url;
   {
-    string url;
-    if (!iterator->ReadString(&url))
+    std::string_view url;
+    if (!iterator->ReadStringPiece(&url)) {
       return false;
+    }
     deserialized_url = GURL(url);
 
     // Note: The url will be cloberred by the SetPageState call below (see how
@@ -355,9 +357,10 @@ bool RestoreNavigationEntryFromPickle(
   }
 
   {
-    string virtual_url;
-    if (!iterator->ReadString(&virtual_url))
+    std::string_view virtual_url;
+    if (!iterator->ReadStringPiece(&virtual_url)) {
       return false;
+    }
     entry->SetVirtualURL(GURL(virtual_url));
   }
 
@@ -366,13 +369,15 @@ bool RestoreNavigationEntryFromPickle(
     // Note: The referrer will be cloberred by the SetPageState call below (see
     // how RecursivelyGenerateFrameEntries uses PageState data to create
     // FrameNavigationEntries).
-    string referrer_url;
+    std::string_view referrer_url;
     int policy;
 
-    if (!iterator->ReadString(&referrer_url))
+    if (!iterator->ReadStringPiece(&referrer_url)) {
       return false;
-    if (!iterator->ReadInt(&policy))
+    }
+    if (!iterator->ReadInt(&policy)) {
       return false;
+    }
 
     deserialized_referrer.url = GURL(referrer_url);
     deserialized_referrer.policy = content::Referrer::ConvertToPolicy(policy);
@@ -432,16 +437,18 @@ bool RestoreNavigationEntryFromPickle(
   }
 
   {
-    string original_request_url;
-    if (!iterator->ReadString(&original_request_url))
+    std::string_view original_request_url;
+    if (!iterator->ReadStringPiece(&original_request_url)) {
       return false;
+    }
     entry->SetOriginalRequestURL(GURL(original_request_url));
   }
 
   {
-    string base_url_for_data_url;
-    if (!iterator->ReadString(&base_url_for_data_url))
+    std::string_view base_url_for_data_url;
+    if (!iterator->ReadStringPiece(&base_url_for_data_url)) {
       return false;
+    }
     entry->SetBaseURLForDataURL(GURL(base_url_for_data_url));
   }
 
