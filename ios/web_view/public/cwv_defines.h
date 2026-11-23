@@ -166,4 +166,7 @@
 // Supports CWVAutofillErrorDialogContext and showErrorDialogWithContext.
 #define IOS_WEB_VIEW_SUPPORTS_AUTOFILL_ERROR_DIALOG 1
 
+// Supports -[CWVWebView prewarm].
+#define CWV_SUPPORTS_WEB_VIEW_PREWARM 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
