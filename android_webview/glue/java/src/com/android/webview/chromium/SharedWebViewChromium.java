@@ -90,11 +90,11 @@ public class SharedWebViewChromium {
                 (SharedWebViewContentsClientAdapter) awContents.getContentsClient();
     }
 
-    public void setAwContentsForTransfer(AwContents awContents) {
+    public void setAwContentsForTransfer(
+            AwContents awContents, SharedWebViewContentsClientAdapter contentsClientAdapter) {
         assert ThreadUtils.runningOnUiThread();
         mAwContents = awContents;
-        mContentsClientAdapter =
-                (SharedWebViewContentsClientAdapter) awContents.getContentsClient();
+        mContentsClientAdapter = contentsClientAdapter;
     }
 
     // Forbids later attempts to begin applying builder configuration on the WebView instance.

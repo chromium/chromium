@@ -503,7 +503,13 @@ class WebViewChromium
 
         mAwWebContent = getSharedDestroyedAwWebContent();
         mAwContents = mAwWebContent.getAwContents();
-        mSharedWebViewChromium.setAwContentsForTransfer(mAwContents);
+        // Calls on this WebView, e.g. an app clearing its clients in onDestroy(), shouldn't change
+        // the WebContent that moved away. Use a new adapter rather than the shared destroyed
+        // AwContents' one so that it doesn't keep clients set here alive.
+        mContentsClientAdapter =
+                new WebViewContentsClientAdapter(mAwContents, mFactory.getWebViewDelegate());
+        mWebSettings = mFactory.createContentSettingsAdapter(mAwContents.getSettings());
+        mSharedWebViewChromium.setAwContentsForTransfer(mAwContents, mContentsClientAdapter);
     }
 
     /** Returns the process-wide destroyed {@link AwWebContent} that detached instances point at. */
