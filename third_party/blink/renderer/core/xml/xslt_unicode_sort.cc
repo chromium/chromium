@@ -176,7 +176,7 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
   UBool is_available;
   ucol_getFunctionalEquivalent(equivalent_locale, ULOC_FULLNAME_CAPACITY,
                                "collation", lang, &is_available, &status);
-  if (U_FAILURE(status)) {
+  if (U_FAILURE(status) || status == U_STRING_NOT_TERMINATED_WARNING) {
     base::span(equivalent_locale)
         .copy_prefix_from(base::span_with_nul_from_cstring("root"));
     status = U_ZERO_ERROR;

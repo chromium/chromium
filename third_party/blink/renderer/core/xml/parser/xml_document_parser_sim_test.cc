@@ -471,6 +471,71 @@ TEST_F(XMLDocumentParserSimTest, RustParserXsltCapAlertDisabled) {
   EXPECT_TRUE(GetDocument().IsViewSource());
 }
 
+TEST_F(XMLDocumentParserSimTest, XsltSortWithLongLocaleIdentifier) {
+  ScopedXSLTForTest enable_xslt(true);
+
+  SimRequest main_resource("https://example.com/test.xml", "application/xml");
+  SimSubresourceRequest sheet_resource("https://example.com/sheet.xsl",
+                                       "text/xsl");
+  LoadURL("https://example.com/test.xml");
+  main_resource.Write(
+      "<?xml version=\"1.0\"?>\n"
+      "<?xml-stylesheet type=\"text/xsl\" href=\"sheet.xsl\"?>\n"
+      "<r><i>b</i><i>a</i></r>");
+  main_resource.Finish();
+
+  // Locale identifier whose functional equivalent fills ULOC_FULLNAME_CAPACITY
+  // (157 bytes) without room for a NUL terminator, alongside standard and
+  // over-capacity locale identifiers across uncached and cached collators.
+  sheet_resource.Complete(
+      "<xsl:stylesheet version=\"1.0\" "
+      "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
+      "<xsl:template match=\"/\">"
+      "<html><body><div id=\"result\">"
+      "<xsl:for-each select=\"r/i\">"
+      "<xsl:sort lang=\"de\"/>"
+      "<xsl:value-of select=\".\"/>"
+      "</xsl:for-each>"
+      "-"
+      "<xsl:for-each select=\"r/i\">"
+      "<xsl:sort lang=\"de_x_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_"
+      "aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_"
+      "aaaaaaaa_aaaaa@collation=phonebook\"/>"
+      "<xsl:value-of select=\".\"/>"
+      "</xsl:for-each>"
+      "-"
+      "<xsl:for-each select=\"r/i\">"
+      "<xsl:sort lang=\"de_x_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_"
+      "aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_"
+      "aaaaaaaa_aaaaa@collation=phonebook\"/>"
+      "<xsl:value-of select=\".\"/>"
+      "</xsl:for-each>"
+      "-"
+      "<xsl:for-each select=\"r/i\">"
+      "<xsl:sort lang=\"de_x_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_"
+      "aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_aaaaaaaa_"
+      "aaaaaaaa_aaaaa_extra@collation=phonebook\"/>"
+      "<xsl:value-of select=\".\"/>"
+      "</xsl:for-each>"
+      "-"
+      "<xsl:for-each select=\"r/i\">"
+      "<xsl:sort lang=\"de\"/>"
+      "<xsl:value-of select=\".\"/>"
+      "</xsl:for-each>"
+      "</div></body></html>"
+      "</xsl:template>"
+      "</xsl:stylesheet>");
+  test::RunPendingTasks();
+
+  Document* transformed_doc = MainFrame().GetFrame()->GetDocument();
+  ASSERT_TRUE(transformed_doc);
+  Element* result = transformed_doc->getElementById(AtomicString("result"));
+  ASSERT_TRUE(result);
+
+  // The test requires building with ASan to catch a crash.
+  EXPECT_EQ(result->textContent(), "ab-ab-ab-ab-ab");
+}
+
 }  // namespace
 
 }  // namespace blink
