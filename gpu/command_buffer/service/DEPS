@@ -22,4 +22,10 @@ specific_include_rules = {
   "drm_modifiers_filter_dawn\\.cc": [
     "+third_party/libdrm/src/include/drm/drm_fourcc.h",
   ],
+  "gl_utils\\.cc": [
+    "+third_party/libdrm/src/include/drm/drm_fourcc.h",
+  ],
+  "raster_decoder\\.cc": [
+    "+third_party/libdrm/src/include/drm/drm_fourcc.h",
+  ],
 }

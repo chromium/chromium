@@ -31,6 +31,12 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "third_party/libdrm/src/include/drm/drm_fourcc.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_surface_egl.h"
+#endif
+
 namespace gpu {
 namespace gles2 {
 
@@ -382,6 +388,57 @@ void PopulateDRMCapabilities(Capabilities* caps,
   }
 }
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+bool LinearDmaBufRequiresExternalSampler(uint32_t drm_format) {
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  if (!display || !display->IsInitialized() ||
+      !display->ext->b_EGL_EXT_image_dma_buf_import_modifiers) {
+    return false;
+  }
+
+  EGLDisplay egl_display = display->GetDisplay();
+
+  // Query the supported formats first: ANGLE rejects
+  // eglQueryDmaBufModifiersEXT for any format until this has been called.
+  EGLint num_formats = 0;
+  if (!eglQueryDmaBufFormatsEXT(egl_display, 0, nullptr, &num_formats) ||
+      num_formats <= 0) {
+    return false;
+  }
+  std::vector<EGLint> formats(num_formats);
+  if (!eglQueryDmaBufFormatsEXT(egl_display, num_formats, formats.data(),
+                                &num_formats)) {
+    return false;
+  }
+  formats.resize(num_formats);
+  if (!std::ranges::contains(formats, static_cast<EGLint>(drm_format))) {
+    return true;
+  }
+
+  EGLint num_modifiers = 0;
+  if (!eglQueryDmaBufModifiersEXT(egl_display, drm_format, 0, nullptr, nullptr,
+                                  &num_modifiers) ||
+      num_modifiers <= 0) {
+    return false;
+  }
+
+  std::vector<EGLuint64KHR> modifiers(num_modifiers);
+  std::vector<EGLBoolean> external_only(num_modifiers);
+  if (!eglQueryDmaBufModifiersEXT(egl_display, drm_format, num_modifiers,
+                                  modifiers.data(), external_only.data(),
+                                  &num_modifiers)) {
+    return false;
+  }
+
+  for (EGLint i = 0; i < num_modifiers; ++i) {
+    if (modifiers[i] == DRM_FORMAT_MOD_LINEAR) {
+      return external_only[i] == EGL_TRUE;
+    }
+  }
+  return true;
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 bool CheckUniqueAndNonNullIds(GLsizei n, const GLuint* client_ids) {
   if (n <= 0)

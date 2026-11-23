@@ -122,6 +122,10 @@
 #include "ui/gfx/linux/drm_util_linux.h"  // nogncheck
 #endif                                    // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX)
+#include "third_party/libdrm/src/include/drm/drm_fourcc.h"
+#endif
+
 // Local versions of the SET_GL_ERROR macros
 #define LOCAL_SET_GL_ERROR(error, function_name, msg) \
   ERRORSTATE_SET_GL_ERROR(error_state_.get(), error, function_name, msg)
@@ -1154,6 +1158,14 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       feature_info()->feature_flags().oes_compressed_etc1_rgb8_texture;
   caps.image_ar30 = feature_info()->feature_flags().chromium_image_ar30;
   caps.image_ab30 = feature_info()->feature_flags().chromium_image_ab30;
+#if BUILDFLAG(IS_LINUX)
+  // XB30 video frames are CPU-written LINEAR dma-bufs sampled as
+  // GL_TEXTURE_2D. Media falls back to YV12 if the driver can't do that.
+  if (caps.image_ab30 &&
+      gles2::LinearDmaBufRequiresExternalSampler(DRM_FORMAT_ABGR2101010)) {
+    caps.image_ab30 = false;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
   caps.render_buffer_format_bgra8888 =
       feature_info()->feature_flags().ext_render_buffer_format_bgra8888;
 

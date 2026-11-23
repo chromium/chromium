@@ -97,6 +97,14 @@ void PopulateDRMCapabilities(Capabilities* caps,
                              const FeatureInfo* feature_info);
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+// Returns true if the driver reports that LINEAR dma-bufs of `drm_format` are
+// external-only, or if `drm_format` or LINEAR can't be imported at all.
+// Returns false if they can be sampled as GL_TEXTURE_2D, or if the driver
+// can't be queried.
+bool LinearDmaBufRequiresExternalSampler(uint32_t drm_format);
+#endif
+
 bool CheckUniqueAndNonNullIds(GLsizei n, const GLuint* client_ids);
 
 const char* GetServiceVersionString(const FeatureInfo* feature_info);
