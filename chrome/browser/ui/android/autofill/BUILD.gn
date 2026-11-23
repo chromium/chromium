@@ -180,6 +180,7 @@ source_set("unit_tests") {
     "//components/browser_ui/device_lock/android:test_support",
     "//components/messages/android",
     "//components/messages/android:test_support",
+    "//components/resources:android_resources",
     "//components/resources:components_scaled_resources",
     "//components/strings:components_strings",
     "//content/public/browser",

@@ -132,7 +132,8 @@ public class AutofillAiSaveUpdateEntityPrompt {
         if (isWalletableEntity) {
             mDialogModel.set(
                     ModalDialogProperties.TITLE_END_ICON,
-                    AppCompatResources.getDrawable(mContext, R.drawable.google_wallet_24dp));
+                    AppCompatResources.getDrawable(
+                            mContext, AutofillUiUtils.getGoogleWalletIconDrawableId()));
             if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_AI_WALLET_PASS_BRANDING_2026)) {
                 mDialogModel.set(ModalDialogProperties.TITLE_END_ICON_GRAVITY, Gravity.TOP);

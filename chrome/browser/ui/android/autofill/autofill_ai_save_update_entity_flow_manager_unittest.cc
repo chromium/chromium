@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/android/autofill/autofill_message_model.h"
@@ -24,6 +25,9 @@
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/grit/components_scaled_resources.h"
+#include "components/resources/android/theme_resources.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
@@ -147,6 +151,8 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowUpdateMessage) {
 }
 
 TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowSaveToWalletMessage) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableGradientGoogleLogos};
   SigninUser(TestingProfile::kDefaultProfileUserName,
              signin::ConsentLevel::kSignin);
   std::unique_ptr<AutofillMessageModel> message_model;
@@ -170,6 +176,41 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowSaveToWalletMessage) {
   EXPECT_EQ(test_api(*message_model).GetMessage().GetPrimaryButtonText(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON));
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetIconResourceId(),
+            ResourceMapper::MapToJavaDrawableId(
+                IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT));
+}
+
+TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest,
+       ShowSaveToWalletMessage_GradientGoogleLogosDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableGradientGoogleLogos);
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
+  std::unique_ptr<AutofillMessageModel> message_model;
+  // Show the message and save the message model.
+  EXPECT_CALL(message_controller(), Show(_))
+      .WillOnce(SaveArgByMove<0>(&message_model));
+  flow_manager().OfferSave(
+      new_entity(EntityInstance::RecordType::kServerWallet),
+      /*old_entity=*/std::nullopt, prompt_closed_callback().Get());
+
+  const std::u16string google_wallet =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_ANDROID));
+  EXPECT_EQ(
+      test_api(*message_model).GetMessage().GetDescription(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_MESSAGE_SUBTITLE, google_wallet,
+          base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName)));
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetPrimaryButtonText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON));
+  EXPECT_EQ(test_api(*message_model).GetMessage().GetIconResourceId(),
+            ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_WALLET));
 }
 
 TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowUpdateInWalletMessage) {

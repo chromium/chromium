@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/language_tag.h"
@@ -24,6 +25,8 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_resource_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/messages/android/message_enums.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -56,7 +59,10 @@ std::u16string GetMessageDescription(content::WebContents* web_contents,
 
 int GetMessageIconResourceId(const EntityInstance& entity) {
   if (entity.record_type() == EntityInstance::RecordType::kServerWallet) {
-    return IDR_ANDROID_AUTOFILL_WALLET;
+    return base::FeatureList::IsEnabled(
+               features::kAutofillEnableGradientGoogleLogos)
+               ? IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT
+               : IDR_ANDROID_AUTOFILL_WALLET;
   }
   switch (entity.type().name()) {
     case EntityTypeName::kDriversLicense:
