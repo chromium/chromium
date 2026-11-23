@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">බ්‍රවුස් ඉතිහාසය</translation>
 <translation id="250020030759455918">ඔබ Chrome තුළ ඔබේ <ph name="SITE_NAME" /> පුරන තත්ත්‍වය, බ්‍රවුස් කිරීමේ දත්ත, සහ අඩවි දත්ත දකිනු ඇත</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# බාගැනීමක් කෙරෙමින් පවතී}one{බාගැනීම් #ක් කෙරෙමින් පවතී}other{බාගැනීම් #ක් කෙරෙමින් පවතී}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ස්ථාපනය කරමින්...</translation>
 <translation id="2512234228327349533">මිල දී ගැනීමේ විකල්ප සොයන්න</translation>
 <translation id="2513403576141822879">රහස්‍යතාව, ආරක්ෂාව, සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />සමමුහුර්තකරණය සහ Google සේවා<ph name="END_LINK" /> බලන්න</translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">ඔබ මෙම වෙබ් අඩවිය විශ්වාස කරන බව සහතික කර ගන්න</translation>
 <translation id="3740525748616366977">මෙම උපාංගයෙහි හඬ සෙවීම නොමැත</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
+<translation id="3751708358601675711">මිල නිරීක්ෂණය සංස්කරණය කරන්න</translation>
 <translation id="3756823472711156529">සමූහය ප්‍රතිසාධනය කරන්න</translation>
 <translation id="3759306015475526475">භාවිතය සහ බිඳ වැටීම් දත්ත සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="3763110477555836428">ඔබේ සැබෑ විස්තර ආරක්ෂා කිරීමට ඔබ මෙම කාඩ්පත සමග පිටවන විට අතථ්‍ය කාඩ්පත් අංකයක් පුරවනු ලැබේ. Google Wallet තුළ කළමනාකරණය කරන්න. <ph name="BEGIN_LINK1" />අතථ්‍ය කාඩ්පත් ගැන තව දැන ගන්න<ph name="END_LINK1" /></translation>

@@ -386,6 +386,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2496180316473517155">방문 기록</translation>
 <translation id="250020030759455918">Chrome에서 <ph name="SITE_NAME" /> 로그인 상태, 인터넷 사용 기록, 사이트 데이터를 볼 수 있습니다.</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{#개 다운로드 중}other{#개 다운로드 중}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> 설치 중...</translation>
 <translation id="2512234228327349533">구매 옵션 검색</translation>
 <translation id="2513403576141822879">개인 정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
@@ -697,6 +698,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3740290940447881599">이 사이트를 신뢰할 수 있는지 확인하세요</translation>
 <translation id="3740525748616366977">이 기기에서는 음성 검색을 사용할 수 없습니다.</translation>
 <translation id="3749289110408117711">파일 이름</translation>
+<translation id="3751708358601675711">가격 추적 수정</translation>
 <translation id="3756823472711156529">그룹 복원</translation>
 <translation id="3759306015475526475">사용 및 비정상 종료 데이터 설정 관리</translation>
 <translation id="3763110477555836428">이 카드로 결제하면 실제 정보를 보호하기 위해 가상 카드 번호가 입력됩니다. Google 월렛에서 관리하세요. <ph name="BEGIN_LINK1" />가상 카드에 대해 자세히 알아보기<ph name="END_LINK1" /></translation>

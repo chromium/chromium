@@ -1788,6 +1788,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6504541289630702018">데스크톱 탭 그룹에 간편하게 액세스하기</translation>
 <translation id="6505334220040167806">탭 그룹을 접습니다.</translation>
 <translation id="6506996418997555004">'<ph name="GROUP_NAME" />' 탭 그룹 공유</translation>
+<translation id="650770261448122895">눈앞의 사물을 렌즈로 검색해 보세요</translation>
 <translation id="6507973708545996744">모든 기기에서 읽기 목록을 확인하려면 로그인하세요.</translation>
 <translation id="6518133107902771759">확인</translation>
 <translation id="6523575793810663688">방법 보기</translation>
@@ -2430,6 +2431,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8439758443371991593">읽기 목록에 추가 숨기기</translation>
 <translation id="8443986842926457191">URL이 2,048자(영문 기준)를 초과합니다.</translation>
 <translation id="8449869326050867919">비밀번호 공유됨</translation>
+<translation id="8473367210869452063">이 사이트와 상호작용하려면 현재 작업을 중지하거나 Gemini가 작업을 완료할 때까지 기다리세요</translation>
 <translation id="8473815223723723001">Gemini로 이미지 수정</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474378002946546633">알림 허용</translation>
