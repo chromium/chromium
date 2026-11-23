@@ -507,7 +507,7 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-multiple-backgrounds.html [ Failure ]
 
 # [css-image-animation]
-crbug.com/536159147 [ Mac ] external/wpt/css/css-image-animation/image-animation-paused-exact-frame.tentative.html [ Failure Pass ]
+crbug.com/536159147 [ Mac ] external/wpt/css/css-image-animation/image-animation-paused-exact-frame.html [ Failure Pass ]
 
 # Most of these fail due to subpixel differences, but a couple are real failures.
 crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter.html [ Failure Pass ]
@@ -8766,3 +8766,8 @@ crbug.com/589040167 [ Mac ] external/wpt/html/interaction/focus/the-autofocus-at
 crbug.com/589614517 [ Win11-arm64 ] external/wpt/webnn/conformance_tests/resample2d-gather-shape-divergence.https.any.html?gpu [ Failure Pass ]
 crbug.com/589626372 [ Debug Linux ] external/wpt/html/user-activation/traverse-aborted-by-204.https.html [ Failure Pass ]
 crbug.com/588928170 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-generated-content-001.html [ Failure Pass ]
+
+# CQ flakiness quarantine 2026-11-23
+crbug.com/584728940 [ Linux Release ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash Pass ]
+crbug.com/339680580 [ Mac ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Failure Pass ]
+crbug.com/339680580 [ Win10.20h2 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Failure Pass ]
