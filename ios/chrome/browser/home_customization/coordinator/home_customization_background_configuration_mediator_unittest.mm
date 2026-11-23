@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import <variant>
 
 #import "base/memory/raw_ptr.h"
@@ -228,9 +230,9 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
         std::get<1>(collection_images[i]);
 
     // Verify that each collection has the right number of items.
-    EXPECT_EQ(expected_images.size(),
+    ASSERT_EQ(expected_images.size(),
               consumer_.configurations[i].configurationOrder.count);
-    EXPECT_EQ(expected_images.size(),
+    ASSERT_EQ(expected_images.size(),
               consumer_.configurations[i].configurations.count);
 
     // Verify that each individual item matches the data.
@@ -263,8 +265,8 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   // First element is the default background. Last element is the custom color
   // option. So expected size is number of colors + 2.
   std::size_t expected_size = kSeedColors.size() + 2;
-  EXPECT_EQ(expected_size, collection.configurationOrder.count);
-  EXPECT_EQ(expected_size, collection.configurations.count);
+  ASSERT_EQ(expected_size, collection.configurationOrder.count);
+  ASSERT_EQ(expected_size, collection.configurations.count);
 
   for (size_t i = 0; i < kSeedColors.size(); i++) {
     NSString* item_id = collection.configurationOrder[i];
@@ -303,6 +305,10 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   [mediator_ loadColorBackgroundConfigurations];
 
+  ASSERT_EQ(1u, consumer_.configurations.count);
+  ASSERT_GT(consumer_.configurations[0].configurationOrder.count,
+            static_cast<NSUInteger>(selected_color + 1));
+
   // The first item in the configurations is the default color selector.
   EXPECT_EQ(consumer_.configurations[0].configurationOrder[selected_color + 1],
             consumer_.selectedBackgroundId);
@@ -338,8 +344,8 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   // There should be 4 items: default, then the user image, gallery image, and
   // color (the set backgrounds in reverse order).
-  EXPECT_EQ(4u, collection.configurationOrder.count);
-  EXPECT_EQ(4u, collection.configurations.count);
+  ASSERT_EQ(4u, collection.configurationOrder.count);
+  ASSERT_EQ(4u, collection.configurations.count);
 
   for (NSUInteger i = 0; i < collection.configurations.count; i++) {
     NSString* item_id = collection.configurationOrder[i];
@@ -620,6 +626,8 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   // Get the background configuration from the mediator.
   [mediator_ loadRecentlyUsedBackgroundConfigurations];
+  ASSERT_EQ(1u, consumer_.configurations.count);
+  ASSERT_GT(consumer_.configurations[0].configurationOrder.count, 1u);
 
   // The color option is index 1 in configurationOrder as index 0 is the default
   // background.
@@ -718,7 +726,7 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
   __block UIImage* actual_image;
-  __block CGSize actual_original_size;
+  __block CGSize actual_original_size = CGSizeZero;
 
   [mediator_
       fetchBackgroundCustomizationUserUploadedImage:base::SysUTF8ToNSString(
