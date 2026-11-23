@@ -15,7 +15,7 @@
 #include "base/byte_size.h"
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -488,27 +488,14 @@ class MODULES_EXPORT BaseRenderingContext2D
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
 
-  // Pool-scoped helper bound weakly into resource release callbacks so
-  // returning resources can recycle into the exact `image_pool_` they came
-  // from (if recycling is enabled) without binding `BaseRenderingContext2D`.
-  // Resetting `resource_recycler_` in `ResetSharedImagePool()` invalidates
-  // callbacks for resources from any previous pool.
-  struct ResourceRecycler {
-    explicit ResourceRecycler(gpu::SharedImagePool<CanvasResource>& pool);
-    ~ResourceRecycler();
-
-    void Recycle(scoped_refptr<CanvasResource> resource);
-
-    raw_ref<gpu::SharedImagePool<CanvasResource>> pool;
-    bool enabled = true;
-    base::WeakPtrFactory<ResourceRecycler> weak_ptr_factory{this};
-  };
-
   Canvas2DColorParams color_params_;
-  // If this instance is single-buffered or `resource_recycler_->enabled` is
-  // false, `image_pool_` will not recycle resources.
+  // If this instance is single-buffered or `resource_recycling_enabled_->data`
+  // is false, `image_pool_` will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResource>> image_pool_;
-  std::optional<ResourceRecycler> resource_recycler_;
+  // Pool-scoped flag wrapped in `RefCountedData` so resource release callbacks
+  // can check whether recycling is enabled without binding the Oilpan-managed
+  // `BaseRenderingContext2D`. Non-null iff `image_pool_` is non-null.
+  scoped_refptr<base::RefCountedData<bool>> resource_recycling_enabled_;
   scoped_refptr<CanvasResource> resource_;
   bool is_accelerated_ = false;
   sk_sp<SkSurface> surface_;

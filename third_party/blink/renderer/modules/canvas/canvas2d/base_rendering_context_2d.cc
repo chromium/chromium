@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <cinttypes>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
@@ -20,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -47,7 +49,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -234,10 +235,10 @@ bool BaseRenderingContext2D::HasSharedImagePool() const {
 }
 
 void BaseRenderingContext2D::SetResourceRecyclingEnabled(bool value) {
-  if (!resource_recycler_) {
+  if (!resource_recycling_enabled_) {
     return;
   }
-  resource_recycler_->enabled = value;
+  resource_recycling_enabled_->data = value;
   if (!value) {
     ClearUnusedResources();
   }
@@ -281,7 +282,7 @@ void BaseRenderingContext2D::ResetSharedImagePool() {
   if (!image_pool_) {
     return;
   }
-  resource_recycler_.reset();
+  resource_recycling_enabled_.reset();
   image_pool_.reset();
   resource_.reset();
   is_accelerated_ = false;
@@ -305,19 +306,6 @@ void BaseRenderingContext2D::ResetSharedImagePool() {
 void BaseRenderingContext2D::ClearUnusedResources() {
   if (image_pool_) {
     image_pool_->Clear();
-  }
-}
-
-BaseRenderingContext2D::ResourceRecycler::ResourceRecycler(
-    gpu::SharedImagePool<CanvasResource>& pool)
-    : pool(pool) {}
-
-BaseRenderingContext2D::ResourceRecycler::~ResourceRecycler() = default;
-
-void BaseRenderingContext2D::ResourceRecycler::Recycle(
-    scoped_refptr<CanvasResource> resource) {
-  if (enabled && !resource->IsLost() && resource->HasOneRef()) {
-    pool->ReleaseImage(std::move(resource));
   }
 }
 
@@ -556,7 +544,8 @@ void BaseRenderingContext2D::CreateSharedImagePool(
       image_info, sii,
       is_accelerated_ ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
       is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
-  resource_recycler_.emplace(*image_pool_);
+  resource_recycling_enabled_ =
+      base::MakeRefCounted<base::RefCountedData<bool>>(true);
 
   resource_ = NewOrRecycledResource();
 
@@ -629,7 +618,8 @@ void BaseRenderingContext2D::CreateSharedImagePoolForSoftwareCompositor() {
   image_pool_ = gpu::SharedImagePool<CanvasResource>::Create(
       image_info, sii, "CanvasResourceSharedImage",
       kMaxRecycledCanvasResources);
-  resource_recycler_.emplace(*image_pool_);
+  resource_recycling_enabled_ =
+      base::MakeRefCounted<base::RefCountedData<bool>>(true);
   CreateSoftwareSurface();
   if (!surface_) {
     ResetSharedImagePool();
@@ -1034,11 +1024,12 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
 
       // The |release_callback| keeps a ref on this resource to ensure the
       // backing shared image is kept alive until the lifetime of the image.
-      // Note that `ResourceRecycler::Recycle()` also uses the ref-count on the
-      // resource as a proxy for a read lock to allow recycling the resource
-      // once all refs have been released.
+      // Note that recycling below also uses the ref-count on the resource as a
+      // proxy for a read lock to allow recycling the resource once all refs
+      // have been released.
       auto release_callback = base::BindOnce(
-          [](base::WeakPtr<ResourceRecycler> recycler,
+          [](base::WeakPtr<gpu::SharedImagePool<CanvasResource>> image_pool,
+             scoped_refptr<const base::RefCountedData<bool>> recycling_enabled,
              scoped_refptr<CanvasResource> resource,
              const gpu::SyncToken& sync_token, bool lost_resource) {
             CHECK(resource);
@@ -1049,11 +1040,12 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
               resource->NotifyResourceLost();
             }
 
-            if (recycler) {
-              recycler->Recycle(std::move(resource));
+            if (image_pool && recycling_enabled->data && !resource->IsLost() &&
+                resource->HasOneRef()) {
+              image_pool->ReleaseImage(std::move(resource));
             }
           },
-          resource_recycler_->weak_ptr_factory.GetWeakPtr(), resource_);
+          image_pool_->GetWeakPtr(), resource_recycling_enabled_, resource_);
 
       const auto& client_shared_image = resource_->GetSharedImage();
 
@@ -1178,7 +1170,8 @@ BaseRenderingContext2D::CreateExportedResource(
           resource));
 
   auto release_callback = base::BindOnce(
-      [](base::WeakPtr<ResourceRecycler> recycler,
+      [](base::WeakPtr<gpu::SharedImagePool<CanvasResource>> image_pool,
+         scoped_refptr<const base::RefCountedData<bool>> recycling_enabled,
          scoped_refptr<CanvasResource> resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
         CHECK(resource);
@@ -1186,11 +1179,12 @@ BaseRenderingContext2D::CreateExportedResource(
         if (is_lost) {
           resource->NotifyResourceLost();
         }
-        if (recycler) {
-          recycler->Recycle(std::move(resource));
+        if (image_pool && recycling_enabled->data && !resource->IsLost() &&
+            resource->HasOneRef()) {
+          image_pool->ReleaseImage(std::move(resource));
         }
       },
-      resource_recycler_->weak_ptr_factory.GetWeakPtr(), resource);
+      image_pool_->GetWeakPtr(), resource_recycling_enabled_, resource);
 
   auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
       resource->GetSharedImage(), resource->sync_token(),
@@ -1937,7 +1931,8 @@ String BaseRenderingContext2D::font() const {
   if (font_description.Weight() == kBoldWeightValue) {
     serialized_font.Append("bold ");
   } else if (font_description.Weight() != kNormalWeightValue) {
-    int weight_as_int = static_cast<int>((float)font_description.Weight());
+    int weight_as_int =
+        static_cast<int>(static_cast<float>(font_description.Weight()));
     serialized_font.AppendNumber(weight_as_int);
     serialized_font.Append(" ");
   }
