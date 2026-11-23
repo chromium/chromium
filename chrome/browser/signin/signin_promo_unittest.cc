@@ -1337,7 +1337,7 @@ TEST_F(AvatarButtonPromoManagerTest, PromoTypesUseDifferentUsedLimits) {
 }
 
 TEST_F(AvatarButtonPromoManagerTest,
-       SigninPromoSupportIndependantProfileAndAccountShownCount) {
+       SigninPromoSupportIndependentProfileAndAccountShownCount) {
   ProfileMenuAvatarButtonPromoInfo::Type promo_type =
       ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo;
   const int max_shown_count = 3;
@@ -1386,7 +1386,7 @@ TEST_F(AvatarButtonPromoManagerTest,
 }
 
 TEST_F(AvatarButtonPromoManagerTest,
-       SigninPromoSupportIndependantProfileAndAccountUsedCount) {
+       SigninPromoSupportIndependentProfileAndAccountUsedCount) {
   ProfileMenuAvatarButtonPromoInfo::Type promo_type =
       ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo;
   const int max_used_count = 2;

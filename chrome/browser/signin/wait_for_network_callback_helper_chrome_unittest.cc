@@ -84,7 +84,7 @@ TEST_F(WaitForNetworkCallbackHelperChromeTest,
 }
 
 TEST_F(WaitForNetworkCallbackHelperChromeTest,
-       MutlipleDelayNetworkCallsRunsAfterNetworkChange) {
+       MultipleDelayNetworkCallsRunsAfterNetworkChange) {
   SetUpNetworkConnection(
       true, net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
