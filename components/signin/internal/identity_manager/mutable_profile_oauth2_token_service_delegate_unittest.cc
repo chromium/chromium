@@ -2449,6 +2449,59 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.empty() ? "NoChallenge" : "HasChallenge";
     });
 
+TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+       ChallengeSigningAndNetworkLatencies) {
+  constexpr base::TimeDelta kUnwrapKeyDelay = base::Milliseconds(80);
+  constexpr base::TimeDelta kSignDelay = base::Milliseconds(120);
+  constexpr base::TimeDelta kNetworkDelay = base::Milliseconds(30);
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  unexportable_keys::MockUnexportableKeyService& mock_uks =
+      SwitchToMockUnexportableKeyService();
+  EXPECT_CALL(mock_uks, GetAlgorithm)
+      .WillOnce(testing::Return(crypto::sign::RSA_PKCS1_SHA256));
+  EXPECT_CALL(mock_uks, GetSubjectPublicKeyInfo)
+      .WillOnce(testing::Return(std::vector<uint8_t>{1, 2, 3}));
+  EXPECT_CALL(mock_uks, FromWrappedSigningKeySlowlyAsync(
+                            Eq(kFakeWrappedBindingKey), _, _))
+      .WillOnce(
+          testing::DoAll(testing::WithoutArgs([this, kUnwrapKeyDelay] {
+                           task_environment_.AdvanceClock(kUnwrapKeyDelay);
+                         }),
+                         base::test::RunOnceCallback<2>(
+                             unexportable_keys::UnexportableSigningKeyId())));
+  EXPECT_CALL(mock_uks, SignSlowlyAsync)
+      .WillOnce(testing::DoAll(
+          testing::WithoutArgs([this, kSignDelay] {
+            task_environment_.AdvanceClock(kSignDelay);
+          }),
+          base::test::RunOnceCallback<3>(std::vector<uint8_t>{4, 5, 6})));
+
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
+      GaiaId("account_id"), "test@google.com");
+  oauth2_service_delegate_->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      signin::TokenBindingInfo(kFakeWrappedBindingKey,
+                               /*mtls_token_binding=*/false));
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
+      oauth2_service_delegate_->CreateAccessTokenFetcher(
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          "test_challenge");
+  fetcher->Start("foo", "bar", {"scope"});
+
+  ASSERT_EQ(1, client_->GetTestURLLoaderFactory()->NumPending());
+  task_environment_.AdvanceClock(kNetworkDelay);
+  AddSuccessfulIssueTokenResponse();
+  WaitForGetTokenCompleted();
+
+  EXPECT_EQ(1, access_token_success_count_);
+  EXPECT_EQ(fetcher->GetChallengeSigningLatency(),
+            kUnwrapKeyDelay + kSignDelay);
+  EXPECT_EQ(fetcher->GetNetworkLatency(), kNetworkDelay);
+}
+
 class MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest
     : public MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       public testing::WithParamInterface<ExtractCredentialsTestCase> {

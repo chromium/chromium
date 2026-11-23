@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
@@ -75,7 +77,13 @@ class TokenBindingOAuth2AccessTokenFetcherTest : public testing::Test {
     return mock_internal_fetcher_;
   }
 
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TokenBindingOAuth2AccessTokenFetcher> fetcher_;
   raw_ptr<testing::StrictMock<MockOAuth2MintAccessTokenFetcherAdapter>>
       mock_internal_fetcher_;
@@ -130,6 +138,15 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, SetAssertionThenStart) {
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, CancelRequest) {
   EXPECT_CALL(*mock_internal_fetcher(), CancelRequest());
   fetcher()->CancelRequest();
+}
+
+TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, GetChallengeSigningLatency) {
+  EXPECT_EQ(fetcher()->GetChallengeSigningLatency(), std::nullopt);
+  task_environment().FastForwardBy(base::Milliseconds(120));
+  EXPECT_CALL(*mock_internal_fetcher(), SetBindingKeyAssertion(kAssertion));
+  fetcher()->SetBindingKeyAssertion(/*ephemeral_key=*/std::nullopt, kAssertion);
+  task_environment().FastForwardBy(base::Milliseconds(50));
+  EXPECT_EQ(fetcher()->GetChallengeSigningLatency(), base::Milliseconds(120));
 }
 
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, SetAssertionWithEphemeralKey) {

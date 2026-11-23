@@ -184,6 +184,12 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   std::string GetConsumerName() const override;
 
  private:
+  struct Latencies {
+    std::optional<base::TimeDelta> network;
+    std::optional<base::TimeDelta> backoff;
+    std::optional<base::TimeDelta> challenge_signing;
+  };
+
   Fetcher(OAuth2AccessTokenManager* oauth2_access_token_manager,
           const CoreAccountId& account_id,
           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -204,18 +210,14 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   bool RetryIfPossible(const GoogleServiceAuthError& error);
 
   // Records the latency of the current fetch attempt (measured from the last
-  // call to `Start()`) and accumulates the attempt's network latency. Must only
-  // be called while `fetcher_` is set, which guarantees that `Start()` was
+  // call to `Start()`) and accumulates the attempt's sub-stage latencies. Must
+  // only be called while `fetcher_` is set, which guarantees that `Start()` was
   // called.
   void RecordAttemptLatency(bool success);
 
-  // Records the cumulative network latency across all attempts when this
+  // Records cumulative sub-stage latencies across all attempts when this
   // `Fetcher` finishes.
-  void RecordCumulativeNetworkLatency(bool success);
-
-  // Records the cumulative retry backoff wait time across all attempts when
-  // this `Fetcher` finishes.
-  void RecordCumulativeBackoffLatency(bool success);
+  void RecordCumulativeLatencies(bool success);
 
   const raw_ptr<OAuth2AccessTokenManager> oauth2_access_token_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -232,14 +234,12 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   // latency of each individual attempt (retries are recorded separately).
   base::TimeTicks attempt_start_time_;
 
-  // Sum of network latencies across all attempts of this fetch, if at least one
-  // network request completed.
-  std::optional<base::TimeDelta> cumulative_network_latency_;
-
-  // Measures the current exponential backoff wait and accumulates completed
-  // backoff delays across all attempts of this fetch.
+  // Measures the current exponential backoff wait between attempts.
   std::optional<base::ElapsedTimer> backoff_timer_;
-  std::optional<base::TimeDelta> cumulative_backoff_latency_;
+
+  // Cumulative sub-stage latencies across all attempts of this fetch. Each
+  // field is populated only if at least one corresponding sub-stage completed.
+  Latencies cumulative_latencies_;
 
   // Token binding challenge from the last server response or an empty string if
   // the response didn't contain any challenge.
@@ -302,8 +302,8 @@ OAuth2AccessTokenManager::Fetcher::~Fetcher() {
 
 void OAuth2AccessTokenManager::Fetcher::Start() {
   if (backoff_timer_.has_value()) {
-    cumulative_backoff_latency_ =
-        cumulative_backoff_latency_.value_or(base::TimeDelta()) +
+    cumulative_latencies_.backoff =
+        cumulative_latencies_.backoff.value_or(base::TimeDelta()) +
         backoff_timer_->Elapsed();
     backoff_timer_.reset();
   }
@@ -354,9 +354,15 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
 void OAuth2AccessTokenManager::Fetcher::RecordAttemptLatency(bool success) {
   if (std::optional<base::TimeDelta> network_latency =
           fetcher_->GetNetworkLatency()) {
-    cumulative_network_latency_ =
-        cumulative_network_latency_.value_or(base::TimeDelta()) +
+    cumulative_latencies_.network =
+        cumulative_latencies_.network.value_or(base::TimeDelta()) +
         *network_latency;
+  }
+  if (std::optional<base::TimeDelta> challenge_signing_latency =
+          fetcher_->GetChallengeSigningLatency()) {
+    cumulative_latencies_.challenge_signing =
+        cumulative_latencies_.challenge_signing.value_or(base::TimeDelta()) +
+        *challenge_signing_latency;
   }
 
   // `fetcher_` is only set by `Start()`, right after `attempt_start_time_`, so
@@ -376,26 +382,27 @@ void OAuth2AccessTokenManager::Fetcher::RecordAttemptLatency(bool success) {
   attempt_start_time_ = base::TimeTicks();
 }
 
-void OAuth2AccessTokenManager::Fetcher::RecordCumulativeNetworkLatency(
+void OAuth2AccessTokenManager::Fetcher::RecordCumulativeLatencies(
     bool success) {
-  if (cumulative_network_latency_.has_value()) {
+  if (cumulative_latencies_.network.has_value()) {
     base::UmaHistogramMediumTimes(
         success ? "Signin.AccessTokenFetch.Latency.Network.Success"
                 : "Signin.AccessTokenFetch.Latency.Network.Failure",
-        *cumulative_network_latency_);
-    cumulative_network_latency_.reset();
+        *cumulative_latencies_.network);
   }
-}
-
-void OAuth2AccessTokenManager::Fetcher::RecordCumulativeBackoffLatency(
-    bool success) {
-  if (cumulative_backoff_latency_.has_value()) {
+  if (cumulative_latencies_.backoff.has_value()) {
     base::UmaHistogramMediumTimes(
         success ? "Signin.AccessTokenFetch.Latency.Backoff.Success"
                 : "Signin.AccessTokenFetch.Latency.Backoff.Failure",
-        *cumulative_backoff_latency_);
-    cumulative_backoff_latency_.reset();
+        *cumulative_latencies_.backoff);
   }
+  if (cumulative_latencies_.challenge_signing.has_value()) {
+    base::UmaHistogramMediumTimes(
+        success ? "Signin.AccessTokenFetch.Latency.ChallengeSigning.Success"
+                : "Signin.AccessTokenFetch.Latency.ChallengeSigning.Failure",
+        *cumulative_latencies_.challenge_signing);
+  }
+  cumulative_latencies_ = {};
 }
 
 std::string OAuth2AccessTokenManager::Fetcher::GetConsumerName() const {
@@ -447,9 +454,7 @@ bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
 void OAuth2AccessTokenManager::Fetcher::InformFetchCompleted(
     base::expected<OAuth2AccessTokenConsumer::TokenResponse,
                    GoogleServiceAuthError> response) {
-  const bool success = response.has_value();
-  RecordCumulativeNetworkLatency(success);
-  RecordCumulativeBackoffLatency(success);
+  RecordCumulativeLatencies(/*success=*/response.has_value());
   oauth2_access_token_manager_->OnFetchComplete(client_id_, account_id_,
                                                 scopes_, response);
   // `this` might be deleted.

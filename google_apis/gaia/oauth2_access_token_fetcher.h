@@ -53,6 +53,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcher {
   // cancelled).
   virtual std::optional<base::TimeDelta> GetNetworkLatency() const;
 
+  // Returns the latency of loading the binding key and signing a token binding
+  // challenge in this fetch attempt, or `std::nullopt` if no challenge signing
+  // completed.
+  virtual std::optional<base::TimeDelta> GetChallengeSigningLatency() const;
+
  protected:
   // Fires |OnGetTokenSuccess| on |consumer_|.
   void FireOnGetTokenSuccess(

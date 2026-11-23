@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 
@@ -45,6 +46,7 @@ class TokenBindingOAuth2AccessTokenFetcher : public OAuth2AccessTokenFetcher {
              const std::vector<std::string>& scopes) override;
   void CancelRequest() override;
   std::optional<base::TimeDelta> GetNetworkLatency() const override;
+  std::optional<base::TimeDelta> GetChallengeSigningLatency() const override;
 
   base::WeakPtr<TokenBindingOAuth2AccessTokenFetcher> GetWeakPtr();
 
@@ -55,6 +57,11 @@ class TokenBindingOAuth2AccessTokenFetcher : public OAuth2AccessTokenFetcher {
   // In theory, this could support any implementation of the base
   // `OAuth2AccessTokenFetcher` class that has a binding key assertion setter.
   const std::unique_ptr<OAuth2MintAccessTokenFetcherAdapter> fetcher_;
+
+  // Measures the time from construction (right before key loading and challenge
+  // signing begin) until `SetBindingKeyAssertion()` completes.
+  const base::ElapsedTimer challenge_signing_timer_;
+  std::optional<base::TimeDelta> challenge_signing_latency_;
 
   // The callback holds parameters that were earlier passed to `Start()`.
   base::OnceCallback<void(OAuth2AccessTokenFetcher*)> delayed_fetcher_start_;

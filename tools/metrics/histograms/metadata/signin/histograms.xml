@@ -289,6 +289,13 @@ to monitor/debug fetching OAuth2 Token issues. -->
                  challenge) do not enter backoff. Only recorded if at least
                  one backoff wait completed during the fetch. Recorded once
                  when the token service fetch completes."/>
+    <variant name="ChallengeSigning"
+        summary="The cumulative latency of loading the binding key and
+                 signing DBSC token binding challenges across all retry
+                 attempts of a token service fetch on Windows/Mac/Linux. Only
+                 recorded if at least one challenge signing attempt completed
+                 during the fetch. Recorded once when the token service fetch
+                 completes."/>
     <variant name="EndToEnd"
         summary="From the creation of the access token fetcher until the
                  result is returned to the client, including any wait for a

@@ -19,6 +19,11 @@ std::optional<base::TimeDelta> OAuth2AccessTokenFetcher::GetNetworkLatency()
   return std::nullopt;
 }
 
+std::optional<base::TimeDelta>
+OAuth2AccessTokenFetcher::GetChallengeSigningLatency() const {
+  return std::nullopt;
+}
+
 void OAuth2AccessTokenFetcher::FireOnGetTokenSuccess(
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   consumer_->OnGetTokenSuccess(token_response);

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -20,6 +21,7 @@
 #include "google_apis/gaia/gaia_id_literal.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "google_apis/gaia/oauth2_access_token_manager_test_util.h"
@@ -41,6 +43,35 @@
 namespace {
 
 constexpr GaiaIdLiteral kTestAccountId("test_user_account_id");
+
+// Wraps an `OAuth2AccessTokenFetcher` to report a simulated DBSC challenge
+// signing latency when `token_binding_challenge` is non-empty.
+class FakeChallengeSigningAccessTokenFetcher : public OAuth2AccessTokenFetcher {
+ public:
+  FakeChallengeSigningAccessTokenFetcher(
+      std::unique_ptr<OAuth2AccessTokenFetcher> fetcher,
+      base::TimeDelta challenge_signing_latency)
+      : OAuth2AccessTokenFetcher(/*consumer=*/nullptr),
+        fetcher_(std::move(fetcher)),
+        challenge_signing_latency_(challenge_signing_latency) {}
+
+  void Start(const std::string& client_id,
+             const std::string& client_secret,
+             const std::vector<std::string>& scopes) override {
+    fetcher_->Start(client_id, client_secret, scopes);
+  }
+  void CancelRequest() override { fetcher_->CancelRequest(); }
+  std::optional<base::TimeDelta> GetNetworkLatency() const override {
+    return fetcher_->GetNetworkLatency();
+  }
+  std::optional<base::TimeDelta> GetChallengeSigningLatency() const override {
+    return challenge_signing_latency_;
+  }
+
+ private:
+  const std::unique_ptr<OAuth2AccessTokenFetcher> fetcher_;
+  const base::TimeDelta challenge_signing_latency_;
+};
 
 class FakeOAuth2AccessTokenManagerDelegate
     : public OAuth2AccessTokenManager::Delegate {
@@ -64,11 +95,19 @@ class FakeOAuth2AccessTokenManagerDelegate
           consumer, *immediate_error_);
     }
     if (use_mint_token_fetcher_) {
-      return std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
-          consumer, url_loader_factory, GaiaId(account_id.ToString()),
-          account_ids_to_refresh_tokens_[account_id],
-          /*use_mtls_endpoints_for_fetching_tokens=*/false,
-          /*is_refresh_token_bound=*/false, "device_id", "version", "channel");
+      std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
+          std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
+              consumer, url_loader_factory, GaiaId(account_id.ToString()),
+              account_ids_to_refresh_tokens_[account_id],
+              /*use_mtls_endpoints_for_fetching_tokens=*/false,
+              /*is_refresh_token_bound=*/false, "device_id", "version",
+              "channel");
+      if (!token_binding_challenge.empty() &&
+          challenge_signing_latency_.has_value()) {
+        return std::make_unique<FakeChallengeSigningAccessTokenFetcher>(
+            std::move(fetcher), *challenge_signing_latency_);
+      }
+      return fetcher;
     }
     return GaiaAccessTokenFetcher::
         CreateExchangeRefreshTokenForAccessTokenInstance(
@@ -161,11 +200,16 @@ class FakeOAuth2AccessTokenManagerDelegate
     use_mint_token_fetcher_ = use_mint_token_fetcher;
   }
 
+  void SetChallengeSigningLatency(base::TimeDelta latency) {
+    challenge_signing_latency_ = latency;
+  }
+
  private:
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::map<CoreAccountId, std::string> account_ids_to_refresh_tokens_;
   std::optional<GoogleServiceAuthError> immediate_error_;
   bool use_mint_token_fetcher_ = false;
+  std::optional<base::TimeDelta> challenge_signing_latency_;
   base::OnceClosure access_token_fetch_closure_;
   CoreAccountId access_token_invalidated_account_id_;
   std::string access_token_invalidated_client_id_;
@@ -332,6 +376,16 @@ class OAuth2AccessTokenManagerTest : public testing::Test {
         GaiaUrls::GetInstance()->oauth2_token_url().spec(), token, status);
   }
 
+  bool SimulateTokenBindingChallengeResponse() {
+    auto head = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
+    head->headers->AddHeader("X-Chrome-Auth-Token-Binding-Challenge",
+                             "challenge");
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GaiaUrls::GetInstance()->oauth2_issue_token_url(),
+        network::URLLoaderCompletionStatus(net::OK), std::move(head),
+        std::string());
+  }
+
   void CreateRequestAndBlockUntilComplete(
       const CoreAccountId& account,
       const OAuth2AccessTokenManager::ScopeSet& scopeset) {
@@ -484,18 +538,9 @@ TEST_F(OAuth2AccessTokenManagerTest,
       account_id_, GoogleServiceAuthError::CreateRequestCanceled());
 
   EXPECT_EQ(1, consumer_.number_of_errors_);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.TokenService.Failure", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.TokenService.Success", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Network.Failure", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Network.Success", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Backoff.Failure", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Backoff.Success", 0);
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.AccessTokenFetch.Latency."),
+              testing::IsEmpty());
 }
 
 // Test that Latency.Network sums the network latencies across retry attempts
@@ -613,16 +658,10 @@ TEST_F(OAuth2AccessTokenManagerTest,
                                      OAuth2AccessTokenManager::ScopeSet());
 
   EXPECT_EQ(1, consumer_.number_of_errors_);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.TokenService.Failure", 1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Network.Failure", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Network.Success", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Backoff.Failure", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.AccessTokenFetch.Latency.Backoff.Success", 0);
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.AccessTokenFetch.Latency."),
+              testing::ElementsAre(testing::Pair(
+                  "Signin.AccessTokenFetch.Latency.TokenService.Failure", 1)));
 }
 
 // Test that Latency.Backoff records the retry backoff delay (excluding network
@@ -685,8 +724,6 @@ TEST_F(OAuth2AccessTokenManagerTest,
        DoesNotRecordBackoffLatencyForImmediateChallengeRetry) {
   base::HistogramTester histogram_tester;
   delegate_.SetUseMintTokenFetcher(true);
-  const GURL issue_token_url =
-      GaiaUrls::GetInstance()->oauth2_issue_token_url();
 
   base::RunLoop run_loop;
   consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
@@ -694,12 +731,7 @@ TEST_F(OAuth2AccessTokenManagerTest,
       token_manager_->StartRequest(
           account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_);
 
-  auto head = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
-  head->headers->AddHeader("X-Chrome-Auth-Token-Binding-Challenge",
-                           "challenge");
-  ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-      issue_token_url, network::URLLoaderCompletionStatus(net::OK),
-      std::move(head), std::string()));
+  ASSERT_TRUE(SimulateTokenBindingChallengeResponse());
   gaia::FakeOAuth2TokenResponse::Success("token").AddToTestURLLoaderFactory(
       test_url_loader_factory_);
   run_loop.Run();
@@ -708,6 +740,87 @@ TEST_F(OAuth2AccessTokenManagerTest,
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                   "Signin.AccessTokenFetch.Latency.Backoff."),
               testing::IsEmpty());
+}
+
+// Test that Latency.ChallengeSigning records the challenge signing latency on
+// a successful challenge retry.
+TEST_F(OAuth2AccessTokenManagerTest, RecordsChallengeSigningLatencyOnSuccess) {
+  base::HistogramTester histogram_tester;
+  delegate_.SetUseMintTokenFetcher(true);
+  delegate_.SetChallengeSigningLatency(base::Milliseconds(200));
+
+  base::RunLoop run_loop;
+  consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request =
+      token_manager_->StartRequest(account_id_, {"scope"}, &consumer_);
+
+  ASSERT_TRUE(SimulateTokenBindingChallengeResponse());
+  gaia::FakeOAuth2TokenResponse::Success("token").AddToTestURLLoaderFactory(
+      test_url_loader_factory_);
+  run_loop.Run();
+
+  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.ChallengeSigning.Success",
+      base::Milliseconds(200), 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.ChallengeSigning.Failure", 0);
+}
+
+// Test that Latency.ChallengeSigning is not recorded when a request is served
+// from the cache.
+TEST_F(OAuth2AccessTokenManagerTest,
+       DoesNotRecordChallengeSigningLatencyForCacheHit) {
+  delegate_.SetUseMintTokenFetcher(true);
+  delegate_.SetChallengeSigningLatency(base::Milliseconds(200));
+  OAuth2AccessTokenManager::ScopeSet scope_list = {"scope"};
+
+  base::RunLoop run_loop;
+  consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request =
+      token_manager_->StartRequest(account_id_, scope_list, &consumer_);
+  ASSERT_TRUE(SimulateTokenBindingChallengeResponse());
+  gaia::FakeOAuth2TokenResponse::Success("token").AddToTestURLLoaderFactory(
+      test_url_loader_factory_);
+  run_loop.Run();
+  ASSERT_EQ(1, consumer_.number_of_successful_tokens_);
+
+  base::HistogramTester histogram_tester;
+  CreateRequestAndBlockUntilComplete(account_id_, scope_list);
+  EXPECT_EQ(2, consumer_.number_of_successful_tokens_);
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.AccessTokenFetch.Latency.ChallengeSigning."),
+              testing::IsEmpty());
+}
+
+// Test that Latency.ChallengeSigning.Failure sums challenge signing latencies
+// across multiple challenge retries when the fetch ultimately fails.
+TEST_F(OAuth2AccessTokenManagerTest,
+       RecordsCumulativeChallengeSigningLatencyOnFailure) {
+  base::HistogramTester histogram_tester;
+  delegate_.SetUseMintTokenFetcher(true);
+  delegate_.SetChallengeSigningLatency(base::Milliseconds(200));
+
+  base::RunLoop run_loop;
+  consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request =
+      token_manager_->StartRequest(account_id_, {"scope"}, &consumer_);
+
+  // Attempt 1 receives a challenge and retries immediately (signing #1).
+  ASSERT_TRUE(SimulateTokenBindingChallengeResponse());
+  // Attempt 2 receives a second challenge and enters backoff before retrying
+  // (signing #2), after which Attempt 3 fails with a persistent error.
+  ASSERT_TRUE(SimulateTokenBindingChallengeResponse());
+  gaia::FakeOAuth2TokenResponse::OAuth2Error(OAuth2Response::kInvalidGrant)
+      .AddToTestURLLoaderFactory(test_url_loader_factory_);
+  run_loop.Run();
+
+  EXPECT_EQ(1, consumer_.number_of_errors_);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.ChallengeSigning.Failure",
+      base::Milliseconds(400), 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.ChallengeSigning.Success", 0);
 }
 
 // Test that destroying `OAuth2AccessTokenManager` triggers
