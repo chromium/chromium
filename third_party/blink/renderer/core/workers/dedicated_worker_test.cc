@@ -16,6 +16,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -43,6 +45,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
@@ -2036,6 +2040,376 @@ TEST_F(DedicatedWorkerTest, NestedWorkerTerminatesWhileParentPaused) {
   EXPECT_TRUE(nested_terminated.IsSignaled());
   EXPECT_EQ(WorkerThread::ExitCode::kGracefullyTerminated,
             GetWorkerThread()->GetExitCodeForTesting());
+}
+
+class DedicatedWorkerPermissionsPolicyTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    NavigateTo(KURL("https://example.com/"));
+  }
+
+  DedicatedWorker* CreateWorkerWithAllow(const String& url,
+                                         const String& allow,
+                                         ExceptionState& exception_state) {
+    WorkerOptions* options = WorkerOptions::Create();
+    if (!allow.IsNull()) {
+      options->setAllow(allow);
+    }
+    return DedicatedWorker::Create(
+        GetFrame().DomWindow(),
+        MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(url), options,
+        exception_state);
+  }
+
+  std::unique_ptr<GlobalScopeCreationParams> CreateGlobalScopeCreationParams(
+      DedicatedWorker* worker,
+      const KURL& script_url) {
+    return worker->CreateGlobalScopeCreationParams(
+        script_url, mojo::NullReceiver(), mojo::NullReceiver());
+  }
+
+  void StartWorker(DedicatedWorker* worker) { worker->Start(); }
+
+  void DisableFeatureInCreator(
+      network::mojom::PermissionsPolicyFeature feature) {
+    network::ParsedPermissionsPolicy header_policy = {
+        network::ParsedPermissionsPolicyDeclaration(feature)};
+    GetFrame().DomWindow()->GetSecurityContext().SetPermissionsPolicy(
+        network::PermissionsPolicy::CreateFromParentPolicy(
+            /*parent_policy=*/nullptr, header_policy, /*container_policy=*/{},
+            GetFrame().DomWindow()->GetSecurityOrigin()->ToUrlOrigin()));
+    ASSERT_FALSE(GetFrame().DomWindow()->IsFeatureEnabled(feature));
+  }
+
+ private:
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform_;
+  ScopedPermissionsPolicyForDedicatedWorkersForTest scoped_feature_{true};
+};
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       SameOriginWorkerInheritsFeaturesByDefault) {
+  DummyExceptionStateForTesting exception_state;
+  KURL script_url("https://example.com/worker.js");
+  DedicatedWorker* worker =
+      CreateWorkerWithAllow(script_url.GetString(), String(), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  auto params = CreateGlobalScopeCreationParams(worker, script_url);
+  ASSERT_TRUE(params->worker_permissions_policy);
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kUsb));
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kSerial));
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       SameOriginWorkerCanRestrictFeaturesWithAllow) {
+  DummyExceptionStateForTesting exception_state;
+  KURL script_url("https://example.com/worker.js");
+  DedicatedWorker* worker = CreateWorkerWithAllow(
+      script_url.GetString(), "geolocation; serial 'none'", exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  auto params = CreateGlobalScopeCreationParams(worker, script_url);
+  ASSERT_TRUE(params->worker_permissions_policy);
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kUsb));
+  EXPECT_FALSE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kSerial));
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       OpaqueOriginEmptyAllowOptionDisallowsAllDefaultSelfFeatures) {
+  DummyExceptionStateForTesting exception_state;
+  KURL data_url("data:text/javascript,");
+  DedicatedWorker* worker =
+      CreateWorkerWithAllow(data_url.GetString(), String(), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  worker->OnWorkerHostCreated(
+      mojo::NullRemote(), mojo::NullRemote(),
+      WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()));
+  auto params = CreateGlobalScopeCreationParams(worker, data_url);
+  ASSERT_TRUE(params->worker_permissions_policy);
+  EXPECT_FALSE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+  EXPECT_FALSE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kUsb));
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       UnrecognizedFeatureLogsConsoleWarning) {
+  DummyExceptionStateForTesting exception_state;
+  DedicatedWorker* worker = CreateWorkerWithAllow(
+      "https://example.com/worker.js", "unknown-feature", exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  ASSERT_EQ(GetPage().GetConsoleMessageStorage().size(), 1u);
+  EXPECT_EQ(GetPage().GetConsoleMessageStorage().at(0)->Message(),
+            "Unrecognized feature: 'unknown-feature'.");
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       DisallowedFeatureInCreatorFiresErrorEventAndLogsConsoleError) {
+  // Disable geolocation in the creator frame's PermissionsPolicy.
+  network::ParsedPermissionsPolicy header_policy = {
+      network::ParsedPermissionsPolicyDeclaration(
+          network::mojom::PermissionsPolicyFeature::kGeolocation)};
+  GetFrame().DomWindow()->GetSecurityContext().SetPermissionsPolicy(
+      network::PermissionsPolicy::CreateFromParentPolicy(
+          /*parent_policy=*/nullptr, header_policy, /*container_policy=*/{},
+          GetFrame().DomWindow()->GetSecurityOrigin()->ToUrlOrigin()));
+  ASSERT_FALSE(GetFrame().DomWindow()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+
+  // Creating a worker without requesting 'geolocation' (or explicitly setting
+  // "geolocation 'none'") should succeed even though geolocation is disabled in
+  // the creator context.
+  {
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker = CreateWorkerWithAllow(
+        "https://example.com/worker.js", "geolocation 'none'", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    auto* counter = MakeGarbageCollected<CountingEventListener>();
+    worker->addEventListener(event_type_names::kError, counter);
+    test::RunPendingTasks();
+    EXPECT_EQ(counter->count(), 0);
+    EXPECT_EQ(GetPage().GetConsoleMessageStorage().size(), 0u);
+  }
+
+  // Requesting 'geolocation' when it is disabled in the creator context logs a
+  // console error naming the feature and dispatches an error event
+  // asynchronously.
+  {
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker = CreateWorkerWithAllow(
+        "https://example.com/worker.js", "geolocation", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    auto* counter = MakeGarbageCollected<CountingEventListener>();
+    worker->addEventListener(event_type_names::kError, counter);
+
+    ASSERT_EQ(GetPage().GetConsoleMessageStorage().size(), 1u);
+    EXPECT_EQ(GetPage().GetConsoleMessageStorage().at(0)->Message(),
+              "Permissions-Policy feature 'geolocation' specified in the "
+              "'allow' option cannot be delegated by the creating context "
+              "to the worker script's origin.");
+    test::RunPendingTasks();
+    EXPECT_EQ(counter->count(), 1);
+  }
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       AllowedFeaturesForOpaqueOriginWithDefaultPolicySucceed) {
+  DummyExceptionStateForTesting exception_state;
+  KURL data_url("data:text/javascript,");
+  DedicatedWorker* worker = CreateWorkerWithAllow(
+      data_url.GetString(), "geolocation; usb", exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  worker->OnWorkerHostCreated(
+      mojo::NullRemote(), mojo::NullRemote(),
+      WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()));
+  auto params = CreateGlobalScopeCreationParams(worker, data_url);
+  ASSERT_TRUE(params->worker_permissions_policy);
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kUsb));
+  EXPECT_FALSE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kSerial));
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       DisallowedFeatureForScriptOriginFiresErrorEventAndLogsConsoleError) {
+  url::Origin creator_origin =
+      GetFrame().DomWindow()->GetSecurityOrigin()->ToUrlOrigin();
+  network::ParsedPermissionsPolicyDeclaration decl(
+      network::mojom::PermissionsPolicyFeature::kGeolocation);
+  decl.self_if_matches = creator_origin;
+  network::ParsedPermissionsPolicy header_policy = {decl};
+  GetFrame().DomWindow()->GetSecurityContext().SetPermissionsPolicy(
+      network::PermissionsPolicy::CreateFromParentPolicy(
+          /*parent_policy=*/nullptr, header_policy, /*container_policy=*/{},
+          creator_origin));
+  ASSERT_TRUE(GetFrame().DomWindow()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+
+  // Opaque-origin (data: URL) worker cannot be delegated 'geolocation' when
+  // the creator declared `geolocation=(self)`.
+  DummyExceptionStateForTesting exception_state;
+  DedicatedWorker* worker = CreateWorkerWithAllow(
+      "data:text/javascript,", "geolocation", exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+  auto* counter = MakeGarbageCollected<CountingEventListener>();
+  worker->addEventListener(event_type_names::kError, counter);
+
+  ASSERT_EQ(GetPage().GetConsoleMessageStorage().size(), 1u);
+  EXPECT_EQ(GetPage().GetConsoleMessageStorage().at(0)->Message(),
+            "Permissions-Policy feature 'geolocation' specified in the "
+            "'allow' option cannot be delegated by the creating context "
+            "to the worker script's origin.");
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 1);
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       DisallowedFeatureDoesNotFireSynchronousErrorEvent) {
+  DisableFeatureInCreator(
+      network::mojom::PermissionsPolicyFeature::kGeolocation);
+
+  WorkerOptions* options = WorkerOptions::Create();
+  options->setAllow("geolocation");
+  DedicatedWorker* worker = MakeGarbageCollected<DedicatedWorker>(
+      GetFrame().DomWindow(), KURL("https://example.com/worker.js"), options);
+  worker->UpdateStateIfNeeded();
+
+  auto* counter = MakeGarbageCollected<CountingEventListener>();
+  worker->addEventListener(event_type_names::kError, counter);
+
+  StartWorker(worker);
+  // No error event should be dispatched synchronously during Start().
+  EXPECT_EQ(counter->count(), 0);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 1);
+  EXPECT_FALSE(worker->HasPendingActivity());
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       DisallowedFeatureUnreferencedWorkerFiresErrorAndDoesNotLeak) {
+  DisableFeatureInCreator(
+      network::mojom::PermissionsPolicyFeature::kGeolocation);
+
+  const int initial_proxy_count = ThreadedMessagingProxyBase::ProxyCount();
+  Persistent<CountingEventListener> counter =
+      MakeGarbageCollected<CountingEventListener>();
+  WeakPersistent<DedicatedWorker> weak_worker;
+  {
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker = CreateWorkerWithAllow(
+        "https://example.com/worker.js", "geolocation", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    worker->addEventListener(event_type_names::kError, counter.Get());
+    weak_worker = worker;
+  }
+
+  // GC before the posted error task runs must not collect the worker before
+  // its error listener fires.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_worker);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 1);
+
+  // After the error event is dispatched, neither the DedicatedWorker nor its
+  // messaging proxy should leak until ContextDestroyed().
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
+  EXPECT_EQ(ThreadedMessagingProxyBase::ProxyCount(), initial_proxy_count);
+}
+
+TEST_F(
+    DedicatedWorkerPermissionsPolicyTest,
+    DisallowedFeatureTerminatedBeforeErrorTaskSuppressesErrorAndDoesNotLeak) {
+  DisableFeatureInCreator(
+      network::mojom::PermissionsPolicyFeature::kGeolocation);
+
+  const int initial_proxy_count = ThreadedMessagingProxyBase::ProxyCount();
+  Persistent<CountingEventListener> counter =
+      MakeGarbageCollected<CountingEventListener>();
+  WeakPersistent<DedicatedWorker> weak_worker;
+  {
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker = CreateWorkerWithAllow(
+        "https://example.com/worker.js", "geolocation", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    worker->addEventListener(event_type_names::kError, counter.Get());
+    worker->terminate();
+    weak_worker = worker;
+  }
+
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 0);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
+  EXPECT_EQ(ThreadedMessagingProxyBase::ProxyCount(), initial_proxy_count);
+}
+
+TEST_F(DedicatedWorkerPermissionsPolicyTest,
+       FeatureDisabledInheritsCreatorPermissionsPolicy) {
+  ScopedPermissionsPolicyForDedicatedWorkersForTest scoped_feature(false);
+
+  DummyExceptionStateForTesting exception_state;
+  KURL script_url("https://example.com/worker.js");
+  DedicatedWorker* worker = CreateWorkerWithAllow(
+      script_url.GetString(), "geolocation 'none'", exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  auto params = CreateGlobalScopeCreationParams(worker, script_url);
+  ASSERT_TRUE(params->worker_permissions_policy);
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+  EXPECT_TRUE(params->worker_permissions_policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kUsb));
+}
+
+TEST_F(DedicatedWorkerTest, PermissionsPolicyInWorkerGlobalScope) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+  ScopedPermissionsPolicyForDedicatedWorkersForTest scoped_feature(true);
+
+  const KURL& script_url = WorkerMessagingProxy()->script_url();
+  scoped_refptr<SecurityOrigin> security_origin =
+      SecurityOrigin::Create(script_url);
+  GetFrame().DomWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+      security_origin);
+  GetFrame().DomWindow()->GetSecurityContext().SetPermissionsPolicy(
+      network::PermissionsPolicy::CreateFromParentPolicy(
+          /*parent_policy=*/nullptr, /*header_policy=*/{},
+          /*container_policy=*/{}, security_origin->ToUrlOrigin()));
+
+  DummyExceptionStateForTesting exception_state;
+  WorkerOptions* options = WorkerOptions::Create();
+  options->setAllow("usb 'none'");
+  DedicatedWorker* worker = DedicatedWorker::Create(
+      GetFrame().DomWindow(),
+      MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
+          script_url.GetString()),
+      options, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  StartWorker("", worker->CreateGlobalScopeCreationParams(
+                      script_url, mojo::NullReceiver(), mojo::NullReceiver()));
+  WaitUntilWorkerIsRunning();
+
+  RunOnWorkerThread(
+      CrossThreadBindOnce([](ExecutionContext* execution_context) {
+        EXPECT_TRUE(execution_context->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kGeolocation));
+        EXPECT_FALSE(execution_context->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kUsb));
+      }));
 }
 
 }  // namespace blink

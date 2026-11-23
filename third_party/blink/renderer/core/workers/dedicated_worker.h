@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -156,7 +157,10 @@ class CORE_EXPORT DedicatedWorker final
 
  private:
   friend class DedicatedWorkerEarlyAbortTest;
+  friend class DedicatedWorkerPermissionsPolicyTest;
   FRIEND_TEST_ALL_PREFIXES(DedicatedWorkerTest, TopLevelFrameSecurityOrigin);
+  FRIEND_TEST_ALL_PREFIXES(DedicatedWorkerTest,
+                           PermissionsPolicyInWorkerGlobalScope);
 
   // Starts the worker.
   void Start();
@@ -220,6 +224,9 @@ class CORE_EXPORT DedicatedWorker final
   // The origin used by this dedicated worker on the renderer side, calculated
   // from the browser side.
   scoped_refptr<SecurityOrigin> origin_;
+
+  // The permissions policy parsed from the 'allow' member of WorkerOptions.
+  network::ParsedPermissionsPolicy parsed_allow_parameter_;
 };
 
 }  // namespace blink

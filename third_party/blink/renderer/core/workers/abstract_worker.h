@@ -31,6 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_ABSTRACT_WORKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_ABSTRACT_WORKER_H_
 
+#include <optional>
+
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -87,6 +90,13 @@ class CORE_EXPORT AbstractWorker
   // and returns false otherwise. Callers are responsible for aborting worker
   // startup and scheduling an error event.
   bool CheckCanReadScriptURLForNoThrow(const KURL& script_url);
+
+  // Parses the `allow` parameter as a `network::ParsedPermissionsPolicy` and
+  // validates it against the parent context Permissions Policy. Logs a console
+  // error and returns `std::nullopt` if validation failed.
+  std::optional<network::ParsedPermissionsPolicy> ParsePermissionsPolicy(
+      const KURL& script_request_url,
+      const String& allow);
 
   void DispatchErrorEvent();
 };

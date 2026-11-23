@@ -108,7 +108,7 @@ class CORE_EXPORT SharedWorker final
       const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
           connector_override);
 
-  // Parses the `allow` parameter as a PermissionsPolicyFeatureBitset and
+  // Parses the `allow` parameter as a PermissionsPolicyFeaturesBitset and
   // validates it against the parent context Permissions Policy. Schedules an
   // error and returns `std::nullopt` if validation failed.
   std::optional<network::PermissionsPolicyFeaturesBitset>

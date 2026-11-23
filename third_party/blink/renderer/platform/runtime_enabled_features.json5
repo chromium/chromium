@@ -5269,9 +5269,21 @@
       status: "experimental",
     },
     {
+      name: "PermissionsPolicyForDedicatedWorkers",
+      status: "experimental",
+    },
+    {
       name: "PermissionsPolicyForSharedWorkers",
       status: "experimental",
       public: true,
+    },
+    {
+      name: "PermissionsPolicyForWorkers",
+      base_feature: "none",
+      implied_by: [
+        "PermissionsPolicyForDedicatedWorkers",
+        "PermissionsPolicyForSharedWorkers",
+      ],
     },
     {
       name: "PermissionsRequestRevoke",

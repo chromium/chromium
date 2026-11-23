@@ -15,6 +15,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
@@ -295,6 +296,23 @@ void DedicatedWorker::Start() {
                    BindOnce(&DedicatedWorker::OnScriptLoadStartFailed,
                             WrapPersistent(this)));
     return;
+  }
+
+  if (RuntimeEnabledFeatures::PermissionsPolicyForDedicatedWorkersEnabled()) {
+    std::optional<network::ParsedPermissionsPolicy> parsed_permissions_policy =
+        ParsePermissionsPolicy(script_request_url_, options_->hasAllow()
+                                                        ? options_->allow()
+                                                        : g_empty_string);
+    if (!parsed_permissions_policy) {
+      factory_client_.reset();
+      GetExecutionContext()
+          ->GetTaskRunner(TaskType::kInternalLoading)
+          ->PostTask(FROM_HERE,
+                     BindOnce(&DedicatedWorker::OnScriptLoadStartFailed,
+                              WrapPersistent(this)));
+      return;
+    }
+    parsed_allow_parameter_ = std::move(parsed_permissions_policy).value();
   }
 
   start_time_ = base::TimeTicks::Now();
@@ -589,6 +607,19 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       origin_ ? origin_->IsolatedCopy() : nullptr,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer));
   params->dedicated_worker_start_time = start_time_;
+
+  if (RuntimeEnabledFeatures::PermissionsPolicyForDedicatedWorkersEnabled()) {
+    const url::Origin worker_origin =
+        (params->origin_to_use ? params->origin_to_use.get()
+                               : execution_context->GetSecurityOrigin())
+            ->ToUrlOrigin();
+    params->worker_permissions_policy =
+        network::PermissionsPolicy::CreateFromParentPolicy(
+            execution_context->GetSecurityContext().GetPermissionsPolicy(),
+            // TODO(https://crbug.com/562705553): Parse the Permissions-Policy
+            // header and take header_policy into account.
+            /*header_policy=*/{}, parsed_allow_parameter_, worker_origin);
+  }
 
   // Store the creator's document policy for inheritance by local-scheme
   // workers.

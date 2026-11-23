@@ -280,45 +280,28 @@ SharedWorker::ParsePermissionsPolicy(const KURL& script_url,
   if (!RuntimeEnabledFeatures::PermissionsPolicyForSharedWorkersEnabled()) {
     return network::PermissionsPolicyFeaturesBitset();
   }
-  const SecurityOrigin* self_origin =
-      GetExecutionContext()->GetSecurityOrigin();
-  scoped_refptr<const SecurityOrigin> src_origin =
-      SecurityOrigin::Create(script_url);
-  PolicyParserMessageBuffer logger;
-  network::PermissionsPolicyFeaturesBitset parsed_permissions_policy =
-      PermissionsPolicyParser::ParseAllowForWorkers(
-          allow, *self_origin, *src_origin, logger, GetExecutionContext());
-  for (const auto& message : logger.GetMessages()) {
-    GetExecutionContext()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther, message.level,
-            message.content));
+  std::optional<network::ParsedPermissionsPolicy> parsed_permissions_policy =
+      AbstractWorker::ParsePermissionsPolicy(script_url, allow);
+  if (!parsed_permissions_policy) {
+    GetExecutionContext()
+        ->GetTaskRunner(TaskType::kInternalLoading)
+        ->PostTask(FROM_HERE, BindOnce(&SharedWorker::DispatchErrorEvent,
+                                       WrapPersistent(this)));
+    return std::nullopt;
   }
-  const network::PermissionsPolicy* permissions_policy =
-      GetExecutionContext()->GetSecurityContext().GetPermissionsPolicy();
-  CHECK(permissions_policy);
-  const url::Origin src_url_origin = src_origin->ToUrlOrigin();
-  for (const auto& entry :
-       GetDefaultFeatureNameMap(GetExecutionContext()->IsIsolatedContext())) {
-    if (parsed_permissions_policy.Contains(entry.value) &&
-        !permissions_policy->CanDelegateFeatureToOrigin(entry.value,
-                                                        src_url_origin)) {
-      GetExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kSecurity,
-              mojom::blink::ConsoleMessageLevel::kError,
-              StrCat({"Permissions-Policy feature '", entry.key,
-                      "' specified in the 'allow' option cannot be delegated "
-                      "by the creating context to the worker script's "
-                      "origin."})));
-      GetExecutionContext()
-          ->GetTaskRunner(TaskType::kInternalLoading)
-          ->PostTask(FROM_HERE, BindOnce(&SharedWorker::DispatchErrorEvent,
-                                         WrapPersistent(this)));
-      return std::nullopt;
+  const url::Origin src_url_origin =
+      SecurityOrigin::Create(script_url)->ToUrlOrigin();
+  network::PermissionsPolicyFeaturesBitset allowed_features;
+  for (const auto& decl : *parsed_permissions_policy) {
+    // The 'allow' parameter for shared workers determines the feature->boolean
+    // mapping of whether each feature is enabled or not in the worker. Since
+    // workers cannot be navigated away, we can just check here whether the
+    // worker's origin (which is immutable) is allowed or not.
+    if (decl.Contains(src_url_origin)) {
+      allowed_features.Add(decl.feature);
     }
   }
-  return parsed_permissions_policy;
+  return allowed_features;
 }
 
 const AtomicString& SharedWorker::InterfaceName() const {

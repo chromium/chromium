@@ -7,6 +7,7 @@ dictionary WorkerOptions {
     WorkerType type = "classic";
     RequestCredentials credentials = "same-origin";
     DOMString name = "";
+    [RuntimeEnabled=PermissionsPolicyForWorkers] DOMString allow = "";
 };
 
 enum WorkerType { "classic", "module" };

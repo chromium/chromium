@@ -35,7 +35,6 @@ dictionary SharedWorkerOptions : WorkerOptions {
     SharedWorkerSameSiteCookies sameSiteCookies;
     // https://html.spec.whatwg.org/#dom-sharedworkeroptions-extendedlifetime
     [RuntimeEnabled=SharedWorkerExtendedLifetime] boolean extendedLifetime;
-    [RuntimeEnabled=PermissionsPolicyForSharedWorkers] DOMString allow = "";
 };
 
 enum SharedWorkerSameSiteCookies { "all", "none" };
