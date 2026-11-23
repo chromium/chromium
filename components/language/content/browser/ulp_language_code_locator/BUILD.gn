@@ -6,8 +6,12 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/python.gni")
 import("//testing/test.gni")
 
-action_with_pydeps("ulp_serialized_to_static_c") {
+python_binary("ulp_serialized_to_static_c_py") {
   script = "ulp_serialized_to_static_c.py"
+}
+
+python_action("ulp_serialized_to_static_c") {
+  python_binary = ":ulp_serialized_to_static_c_py"
   inputs = [
     "geolanguage-data_rank0.bin",
     "geolanguage-data_rank1.bin",

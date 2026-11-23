@@ -144,9 +144,13 @@ grit("translate_policy_templates") {
   ]
 }
 
-# Generate the various templates and docs (admx, doc, json, etc.)
-action_with_pydeps("policy_templates") {
+python_binary("template_formatter") {
   script = "tools/template_writers/template_formatter.py"
+}
+
+# Generate the various templates and docs (admx, doc, json, etc.)
+python_action("policy_templates") {
+  python_binary = ":template_formatter"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
   deps = [ ":translate_policy_templates_grit" ]

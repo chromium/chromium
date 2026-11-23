@@ -60,8 +60,12 @@ grit_strings("strings") {
   }
 }
 
-action_with_pydeps("copy_locales") {
+python_binary("remoting_copy_locales") {
   script = "../tools/build/remoting_copy_locales.py"
+}
+
+python_action("copy_locales") {
+  python_binary = ":remoting_copy_locales"
 
   # The gyp build calls out to Python, but the Python just computes a simple
   # replacement over the locales. Here, we can do this in GN script by

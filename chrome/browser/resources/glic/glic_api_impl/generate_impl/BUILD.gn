@@ -15,8 +15,12 @@ generator_ts_sources = [
   "ts_types.ts",
 ]
 
-action_with_pydeps("parse_mojom") {
+python_binary("parse") {
   script = "parse.py"
+}
+
+python_action("parse_mojom") {
+  python_binary = ":parse"
   inputs = [
     "//chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom",
     "//chrome/browser/glic/host/glic.mojom",

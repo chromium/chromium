@@ -84,8 +84,8 @@ template("generate_embedded_i18n") {
     first_resource_id = invoker.first_resource_id
   }
 
-  action_with_pydeps(target_name) {
-    script = "//base/i18n/win/embedded_i18n/create_string_rc.py"
+  python_action(target_name) {
+    python_binary = "//base/i18n:create_string_rc"
     inputs = []
 
     output_dir = rebase_path(target_gen_dir, root_build_dir)

@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/clang/clang.gni")
+import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/manifest.gni")
+import("//build_overrides/build.gni")
 
 # Depending on this target will cause the manifests for Chrome's default
 # Windows and common control compatibility and elevation for executables.
@@ -19,6 +21,12 @@ windows_manifest("default_exe_manifest") {
 if (is_win) {
   assert(host_os != "mac" || target_cpu != "x86",
          "Windows cross-builds from Mac must be 64-bit.")
+
+  if (build_with_chromium) {
+    python_binary("redirect_imports") {
+      script = "redirect_imports.py"
+    }
+  }
 
   action("copy_cdb_to_output") {
     script = "//build/win/copy_cdb_to_output.py"

@@ -45,7 +45,6 @@ def __step_config(ctx, step_config):
         # Invokes dpkg-buildpackage which requires debhelper (dh) not present in
         # the RBE worker container image.
         "remoting/host/installer/linux/build_deb.py",
-        "remoting/tools/build/remoting_copy_locales.py",
         "testing/libfuzzer/fuzzers/generate_v8_inspector_fuzzer_corpus.py",
         "testing/scripts/rust/generate_script.py",
         # Dynamically walks and loads 160+ translated grd files (xtb) and requires
@@ -88,7 +87,6 @@ def __step_config(ctx, step_config):
         "third_party/webgpu-cts/scripts/compile_src.py",
         "third_party/webgpu-cts/scripts/gen_ts_dep_lists.py",
         "third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py",
-        "tools/grit/grit_info.py",
         "tools/licenses/licenses.py",
 
         # merge_xml.py relies on expand_owners.py, which
@@ -123,7 +121,9 @@ def __step_config(ctx, step_config):
         })
 
     pyz_files = [
+        "obj/remoting/resources/remoting_copy_locales.pyz",
         "obj/tools/grit/grit.pyz",
+        "obj/tools/grit/grit_info.pyz",
     ]
 
     for pyz_file in pyz_files:

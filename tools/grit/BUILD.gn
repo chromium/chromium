@@ -36,6 +36,10 @@ python_binary("grit") {
   }
 }
 
+python_binary("grit_info") {
+  script = "grit_info.py"
+}
+
 python_binary("pak_util") {
   script = "pak_util.py"
 }

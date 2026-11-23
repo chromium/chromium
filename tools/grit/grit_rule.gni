@@ -179,8 +179,8 @@ template("grit") {
     # This action is used to warn about outdated gritdeps files.
     _check_gritdeps_target = "${target_name}_check_gritdeps"
 
-    action_with_pydeps(_check_gritdeps_target) {
-      script = grit_info_script
+    python_action(_check_gritdeps_target) {
+      python_binary = "//tools/grit:grit_info"
       inputs = [
         invoker.gritdeps,
         invoker.source,
@@ -238,7 +238,7 @@ template("grit") {
     if (_enable_grit_info && compute_inputs_for_analyze) {
       # Only call exec_script when the user has explicitly opted into greater
       # precision at the expense of performance.
-      _rel_inputs = exec_script("//tools/grit/grit_info.py",
+      _rel_inputs = exec_script(grit_info_script,
                                 [
                                       "--inputs",
                                       _rebased_source_path,

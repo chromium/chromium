@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 source_set("base_i18n_export") {
   public = [ "base_i18n_export.h" ]
 }
@@ -107,6 +109,10 @@ source_set("unittests") {
   if (is_android) {
     sources += [ "android_locale_unittest.cc" ]
   }
+}
+
+python_binary("create_string_rc") {
+  script = "win/embedded_i18n/create_string_rc.py"
 }
 
 if (is_win) {

@@ -19,14 +19,14 @@ import("//build/config/python.gni")
 #   skip_list (optional): List of DLL names to preserve.
 #   related_file (optional): Explicit sidecar input to copy unchanged.
 template("redirect_imports") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
 
     _import_dll = "$root_out_dir/${invoker.import_dll_name}.dll"
 
-    script = "//build/win/redirect_imports.py"
+    python_binary = "//build/win:redirect_imports"
     inputs = [
       invoker.input,
       _import_dll,

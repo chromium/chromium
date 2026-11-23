@@ -9,6 +9,7 @@ import("//build/config/android/rules.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/gclient_args.gni")
+import("//build/config/python.gni")
 import("//build/config/zip.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
@@ -1209,6 +1210,10 @@ cronet_package_apk("cronet_package_with_nativejava_apk") {
   proguard_configs = [ "cronet_package_proguard.cfg" ]
 }
 
+python_binary("jar_src_py") {
+  script = "//components/cronet/tools/jar_src.py"
+}
+
 # Generates a source jar.
 #
 # The main purpose of us packaging source jars is for downstream consumers to be
@@ -1223,11 +1228,11 @@ cronet_package_apk("cronet_package_with_nativejava_apk") {
 # jar unless we take extra steps to post-process it. See also
 # https://crbug.com/498920641 for some context.
 template("jar_src") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     _rebased_src_search_dirs =
         rebase_path(invoker.src_search_dirs, root_build_dir)
 
-    script = "//components/cronet/tools/jar_src.py"
+    python_binary = ":jar_src_py"
     depfile = "$target_gen_dir/$target_name.d"
     outputs = [ invoker.jar_path ]
     args = [

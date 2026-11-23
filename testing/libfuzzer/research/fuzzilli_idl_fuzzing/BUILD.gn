@@ -6,27 +6,30 @@ group("research") {
   testonly = true
 }
 
-if (build_with_chromium) {
-  # There is a build failure when trying to depend on
-  # //third_party/blink/renderer/bindings:web_idl_database from outside blink on
-  # iOS. Since we don't (and likely will never need to) build this on iOS, we
-  # just don't define on such platform.
-  if (!is_ios) {
-    action_with_pydeps("chrome_profile_generator") {
-      testonly = true
-      script = "//testing/libfuzzer/research/fuzzilli_idl_fuzzing/generator.py"
-      args = [
-        "-p",
-        rebase_path(web_idl_database_filepath, root_build_dir),
-        "-o",
-        rebase_path("${root_build_dir}/ChromiumProfile.swift", root_build_dir),
-      ]
-      inputs = [
-        "//testing/libfuzzer/research/fuzzilli_idl_fuzzing/ChromiumProfile.swift.tmpl",
-        web_idl_database_filepath,
-      ]
-      deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
-      outputs = [ "${root_build_dir}/ChromiumProfile.swift" ]
-    }
+# There is a build failure when trying to depend on
+# //third_party/blink/renderer/bindings:web_idl_database from outside blink on
+# iOS. Since we don't (and likely will never need to) build this on iOS, we
+# just don't define on such platform.
+if (build_with_chromium && !is_ios) {
+  python_binary("generator") {
+    testonly = true
+    script = "generator.py"
+  }
+
+  python_action("chrome_profile_generator") {
+    testonly = true
+    python_binary = ":generator"
+    args = [
+      "-p",
+      rebase_path(web_idl_database_filepath, root_build_dir),
+      "-o",
+      rebase_path("${root_build_dir}/ChromiumProfile.swift", root_build_dir),
+    ]
+    inputs = [
+      "//testing/libfuzzer/research/fuzzilli_idl_fuzzing/ChromiumProfile.swift.tmpl",
+      web_idl_database_filepath,
+    ]
+    deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
+    outputs = [ "${root_build_dir}/ChromiumProfile.swift" ]
   }
 }
