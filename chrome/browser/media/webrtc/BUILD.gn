@@ -492,6 +492,7 @@ if (!is_android) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/isolated_web_apps/test:test_support",
       "//chrome/test/base:tracing",
+      "//components/content_settings/core/common:pref_names",
       "//components/infobars/content",
       "//components/permissions:test_support",
       "//content/test:test_support",

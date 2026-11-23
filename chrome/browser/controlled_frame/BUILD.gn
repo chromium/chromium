@@ -57,6 +57,7 @@ source_set("media_access_handler_impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
+    "//components/content_settings/core/common:pref_names",
     "//extensions/browser",
   ]
 }

@@ -1361,6 +1361,7 @@ source_set("impl") {
     "//components/collaboration/public:prefs",
     "//components/commerce/core:pref_names",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/common:pref_names",
     "//components/contextual_search:policy_handler",
     "//components/contextual_search:prefs",
     "//components/contextual_tasks/public",

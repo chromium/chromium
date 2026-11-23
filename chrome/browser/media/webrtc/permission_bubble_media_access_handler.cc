@@ -15,12 +15,10 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -284,15 +282,6 @@ void PermissionBubbleMediaAccessHandler::UpdateMediaRequestState(
     if (found)
       break;
   }
-}
-
-// static
-void PermissionBubbleMediaAccessHandler::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* prefs) {
-  prefs->RegisterBooleanPref(prefs::kVideoCaptureAllowed, true);
-  prefs->RegisterBooleanPref(prefs::kAudioCaptureAllowed, true);
-  prefs->RegisterListPref(prefs::kVideoCaptureAllowedUrls);
-  prefs->RegisterListPref(prefs::kAudioCaptureAllowedUrls);
 }
 
 void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(

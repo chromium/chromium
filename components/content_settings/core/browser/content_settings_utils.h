@@ -16,6 +16,10 @@
 
 class HostContentSettingsMap;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace content_settings {
 class PermissionSettingsInfo;
 
@@ -124,6 +128,10 @@ PermissionSetting ValueToPermissionSetting(const PermissionSettingsInfo* info,
 // |info|. Expects that the setting is valid.
 base::Value PermissionSettingToValue(const PermissionSettingsInfo* info,
                                      const PermissionSetting& setting);
+
+// Registers profile preferences backing the audio and video capture policies.
+void RegisterMediaCaptureProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace content_settings
 

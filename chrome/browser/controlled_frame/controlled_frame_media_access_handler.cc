@@ -9,7 +9,7 @@
 #include "chrome/browser/controlled_frame/controlled_frame_media_permission_cache_factory.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

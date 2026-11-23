@@ -61,6 +61,7 @@
 #include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_manager.h"

@@ -9,7 +9,7 @@
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"

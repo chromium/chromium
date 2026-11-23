@@ -115,6 +115,7 @@ source_set("permissions") {
     "//components/content_extraction/content/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common:pref_names",
     "//components/contextual_tasks/public:feature_list",
     "//components/embedder_support:permissions",
     "//components/google/core/common",

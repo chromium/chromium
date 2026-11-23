@@ -49,7 +49,6 @@
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
@@ -118,6 +117,7 @@
 #include "components/certificate_transparency/pref_names.h"
 #include "components/collaboration/public/pref_names.h"
 #include "components/commerce/core/prefs.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -2216,7 +2216,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   payments::RegisterProfilePrefs(registry);
   performance_manager::user_tuning::prefs::RegisterProfilePrefs(registry);
   permissions::RegisterProfilePrefs(registry);
-  PermissionBubbleMediaAccessHandler::RegisterProfilePrefs(registry);
+  content_settings::RegisterMediaCaptureProfilePrefs(registry);
   PlatformNotificationServiceImpl::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PolicyUI::RegisterProfilePrefs(registry);

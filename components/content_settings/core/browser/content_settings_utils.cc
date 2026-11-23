@@ -23,6 +23,8 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace {
 
@@ -302,6 +304,16 @@ base::Value PermissionSettingToValue(const PermissionSettingsInfo* info,
   DCHECK(info->delegate().IsValid(setting));
   auto value = info->delegate().ToValue(setting);
   return value;
+}
+
+// TODO:(cr.bug.com/587333290) Move media capture policies registration into
+//  content_settings_policy_provider.
+void RegisterMediaCaptureProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kAudioCaptureAllowed, true);
+  registry->RegisterListPref(prefs::kAudioCaptureAllowedUrls);
+  registry->RegisterBooleanPref(prefs::kVideoCaptureAllowed, true);
+  registry->RegisterListPref(prefs::kVideoCaptureAllowedUrls);
 }
 
 }  // namespace content_settings

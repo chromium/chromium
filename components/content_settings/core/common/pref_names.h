@@ -268,6 +268,29 @@ inline constexpr char kQuietNotificationPermissionUiDisabledTime[] =
 inline constexpr char kInContextCookieControlsOpened[] =
     "profile.content_settings.in_content_cookies_controls_opened";
 
+// A pref holding the value of the policy used to explicitly allow or deny
+// access to audio capture devices. When enabled or not set, the user is
+// prompted for device access. When disabled, access to audio capture devices
+// is not allowed and no prompt will be shown.
+// See also kAudioCaptureAllowedUrls.
+inline constexpr char kAudioCaptureAllowed[] = "hardware.audio_capture_enabled";
+
+// Holds URL patterns that specify URLs that will be granted access to audio
+// capture devices without prompt.
+inline constexpr char kAudioCaptureAllowedUrls[] =
+    "hardware.audio_capture_allowed_urls";
+
+// A pref holding the value of the policy used to explicitly allow or deny
+// access to video capture devices. When enabled or not set, the user is
+// prompted for device access. When disabled, access to video capture devices
+// is not allowed and no prompt will be shown.
+inline constexpr char kVideoCaptureAllowed[] = "hardware.video_capture_enabled";
+
+// Holds URL patterns that specify URLs that will be granted access to video
+// capture devices without prompt.
+inline constexpr char kVideoCaptureAllowedUrls[] =
+    "hardware.video_capture_allowed_urls";
+
 #if BUILDFLAG(IS_ANDROID)
 // Enable vibration for web notifications.
 inline constexpr char kNotificationsVibrateEnabled[] =

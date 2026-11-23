@@ -17,7 +17,9 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content_settings {
@@ -220,5 +222,22 @@ TEST_P(ContentSettingsUtilsFlagTest, GetCoarseVisitedTime) {
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          ContentSettingsUtilsFlagTest,
                          testing::Bool());
+
+TEST(ContentSettingsUtilsTest, RegisterMediaCaptureProfilePrefs) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  RegisterMediaCaptureProfilePrefs(prefs.registry());
+
+  EXPECT_TRUE(prefs.FindPreference(prefs::kAudioCaptureAllowed));
+  EXPECT_TRUE(prefs.GetBoolean(prefs::kAudioCaptureAllowed));
+
+  EXPECT_TRUE(prefs.FindPreference(prefs::kAudioCaptureAllowedUrls));
+  EXPECT_TRUE(prefs.GetList(prefs::kAudioCaptureAllowedUrls).empty());
+
+  EXPECT_TRUE(prefs.FindPreference(prefs::kVideoCaptureAllowed));
+  EXPECT_TRUE(prefs.GetBoolean(prefs::kVideoCaptureAllowed));
+
+  EXPECT_TRUE(prefs.FindPreference(prefs::kVideoCaptureAllowedUrls));
+  EXPECT_TRUE(prefs.GetList(prefs::kVideoCaptureAllowedUrls).empty());
+}
 
 }  // namespace content_settings
