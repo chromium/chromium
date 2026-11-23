@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createSiteSuggestion;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +64,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -171,32 +171,21 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
-    public void testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
+    public void testModernTilesLayoutAppearance_Full()
+            throws IOException, InterruptedException, TimeoutException {
         doModernTilesLayoutAppearanceTest_Full("_with_add_new_button_v1");
     }
 
     private void doModernTilesLayoutAppearanceTest_Full(String suffix)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, TimeoutException {
         makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
         View tilesLayout = renderTiles();
 
         Activity activity = mActivityTestRule.getActivity();
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            activity.getResources().getConfiguration().orientation,
-                            is(ORIENTATION_PORTRAIT));
-                });
+        setOrientationAndWaitForLayout(activity, tilesLayout, ORIENTATION_PORTRAIT);
         mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_portrait" + suffix);
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            activity.getResources().getConfiguration().orientation,
-                            is(ORIENTATION_LANDSCAPE));
-                });
+        setOrientationAndWaitForLayout(activity, tilesLayout, ORIENTATION_LANDSCAPE);
         mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_landscape" + suffix);
 
         // Reset device orientation.
@@ -207,7 +196,8 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
-    public void testModernTilesLayoutAppearance_Two() throws IOException, InterruptedException {
+    public void testModernTilesLayoutAppearance_Two()
+            throws IOException, InterruptedException, TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
@@ -217,26 +207,40 @@ public class MostVisitedTilesLayoutTest {
         View tilesLayout = renderTiles();
 
         Activity activity = mActivityTestRule.getActivity();
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            activity.getResources().getConfiguration().orientation,
-                            is(ORIENTATION_PORTRAIT));
-                });
+        setOrientationAndWaitForLayout(activity, tilesLayout, ORIENTATION_PORTRAIT);
         mRenderTestRule.render(tilesLayout, "modern_tiles_layout_two_tiles_portrait_v1");
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            activity.getResources().getConfiguration().orientation,
-                            is(ORIENTATION_LANDSCAPE));
-                });
+        setOrientationAndWaitForLayout(activity, tilesLayout, ORIENTATION_LANDSCAPE);
         mRenderTestRule.render(tilesLayout, "modern_tiles_layout_two_tiles_landscape_v1");
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);
+    }
+
+    private static void setOrientationAndWaitForLayout(
+            Activity activity, View tilesLayout, int orientation) {
+        ActivityTestUtils.rotateActivityToOrientation(activity, orientation);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View decorView = activity.getWindow().getDecorView();
+                    int width = decorView.getWidth();
+                    int height = decorView.getHeight();
+                    boolean matchesOrientationBounds =
+                            orientation == ORIENTATION_LANDSCAPE
+                                    ? width >= height
+                                    : width <= height;
+                    Criteria.checkThat(
+                            "Window bounds ("
+                                    + width
+                                    + "x"
+                                    + height
+                                    + ") have not updated for orientation "
+                                    + orientation
+                                    + ".",
+                            width > 0 && height > 0 && matchesOrientationBounds,
+                            is(true));
+                });
+        ViewUtils.waitForStableView(tilesLayout);
     }
 
     @Test
@@ -248,8 +252,6 @@ public class MostVisitedTilesLayoutTest {
         List<SiteSuggestion> suggestions = makeAndSetUpFakeSuggestions(2);
         List<GURL> offlineAvailableUrls = Collections.singletonList(suggestions.get(0).url);
         ViewGroup tiles = renderTiles(offlineAvailableUrls);
-
-        mLoadCompleteHelper.waitForCallback(0);
 
         mRenderTestRule.render(tiles.getChildAt(0), "tile_modern_offline_v1");
         mRenderTestRule.render(tiles.getChildAt(1), "tile_modern_v1");
@@ -283,39 +285,51 @@ public class MostVisitedTilesLayoutTest {
      *
      * @return the layout in which the suggestions are rendered.
      */
-    private ViewGroup renderTiles(List<GURL> offlineUrls) throws InterruptedException {
+    private ViewGroup renderTiles(List<GURL> offlineUrls)
+            throws InterruptedException, TimeoutException {
         // Launching the activity, that should now use the right UI.
         mActivityTestRule.startOnBlankPage();
         ChromeActivity activity = mActivityTestRule.getActivity();
 
         ViewGroup contentView = new FrameLayout(activity);
 
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    setOfflinePageBridge(offlineUrls);
-                    // Overlay the content instead of replacing it with setContentView(), which
-                    // would break the hub when the test rule closes the tabs during cleanup.
-                    ViewGroup activityContent = activity.findViewById(android.R.id.content);
-                    activityContent.addView(
-                            contentView,
-                            new FrameLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT));
-                    ViewGroup containerLayout =
-                            (ViewGroup)
-                                    LayoutInflater.from(contentView.getContext())
-                                            .inflate(R.layout.mv_tiles_layout, contentView, false);
-                    containerLayout.setVisibility(View.VISIBLE);
-                    contentView.addView(containerLayout);
-                    initializeCoordinator(containerLayout);
-                    TilesLinearLayout mvTilesLayout =
-                            containerLayout.findViewById(R.id.mv_tiles_layout);
-                    assertNotNull(mvTilesLayout);
-                    return mvTilesLayout;
-                });
+        int callCount = mLoadCompleteHelper.getCallCount();
+        ViewGroup mvTilesLayout =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            setOfflinePageBridge(offlineUrls);
+                            // Overlay the content instead of replacing it with setContentView(),
+                            // which would break the hub when the test rule closes the tabs during
+                            // cleanup.
+                            ViewGroup activityContent = activity.findViewById(android.R.id.content);
+                            activityContent.addView(
+                                    contentView,
+                                    new FrameLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.MATCH_PARENT));
+                            ViewGroup containerLayout =
+                                    (ViewGroup)
+                                            LayoutInflater.from(contentView.getContext())
+                                                    .inflate(
+                                                            R.layout.mv_tiles_layout,
+                                                            contentView,
+                                                            false);
+                            containerLayout.setVisibility(View.VISIBLE);
+                            contentView.addView(containerLayout);
+                            initializeCoordinator(containerLayout);
+                            TilesLinearLayout layout =
+                                    containerLayout.findViewById(R.id.mv_tiles_layout);
+                            assertNotNull(layout);
+                            return layout;
+                        });
+        // Wait for async LargeIconBridge icon fetches and the resulting layout pass to complete
+        // before capturing render snapshots.
+        mLoadCompleteHelper.waitForCallback(callCount);
+        ViewUtils.waitForStableView(mvTilesLayout);
+        return mvTilesLayout;
     }
 
-    private ViewGroup renderTiles() throws InterruptedException {
+    private ViewGroup renderTiles() throws InterruptedException, TimeoutException {
         return renderTiles(Collections.emptyList());
     }
 
