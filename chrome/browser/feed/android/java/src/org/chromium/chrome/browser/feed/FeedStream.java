@@ -1039,7 +1039,7 @@ public class FeedStream implements Stream {
         // Starts to load more content if not yet.
         if (!mIsLoadingMoreContent) {
             mIsLoadingMoreContent = true;
-            FeedUma.recordFeedLoadMoreTrigger(getStreamKind(), totalItemCount, numItemsRemaining);
+            FeedUma.recordFeedLoadMoreTrigger(getStreamKind(), numItemsRemaining);
             // The native loadMore() call may immediately result in onStreamUpdated(), which can
             // result in a crash if maybeLoadMore() is being called in response to certain events.
             // Use postTask to avoid this.

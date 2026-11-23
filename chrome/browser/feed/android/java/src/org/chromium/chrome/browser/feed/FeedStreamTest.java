@@ -148,9 +148,8 @@ public class FeedStreamTest {
     }
 
     private static HistogramWatcher expectFeedRecordForLoadMoreTrigger(
-            @StreamKind int streamKind, int itemCount, int numCardsRemaining) {
+            @StreamKind int streamKind, int numCardsRemaining) {
         return HistogramWatcher.newBuilder()
-                .expectIntRecord(FeedUma.TOTAL_CARDS_HISTOGRAM_NAMES[streamKind - 1], itemCount)
                 .expectIntRecord(
                         FeedUma.OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES[streamKind - 1],
                         numCardsRemaining)
@@ -441,8 +440,7 @@ public class FeedStreamTest {
         final int itemCount = 10;
         final int lookAheadRange = itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD;
         HistogramWatcher histogramWatcher =
-                expectFeedRecordForLoadMoreTrigger(
-                        mFeedStream.getStreamKind(), itemCount, lookAheadRange - 1);
+                expectFeedRecordForLoadMoreTrigger(mFeedStream.getStreamKind(), lookAheadRange - 1);
 
         // loadMore not triggered due to not enough accumulated scrolling distance.
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
@@ -470,8 +468,7 @@ public class FeedStreamTest {
         final int itemCount = 10;
         final int lookAheadRange = itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD;
         HistogramWatcher histogramWatcher =
-                expectFeedRecordForLoadMoreTrigger(
-                        mFeedStream.getStreamKind(), itemCount, lookAheadRange - 1);
+                expectFeedRecordForLoadMoreTrigger(mFeedStream.getStreamKind(), lookAheadRange - 1);
 
         // loadMore triggered.
         mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);

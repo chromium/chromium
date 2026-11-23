@@ -11,11 +11,6 @@ import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 /** Records UMA stats for the actions that the user takes on the feed in the NTP. */
 @NullMarked
 public class FeedUma {
-    public static final String[] TOTAL_CARDS_HISTOGRAM_NAMES = {
-        "ContentSuggestions.Feed.LoadMoreTrigger.TotalCards",
-        "ContentSuggestions.Feed.SupervisedFeed.LoadMoreTrigger.TotalCards"
-    };
-
     public static final String[] OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES = {
         "ContentSuggestions.Feed.LoadMoreTrigger.OffsetFromEndOfStream",
         "ContentSuggestions.Feed.SupervisedFeed.LoadMoreTrigger.OffsetFromEndOfStream"
@@ -28,21 +23,15 @@ public class FeedUma {
      * Records the number of remaining cards (for the user to scroll through) at which the feed is
      * triggered to load more content.
      *
-     * @param sectionType The type of stream, which should be one of the values from
-     *     {@link org.chromium.chrome.browser.feed.StreamKind}.
+     * @param sectionType The type of stream, which should be one of the values from {@link
+     *     org.chromium.chrome.browser.feed.StreamKind}.
      * @param numCardsRemaining the number of cards the user has yet to scroll through.
      */
-    public static void recordFeedLoadMoreTrigger(
-            int sectionType, int totalCards, int numCardsRemaining) {
-        assert totalCards >= 0;
+    public static void recordFeedLoadMoreTrigger(int sectionType, int numCardsRemaining) {
         assert numCardsRemaining >= 0;
-        assert OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES.length
-                == TOTAL_CARDS_HISTOGRAM_NAMES.length;
         // Subtract 1 from sectionType to account for Unknown.
         sectionType -= 1;
-        assert sectionType >= 0 || sectionType <= TOTAL_CARDS_HISTOGRAM_NAMES.length;
-        RecordHistogram.recordCount1000Histogram(
-                TOTAL_CARDS_HISTOGRAM_NAMES[sectionType], totalCards);
+        assert sectionType >= 0 || sectionType <= OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES.length;
         RecordHistogram.recordCount100Histogram(
                 OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES[sectionType], numCardsRemaining);
     }

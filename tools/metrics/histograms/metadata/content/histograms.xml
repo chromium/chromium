@@ -859,21 +859,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.{FeedType}.LoadMoreTrigger.TotalCards"
-    units="cards" expires_after="2024-09-01">
-  <owner>dewittj@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The total number of cards in the feed stream at the moment the Feed decides
-    to load more content.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="Supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
 <histogram
     name="ContentSuggestions.{FeedType}.LoadStreamStatus.BackgroundRefresh"
     enum="FeedLoadStreamStatus" expires_after="2027-04-11">
