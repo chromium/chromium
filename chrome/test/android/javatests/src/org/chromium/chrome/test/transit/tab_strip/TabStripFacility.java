@@ -27,6 +27,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabModelSelectedCondition;
 
 /**
  * The horizontal tab strip of tablets and desktop, entered with {@link
@@ -154,6 +155,23 @@ public class TabStripFacility<HostStationT extends CtaPageStation> extends Facil
      */
     public <PageStationT extends CtaPageStation> PageStationT switchModel(
             BasePageStation.Builder<PageStationT> destinationBuilder) {
+        return switchModelTo().reach(otherModelSelected(destinationBuilder));
+    }
+
+    /** Starts a Trip clicking the model selector button. Reach {@link #otherModelSelected}. */
+    public TripBuilder switchModelTo() {
+        assert modelSelectorButtonElement != null : "No incognito tabs in this window";
+        return modelSelectorButtonElement.clickTo();
+    }
+
+    /**
+     * Outcome: the other model (regular or incognito) is selected and shows its selected tab.
+     *
+     * @param destinationBuilder Builder of the expected {@link CtaPageStation}, e.g. {@code
+     *     WebPageStation.newBuilder()}.
+     */
+    public <PageStationT extends CtaPageStation> Outcome<PageStationT> otherModelSelected(
+            BasePageStation.Builder<PageStationT> destinationBuilder) {
         boolean expectIncognito = !mHostStation.isIncognito();
         @Nullable Tab otherModelTab =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -163,35 +181,14 @@ public class TabStripFacility<HostStationT extends CtaPageStation> extends Facil
                                                 .getTabModelSelector()
                                                 .getModel(expectIncognito)));
         assert otherModelTab != null : "No selected tab in the other model";
-        return switchModelTo()
-                .arriveAt(
+        return Outcome.enter(
                         destinationBuilder
                                 .withIncognito(expectIncognito)
                                 .withTabAlreadySelected(otherModelTab)
-                                .build());
-    }
-
-    /**
-     * Starts a Trip clicking the model selector button, which waits for the other model (regular or
-     * incognito) to be selected.
-     *
-     * <p>Prefer {@link #switchModel}. Completing this Trip without arriving at a Station of the
-     * other model leaves the host Station on the wrong model; only legacy tests should do that.
-     */
-    public TripBuilder switchModelTo() {
-        assert modelSelectorButtonElement != null : "No incognito tabs in this window";
-        boolean expectIncognito = !mHostStation.isIncognito();
-        return modelSelectorButtonElement
-                .clickTo()
-                .waitForAnd(
-                        SimpleConditions.uiThreadCondition(
-                                (expectIncognito ? "Incognito" : "Regular") + " model selected",
-                                mHostStation.tabModelSelectorElement,
-                                selector ->
-                                        whether(
-                                                selector.isIncognitoSelected() == expectIncognito,
-                                                "isIncognitoSelected=%b",
-                                                selector.isIncognitoSelected())));
+                                .build())
+                .andWaitFor(
+                        new TabModelSelectedCondition(
+                                mHostStation.tabModelSelectorElement, expectIncognito));
     }
 
     /** Clicks the tab search button and opens the Tab Search overlay. */
