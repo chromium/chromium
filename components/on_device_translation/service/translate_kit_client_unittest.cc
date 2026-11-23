@@ -109,7 +109,9 @@ TEST_F(TranslateKitClientTest, GetTranslatorMatchingLanguagePack) {
   // Check that the translator can be used to translate text.
   // Note: the mock library returns the concatenation of the content of
   // "dict.dat" and the input text.
-  EXPECT_EQ(translator->Translate("test"), "En to Ja - test");
+  const std::string input = "test";
+  EXPECT_EQ(translator->Translate(input), "En to Ja - test");
+  EXPECT_EQ(input, "test");
   histogram_tester.ExpectUniqueSample(
       "Translate.OnDeviceTranslation.ModelFileMmapSuccess", true, 1);
   histogram_tester.ExpectTotalCount(

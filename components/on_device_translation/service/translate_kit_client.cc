@@ -102,8 +102,12 @@ void TranslateCallback(TranslateKitOutputText result,
                        std::uintptr_t user_data) {
   std::string* output = reinterpret_cast<std::string*>(user_data);
   CHECK(output);
-  CHECK(result.buffer);
-  *output = std::string(result.buffer, result.buffer_size);
+  CHECK(result.buffer || result.buffer_size == 0);
+  if (result.buffer) {
+    output->assign(result.buffer, result.buffer_size);
+  } else {
+    output->clear();
+  }
 }
 
 void DeleteReadOnlyMemoryRegion(std::uintptr_t memory_map_ptr,
@@ -503,9 +507,10 @@ std::optional<std::string> TranslateKitClient::TranslatorImpl::Translate(
   if (!MaybeLoadModel()) {
     return std::nullopt;
   }
+  std::string output;
   const bool translated = client_->translator_translate_func_(
       translator_ptr_, TranslateKitInputText(text.c_str(), text.length()),
-      TranslateCallback, reinterpret_cast<uintptr_t>(&text));
+      TranslateCallback, reinterpret_cast<std::uintptr_t>(&output));
 
   // Count the idle time from the end of the call. One call can run longer
   // than the timeout, and a timer that started before it would unload the
@@ -514,7 +519,7 @@ std::optional<std::string> TranslateKitClient::TranslatorImpl::Translate(
   if (!translated) {
     return std::nullopt;
   }
-  return text;
+  return output;
 }
 
 DISABLE_CFI_DLSYM
