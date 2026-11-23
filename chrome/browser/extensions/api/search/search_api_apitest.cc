@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -21,14 +20,7 @@ namespace {
 using SearchApiTest = ExtensionApiTest;
 
 // Test various scenarios, such as the use of input different parameters.
-// Disabled due to flakes on Mac and Win testers; see
-// https://crbug.com/394345948.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_Normal DISABLED_Normal
-#else
-#define MAYBE_Normal Normal
-#endif
-IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Normal) {
+IN_PROC_BROWSER_TEST_F(SearchApiTest, Normal) {
   ASSERT_TRUE(RunExtensionTest("search/query/normal")) << message_;
 }
 
