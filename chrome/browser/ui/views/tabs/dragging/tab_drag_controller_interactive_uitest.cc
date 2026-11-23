@@ -23,7 +23,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -45,6 +44,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -2205,76 +2205,75 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
 
 // Drags a tab within the window (without dragging the whole window) then
 // pressing a key ends the drag.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        KeyPressShouldEndDragTest) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
+  RunTestSequence(StartDragStatePollers(),
 
-  ASSERT_TRUE(TabDragController::IsActive());
+                  // Drag the second tab over the first, without releasing.
+                  PressTab(tab_strip, 1), MoveToTab(tab_strip, 0),
+                  WaitForState(kTabDragActiveState, true),
 
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
-  StopAnimating(tab_strip);
-
-  EXPECT_EQ("1 0", IDString(browser()->GetTabStripModel()));
-  EXPECT_FALSE(TabDragController::IsActive());
-  EXPECT_FALSE(IsDragSessionActive(tab_strip));
+                  // Pressing a key ends the drag and keeps the new order.
+                  SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB),
+                  WaitForState(kTabDragActiveState, false),
+                  Do([&]() { StopAnimating(tab_strip); }),
+                  CheckTabOrder(browser(), "1 0"),
+                  Check([&]() { return !IsDragSessionActive(tab_strip); },
+                        "No drag session"));
 }
 
 // Can't start another drag session while the previous one is still ending.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        StartDragWhileEndingPreviousDragDoesNothingTest) {
   AddTabsAndResetBrowser(browser(), 2);
-
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
+  RunTestSequence(
+      StartDragStatePollers(),
 
-  ASSERT_TRUE(TabDragController::IsActive());
-  StopAnimating(tab_strip);
+      // Drag the second tab over the first.
+      PressTab(tab_strip, 1), MoveToTab(tab_strip, 0),
+      WaitForState(kTabDragActiveState, true),
+      Do([&]() { StopAnimating(tab_strip); }),
 
-  ASSERT_TRUE(ReleaseInput());
+      // Drop it, then try to start another drag while the dropped tab is still
+      // animating into place.
+      //
+      // This uses `ReleaseMouse()` rather than `ReleaseDrag()`, which waits on
+      // a poller, so the checks run before the ~200ms end-of-drag animation
+      // finishes. The second press calls `OnMousePressed()` directly for the
+      // same reason: real OS input is asynchronous and could arrive after the
+      // animation has finished on a loaded bot.
+      ReleaseMouse(ui_controls::LEFT), Do([&]() {
+        // The drag is over...
+        ASSERT_FALSE(TabDragController::IsActive());
+        ASSERT_FALSE(IsDragSessionActive(tab_strip));
 
-  // The drag is over...
-  ASSERT_FALSE(TabDragController::IsActive());
-  ASSERT_FALSE(IsDragSessionActive(tab_strip));
+        // ...but the tab is still animating and still belongs to the
+        // TabDragContext.
+        ASSERT_TRUE(tab_strip->IsAnimatingInTabStrip());
+        ASSERT_TRUE(tab_strip->tab_at(0)->dragging());
+        ASSERT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
+        ASSERT_EQ("1 0 2", IDString(browser()->GetTabStripModel()));
 
-  // But the tab is still animating and still belongs to the TabDragContext.
-  ASSERT_TRUE(tab_strip->IsAnimatingInTabStrip());
-  ASSERT_TRUE(tab_strip->tab_at(0)->dragging());
-  ASSERT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
+        ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                                   gfx::Point(), base::TimeTicks::Now(),
+                                   ui::EF_LEFT_MOUSE_BUTTON,
+                                   ui::EF_LEFT_MOUSE_BUTTON);
+        tab_strip->tab_at(2)->OnMousePressed(press_event);
 
-  ASSERT_EQ("1 0 2", IDString(browser()->GetTabStripModel()));
-
-  // Attempt to start *another* drag session while the animation is still going.
-  // We do not use interactive OS input (e.g. PressInput) here because it
-  // dispatches events asynchronously and pumps the message loop. On heavily
-  // loaded test bots, the end-drag animation (~200ms) could complete before
-  // the OS event is received, causing the drag to succeed and flaking the test.
-  // Directly invoking OnMousePressed synchronously guarantees the event is
-  // processed while the animation is still active.
-  ASSERT_TRUE(tab_strip->IsAnimatingInTabStrip());
-  ASSERT_TRUE(tab_strip->tab_at(0)->dragging());
-  ASSERT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
-
-  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
-                             gfx::Point(), base::TimeTicks::Now(),
-                             ui::EF_LEFT_MOUSE_BUTTON,
-                             ui::EF_LEFT_MOUSE_BUTTON);
-  tab_strip->tab_at(2)->OnMousePressed(press_event);
-
-  // This should not actually start. The previous animation should also still
-  // be in progress.
-  EXPECT_FALSE(TabDragController::IsActive());
-  EXPECT_FALSE(IsDragSessionActive(tab_strip));
-  EXPECT_TRUE(tab_strip->IsAnimatingInTabStrip());
-  EXPECT_TRUE(tab_strip->tab_at(0)->dragging());
-  EXPECT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
-  EXPECT_EQ("1 0 2", IDString(browser()->GetTabStripModel()));
+        // This should not actually start. The previous animation should also
+        // still be in progress.
+        EXPECT_FALSE(TabDragController::IsActive());
+        EXPECT_FALSE(IsDragSessionActive(tab_strip));
+        EXPECT_TRUE(tab_strip->IsAnimatingInTabStrip());
+        EXPECT_TRUE(tab_strip->tab_at(0)->dragging());
+        EXPECT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
+        EXPECT_EQ("1 0 2", IDString(browser()->GetTabStripModel()));
+      }));
 }
 
 #if defined(USE_AURA)
@@ -2293,7 +2292,7 @@ bool SubtreeShouldBeExplored(aura::Window* window,
 
 // The logic to find the target tabstrip should take the window mask into
 // account. This test hangs without the fix. crbug.com/40412236.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        DragWithMaskedWindows) {
   AddTabsAndResetBrowser(browser(), 1);
 
@@ -2317,16 +2316,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(SubtreeShouldBeExplored(masked_window.get(),
                                       gfx::Point(bounds.width() - 9, 0)));
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  TabStripModel* model = browser()->GetTabStripModel();
 
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
-  ASSERT_TRUE(ReleaseInput());
-  StopAnimating(tab_strip);
-
-  EXPECT_EQ("1 0", IDString(model));
-  EXPECT_FALSE(TabDragController::IsActive());
-  EXPECT_FALSE(IsDragSessionActive(tab_strip));
+  RunTestSequence(DragTabInStripAndRelease(tab_strip, /*from=*/1, /*to=*/0),
+                  CheckTabOrder(browser(), "1 0"), CheckDragEnded());
 }
 #endif  // USE_AURA
 
@@ -2525,7 +2517,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
 // Create two browsers, with the second one occluded, and drag from first over
 // second. This should create a third browser, w/o bringing forward the second
 // browser, because it's occluded.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        DragToOccludedWindow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -2544,13 +2536,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       ->SetNativeWindowOcclusionState(aura::Window::OcclusionState::OCCLUDED,
                                       {});
 
-  // Drag a tab from first browser to middle of first tab of the second,
-  // occluded browser, and drop. This should create a third browser window.
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
-  ASSERT_TRUE(DragInputToCenterAsync(tab_strip2->tab_at(0)));
-  ASSERT_TRUE(ReleaseInput());
+  RunTestSequence(
+      StartDragStatePollers(),
 
-  EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
+      // Drag a tab from the first browser over the first tab of the occluded
+      // second browser, and drop it there. This creates a third browser
+      // window instead of attaching to the occluded one.
+      PressTab(tab_strip, 1), MoveTabOutUntilDetached(tab_strip, 1),
+      MoveToTab(tab_strip2, 0), ReleaseDrag(), WaitForBrowserCount(3u));
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -2584,21 +2577,28 @@ class CaptureLoseWindowFinder : public WindowFinder {
 
 // Calls OnMouseCaptureLost() from WindowFinder::GetLocalProcessWindowAtPoint()
 // and verifies we don't crash. This simulates a crash seen on windows.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        CaptureLostDuringDrag) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   AddTabsAndResetBrowser(browser(), 1);
 
-  // Press on first tab so drag is active. Reset WindowFinder to one that causes
-  // capture to be lost from within GetLocalProcessWindowAtPoint(), then
-  // continue drag. The capture lost should trigger the drag to cancel.
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
-  ASSERT_TRUE(IsDragSessionActive(tab_strip));
-  SetWindowFinderForTabStrip(
-      tab_strip, base::WrapUnique(new CaptureLoseWindowFinder(tab_strip)));
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(1)));
-  ASSERT_FALSE(IsDragSessionActive(tab_strip));
+  RunTestSequence(
+      // Press on the first tab so a drag session starts.
+      PressTab(tab_strip, 0),
+      Check([&]() { return IsDragSessionActive(tab_strip); },
+            "Drag session started"),
+
+      // Make the window finder drop capture from within
+      // `GetLocalProcessWindowAtPoint()`. Continuing the drag should then
+      // cancel it.
+      Do([&]() {
+        SetWindowFinderForTabStrip(
+            tab_strip, std::make_unique<CaptureLoseWindowFinder>(tab_strip));
+      }),
+      MoveToTab(tab_strip, 1),
+      Check([&]() { return !IsDragSessionActive(tab_strip); },
+            "Drag was cancelled"));
 }
 
 namespace {
@@ -3457,117 +3457,122 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deletes a tab being dragged before the user moved enough to start a drag.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        DeleteBeforeStartedDragging) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
-  // Click on the first tab, but don't move it.
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  RunTestSequence(
+      // Press on the first tab, but don't move it. A drag session starts.
+      PressTab(tab_strip, 0), Do([&]() {
+        ASSERT_TRUE(IsDragSessionActive(tab_strip));
+        ASSERT_TRUE(TabDragController::IsActive());
+      }),
 
-  // Should be dragging.
-  ASSERT_TRUE(IsDragSessionActive(tab_strip));
-  ASSERT_TRUE(TabDragController::IsActive());
-
-  // Delete the tab being dragged.
-  browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
-
-  // Should have canceled dragging.
-  ASSERT_FALSE(IsDragSessionActive(tab_strip));
-  ASSERT_FALSE(TabDragController::IsActive());
-
-  EXPECT_EQ("1", IDString(browser()->GetTabStripModel()));
-  EXPECT_FALSE(GetIsDragged(browser()));
+      // Deleting the pressed tab cancels the drag.
+      Do([&]() {
+        browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
+      }),
+      Do([&]() {
+        ASSERT_FALSE(IsDragSessionActive(tab_strip));
+        ASSERT_FALSE(TabDragController::IsActive());
+      }),
+      CheckTabOrder(browser(), "1"),
+      Check([&]() { return !GetIsDragged(browser()); },
+            "Window is not marked as dragged"));
 }
 
 // Replaces a tab being dragged before the user moved enough to start a drag.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        ReplaceBeforeStartedDragging) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
-  // Click on the first tab, but don't move it.
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  RunTestSequence(
+      StartDragStatePollers(),
 
-  // A drag session should exist, but the drag should not have started.
-  ASSERT_TRUE(IsDragSessionActive(tab_strip));
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_FALSE(HasDragStarted(tab_strip));
+      // Press on the first tab, but don't move it. A drag session exists, but
+      // the drag has not started.
+      PressTab(tab_strip, 0), Do([&]() {
+        ASSERT_TRUE(IsDragSessionActive(tab_strip));
+        ASSERT_TRUE(TabDragController::IsActive());
+        ASSERT_FALSE(HasDragStarted(tab_strip));
+      }),
 
-  // Replace the tab being dragged.
-  std::unique_ptr<content::WebContents> new_web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->GetProfile()));
-  browser()->GetTabStripModel()->DiscardWebContents(
-      browser()->GetTabStripModel()->GetWebContentsAt(0),
-      std::move(new_web_contents));
+      // Replacing the pressed tab's contents keeps the session, still not
+      // started.
+      Do([&]() {
+        std::unique_ptr<content::WebContents> new_web_contents =
+            content::WebContents::Create(
+                content::WebContents::CreateParams(browser()->GetProfile()));
+        browser()->GetTabStripModel()->DiscardWebContents(
+            browser()->GetTabStripModel()->GetWebContentsAt(0),
+            std::move(new_web_contents));
+      }),
+      Do([&]() {
+        ASSERT_TRUE(IsDragSessionActive(tab_strip));
+        ASSERT_TRUE(TabDragController::IsActive());
+        ASSERT_FALSE(HasDragStarted(tab_strip));
+      }),
 
-  // The drag session should still exist, and still not be started.
-  ASSERT_TRUE(IsDragSessionActive(tab_strip));
-  ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_FALSE(HasDragStarted(tab_strip));
+      // Moving far enough starts the drag. It doesn't matter whether this is
+      // enough to create a window or not.
+      MoveToTab(tab_strip, 0, gfx::Vector2d(40, 0)),
+      Check([&]() { return HasDragStarted(tab_strip); }, "Drag started"),
 
-  // Move the mouse enough to start the drag.  It doesn't matter whether this
-  // is enough to create a window or not.
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0), gfx::Vector2d(40, 0)));
-
-  // Drag should now have started.
-  ASSERT_TRUE(HasDragStarted(tab_strip));
-
-  // The replaced webcontents should not have an id character.
-  EXPECT_EQ("? 1", IDString(browser()->GetTabStripModel()));
-
-  EXPECT_TRUE(ReleaseInput());
+      // The replaced WebContents has no ID character.
+      CheckTabOrder(browser(), "? 1"), ReleaseDrag());
 }
 
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        DragDoesntStartFromClick) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
-  // Click on the first tab, but don't move it.
-  EXPECT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  RunTestSequence(
+      StartDragStatePollers(),
 
-  // A drag session should exist, but the drag should not have started.
-  EXPECT_TRUE(IsDragSessionActive(tab_strip));
-  EXPECT_TRUE(TabDragController::IsActive());
-  EXPECT_FALSE(HasDragStarted(tab_strip));
+      // Press on the first tab, but don't move it. A drag session exists, but
+      // the drag has not started.
+      PressTab(tab_strip, 0), Do([&]() {
+        EXPECT_TRUE(IsDragSessionActive(tab_strip));
+        EXPECT_TRUE(TabDragController::IsActive());
+        EXPECT_FALSE(HasDragStarted(tab_strip));
+      }),
 
-  // Move the mouse enough to start the drag.  It doesn't matter whether this
-  // is enough to create a window or not.
-  EXPECT_TRUE(DragInputToCenter(tab_strip->tab_at(0), gfx::Vector2d(20, 0)));
-
-  // Drag should now have started.
-  EXPECT_TRUE(HasDragStarted(tab_strip));
-
-  EXPECT_TRUE(ReleaseInput());
+      // Moving far enough starts the drag. It doesn't matter whether this is
+      // enough to create a window or not.
+      MoveToTab(tab_strip, 0, gfx::Vector2d(20, 0)),
+      Check([&]() { return HasDragStarted(tab_strip); }, "Drag started"),
+      ReleaseDrag());
 }
 
 // Deletes a tab being dragged while still attached.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        DeleteTabWhileAttached) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
-  // Click on the first tab and move it enough so that it starts dragging but is
-  // still attached.
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0), gfx::Vector2d(20, 0)));
+  RunTestSequence(
+      // Press on the first tab and move it enough to start dragging, while
+      // staying attached.
+      PressTab(tab_strip, 0), MoveToTab(tab_strip, 0, gfx::Vector2d(20, 0)),
+      Do([&]() {
+        ASSERT_TRUE(IsDragSessionActive(tab_strip));
+        ASSERT_TRUE(TabDragController::IsActive());
+      }),
 
-  // Should be dragging.
-  ASSERT_TRUE(IsDragSessionActive(tab_strip));
-  ASSERT_TRUE(TabDragController::IsActive());
-
-  // Delete the tab being dragged.
-  browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
-
-  // Should have canceled dragging.
-  ASSERT_FALSE(IsDragSessionActive(tab_strip));
-  ASSERT_FALSE(TabDragController::IsActive());
-
-  EXPECT_EQ("1", IDString(browser()->GetTabStripModel()));
-
-  EXPECT_FALSE(GetIsDragged(browser()));
+      // Deleting the dragged tab cancels the drag.
+      Do([&]() {
+        browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
+      }),
+      Do([&]() {
+        ASSERT_FALSE(IsDragSessionActive(tab_strip));
+        ASSERT_FALSE(TabDragController::IsActive());
+      }),
+      CheckTabOrder(browser(), "1"),
+      Check([&]() { return !GetIsDragged(browser()); },
+            "Window is not marked as dragged"));
 }
 
 // Selects 1 tab out of 4, drags it out and closes the new browser window while
@@ -3666,8 +3671,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
 
 // Tests that the TabDragPinnedness UMA metric is correctly logged for same
 // window drags.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        DragInSameWindowPinnedness) {
+  static constexpr char kHistogram[] =
+      "TabStrip.HorizontalTabStrip.TabDragPinnedness";
+
   // Case 1: Drag an unpinned tab.
   {
     AddTabsAndResetBrowser(browser(), 2);
@@ -3675,14 +3683,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     StopAnimating(tab_strip);
 
     base::HistogramTester histogram_tester;
-    ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(2)));
-    // Drag enough to ensure it starts.
-    ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
-    ASSERT_TRUE(ReleaseInput());
-    StopAnimating(tab_strip);
-    histogram_tester.ExpectUniqueSample(
-        "TabStrip.HorizontalTabStrip.TabDragPinnedness", 0 /* kAllUnpinned */,
-        1);
+    RunTestSequence(DragTabInStripAndRelease(tab_strip, /*from=*/2, /*to=*/0),
+                    Do([&]() {
+                      histogram_tester.ExpectUniqueSample(
+                          kHistogram, 0 /* kAllUnpinned */, 1);
+                    }));
   }
 
   // Case 2: Drag a pinned tab.
@@ -3694,15 +3699,17 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     model2->SetTabPinned(0, true);
     model2->ActivateTabAt(0);
     StopAnimating(tab_strip2);
+    ui_test_utils::WaitForBrowserSetLastActive(browser2);
 
+    // Run in `browser2`'s context so the mouse press targets its window (on
+    // Mac, `ui_controls` posts mouse events to a specific window).
     base::HistogramTester histogram_tester;
-    ASSERT_TRUE(PressInputAtCenter(tab_strip2->tab_at(0)));
-    // Drag further to the right.
-    ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(2)));
-    ASSERT_TRUE(ReleaseInput());
-    StopAnimating(tab_strip2);
-    histogram_tester.ExpectUniqueSample(
-        "TabStrip.HorizontalTabStrip.TabDragPinnedness", 1 /* kAllPinned */, 1);
+    RunTestSequenceInContext(
+        BrowserElements::From(browser2)->GetContext(),
+        DragTabInStripAndRelease(tab_strip2, /*from=*/0, /*to=*/2), Do([&]() {
+          histogram_tester.ExpectUniqueSample(kHistogram, 1 /* kAllPinned */,
+                                              1);
+        }));
   }
 
   // Case 3: Drag a mix of pinned and unpinned tabs.
@@ -3718,48 +3725,55 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     selection.set_active(0);
     model3->SetSelectionFromModel(selection);
     StopAnimating(tab_strip3);
+    ui_test_utils::WaitForBrowserSetLastActive(browser3);
 
+    // Run in `browser3`'s context so the mouse press targets its window.
     base::HistogramTester histogram_tester;
-    ASSERT_TRUE(PressInputAtCenter(tab_strip3->tab_at(0)));
-    ASSERT_TRUE(DragInputToCenter(tab_strip3->tab_at(2)));
-    ASSERT_TRUE(ReleaseInput());
-    StopAnimating(tab_strip3);
-    histogram_tester.ExpectUniqueSample(
-        "TabStrip.HorizontalTabStrip.TabDragPinnedness", 2 /* kMixed */, 1);
+    RunTestSequenceInContext(
+        BrowserElements::From(browser3)->GetContext(),
+        DragTabInStripAndRelease(tab_strip3, /*from=*/0, /*to=*/2), Do([&]() {
+          histogram_tester.ExpectUniqueSample(kHistogram, 2 /* kMixed */, 1);
+        }));
   }
 }
 
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        TabDragContextOwnsDraggedTabs) {
   AddTabsAndResetBrowser(browser(), 1);
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabDragContext* drag_context = tab_strip->GetDragContext();
   Tab* dragged_tab = tab_strip->tab_at(1);
+  const auto drag_context_owns_tab = [&]() {
+    return drag_context->Contains(dragged_tab);
+  };
 
   // Tabs are not in the TabDragContext when they aren't being dragged.
-  ASSERT_FALSE(drag_context->Contains(dragged_tab));
+  ASSERT_FALSE(drag_context_owns_tab());
 
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
-  EXPECT_FALSE(drag_context->Contains(dragged_tab));
+  RunTestSequence(
+      // Pressing the tab doesn't hand it to the TabDragContext...
+      PressTab(tab_strip, 1),
+      CheckResult(drag_context_owns_tab, false, "Not owned after press"),
 
-  // TabDragContext gets them only after the drag truly begins.
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
-  EXPECT_TRUE(drag_context->Contains(dragged_tab));
+      // ...it gets it only after the drag truly begins.
+      MoveToTab(tab_strip, 0),
+      CheckResult(drag_context_owns_tab, true, "Owned while dragging"),
 
-  // TabDragContext keeps them after the drag ends...
-  ASSERT_TRUE(ReleaseInput());
-  EXPECT_TRUE(drag_context->Contains(dragged_tab));
-
-  // Until they animate back into place.
-  StopAnimating(tab_strip);
-  EXPECT_FALSE(drag_context->Contains(dragged_tab));
-
-  EXPECT_FALSE(TabDragController::IsActive());
-  EXPECT_FALSE(IsDragSessionActive(tab_strip));
+      // The TabDragContext keeps it after the drag ends, until it animates back
+      // into place. `ReleaseMouse()` is used rather than `ReleaseDrag()`, which
+      // waits on a poller, so the check runs before the animation finishes.
+      ReleaseMouse(ui_controls::LEFT),
+      CheckResult(drag_context_owns_tab, true, "Owned while animating"),
+      Do([&]() { StopAnimating(tab_strip); }),
+      CheckResult(drag_context_owns_tab, false, "Not owned after animating"),
+      CheckDragEnded());
 }
 
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kDraggedTabIsFirstState);
+
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        TabDragContextOwnsClosingDraggedTabs) {
   AddTabsAndResetBrowser(browser(), 1);
 
@@ -3767,28 +3781,31 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabDragContext* drag_context = tab_strip->GetDragContext();
   Tab* dragged_tab = tab_strip->tab_at(1);
 
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
+  RunTestSequence(
+      // Drag the second tab until it becomes the first.
+      PressTab(tab_strip, 1), MoveToTab(tab_strip, 0),
+      PollStateUntil(
+          kDraggedTabIsFirstState,
+          [&]() { return tab_strip->tab_at(0) == dragged_tab; }, true),
 
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
+      // Deleting the dragged tab cancels the drag, but the TabDragContext still
+      // owns the tab while it's closing.
+      Do([&]() {
+        browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
+      }),
+      Do([&]() {
+        ASSERT_FALSE(IsDragSessionActive(tab_strip));
+        ASSERT_FALSE(TabDragController::IsActive());
+        ASSERT_TRUE(dragged_tab->closing());
+        EXPECT_TRUE(drag_context->Contains(dragged_tab));
+      }),
 
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return tab_strip->tab_at(0) == dragged_tab; }));
-
-  // Delete the tab being dragged.
-  browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
-
-  // Should have canceled dragging.
-  ASSERT_FALSE(IsDragSessionActive(tab_strip));
-  ASSERT_FALSE(TabDragController::IsActive());
-
-  // TabDragContext still owns the tab while it's closing.
-  ASSERT_TRUE(dragged_tab->closing());
-  EXPECT_TRUE(drag_context->Contains(dragged_tab));
-
-  // Completing the close animation destroys the tab.
-  views::ViewTracker dragged_tab_tracker(dragged_tab);
-  StopAnimating(tab_strip);
-  EXPECT_EQ(dragged_tab_tracker.view(), nullptr);
+      // Completing the close animation destroys the tab.
+      Do([&]() {
+        views::ViewTracker dragged_tab_tracker(dragged_tab);
+        StopAnimating(tab_strip);
+        EXPECT_EQ(dragged_tab_tracker.view(), nullptr);
+      }));
 }
 
 namespace {
@@ -6958,7 +6975,7 @@ class SelectTabDuringDragObserver : public TabStripModelObserver {
 }  // namespace
 
 // Bug fix for crbug.com/40055468. Don't change tab selection while dragging.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
                        SelectTabDuringDrag) {
   TabStripModel* model = browser()->GetTabStripModel();
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -6969,15 +6986,17 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   AddTabsAndResetBrowser(browser(), 1);
   ASSERT_EQ(2, model->count());
 
-  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
-  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(1)));
-  {
-    gfx::Rect tab_bounds = tab_strip->tab_at(1)->GetLocalBounds();
-    views::View::ConvertRectToScreen(tab_strip->tab_at(1), &tab_bounds);
-    ASSERT_TRUE(
-        DragInputTo(tab_bounds.right_center(), GetWindowHint(tab_strip)));
-  }
-  ASSERT_TRUE(ReleaseInput());
+  RunTestSequence(
+      StartDragStatePollers(),
+
+      // Drag the first tab past the second while `observer` tries to change
+      // the selection on every move.
+      PressTab(tab_strip, 0), MoveToTab(tab_strip, 1),
+      MoveToTab(tab_strip, 1,
+                base::BindLambdaForTesting([](ui::TrackedElement* el) {
+                  return el->GetScreenBounds().right_center();
+                })),
+      ReleaseDrag());
 }
 
 // Regression test for http://crbug.com/505371980.
