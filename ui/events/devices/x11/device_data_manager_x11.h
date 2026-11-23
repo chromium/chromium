@@ -165,6 +165,9 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // Check if the event comes from stylus devices.
   bool IsStylusXInputEvent(const x11::Event& xev) const;
 
+  // Check if the event comes from the eraser end of a stylus.
+  bool IsEraserXInputEvent(const x11::Event& xev) const;
+
   // Check if the event comes from touchpad devices.
   bool IsTouchpadXInputEvent(const x11::Event& xev) const;
 
@@ -372,6 +375,7 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   base::flat_set<x11::Input::DeviceId> cmt_devices_;
   base::flat_set<x11::Input::DeviceId> touchpads_;
   base::flat_set<x11::Input::DeviceId> stylus_;
+  base::flat_set<x11::Input::DeviceId> erasers_;
 
   // List of the master pointer devices.
   std::vector<x11::Input::DeviceId> master_pointers_;

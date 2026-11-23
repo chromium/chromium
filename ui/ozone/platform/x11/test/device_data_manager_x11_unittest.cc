@@ -351,6 +351,7 @@ TEST_F(DeviceDataManagerX11Test, AbsolutePointerVsStylusClassification) {
   constexpr uint8_t kTabletCursorPuckId = 18;
   constexpr uint8_t kTabletPadId = 19;
   constexpr uint8_t kTouchscreenWithPressureId = 20;
+  constexpr uint8_t kXwaylandEraserId = 21;
 
   std::vector<x11::Input::DeviceInfo> dev_list = {
       {.device_type = connection->GetAtom("MOUSE"), .device_id = kAbsMouseId},
@@ -376,6 +377,8 @@ TEST_F(DeviceDataManagerX11Test, AbsolutePointerVsStylusClassification) {
       {.device_type = connection->GetAtom("PAD"), .device_id = kTabletPadId},
       {.device_type = connection->GetAtom("MOUSE"),
        .device_id = kTouchscreenWithPressureId},
+      {.device_type = connection->GetAtom("xwayland-pointer"),
+       .device_id = kXwaylandEraserId},
   };
 
   auto id = [](uint8_t raw) { return static_cast<x11::Input::DeviceId>(raw); };
@@ -440,6 +443,21 @@ TEST_F(DeviceDataManagerX11Test, AbsolutePointerVsStylusClassification) {
           .attachment = kMasterId,
           .enabled = 1,
           .name = "xwayland-tablet stylus:10",
+          .classes =
+              {
+                  make_valuator(0, abs_x, 0, 262143),
+                  make_valuator(1, abs_y, 0, 262143),
+                  make_valuator(2, abs_pressure, 0, 65535),
+                  make_valuator(3, abs_tilt_x, -64, 63),
+                  make_valuator(4, abs_tilt_y, -64, 63),
+              },
+      },
+      {
+          .deviceid = id(kXwaylandEraserId),
+          .type = x11::Input::DeviceType::SlavePointer,
+          .attachment = kMasterId,
+          .enabled = 1,
+          .name = "xwayland-tablet eraser:10",
           .classes =
               {
                   make_valuator(0, abs_x, 0, 262143),
@@ -591,8 +609,19 @@ TEST_F(DeviceDataManagerX11Test, AbsolutePointerVsStylusClassification) {
       EventPointerType::kPen,
       GetStylusPointerDetailsFromXEvent(xwayland_stylus_event).pointer_type);
 
-  // Stylus/eraser/tablet devices without pressure or tilt axes remain kPen.
-  for (uint8_t stylus_id : {kBasicStylusId, kBasicEraserId, kBasicTabletId}) {
+  // Eraser devices report kEraser, identified by the ERASER type atom or, for
+  // XWayland, by the device name.
+  for (uint8_t eraser_id : {kBasicEraserId, kXwaylandEraserId}) {
+    x11::Event eraser_event = make_motion(eraser_id);
+    EXPECT_TRUE(manager->IsStylusXInputEvent(eraser_event))
+        << "device_id=" << static_cast<int>(eraser_id);
+    EXPECT_EQ(EventPointerType::kEraser,
+              GetStylusPointerDetailsFromXEvent(eraser_event).pointer_type)
+        << "device_id=" << static_cast<int>(eraser_id);
+  }
+
+  // Stylus/tablet devices without pressure or tilt axes remain kPen.
+  for (uint8_t stylus_id : {kBasicStylusId, kBasicTabletId}) {
     x11::Event basic_stylus_event = make_motion(stylus_id);
     EXPECT_TRUE(manager->IsStylusXInputEvent(basic_stylus_event))
         << "device_id=" << static_cast<int>(stylus_id);

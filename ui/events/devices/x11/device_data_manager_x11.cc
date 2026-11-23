@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <string>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -18,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -203,6 +205,7 @@ void DeviceDataManagerX11::UpdateDeviceListFromLists(
   cmt_devices_.clear();
   touchpads_.clear();
   stylus_.clear();
+  erasers_.clear();
   master_pointers_.clear();
   valuator_count_.clear();
   valuator_lookup_.clear();
@@ -223,6 +226,7 @@ void DeviceDataManagerX11::UpdateDeviceListFromLists(
   x11::Atom xi_cursor = connection->GetAtom("CURSOR");
   x11::Atom xi_pad = connection->GetAtom("PAD");
   base::flat_set<x11::Input::DeviceId> xi_stylus_devices;
+  base::flat_set<x11::Input::DeviceId> xi_eraser_devices;
   base::flat_set<x11::Input::DeviceId> non_stylus_devices;
   for (const auto& device : dev_list) {
     const auto device_id = static_cast<x11::Input::DeviceId>(device.device_id);
@@ -237,6 +241,9 @@ void DeviceDataManagerX11::UpdateDeviceListFromLists(
                device.device_type == xi_eraser ||
                device.device_type == xi_tablet) {
       xi_stylus_devices.insert(device_id);
+      if (device.device_type == xi_eraser) {
+        xi_eraser_devices.insert(device_id);
+      }
     }
   }
 
@@ -304,6 +311,12 @@ void DeviceDataManagerX11::UpdateDeviceListFromLists(
 
     if (possible_stylus && !not_stylus) {
       stylus_.insert(deviceid);
+      // XWayland ("xwayland-tablet eraser") does not set the ERASER type atom,
+      // so also match the device name, as GTK does.
+      if (xi_eraser_devices.contains(deviceid) ||
+          base::ToLowerASCII(info.name).find("eraser") != std::string::npos) {
+        erasers_.insert(deviceid);
+      }
     }
 
     if (possible_cmt && !not_cmt)
@@ -435,6 +448,15 @@ bool DeviceDataManagerX11::IsStylusXInputEvent(
     return false;
   }
   return stylus_.contains(static_cast<x11::Input::DeviceId>(source_id));
+}
+
+bool DeviceDataManagerX11::IsEraserXInputEvent(
+    const x11::Event& x11_event) const {
+  uint16_t source_id;
+  if (!GetSourceId(x11_event, &source_id)) {
+    return false;
+  }
+  return erasers_.contains(static_cast<x11::Input::DeviceId>(source_id));
 }
 
 bool DeviceDataManagerX11::IsTouchpadXInputEvent(

@@ -717,7 +717,10 @@ PointerDetails GetStylusPointerDetailsFromXEvent(const x11::Event& xev) {
     // default: empty details with kMouse
     return PointerDetails(EventPointerType::kMouse);
   }
-  PointerDetails p(EventPointerType::kPen);
+  PointerDetails p(
+      ui::DeviceDataManagerX11::GetInstance()->IsEraserXInputEvent(xev)
+          ? EventPointerType::kEraser
+          : EventPointerType::kPen);
   // NOTE: id is not set here
   p.force = GetStylusForceFromXEvent(xev);
   p.tilt_x = GetStylusTiltXFromXEvent(xev);
