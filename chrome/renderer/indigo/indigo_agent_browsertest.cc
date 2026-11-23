@@ -47,7 +47,7 @@ class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
 
   // chrome::mojom::IndigoAgentHost:
   void StartImageReplacement(
-      mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+      mojo::PendingAssociatedRemote<blink::mojom::ImageReplacement> replacement,
       bool is_primary,
       StartImageReplacementCallback callback) override {
     last_is_primary_ = is_primary;
@@ -68,13 +68,15 @@ class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
   std::optional<chrome::mojom::IndigoInvokeError> last_invoke_error() const {
     return last_invoke_error_;
   }
-  mojo::Remote<blink::mojom::ImageReplacement>& last_replacement_remote() {
+  mojo::AssociatedRemote<blink::mojom::ImageReplacement>&
+  last_replacement_remote() {
     return last_replacement_remote_;
   }
 
  private:
   mojo::AssociatedReceiver<chrome::mojom::IndigoAgentHost> receiver_{this};
-  mojo::Remote<blink::mojom::ImageReplacement> last_replacement_remote_;
+  mojo::AssociatedRemote<blink::mojom::ImageReplacement>
+      last_replacement_remote_;
   base::test::TestFuture<void> replacement_started_;
   base::test::TestFuture<void> invoke_error_future_;
   bool last_is_primary_ = false;
@@ -602,8 +604,8 @@ TEST_F(IndigoAgentBrowserTest,
 
   // Start replacement on the image from the host and flush the pipe so
   // StartReplacement executes synchronously on the renderer.
-  mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote;
-  std::ignore = host_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingAssociatedRemote<blink::mojom::ImageReplacementHost> host_remote;
+  std::ignore = host_remote.InitWithNewEndpointAndPassReceiver();
   host_.last_replacement_remote()->StartReplacement(std::move(host_remote),
                                                     std::nullopt);
   host_.last_replacement_remote().FlushForTesting();

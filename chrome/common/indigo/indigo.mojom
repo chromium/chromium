@@ -18,7 +18,7 @@ enum IndigoInvokeError {
 interface IndigoAgentHost {
   // Asks the browser to start an image replacement on the given element.
   StartImageReplacement(
-      pending_remote<blink.mojom.ImageReplacement> replacement,
+      pending_associated_remote<blink.mojom.ImageReplacement> replacement,
       bool is_primary) => ();
 
   // Notifies the browser that an error occurred during invocation.

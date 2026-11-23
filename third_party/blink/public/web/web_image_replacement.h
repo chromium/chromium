@@ -18,7 +18,7 @@ class WebElement;
 class BLINK_EXPORT WebImageReplacement {
  public:
   static base::expected<
-      CrossVariantMojoRemote<mojom::ImageReplacementInterfaceBase>,
+      CrossVariantMojoAssociatedRemote<mojom::ImageReplacementInterfaceBase>,
       WebString>
   CreateAndBindReceiver(const WebElement& element);
 

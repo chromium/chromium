@@ -10,7 +10,7 @@ namespace indigo {
 
 IndigoImageReplacement::IndigoImageReplacement(
     IndigoImageReplacementManager* manager,
-    mojo::Remote<blink::mojom::ImageReplacement> remote,
+    mojo::AssociatedRemote<blink::mojom::ImageReplacement> remote,
     bool is_primary)
     : manager_(manager), remote_(std::move(remote)), is_primary_(is_primary) {}
 

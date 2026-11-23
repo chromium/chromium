@@ -131,7 +131,7 @@ void IndigoAgentHost::OnScriptLoaded(
 }
 
 void IndigoAgentHost::StartImageReplacement(
-    mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+    mojo::PendingAssociatedRemote<blink::mojom::ImageReplacement> replacement,
     bool is_primary,
     StartImageReplacementCallback callback) {
   // The renderer could still register new replacements between when Reset()

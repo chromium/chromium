@@ -9,11 +9,12 @@
 
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -29,8 +30,9 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
   // created (and hasn't been discarded/disconnected), this method will fail.
   // Note: This doesn't actually start replacement; the caller can connect to
   // returned remote and call StartReplacement() to do so.
-  static base::expected<mojo::PendingRemote<mojom::blink::ImageReplacement>,
-                        String>
+  static base::expected<
+      mojo::PendingAssociatedRemote<mojom::blink::ImageReplacement>,
+      String>
   CreateAndBindReceiver(HTMLImageElement& image_element);
   explicit ImageReplacement(base::PassKey<ImageReplacement>,
                             HTMLImageElement& image_element);
@@ -59,22 +61,25 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
  private:
   // mojom::blink::ImageReplacement:
   void StartReplacement(
-      mojo::PendingRemote<mojom::blink::ImageReplacementHost> host_remote,
+      mojo::PendingAssociatedRemote<mojom::blink::ImageReplacementHost>
+          host_remote,
       std::optional<int32_t> tracked_element_feature_id) override;
   void RenderReplacement() override;
 
-  mojo::PendingRemote<mojom::blink::ImageReplacement> BindReceiver();
+  mojo::PendingAssociatedRemote<mojom::blink::ImageReplacement> BindReceiver();
   void Reset(Document& document);
 
  private:
   void OnDisconnect();
 
   Member<HTMLImageElement> image_element_;
-  HeapMojoReceiver<mojom::blink::ImageReplacement, ImageReplacement> receiver_;
-  HeapMojoRemote<mojom::blink::ImageReplacementHost> host_;
+  HeapMojoAssociatedReceiver<mojom::blink::ImageReplacement, ImageReplacement>
+      receiver_;
+  HeapMojoAssociatedRemote<mojom::blink::ImageReplacementHost> host_;
   bool should_paint_original_image_ = true;
   AtomicString original_image_source_url_;
-  mojo::PendingRemote<mojom::blink::ImageReplacementHost> pending_host_remote_;
+  mojo::PendingAssociatedRemote<mojom::blink::ImageReplacementHost>
+      pending_host_remote_;
   std::optional<int32_t> tracked_element_feature_id_;
 };
 

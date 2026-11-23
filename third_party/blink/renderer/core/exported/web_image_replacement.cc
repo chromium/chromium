@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/web/web_image_replacement.h"
 
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -16,7 +16,8 @@
 namespace blink {
 
 // static
-base::expected<CrossVariantMojoRemote<mojom::ImageReplacementInterfaceBase>,
+base::expected<CrossVariantMojoAssociatedRemote<
+                   mojom::blink::ImageReplacementInterfaceBase>,
                WebString>
 WebImageReplacement::CreateAndBindReceiver(const WebElement& element) {
   auto* image_element =
@@ -25,7 +26,8 @@ WebImageReplacement::CreateAndBindReceiver(const WebElement& element) {
     return base::unexpected(WebString("Not an HTMLImageElement"));
   }
 
-  base::expected<mojo::PendingRemote<mojom::blink::ImageReplacement>, String>
+  base::expected<mojo::PendingAssociatedRemote<mojom::blink::ImageReplacement>,
+                 String>
       result = ImageReplacement::CreateAndBindReceiver(*image_element);
   if (!result.has_value()) {
     return base::unexpected(WebString(result.error()));

@@ -77,7 +77,8 @@ IndigoImageReplacementManager::IndigoImageReplacementManager(
 IndigoImageReplacementManager::~IndigoImageReplacementManager() = default;
 
 void IndigoImageReplacementManager::RegisterImageReplacement(
-    mojo::PendingRemote<blink::mojom::ImageReplacement> image_replacement,
+    mojo::PendingAssociatedRemote<blink::mojom::ImageReplacement>
+        image_replacement,
     bool is_primary) {
   if (is_primary) {
     if (primary_receiver_id_.has_value()) {
@@ -94,10 +95,10 @@ void IndigoImageReplacementManager::RegisterImageReplacement(
     return;
   }
 
-  mojo::Remote<blink::mojom::ImageReplacement> remote(
+  mojo::AssociatedRemote<blink::mojom::ImageReplacement> remote(
       std::move(image_replacement));
-  mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote;
-  auto host_receiver = host_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingAssociatedRemote<blink::mojom::ImageReplacementHost> host_remote;
+  auto host_receiver = host_remote.InitWithNewEndpointAndPassReceiver();
   // With the flag on, mirrors are tracked too so the toolbar can follow them.
   std::optional<int32_t> feature_id;
   if (is_primary || base::FeatureList::IsEnabled(
@@ -266,8 +267,10 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
               page().GetMainDocument().GetProcess()->GetID().GetUnsafeValue(),
               replacement_frame_token));
   if (!image_replacement_subframe) {
-    // TODO(b/489445294): We should wait for this subframe to be attached,
-    // rather than returning early.
+    // `ImageReplacementHost` is channel-associated with `FrameHost`, so
+    // `CreateChildFrame` is processed before `ReplacementFrameAttached`. The
+    // subframe can still be absent if `CreateChildFrame` was dropped (e.g.,
+    // during teardown or deactivation) or the subframe was already detached.
     return;
   }
 
@@ -310,6 +313,12 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   params.frame_tree_node_id = frame_tree_node_id;
   params.should_replace_current_entry = true;
   web_contents->GetController().LoadURLWithParams(std::move(params));
+
+  if (replacement_data->tracked_element_id) {
+    if (auto* controller = GetIndigoPageActionController()) {
+      controller->RefreshTrackedBounds();
+    }
+  }
 
   // We only use the primary image for generating the replacement image.
   // The generated image is then shared with the other replacements.

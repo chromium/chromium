@@ -598,6 +598,9 @@ void IndigoPageActionController::DidFinishNavigation(
   if (navigation_handle->IsSameDocument()) {
     Reset(ResetType::kResetReplacementsAndContentScript);
   } else {
+    last_tracked_element_rects_.reset();
+    last_device_scale_factor_ = 1.0f;
+    tracked_bounds_ = std::nullopt;
     DestroyToolbar();
   }
 
@@ -1204,6 +1207,8 @@ void IndigoPageActionController::RegisterObserverWithHost(
   if (current_host_ == host) {
     return;
   }
+  last_tracked_element_rects_.reset();
+  last_device_scale_factor_ = 1.0f;
   UnregisterObserverFromHost(current_host_);
   current_host_ = host;
   if (current_host_) {
@@ -1237,6 +1242,16 @@ void IndigoPageActionController::OnDiscardContents(
 void IndigoPageActionController::OnTrackedElementRectsChanged(
     const viz::TrackedElementRects& rects,
     float device_scale_factor) {
+  last_tracked_element_rects_ = rects;
+  last_device_scale_factor_ = device_scale_factor;
+  RefreshTrackedBounds();
+}
+
+void IndigoPageActionController::RefreshTrackedBounds() {
+  if (!last_tracked_element_rects_) {
+    return;
+  }
+
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
     return;
@@ -1254,8 +1269,8 @@ void IndigoPageActionController::OnTrackedElementRectsChanged(
   const auto feature_id = static_cast<viz::TrackedElementFeature>(
       page_content_annotations::TrackedElementFeature::kIndigoImageReplacement);
 
-  auto it = rects.find(feature_id);
-  if (it == rects.end()) {
+  auto it = last_tracked_element_rects_->find(feature_id);
+  if (it == last_tracked_element_rects_->end()) {
     SetTrackedBounds(std::nullopt);
     return;
   }
@@ -1263,7 +1278,8 @@ void IndigoPageActionController::OnTrackedElementRectsChanged(
   const viz::TrackedElementRect* anchor = nullptr;
   if (base::FeatureList::IsEnabled(
           features::kIndigoToolbarFollowsReplacedImage)) {
-    anchor = SelectToolbarAnchor(it->second, primary_token, device_scale_factor,
+    anchor = SelectToolbarAnchor(it->second, primary_token,
+                                 last_device_scale_factor_,
                                  manager->GetTrackedReplacementIds());
   } else if (primary_token) {
     auto primary = std::ranges::find(it->second, *primary_token,
@@ -1277,7 +1293,7 @@ void IndigoPageActionController::OnTrackedElementRectsChanged(
     return;
   }
 
-  float dip_scale = 1.0f / device_scale_factor;
+  float dip_scale = 1.0f / last_device_scale_factor_;
   SetTrackedBounds(gfx::ScaleToRoundedRect(anchor->visible_bounds, dip_scale));
 }
 

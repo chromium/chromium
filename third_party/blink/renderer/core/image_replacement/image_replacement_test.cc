@@ -10,10 +10,10 @@
 #include "base/test/test_future.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom-blink.h"
@@ -145,12 +145,12 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
 
   const SkBitmap& decoded_bitmap() const { return decoded_bitmap_; }
 
-  mojo::Receiver<mojom::blink::ImageReplacementHost>& receiver() {
+  mojo::AssociatedReceiver<mojom::blink::ImageReplacementHost>& receiver() {
     return receiver_;
   }
 
  private:
-  mojo::Receiver<mojom::blink::ImageReplacementHost> receiver_{this};
+  mojo::AssociatedReceiver<mojom::blink::ImageReplacementHost> receiver_{this};
   std::optional<blink::LocalFrameToken> frame_token_;
   mojom::blink::ImageDataPtr original_image_;
   std::optional<base::Token> tracked_element_id_;
@@ -158,7 +158,17 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
   SkBitmap decoded_bitmap_;
 };
 
-class ImageReplacementSimTest : public SimTest {};
+class ImageReplacementSimTest : public SimTest {
+ protected:
+  static mojo::AssociatedRemote<mojom::blink::ImageReplacement>
+  BindReplacementRemote(
+      mojo::PendingAssociatedRemote<mojom::blink::ImageReplacement>
+          pending_remote) {
+    pending_remote.EnableUnassociatedUsage();
+    return mojo::AssociatedRemote<mojom::blink::ImageReplacement>(
+        std::move(pending_remote));
+  }
+};
 
 TEST_F(ImageReplacementSimTest, ShadowTreeClearedOnLayoutDispositionChange) {
   auto* image = MakeGarbageCollected<HTMLImageElement>(GetDocument());
@@ -209,12 +219,12 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   // Verify replacement state
@@ -275,12 +285,12 @@ TEST_F(ImageReplacementSimTest, OriginalImageIsEncodedCorrectly) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   // Verify the decoded image in the mock host.
@@ -355,12 +365,12 @@ TEST_F(ImageReplacementSimTest, OriginalImageRespectsOrientation) {
     FAIL() << "CreateAndBindReceiver failed: " << result.error();
   }
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   // Verify the decoded image in the mock host.
@@ -395,14 +405,14 @@ TEST_F(ImageReplacementSimTest, ImageReplacementSendsTrackedElementId) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   // Start replacement with layout tracking enabled (using kIndigoToolbar as
   // feature ID).
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), 0);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), 0);
   test::RunPendingTasks();
 
   EXPECT_TRUE(mock_host.tracked_element_id().has_value());
@@ -433,13 +443,13 @@ TEST_F(ImageReplacementSimTest, ImageReplacementDoesNotSendTrackedElementId) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   // Start replacement with layout tracking disabled.
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_FALSE(mock_host.tracked_element_id().has_value());
@@ -467,11 +477,11 @@ TEST_F(ImageReplacementSimTest, ClickFiresOnImageAfterReplacement) {
 
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
@@ -522,11 +532,11 @@ TEST_F(ImageReplacementSimTest, ImageReplacementRendering) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
@@ -584,11 +594,11 @@ TEST_F(ImageReplacementSimTest,
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
@@ -638,11 +648,11 @@ TEST_F(ImageReplacementSimTest, ImageReplacementWaitsForLoadAndResumes) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_FALSE(img->HasImageReplacement());
@@ -682,12 +692,12 @@ TEST_F(ImageReplacementSimTest, ImageReplacementRemovedFromDocument) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -765,12 +775,12 @@ TEST_F(ImageReplacementSimTest, ImageReplacementMovedToNewDocument) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -839,11 +849,11 @@ TEST_F(ImageReplacementSimTest, ResumeReplacementFailsIfImageLoadFails) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   // Replacement should not have started since the image is not loaded.
@@ -868,7 +878,7 @@ TEST_F(ImageReplacementSimTest, ResumeReplacementFailsIfImageLoadFails) {
   // Replacement should not have started since the image load failed.
   mock_host.receiver().reset();
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
   EXPECT_FALSE(img->HasImageReplacement());
   EXPECT_FALSE(replacement_remote.is_connected());
@@ -895,11 +905,11 @@ TEST_F(ImageReplacementSimTest, ImageReplacementResetAfterSrcChange) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -951,12 +961,12 @@ TEST_F(ImageReplacementSimTest, ImageReplacementSendsObjectFit) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   ASSERT_TRUE(mock_host.replacement_data());
@@ -1006,12 +1016,12 @@ TEST_F(ImageReplacementSimTest, ImageReplacementNotResetAfterSizeChange) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -1075,11 +1085,11 @@ TEST_F(ImageReplacementSimTest,
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -1150,11 +1160,11 @@ TEST_F(ImageReplacementSimTest,
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   // Replacement is registered but not active (disposition is still
@@ -1223,11 +1233,11 @@ TEST_F(ImageReplacementSimTest,
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -1287,12 +1297,12 @@ TEST_F(ImageReplacementSimTest,
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -1354,11 +1364,11 @@ TEST_F(ImageReplacementSimTest,
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -1428,11 +1438,11 @@ TEST_F(ImageReplacementSimTest,
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -1516,12 +1526,12 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPI) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->replacedByUserAgent());
@@ -1600,12 +1610,12 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIDisabled) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   img->ResetImageReplacement();
@@ -1645,12 +1655,12 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIElementRemoved) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->replacedByUserAgent());
@@ -1695,11 +1705,11 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIWaitsForImageLoad) {
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   ASSERT_TRUE(result.has_value());
 
-  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
-      std::move(result.value()));
+  mojo::AssociatedRemote<mojom::blink::ImageReplacement> replacement_remote =
+      BindReplacementRemote(std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewEndpointAndPassRemote(), std::nullopt);
   test::RunPendingTasks();
 
   // Image load is still pending. Replacement should not be active yet.

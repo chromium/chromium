@@ -63,7 +63,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -532,13 +532,14 @@ IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, CloseResetsReplacements) {
   class FakeImageReplacement : public blink::mojom::ImageReplacement {
    public:
     void StartReplacement(
-        mojo::PendingRemote<blink::mojom::ImageReplacementHost> host,
+        mojo::PendingAssociatedRemote<blink::mojom::ImageReplacementHost> host,
         std::optional<int32_t> tracked_element_feature_id) override {}
     void RenderReplacement() override {}
   };
 
   FakeImageReplacement fake_replacement;
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&fake_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &fake_replacement);
   base::test::TestFuture<void> disconnect_future;
 
   RunTestSequence(
@@ -553,7 +554,7 @@ IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, CloseResetsReplacements) {
             auto* manager = IndigoImageReplacementManager::GetOrCreateForPage(
                 web_contents->GetPrimaryPage());
             manager->RegisterImageReplacement(
-                receiver.BindNewPipeAndPassRemote(),
+                receiver.BindNewEndpointAndPassDedicatedRemote(),
                 /*is_primary=*/false);
             receiver.set_disconnect_handler(disconnect_future.GetCallback());
           })),

@@ -20,8 +20,8 @@
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "content/public/browser/page_user_data.h"
 #include "crypto/sha2.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -70,7 +70,8 @@ class IndigoImageReplacementManager
       const IndigoImageReplacementManager&) = delete;
 
   void RegisterImageReplacement(
-      mojo::PendingRemote<blink::mojom::ImageReplacement> image_replacement,
+      mojo::PendingAssociatedRemote<blink::mojom::ImageReplacement>
+          image_replacement,
       bool is_primary);
   IndigoImageReplacement* GetImageReplacementForFrame(
       const content::RenderFrameHost& rfh);
@@ -137,7 +138,8 @@ class IndigoImageReplacementManager
 
   void RecordImageDisplayed();
 
-  mojo::ReceiverSet<blink::mojom::ImageReplacementHost, IndigoImageReplacement>
+  mojo::AssociatedReceiverSet<blink::mojom::ImageReplacementHost,
+                              IndigoImageReplacement>
       receivers_;
   std::optional<mojo::ReceiverId> primary_receiver_id_;
   std::optional<std::array<uint8_t, crypto::kSHA256Length>>

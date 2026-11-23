@@ -81,6 +81,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1226,7 +1227,7 @@ TEST_P(IndigoPageActionControllerTest, OnCloseResetsReplacements) {
    public:
     FakeImageReplacement() = default;
     void StartReplacement(
-        mojo::PendingRemote<blink::mojom::ImageReplacementHost> host,
+        mojo::PendingAssociatedRemote<blink::mojom::ImageReplacementHost> host,
         std::optional<int32_t> tracked_element_feature_id) override {
       // Do nothing.
     }
@@ -1234,10 +1235,12 @@ TEST_P(IndigoPageActionControllerTest, OnCloseResetsReplacements) {
   };
 
   FakeImageReplacement fake_replacement;
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&fake_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &fake_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   receiver.set_disconnect_handler(disconnect_future.GetCallback());
 
   controller_->OnClose(nullptr);

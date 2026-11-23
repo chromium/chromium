@@ -88,7 +88,8 @@ mojom::blink::ObjectFit ConvertObjectFit(EObjectFit object_fit) {
 }  // namespace
 
 // static
-base::expected<mojo::PendingRemote<mojom::blink::ImageReplacement>, String>
+base::expected<mojo::PendingAssociatedRemote<mojom::blink::ImageReplacement>,
+               String>
 ImageReplacement::CreateAndBindReceiver(HTMLImageElement& image_element) {
   if (!base::FeatureList::IsEnabled(features::kImageReplacement)) {
     return base::unexpected("ImageReplacement feature is not enabled.");
@@ -147,7 +148,8 @@ void ImageReplacement::ResetImageReplacement(base::PassKey<HTMLImageElement>,
 }
 
 void ImageReplacement::StartReplacement(
-    mojo::PendingRemote<mojom::blink::ImageReplacementHost> host_remote,
+    mojo::PendingAssociatedRemote<mojom::blink::ImageReplacementHost>
+        host_remote,
     std::optional<int32_t> tracked_element_feature_id) {
   CHECK(base::FeatureList::IsEnabled(features::kImageReplacement));
   CHECK(image_element_->isConnected());
@@ -237,10 +239,10 @@ void ImageReplacement::Trace(Visitor* visitor) const {
   visitor->Trace(host_);
 }
 
-mojo::PendingRemote<mojom::blink::ImageReplacement>
+mojo::PendingAssociatedRemote<mojom::blink::ImageReplacement>
 ImageReplacement::BindReceiver() {
-  mojo::PendingRemote<mojom::blink::ImageReplacement> pending_remote =
-      receiver_.BindNewPipeAndPassRemote(
+  mojo::PendingAssociatedRemote<mojom::blink::ImageReplacement> pending_remote =
+      receiver_.BindNewEndpointAndPassRemote(
           image_element_->GetDocument().GetTaskRunner(
               TaskType::kInternalDefault));
   receiver_.set_disconnect_handler(
@@ -298,7 +300,7 @@ bool ImageReplacement::ResumeReplacementAfterImageLoad() {
     return false;
   }
   CHECK(image_element_ && image_element_->complete());
-  mojo::PendingRemote<mojom::blink::ImageReplacementHost> remote =
+  mojo::PendingAssociatedRemote<mojom::blink::ImageReplacementHost> remote =
       std::move(pending_host_remote_);
   StartReplacement(std::move(remote), tracked_element_feature_id_);
   // Note: `image_element_` can be nullptr here if the image load failed with

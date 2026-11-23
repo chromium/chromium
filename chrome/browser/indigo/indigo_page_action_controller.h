@@ -110,7 +110,12 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Shows the toolbar using the latest tracked bounds, if available.
   void ShowToolbar();
 
+  // Recomputes `tracked_bounds_` from the latest compositor tracked-element
+  // rects and active image replacements, updating the toolbar if shown.
+  void RefreshTrackedBounds();
+
   void SetTrackedBoundsForTesting(const std::optional<gfx::Rect>& bounds) {
+    last_tracked_element_rects_.reset();
     tracked_bounds_ = bounds;
   }
   const std::optional<gfx::Rect>& tracked_bounds_for_testing() const {
@@ -358,6 +363,13 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // The latest bounds of the toolbar's anchor (the primary image or a visible
   // copy of it), in DIPs.
   std::optional<gfx::Rect> tracked_bounds_;
+
+  // The latest tracked-element rects reported by the main frame's
+  // `RenderWidgetHost`, retained so `RefreshTrackedBounds()` can resolve the
+  // toolbar anchor if `OnTrackedElementRectsChanged()` arrived before
+  // `ReplacementFrameAttached()` recorded the tracked-element token.
+  std::optional<viz::TrackedElementRects> last_tracked_element_rects_;
+  float last_device_scale_factor_ = 1.0f;
 
   // Timer to delay the invocation of IndigoAgent after Glic is invoked and the
   // side panel is opened, to allow for the page to stabilize.

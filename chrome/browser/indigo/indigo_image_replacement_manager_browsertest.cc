@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,6 +50,7 @@
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -59,11 +61,9 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,6 +82,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/widget/root_view.h"
 
@@ -241,7 +242,8 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
       : web_contents_(web_contents), frame_index_(frame_index) {}
 
   void StartReplacement(
-      mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote,
+      mojo::PendingAssociatedRemote<blink::mojom::ImageReplacementHost>
+          host_remote,
       std::optional<int32_t> tracked_element_feature_id) override {
     host_remote_.Bind(std::move(host_remote));
     host_remote_.set_disconnect_handler(disconnect_future_.GetCallback());
@@ -316,7 +318,7 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
  private:
   raw_ptr<content::WebContents> web_contents_;
   const size_t frame_index_;
-  mojo::Remote<blink::mojom::ImageReplacementHost> host_remote_;
+  mojo::AssociatedRemote<blink::mojom::ImageReplacementHost> host_remote_;
   base::test::TestFuture<void> start_replacement_future_;
   base::test::TestFuture<void> render_replacement_future_;
   base::test::TestFuture<void> disconnect_future_;
@@ -402,7 +404,8 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
 
   struct PrimaryReplacementTestContext {
     std::unique_ptr<MockImageReplacement> mock_replacement;
-    std::unique_ptr<mojo::Receiver<blink::mojom::ImageReplacement>> receiver;
+    std::unique_ptr<mojo::AssociatedReceiver<blink::mojom::ImageReplacement>>
+        receiver;
   };
 
   void SetupPrimaryReplacementAndCopyImage(
@@ -422,12 +425,12 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
 
     context.mock_replacement =
         std::make_unique<MockImageReplacement>(web_contents);
-    context.receiver =
-        std::make_unique<mojo::Receiver<blink::mojom::ImageReplacement>>(
-            context.mock_replacement.get());
+    context.receiver = std::make_unique<
+        mojo::AssociatedReceiver<blink::mojom::ImageReplacement>>(
+        context.mock_replacement.get());
 
     manager->RegisterImageReplacement(
-        context.receiver->BindNewPipeAndPassRemote(),
+        context.receiver->BindNewEndpointAndPassDedicatedRemote(),
         /*is_primary=*/true);
     context.mock_replacement->WaitForStartReplacement();
     context.mock_replacement->WaitForRenderReplacement();
@@ -511,10 +514,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   GURL component_extension_url = GetComponentExtensionUrl();
@@ -561,10 +566,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -597,10 +604,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -655,10 +664,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -683,10 +694,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   GURL component_extension_url = GetComponentExtensionUrl();
@@ -731,10 +744,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -777,10 +792,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -826,10 +843,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -866,9 +885,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
   base::test::TestFuture<void> disconnect_future;
-  auto pending_remote = receiver.BindNewPipeAndPassRemote();
+  auto pending_remote = receiver.BindNewEndpointAndPassDedicatedRemote();
   receiver.set_disconnect_handler(disconnect_future.GetCallback());
 
   // A non-primary replacement registered before any primary should be ignored
@@ -898,16 +918,20 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register first primary replacement.
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
 
   // Register second primary replacement - should reset the first one.
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
 
   mock_replacement1.WaitForDisconnect();
   mock_replacement2.WaitForStartReplacement();
@@ -936,16 +960,20 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register primary replacement.
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
 
   // Register non-primary replacement.
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/false);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
   mock_replacement2.WaitForStartReplacement();
 
   // Disconnect primary before generated image is ready.
@@ -985,16 +1013,20 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register primary replacement.
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
 
   // Register non-primary replacement.
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/false);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
   mock_replacement2.WaitForStartReplacement();
 
   mock_replacement1.WaitForRenderReplacement();
@@ -1036,15 +1068,19 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(controller);
 
   MockImageReplacement primary(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> primary_receiver(&primary);
-  manager->RegisterImageReplacement(primary_receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> primary_receiver(
+      &primary);
+  manager->RegisterImageReplacement(
+      primary_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   primary.WaitForStartReplacement();
 
   MockImageReplacement mirror(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> mirror_receiver(&mirror);
-  manager->RegisterImageReplacement(mirror_receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/false);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> mirror_receiver(
+      &mirror);
+  manager->RegisterImageReplacement(
+      mirror_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
   mirror.WaitForStartReplacement();
   mirror.FlushHost();
   CompleteGeneration(*manager);
@@ -1103,12 +1139,14 @@ class IndigoImageReplacementManagerToolbarFollowsBrowserTest
     for (size_t i = 0; i <= mirror_count; ++i) {
       MockImageReplacement& replacement = *replacements_.emplace_back(
           std::make_unique<MockImageReplacement>(web_contents, i));
-      mojo::Receiver<blink::mojom::ImageReplacement>& receiver =
+      mojo::AssociatedReceiver<blink::mojom::ImageReplacement>& receiver =
           *receivers_.emplace_back(
-              std::make_unique<mojo::Receiver<blink::mojom::ImageReplacement>>(
+              std::make_unique<
+                  mojo::AssociatedReceiver<blink::mojom::ImageReplacement>>(
                   &replacement));
-      manager_->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                         /*is_primary=*/i == 0);
+      manager_->RegisterImageReplacement(
+          receiver.BindNewEndpointAndPassDedicatedRemote(),
+          /*is_primary=*/i == 0);
       replacement.WaitForStartReplacement();
       replacement.FlushHost();
     }
@@ -1116,6 +1154,7 @@ class IndigoImageReplacementManagerToolbarFollowsBrowserTest
   }
 
   IndigoImageReplacementManager& manager() { return *manager_; }
+  IndigoPageActionController& controller() { return *controller_; }
   MockImageReplacement& primary() { return *replacements_[0]; }
   base::Token primary_id() const {
     return replacements_[0]->tracked_element_id();
@@ -1136,7 +1175,8 @@ class IndigoImageReplacementManagerToolbarFollowsBrowserTest
   raw_ptr<IndigoImageReplacementManager> manager_ = nullptr;
   raw_ptr<IndigoPageActionController> controller_ = nullptr;
   std::vector<std::unique_ptr<MockImageReplacement>> replacements_;
-  std::vector<std::unique_ptr<mojo::Receiver<blink::mojom::ImageReplacement>>>
+  std::vector<
+      std::unique_ptr<mojo::AssociatedReceiver<blink::mojom::ImageReplacement>>>
       receivers_;
 };
 
@@ -1171,6 +1211,86 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerToolbarFollowsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       TrackedElementRectsBeforeReplacementFrameAttached) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+  IndigoPageActionController* controller = IndigoPageActionController::From(
+      tabs::TabInterface::GetFromContents(web_contents));
+  ASSERT_TRUE(controller);
+
+  // Detach from the real main-frame `RenderWidgetHost` first so compositor
+  // frames from `ExecJs()` do not overwrite the synthetic tracked-element rects
+  // with empty metadata.
+  main_rfh->GetRenderWidgetHost()->RemoveTrackedElementObserver(controller);
+
+  MockImageReplacement mock_replacement(web_contents, 0);
+  const gfx::Rect expected_bounds(50, 60, 200, 200);
+  controller->OnTrackedElementRectsChanged(
+      IndigoRects({{mock_replacement.tracked_element_id(), expected_bounds}}),
+      /*device_scale_factor=*/1.0f);
+  EXPECT_FALSE(controller->tracked_bounds_for_testing());
+
+  GURL component_extension_url = GetComponentExtensionUrl();
+  content::TestNavigationObserver navigation_observer(component_extension_url);
+  navigation_observer.WatchExistingWebContents();
+
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.FlushHost();
+
+  EXPECT_EQ(controller->tracked_bounds_for_testing(), expected_bounds);
+
+  CompleteGeneration(*manager);
+  navigation_observer.Wait();
+  mock_replacement.WaitForRenderReplacement();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  views::View* toolbar_view =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          IndigoToolbar::kToolbarElementId,
+          views::ElementTrackerViews::GetContextForView(browser_view));
+  ASSERT_TRUE(toolbar_view);
+  EXPECT_TRUE(toolbar_view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerToolbarFollowsBrowserTest,
+                       TrackedElementRectsBeforeMirrorFrameAttached) {
+  ASSERT_NO_FATAL_FAILURE(SetUpReplacements(/*mirror_count=*/0));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  web_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->RemoveTrackedElementObserver(&controller());
+
+  MockImageReplacement mirror(web_contents, 1);
+  const gfx::Rect mirror_bounds(0, 400, 400, 400);
+  EXPECT_FALSE(
+      TrackedBoundsFor({{mirror.tracked_element_id(), mirror_bounds}}));
+
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> mirror_receiver(
+      &mirror);
+  manager().RegisterImageReplacement(
+      mirror_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
+  mirror.WaitForStartReplacement();
+  mirror.FlushHost();
+
+  EXPECT_EQ(controller().tracked_bounds_for_testing(), mirror_bounds);
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                        HandlesDelayedResponseAfterNewPrimaryIsRegistered) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
@@ -1185,9 +1305,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Create the first image replacement (primary).
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
   mock_replacement1.WaitForRenderReplacement();
 
@@ -1197,9 +1319,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   // Create a second primary image replacement. This should automatically reset
   // the first one.
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement2.WaitForStartReplacement();
   mock_replacement2.WaitForRenderReplacement();
 
@@ -1242,10 +1366,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   auto* tab = tabs::TabInterface::GetFromContents(web_contents);
@@ -1380,10 +1506,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   // Trigger a same-document navigation using pushState so that the path changes
@@ -1426,8 +1554,9 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   // processed in the renderer process to simulate a replacement being
   // registered while a reset is ongoing.
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
-  auto pending_remote = receiver.BindNewPipeAndPassRemote();
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  auto pending_remote = receiver.BindNewEndpointAndPassRemote();
 
   base::test::TestFuture<void> disconnect_future;
   receiver.set_disconnect_handler(disconnect_future.GetCallback());
@@ -1462,10 +1591,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Subsequent registrations should succeed.
   MockImageReplacement mock_replacement2(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
   base::test::TestFuture<void> start_replacement_callback_future2;
   fake_agent->host()->StartImageReplacement(
-      receiver2.BindNewPipeAndPassRemote(),
+      receiver2.BindNewEndpointAndPassRemote(),
       /*is_primary=*/true, start_replacement_callback_future2.GetCallback());
 
   EXPECT_TRUE(start_replacement_callback_future2.Wait());
@@ -1495,10 +1625,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBFCacheBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -1525,16 +1657,20 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
   // Register primary replacement.
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
 
   // Register non-primary replacement.
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/false);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
   mock_replacement2.WaitForStartReplacement();
 
   mock_replacement1.WaitForRenderReplacement();
@@ -1603,9 +1739,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager1);
 
   MockImageReplacement mock_replacement1(web_contents1, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager1->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                     /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager1->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
   mock_replacement1.WaitForRenderReplacement();
 
@@ -1624,9 +1762,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager2);
 
   MockImageReplacement mock_replacement2(web_contents2, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager2->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                     /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager2->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement2.WaitForStartReplacement();
   mock_replacement2.WaitForRenderReplacement();
 
@@ -1705,9 +1845,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register primary replacement.
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -1786,9 +1928,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register primary replacement.
   MockImageReplacement mock_replacement(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -1861,9 +2005,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register primary replacement.
   MockImageReplacement mock_replacement(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -1965,10 +2111,12 @@ IN_PROC_BROWSER_TEST_P(IndigoImageReplacementManagerBrowserTestWithParam,
   ASSERT_TRUE(controller);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   // An initial 0x0 frame size notification before the replacement has rendered
@@ -2027,10 +2175,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest, ObjectFit) {
 
   MockImageReplacement mock_replacement(web_contents);
   mock_replacement.set_object_fit(blink::mojom::ObjectFit::kFill);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   GURL expected_url = GetComponentExtensionUrl();
@@ -2073,9 +2223,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // First invocation (Cache Miss).
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
   mock_replacement1.WaitForRenderReplacement();
 
@@ -2110,9 +2262,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Second invocation (Cache Hit).
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement2.WaitForStartReplacement();
   mock_replacement2.WaitForRenderReplacement();
 
@@ -2149,9 +2303,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   base::HistogramTester histogram_tester;
 
   MockImageReplacement mock_replacement(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -2205,9 +2361,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   base::HistogramTester histogram_tester;
 
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
   mock_replacement1.WaitForRenderReplacement();
 
@@ -2241,9 +2399,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Re-invocation should miss the cache and send a new Generate request.
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement2.WaitForStartReplacement();
   mock_replacement2.WaitForRenderReplacement();
 
@@ -2277,9 +2437,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager1);
 
   MockImageReplacement mock_replacement1(web_contents1, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager1->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                     /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager1->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
   mock_replacement1.WaitForRenderReplacement();
 
@@ -2346,9 +2508,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager1);
 
   MockImageReplacement mock_replacement(web_contents1, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
-  manager1->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                     /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  manager1->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -2428,9 +2592,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerCacheDisabledBrowserTest,
   base::HistogramTester histogram_tester;
 
   MockImageReplacement mock_replacement1(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
-  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver1(
+      &mock_replacement1);
+  manager->RegisterImageReplacement(
+      receiver1.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement1.WaitForStartReplacement();
   mock_replacement1.WaitForRenderReplacement();
 
@@ -2459,9 +2625,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerCacheDisabledBrowserTest,
 
   // Second invocation should issue another Generate request.
   MockImageReplacement mock_replacement2(web_contents, 1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement2.WaitForStartReplacement();
   mock_replacement2.WaitForRenderReplacement();
 
@@ -2495,9 +2663,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents, 0);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -2545,10 +2715,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -2568,9 +2740,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register a secondary (non-primary) replacement to verify disambiguation.
   MockImageReplacement mock_replacement2(web_contents, /*frame_index=*/1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/false);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
   mock_replacement2.WaitForStartReplacement();
   mock_replacement2.WaitForRenderReplacement();
 
@@ -2694,10 +2868,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -2736,9 +2912,11 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Register a secondary (non-primary) replacement to verify disambiguation.
   MockImageReplacement mock_replacement2(web_contents, /*frame_index=*/1);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
-  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/false);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver2(
+      &mock_replacement2);
+  manager->RegisterImageReplacement(
+      receiver2.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
   mock_replacement2.WaitForStartReplacement();
   mock_replacement2.WaitForRenderReplacement();
 
@@ -2938,10 +3116,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(manager);
 
   MockImageReplacement mock_replacement(web_contents);
-  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver(
+      &mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
-                                    /*is_primary=*/true);
+  manager->RegisterImageReplacement(
+      receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 

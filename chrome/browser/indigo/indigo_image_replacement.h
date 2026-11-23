@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "url/gurl.h"
 
@@ -23,9 +23,10 @@ class IndigoImageReplacementManager;
 // using `IndigoImageReplacementManager::GetImageReplacementForFrame`.
 class IndigoImageReplacement {
  public:
-  IndigoImageReplacement(IndigoImageReplacementManager* manager,
-                         mojo::Remote<blink::mojom::ImageReplacement> remote,
-                         bool is_primary);
+  IndigoImageReplacement(
+      IndigoImageReplacementManager* manager,
+      mojo::AssociatedRemote<blink::mojom::ImageReplacement> remote,
+      bool is_primary);
   IndigoImageReplacement(IndigoImageReplacement&&);
   ~IndigoImageReplacement();
 
@@ -56,7 +57,7 @@ class IndigoImageReplacement {
  private:
   // `manager_` uniquely owns `this` and will outlive it.
   raw_ptr<IndigoImageReplacementManager> manager_;
-  mojo::Remote<blink::mojom::ImageReplacement> remote_;
+  mojo::AssociatedRemote<blink::mojom::ImageReplacement> remote_;
   // Identifies the replacement frame. It is only set after
   // ReplacementFrameAttached is called, and stays constant after.
   content::FrameTreeNodeId frame_tree_node_id_;

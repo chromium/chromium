@@ -12,18 +12,21 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Browser -> Renderer interface to manage a single image replacement (where an
 // image in a HTML document is replaced in-place with remote content (hosted and
 // rendered by a page in an iframe).
-// Note: Features using image replacement will need to send the browser a
-// pending_remote<ImageReplacement> through a separate interface.
+// Note: Features using image replacement need to send the browser a
+// pending_associated_remote<ImageReplacement> over an interface associated
+// with the frame's legacy IPC channel so that `ImageReplacementHost` shares
+// ordering with `FrameHost::CreateChildFrame`.
 interface ImageReplacement {
   // Starts the replacement of the image in the renderer (i.e. creates the
   // shadow tree, and appends a blank iframe).
   //
   // Params:
   //   `host_remote`: Will be used to communicate with the browser process about
-  //     this image's replacement.
+  //     this image's replacement. Associated with this interface so
+  //     `ReplacementFrameAttached` is ordered after subframe creation.
   //   `tracked_element_feature_id`: A viz::TrackedElementFeature to associate
   //     with the element, if tracking is required.
-  StartReplacement(pending_remote<ImageReplacementHost> host_remote,
+  StartReplacement(pending_associated_remote<ImageReplacementHost> host_remote,
                    int32? tracked_element_feature_id);
 
   // Instructs the renderer to stop painting the original image content and

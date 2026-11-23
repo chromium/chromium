@@ -16,6 +16,7 @@
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 class GURL;
 
@@ -41,7 +42,7 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
 
   // chrome::mojom::IndigoAgentHost:
   void StartImageReplacement(
-      mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+      mojo::PendingAssociatedRemote<blink::mojom::ImageReplacement> replacement,
       bool is_primary,
       StartImageReplacementCallback callback) override;
   void ReportInvokeError(chrome::mojom::IndigoInvokeError error) override;
