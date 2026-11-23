@@ -150,8 +150,9 @@ TEST_F(AnimationFrameTimingMonitorTest,
   }
 }
 
+// TODO(crbug.com/587574574): Re-enable once flaky LoAF script leak is fixed.
 TEST_F(AnimationFrameTimingMonitorTest,
-       CrossOriginLivePromiseSettlementNotExposed) {
+       DISABLED_CrossOriginLivePromiseSettlementNotExposed) {
   SimRequest::Params params;
   params.response_http_headers.insert("Origin-Agent-Cluster", "?0");
 
