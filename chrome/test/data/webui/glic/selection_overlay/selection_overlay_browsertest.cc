@@ -32,9 +32,27 @@ IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
-                       GlicSelectionOverlayLayout) {
+                       GlicSelectionOverlayLayoutPromptBox) {
   RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
-          "runMochaSuite('GlicSelectionOverlayLayout')");
+          "runMochaSuite('GlicSelectionOverlayLayout PromptBox')");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
+                       GlicSelectionOverlayLayoutPromptBoxFallback) {
+  RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
+          "runMochaSuite('GlicSelectionOverlayLayout PromptBoxFallback')");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
+                       GlicSelectionOverlayLayoutChips) {
+  RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
+          "runMochaSuite('GlicSelectionOverlayLayout Chips')");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
+                       GlicSelectionOverlayLayoutCard) {
+  RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
+          "runMochaSuite('GlicSelectionOverlayLayout Card')");
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
