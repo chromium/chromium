@@ -20,9 +20,12 @@ windows_app_sdk_headers = [
 ]
 headers = [version_info_header] + windows_app_sdk_headers
 
-# The target revision of WindowsAppSDK
+# The target revision and version of the WindowsAppSDK.
+#
+# When updating these versions, file an issue under component 1457062
+# (Chromium > Security (Use Subcomponents) > Fuzzing > ClusterFuzz) to update
+# the preinstalled runtime version used for testing.
 revision = "c5fbfa2932a43874120698ab1610b6705042292b"
-# The target version of WindowsAppSDK
 version = "2.7.0"
 
 base_url = "https://raw.githubusercontent.com/microsoft/WindowsAppSDK"
