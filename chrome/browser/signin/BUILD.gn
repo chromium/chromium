@@ -677,6 +677,9 @@ source_set("unit_tests") {
       "signin_util_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/profiles:gaia_info_update_service",
       "//chrome/browser/sync",
       "//components/sync:test_support",
       "//components/sync/base",

@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/signin_util.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/feature_list.h"
@@ -46,6 +47,19 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "google_apis/gaia/core_account_id.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace signin_util {
 
@@ -528,5 +542,153 @@ std::vector<net::SchemefulSite> GetDeviceBoundSessionRestrictedSites() {
   return {net::SchemefulSite(GURL("https://google.com")),
           net::SchemefulSite(GURL("https://youtube.com"))};
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+SwitchPrimaryAccountWithinProfileResult SwitchPrimaryAccountWithinProfile(
+    Profile* profile,
+    const PrefService* local_state,
+    const CoreAccountId& target_account_id,
+    signin_metrics::AccessPoint access_point) {
+  // TODO(crbug.com/587799673): Extract and reuse a shared non-UI sign-in
+  // eligibility helper (shared with `CanOfferSignin()`) for the generic profile
+  // and account eligibility checks below.
+  if (!profile || !profile->IsRegularProfile()) {
+    return SwitchPrimaryAccountWithinProfileResult::kInvalidProfile;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  signin::PrimaryAccountMutator* primary_account_mutator =
+      identity_manager ? identity_manager->GetPrimaryAccountMutator() : nullptr;
+  SigninClient* signin_client =
+      ChromeSigninClientFactory::GetForProfile(profile);
+  if (!identity_manager || !primary_account_mutator || !signin_client) {
+    return SwitchPrimaryAccountWithinProfileResult::kSigninServicesUnavailable;
+  }
+
+  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+    return SwitchPrimaryAccountWithinProfileResult::kSigninNotAllowed;
+  }
+
+  if (!signin_client->AreSigninCookiesAllowed()) {
+    return SwitchPrimaryAccountWithinProfileResult::kSigninCookiesDisallowed;
+  }
+
+  if (!signin_client->IsClearPrimaryAccountAllowed()) {
+    return SwitchPrimaryAccountWithinProfileResult::kSignoutDisallowed;
+  }
+
+  if (IsForceSigninEnabled()) {
+    return SwitchPrimaryAccountWithinProfileResult::kForceSigninEnabled;
+  }
+
+  // TODO(crbug.com/588424046): Check and confirm how Sync state should be
+  // handled here, both for `ConsentLevel::kSync` primary accounts (ignored for
+  // now because clearing the primary account would silently revoke Sync consent
+  // without confirmation and leave local synced data under the new primary
+  // account) and for `ConsentLevel::kSignin` accounts with unsynced data
+  // (`SyncService::GetTypesWithUnsyncedData()`).
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return SwitchPrimaryAccountWithinProfileResult::
+        kPrimaryAccountHasSyncConsent;
+  }
+
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return SwitchPrimaryAccountWithinProfileResult::kNoPrimaryAccount;
+  }
+
+  if (target_account_id.empty()) {
+    return SwitchPrimaryAccountWithinProfileResult::kEmptyTargetAccountId;
+  }
+
+  if (identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
+      target_account_id) {
+    return SwitchPrimaryAccountWithinProfileResult::kAlreadyPrimaryAccount;
+  }
+
+  if (!identity_manager->AreRefreshTokensLoaded()) {
+    return SwitchPrimaryAccountWithinProfileResult::kRefreshTokensNotLoaded;
+  }
+
+  if (!identity_manager->HasAccountWithRefreshToken(target_account_id)) {
+    return SwitchPrimaryAccountWithinProfileResult::
+        kTargetAccountMissingRefreshToken;
+  }
+
+  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          target_account_id)) {
+    return SwitchPrimaryAccountWithinProfileResult::
+        kTargetAccountRefreshTokenInError;
+  }
+
+  const AccountInfo target_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(target_account_id);
+  if (target_account_info.IsEmpty() || target_account_info.GetEmail().empty() ||
+      target_account_info.GetGaiaId().empty()) {
+    return SwitchPrimaryAccountWithinProfileResult::
+        kTargetAccountInfoIncomplete;
+  }
+
+  if (!signin::IsUsernameAllowedByPatternFromPrefs(
+          local_state, target_account_info.GetEmail())) {
+    return SwitchPrimaryAccountWithinProfileResult::
+        kUsernameNotAllowedByPattern;
+  }
+
+  if (target_account_info.IsManaged() == signin::Tribool::kTrue ||
+      target_account_info.IsMemberOfFlexOrg()) {
+    return SwitchPrimaryAccountWithinProfileResult::kTargetAccountManaged;
+  }
+
+  // Fail closed when management status is unknown on a potentially enterprise
+  // domain to avoid triggering the post-signin enterprise disclaimer flow.
+  if (target_account_info.IsManaged() == signin::Tribool::kUnknown &&
+      signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          target_account_info.GetEmail())) {
+    return SwitchPrimaryAccountWithinProfileResult::
+        kTargetAccountManagementStatusUnknown;
+  }
+
+  if (!IsAccountExemptedFromEnterpriseProfileSeparation(
+          profile, target_account_info.GetEmail())) {
+    return SwitchPrimaryAccountWithinProfileResult::kProfileSeparationRequired;
+  }
+
+  if (signin_client->IsAccountSignedInOnOtherProfile(
+          target_account_info.GetGaiaId())) {
+    return SwitchPrimaryAccountWithinProfileResult::
+        kAccountSignedInOnOtherProfile;
+  }
+
+  // Lock `AccountReconcilor` across the two-step switch so that it does not
+  // reconcile in cookie-based consistency mode during the transient signed-out
+  // state between clearing the old primary account and setting the new one
+  // (which could otherwise revoke refresh tokens for accounts not currently
+  // valid in cookies).
+  std::optional<AccountReconcilor::Lock> reconcilor_lock;
+  if (AccountReconcilor* account_reconcilor =
+          AccountReconcilorFactory::GetForProfile(profile)) {
+    reconcilor_lock.emplace(account_reconcilor);
+  }
+
+  if (!primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+          signin_metrics::ProfileSignout::kSignoutForAccountSwitching) ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return SwitchPrimaryAccountWithinProfileResult::kSignoutFailed;
+  }
+
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
+  signin_metrics::LogSignInStarted(
+      access_point, *ProfileMetricsServiceFactory::GetForProfile(profile));
+
+  if (primary_account_mutator->SetPrimaryAccount(
+          target_account_id, signin::ConsentLevel::kSignin, access_point) !=
+      signin::PrimaryAccountMutator::PrimaryAccountError::kNoError) {
+    return SwitchPrimaryAccountWithinProfileResult::kSigninFailed;
+  }
+
+  return SwitchPrimaryAccountWithinProfileResult::kSuccess;
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin_util

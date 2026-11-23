@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -21,9 +22,11 @@
 #include "net/base/schemeful_site.h"
 #include "ui/base/interaction/element_identifier.h"
 
-class GaiaId;
-class Profile;
 class BrowserWindowInterface;
+struct CoreAccountId;
+class GaiaId;
+class PrefService;
+class Profile;
 
 namespace signin {
 class IdentityManager;
@@ -209,6 +212,91 @@ void ShowErrorDialogWithMessage(BrowserWindowInterface* browser,
 // Returns the list of sites that register Device Bound Sessions that
 // are of interest to signin code.
 std::vector<net::SchemefulSite> GetDeviceBoundSessionRestrictedSites();
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Result of attempting an in-place primary account switch via
+// `SwitchPrimaryAccountWithinProfile()`.
+enum class SwitchPrimaryAccountWithinProfileResult {
+  // Primary account was switched to the target account.
+  kSuccess,
+  // `profile` is null or not a regular profile.
+  kInvalidProfile,
+  // Required sign-in services (`IdentityManager`, `PrimaryAccountMutator`, or
+  // `SigninClient`) are unavailable for `profile`.
+  kSigninServicesUnavailable,
+  // Sign-in to Chrome is disabled (`prefs::kSigninAllowed` is false).
+  kSigninNotAllowed,
+  // Sign-in cookies are disallowed for `profile`.
+  kSigninCookiesDisallowed,
+  // Clearing the current primary account is disallowed by `SigninClient` (e.g.
+  // managed profile).
+  kSignoutDisallowed,
+  // Force sign-in policy is enabled.
+  kForceSigninEnabled,
+  // The current primary account has legacy `ConsentLevel::kSync`.
+  kPrimaryAccountHasSyncConsent,
+  // The profile does not currently have a primary account.
+  kNoPrimaryAccount,
+  // `target_account_id` is empty.
+  kEmptyTargetAccountId,
+  // `target_account_id` is already the primary account.
+  kAlreadyPrimaryAccount,
+  // Refresh tokens have not finished loading from disk yet.
+  kRefreshTokensNotLoaded,
+  // `target_account_id` has no refresh token in `IdentityManager` (including
+  // unknown accounts).
+  kTargetAccountMissingRefreshToken,
+  // `target_account_id` has a refresh token in a persistent auth error state.
+  kTargetAccountRefreshTokenInError,
+  // Extended `AccountInfo` for `target_account_id` is empty or missing email
+  // or Gaia ID.
+  kTargetAccountInfoIncomplete,
+  // `target_account_id`'s email is disallowed by
+  // `prefs::kGoogleServicesUsernamePattern`.
+  kUsernameNotAllowedByPattern,
+  // `target_account_id` is a confirmed managed account (including Flex Org
+  // accounts), which cannot be switched into in place without enterprise
+  // management consent and profile separation checks.
+  kTargetAccountManaged,
+  // `target_account_id`'s management status is unknown on a potentially
+  // enterprise domain, so switching fails closed to avoid triggering the
+  // post-signin enterprise disclaimer flow.
+  kTargetAccountManagementStatusUnknown,
+  // `target_account_id` is not exempted by
+  // `prefs::kProfileSeparationDomainExceptionList` on `profile`.
+  kProfileSeparationRequired,
+  // `target_account_id` is already signed in as the primary account of another
+  // Chrome profile.
+  kAccountSignedInOnOtherProfile,
+  // Removing the current primary account failed unexpectedly.
+  kSignoutFailed,
+  // Setting the target account as primary failed unexpectedly.
+  kSigninFailed,
+};
+
+// Switches `profile`'s primary account within the profile to
+// `target_account_id` at `ConsentLevel::kSignin`, leaving the previous primary
+// account signed in as a web account (preserving its refresh token, cookies,
+// and `SigninPrefs` entries). `local_state` is checked for
+// `prefs::kGoogleServicesUsernamePattern` and may be null (in which case
+// username pattern restrictions are skipped).
+//
+// This helper is specific to in-profile switching: it validates the
+// preconditions needed to safely perform this swap and executes it, whereas
+// candidate selection heuristics and switching promo logic and triggers (e.g.
+// `AccountSwitchingManager`) live separately.
+//
+// This synchronously clears the previous primary account without querying
+// `SyncService::GetTypesWithUnsyncedData()` or showing an unsynced-data
+// confirmation prompt (stopping Sync and discarding any pending unsynced
+// account-scoped data). Callers must prompt beforehand if confirmation is
+// required.
+[[nodiscard]] SwitchPrimaryAccountWithinProfileResult
+SwitchPrimaryAccountWithinProfile(Profile* profile,
+                                  const PrefService* local_state,
+                                  const CoreAccountId& target_account_id,
+                                  signin_metrics::AccessPoint access_point);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin_util
 
