@@ -74,7 +74,7 @@ message BrowserToServerPayload {
 }
 
 // Downstream request to initiate a task on the target browser instance.
-// Next ID: 5
+// Next ID: 6
 message StartTaskRequest {
   // Human-readable title displayed in browser task UI and indicators.
   string task_title = 1;
@@ -90,6 +90,26 @@ message StartTaskRequest {
 
   // Level of observation to collect upon task creation.
   ObservationConfig initial_observation_config = 4;
+
+  // Conversation the task belongs to. Unset for callers without a
+  // conversation.
+  ConversationContext conversation_context = 5;
+}
+
+// Identifies the conversation that started a task.
+// Next ID: 2
+message ConversationContext {
+  // A Gemini conversation.
+  // Next ID: 2
+  message GeminiConversation {
+    // Identifier of the conversation.
+    string conversation_id = 1;
+  }
+
+  oneof source {
+    // Set when the task was started from a Gemini conversation.
+    GeminiConversation gemini = 1;
+  }
 }
 
 // Specification of a browser surface to bind to an actor task.
