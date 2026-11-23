@@ -35,6 +35,22 @@
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/scoped_cg_context_save_gstate_mac.h"
 
+namespace {
+
+// Tolerance in points for fractional scale rounding when checking whether a
+// keyboard frame spans the screen width and touches the bottom edge.
+constexpr CGFloat kKeyboardFrameTolerance = 1.0;
+
+// Minimum screen-space height in points for a software keyboard to be
+// considered docked on iPad and Regular x Regular layouts (e.g. unfolded
+// foldables). When the software keyboard is collapsed (e.g., with a hardware
+// keyboard connected), UIKit still reports a full-width, bottom-anchored frame
+// for the shortcut / input accessory bar (~79-150pt), whereas a docked
+// keyboard on these layouts is >250pt tall.
+constexpr CGFloat kMinDockedLargeKeyboardHeight = 200.0;
+
+}  // namespace
+
 void SetA11yLabelAndUiAutomationName(
     NSObject<UIAccessibilityIdentification>* element,
     int idsAccessibilityLabel,
@@ -196,14 +212,22 @@ CGFloat VisibleKeyboardHeightFromNotification(NSNotification* notification,
   }
 
   // Ignore floating or undocked keyboards (e.g., on iPad), which do not occupy
-  // the bottom edge of the screen. Allow a 1pt tolerance for fractional scale
-  // rounding.
-  constexpr CGFloat kKeyboardFrameTolerance = 1.0;
+  // the bottom edge of the screen.
   CGRect screen_bounds = screen.coordinateSpace.bounds;
   if (CGRectGetWidth(keyboard_frame) <
           CGRectGetWidth(screen_bounds) - kKeyboardFrameTolerance ||
       CGRectGetMaxY(keyboard_frame) <
           CGRectGetMaxY(screen_bounds) - kKeyboardFrameTolerance) {
+    return 0;
+  }
+
+  // Ignore input-accessory-only bars on iPad and Regular x Regular layouts when
+  // the software keyboard is collapsed.
+  const bool is_large_layout =
+      window.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad ||
+      IsRegularXRegularSizeClass(window.traitCollection);
+  if (is_large_layout &&
+      CGRectGetHeight(keyboard_frame) < kMinDockedLargeKeyboardHeight) {
     return 0;
   }
 

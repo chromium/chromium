@@ -703,3 +703,69 @@ TEST_F(FullscreenMediatorTest, KeyboardTransitionFromDockedToFloating) {
   EXPECT_EQ(agent_->keyboard_obscured_inset(), 0.0);
   EXPECT_EQ(scroll_view.contentInset.bottom, 0.0);
 }
+
+// Tests that `UIKeyboardDidChangeFrameNotification` clears a stale keyboard
+// inset when an iPad keyboard collapses to an input-accessory-only bar without
+// posting `UIKeyboardWillHideNotification`, and that cross-screen keyboard
+// notifications are ignored.
+TEST_F(FullscreenMediatorTest, KeyboardDidChangeFrameClearsStaleIPadInset) {
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  UIScreen* screen = window.windowScene.screen;
+  ASSERT_TRUE(screen);
+  CGRect screen_bounds = screen.coordinateSpace.bounds;
+  ASSERT_FALSE(CGRectIsEmpty(screen_bounds));
+  window.frame = screen_bounds;
+  window.traitOverrides.userInterfaceIdiom = UIUserInterfaceIdiomPad;
+  [window updateTraitsIfNeeded];
+
+  UIView* web_view = [[UIView alloc] initWithFrame:window.bounds];
+  [window addSubview:web_view];
+  static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetActiveWebState())
+      ->SetView(web_view);
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
+  // Show a 300pt docked keyboard.
+  CGRect docked_frame = CGRectMake(0, CGRectGetHeight(screen_bounds) - 300.0,
+                                   CGRectGetWidth(screen_bounds), 300.0);
+  [center postNotificationName:UIKeyboardWillShowNotification
+                        object:screen
+                      userInfo:@{
+                        UIKeyboardFrameEndUserInfoKey :
+                            [NSValue valueWithCGRect:docked_frame],
+                      }];
+  EXPECT_EQ(agent_->keyboard_obscured_inset(), 300.0);
+  EXPECT_EQ(scroll_view.contentInset.bottom, 300.0);
+
+  // Notifications from another screen must not clear the active inset.
+  id other_screen = OCMClassMock([UIScreen class]);
+  CGRect accessory_frame = CGRectMake(0, CGRectGetHeight(screen_bounds) - 79.0,
+                                      CGRectGetWidth(screen_bounds), 79.0);
+  [center postNotificationName:UIKeyboardDidChangeFrameNotification
+                        object:other_screen
+                      userInfo:@{
+                        UIKeyboardFrameEndUserInfoKey :
+                            [NSValue valueWithCGRect:accessory_frame],
+                      }];
+  [center postNotificationName:UIKeyboardWillHideNotification
+                        object:other_screen
+                      userInfo:nil];
+  EXPECT_EQ(agent_->keyboard_obscured_inset(), 300.0);
+  EXPECT_EQ(scroll_view.contentInset.bottom, 300.0);
+
+  // Collapsing to an iPad accessory-only bar via
+  // `UIKeyboardDidChangeFrameNotification` must clear both the agent's keyboard
+  // inset and the scroll view inset.
+  [center postNotificationName:UIKeyboardDidChangeFrameNotification
+                        object:screen
+                      userInfo:@{
+                        UIKeyboardFrameEndUserInfoKey :
+                            [NSValue valueWithCGRect:accessory_frame],
+                      }];
+  EXPECT_EQ(agent_->keyboard_obscured_inset(), 0.0);
+  EXPECT_EQ(scroll_view.contentInset.bottom, 0.0);
+}

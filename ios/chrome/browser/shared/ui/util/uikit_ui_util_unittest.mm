@@ -378,4 +378,36 @@ TEST_F(VisibleKeyboardHeightTest, ScreenAndNilInputs) {
   EXPECT_EQ(VisibleHeightForFrame(docked_frame, other_screen), 0.0);
 }
 
+// Tests that short input-accessory-only bars return 0 on iPad and Regular x
+// Regular phone layouts while docked keyboards (including windowed overlap) and
+// compact-height phone bars return their overlap height.
+TEST_F(VisibleKeyboardHeightTest, LargeLayoutAccessoryBarThreshold) {
+  window_.traitOverrides.userInterfaceIdiom = UIUserInterfaceIdiomPad;
+  [window_ updateTraitsIfNeeded];
+
+  EXPECT_EQ(VisibleHeightForFrame(DockedKeyboardFrame(199.0)), 0.0);
+  EXPECT_EQ(VisibleHeightForFrame(DockedKeyboardFrame(200.0)), 200.0);
+
+  // Stage Manager / windowed mode: a 250pt docked iPad keyboard overlapping an
+  // offset window by 120pt should still report 120pt.
+  window_.frame = CGRectMake(20.0, 40.0, CGRectGetWidth(screen_bounds_) - 40.0,
+                             CGRectGetHeight(screen_bounds_) - 170.0);
+  EXPECT_EQ(VisibleHeightForFrame(DockedKeyboardFrame(250.0)), 120.0);
+
+  // Regular x Regular phone layout (e.g. unfolded foldable) applies the same
+  // threshold.
+  window_.frame = screen_bounds_;
+  window_.traitOverrides.userInterfaceIdiom = UIUserInterfaceIdiomPhone;
+  window_.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassRegular;
+  window_.traitOverrides.verticalSizeClass = UIUserInterfaceSizeClassRegular;
+  [window_ updateTraitsIfNeeded];
+  EXPECT_EQ(VisibleHeightForFrame(DockedKeyboardFrame(199.0)), 0.0);
+  EXPECT_EQ(VisibleHeightForFrame(DockedKeyboardFrame(200.0)), 200.0);
+
+  // Compact-height phone (e.g. iPhone landscape): short bars are not filtered.
+  window_.traitOverrides.verticalSizeClass = UIUserInterfaceSizeClassCompact;
+  [window_ updateTraitsIfNeeded];
+  EXPECT_EQ(VisibleHeightForFrame(DockedKeyboardFrame(79.0)), 79.0);
+}
+
 }  // namespace
