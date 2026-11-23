@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
@@ -38,6 +39,7 @@
 #include "ui/base/ime/events.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
+#include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
@@ -241,8 +243,43 @@ class NiceMockIMEEngine : public MockIMEEngineHandler {
  public:
   MOCK_METHOD1(Focus, void(const InputContext&));
   MOCK_METHOD0(Blur, void());
+  MOCK_METHOD1(SetCaretBounds, void(const gfx::Rect&));
   MOCK_METHOD3(SetSurroundingText,
                void(const std::u16string&, gfx::Range, uint32_t));
+};
+
+class MockInputMethodObserver : public ui::InputMethodObserver {
+ public:
+  MOCK_METHOD(void, OnFocus, (), (override));
+  MOCK_METHOD(void, OnBlur, (), (override));
+  MOCK_METHOD(void,
+              OnCaretBoundsChanged,
+              (const ui::TextInputClient*),
+              (override));
+  MOCK_METHOD(void,
+              OnTextInputStateChanged,
+              (const ui::TextInputClient*),
+              (override));
+  MOCK_METHOD(void,
+              OnInputMethodDestroyed,
+              (const ui::InputMethod*),
+              (override));
+};
+
+class MockCandidateWindowHandler : public MockIMECandidateWindowHandler {
+ public:
+  MOCK_METHOD(void,
+              SetCursorAndCompositionBounds,
+              (const gfx::Rect&, const gfx::Rect&),
+              (override));
+};
+
+class MockAssistiveWindowHandler : public IMEAssistiveWindowHandlerInterface {
+ public:
+  std::u16string GetSuggestionText() const override { return {}; }
+  size_t GetConfirmedLength() const override { return 0; }
+  void Announce(const std::u16string& message) override {}
+  MOCK_METHOD(void, SetBounds, (const Bounds&), (override));
 };
 
 class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
@@ -643,6 +680,96 @@ TEST_F(InputMethodAshTest, OnCaretBoundsChanged) {
   // regardless of the bounds are changed or not.
   EXPECT_EQ(4, mock_ime_candidate_window_handler_
                    ->set_cursor_and_composition_bounds_call_count());
+}
+
+TEST_F(InputMethodAshTest, OnCaretBoundsChanged_ClientDestroyedInObserver) {
+  TextInputClient* prev_client = input_method_ash_->GetTextInputClient();
+  auto client =
+      std::make_unique<ui::DummyTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
+  ui::DummyTextInputClient next_client(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method_ash_->SetFocusedTextInputClient(client.get());
+
+  ::testing::NiceMock<MockInputMethodObserver> observer;
+  EXPECT_CALL(observer, OnCaretBoundsChanged(client.get())).WillOnce([&] {
+    input_method_ash_->SetFocusedTextInputClient(&next_client);
+    client.reset();
+  });
+  EXPECT_CALL(observer, OnCaretBoundsChanged(&next_client));
+  input_method_ash_->AddObserver(&observer);
+
+  input_method_ash_->OnCaretBoundsChanged(client.get());
+
+  EXPECT_EQ(&next_client, input_method_ash_->GetTextInputClient());
+  input_method_ash_->RemoveObserver(&observer);
+  input_method_ash_->SetFocusedTextInputClient(prev_client);
+}
+
+TEST_F(InputMethodAshTest, OnCaretBoundsChanged_ClientDestroyedInEngine) {
+  TextInputClient* prev_client = input_method_ash_->GetTextInputClient();
+  auto client =
+      std::make_unique<ui::DummyTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method_ash_->SetFocusedTextInputClient(client.get());
+
+  ::testing::NiceMock<NiceMockIMEEngine> mock_engine;
+  EXPECT_CALL(mock_engine, SetCaretBounds).WillOnce([&] {
+    input_method_ash_->DetachTextInputClient(client.get());
+    client.reset();
+  });
+  TextInputMethod* prev_engine = IMEBridge::Get()->GetCurrentEngineHandler();
+  IMEBridge::Get()->SetCurrentEngineHandler(&mock_engine);
+
+  input_method_ash_->OnCaretBoundsChanged(client.get());
+
+  EXPECT_EQ(nullptr, input_method_ash_->GetTextInputClient());
+  IMEBridge::Get()->SetCurrentEngineHandler(prev_engine);
+  input_method_ash_->SetFocusedTextInputClient(prev_client);
+}
+
+TEST_F(InputMethodAshTest,
+       OnCaretBoundsChanged_ClientDestroyedInCandidateWindow) {
+  TextInputClient* prev_client = input_method_ash_->GetTextInputClient();
+  auto client =
+      std::make_unique<ui::DummyTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method_ash_->SetFocusedTextInputClient(client.get());
+
+  ::testing::NiceMock<MockCandidateWindowHandler> mock_candidate_window;
+  EXPECT_CALL(mock_candidate_window, SetCursorAndCompositionBounds)
+      .WillOnce([&] {
+        input_method_ash_->DetachTextInputClient(client.get());
+        client.reset();
+      });
+  IMECandidateWindowHandlerInterface* prev_handler =
+      IMEBridge::Get()->GetCandidateWindowHandler();
+  IMEBridge::Get()->SetCandidateWindowHandler(&mock_candidate_window);
+
+  input_method_ash_->OnCaretBoundsChanged(client.get());
+
+  EXPECT_EQ(nullptr, input_method_ash_->GetTextInputClient());
+  IMEBridge::Get()->SetCandidateWindowHandler(prev_handler);
+  input_method_ash_->SetFocusedTextInputClient(prev_client);
+}
+
+TEST_F(InputMethodAshTest,
+       OnCaretBoundsChanged_ClientDestroyedInAssistiveWindow) {
+  TextInputClient* prev_client = input_method_ash_->GetTextInputClient();
+  auto client =
+      std::make_unique<ui::DummyTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method_ash_->SetFocusedTextInputClient(client.get());
+
+  ::testing::NiceMock<MockAssistiveWindowHandler> mock_assistive_window;
+  EXPECT_CALL(mock_assistive_window, SetBounds).WillOnce([&] {
+    input_method_ash_->DetachTextInputClient(client.get());
+    client.reset();
+  });
+  IMEAssistiveWindowHandlerInterface* prev_handler =
+      IMEBridge::Get()->GetAssistiveWindowHandler();
+  IMEBridge::Get()->SetAssistiveWindowHandler(&mock_assistive_window);
+
+  input_method_ash_->OnCaretBoundsChanged(client.get());
+
+  EXPECT_EQ(nullptr, input_method_ash_->GetTextInputClient());
+  IMEBridge::Get()->SetAssistiveWindowHandler(prev_handler);
+  input_method_ash_->SetFocusedTextInputClient(prev_client);
 }
 
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_NoAttribute) {

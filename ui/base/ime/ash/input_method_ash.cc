@@ -316,19 +316,30 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
     return;
   }
 
-  NotifyTextInputCaretBoundsChanged(client);
+  // Synchronous callouts below can re-enter focus handling and detach or
+  // destroy the focused client. Hold it weakly and re-validate after every
+  // callout before dereferencing it again.
+  const base::WeakPtr<TextInputClient> weak_text_input_client_ptr =
+      GetTextInputClient()->AsWeakPtr();
 
-  if (IsPasswordOrNoneInputFieldFocused()) {
+  NotifyTextInputCaretBoundsChanged(weak_text_input_client_ptr.get());
+
+  if (!IsTextInputClientValid(weak_text_input_client_ptr) ||
+      IsPasswordOrNoneInputFieldFocused()) {
     return;
   }
 
   // The current text input type should not be NONE if |context_| is focused.
-  CHECK(client == GetTextInputClient(), base::NotFatalUntil::M163);
+  CHECK(weak_text_input_client_ptr.get() == GetTextInputClient(),
+        base::NotFatalUntil::M163);
   CHECK(!IsTextInputTypeNone(), base::NotFatalUntil::M163);
 
   TextInputMethod* engine = GetEngine();
   if (engine) {
-    engine->SetCaretBounds(client->GetCaretBounds());
+    engine->SetCaretBounds(weak_text_input_client_ptr->GetCaretBounds());
+    if (!IsTextInputClientValid(weak_text_input_client_ptr)) {
+      return;
+    }
   }
 
   IMECandidateWindowHandlerInterface* candidate_window =
@@ -339,11 +350,12 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
     return;
   }
 
-  const gfx::Rect caret_rect = client->GetCaretBounds();
+  const gfx::Rect caret_rect = weak_text_input_client_ptr->GetCaretBounds();
 
   gfx::Rect composition_bounds;
-  if (client->HasCompositionText()) {
-    client->GetCompositionCharacterBounds(0, &composition_bounds);
+  if (weak_text_input_client_ptr->HasCompositionText()) {
+    weak_text_input_client_ptr->GetCompositionCharacterBounds(
+        0, &composition_bounds);
   }
 
   // Pepper doesn't support composition bounds, so fall back to caret bounds to
@@ -354,24 +366,33 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   if (candidate_window) {
     candidate_window->SetCursorAndCompositionBounds(caret_rect,
                                                     composition_bounds);
+    if (!IsTextInputClientValid(weak_text_input_client_ptr)) {
+      return;
+    }
   }
 
   if (assistive_window) {
     Bounds bounds;
     bounds.caret = caret_rect;
-    bounds.autocorrect = client->GetAutocorrectCharacterBounds();
+    bounds.autocorrect =
+        weak_text_input_client_ptr->GetAutocorrectCharacterBounds();
     if (bounds.autocorrect.IsEmpty()) {
       bounds.autocorrect = caret_rect;
     }
     assistive_window->SetBounds(bounds);
+    if (!IsTextInputClientValid(weak_text_input_client_ptr)) {
+      return;
+    }
   }
 
   gfx::Range text_range;
   gfx::Range selection_range;
   std::u16string surrounding_text;
-  if (!client->GetTextRange(&text_range) ||
-      !client->GetTextFromRange(text_range, &surrounding_text) ||
-      !client->GetEditableSelectionRange(&selection_range)) {
+  if (!weak_text_input_client_ptr->GetTextRange(&text_range) ||
+      !weak_text_input_client_ptr->GetTextFromRange(text_range,
+                                                    &surrounding_text) ||
+      !weak_text_input_client_ptr->GetEditableSelectionRange(
+          &selection_range)) {
     previous_surrounding_text_.clear();
     previous_selection_range_ = gfx::Range::InvalidRange();
     return;
@@ -1219,6 +1240,11 @@ bool InputMethodAsh::IsPasswordOrNoneInputFieldFocused() {
   ui::TextInputType type = GetTextInputType();
   return type == ui::TEXT_INPUT_TYPE_NONE ||
          type == ui::TEXT_INPUT_TYPE_PASSWORD;
+}
+
+bool InputMethodAsh::IsTextInputClientValid(
+    const base::WeakPtr<TextInputClient>& client) const {
+  return client && client.get() == GetTextInputClient();
 }
 
 bool InputMethodAsh::HasCompositionText() {

@@ -191,6 +191,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
 
   bool IsPasswordOrNoneInputFieldFocused();
 
+  // Returns true if `client` is still alive and remains the focused
+  // TextInputClient.
+  bool IsTextInputClientValid(
+      const base::WeakPtr<ui::TextInputClient>& client) const;
+
   // Returns true if there is at least one physical key event currently being
   // handled by the IME engine.
   bool IsHandlingKeyEvent() const { return num_handling_key_events_ > 0; }
