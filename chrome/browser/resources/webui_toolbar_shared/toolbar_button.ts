@@ -457,6 +457,10 @@ export function getContextMenuPosition(element: HTMLElement) {
   return element.getBoundingClientRect();
 }
 
+// `PointerEvent.button` value when no button is involved (e.g. a
+// keyboard-triggered `contextmenu` event).
+const BUTTON_NONE = -1;
+
 // Should match ui::GetMenuSourceTypeForEvent().
 // * keyboard event -> keyboard
 // * touch event -> touch
@@ -469,11 +473,12 @@ export function getClickSourceType(e: Event): MenuSourceType {
   // Keyboard activations on `<cr-icon-button>` or `<button>` (Space or Enter)
   // programmatically synthesize standard `click` events with `detail` 0, while
   // direct keydown activations (e.g. ArrowDown/ArrowUp) pass a `KeyboardEvent`.
-  // TODO(crbug.com/543376027): Handle pointer events correctly. Physical
-  // pointer events can have detail === 0, which incorrectly classifies them as
-  // keyboard events.
+  // Only `click` events are checked for `detail` 0: other mouse/pointer events
+  // (e.g. pointerdown, pointerup, pointermove, mousemove) natively have
+  // `detail` 0 even for physical interactions, so they must not be classified
+  // as keyboard.
   if (e instanceof KeyboardEvent ||
-      (e instanceof MouseEvent && e.detail === 0)) {
+      (e instanceof MouseEvent && e.type === 'click' && e.detail === 0)) {
     return MenuSourceType.kKeyboard;
   }
   return MenuSourceType.kMouse;
@@ -484,14 +489,19 @@ export function getClickSourceType(e: Event): MenuSourceType {
 // * touch/gesture event -> touch
 // * others -> mouse
 export function getContextMenuSourceType(e: Event): MenuSourceType {
-  if (e instanceof PointerEvent || e instanceof KeyboardEvent) {
+  if (e.type !== 'contextmenu') {
     return getClickSourceType(e);
   }
-  if (e instanceof MouseEvent && e.button === BUTTON_LEFT) {
-    // Mac Ctrl+Click (ctrlKey + button 0) should be Mouse for context menu.
-    if (e.type === 'contextmenu' && e.ctrlKey) {
-      return MenuSourceType.kMouse;
-    }
+  if (e instanceof PointerEvent &&
+      (e.pointerType === 'touch' || e.pointerType === 'pen')) {
+    return MenuSourceType.kTouch;
+  }
+  // Blink never populates `detail` for `contextmenu` events, so use `button`
+  // instead: keyboard-triggered context menus (e.g. Menu key or Shift+F10) have
+  // no button (reported as -1 on `PointerEvent` and 0 on `MouseEvent`) and no
+  // modifiers. Mac Ctrl+Click (button 0 + ctrlKey) is a mouse interaction.
+  if (e instanceof MouseEvent &&
+      (e.button === BUTTON_NONE || e.button === BUTTON_LEFT) && !e.ctrlKey) {
     return MenuSourceType.kKeyboard;
   }
   return MenuSourceType.kMouse;

@@ -46,6 +46,19 @@ suite('ToolbarButtonTest', function() {
         MenuSourceType.kMouse,
         getClickSourceType(new MouseEvent('click', {detail: 1})));
 
+    // Physical pointer events natively have detail == 0 -> kMouse
+    for (const type of ['pointerdown', 'pointerup', 'pointermove']) {
+      assertEquals(
+          MenuSourceType.kMouse,
+          getClickSourceType(
+              new PointerEvent(type, {pointerType: 'mouse', detail: 0})));
+    }
+
+    // Non-activation MouseEvent, detail == 0 -> kMouse
+    assertEquals(
+        MenuSourceType.kMouse,
+        getClickSourceType(new MouseEvent('mousemove', {detail: 0})));
+
     // KeyboardEvent -> kKeyboard
     assertEquals(
         MenuSourceType.kKeyboard,
@@ -65,17 +78,28 @@ suite('ToolbarButtonTest', function() {
         getContextMenuSourceType(
             new PointerEvent('contextmenu', {pointerType: 'pen'})));
 
-    // PointerEvent mouse, detail > 0 -> kMouse
+    // PointerEvent mouse right-click (Blink leaves detail == 0) -> kMouse
     assertEquals(
         MenuSourceType.kMouse,
         getContextMenuSourceType(new PointerEvent(
-            'contextmenu', {pointerType: 'mouse', detail: 1})));
+            'contextmenu', {pointerType: 'mouse', button: 2, detail: 0})));
 
-    // PointerEvent mouse, detail == 0 -> kKeyboard (Crucial test for fix)
+    // PointerEvent Mac Ctrl+LeftClick -> kMouse
+    assertEquals(
+        MenuSourceType.kMouse,
+        getContextMenuSourceType(new PointerEvent('contextmenu', {
+          pointerType: 'mouse',
+          button: 0,
+          ctrlKey: true,
+          detail: 0,
+        })));
+
+    // PointerEvent from keyboard (Menu key / Shift+F10), no button ->
+    // kKeyboard
     assertEquals(
         MenuSourceType.kKeyboard,
         getContextMenuSourceType(new PointerEvent(
-            'contextmenu', {pointerType: 'mouse', detail: 0})));
+            'contextmenu', {pointerType: 'mouse', button: -1, detail: 0})));
 
     // MouseEvent left button, detail == 0 -> kKeyboard
     assertEquals(

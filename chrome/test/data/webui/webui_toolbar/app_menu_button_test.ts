@@ -82,12 +82,11 @@ suite('AppMenuButtonTest', function() {
   test('Mouse Down Triggers Menu', function() {
     const button = appMenuButton.$.button;
 
-    // Simulate mouse pointerdown (detail: 1 is required to be treated as mouse
-    // click)
+    // Simulate mouse pointerdown. Real pointerdown events have detail 0.
     button.dispatchEvent(new PointerEvent('pointerdown', {
       button: 0,
       pointerType: 'mouse',
-      detail: 1,
+      detail: 0,
     }));
 
     assertEquals(1, toolbarUiHandler.getCallCount('showContextMenu'));
