@@ -6,13 +6,10 @@
 
 #include "base/memory/asan_interface.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -28,37 +25,6 @@
 namespace blink {
 
 namespace {
-
-void RecordReadStatistics(size_t size,
-                          base::TimeDelta duration,
-                          base::TimeDelta time_since_freeze) {
-  int throughput_mb_s = duration.is_zero()
-                            ? INT_MAX
-                            : base::saturated_cast<int>(
-                                  size / duration.InSecondsF() / (1024 * 1024));
-
-  // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
-  // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
-  // ranges.
-  base::UmaHistogramCustomMicrosecondsTimes("Memory.ParkableImage.Read.Latency",
-                                            duration, base::Microseconds(500),
-                                            base::Seconds(1), 100);
-  base::UmaHistogramCounts1000("Memory.ParkableImage.Read.Throughput",
-                               throughput_mb_s);
-}
-
-void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
-  int size_kb = static_cast<int>(size / 1024);  // in KiB
-
-  // Size should be <1MiB in most cases.
-  base::UmaHistogramCounts10000("Memory.ParkableImage.Write.Size", size_kb);
-  // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
-  // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
-  // ranges.
-  base::UmaHistogramCustomMicrosecondsTimes(
-      "Memory.ParkableImage.Write.Latency", duration, base::Microseconds(500),
-      base::Seconds(1), 100);
-}
 
 void AsanPoisonBuffer(RWBuffer* rw_buffer) {
 #if defined(ADDRESS_SANITIZER)
@@ -322,10 +288,8 @@ void ParkableImageImpl::WriteToDiskInBackground(
   }
 
   // Release the lock while writing, so we don't block for too long.
-  base::ElapsedTimer timer;
   auto metadata = ParkableImageManager::Instance().data_allocator().Write(
       std::move(reserved_chunk), base::as_byte_span(vector));
-  base::TimeDelta elapsed = timer.Elapsed();
 
   // Acquire the lock again after writing. Release it before posting the
   // completion task, since the task may drop the last reference and destroy
@@ -336,8 +300,6 @@ void ParkableImageImpl::WriteToDiskInBackground(
     parkable_image->on_disk_metadata_ = std::move(metadata);
     if (write_failed) {
       parkable_image->background_task_in_progress_ = false;
-    } else {
-      RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
     }
   }
 
@@ -459,21 +421,12 @@ void ParkableImageImpl::Unpark() {
 
   DCHECK(on_disk_metadata_);
 
-  base::ElapsedTimer timer;
-
   DCHECK(!rw_buffer_);
   rw_buffer_ = std::make_unique<RWBuffer>(
       base::BindOnce(&ParkableImageImpl::ReadFromDiskIntoBuffer,
                      base::Unretained(on_disk_metadata_.get())),
       size());
 
-  base::TimeTicks now;
-  base::TimeDelta elapsed = timer.Elapsed(&now);
-  base::TimeDelta time_since_freeze = now - frozen_time_;
-
-  RecordReadStatistics(on_disk_metadata_->size(), elapsed, time_since_freeze);
-
-  ParkableImageManager::Instance().RecordDiskReadTime(elapsed);
   ParkableImageManager::Instance().OnReadFromDisk(this);
 
   DCHECK(rw_buffer_);

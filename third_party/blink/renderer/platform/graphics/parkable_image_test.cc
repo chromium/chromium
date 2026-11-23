@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,10 +63,6 @@ class ParkableImageTest : public ::testing::Test {
   }
 
   void WaitForDelayedParking() { task_env_.FastForwardBy(base::Seconds(30)); }
-
-  // To aid in testing that the "Memory.ParkableImage.*.5min" metrics are
-  // correctly recorded.
-  void Wait5MinForStatistics() { task_env_.FastForwardBy(base::Minutes(5)); }
 
   void DescribeCurrentTasks() { task_env_.DescribeCurrentTasks(); }
 
@@ -143,38 +138,6 @@ class ParkableImageTest : public ::testing::Test {
     pi->UnlockData();
     return true;
   }
-
-  // This checks that the "Memory.ParkableImage.Write.*" statistics from
-  // |RecordReadStatistics()| are recorded correctly, namely
-  // "Memory.ParkableImage.Write.Latency" and
-  // "Memory.ParkableImage.Write.Size".
-  //
-  // Checks the counts for all 3 metrics, but only checks the value for
-  // "Memory.ParkableImage.Write.Size", since the others can't be easily tested.
-  void ExpectWriteStatistics(base::HistogramBase::Sample32 sample,
-                             base::HistogramBase::Count32 expected_count) {
-    histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Write.Latency",
-                                       expected_count);
-    histogram_tester_.ExpectBucketCount("Memory.ParkableImage.Write.Size",
-                                        sample, expected_count);
-  }
-
-  // This checks that the "Memory.ParkableImage.Read.*" statistics from
-  // |RecordReadStatistics()| are recorded correctly, namely
-  // "Memory.ParkableImage.Read.Latency", and
-  // "Memory.ParkableImage.Read.Throughput".
-  //
-  // Checks the counts for both metrics, but not their values, since they can't
-  // be easily tested.
-  void ExpectReadStatistics(base::HistogramBase::Sample32 sample,
-                            base::HistogramBase::Count32 expected_count) {
-    histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Latency",
-                                       expected_count);
-    histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Throughput",
-                                       expected_count);
-  }
-
-  base::HistogramTester histogram_tester_;
 
  private:
   base::test::TaskEnvironment task_env_;
@@ -324,9 +287,6 @@ TEST_F(ParkableImageTest, ParkAndUnpark) {
 
   // Make sure content is the same after unparking.
   EXPECT_TRUE(IsSameContent(pi, data));
-
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 1);
 }
 
 // Tests that trying to park multiple times doesn't add any extra tasks.
@@ -364,9 +324,6 @@ TEST_F(ParkableImageTest, ParkTwiceAndUnpark) {
 
   // Make sure content is the same after unparking.
   EXPECT_TRUE(IsSameContent(pi, data));
-
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 1);
 }
 
 // Tests that we can park to disk synchronously after the data is stored on
@@ -408,9 +365,6 @@ TEST_F(ParkableImageTest, ParkAndUnparkSync) {
 
   Unpark(pi);
 
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 1);
-
   // Unparking blocks until it is read from disk, so we expect it to no longer
   // be on disk after unparking.
   EXPECT_FALSE(is_on_disk(pi));
@@ -433,12 +387,6 @@ TEST_F(ParkableImageTest, ParkAndUnparkSync) {
 
   // Make sure content is the same after unparking.
   EXPECT_TRUE(IsSameContent(pi, data));
-
-  // One extra read than write. We discard the data twice, but we only need to
-  // write to disk once. Because we've discarded it twice, we need to do two
-  // reads.
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 2);
 }
 
 // Tests that creating a snapshot partway through writing correctly aborts
@@ -482,14 +430,6 @@ TEST_F(ParkableImageTest, ParkAndUnparkAborted) {
   // Make sure content is the same.
   EXPECT_TRUE(IsSameContent(pi, data));
 
-  // We still expect a write to be done in this case, since the only thing
-  // preventing it from being parked is the snapshot. However, the data is not
-  // discarded here, since we need for the snapshot.
-  //
-  // Since the data was never discarded, we expect 0 reads however.
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 0);
-
   // Since we have a snapshot alive, we can't park.
   EXPECT_FALSE(MaybePark(pi));
 
@@ -512,9 +452,6 @@ TEST_F(ParkableImageTest, ParkAndUnparkAborted) {
 
   // Make sure content is the same.
   EXPECT_TRUE(IsSameContent(pi, data));
-
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 1);
 }
 
 // Tests that a frozen image will be written to disk by the manager.
@@ -531,10 +468,8 @@ TEST_F(ParkableImageTest, ManagerSimple) {
 
   EXPECT_EQ(1u, manager.Size());
 
-  // One of these is the delayed parking task
-  // |ParkableImageManager::MaybeParkImages|, the other is the delayed
-  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|.
-  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+  // This is the delayed parking task |ParkableImageManager::MaybeParkImages|.
+  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   WaitForParking();
   WaitForDelayedParking();
@@ -550,9 +485,6 @@ TEST_F(ParkableImageTest, ManagerSimple) {
   // Even though we unparked earlier, a new delayed parking task should park the
   // image still.
   EXPECT_TRUE(is_on_disk(pi));
-
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 1);
 }
 
 // Tests that a small image is not kept in the manager.
@@ -572,10 +504,8 @@ TEST_F(ParkableImageTest, ManagerSmall) {
   // Image should now be removed from the manager.
   EXPECT_EQ(0u, manager.Size());
 
-  // One of these is the delayed parking task
-  // |ParkableImageManager::MaybeParkImages|, the other is the delayed
-  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|.
-  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+  // This is the delayed parking task |ParkableImageManager::MaybeParkImages|.
+  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   WaitForParking();
 
@@ -598,10 +528,8 @@ TEST_F(ParkableImageTest, ManagerTwo) {
 
   EXPECT_EQ(1u, manager.Size());
 
-  // One of these is the delayed parking task
-  // |ParkableImageManager::MaybeParkImages|, the other is the delayed
-  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|.
-  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+  // This is the delayed parking task |ParkableImageManager::MaybeParkImages|.
+  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   WaitForParking();
   WaitForDelayedParking();
@@ -617,9 +545,6 @@ TEST_F(ParkableImageTest, ManagerTwo) {
   // Even though we unparked earlier, a new delayed parking task should park the
   // image still.
   EXPECT_TRUE(is_on_disk(pi));
-
-  ExpectWriteStatistics(kDataSize / 1024, 1);
-  ExpectReadStatistics(kDataSize / 1024, 1);
 }
 
 // Test that a non-frozen image will not be written to disk.
@@ -635,43 +560,13 @@ TEST_F(ParkableImageTest, ManagerNonFrozen) {
 
   EXPECT_EQ(1u, manager.Size());
 
-  // One of these is the delayed parking task
-  // |ParkableImageManager::MaybeParkImages|, the other is the delayed
-  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|.
-  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+  // This is the delayed parking task |ParkableImageManager::MaybeParkImages|.
+  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   WaitForParking();
 
   // Can't park because it is not frozen.
   EXPECT_FALSE(is_on_disk(pi));
-
-  // No read or write was done, so we expect no metrics to be recorded for
-  // reading/writing.
-  ExpectWriteStatistics(0, 0);
-  ExpectReadStatistics(0, 0);
-}
-
-// Tests that the ParkableImageManager is correctly recording statistics after 5
-// minutes.
-TEST_F(ParkableImageTest, ManagerStatistics5min) {
-  const size_t kDataSize = 3.5 * 4096;
-  auto data = base::HeapArray<uint8_t>::Uninit(kDataSize);
-  PrepareReferenceData(data);
-
-  auto pi = MakeParkableImageForTesting(data);
-  pi->Freeze();
-
-  Wait5MinForStatistics();
-
-  // We expect "Memory.ParkableImage.OnDiskFootprintKb.5min" not to be emitted,
-  // since we've mocked the DiskDataAllocator for testing (and therefore cannot
-  // actually write to disk).
-  histogram_tester_.ExpectTotalCount(
-      "Memory.ParkableImage.OnDiskFootprintKb.5min", 0);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.TotalReadTime.5min",
-                                     1);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.UnparkedSize.5min",
-                                     1);
 }
 
 // Test a locked image will not be written to disk.
@@ -713,13 +608,10 @@ TEST_F(ParkableImageTest, ManagerRescheduleUnfrozen) {
 
   auto pi = MakeParkableImageForTesting(data);
 
-  // This is the delayed
-  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|, and
-  // the parking task.
-  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+  // This is the delayed parking task.
+  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
-  // Fast forward enough for both to run.
-  Wait5MinForStatistics();
+  // Fast forward enough for it to run.
   WaitForParking();
 
   // Unfrozen ParkableImages are never parked.
@@ -756,8 +648,6 @@ TEST_F(ParkableImageTest, DestroyOnSeparateThread) {
 
   auto pi = MakeParkableImageForTesting(data);
   EXPECT_EQ(1u, manager.Size());
-
-  Wait5MinForStatistics();
 
   pi->Freeze();
 
@@ -845,8 +735,6 @@ TEST_F(ParkableImageTest, DelayedSimple) {
   auto pi = MakeParkableImageForTesting(data);
   EXPECT_EQ(1u, manager.Size());
 
-  Wait5MinForStatistics();
-
   pi->Freeze();
 
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
@@ -878,8 +766,6 @@ TEST_F(ParkableImageTest, DelayedRead) {
 
   auto pi = MakeParkableImageForTesting(data);
   EXPECT_EQ(1u, manager.Size());
-
-  Wait5MinForStatistics();
 
   pi->Freeze();
 

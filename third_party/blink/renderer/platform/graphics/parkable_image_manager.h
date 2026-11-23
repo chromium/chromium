@@ -72,17 +72,10 @@ class PLATFORM_EXPORT ParkableImageManager
 
   Statistics ComputeStatistics() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void RecordStatisticsAfter5Minutes() const LOCKS_EXCLUDED(lock_);
-
   void MoveImage(ParkableImageImpl* image,
                  HashSet<ParkableImageImpl*>* from,
                  HashSet<ParkableImageImpl*>* to)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  void RecordDiskReadTime(base::TimeDelta read_time) LOCKS_EXCLUDED(lock_) {
-    base::AutoLock lock(lock_);
-    total_disk_read_time_ += read_time;
-  }
 
   // Keeps track of whether the image is unparked or on disk. ParkableImage
   // should call these when written to or read from disk.
@@ -121,9 +114,6 @@ class PLATFORM_EXPORT ParkableImageManager
   HashSet<ParkableImageImpl*> on_disk_images_ GUARDED_BY(lock_);
 
   bool has_pending_parking_task_ GUARDED_BY(lock_) = false;
-  bool has_posted_accounting_task_ GUARDED_BY(lock_) = false;
-
-  base::TimeDelta total_disk_read_time_ GUARDED_BY(lock_) = base::TimeDelta();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<DiskDataAllocator> allocator_for_testing_;

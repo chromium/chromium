@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -88,11 +87,9 @@ void ParkableImageManager::ResetForTesting() {
   base::AutoLock lock(lock_);
 
   has_pending_parking_task_ = false;
-  has_posted_accounting_task_ = false;
   unparked_images_.clear();
   on_disk_images_.clear();
   allocator_for_testing_ = nullptr;
-  total_disk_read_time_ = base::TimeDelta();
 }
 
 void ParkableImageManager::Add(ParkableImageImpl* impl) {
@@ -108,37 +105,7 @@ void ParkableImageManager::Add(ParkableImageImpl* impl) {
 
   ScheduleDelayedParkingTaskIfNeeded();
 
-  if (!has_posted_accounting_task_) {
-    // |base::Unretained(this)| is fine because |this| is a NoDestructor
-    // singleton.
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ParkableImageManager::RecordStatisticsAfter5Minutes,
-                       base::Unretained(this)),
-        base::Minutes(5));
-    has_posted_accounting_task_ = true;
-  }
-
   unparked_images_.insert(impl);
-}
-
-void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
-  DCHECK(IsMainThread());
-
-  base::AutoLock lock(lock_);
-
-  Statistics stats = ComputeStatistics();
-
-  // In KiB
-  base::UmaHistogramCounts100000("Memory.ParkableImage.UnparkedSize.5min",
-                                 static_cast<int>(stats.unparked_size / 1024));
-
-  // Metrics related to parking only should be recorded if the feature is
-  // enabled.
-  if (data_allocator().may_write()) {
-    base::UmaHistogramTimes("Memory.ParkableImage.TotalReadTime.5min",
-                            total_disk_read_time_);
-  }
 }
 
 scoped_refptr<ParkableImageImpl> ParkableImageManager::CreateParkableImage(
