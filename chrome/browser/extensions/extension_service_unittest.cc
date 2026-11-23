@@ -39,6 +39,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -8846,6 +8847,53 @@ TEST_F(ExtensionServiceTest,
   ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
   ASSERT_TRUE(updater);
   EXPECT_FALSE(updater->WillCheckSoon());
+}
+
+// Regression test for crbug.com/581702596: Verifies that when an installed
+// extension fails the policy minimum version requirement on startup,
+// ExtensionService::Init() starts ExtensionUpdater before
+// CheckManagementPolicy() triggers an update check for the disabled extension.
+TEST_F(ExtensionServiceTest,
+       MinimumVersionRequiredOnStartupTriggersUpdateCheck) {
+  ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
+  InitPluginService();
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(
+      params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
+  base::ReplaceFirstSubstringAfterOffset(
+      &params.prefs_content.value(), 0, "\"version\": \"1.0\",",
+      "\"version\": \"1.0\", "
+      "\"update_url\": \"http://example.com/update_url\",");
+  params.autoupdate_enabled = true;
+  InitializeExtensionService(std::move(params));
+
+  ExtensionDownloaderTestHelper helper;
+  NullExtensionCache extension_cache;
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  ASSERT_TRUE(updater);
+  updater->SetExtensionDownloaderForTesting(helper.CreateDownloader());
+  updater->SetExtensionCacheForTesting(&extension_cache);
+
+  {
+    ExtensionManagementPolicyUpdater pref(policy_provider());
+    pref.SetMinimumVersionRequired(kGood2, "2.0.0.0");
+  }
+
+  service()->Init();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return helper.test_url_loader_factory().NumPending() == 1; }));
+
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(kGood2));
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(kGood2));
+  EXPECT_THAT(prefs()->GetDisableReasons(kGood2),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY));
+  EXPECT_THAT(
+      helper.test_url_loader_factory().GetPendingRequest(0)->request.url.spec(),
+      testing::HasSubstr(kGood2));
+
+  updater->SetExtensionDownloaderForTesting(nullptr);
+  updater->Stop();
 }
 
 class ExternalExtensionPriorityTest
