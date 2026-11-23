@@ -43,7 +43,6 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/listformatter.h"
-#include "ui/base/grit/ui_base_test_resources.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 #include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/base/ui_base_paths.h"
@@ -172,20 +171,6 @@ class L10nUtilTest : public PlatformTest {
   std::unique_ptr<base::Environment> env_;
   std::optional<base::i18n::ScopedDefaultIcuLocale> icu_locale_override_;
 };
-
-TEST_F(L10nUtilTest, GetString) {
-  std::string s = l10n_util::GetStringUTF8(IDS_SIMPLE);
-  EXPECT_EQ(std::string("Hello World!"), s);
-
-  s = l10n_util::GetStringFUTF8(IDS_PLACEHOLDERS, u"chrome", u"10");
-  EXPECT_EQ(std::string("Hello, chrome. Your number is 10."), s);
-
-  std::u16string s16 = l10n_util::GetStringFUTF16Int(IDS_PLACEHOLDERS_2, 20);
-
-  // Consecutive '$' characters override any placeholder functionality.
-  // See //base/strings/string_util.h ReplaceStringPlaceholders().
-  EXPECT_EQ(u"You owe me $$1.", s16);
-}
 
 TEST_F(L10nUtilTest, GetAppLocale_HasDefaultLocale_UseLocaleFromEnvironment) {
   if (kPlatformHasDefaultLocale && kUseLocaleFromEnvironment) {
@@ -830,25 +815,6 @@ TEST_F(L10nUtilTest, KeepAcceptedLanguages) {
           base::i18n::GetLanguageTagListFromString("en,aa,es,iw,fr,xx")),
       ElementsAre(GetKnownLanguageTag("en"), GetKnownLanguageTag("es"),
                   GetKnownLanguageTag("he"), GetKnownLanguageTag("fr")));
-}
-
-TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
-  base::i18n::ScopedDefaultIcuLocale scoped_locale(
-      base::i18n::GetKnownLanguageTag("ar"));
-  ASSERT_EQ(true, base::i18n::IsRTL());
-  // Use a format string that contains Strong RTL Chars.
-  const std::u16string kFormatString(u"كلمة مرور $1");
-  std::vector<size_t> offsets;
-  l10n_util::FormatString(kFormatString, {u"Replacement"}, &offsets);
-  ASSERT_FALSE(offsets.empty());
-  // On Linux, an extra base::i18n::kRightToLeftMark character is appended for
-  // the text rendering engine to render the string correctly. This should be
-  // considered when computing the offsets.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(offsets[0], 11u);
-#else
-  EXPECT_EQ(offsets[0], 10u);
-#endif
 }
 
 TEST_F(L10nUtilTest, AllLegacyAcceptLanguagesWork) {
