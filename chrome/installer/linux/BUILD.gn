@@ -386,6 +386,8 @@ copy("common_packaging_files") {
     "common/repo_variables.include",
     "common/rpm.include",
     "common/rpmrepo.cron",
+    "common/rpmrepo.service",
+    "common/rpmrepo.timer",
     "common/symlinks.include",
     "common/variables.include",
     "common/wrapper",

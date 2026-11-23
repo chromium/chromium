@@ -116,13 +116,35 @@ def main() -> None:
         inst.stage_install_common()
 
         logging.info(f"Staging RPM install files in '{staging_dir}'...")
-        cron_file = staging_dir / "etc/cron.daily" / config.info_vars["PACKAGE"]
+        package = config.info_vars["PACKAGE"]
+        install_dir = config.info_vars["INSTALLDIR"]
+        cron_dir = staging_dir / install_dir.lstrip("/") / "cron"
+        cron_dir.mkdir(parents=True, exist_ok=True)
+        cron_dir.chmod(installer.StandardPermissions.EXECUTABLE)
+        cron_file = cron_dir / package
         installer.process_template(
             output_dir / "installer/common/rpmrepo.cron",
             cron_file,
             config.get_template_context(),
         )
         cron_file.chmod(installer.StandardPermissions.EXECUTABLE)
+        # Keep the cron.daily entry for systems with a cron daemon; the
+        # systemd timer covers systems without one (crbug.com/325838110).
+        os.symlink(
+            os.path.join(install_dir, "cron", package),
+            staging_dir / "etc/cron.daily" / package,
+        )
+
+        unit_dir = staging_dir / "usr/lib/systemd/system"
+        unit_dir.mkdir(parents=True, exist_ok=True)
+        for ext in ("service", "timer"):
+            unit_file = unit_dir / f"{package}-repo.{ext}"
+            installer.process_template(
+                output_dir / f"installer/common/rpmrepo.{ext}",
+                unit_file,
+                config.get_template_context(),
+            )
+            unit_file.chmod(installer.StandardPermissions.REGULAR)
 
         # do_package logic
         logging.info(f"Packaging {args.arch}...")

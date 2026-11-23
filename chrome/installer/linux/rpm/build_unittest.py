@@ -246,6 +246,31 @@ class BuildTest(unittest.TestCase):
                         payload_head = gz.read(6)
                 self.assertEqual(payload_head, b"070701")
 
+                # The daily repo/key job also runs from a systemd timer on
+                # systems without cron (crbug.com/325838110).
+                files = subprocess.check_output(
+                    [
+                        "rpm",
+                        "-qp",
+                        "--qf",
+                        "[%{FILENAMES} %{FILELINKTOS}\n]",
+                        str(rpm_path),
+                    ],
+                    text=True,
+                ).splitlines()
+                package = "chromium-browser"
+                cron_script = f"/opt/chromium.org/chromium/cron/{package}"
+                self.assertIn(f"/etc/cron.daily/{package} {cron_script}", files)
+                self.assertIn(f"{cron_script} ", files)
+                unit_dir = "/usr/lib/systemd/system"
+                self.assertIn(f"{unit_dir}/{package}-repo.service ", files)
+                self.assertIn(f"{unit_dir}/{package}-repo.timer ", files)
+                scripts = subprocess.check_output(
+                    ["rpm", "-qp", "--scripts", str(rpm_path)], text=True
+                )
+                self.assertIn(f"enable {package}-repo.timer", scripts)
+                self.assertIn(f"disable {package}-repo.timer", scripts)
+
 
 if __name__ == "__main__":
     unittest.main()
