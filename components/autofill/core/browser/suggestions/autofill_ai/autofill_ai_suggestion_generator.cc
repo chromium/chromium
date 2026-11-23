@@ -775,7 +775,7 @@ Suggestion GetSuggestionForEntity(
 #endif
 
   const bool requires_server_fetch = WillRequireServerFetch(
-      entity, form, trigger_field.field->section(), app_locale.tag_string());
+      entity, form, trigger_field.field->section(), app_locale);
   suggestion.payload =
       Suggestion::AutofillAiPayload(entity.guid(), requires_server_fetch);
   suggestion.icon = GetSuggestionIcon(entity.type(), entity.record_type());

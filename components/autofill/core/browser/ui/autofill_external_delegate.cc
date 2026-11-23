@@ -1107,7 +1107,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       const bool will_fill_sensitive_info = WillFillSensitiveAttributes(
           *entity, *form_structure, autofill_field->section(),
-          manager_->client().GetAppLocale().tag_string());
+          manager_->client().GetAppLocale());
 
       // The loading dialog is displayed when the user successfully
       // authenticates and the entity is fetched from server. It is closed when
@@ -1558,7 +1558,7 @@ void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
   }
   const auto& [filling_value, select_text, filling_type] =
       GetFillingValueAndTypeForProfile(
-          profile, std::string(manager_->client().GetAppLocale().tag_string()),
+          profile, manager_->client().GetAppLocale(),
           *suggestion.field_by_field_filling_type_used, *trigger_field,
           manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
@@ -1582,7 +1582,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   }
   const auto& [filling_value, select_text, filling_type] =
       GetFillingValueAndTypeForProfile(
-          profile, std::string(manager_->client().GetAppLocale().tag_string()),
+          profile, manager_->client().GetAppLocale(),
           *suggestion.field_by_field_filling_type_used, *trigger_field,
           manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {

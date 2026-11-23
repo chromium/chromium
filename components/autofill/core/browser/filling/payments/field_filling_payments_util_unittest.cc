@@ -13,6 +13,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
@@ -60,7 +61,8 @@ const std::u16string kMidlineEllipsis3DotsWithoutPadding =
 const std::u16string kMidlineEllipsis4DotsWithoutPadding =
     CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/4);
 
-constexpr char kAppLocale[] = "en-US";
+constexpr base::i18n::LanguageTag kAppLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 const std::vector<const char*> NotNumericMonthsContentsNoPlaceholder() {
   const std::vector<const char*> result = {"Jan", "Feb", "Mar", "Apr",
@@ -159,7 +161,7 @@ class FieldFillingPaymentsUtilTest : public testing::Test {
 
   std::u16string GetFillingValueForCreditCard(
       const CreditCard& credit_card,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       mojom::ActionPersistence action_persistence,
       const AutofillField& field,
       bool is_cvc_filling_supported) {
@@ -906,15 +908,19 @@ TEST_F(FieldFillingPaymentsUtilTest,
       CREDIT_CARD_EXP_MONTH);
   CreditCard credit_card = test::GetCreditCard();
   credit_card.SetExpirationMonth(8);
-  EXPECT_EQ(GetFillingValueForCreditCard(credit_card, /*app_locale=*/"fr-FR",
-                                         mojom::ActionPersistence::kFill, field,
-                                         /*is_cvc_filling_supported=*/true),
-            u"08 - AOÛT");
+  EXPECT_EQ(
+      GetFillingValueForCreditCard(
+          credit_card, /*app_locale=*/base::i18n::GetKnownLanguageTag("fr-FR"),
+          mojom::ActionPersistence::kFill, field,
+          /*is_cvc_filling_supported=*/true),
+      u"08 - AOÛT");
   credit_card.SetExpirationMonth(12);
-  EXPECT_EQ(GetFillingValueForCreditCard(credit_card, /*app_locale=*/"fr-FR",
-                                         mojom::ActionPersistence::kFill, field,
-                                         /*is_cvc_filling_supported=*/true),
-            u"12 - DECEMBRE");
+  EXPECT_EQ(
+      GetFillingValueForCreditCard(
+          credit_card, /*app_locale=*/base::i18n::GetKnownLanguageTag("fr-FR"),
+          mojom::ActionPersistence::kFill, field,
+          /*is_cvc_filling_supported=*/true),
+      u"12 - DECEMBRE");
 }
 
 TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithMonthName_French) {
@@ -922,22 +928,28 @@ TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithMonthName_French) {
       {"JANV", "FÉVR.", "MARS", "décembre"}, CREDIT_CARD_EXP_MONTH);
   CreditCard credit_card = test::GetCreditCard();
   credit_card.SetExpirationMonth(2);
-  EXPECT_EQ(GetFillingValueForCreditCard(credit_card, /*app_locale=*/"fr-FR",
-                                         mojom::ActionPersistence::kFill, field,
-                                         /*is_cvc_filling_supported=*/true),
-            u"FÉVR.");
+  EXPECT_EQ(
+      GetFillingValueForCreditCard(
+          credit_card, /*app_locale=*/base::i18n::GetKnownLanguageTag("fr-FR"),
+          mojom::ActionPersistence::kFill, field,
+          /*is_cvc_filling_supported=*/true),
+      u"FÉVR.");
 
   credit_card.SetExpirationMonth(1);
-  EXPECT_EQ(GetFillingValueForCreditCard(credit_card, /*app_locale=*/"fr-FR",
-                                         mojom::ActionPersistence::kFill, field,
-                                         /*is_cvc_filling_supported=*/true),
-            u"JANV");
+  EXPECT_EQ(
+      GetFillingValueForCreditCard(
+          credit_card, /*app_locale=*/base::i18n::GetKnownLanguageTag("fr-FR"),
+          mojom::ActionPersistence::kFill, field,
+          /*is_cvc_filling_supported=*/true),
+      u"JANV");
 
   credit_card.SetExpirationMonth(12);
-  EXPECT_EQ(GetFillingValueForCreditCard(credit_card, /*app_locale=*/"fr-FR",
-                                         mojom::ActionPersistence::kFill, field,
-                                         /*is_cvc_filling_supported=*/true),
-            u"décembre");
+  EXPECT_EQ(
+      GetFillingValueForCreditCard(
+          credit_card, /*app_locale=*/base::i18n::GetKnownLanguageTag("fr-FR"),
+          mojom::ActionPersistence::kFill, field,
+          /*is_cvc_filling_supported=*/true),
+      u"décembre");
 }
 
 TEST_F(FieldFillingPaymentsUtilTest,
@@ -956,9 +968,10 @@ TEST_F(FieldFillingPaymentsUtilTest,
   ja_field.set_heuristic_type(GetActiveHeuristicSource(),
                               CREDIT_CARD_EXP_MONTH);
   EXPECT_EQ(
-      GetFillingValueForCreditCard(credit_card, /*app_locale=*/"ja",
-                                   mojom::ActionPersistence::kFill, ja_field,
-                                   /*is_cvc_filling_supported=*/true),
+      GetFillingValueForCreditCard(
+          credit_card, /*app_locale=*/base::i18n::GetKnownLanguageTag("ja"),
+          mojom::ActionPersistence::kFill, ja_field,
+          /*is_cvc_filling_supported=*/true),
       u"m5");
 
   credit_card.SetExpirationMonth(11);
@@ -967,9 +980,10 @@ TEST_F(FieldFillingPaymentsUtilTest,
        "07 - Jul", "08 - Aug", "09 - Sep", "10 - Oct", "11 - Nov", "12 - Dec"},
       CREDIT_CARD_EXP_MONTH);
   EXPECT_EQ(
-      GetFillingValueForCreditCard(credit_card, /*app_locale=*/"ja",
-                                   mojom::ActionPersistence::kFill, en_field,
-                                   /*is_cvc_filling_supported=*/true),
+      GetFillingValueForCreditCard(
+          credit_card, /*app_locale=*/base::i18n::GetKnownLanguageTag("ja"),
+          mojom::ActionPersistence::kFill, en_field,
+          /*is_cvc_filling_supported=*/true),
       u"11 - Nov");
 }
 

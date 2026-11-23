@@ -1525,15 +1525,13 @@ FormFiller::GetFieldFillingData(
       absl::Overload{
           [&](const AutofillProfile* profile) {
             return GetFillingValueAndTypeForProfile(
-                CHECK_DEREF(profile),
-                std::string(manager_->client().GetAppLocale().tag_string()),
+                CHECK_DEREF(profile), manager_->client().GetAppLocale(),
                 field.Type().GetAddressType(), field,
                 manager_->client().GetAddressNormalizer(), failure_to_fill);
           },
           [&](const CreditCard* credit_card) {
             return GetFillingValueAndTypeForCreditCard(
-                CHECK_DEREF(credit_card),
-                std::string(manager_->client().GetAppLocale().tag_string()),
+                CHECK_DEREF(credit_card), manager_->client().GetAppLocale(),
                 action_persistence, field,
                 manager_->client().IsCvcSavingSupported(), failure_to_fill);
           },
@@ -1545,7 +1543,7 @@ FormFiller::GetFieldFillingData(
                 entity_and_fields_and_types.second;
             return GetFillingValueAndTypeForEntity(
                 entity, fields, field, action_persistence,
-                std::string(manager_->client().GetAppLocale().tag_string()),
+                manager_->client().GetAppLocale(),
                 manager_->client().GetAddressNormalizer());
           },
           [&](const VerifiedProfile* profile) {

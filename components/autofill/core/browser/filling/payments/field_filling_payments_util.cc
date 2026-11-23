@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -53,7 +54,7 @@ namespace {
 // heuristics are run to cover all observed cases.
 std::optional<SelectOption> GetExpirationMonthSelectControlValue(
     const std::u16string& value,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
   // |value| is defined to be between 1 and 12, inclusively.
@@ -112,8 +113,8 @@ std::optional<SelectOption> GetExpirationMonthSelectControlValue(
        std::views::zip(field_options, trimmed_values)) {
     // We use the trimmed value to match with `month`, but the original select
     // value to fill the field (otherwise filling wouldn't work).
-    if (std::optional<int> parsed_month =
-            data_util::ParseMonthFromString(trimmed_value, app_locale)) {
+    if (std::optional<int> parsed_month = data_util::ParseMonthFromString(
+            trimmed_value, app_locale.tag_string())) {
       if (month == *parsed_month) {
         return field_option;
       }
@@ -122,8 +123,8 @@ std::optional<SelectOption> GetExpirationMonthSelectControlValue(
 
   // Attempt to match with each of the options' content.
   for (const SelectOption& option : field_options) {
-    if (std::optional<int> parsed_month =
-            data_util::ParseMonthFromString(option.text, app_locale)) {
+    if (std::optional<int> parsed_month = data_util::ParseMonthFromString(
+            option.text, app_locale.tag_string())) {
       if (month == *parsed_month) {
         return option;
       }
@@ -234,7 +235,7 @@ std::u16string GetCreditCardNumberForInput(
     const CreditCard& credit_card,
     size_t card_number_offset,
     uint64_t field_max_length,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     mojom::ActionPersistence action_persistence) {
   std::u16string value;
   if (action_persistence == mojom::ActionPersistence::kPreview) {
@@ -257,7 +258,7 @@ std::u16string GetCreditCardNumberForInput(
             : credit_card
                   .ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields();
   } else {
-    value = credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
+    value = credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale.tag_string());
   }
   // Check to truncate card number based on the field's credit card number
   // offset and length of the credit card number.
@@ -389,7 +390,7 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
 // into the input `field`.
 std::u16string GetFillingValueForCreditCardForInput(
     const CreditCard& credit_card,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     bool is_cvc_filling_supported,
@@ -424,7 +425,7 @@ std::u16string GetFillingValueForCreditCardForInput(
                                        field.max_length());
     default:
       // All other cases handled here.
-      return credit_card.GetInfo(field_type, app_locale);
+      return credit_card.GetInfo(field_type, app_locale.tag_string());
   }
 }
 
@@ -442,7 +443,7 @@ std::u16string ReplaceDigitsWithCenterDots(std::u16string value) {
 // preview into `field`.
 std::u16string GetValueForVirtualCardInputPreview(
     const CreditCard& virtual_card,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const AutofillField& field,
     std::string* failure_to_fill) {
   CHECK_EQ(virtual_card.record_type(), CreditCard::RecordType::kVirtualCard);
@@ -468,13 +469,13 @@ std::u16string GetValueForVirtualCardInputPreview(
           /*is_cvc_filling_supported=*/true, failure_to_fill));
     default:
       // All other cases handled here.
-      return virtual_card.GetInfo(field_type, app_locale);
+      return virtual_card.GetInfo(field_type, app_locale.tag_string());
   }
 }
 
 std::optional<SelectOption> GetFillingOptionForCreditCardSelectControl(
     const std::u16string& value,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const AutofillField& field,
     std::string* failure_to_fill) {
   switch (field.Type().GetCreditCardType()) {
@@ -504,7 +505,7 @@ bool HasSwappableCreditCardType(const AutofillField& field) {
 
 FillingValueAndType GetFillingValueAndTypeForCreditCard(
     const CreditCard& credit_card,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     bool is_cvc_filling_supported,

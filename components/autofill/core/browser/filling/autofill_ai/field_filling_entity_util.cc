@@ -21,6 +21,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
@@ -95,7 +96,7 @@ std::u16string MaybeStripPrefix(const std::u16string& value,
 std::optional<SelectOption> GetValueForDateSelect(
     const AttributeInstance& attribute,
     const AutofillField& field,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   const FieldType type =
       field.Type().GetAutofillAiType(attribute.type().entity_type());
   if (!IsDateFieldType(type)) {
@@ -106,7 +107,7 @@ std::optional<SelectOption> GetValueForDateSelect(
                       uint32_t max =
                           std::numeric_limits<uint32_t>::max()) -> uint32_t {
     std::u16string s = attribute.GetInfo(
-        type, app_locale,
+        type, app_locale.tag_string(),
         AutofillFormatString(std::move(format_string), FormatString_Type_DATE));
     unsigned int i = 0;
     return base::StringToUint(s, &i) && min <= i && i <= max
@@ -131,7 +132,7 @@ std::optional<SelectOption> GetValueForDateSelect(
 
 std::u16string GetValueForInput(const AttributeInstance& attribute,
                                 const AutofillField& field,
-                                const std::string& app_locale) {
+                                const base::i18n::LanguageTag& app_locale) {
   const FieldType type =
       field.Type().GetAutofillAiType(attribute.type().entity_type());
   // TODO(crbug.com/389625753): Investigate whether only passing the
@@ -140,7 +141,7 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
   // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
   // prediction logic.
   std::u16string value =
-      attribute.GetInfo(type, app_locale, field.format_string());
+      attribute.GetInfo(type, app_locale.tag_string(), field.format_string());
   switch (type) {
     case DRIVERS_LICENSE_REGION:
     case VEHICLE_PLATE_STATE:
@@ -163,7 +164,7 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
 std::optional<SelectOption> GetOptionForSelect(
     const AttributeInstance& attribute,
     const AutofillField& field,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AddressNormalizer* address_normalizer) {
   const FieldType type =
       field.Type().GetAutofillAiType(attribute.type().entity_type());
@@ -300,7 +301,7 @@ FillingValueAndType GetFillingValueAndTypeForEntity(
     base::span<const AutofillFieldWithAttributeType> fields_and_types,
     const AutofillField& field,
     mojom::ActionPersistence action_persistence,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AddressNormalizer* address_normalizer) {
   auto attribute = [&]() -> base::optional_ref<const AttributeInstance> {
     auto it = std::ranges::find(fields_and_types, field.global_id(),
@@ -350,18 +351,18 @@ FillingValueAndType GetFillingValueAndTypeForEntity(
 bool WillFillSensitiveAttributes(const EntityInstance& entity,
                                  const FormStructure& form,
                                  const Section& section,
-                                 std::string_view app_locale) {
+                                 const base::i18n::LanguageTag& app_locale) {
   return std::ranges::any_of(
       RationalizeAndDetermineAttributeTypes(form.fields(), section,
                                             entity.type()),
-      [&entity, app_locale](const AutofillFieldWithAttributeType& f) {
+      [&entity, &app_locale](const AutofillFieldWithAttributeType& f) {
         base::optional_ref<const AttributeInstance> attribute =
             entity.attribute(f.type);
         return entity.type() == f.type.entity_type() && attribute &&
                attribute->type().is_obfuscated() &&
                !attribute
                     ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
-                              app_locale, f.field->format_string())
+                              app_locale.tag_string(), f.field->format_string())
                     .empty();
       });
 }
@@ -369,7 +370,7 @@ bool WillFillSensitiveAttributes(const EntityInstance& entity,
 bool WillRequireServerFetch(const EntityInstance& entity,
                             const FormStructure& form,
                             const Section& section,
-                            std::string_view app_locale) {
+                            const base::i18n::LanguageTag& app_locale) {
   if (!entity.IsMaskedEntity() || !entity.IsServerInstance() ||
       !WillFillSensitiveAttributes(entity, form, section, app_locale)) {
     return false;

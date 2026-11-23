@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -187,11 +188,12 @@ std::u16string GetPhoneNumberValueForInput(
 
 // Returns the appropriate `profile` value based on `field_type` to fill
 // into the input `field`.
-std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
-                                          const std::string& app_locale,
-                                          FieldType field_type,
-                                          const AutofillField& field,
-                                          std::string* failure_to_fill) {
+std::u16string GetValueForProfileForInput(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& app_locale,
+    FieldType field_type,
+    const AutofillField& field,
+    std::string* failure_to_fill) {
   if (field_type == ADDRESS_HOME_COUNTRY) {
     const std::u16string country_code =
         profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
@@ -200,16 +202,17 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
             features::kAutofillDisallowCountryCodeFilling)) {
       return country_code;
     }
-    return AutofillCountry(country_code, app_locale).name();
+    return AutofillCountry(country_code, app_locale.tag_string()).name();
   }
-  const std::u16string value = profile.GetInfo(field_type, app_locale);
+  const std::u16string value =
+      profile.GetInfo(field_type, app_locale.tag_string());
   if (value.empty()) {
     return {};
   }
   if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone) {
     return GetPhoneNumberValueForInput(
         field.max_length(), value,
-        profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
+        profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale.tag_string()));
   }
   if (field_type == ADDRESS_HOME_STREET_ADDRESS) {
     return GetStreetAddressForInput(value, profile.language_code(),
@@ -217,7 +220,8 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
   }
   if (field_type == ADDRESS_HOME_STATE) {
     return GetStateTextForInput(
-        value, data_util::GetCountryCodeWithFallback(profile, app_locale),
+        value,
+        data_util::GetCountryCodeWithFallback(profile, app_locale.tag_string()),
         field.max_length(), failure_to_fill);
   }
   if (IsAlternativeNameType(field_type)) {
@@ -230,7 +234,7 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
 std::optional<SelectOption> GetOptionForProfileSelectControl(
     const AutofillProfile& profile,
     const std::u16string& value,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::span<const SelectOption> field_options,
     FieldType field_type,
     AddressNormalizer* address_normalizer,
@@ -240,14 +244,15 @@ std::optional<SelectOption> GetOptionForProfileSelectControl(
       return GetCountrySelectControlOption(value, field_options,
                                            failure_to_fill);
     case ADDRESS_HOME_STATE:
-      return GetStateSelectControlOption(
-          value, field_options,
-          data_util::GetCountryCodeWithFallback(profile, app_locale),
-          address_normalizer, failure_to_fill);
+      return GetStateSelectControlOption(value, field_options,
+                                         data_util::GetCountryCodeWithFallback(
+                                             profile, app_locale.tag_string()),
+                                         address_normalizer, failure_to_fill);
     case PHONE_HOME_COUNTRY_CODE:
       return GetPhoneCountryCodeSelectControlValue(
           value, field_options,
-          data_util::GetCountryCodeWithFallback(profile, app_locale),
+          data_util::GetCountryCodeWithFallback(profile,
+                                                app_locale.tag_string()),
           failure_to_fill);
     default:
       return GetSelectControlOption(value, field_options, failure_to_fill);
@@ -258,7 +263,7 @@ std::optional<SelectOption> GetOptionForProfileSelectControl(
 
 FillingValueAndType GetFillingValueAndTypeForProfile(
     const AutofillProfile& profile,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     FieldType field_type,
     const AutofillField& field,
     AddressNormalizer* address_normalizer,

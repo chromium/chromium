@@ -43,7 +43,8 @@ using ::i18n::addressinput::Source;
 using ::i18n::addressinput::Storage;
 using ::i18n::addressinput::TestdataSource;
 
-constexpr char kAppLocale[] = "en-US";
+constexpr base::i18n::LanguageTag kAppLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 AutofillField CreateTestSelectAutofillField(
     const std::vector<const char*>& values,
@@ -54,7 +55,7 @@ AutofillField CreateTestSelectAutofillField(
 }
 
 std::u16string GetValueForProfile(const AutofillProfile& profile,
-                                  const std::string& app_locale,
+                                  const base::i18n::LanguageTag& app_locale,
                                   FieldType field_type,
                                   const AutofillField& field,
                                   AddressNormalizer* address_normalizer) {
@@ -410,9 +411,12 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
   std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
   profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, ja_value, "ja-JP");
   profile.set_language_code("ja-JP");
-  EXPECT_EQ(ja_value, GetValueForProfile(profile, /*app_locale=*/"ja-JP",
-                                         ADDRESS_HOME_STREET_ADDRESS, field,
-                                         /*address_normalizer=*/nullptr));
+  EXPECT_EQ(
+      ja_value,
+      GetValueForProfile(
+          profile, /*app_locale=*/base::i18n::GetKnownLanguageTag("ja-JP"),
+          ADDRESS_HOME_STREET_ADDRESS, field,
+          /*address_normalizer=*/nullptr));
 }
 
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
@@ -432,10 +436,12 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
   std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
   profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, ja_value, "ja-JP");
   profile.set_language_code("ja-JP");
-  EXPECT_EQ(GetValueForProfile(profile, /*app_locale=*/"ja-JP",
-                               ADDRESS_HOME_STREET_ADDRESS, field,
-                               /*address_normalizer=*/nullptr),
-            u"桜丘町26-1セルリアンタワー6階");
+  EXPECT_EQ(
+      GetValueForProfile(
+          profile, /*app_locale=*/base::i18n::GetKnownLanguageTag("ja-JP"),
+          ADDRESS_HOME_STREET_ADDRESS, field,
+          /*address_normalizer=*/nullptr),
+      u"桜丘町26-1セルリアンタワー6階");
 }
 
 // Tests that text state fields are filled correctly depending on their

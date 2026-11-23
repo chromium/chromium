@@ -249,7 +249,7 @@ std::optional<std::u16string> GetAttributeFillValue(
         AutofillFieldWithAttributeType(*autofill_field, attribute_type)};
     FillingValueAndType value_and_type = GetFillingValueAndTypeForEntity(
         entity, fields_and_types, *autofill_field,
-        mojom::ActionPersistence::kFill, app_locale,
+        mojom::ActionPersistence::kFill, manager.client().GetAppLocale(),
         manager.client().GetAddressNormalizer());
     return value_and_type.value;
   }

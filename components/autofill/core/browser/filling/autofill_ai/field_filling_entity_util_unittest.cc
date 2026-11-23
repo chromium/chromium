@@ -48,7 +48,8 @@
 namespace autofill {
 namespace {
 
-constexpr char kAppLocaleUS[] = "en-US";
+constexpr base::i18n::LanguageTag kAppLocaleUS =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 using ::i18n::addressinput::NullStorage;
 using ::i18n::addressinput::Source;
@@ -78,7 +79,7 @@ std::u16string GetFillValueForEntity(
     const EntityInstance& entity,
     base::span<const std::unique_ptr<AutofillField>> fields,
     mojom::ActionPersistence action_persistence,
-    const std::string& app_locale = kAppLocaleUS,
+    const base::i18n::LanguageTag& app_locale = kAppLocaleUS,
     AddressNormalizer* address_normalizer = nullptr) {
   CHECK(!fields.empty());
   std::vector<AutofillFieldWithAttributeType> fields_and_types =
@@ -133,7 +134,7 @@ std::u16string GetFillValueForEntity(
     const EntityInstance& entity,
     const std::unique_ptr<AutofillField>& field,
     mojom::ActionPersistence action_persistence,
-    const std::string& app_locale = kAppLocaleUS,
+    const base::i18n::LanguageTag& app_locale = kAppLocaleUS,
     AddressNormalizer* address_normalizer = nullptr) {
   return GetFillValueForEntity(entity, base::span_from_ref(field),
                                action_persistence, app_locale,
@@ -664,11 +665,11 @@ TEST_F(GetFillValueForEntityTest, FillingLocalizedCountries) {
   EntityInstance passport =
       test::GetPassportEntityInstance({.country = u"Lebanon"});
   for (const auto& [locale, expectation] :
-       std::vector<std::pair<std::string, std::u16string>>{
-           {"en-US", u"Lebanon"},
-           {"fr-FR", u"Liban"},
-           {"de-DE", u"Libanon"},
-           {"ar-LB", u"لبنان"}}) {
+       std::vector<std::pair<base::i18n::LanguageTag, std::u16string>>{
+           {base::i18n::GetKnownLanguageTag("en-US"), u"Lebanon"},
+           {base::i18n::GetKnownLanguageTag("fr-FR"), u"Liban"},
+           {base::i18n::GetKnownLanguageTag("de-DE"), u"Libanon"},
+           {base::i18n::GetKnownLanguageTag("ar-LB"), u"لبنان"}}) {
     auto country_field = std::make_unique<AutofillField>();
     country_field->set_server_predictions(
         {CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
@@ -870,9 +871,10 @@ TEST_F(GetFillValueForEntityStateTest, FillingStateValueIntoInput) {
                      AutofillPredictionSource::kServerCrowdsourcing);
     field->set_max_length(max_length);
 
-    EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
-                                    mojom::ActionPersistence::kFill,
-                                    /*app_locale=*/"", normalizer()),
+    EXPECT_EQ(GetFillValueForEntity(
+                  drivers_license, field, mojom::ActionPersistence::kFill,
+                  /*app_locale=*/base::i18n::GetKnownLanguageTag("und"),
+                  normalizer()),
               expectation)
         << max_length;
   }
@@ -893,9 +895,10 @@ TEST_F(GetFillValueForEntityStateTest, FillingSelectControlWithState) {
     field->SetTypeTo(AutofillType(DRIVERS_LICENSE_REGION),
                      AutofillPredictionSource::kServerCrowdsourcing);
 
-    EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
-                                    mojom::ActionPersistence::kFill,
-                                    /*app_locale=*/"", normalizer()),
+    EXPECT_EQ(GetFillValueForEntity(
+                  drivers_license, field, mojom::ActionPersistence::kFill,
+                  /*app_locale=*/base::i18n::GetKnownLanguageTag("und"),
+                  normalizer()),
               expectation);
   }
 }
@@ -938,31 +941,31 @@ TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoTextInput) {
   field->set_format_string_unless_overruled(
       AutofillFormatString(u"DD/MM/YYYY", FormatString_Type_DATE),
       AutofillFormatStringSource::kServer);
-  EXPECT_EQ(
-      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
-                            /*app_locale=*/"",
-                            /*address_normalizer=*/nullptr),
-      u"16/12/2022");
+  EXPECT_EQ(GetFillValueForEntity(
+                passport(), field, mojom::ActionPersistence::kFill,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und"),
+                /*address_normalizer=*/nullptr),
+            u"16/12/2022");
 }
 
 // Tests that a date is filled into an input according to the format string.
 TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoDateInput) {
   auto field = CreateInput(FormControlType::kInputDate);
-  EXPECT_EQ(
-      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
-                            /*app_locale=*/"",
-                            /*address_normalizer=*/nullptr),
-      u"2022-12-16");
+  EXPECT_EQ(GetFillValueForEntity(
+                passport(), field, mojom::ActionPersistence::kFill,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und"),
+                /*address_normalizer=*/nullptr),
+            u"2022-12-16");
 }
 
 // Tests that a date is filled into an input according to the format string.
 TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoMonthInput) {
   auto field = CreateInput(FormControlType::kInputMonth);
-  EXPECT_EQ(
-      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
-                            /*app_locale=*/"",
-                            /*address_normalizer=*/nullptr),
-      u"2022-12");
+  EXPECT_EQ(GetFillValueForEntity(
+                passport(), field, mojom::ActionPersistence::kFill,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und"),
+                /*address_normalizer=*/nullptr),
+            u"2022-12");
 }
 
 // Describes number-based options of a <select> field.
@@ -1040,12 +1043,13 @@ TEST_P(GetFillValueForEntityTest_Date_Select_Integral, GetFillValueForEntity) {
   SCOPED_TRACE(testing::Message()
                << "values: " << base::JoinString(values, ", ")
                << " / texts = " << base::JoinString(texts, ", "));
-  EXPECT_EQ(GetFillValueForEntity(passport(),
-                                  CreateSelect(
-                                      /*values=*/values,
-                                      /*texts=*/texts),
-                                  mojom::ActionPersistence::kFill,
-                                  /*app_locale=*/""),
+  EXPECT_EQ(GetFillValueForEntity(
+                passport(),
+                CreateSelect(
+                    /*values=*/values,
+                    /*texts=*/texts),
+                mojom::ActionPersistence::kFill,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
             base::UTF8ToUTF16(p.expectation));
 }
 
@@ -1161,10 +1165,10 @@ TEST_F(GetFillValueForEntityTest_Date, MonthString) {
       "January", "February", "March",     "April",   "May",      "June",
       "July",    "August",   "September", "October", "November", "December"};
   auto field = CreateSelect(months, months);
-  EXPECT_EQ(
-      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
-                            /*app_locale=*/""),
-      u"December");
+  EXPECT_EQ(GetFillValueForEntity(
+                passport(), field, mojom::ActionPersistence::kFill,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
+            u"December");
 }
 
 // Tests that a date is filled into a select element that seems to contain
@@ -1173,10 +1177,10 @@ TEST_F(GetFillValueForEntityTest_Date, MonthStringAbbreviations) {
   std::vector<std::string> months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   auto field = CreateSelect(months, months);
-  EXPECT_EQ(
-      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
-                            /*app_locale=*/""),
-      u"Dec");
+  EXPECT_EQ(GetFillValueForEntity(
+                passport(), field, mojom::ActionPersistence::kFill,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("und")),
+            u"Dec");
 }
 
 // Tests that `GetTargetFieldOrigin` returns the given origin if it is not

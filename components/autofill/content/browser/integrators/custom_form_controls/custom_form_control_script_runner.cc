@@ -261,8 +261,7 @@ std::optional<SelectOption> CustomFormControlScriptRunner::ChooseOption(
   field.set_form_control_type(FormControlType::kSelectOne);
   field.set_options(std::move(options));
   FillingValueAndType filling = GetFillingValueAndTypeForProfile(
-      filling_state_->profile,
-      std::string(client_->GetAppLocale().tag_string()), field_type, field,
+      filling_state_->profile, client_->GetAppLocale(), field_type, field,
       client_->GetAddressNormalizer());
   // For <select> elements, `select_text` is set iff an option matches. The
   // option's value may be empty.

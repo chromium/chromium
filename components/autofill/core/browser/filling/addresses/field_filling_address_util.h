@@ -11,6 +11,10 @@
 
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace autofill {
 
 class AddressNormalizer;
@@ -24,7 +28,7 @@ class AutofillProfile;
 // `field.Type().GetAddressType()` for field-by-field filling.
 FillingValueAndType GetFillingValueAndTypeForProfile(
     const AutofillProfile& profile,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     FieldType field_type,
     const AutofillField& field,
     AddressNormalizer* address_normalizer,

@@ -15,6 +15,10 @@
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace autofill {
 
 class AutofillField;
@@ -25,7 +29,7 @@ class CreditCard;
 // `field`.
 FillingValueAndType GetFillingValueAndTypeForCreditCard(
     const CreditCard& credit_card,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     bool is_cvc_filling_supported,

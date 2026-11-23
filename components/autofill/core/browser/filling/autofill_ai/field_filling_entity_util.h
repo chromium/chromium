@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_AI_FIELD_FILLING_ENTITY_UTIL_H_
 
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,6 +16,10 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/origin.h"
+
+namespace base::i18n {
+class LanguageTag;
+}
 
 namespace autofill {
 
@@ -60,7 +63,7 @@ FillingValueAndType GetFillingValueAndTypeForEntity(
     base::span<const AutofillFieldWithAttributeType> fields_and_types,
     const AutofillField& field,
     mojom::ActionPersistence action_persistence,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AddressNormalizer* address_normalizer);
 
 // Returns whether filling `form`'s `section` with `entity` would fill sensitive
@@ -68,7 +71,7 @@ FillingValueAndType GetFillingValueAndTypeForEntity(
 bool WillFillSensitiveAttributes(const EntityInstance& entity,
                                  const FormStructure& form,
                                  const Section& section,
-                                 std::string_view app_locale);
+                                 const base::i18n::LanguageTag& app_locale);
 
 // Returns whether filling `form`'s `section` with `entity` will require a
 // server fetch. This returns true only if the form contains fields that match
@@ -77,7 +80,7 @@ bool WillFillSensitiveAttributes(const EntityInstance& entity,
 bool WillRequireServerFetch(const EntityInstance& entity,
                             const FormStructure& form,
                             const Section& section,
-                            std::string_view app_locale);
+                            const base::i18n::LanguageTag& app_locale);
 
 // Returns the origin of the field being targeted, falling back to the
 // primary main frame origin if `origin` is opaque.
