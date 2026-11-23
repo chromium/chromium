@@ -1558,6 +1558,12 @@ if (use_blink && !is_cronet_build) {
         [ "//$devtools_root_location/test/unit:devtools_node_unit_tests" ]
   }
 
+  group("devtools_script_tests") {
+    testonly = true
+    data_deps =
+        [ "//$devtools_root_location/test/scripts:devtools_script_tests" ]
+  }
+
   group("devtools_unit_tests") {
     testonly = true
     data_deps = [ "//$devtools_root_location/test/unit:devtools_unit_tests" ]

@@ -2691,6 +2691,7 @@ ci.builder(
             "devtools_api_tests",
             "devtools_e2e_tests",
             "devtools_node_unit_tests",
+            "devtools_script_tests",
             "devtools_unit_tests",
         ],
         mixins = [
@@ -2738,6 +2739,7 @@ ci.builder(
             "devtools_api_tests",
             "devtools_e2e_tests",
             "devtools_node_unit_tests",
+            "devtools_script_tests",
             "devtools_unit_tests",
         ],
         mixins = [
@@ -2787,6 +2789,7 @@ ci.builder(
             "devtools_api_tests",
             "devtools_e2e_tests",
             "devtools_node_unit_tests",
+            "devtools_script_tests",
             "devtools_unit_tests",
         ],
         mixins = [

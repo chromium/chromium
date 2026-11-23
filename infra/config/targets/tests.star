@@ -1062,6 +1062,13 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "devtools_script_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.isolated_script_test(
     name = "devtools_unit_tests",
     mixins = [
         "has_native_resultdb_integration",

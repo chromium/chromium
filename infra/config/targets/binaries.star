@@ -1082,6 +1082,13 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "devtools_script_tests",
+    label = "//:devtools_script_tests",
+    skip_usage_check = True,
+    module_scheme = "mocha",
+)
+
+targets.binaries.generated_script(
     name = "devtools_unit_tests",
     label = "//:devtools_unit_tests",
     skip_usage_check = True,

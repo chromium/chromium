@@ -69,6 +69,27 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//:devtools_script_tests",
+        "module_scheme": "mocha",
+        "name": "devtools_script_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "devtools_script_tests",
+        "test_id_prefix": "ninja://:devtools_script_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "module_name": "//:devtools_unit_tests",
         "module_scheme": "mocha",
         "name": "devtools_unit_tests",
