@@ -68,7 +68,7 @@ class IOSImageDecoderImplTest : public PlatformTest {
 
   ~IOSImageDecoderImplTest() override = default;
 
-  base::test::TaskEnvironment scoped_task_evironment_;
+  base::test::TaskEnvironment scoped_task_environment_;
   std::unique_ptr<ImageDecoder> ios_image_decoder_impl_;
 
   gfx::Image decoded_image_;
@@ -84,7 +84,7 @@ TEST_F(IOSImageDecoderImplTest, JPGImage) {
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
 
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(decoded_image_.IsEmpty());
 }
@@ -99,7 +99,7 @@ TEST_F(IOSImageDecoderImplTest, WebpImage) {
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
 
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(decoded_image_.IsEmpty());
 }
@@ -141,7 +141,7 @@ TEST_F(IOSImageDecoderImplTest, DecodedImageScale) {
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
 
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(decoded_image_.IsEmpty());
 

@@ -211,7 +211,7 @@ TEST_F(ImageFetcherMetricsReporterTest,
   histogram_tester().ExpectTotalCount(kTimeSinceLastCacheLRUEviction, 1);
 }
 
-TEST_F(ImageFetcherMetricsReporterTest, TestReportReponseStatusCode) {
+TEST_F(ImageFetcherMetricsReporterTest, TestReportResponseStatusCode) {
   ImageFetcherMetricsReporter::ReportRequestStatusCode(kUmaClientNameOther,
                                                        200);
   histogram_tester().ExpectTotalCount(kNetworkRequestStatusCodes, 1);

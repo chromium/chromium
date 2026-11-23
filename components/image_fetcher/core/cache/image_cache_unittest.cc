@@ -546,7 +546,7 @@ TEST_F(CachedImageFetcherImageCacheTest, Eviction) {
 }
 
 // Verifies eviction for CacheStrategy::HOLD_UNTIL_EXPIRED.
-TEST_F(CachedImageFetcherImageCacheTest, EvictionHoldUtilExpires) {
+TEST_F(CachedImageFetcherImageCacheTest, EvictionHoldUntilExpires) {
   PrepareImageCache(false);
   clock()->SetNow(clock()->Now() + base::Days(2));
 
