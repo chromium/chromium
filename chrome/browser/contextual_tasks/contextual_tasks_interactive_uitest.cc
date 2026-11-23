@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
@@ -5703,6 +5704,126 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
               l10n_util::GetStringUTF8(
                   IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP)),
           true));
+}
+
+// This tests the following CUJ:
+//  (1) User opens Lens Overlay from the 3-dot App Menu on a web page.
+//  (2) User types a query into the Lens Overlay Contextual Searchbox and
+//      presses Enter to submit.
+//  (3) The Contextual Tasks side panel opens on an AI Mode page.
+//  (4) User clicks the toolbar overflow menu button.
+//  (5) User clicks the Thread History item in the overflow menu.
+//  (6) The overflow menu closes and the browser posts an `OpenThreadsView`
+//      message to the AI Mode page in the side panel.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
+                       OverflowMenuThreadHistoryOpensThreadsView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
+                                      kOpenThreadsViewCount);
+
+  const DeepQuery kToolbarTitle{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      ".top-toolbar-title",
+  };
+  const DeepQuery kOverflowMenuButton{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "#overflowMenuButton",
+  };
+  const DeepQuery kOverflowMenu{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "contextual-tasks-overflow-menu",
+  };
+  const std::string thread_history_label = l10n_util::GetStringUTF8(
+      IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP);
+
+  // Counts the `OpenThreadsView` messages posted to the side panel AI page. It
+  // is ref-counted so that the dispatcher stays valid after the test body.
+  auto open_threads_view_count =
+      base::MakeRefCounted<base::RefCountedData<int>>(0);
+
+  RunTestSequence(
+      // Steps 1-3: Open the Contextual Tasks side panel on an AI page from a
+      // Contextual Searchbox query, and wait for the AI page to load.
+      SubmitContextualSearchboxQueryToOpenSidePanel(
+          kOverlayId, "hello world",
+          GURL("https://www.google.com/search?q=hello+world&udm=50")),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelContentWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelContentWebContentsId),
+
+      // Record the search messages posted to the AI page, and complete the
+      // search channel handshake that the AI page performs in production, so
+      // that messages are dispatched to the page instead of queued.
+      Do([this, open_threads_view_count]() {
+        content::WebContents* panel_contents =
+            ContextualTasksPanelController::From(browser())
+                ->GetActiveWebContents();
+        ASSERT_TRUE(panel_contents);
+        auto* user_data =
+            ContextualTasksWebContentsUserData::FromWebContents(panel_contents);
+        ASSERT_TRUE(user_data);
+        user_data->SetSearchMessageDispatcherForTesting(
+            base::BindLambdaForTesting(
+                [open_threads_view_count](
+                    const lens::ClientToSearchMessage& message) {
+                  if (message.has_open_threads_view()) {
+                    ++open_threads_view_count->data;
+                  }
+                }));
+        user_data->OnHandshakeComplete();
+      }),
+      PollState(kOpenThreadsViewCount,
+                [open_threads_view_count]() {
+                  return open_threads_view_count->data;
+                }),
+      WaitForState(kOpenThreadsViewCount, 0),
+
+      // Step 4: Wait for the toolbar to show the AI page's thread title, then
+      // open the toolbar overflow menu and wait for the Thread History item.
+      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
+      WaitForElementExists(kSidePanelToolbarWebContentsId, kToolbarTitle),
+      WaitForJsResultAt(kSidePanelToolbarWebContentsId, kToolbarTitle,
+                        "el => el.textContent.trim()",
+                        std::string("hello world")),
+      WaitForElementVisible(kSidePanelToolbarWebContentsId,
+                            kOverflowMenuButton),
+      ClickButton(kSidePanelToolbarWebContentsId, kOverflowMenuButton),
+      WaitForElementExists(kSidePanelToolbarWebContentsId, kOverflowMenu),
+      WaitForJsResultAt(
+          kSidePanelToolbarWebContentsId, kOverflowMenu,
+          content::JsReplace(
+              "el => Boolean(el.shadowRoot.querySelector('#menu')?.open && "
+              "Array.from(el.shadowRoot.querySelectorAll("
+              "'button.dropdown-item')).some(b => !b.hidden && "
+              "b.textContent.trim() === $1))",
+              thread_history_label),
+          true),
+
+      // Step 5: Click the Thread History item.
+      ExecuteJsAt(
+          kSidePanelToolbarWebContentsId, kOverflowMenu,
+          content::JsReplace("el => Array.from(el.shadowRoot.querySelectorAll("
+                             "'button.dropdown-item')).find(b => "
+                             "b.textContent.trim() === $1).click()",
+                             thread_history_label)),
+
+      // Step 6: Verify the overflow menu closes and the browser posts exactly
+      // one `OpenThreadsView` message to the AI page.
+      WaitForJsResultAt(kSidePanelToolbarWebContentsId, kOverflowMenu,
+                        "el => !el.shadowRoot.querySelector('#menu').open",
+                        true),
+      WaitForState(kOpenThreadsViewCount, 1),
+      StopObservingState(kOpenThreadsViewCount));
 }
 
 // This tests the following CUJ:
