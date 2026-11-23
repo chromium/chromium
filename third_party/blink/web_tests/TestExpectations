@@ -8761,3 +8761,6 @@ crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propa
 crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
 crbug.com/589040167 [ Linux ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure Pass ]
 crbug.com/589040167 [ Mac ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure Pass ]
+
+# Gardener 2026-11-23
+crbug.com/589614517 [ Win11-arm64 ] external/wpt/webnn/conformance_tests/resample2d-gather-shape-divergence.https.any.html?gpu [ Failure Pass ]
