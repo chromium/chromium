@@ -64,6 +64,16 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
   }
   bool WasCreatedByScript() const { return was_created_by_script_; }
 
+  // True if this parser was created by the web-exposed document.open()
+  // (explicitly, or implicitly via document.write()), as opposed to internal
+  // callers such as Document::SetContent() (used by XHR, DOMParser and XSLT).
+  void SetWasCreatedByDocumentOpen(bool was_created_by_document_open) {
+    was_created_by_document_open_ = was_created_by_document_open;
+  }
+  bool WasCreatedByDocumentOpen() const {
+    return was_created_by_document_open_;
+  }
+
   ParserContentPolicy GetParserContentPolicy() const {
     return parser_content_policy_;
   }
@@ -90,6 +100,7 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
 
   // http://www.whatwg.org/specs/web-apps/current-work/#script-created-parser
   bool was_created_by_script_;
+  bool was_created_by_document_open_ = false;
   ParserContentPolicy parser_content_policy_;
 
   base::Lock streamers_lock_;

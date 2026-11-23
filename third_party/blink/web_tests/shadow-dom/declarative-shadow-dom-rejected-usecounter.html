@@ -6,35 +6,47 @@
 <script>
 const kDeclarativeShadowDomRejectedByNormalParser = 5988; // From web_feature.mojom
 const kDeclarativeShadowDomRejectedByFragmentParser = 5989; // From web_feature.mojom
+const kDeclarativeShadowDomRejectedByDocumentOpen = 6162; // From web_feature.mojom
 
-promise_test(async () => {
+const kDsdMarkup = '<div><template shadowrootmode="open"></template></div>';
+
+function clearCounters() {
     internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByNormalParser);
     internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByFragmentParser);
+    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByDocumentOpen);
+}
 
-    // Test XHR parsing (which does not parse DSD by default)
+function loadXhrDocument(markup) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'data:text/html,<template shadowrootmode="open"></template>');
+    xhr.open('GET', 'data:text/html,' + encodeURIComponent(markup));
     xhr.responseType = 'document';
-
-    await new Promise((resolve) => {
-        xhr.onload = resolve;
+    return new Promise((resolve) => {
+        xhr.onload = () => resolve(xhr.response);
         xhr.send();
     });
+}
 
-    assert_true(internals.isUseCounted(xhr.response, kDeclarativeShadowDomRejectedByNormalParser) ||
+promise_test(async () => {
+    clearCounters();
+
+    // Test XHR parsing (which does not parse DSD by default)
+    const doc = await loadXhrDocument(kDsdMarkup);
+
+    assert_true(internals.isUseCounted(doc, kDeclarativeShadowDomRejectedByNormalParser) ||
                 internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
                 'NormalParser use counter should trigger for XHR document parsing DSD');
 
-    assert_false(internals.isUseCounted(xhr.response, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
+    assert_false(internals.isUseCounted(doc, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
     assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                 'DocumentOpen use counter should NOT trigger for the initial XHR parse');
 }, 'XHR parsing of DSD should be use counted as rejected by NormalParser');
 
 test(() => {
-    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByNormalParser);
-    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByFragmentParser);
+    clearCounters();
 
     const doc = document.implementation.createHTMLDocument();
-    doc.write('<template shadowrootmode="open"></template>');
+    doc.write(kDsdMarkup);
 
     assert_true(internals.isUseCounted(doc, kDeclarativeShadowDomRejectedByNormalParser) ||
                 internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
@@ -42,11 +54,73 @@ test(() => {
 
     assert_false(internals.isUseCounted(doc, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
     assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
+    assert_true(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                'DocumentOpen use counter should trigger for document.write on detached document');
 }, 'document.write parsing of DSD should be use counted as rejected by NormalParser');
 
 test(() => {
-    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByNormalParser);
-    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByFragmentParser);
+    clearCounters();
+
+    const doc = document.implementation.createHTMLDocument();
+    doc.open();
+    doc.write(kDsdMarkup);
+    doc.close();
+
+    assert_equals(doc.querySelector('div').shadowRoot, null, 'DSD should not be attached');
+    assert_true(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                'DocumentOpen use counter should trigger for explicit document.open');
+}, 'Explicit document.open() + write() of DSD on a detached document should be use counted as rejected by DocumentOpen');
+
+promise_test(async () => {
+    const doc = await loadXhrDocument('<p>hello</p>');
+    clearCounters();
+
+    doc.open();
+    doc.write(kDsdMarkup);
+    doc.close();
+
+    assert_true(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                'DocumentOpen use counter should trigger for document.open on an XHR document');
+}, 'document.open() + write() of DSD on an XHR document should be use counted as rejected by DocumentOpen');
+
+test(() => {
+    clearCounters();
+
+    const doc = Document.parseHTMLUnsafe('');
+    doc.open();
+    doc.write(kDsdMarkup);
+    doc.close();
+
+    assert_not_equals(doc.querySelector('div').shadowRoot, null, 'DSD should be attached');
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
+                 'NormalParser use counter should NOT trigger when DSD is allowed');
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                 'DocumentOpen use counter should NOT trigger when DSD is allowed');
+}, 'document.open() + write() of DSD on a parseHTMLUnsafe document should not be use counted');
+
+test(() => {
+    clearCounters();
+
+    const doc = document.implementation.createHTMLDocument();
+    doc.write('<div><template></template></div>');
+
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
+                 'NormalParser use counter should NOT trigger without shadowrootmode');
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                 'DocumentOpen use counter should NOT trigger without shadowrootmode');
+}, 'document.write of a template without shadowrootmode should not be use counted');
+
+test(() => {
+    clearCounters();
+
+    new DOMParser().parseFromString(kDsdMarkup, 'text/html');
+
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                 'DocumentOpen use counter should NOT trigger for DOMParser');
+}, 'DOMParser parsing of DSD should not be use counted as rejected by DocumentOpen');
+
+test(() => {
+    clearCounters();
 
     const div = document.createElement('div');
     div.innerHTML = '<template shadowrootmode="open"></template>';
@@ -56,5 +130,7 @@ test(() => {
 
     assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
                  'NormalParser use counter should NOT trigger for innerHTML');
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByDocumentOpen),
+                 'DocumentOpen use counter should NOT trigger for innerHTML');
 }, 'innerHTML parsing of DSD should be use counted as rejected by FragmentParser');
 </script>

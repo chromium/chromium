@@ -5510,6 +5510,7 @@ enum WebFeature {
   kWindowFeaturesAttribute = 6159,
   kLanguageModel_Create_ThinkingEffort = 6160,
   kLanguageModel_Prompt_ThinkingEffort = 6161,
+  kDeclarativeShadowDomRejectedByDocumentOpen = 6162,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

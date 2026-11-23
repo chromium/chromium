@@ -1244,10 +1244,12 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
 }
 
 namespace {
-String DeclarativeShadowRootModeFromToken(AtomicHTMLToken* token,
-                                          Document& document,
-                                          bool include_shadow_roots,
-                                          bool is_fragment_context) {
+String DeclarativeShadowRootModeFromToken(
+    AtomicHTMLToken* token,
+    Document& document,
+    bool include_shadow_roots,
+    bool is_fragment_context,
+    bool parser_created_by_document_open) {
   Attribute* mode_attribute =
       token->GetAttributeItem(html_names::kShadowrootmodeAttr);
   if (!mode_attribute) {
@@ -1259,6 +1261,14 @@ String DeclarativeShadowRootModeFromToken(AtomicHTMLToken* token,
         is_fragment_context
             ? WebFeature::kDeclarativeShadowDomRejectedByFragmentParser
             : WebFeature::kDeclarativeShadowDomRejectedByNormalParser);
+    if (parser_created_by_document_open) {
+      // The document's "allow declarative shadow roots" is false, and this
+      // parser was created via document.open() or document.write(). This
+      // measures the compat impact of always allowing declarative shadow roots
+      // for document.open(): https://github.com/whatwg/html/issues/12652
+      UseCounter::Count(
+          document, WebFeature::kDeclarativeShadowDomRejectedByDocumentOpen);
+    }
 
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
@@ -1274,10 +1284,13 @@ String DeclarativeShadowRootModeFromToken(AtomicHTMLToken* token,
 
 void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->AppendMarker();
+  const bool is_fragment_context = !!fragment_context_.FragmentTarget();
   tree_.InsertHTMLTemplateElement(
       token, DeclarativeShadowRootModeFromToken(
                  token, tree_.OwnerDocumentForCurrentNode(),
-                 include_shadow_roots_, !!fragment_context_.FragmentTarget()));
+                 include_shadow_roots_, is_fragment_context,
+                 !is_fragment_context && parser_ &&
+                     parser_->WasCreatedByDocumentOpen()));
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);

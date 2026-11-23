@@ -4016,6 +4016,13 @@ void Document::open(LocalDOMWindow* entered_window,
   }
 
   open();
+
+  // Distinguish parsers created by the web-exposed document.open() (and
+  // implicitly by document.write()) from parsers created by internal callers
+  // of open(), e.g. Document::SetContent() for XHR or DOMParser.
+  if (ScriptableDocumentParser* parser = GetScriptableDocumentParser()) {
+    parser->SetWasCreatedByDocumentOpen(true);
+  }
 }
 
 // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#document-open-steps
