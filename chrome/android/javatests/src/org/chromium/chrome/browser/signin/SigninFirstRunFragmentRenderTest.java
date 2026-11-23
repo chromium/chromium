@@ -16,6 +16,7 @@ import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.res.Configuration;
+import android.os.Build.VERSION_CODES;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
@@ -205,6 +206,7 @@ public class SigninFirstRunFragmentRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableIf.Build(sdk_equals = VERSION_CODES.BAKLAVA, message = "https://crbug.com/583912406")
     public void testFragmentRotationToLandscapeWithAccount() throws IOException {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment(Configuration.ORIENTATION_PORTRAIT);
@@ -221,6 +223,7 @@ public class SigninFirstRunFragmentRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableIf.Build(sdk_equals = VERSION_CODES.BAKLAVA, message = "https://crbug.com/583912406")
     public void testFragmentRotationToPortraitWithAccount() throws IOException {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment(Configuration.ORIENTATION_LANDSCAPE);
