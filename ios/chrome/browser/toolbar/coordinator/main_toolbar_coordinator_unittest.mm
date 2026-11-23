@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/toolbar/coordinator/buttons/toolbar_buttons_mediator.h"
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
@@ -77,9 +78,10 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-// Exposes `LegacyToolbarMediatorDelegate` and `ToolbarMediatorDelegate` in
-// order to invoke delegate methods in tests.
+// Exposes `LegacyToolbarMediatorDelegate`, `ToolbarButtonsMediatorDelegate`
+// and `ToolbarMediatorDelegate` in order to invoke delegate methods in tests.
 @interface MainToolbarCoordinator (Testing) <LegacyToolbarMediatorDelegate,
+                                             ToolbarButtonsMediatorDelegate,
                                              ToolbarMediatorDelegate>
 @property(nonatomic, strong, readonly)
     LegacyToolbarMediator* legacyToolbarMediator;
@@ -409,7 +411,7 @@ TEST_F(MainToolbarCoordinatorTest, TestAssistantButtonTappedInIncognito) {
                 }]
              completionAction:[OCMArg any]]);
 
-  [coordinator_ toolbarMediatorDidTapAssistantInIncognito:nil];
+  [coordinator_ toolbarButtonsMediatorDidTapAssistantInIncognito:nil];
 
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "MobileToolbarAssistantIncognitoTapped"),

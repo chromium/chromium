@@ -7,43 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-// The types of button for which a menu can be provided.
-typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
-  ToolbarButtonTypeBack,
-  ToolbarButtonTypeForward,
-  ToolbarButtonTypeReload,
-  ToolbarButtonTypeStop,
-  ToolbarButtonTypeShare,
-  ToolbarButtonTypeAssistant,
-  ToolbarButtonTypeTabGrid,
-  ToolbarButtonTypeTools,
-};
+#import "ios/chrome/browser/toolbar/ui/toolbar_buttons_consumer.h"
 
 // Protocol for implementing the toolbar view.
-@protocol ToolbarConsumer
-
-// Sets whether the back button is enabled.
-- (void)setCanGoBack:(BOOL)canGoBack;
-
-// Sets whether the forward button is enabled.
-- (void)setCanGoForward:(BOOL)canGoForward animated:(BOOL)animated;
-
-// Sets whether the share button is enabled.
-- (void)setShareEnabled:(BOOL)enabled;
+@protocol ToolbarConsumer <ToolbarButtonsConsumer>
 
 // Sets whether the toolbar contains the omnibox.
 - (void)setHasOmnibox:(BOOL)hasOmnibox;
-
-// Sets whether the current page is the NTP, if it is the Start Surface, whether
-// the page is loading, and the `progress` between 0.0 and 1.0 for the loading
-// progress bar.
-- (void)setNTPVisible:(BOOL)ntpVisible
-       isStartSurface:(BOOL)isStartSurface
-            isLoading:(BOOL)isLoading
-      loadingProgress:(double)progress;
-
-// Sets the context menu for the Toolbar button with `buttonType`.
-- (void)setMenu:(UIMenu*)menu forButtonType:(ToolbarButtonType)buttonType;
 
 // Sets whether the location indicator should be visible.
 - (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible
@@ -54,15 +24,6 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 
 // Hides the banner promo view.
 - (void)hideBannerPromo;
-
-// Sets the tab count to display.
-- (void)updateTabCount:(NSUInteger)tabCount;
-
-// Sets whether the active web state is inside a tab group.
-- (void)setInTabGroup:(BOOL)inTabGroup;
-
-// Sets the state of the assistant button.
-- (void)setAssistantButtonVisible:(BOOL)visible enabled:(BOOL)enabled;
 
 @end
 

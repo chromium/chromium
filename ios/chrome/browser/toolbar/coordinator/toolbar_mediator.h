@@ -11,14 +11,11 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
 
 class FullscreenBrowserAgent;
-@class BrowserActionFactory;
 @class BrowserLayoutState;
 @class DefaultBrowserBannerPromoAppAgent;
 @protocol FullscreenCommands;
 class FullscreenController;
 @protocol SettingsCommands;
-@protocol SceneCommands;
-@class UIViewController;
 @protocol ToolbarConsumer;
 @protocol ToolbarHeightDelegate;
 @class ToolbarMediator;
@@ -26,25 +23,17 @@ class FullscreenController;
 /// Delegate for events in `ToolbarMediator`.
 @protocol ToolbarMediatorDelegate <NSObject>
 
-/// Notifies the delegate that the assistant button was tapped in Incognito
-/// mode.
-- (void)toolbarMediatorDidTapAssistantInIncognito:(ToolbarMediator*)mediator;
+/// Notifies the delegate that `mediator`'s toolbar has the omnibox or not.
+/// Only the toolbar with the omnibox shows the state of its control buttons.
+- (void)toolbarMediator:(ToolbarMediator*)mediator
+    didUpdateHasOmnibox:(BOOL)hasOmnibox;
 
 @end
 
-class PrefService;
-class WebNavigationBrowserAgent;
 namespace web {
 class WebState;
 }  // namespace web
 class WebStateList;
-class TabBasedIPHBrowserAgent;
-
-class AuthenticationService;
-class GeminiBrowserAgent;
-@protocol GeminiCommands;
-class GeminiService;
-class ProfileIOS;
 
 // Mediator for the toolbar.
 @interface ToolbarMediator : NSObject <BannerPromoViewDelegate, ToolbarMutator>
@@ -58,12 +47,6 @@ class ProfileIOS;
 // Delegate for events in `ToolbarMediator`.
 @property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
 
-// Helper for web navigation.
-@property(nonatomic, assign) WebNavigationBrowserAgent* navigationBrowserAgent;
-
-// Helper for tab-based IPH.
-@property(nonatomic, assign) TabBasedIPHBrowserAgent* tabBasedIPHAgent;
-
 // Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
@@ -73,30 +56,14 @@ class ProfileIOS;
 // Handler for settings commands.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
-// Dispatcher for Gemini commands.
-@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
-
-// Base view controller for presenting UI sheets.
-@property(nonatomic, weak) UIViewController* baseViewController;
-
-// Handler for scene commands.
-@property(nonatomic, weak) id<SceneCommands> sceneHandler;
-
 // Initializer.
-- (instancetype)initWithIncognito:(BOOL)incognito
-                     webStateList:(WebStateList*)webStateList
-                    actionFactory:(BrowserActionFactory*)actionFactory
-                          profile:(ProfileIOS*)profile
-                      prefService:(PrefService*)prefService
-             fullscreenController:(FullscreenController*)fullscreenController
-           fullscreenBrowserAgent:
-               (FullscreenBrowserAgent*)fullscreenBrowserAgent
-                      topPosition:(BOOL)topPosition
-     defaultBrowserBannerAppAgent:
-         (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
-            authenticationService:(AuthenticationService*)authenticationService
-                    geminiService:(GeminiService*)geminiService
-               geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                fullscreenController:(FullscreenController*)fullscreenController
+              fullscreenBrowserAgent:
+                  (FullscreenBrowserAgent*)fullscreenBrowserAgent
+                         topPosition:(BOOL)topPosition
+        defaultBrowserBannerAppAgent:
+            (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -104,9 +71,9 @@ class ProfileIOS;
 // Sets whether the UI currently supports showing the promo.
 - (void)setUICurrentlySupportsPromo:(BOOL)supports;
 
-// Updates the consumer with the current state of the web state.
-- (void)updateConsumerWithWebState:(web::WebState*)webState
-                          animated:(BOOL)animated;
+// Updates the consumer with the state of `webState` that doesn't come from
+// `ToolbarButtonsMediator`.
+- (void)updateConsumerWithWebState:(web::WebState*)webState;
 
 // Disconnects observations.
 - (void)disconnect;

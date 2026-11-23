@@ -719,6 +719,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/text_zoom/ui_bundled:unit_tests",
     "//ios/chrome/browser/tips_notifications/model:unit_tests",
     "//ios/chrome/browser/toolbar/coordinator:unit_tests",
+    "//ios/chrome/browser/toolbar/coordinator/buttons:unit_tests",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled:unit_tests",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons:unit_tests",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen:unit_tests",
