@@ -78,6 +78,9 @@ struct GeminiContainerUIState {
 // indicates whether the container is starting with an existing conversation.
 - (void)setupInitialUIStateWithConversation:(BOOL)hasConversation;
 
+// Resets and applies the initial container UI state for an auto-submit flow.
+- (void)setupInitialUIStateForAutoSubmit;
+
 // Handles actuation state transitions.
 - (void)handleActuationStateChanged:(BOOL)actuating;
 

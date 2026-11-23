@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
 
+#import "base/check.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
@@ -118,6 +119,16 @@ GeminiContainerUIState::WorklogDisplayMode() const {
     _processingStatus = GeminiClientMode::kDormant;
     [self resetToZeroStateWithDetent:AssistantContainerDetent::kMedium];
   }
+}
+
+- (void)setupInitialUIStateForAutoSubmit {
+  CHECK(IsIOSGeminiBottomSheetMigrationEnabled());
+
+  _viewMode = GeminiViewMode::kFloaty;
+  // Preemptively applies the minimized `kThinking` UI state so the container
+  // does not flash zero-state, padding, or the grabber before the SDK reports
+  // `kThinking`.
+  [self updateUIState:GeminiContainerUIState::Minimized(/*has_grabber=*/NO)];
 }
 
 - (void)handleActuationStateChanged:(BOOL)actuating {
@@ -246,7 +257,7 @@ GeminiContainerUIState::WorklogDisplayMode() const {
 - (BOOL)shouldBeDismissed {
   return !_currentUIState.actuating && _viewMode == GeminiViewMode::kFloaty &&
          _currentUIState.detent == AssistantContainerDetent::kMinimized &&
-         !_hasConversation && IsChromeNextIaEnabled();
+         _currentUIState.zeroStateVisible && IsChromeNextIaEnabled();
 }
 
 - (BOOL)isInGeminiLiveMode {

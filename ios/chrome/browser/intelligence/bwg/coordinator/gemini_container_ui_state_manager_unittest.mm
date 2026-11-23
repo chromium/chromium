@@ -763,3 +763,69 @@ TEST_F(GeminiContainerUIStateManagerTest,
                              error:error];
   EXPECT_EQ(0, delegate_.changeCount);
 }
+
+// Tests that an auto-submit flow starts minimized without a grabber, stays
+// minimized during `kThinking`, expands to medium on `kResponding`, and falls
+// back to zero state if an error arrives before `kThinking`.
+TEST_F(GeminiContainerUIStateManagerTest, TestAutoSubmitLifecycle) {
+  [state_manager_ setupInitialUIStateForAutoSubmit];
+  EXPECT_EQ(1, delegate_.changeCount);
+  EXPECT_EQ(AssistantContainerDetent::kMinimized, delegate_.lastUIState.detent);
+  EXPECT_FALSE(delegate_.lastUIState.hasGrabber);
+  EXPECT_FALSE(delegate_.lastUIState.zeroStateVisible);
+  EXPECT_FALSE(state_manager_.hasConversation);
+  EXPECT_EQ(ios::provider::GeminiViewMode::kFloaty, state_manager_.viewMode);
+  EXPECT_EQ(ios::provider::GeminiClientMode::kUnknown,
+            state_manager_.processingStatus);
+
+  [delegate_ reset];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                             error:nil];
+  EXPECT_EQ(1, delegate_.changeCount);
+  EXPECT_EQ(AssistantContainerDetent::kMinimized, delegate_.lastUIState.detent);
+  EXPECT_FALSE(delegate_.lastUIState.hasGrabber);
+  EXPECT_FALSE(delegate_.lastUIState.zeroStateVisible);
+  EXPECT_TRUE(state_manager_.hasConversation);
+
+  [delegate_ reset];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                             error:nil];
+  EXPECT_EQ(1, delegate_.changeCount);
+  EXPECT_EQ(AssistantContainerDetent::kMedium, delegate_.lastUIState.detent);
+  EXPECT_TRUE(delegate_.lastUIState.hasGrabber);
+  EXPECT_FALSE(delegate_.lastUIState.zeroStateVisible);
+
+  // If an error arrives before reaching `kThinking`, fall back to zero state.
+  [state_manager_ reset];
+  [delegate_ reset];
+  [state_manager_ setupInitialUIStateForAutoSubmit];
+  [delegate_ reset];
+  NSError* error = [NSError errorWithDomain:@"test" code:1 userInfo:nil];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                             error:error];
+  EXPECT_EQ(1, delegate_.changeCount);
+  EXPECT_EQ(AssistantContainerDetent::kMedium, delegate_.lastUIState.detent);
+  EXPECT_TRUE(delegate_.lastUIState.hasGrabber);
+  EXPECT_TRUE(delegate_.lastUIState.zeroStateVisible);
+}
+
+// Tests that starting minimized for auto-submit does not trigger dismissal
+// under `kChromeNextIa` while awaiting thinking, and resumes dismissing in
+// zero state after starting a new chat.
+TEST_F(GeminiContainerUIStateManagerTest,
+       TestAutoSubmitDoesNotDismissBeforeThinkingWithChromeNextIa) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration, kChromeNextIa}, {});
+
+  [state_manager_ setupInitialUIStateForAutoSubmit];
+  ASSERT_EQ(AssistantContainerDetent::kMinimized,
+            state_manager_.currentUIState.detent);
+  EXPECT_FALSE([state_manager_ shouldBeDismissed]);
+
+  [state_manager_ handleNewChat];
+  EXPECT_TRUE([state_manager_ shouldBeDismissed]);
+}

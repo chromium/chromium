@@ -73,6 +73,10 @@ using ios::provider::GeminiViewState;
   }
 }
 
+- (void)setInitialDetent:(AssistantContainerDetent)detent {
+  _isMinimized = (detent == AssistantContainerDetent::kMinimized);
+}
+
 - (void)didChangeDetent:(AssistantContainerDetent)detent {
   BOOL isMinimized = (detent == AssistantContainerDetent::kMinimized);
   if (isMinimized == _isMinimized) {
