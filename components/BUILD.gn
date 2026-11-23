@@ -1333,6 +1333,13 @@ if (use_blink) {
         ":components_browsertests_assets",
         ":components_browsertests_java",
       ]
+
+      # Meet effects assets are only used by the GPU integration tests in
+      # //content/test/gpu, so do not push them to the device.
+      device_data_filters = [
+        "-//content/test/data/gpu/meet_effects/*",
+        "-//content/test/data/gpu/meet_effects_videos/*",
+      ]
     }
 
     if (is_chromeos) {

@@ -2309,6 +2309,13 @@ test("content_browsertests") {
       proguard_enabled = true
     }
 
+    # Meet effects assets are only used by the GPU integration tests in
+    # //content/test/gpu, so do not push them to the device.
+    device_data_filters = [
+      "-//content/test/data/gpu/meet_effects/*",
+      "-//content/test/data/gpu/meet_effects_videos/*",
+    ]
+
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank/build/bot/filters:content_browsertests_filters" ]
     }
