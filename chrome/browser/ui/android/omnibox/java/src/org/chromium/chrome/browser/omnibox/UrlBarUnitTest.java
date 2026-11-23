@@ -175,6 +175,7 @@ public class UrlBarUnitTest {
     private static class TestUrlBar extends UrlBarApi26 {
         TextPaint mCustomPaint;
         boolean mSuperOnKeyDownResult;
+        boolean mRequestLayoutOnSetSelection;
 
         TestUrlBar(Context context, AttributeSet attrs) {
             super(context, attrs);
@@ -188,6 +189,12 @@ public class UrlBarUnitTest {
         @Override
         public boolean super_onKeyDown(int keyCode, KeyEvent event) {
             return mSuperOnKeyDownResult;
+        }
+
+        @Override
+        public void setSelection(int index) {
+            super.setSelection(index);
+            if (mRequestLayoutOnSetSelection) requestLayout();
         }
     }
 
@@ -1169,6 +1176,25 @@ public class UrlBarUnitTest {
         // Case 3: Selection exists.
         mUrlBar.setSelection(1, 3);
         mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        assertEquals(0, mUrlBar.getSelectionStart());
+        assertEquals(0, mUrlBar.getSelectionEnd());
+    }
+
+    @Test
+    public void scrollDisplayText_duringLayout_allowsRequestLayoutFromSetSelection() {
+        mUrlBar.setText(SHORT_DOMAIN);
+        mUrlBar.setSelection(5);
+        mUrlBar.requestLayout();
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
+
+        mUrlBar.mRequestLayoutOnSetSelection = true;
+        mUrlBar.setLayoutParams(new LayoutParams(URL_BAR_WIDTH, URL_BAR_HEIGHT));
+        mUrlBar.measure(
+                MeasureSpec.makeMeasureSpec(URL_BAR_WIDTH, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(URL_BAR_HEIGHT, MeasureSpec.EXACTLY));
+        mUrlBar.layout(0, 0, URL_BAR_WIDTH, URL_BAR_HEIGHT);
+
         assertEquals(0, mUrlBar.getSelectionStart());
         assertEquals(0, mUrlBar.getSelectionEnd());
     }

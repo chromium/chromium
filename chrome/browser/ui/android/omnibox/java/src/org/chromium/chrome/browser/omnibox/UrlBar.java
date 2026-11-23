@@ -1783,15 +1783,7 @@ public class UrlBar extends AutocompleteEditText {
         // and the text layout will remain unresolved, suppressing resolution of display text
         // scroll position.
         if (mPendingScroll || mPreviousScrollViewWidth != getVisibleMeasuredViewportWidth()) {
-            boolean isLayoutRequestedBeforeScrollDisplayText = isLayoutRequested();
             scrollDisplayText(mCurrentScrollType, /* originChanged= */ false);
-            // Confirmation check: be sure we don't re-request layout as a result of something that
-            // happens in scrollDisplayText(). However, isLayoutRequested could be true before
-            // scrollDisplayText() due to what happened within super.layout(), e.g. clear focus.
-            // Note: applyBoundsEllipsis() may request layout when adding/removing spans.
-            assert isLayoutRequestedBeforeScrollDisplayText
-                    || !isLayoutRequested()
-                    || shouldApplyBoundsEllipsis();
         }
     }
 
