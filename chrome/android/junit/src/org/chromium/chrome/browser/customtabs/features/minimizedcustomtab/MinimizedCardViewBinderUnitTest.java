@@ -13,13 +13,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.ASPECT_RATIO;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
+import android.text.Layout;
+import android.text.TextUtils.TruncateAt;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -32,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -61,6 +67,9 @@ public class MinimizedCardViewBinderUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        // The JUnit manifest omits android:supportsRtl, which causes View to fall back to
+        // FIRST_STRONG instead of the view's configured text direction unless enabled here.
+        mActivity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
         float density = mActivity.getResources().getDisplayMetrics().density;
         int height = Math.round(HEIGHT_DP * density);
         int width = Math.round(ASPECT_RATIO.floatValue() * height);
@@ -130,5 +139,42 @@ public class MinimizedCardViewBinderUnitTest {
     public void testNullFavicon() {
         onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
         assertNotNull(mFavicon.getDrawable());
+    }
+
+    @Test
+    public void testUrlTextDirectionIsLtr() {
+        mModel.set(MinimizedCardProperties.URL, "\u0627.google.com.\u0627.yen.comma.sbs");
+        mView.measure(
+                MeasureSpec.makeMeasureSpec(400, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
+        mView.layout(0, 0, 400, 200);
+
+        assertEquals(View.TEXT_DIRECTION_LTR, mUrl.getTextDirection());
+        assertEquals(TruncateAt.START, mUrl.getEllipsize());
+        assertNotNull(mUrl.getLayout());
+        assertEquals(Layout.DIR_LEFT_TO_RIGHT, mUrl.getLayout().getParagraphDirection(0));
+    }
+
+    @Test
+    // Native graphics are needed for real text measurement and ellipsizing.
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void testHyphenatedUrlElidesFromStartOnSingleLine() {
+        String url = "www.google.com-login.example.com";
+        mModel.set(MinimizedCardProperties.URL, url);
+        View card = mView.findViewById(R.id.card);
+        int textWidth = (int) Math.ceil(mUrl.getPaint().measureText("www.google.com-login"));
+        int narrowWidth = textWidth + card.getPaddingLeft() + card.getPaddingRight();
+        mView.measure(
+                MeasureSpec.makeMeasureSpec(narrowWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
+        mView.layout(0, 0, narrowWidth, 200);
+
+        assertTrue(mUrl.isSingleLine());
+        Layout layout = mUrl.getLayout();
+        assertNotNull(layout);
+        assertEquals(1, layout.getLineCount());
+        assertEquals(url.length(), layout.getLineEnd(0));
+        assertEquals(0, layout.getEllipsisStart(0));
+        assertTrue(layout.getEllipsisCount(0) > 0);
     }
 }

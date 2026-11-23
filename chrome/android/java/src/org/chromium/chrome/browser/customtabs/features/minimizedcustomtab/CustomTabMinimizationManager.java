@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.app.PictureInPictureParams;
+import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -43,12 +44,18 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -258,8 +265,8 @@ public class CustomTabMinimizationManager
         }
 
         if (pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
-            showMinimizedCard(/* fromSavedState= */ false);
             updateTabForMinimization(tab);
+            showMinimizedCard(/* fromSavedState= */ false);
             CustomTabsConnection.getInstance().onMinimized(mIntentData.getSession());
         } else {
             mActivity.removeOnPictureInPictureModeChangedListener(this);
@@ -309,27 +316,71 @@ public class CustomTabMinimizationManager
         } else {
             Tab tab = mTabProvider.get();
             if (tab == null) return;
-            GURL url =
-                    WebDistillerUrlUtils.isDistilledPage(tab.getUrl())
-                            ? tab.getOriginalUrl()
-                            : tab.getUrl();
-            String host = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(url);
-            if (TextUtils.isEmpty(host)
-                    || host.startsWith(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
-                host = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
-            }
-            String title =
-                    ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(host) ? "" : tab.getTitle();
+            String host = formatUrlForMinimizedCard(tab);
+            boolean isAboutBlank = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(host);
+            String title = isAboutBlank ? "" : tab.getTitle();
+            Bitmap favicon = isAboutBlank ? null : TabFavicon.getBitmap(tab);
             mModel =
                     new PropertyModel.Builder(ALL_KEYS)
                             .with(TITLE, title)
                             .with(URL, host)
-                            .with(FAVICON, TabFavicon.getBitmap(tab))
+                            .with(FAVICON, favicon)
                             .build();
         }
         mCoordinator =
                 new MinimizedCardCoordinator(
                         mActivity, mActivity.findViewById(android.R.id.content), mModel);
+    }
+
+    private static GURL getTargetUrlForDisplay(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        GURL url = webContents != null ? webContents.getLastCommittedUrl() : tab.getUrl();
+        if (WebDistillerUrlUtils.isDistilledPage(url)) {
+            return WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(url);
+        }
+        return url;
+    }
+
+    private static @Nullable Origin getLastCommittedOrigin(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return null;
+        RenderFrameHost mainFrame = webContents.getMainFrame();
+        return mainFrame != null ? mainFrame.getLastCommittedOrigin() : null;
+    }
+
+    private static String formatUrlForMinimizedCard(Tab tab) {
+        GURL url = getTargetUrlForDisplay(tab);
+        if (GURL.isEmptyOrInvalid(url)) {
+            return ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
+        }
+        String formatted;
+        String scheme = url.getScheme();
+        if (UrlUtilities.isHttpOrHttps(url)) {
+            formatted =
+                    url.getHost().isEmpty()
+                            ? ""
+                            : UrlFormatter.formatUrlForSecurityDisplay(
+                                    url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        } else if (UrlConstants.BLOB_SCHEME.equals(scheme)
+                || UrlConstants.FILESYSTEM_SCHEME.equals(scheme)) {
+            Origin origin = getLastCommittedOrigin(tab);
+            formatted =
+                    origin != null && !origin.isOpaque()
+                            ? UrlFormatter.formatOriginForSecurityDisplay(
+                                    origin, SchemeDisplay.OMIT_HTTP_AND_HTTPS)
+                            : "";
+        } else if (UrlConstants.FILE_SCHEME.equals(scheme)) {
+            formatted = UrlConstants.FILE_URL_PREFIX;
+        } else if (UrlUtilities.isChromeScheme(url) && !url.getHost().isEmpty()) {
+            formatted =
+                    UrlFormatter.formatUrlForSecurityDisplay(
+                            url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        } else {
+            formatted = "";
+        }
+        return TextUtils.isEmpty(formatted)
+                ? ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL
+                : formatted;
     }
 
     private void updateTabForMinimization(@Nullable Tab tab) {
@@ -341,11 +392,14 @@ public class CustomTabMinimizationManager
     }
 
     private void updateTabForMaximization(@Nullable Tab tab) {
-        if (tab == null) return;
-        tab.show(FROM_USER);
-        TabUtils.unmuteMedia(tab);
+        mModel = null;
+        if (tab != null) {
+            tab.show(FROM_USER);
+            TabUtils.unmuteMedia(tab);
+        }
         if (mCoordinator != null) {
             mCoordinator.dismiss();
+            mCoordinator = null;
         }
     }
 
@@ -405,9 +459,17 @@ public class CustomTabMinimizationManager
     }
 
     private static PropertyModel toModel(Bundle bundle) {
+        String url = bundle.getString(URL.toString());
+        if (TextUtils.isEmpty(url) || ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(url)) {
+            return new PropertyModel.Builder(ALL_KEYS)
+                    .with(TITLE, "")
+                    .with(URL, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
+                    .with(FAVICON, null)
+                    .build();
+        }
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(TITLE, bundle.getString(TITLE.toString()))
-                .with(URL, bundle.getString(URL.toString()))
+                .with(URL, url)
                 .with(FAVICON, IntentUtils.safeGetParcelable(bundle, FAVICON.toString()))
                 .build();
     }
