@@ -167,9 +167,13 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 - (void)tearDownHelper {
-  [super tearDownHelper];
+  [ChromeEarlGrey clearUserPrefWithName:
+                      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn];
+  [ChromeEarlGrey
+      clearUserPrefWithName:prefs::kIosBookmarkUploadSyncLeftBehindCompleted];
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
+  [super tearDownHelper];
 }
 
 #pragma mark - BookmarksBatchUploadEnabledTestCase Tests
