@@ -59,6 +59,11 @@ enum class ObjectsEdge {
   kOwnership,
 };
 
+// Adds the scalars every backend dump reports, PartitionAlloc's per-partition
+// dumps included, to `dump`. Not the object count: `object_count` in the
+// objects dump for backends, `allocated_objects_count` for partitions.
+void AddBackendScalars(MemoryAllocatorDump* dump, const BackendStats& stats);
+
 // Creates the dump of a malloc backend and, unless `objects_name` is null, the
 // dump of its live objects under malloc/allocated_objects. Each objects dump
 // has an edge to its own backend: a single edge out of malloc/allocated_objects

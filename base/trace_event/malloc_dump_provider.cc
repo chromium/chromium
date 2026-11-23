@@ -24,6 +24,22 @@ MallocTotals& MallocTotals::operator+=(const MallocTotals& other) {
   return *this;
 }
 
+void AddBackendScalars(MemoryAllocatorDump* dump, const BackendStats& stats) {
+  dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                  MemoryAllocatorDump::kUnitsBytes, stats.resident_size);
+  dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
+                  stats.virtual_size);
+  dump->AddScalar("virtual_committed_size", MemoryAllocatorDump::kUnitsBytes,
+                  stats.committed_size);
+  dump->AddScalar("allocated_objects_size", MemoryAllocatorDump::kUnitsBytes,
+                  stats.allocated_objects_size);
+  dump->AddScalar("wasted", MemoryAllocatorDump::kUnitsBytes, stats.wasted);
+  dump->AddScalar("fragmentation", "percent",
+                  stats.committed_size == 0
+                      ? 0
+                      : 100 * stats.wasted / stats.committed_size);
+}
+
 MemoryAllocatorDump* CreateBackendDumps(ProcessMemoryDump* pmd,
                                         MemoryDumpLevelOfDetail level_of_detail,
                                         const char* backend_name,
@@ -31,23 +47,7 @@ MemoryAllocatorDump* CreateBackendDumps(ProcessMemoryDump* pmd,
                                         const BackendStats& stats,
                                         ObjectsEdge edge) {
   MemoryAllocatorDump* backend_dump = pmd->CreateAllocatorDump(backend_name);
-  backend_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes,
-                          stats.resident_size);
-  backend_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
-                          stats.virtual_size);
-  backend_dump->AddScalar("virtual_committed_size",
-                          MemoryAllocatorDump::kUnitsBytes,
-                          stats.committed_size);
-  backend_dump->AddScalar("allocated_objects_size",
-                          MemoryAllocatorDump::kUnitsBytes,
-                          stats.allocated_objects_size);
-  backend_dump->AddScalar("wasted", MemoryAllocatorDump::kUnitsBytes,
-                          stats.wasted);
-  backend_dump->AddScalar("fragmentation", "percent",
-                          stats.committed_size == 0
-                              ? 0
-                              : 100 * stats.wasted / stats.committed_size);
+  AddBackendScalars(backend_dump, stats);
 
   if (!objects_name) {
     return backend_dump;

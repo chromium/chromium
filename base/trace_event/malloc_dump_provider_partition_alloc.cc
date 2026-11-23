@@ -411,23 +411,15 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   }
   total_committed_bytes_ += total_committed_bytes;
   total_wasted_bytes_ += wasted;
-  uint64_t fragmentation = total_committed_bytes == 0
-                               ? 0
-                               : uint64_t{100} * wasted / total_committed_bytes;
 
-  allocator_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                            MemoryAllocatorDump::kUnitsBytes,
-                            memory_stats->total_resident_bytes);
-  allocator_dump->AddScalar("allocated_objects_size",
-                            MemoryAllocatorDump::kUnitsBytes,
-                            memory_stats->total_active_bytes);
+  internal::AddBackendScalars(
+      allocator_dump, {.resident_size = memory_stats->total_resident_bytes,
+                       .virtual_size = memory_stats->total_mmapped_bytes,
+                       .committed_size = total_committed_bytes,
+                       .allocated_objects_size = total_active_bytes,
+                       .wasted = wasted});
   allocator_dump->AddScalar("allocated_objects_count", "count",
                             memory_stats->total_active_count);
-  allocator_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
-                            memory_stats->total_mmapped_bytes);
-  allocator_dump->AddScalar("virtual_committed_size",
-                            MemoryAllocatorDump::kUnitsBytes,
-                            memory_stats->total_committed_bytes);
   allocator_dump->AddScalar("max_committed_size",
                             MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->max_committed_bytes);
@@ -453,8 +445,6 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
                             memory_stats->syscall_count);
   allocator_dump->AddScalar("syscall_total_time_ms", "ms",
                             memory_stats->syscall_total_time_ns / 1e6);
-  allocator_dump->AddScalar("fragmentation", "percent", fragmentation);
-  allocator_dump->AddScalar("wasted", MemoryAllocatorDump::kUnitsBytes, wasted);
 
   if (memory_stats->has_thread_cache) {
     const auto& thread_cache_stats = memory_stats->current_thread_cache_stats;
