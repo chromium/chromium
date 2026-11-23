@@ -4,6 +4,8 @@
 
 #include "services/image_annotation/public/cpp/image_processor.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -94,10 +96,16 @@ mojo::PendingRemote<mojom::ImageProcessor> ImageProcessor::GetPendingRemote() {
 void ImageProcessor::GetJpgImageData(GetJpgImageDataCallback callback) {
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
 
+  base::WeakPtr<ImageProcessor> weak_this = weak_factory_.GetWeakPtr();
+  SkBitmap pixels = get_pixels_.Run();
+  if (!weak_this) {
+    return;
+  }
+
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ScaleAndEncodeImage,
                                 base::SequencedTaskRunner::GetCurrentDefault(),
-                                std::move(callback), get_pixels_.Run(),
+                                std::move(callback), std::move(pixels),
                                 kMaxPixels, kJpgQuality));
 }
 
