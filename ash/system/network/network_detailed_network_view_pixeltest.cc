@@ -140,7 +140,7 @@ TEST_F(NetworkDetailedNetworkViewPixelTest, Basics) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/14, detailed_view));
+      /*revision_number=*/15, detailed_view));
 }
 
 }  // namespace

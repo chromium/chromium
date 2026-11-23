@@ -99,7 +99,7 @@ TEST_P(WmPixelDiffTest, OverviewAndDesksBarBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("overview_and_desks_bar_basic"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 22 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 23 : 3,
       desk_widget, overview_widget1, overview_widget2, overview_widget3));
 }
 

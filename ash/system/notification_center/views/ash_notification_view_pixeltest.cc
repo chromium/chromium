@@ -143,7 +143,7 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("close_button_focused"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 4,
       notification_view));
 }
 
@@ -189,7 +189,7 @@ TEST_P(AshNotificationViewPixelTest, ProgressCollapsed) {
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("progress_collapsed"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
       notification_view));
 }
 
@@ -213,7 +213,7 @@ TEST_P(AshNotificationViewPixelTest, CloseControlButton) {
   // the proper placement.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("close_control_button"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 4,
       notification_view));
 }
 
@@ -237,7 +237,7 @@ TEST_P(AshNotificationViewPixelTest, SettingsAndCloseControlButtons) {
   // proper spacing between them.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("settings_and_close_control_buttons"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 4,
       notification_view));
 }
 
@@ -263,7 +263,7 @@ TEST_P(AshNotificationViewPixelTest, InlineReply) {
   // Verify with a pixel test that the inline reply field is correctly drawn.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("inline_reply_focused"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 4,
       notification_view));
 }
 
@@ -280,7 +280,7 @@ TEST_P(AshNotificationViewPixelTest, ExpandButtonFocusRing) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("expand_button_focus_ring"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 4,
       notification_view));
 }
 
@@ -294,7 +294,7 @@ TEST_P(AshNotificationViewPixelTest, NotificationViewFocusRing) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("notification_view_focus_ring"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 4,
       notification_view));
 }
 
@@ -312,7 +312,7 @@ TEST_P(AshNotificationViewPixelTest, NotificationPopupFocusRing) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("notification_popup_focus_ring"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 4,
       notification_view));
 }
 

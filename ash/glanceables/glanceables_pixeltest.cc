@@ -103,7 +103,7 @@ TEST_P(GlanceablesTasksPixelTest, Smoke) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("glanceables_smoke"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 
@@ -170,27 +170,27 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(GlanceablesTimeManagementPixelTest, Smoke) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("expanded_tasks_top"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 
   GetTasksScrollView()->ScrollToPosition(
       GetTasksScrollView()->vertical_scroll_bar(), INT_MAX);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("expanded_tasks_bottom"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 
   GetClassroomView()->SetExpandState(true, /*expand_by_overscroll=*/false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("expanded_classroom_top"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 
   GetClassroomScrollView()->ScrollToPosition(
       GetClassroomScrollView()->vertical_scroll_bar(), INT_MAX);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("expanded_classroom_bottom"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 

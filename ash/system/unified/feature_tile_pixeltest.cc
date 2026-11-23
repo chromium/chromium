@@ -115,24 +115,24 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   widget_->GetFocusManager()->SetFocusedView(tile);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focused",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   tile->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   // Test eliding.
   tile->SetLabel(u"A very very long label");
   tile->SetSubLabel(u"A very very long label");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "elided",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 }
 
 TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
@@ -147,24 +147,24 @@ TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   widget_->GetFocusManager()->SetFocusedView(tile);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focused",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   tile->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   // Test eliding.
   tile->SetLabel(u"A very very long label");
   tile->SetSubLabel(u"A very very long label");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "elided",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 }
 
 TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
@@ -185,7 +185,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 }
 
 TEST_F(FeatureTilePixelTest, CompactTile) {
@@ -199,35 +199,35 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   widget_->GetFocusManager()->SetFocusedView(tile);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focused",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   tile->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   // Test eliding.
   tile->SetLabel(u"A very very long label");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "elided",
-      /*revision_number=*/3, widget_.get()));
+      /*revision_number=*/4, widget_.get()));
 
   // Test font descenders ("g").
   tile->SetLabel(u"Multi-line ggggg");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "descenders",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   // Test one-line labels.
   tile->SetLabel(u"One line");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "one_line",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   // Test one-line labels with one-line sub-labels.
   tile->SetLabel(u"One line");
@@ -235,7 +235,7 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
   tile->SetSubLabelVisibility(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "one_line_with_sub_label",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   // Test eliding with sub-labels.
   tile->SetLabel(u"A very very long label");
@@ -243,7 +243,7 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
   tile->SetSubLabelVisibility(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "elided_with_sub_label",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 }
 
 class FeatureTileVcDlcUiEnabledPixelTest : public FeatureTilePixelTest {
@@ -301,21 +301,21 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, CompactTileCanFillContainer) {
   // Use the default, one-line compact tile that is created during test set-up.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   // Focus the tile (and reset the focus after the screenshot is taken).
   auto* previous_focused_view = widget_->GetFocusManager()->GetFocusedView();
   widget_->GetFocusManager()->SetFocusedView(tile());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focused",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
   widget_->GetFocusManager()->SetFocusedView(previous_focused_view);
 
   // Toggle the tile (and reset the toggle state after the screenshot is taken).
   tile()->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
   tile()->SetToggled(false);
 }
 
@@ -326,31 +326,31 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, DownloadInProgress) {
   SetDownloadProgress(tile(), 0);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "0_percent",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   // Set the tile's download to be 1% complete.
   SetDownloadProgress(tile(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "1_percent",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   // Set the tile's download to be 50% complete.
   SetDownloadProgress(tile(), 50);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "50_percent",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   // Set the tile's download to be 99% complete.
   SetDownloadProgress(tile(), 99);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "99_percent",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 
   // Set the tile's download to be 100% complete.
   SetDownloadProgress(tile(), 100);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "100_percent",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 }
 
 // Tests the UI of a compact tile that has an error during download.
@@ -358,7 +358,7 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, ErrorInDlcDownload) {
   tile()->SetDownloadState(FeatureTile::DownloadState::kError, 0);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "error",
-      /*revision_number=*/2, widget_.get()));
+      /*revision_number=*/3, widget_.get()));
 }
 
 // Tests the UI of a compact tile that has a pending download.
@@ -366,7 +366,7 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, PendingDownload) {
   tile()->SetDownloadState(FeatureTile::DownloadState::kPending, 0);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "pending",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 }
 
 }  // namespace ash

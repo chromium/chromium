@@ -278,8 +278,8 @@ TEST_P(StatusAreaPowerTrayPixelTest, UnreliableIcon) {
   fake_power_status->SetIsUsbChargerConnected(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("unreliable_icon"),
-      /*revision_number=*/
-      0, power_tray_view()));
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 1,
+      power_tray_view()));
 }
 
 TEST_P(StatusAreaPowerTrayPixelTest, BatterySaverPlusIcon) {
