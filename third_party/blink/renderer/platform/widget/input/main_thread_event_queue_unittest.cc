@@ -1083,18 +1083,64 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputThrottlingMoves) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_TRUE(needs_main_frame_);
 
-  // Event should still be in queue after handling a single rAF call.
+  // Event should still be in queue after handling a single rAF call (16ms <
+  // 25ms, where 25ms is the default async touch move throttle time).
   RunSimulatedRafOnce();
   EXPECT_EQ(1u, event_queue().size());
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_TRUE(needs_main_frame_);
 
-  // And should eventually flush.
-  RunPendingTasksWithSimulatedRaf();
+  // Event should flush on the second rAF call (32ms >= 25ms).
+  RunSimulatedRafOnce();
   EXPECT_THAT(GetAndResetCallbackResults(),
               testing::Each(ReceivedCallback(
                   CallbackReceivedState::kCalledWhileHandlingEvent, false, 1)));
   EXPECT_EQ(0u, event_queue().size());
+  EXPECT_FALSE(needs_main_frame_);
+}
+
+TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputLegacyThrottleInterval) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          blink::features::kConfigurableAsyncTouchMoveInterval,
+          blink::features::kUnthrottleAsyncTouchMoves});
+  SetUp();
+
+  EXPECT_CALL(*widget_scheduler_, DidHandleInputEventOnMainThread(
+                                      testing::_, testing::_, testing::_))
+      .Times(2);
+
+  SyntheticWebTouchEvent touch_move;
+  touch_move.PressPoint(10, 10);
+  touch_move.MovePoint(0, 50, 50);
+  touch_move.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
+
+  HandleEvent(touch_move, blink::mojom::InputEventResultState::kNotConsumed);
+  RunPendingTasksWithSimulatedRaf();
+  EXPECT_EQ(0u, event_queue().size());
+  EXPECT_THAT(GetAndResetCallbackResults(),
+              testing::Each(ReceivedCallback(
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
+
+  HandleEvent(touch_move, blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(1u, event_queue().size());
+
+  // Advancing to 192ms (176ms + 16ms rAF < 200ms) should keep the async
+  // touchmove throttled.
+  frame_time_ += base::Milliseconds(176);
+  RunSimulatedRafOnce();
+  EXPECT_EQ(1u, event_queue().size());
+  EXPECT_TRUE(needs_main_frame_);
+
+  // Next rAF (208ms >= 200ms) should flush the event.
+  RunSimulatedRafOnce();
+  EXPECT_EQ(0u, event_queue().size());
+  EXPECT_FALSE(needs_main_frame_);
+  EXPECT_THAT(GetAndResetCallbackResults(),
+              testing::Each(ReceivedCallback(
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 1)));
 }
 
 TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputUnthrottledMoves) {
@@ -2174,7 +2220,7 @@ TEST_F(MainThreadEventQueueTest, InputEventsDispatchedNotified) {
 TEST_F(MainThreadEventQueueTest, FirstBlockingTouchMoveNotThrottled) {
   // Advance `frame_time_` so that when we process the event we aren't
   // throttled.
-  frame_time_ += base::Milliseconds(200);
+  frame_time_ += base::Milliseconds(25);
   SyntheticWebTouchEvent touch_move;
   touch_move.PressPoint(10, 10);
   touch_move.MovePoint(0, 20, 20);
@@ -2207,7 +2253,8 @@ TEST_F(MainThreadEventQueueTest, FirstBlockingTouchMoveNotThrottled) {
   raf_aligned_events_dispatched_ = false;
 
   // Simulate a the first `kTouchMove` of another sequence, that is blocking,
-  // which arrives within the throttling time `kAsyncTouchMoveInterval`.
+  // which arrives within the throttling time
+  // `kConfigurableAsyncTouchMoveIntervalParam`.
   SyntheticWebTouchEvent touch_move_2;
   touch_move_2.PressPoint(10, 10);
   touch_move_2.MovePoint(0, 40, 40);
@@ -2238,7 +2285,7 @@ TEST_F(MainThreadEventQueueTest, FirstBlockingTouchMoveNotThrottled) {
   EXPECT_EQ(1u, event_queue().size());
 
   // The rAF is only advanced `kFrameInterval` 16ms vs the
-  // `kAsyncTouchMoveInterval` of 200ms.
+  // `kConfigurableAsyncTouchMoveIntervalParam` default of 25ms.
   RunSimulatedRafOnce();
   // Now, clients should be notified of rAF-aligned events dispatch.
   EXPECT_TRUE(raf_aligned_events_dispatched_);

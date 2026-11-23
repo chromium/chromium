@@ -67,6 +67,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     AsyncTouchMoveThrottlingPolicy,
     kAsyncTouchMoveThrottlingPolicyParam);
 
+// Controls the minimum interval at which async touchmove events are throttled
+// during scroll. When enabled, uses the configured `interval` param; when
+// disabled, falls back to the legacy throttling interval.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConfigurableAsyncTouchMoveInterval);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kConfigurableAsyncTouchMoveIntervalParam);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
 
 // Gates navigator.clipboard on extension service workers. Checked only where

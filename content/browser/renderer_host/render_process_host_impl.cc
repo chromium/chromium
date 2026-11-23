@@ -4068,7 +4068,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kWebSettingsForTesting,
       // Please keep these in alphabetical order.
       blink::switches::kAllowPreCommitInput,
-      blink::switches::kAsyncTouchMoveThrottleTimeMs,
       blink::switches::kDisableBackForwardCacheForWebSockets,
       blink::switches::kBlinkSettings,
       blink::switches::kDarkModeSettings,

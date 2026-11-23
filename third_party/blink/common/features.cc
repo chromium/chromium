@@ -108,6 +108,14 @@ BASE_FEATURE_ENUM_PARAM(
     AsyncTouchMoveThrottlingPolicy::kUnthrottledWhenGsuUnconsumed,
     &async_touch_move_throttling_policies);
 
+BASE_FEATURE(kConfigurableAsyncTouchMoveInterval,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kConfigurableAsyncTouchMoveIntervalParam,
+                   &kConfigurableAsyncTouchMoveInterval,
+                   "interval",
+                   base::Milliseconds(25));
+
 // Exports this feature so that Rust code can use it.
 extern "C" {
 // Block all MIDI access with the MIDI_SYSEX permission
