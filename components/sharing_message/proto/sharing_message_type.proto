@@ -35,4 +35,4 @@ enum MessageType {
   GLIC_EXPERIMENTAL_TRIGGERING = 15;
   BROWSER_ACTUATOR_DOWNSTREAM_MESSAGE = 16;
 }
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SharingMessageType)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SharingMessageType, //tools/metrics/histograms/metadata/sharing/histograms.xml:PulseIntervalOrSharingMessage)

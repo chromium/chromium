@@ -23,8 +23,10 @@ const char* GetEnumStringValue(SharingFeatureName feature) {
   }
 }
 
+// LINT.IfChange(DevicePlatformOrChannel)
 // Maps SharingChannelType enum values to strings used as histogram
-// suffixes. Keep in sync with "SharingChannelType" in histograms.xml.
+// suffixes. Keep in sync with "DevicePlatformOrChannel" in
+// tools/metrics/histograms/metadata/sharing/histograms.xml.
 std::string SharingChannelTypeToString(SharingChannelType channel_type) {
   switch (channel_type) {
     case SharingChannelType::kUnknown:
@@ -41,7 +43,8 @@ std::string SharingChannelTypeToString(SharingChannelType channel_type) {
 }
 
 // Maps SharingDevicePlatform enum values to strings used as histogram
-// suffixes. Keep in sync with "SharingDevicePlatform" in histograms.xml.
+// suffixes. Keep in sync with "DevicePlatformOrChannel" in
+// tools/metrics/histograms/metadata/sharing/histograms.xml.
 std::string DevicePlatformToString(SharingDevicePlatform device_platform) {
   switch (device_platform) {
     case SharingDevicePlatform::kAndroid:
@@ -62,9 +65,11 @@ std::string DevicePlatformToString(SharingDevicePlatform device_platform) {
       return "Unknown";
   }
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sharing/histograms.xml:DevicePlatformOrChannel)
 
 // Maps pulse intervals to strings used as histogram suffixes. Keep in sync with
-// "SharingPulseInterval" in histograms.xml.
+// "PulseIntervalOrSharingMessage" in
+// tools/metrics/histograms/metadata/sharing/histograms.xml.
 std::string PulseIntervalToString(base::TimeDelta pulse_interval) {
   if (pulse_interval < base::Hours(4)) {
     return "PulseIntervalShort";
