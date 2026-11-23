@@ -45,21 +45,6 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskSpecifics(int templateIndex,
   return specifics;
 }
 
-// Waits for kUpToDate download status for WORKSPACE_DESK data type.
-class DownloadStatusChecker : public SingleClientStatusChangeChecker {
- public:
-  explicit DownloadStatusChecker(syncer::SyncServiceImpl* sync_service)
-      : SingleClientStatusChangeChecker(sync_service) {}
-  ~DownloadStatusChecker() override = default;
-
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for download status kUpToDate for WORKSPACE_DESK.";
-
-    return service()->GetDownloadStatusFor(syncer::WORKSPACE_DESK) ==
-           syncer::SyncService::DataTypeDownloadStatus::kUpToDate;
-  }
-};
-
 class TwoClientWorkspaceDeskSyncTest : public SyncTest {
  public:
   TwoClientWorkspaceDeskSyncTest() : SyncTest(TWO_CLIENT) {}
@@ -114,9 +99,16 @@ IN_PROC_BROWSER_TEST_F(TwoClientWorkspaceDeskSyncTest,
       base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 2));
 
   ASSERT_TRUE(SetupClients());
-  // Checks that client 1 was able to get the entry via the on `OnStateChanged`
-  // from sync service.
-  ASSERT_TRUE(DownloadStatusChecker(GetSyncService(0)).Wait());
+  // `GetDownloadStatusFor()` can return `kUpToDate` on warm restart before an
+  // asynchronous push invalidation arrives (crbug.com/587268498). Wait until
+  // the `PRE_`-queued invalidation reaches Sync first.
+  ASSERT_TRUE(workspace_desk_helper::InitialDeskInvalidationDeliveredChecker(
+                  GetSyncService(0))
+                  .Wait());
+  // Checks that client 1 was able to get the entry via the `OnStateChanged()`
+  // notification from `SyncService`.
+  ASSERT_TRUE(
+      workspace_desk_helper::DownloadStatusChecker(GetSyncService(0)).Wait());
   // Verify that the update has been actually downloaded.
   desks_storage::DeskModel* c1_desk_model =
       DeskSyncServiceFactory::GetForProfile(GetProfile(0))->GetDeskModel();

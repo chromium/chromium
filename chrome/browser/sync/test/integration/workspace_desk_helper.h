@@ -5,16 +5,22 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_WORKSPACE_DESK_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_WORKSPACE_DESK_HELPER_H_
 
+#include <iosfwd>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 
 namespace desks_storage {
 class DeskSyncService;
 }  // namespace desks_storage
+
+namespace syncer {
+class SyncServiceImpl;
+}  // namespace syncer
 
 namespace workspace_desk_helper {
 
@@ -97,6 +103,39 @@ class DeskModelReadyChecker : public StatusChangeChecker,
 
  private:
   const raw_ptr<desks_storage::DeskSyncService> service_;
+};
+
+// Waits for `kUpToDate` download status for the `WORKSPACE_DESK` data type.
+class DownloadStatusChecker : public SingleClientStatusChangeChecker {
+ public:
+  explicit DownloadStatusChecker(syncer::SyncServiceImpl* sync_service);
+  DownloadStatusChecker(const DownloadStatusChecker&) = delete;
+  DownloadStatusChecker& operator=(const DownloadStatusChecker&) = delete;
+  ~DownloadStatusChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+};
+
+// Waits until a `WORKSPACE_DESK` invalidation queued before browser restart has
+// been delivered to `sync_service` (either recorded in
+// `invalidated_data_types`, or with `notifications_received > 0` if its sync
+// cycle already completed). Intended specifically for post-`PRE_` startup
+// before other invalidations arrive, since `SyncStatus::notifications_received`
+// counts invalidations across all data types since startup.
+class InitialDeskInvalidationDeliveredChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  explicit InitialDeskInvalidationDeliveredChecker(
+      syncer::SyncServiceImpl* sync_service);
+  InitialDeskInvalidationDeliveredChecker(
+      const InitialDeskInvalidationDeliveredChecker&) = delete;
+  InitialDeskInvalidationDeliveredChecker& operator=(
+      const InitialDeskInvalidationDeliveredChecker&) = delete;
+  ~InitialDeskInvalidationDeliveredChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
 }  // namespace workspace_desk_helper
