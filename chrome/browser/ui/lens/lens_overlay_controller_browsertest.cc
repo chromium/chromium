@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -639,7 +640,7 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
             full_image_callback,
             base::BindRepeating(
                 &LensSearchControllerFake::RecordUrlResponseCallback,
-                base::Unretained(this)),
+                weak_ptr_factory_.GetWeakPtr()),
             interaction_callback, thumbnail_created_callback,
             upload_progress_callback, variations_client, identity_manager,
             profile, invocation_source, use_dark_mode, gen204_controller);
@@ -681,6 +682,7 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
   lens::LensOverlayUrlResponseCallback url_callback_;
   bool full_image_request_should_return_error_ = false;
   int close_side_panel_call_count_ = 0;
+  base::WeakPtrFactory<LensSearchControllerFake> weak_ptr_factory_{this};
 };
 
 namespace {
