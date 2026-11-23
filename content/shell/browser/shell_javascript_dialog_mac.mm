@@ -88,28 +88,33 @@
 
 namespace content {
 
+struct ShellJavaScriptDialog::ObjCStorage {
+  ShellJavaScriptDialogHelper* __strong helper;
+};
+
 ShellJavaScriptDialog::ShellJavaScriptDialog(
     ShellJavaScriptDialogManager* manager,
     gfx::NativeWindow parent_window,
     JavaScriptDialogType dialog_type,
     const std::u16string& message_text,
     const std::u16string& default_prompt_text,
-    JavaScriptDialogManager::DialogClosedCallback callback) {
+    JavaScriptDialogManager::DialogClosedCallback callback)
+    : objc_storage_(std::make_unique<ObjCStorage>()) {
   bool text_field = dialog_type == JAVASCRIPT_DIALOG_TYPE_PROMPT;
   bool one_button = dialog_type == JAVASCRIPT_DIALOG_TYPE_ALERT;
 
-  helper_ = [[ShellJavaScriptDialogHelper alloc]
+  objc_storage_->helper = [[ShellJavaScriptDialogHelper alloc]
       initHelperWithManager:manager
                 andCallback:std::move(callback)];
 
   // Show the modal dialog.
-  NSAlert* alert = [helper_ alert];
+  NSAlert* alert = [objc_storage_->helper alert];
   NSTextField* field = nil;
   if (text_field) {
-    field = [helper_ textField];
+    field = [objc_storage_->helper textField];
     field.stringValue = base::SysUTF16ToNSString(default_prompt_text);
   }
-  alert.delegate = helper_;
+  alert.delegate = objc_storage_->helper;
   alert.informativeText = base::SysUTF16ToNSString(message_text);
   alert.messageText = @"Javascript alert";
   [alert addButtonWithTitle:@"OK"];
@@ -119,15 +124,16 @@ ShellJavaScriptDialog::ShellJavaScriptDialog(
   }
 
   [alert beginSheetModalForWindow:nil  // nil here makes it app-modal
-                completionHandler:^void(NSModalResponse returnCode) {
-                  [helper_ alertDidEndWithResult:returnCode dialog:this];
+                completionHandler:^(NSModalResponse returnCode) {
+                  [objc_storage_->helper alertDidEndWithResult:returnCode
+                                                        dialog:this];
                 }];
 }
 
 ShellJavaScriptDialog::~ShellJavaScriptDialog() = default;
 
 void ShellJavaScriptDialog::Cancel() {
-  [helper_ cancel];
+  [objc_storage_->helper cancel];
 }
 
 }  // namespace content
