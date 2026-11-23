@@ -1918,8 +1918,8 @@ NSSet<UISceneSession*>* AllSceneSessions() {
   return base::FeatureList::IsEnabled(metrics::kDemographicMetricsReporting);
 }
 
-+ (BOOL)isProactiveSuggestionsFrameworkEnabled {
-  return IsProactiveSuggestionsFrameworkEnabled();
++ (BOOL)isPageActionMenuEnabled {
+  return IsPageActionMenuEnabled();
 }
 
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch {

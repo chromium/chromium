@@ -214,8 +214,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
       [self
           isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
     // TODO(crbug.com/467331873): Re-enable this when the test is updated for
-    // PSF.
-    config.features_disabled.push_back(kProactiveSuggestionsFramework);
+    // Page Action Menu.
+    config.features_disabled.push_back(kPageActionMenu);
+    config.features_enabled.push_back(kGeminiKillSwitch);
   }
 
   config.features_disabled.push_back(

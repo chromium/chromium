@@ -401,8 +401,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isCurrentLayoutBottomOmnibox];
 }
 
-- (BOOL)isProactiveSuggestionsFrameworkEnabled {
-  return [ChromeEarlGreyAppInterface isProactiveSuggestionsFrameworkEnabled];
+- (BOOL)isPageActionMenuEnabled {
+  return [ChromeEarlGreyAppInterface isPageActionMenuEnabled];
 }
 
 - (UIInterfaceOrientation)interfaceOrientation {

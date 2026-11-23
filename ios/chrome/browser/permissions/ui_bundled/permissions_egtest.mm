@@ -126,10 +126,11 @@ void TapDoneButtonOnInfobarModal() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   // `PermissionsTestCase` tests the legacy permissions infobar modal, location
   // bar badge states, and per-navigation permission reset flows, which are
-  // bypassed when `kDomainLevelSitePermissions` or
-  // `kProactiveSuggestionsFramework` are enabled.
+  // bypassed when `kDomainLevelSitePermissions` or `kPageActionMenu` are
+  // enabled.
   config.features_disabled.push_back(kDomainLevelSitePermissions);
-  config.features_disabled.push_back(kProactiveSuggestionsFramework);
+  config.features_disabled.push_back(kPageActionMenu);
+  config.features_enabled.push_back(kGeminiKillSwitch);
   return config;
 }
 

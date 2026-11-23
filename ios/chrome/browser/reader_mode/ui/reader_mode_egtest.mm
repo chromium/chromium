@@ -55,7 +55,7 @@ using ::chrome_test_util::PrimaryToolbar;
 // visible.
 id<GREYMatcher> ReaderModeBadge() {
   NSString* const badge_identifier =
-      [ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]
+      [ChromeEarlGrey isPageActionMenuEnabled]
           ? kBadgeButtonReaderModeAccessibilityIdentifier
           : kReaderModeChipViewAccessibilityIdentifier;
   return grey_allOf(grey_accessibilityID(badge_identifier),
@@ -117,7 +117,7 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Returns the Contextual Panel's entrypoint view GREY matcher.
 id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
-  if ([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]) {
+  if ([ChromeEarlGrey isPageActionMenuEnabled]) {
     return grey_allOf(
         grey_accessibilityID(kLocationBarBadgeImageViewIdentifier),
         grey_interactable(), nil);
@@ -208,7 +208,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
                               testSampleContextualChipVisibleInReaderMode)] ||
       [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
     config.features_enabled.push_back(kPageActionMenu);
-    config.features_enabled.push_back(kProactiveSuggestionsFramework);
   } else {
     // Force an app restart before any tests that require the Gemini kill
     // switch. This is required to ensure that
@@ -235,7 +234,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
       [self
           isRunningTest:
               @selector(
-                  testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled)]) {
+                  testReaderModeChipVisibleWhenLeavingReaderModeWithPageActionMenuDisabled)]) {
     config.features_disabled.push_back(kChromeNextIa);
   }
 
@@ -243,15 +242,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
     config.additional_args.push_back(
         "--" + std::string(switches::kForceReaderModeDistillationTimeout));
   }
-  if ([self
-          isRunningTest:
-              @selector(
-                  testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled)]) {
-    config.features_disabled.push_back(kProactiveSuggestionsFramework);
-  }
   if ([self isRunningTest:@selector(
                               testSampleContextualChipVisibleInReaderMode)]) {
-    config.features_enabled.push_back(kProactiveSuggestionsFramework);
     config.features_enabled.push_back(kContextualPanelForceShowEntrypoint);
   }
   return config;
@@ -261,7 +253,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
 // Opens Reader mode via the contextual panel badge entrypoint UI.
 - (void)openReaderModeWithBadgeEntrypoint {
-  if ([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]) {
+  if ([ChromeEarlGrey isPageActionMenuEnabled]) {
     // Tap the AI hub entrypoint.
     id<GREYMatcher> entrypointMatcher = grey_allOf(
         grey_accessibilityID(kAIHubEntrypointAccessibilityIdentifier),
@@ -351,7 +343,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
 // Open the customization options UI via the Reader Mode badge.
 - (void)openReaderModeCustomizationOptions {
-  if ([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]) {
+  if ([ChromeEarlGrey isPageActionMenuEnabled]) {
     // Tap the Reader Mode chip.
     [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
         performAction:grey_tap()];
@@ -830,7 +822,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   [self openReaderModeCustomizationOptions];
 
   // Tap the "Turn off" button.
-  if ([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]) {
+  if ([ChromeEarlGrey isPageActionMenuEnabled]) {
     [[EarlGrey selectElementWithMatcher:testing::NavigationBarBackButton()]
         performAction:grey_tap()];
     [[EarlGrey selectElementWithMatcher:
@@ -1006,8 +998,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 
 // Tests that the user can turn on Reader Mode from the page action menu.
 - (void)testTurnOnReaderModeViaPageActionMenu {
-  GREYAssertTrue([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled],
-                 @"Proactive suggestions framework feature must be enabled");
+  GREYAssertTrue([ChromeEarlGrey isPageActionMenuEnabled],
+                 @"Page action menu feature must be enabled");
 
   [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
@@ -1273,10 +1265,9 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 }
 
 // Tests that the Reader mode chip is visible when leaving Reader mode if
-// PSF is disabled.
-// TODO(crbug.com/467908483): Remove this test once PSF is launched with
-// Reading Mode.
-- (void)testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled {
+// the Page Action Menu is disabled.
+- (void)
+    testReaderModeChipVisibleWhenLeavingReaderModeWithPageActionMenuDisabled {
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
 

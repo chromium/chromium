@@ -699,8 +699,8 @@ enum class TipsNotificationType;
 // Returns YES if DemographicMetricsReporting feature is enabled.
 + (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
 
-// Returns YES if ProactiveSuggestionsFramework is enabled.
-+ (BOOL)isProactiveSuggestionsFrameworkEnabled [[nodiscard]];
+// Returns YES if PageActionMenu is enabled.
++ (BOOL)isPageActionMenuEnabled [[nodiscard]];
 
 // Returns YES if the `launchSwitch` is found in host app launch switches.
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch;

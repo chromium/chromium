@@ -6,7 +6,6 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -37,8 +36,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
 
 // Returns the Contextual Panel's entrypoint view GREY matcher.
 id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
-  return grey_allOf(grey_accessibilityID(kLocationBarBadgeImageViewIdentifier),
-                    grey_interactable(), nil);
+  return grey_allOf(
+      grey_accessibilityID(@"ContextualPanelEntrypointImageViewAXID"),
+      grey_interactable(), nil);
 }
 
 }  // namespace
@@ -77,7 +77,10 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   config.features_enabled.push_back(kContextualPanelForceShowEntrypoint);
-  config.features_enabled.push_back(kPageActionMenu);
+  // TODO(crbug.com/467331873): Re-enable this when the test is updated for
+  // Page Action Menu.
+  config.features_disabled.push_back(kPageActionMenu);
+  config.features_enabled.push_back(kGeminiKillSwitch);
 
   if ([self isRunningTest:@selector(testOpenContextualPanelFromIPH)] ||
       [self isRunningTest:@selector(testOrientationChangeDismissesIPH)]) {
@@ -85,9 +88,6 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
         feature_engagement::kIPHiOSContextualPanelSampleModelFeature.name;
   }
 
-  // TODO(crbug.com/467331873): Re-enable this when the test is updated for
-  // PSF.
-  config.features_disabled.push_back(kProactiveSuggestionsFramework);
   return config;
 }
 
@@ -314,7 +314,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 - (void)testContextualPanelEntrypointLargeChipDismissable {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
-  NSString* entryPointLabel = kLocationBarBadgeLabelIdentifier;
+  NSString* entryPointLabel = @"ContextualPanelEntrypointLabelAXID";
   id<GREYMatcher> entryPointMatcher = grey_allOf(
       grey_accessibilityID(entryPointLabel), grey_sufficientlyVisible(), nil);
   [ChromeEarlGrey

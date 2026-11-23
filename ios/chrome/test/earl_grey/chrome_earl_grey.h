@@ -259,8 +259,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the current layout is showing the bottom omnibox.
 - (BOOL)isCurrentLayoutBottomOmnibox;
 
-// Returns whether the Proactive Suggestions Framework feature is enabled.
-- (BOOL)isProactiveSuggestionsFrameworkEnabled;
+// Returns whether the Page Action Menu feature is enabled.
+- (BOOL)isPageActionMenuEnabled;
 
 // Returns the interface orientation of the scene.
 - (UIInterfaceOrientation)interfaceOrientation;

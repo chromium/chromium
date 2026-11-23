@@ -295,13 +295,11 @@ class TestResponseProvider {
       [self isRunningTest:@selector(testTranslatePriorToReaderMode)] ||
       [self isRunningTest:@selector(testAutotranslateInReaderMode)] ||
       [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
-      [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)] ||
       [self isRunningTest:@selector
             (testTranslateBadgeWithReaderModeBadgeSupport)] ||
       [self
           isRunningTest:@selector(testTranslateInReaderModeAndNavigatesBack)]) {
-    config.features_enabled.push_back(kProactiveSuggestionsFramework);
     config.features_enabled.push_back(kPageActionMenu);
   }
 
@@ -309,7 +307,8 @@ class TestResponseProvider {
       [self isRunningTest:@selector(testInfobarTranslateRevertIncognito)] ||
       [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateModalCancel)]) {
-    config.features_disabled.push_back(kProactiveSuggestionsFramework);
+    config.features_disabled.push_back(kPageActionMenu);
+    config.features_enabled.push_back(kGeminiKillSwitch);
   }
 
   return config;
