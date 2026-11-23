@@ -13,9 +13,14 @@
 @protocol ActorTaskActionHandler;
 @protocol ActorTaskDataSource;
 
-// Delegate notified of Gemini actuation task transitions tracked by
-// `GeminiContainerMediator`.
+// Delegate for `GeminiContainerMediator`, handling container presentation and
+// Gemini actuation task transitions.
 @protocol GeminiContainerMediatorDelegate <NSObject>
+
+// Called when the mediator has finished preparing and is ready for the
+// container to be presented.
+- (void)geminiContainerMediatorReadyForPresentation:
+    (GeminiContainerMediator*)mediator;
 
 // Called when the Gemini actuation task identified by `taskID` starts.
 // `dataSource` publishes its worklog and `actionHandler` handles the user

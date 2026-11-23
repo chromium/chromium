@@ -28,6 +28,7 @@ void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* startup_configuration) {}
 
 static GeminiConfiguration* g_last_start_gemini_overlay_configuration = nil;
+static GeminiConfiguration* g_last_floaty_view_controller_configuration = nil;
 
 void StartGeminiOverlay(GeminiConfiguration* gemini_configuration) {
   g_last_start_gemini_overlay_configuration = gemini_configuration;
@@ -35,6 +36,10 @@ void StartGeminiOverlay(GeminiConfiguration* gemini_configuration) {
 
 GeminiConfiguration* GetLastStartGeminiOverlayConfiguration() {
   return g_last_start_gemini_overlay_configuration;
+}
+
+GeminiConfiguration* GetLastFloatyViewControllerConfiguration() {
+  return g_last_floaty_view_controller_configuration;
 }
 
 id<BWGGatewayProtocol> CreateGeminiGateway() {
@@ -83,6 +88,7 @@ void ResetGemini() {
   g_last_show_page_loading_snackbar_on_opening_invocation.reset();
   g_show_account_snackbar_called = false;
   g_last_start_gemini_overlay_configuration = nil;
+  g_last_floaty_view_controller_configuration = nil;
 }
 
 void UpdatePageAttachmentState(
@@ -239,6 +245,7 @@ bool WasShowAccountSnackbarCalled() {
 
 UIViewController* GetFloatyViewControllerWithConfiguration(
     GeminiConfiguration* gemini_configuration) {
+  g_last_floaty_view_controller_configuration = gemini_configuration;
   UIViewController* viewController = [[UIViewController alloc] init];
   UITextField* textField = [[UITextField alloc] init];
   textField.accessibilityIdentifier = @"GeminiTestTextField";

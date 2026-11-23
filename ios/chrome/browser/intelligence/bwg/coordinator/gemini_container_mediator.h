@@ -45,7 +45,8 @@ class GeminiSharedTabsManager;
                                                GeminiViewStateDelegate,
                                                GeminiZeroStateMutator>
 
-// Delegate notified of Gemini actuation task transitions.
+// Delegate handling container presentation and Gemini actuation task
+// transitions.
 @property(nonatomic, weak) id<GeminiContainerMediatorDelegate> delegate;
 
 // Delegate for handling events from the mediator. Temporarily used by
@@ -96,7 +97,9 @@ class GeminiSharedTabsManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// TODO(crbug.com/535579970): Move to private after migration is complete.
+// TODO(crbug.com/535579970): Move to private, remove the `pageContext`
+// parameter, and read `_initialPageContext` directly after migration is
+// complete.
 // Creates and returns the GeminiConfiguration for the active web state, using
 // `pageContext` as its initial page context (e.g. an already generated full
 // page context). Falls back to the partial page context when nil.
@@ -134,8 +137,9 @@ class GeminiSharedTabsManager;
 // `disconnect` handles all the cleanup that should happen before
 // mediator/`GeminiBrowserAgent` destruction.
 // TODO(crbug.com/535579970): After the migration is done we can merge
-// `onFloatyInvoked`/`onFloatyDismiss` into `connect`/`disconnect` as for the
-// new code path the lifecycle of floaty and the mediator will be the same.
+// `onFloatyInvoked`/`onFloatyDismiss` into `didPresentContainer`/`disconnect`
+// as for the new code path the lifecycle of floaty and the mediator will be
+// the same.
 - (void)onFloatyInvoked;
 - (void)onFloatyDismiss;
 
@@ -143,9 +147,15 @@ class GeminiSharedTabsManager;
 // its page context is detached or not eligible to be attached.
 - (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState;
 
-// Handles initial setup for UI state, page context generation, and connecting
-// observed services (e.g. actor service) when the container session starts.
-- (void)connect;
+// Prepares the mediator for presenting the container (e.g. generating full page
+// context when `startupState.shouldAutoSubmit` is set) and notifies `delegate`
+// when ready for presentation.
+- (void)prepareForPresentation;
+
+// Configures the initial UI state, requests page context generation, and
+// connects observed services (e.g. actor service) once the container has been
+// presented.
+- (void)didPresentContainer;
 
 // Disconnects raw pointers owned by the mediator and dismisses handlers.
 // Handles all the cleanup that needs to happen before mediator dealloc.
