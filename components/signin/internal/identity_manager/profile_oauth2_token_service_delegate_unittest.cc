@@ -107,7 +107,7 @@ std::vector<GoogleServiceAuthError> GetAllErrors() {
                                              std::end(table));
 }
 
-TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
+TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistentErrors) {
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");
@@ -162,7 +162,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest,
-       UpdateAuthErrorScopePersistenErrors) {
+       UpdateAuthErrorScopePersistentErrors) {
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");

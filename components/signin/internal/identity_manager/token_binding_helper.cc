@@ -380,7 +380,7 @@ void TokenBindingHelper::SignAssertionToken(
 
   if (!header_and_payload.has_value()) {
     RunCallbackAndRecordMetrics(
-        std::move(callback), base::unexpected(Error::kCreateAssertionFaiure));
+        std::move(callback), base::unexpected(Error::kCreateAssertionFailure));
     return;
   }
 

@@ -258,7 +258,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          TokenServiceTableRemoveOtherStressTest,
                          testing::Values(0u, 1u, 10u, 42u, 100u));
 
-TEST_F(TokenServiceTableTest, GetSetWithBidningKey) {
+TEST_F(TokenServiceTableTest, GetSetWithBindingKey) {
   bool should_reencrypt = false;
   std::map<std::string, TokenWithBindingInfo> out_map;
   const std::string kService = "testservice";

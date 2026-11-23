@@ -30,7 +30,7 @@
 @property(nonatomic, assign) CoreAccountInfo receivedPrimaryAccountInfo;
 @property(nonatomic, assign) CoreAccountId receivedAccountId;
 @property(nonatomic, assign)
-    signin::AccountsInCookieJarInfo receivedccountsInCookieJarInfo;
+    signin::AccountsInCookieJarInfo receivedAccountsInCookieJarInfo;
 @property(nonatomic, assign) GoogleServiceAuthError receivedError;
 
 @end
@@ -61,7 +61,7 @@
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                              error:(const GoogleServiceAuthError&)error {
   ++self.accountsInCookieWasUpdatedCount;
-  self.receivedccountsInCookieJarInfo = accountsInCookieJarInfo;
+  self.receivedAccountsInCookieJarInfo = accountsInCookieJarInfo;
   self.receivedError = error;
 }
 
@@ -161,7 +161,7 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountCleared) {
 }
 
 // Tests IdentityManagerObserverBridge::refreshTokenDidUpdateForAccount()
-TEST_F(IdentityManagerObserverBridgeTest, TestrefreshTokenDidUpdateForAccount) {
+TEST_F(IdentityManagerObserverBridgeTest, TestRefreshTokenDidUpdateForAccount) {
   observer_bridge_.get()->OnRefreshTokenUpdatedForAccount(account_info_);
   EXPECT_EQ(1, observer_bridge_target_.refreshTokenDidUpdateForAccountCount);
   EXPECT_EQ(account_info_, observer_bridge_target_.receivedPrimaryAccountInfo);

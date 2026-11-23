@@ -1140,15 +1140,15 @@ void MutableProfileOAuth2TokenServiceDelegate::RecordAccountAvailabilityStartup(
 
   bool known_account =
       !account_tracker_service_->GetAccountInfo(account_id).IsEmpty();
-  bool refersh_token_valid =
+  bool refresh_token_valid =
       refresh_token != GaiaConstants::kInvalidRefreshToken;
 
   AccountStartupState startup_state = AccountStartupState::kUnknownInvalidToken;
-  if (known_account && refersh_token_valid) {
+  if (known_account && refresh_token_valid) {
     startup_state = AccountStartupState::kKnownValidToken;
   } else if (known_account) {
     startup_state = AccountStartupState::kKnownInvalidToken;
-  } else if (refersh_token_valid) {
+  } else if (refresh_token_valid) {
     startup_state = AccountStartupState::kUnknownValidToken;
   }
 

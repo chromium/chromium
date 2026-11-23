@@ -271,14 +271,14 @@ AboutSigninInternals::AboutSigninInternals(
       account_consistency_(account_consistency) {
   RefreshSigninPrefs();
 
-  identity_manager_observeration_.Observe(identity_manager_);
-  diganostics_observeration_.Observe(identity_manager_);
-  client_observeration_.Observe(client_);
+  identity_manager_observation_.Observe(identity_manager_);
+  diagnostics_observation_.Observe(identity_manager_);
+  client_observation_.Observe(client_);
   if (signin_error_controller_) {
-    signin_error_observeration_.Observe(signin_error_controller_);
+    signin_error_observation_.Observe(signin_error_controller_);
   }
   if (account_reconcilor_) {
-    account_reconcilor_observeration_.Observe(account_reconcilor_);
+    account_reconcilor_observation_.Observe(account_reconcilor_);
   }
 }
 
@@ -391,11 +391,11 @@ void AboutSigninInternals::RefreshSigninPrefs() {
 }
 
 void AboutSigninInternals::Shutdown() {
-  identity_manager_observeration_.Reset();
-  diganostics_observeration_.Reset();
-  client_observeration_.Reset();
-  signin_error_observeration_.Reset();
-  account_reconcilor_observeration_.Reset();
+  identity_manager_observation_.Reset();
+  diagnostics_observation_.Reset();
+  client_observation_.Reset();
+  signin_error_observation_.Reset();
+  account_reconcilor_observation_.Reset();
 }
 
 void AboutSigninInternals::OnContentSettingChanged(

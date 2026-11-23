@@ -707,7 +707,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
-       BackOffIsTriggerredForTransientErrors) {
+       BackOffIsTriggeredForTransientErrors) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(),
                                     account_info_.GetEmail(), kGaiaToken);
   auto transient_error =

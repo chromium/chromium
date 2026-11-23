@@ -145,7 +145,7 @@ using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 const char kAccountCapabilitiesResponseFormat[] =
     R"({"accountCapabilities": [%s]})";
 
-const char kSingleCapabilitiyResponseFormat[] =
+const char kSingleCapabilityResponseFormat[] =
     R"({"name": "%.*s", "booleanValue": %s})";
 
 const char kCapabilityParamName[] = "names=";
@@ -155,7 +155,7 @@ std::string GenerateValidAccountCapabilitiesResponse(
     bool capability_value) {
   std::vector<std::string> dict_array;
   for (std::string_view name : capability_names) {
-    dict_array.push_back(base::StringPrintf(kSingleCapabilitiyResponseFormat,
+    dict_array.push_back(base::StringPrintf(kSingleCapabilityResponseFormat,
                                             name.size(), name.data(),
                                             base::ToString(capability_value)));
   }

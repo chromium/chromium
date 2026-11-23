@@ -143,7 +143,7 @@ class MockIdentityManagerObserver : public signin::IdentityManager::Observer {
 void RunRevokeConsentTest(
     RevokeConsentAction action,
     RemoveAccountExpectation account_expectation,
-    AuthExpectation auth_expection = AuthExpectation::kAuthNormal) {
+    AuthExpectation auth_expectation = AuthExpectation::kAuthNormal) {
   base::test::TaskEnvironment task_environment;
   signin::IdentityTestEnvironment environment;
 
@@ -179,7 +179,7 @@ void RunRevokeConsentTest(
                 .email,
             kPrimaryAccountEmail);
 
-  if (auth_expection == AuthExpectation::kAuthError) {
+  if (auth_expectation == AuthExpectation::kAuthError) {
     // Set primary account to have authentication error.
     SetRefreshTokenForPrimaryAccount(identity_manager);
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(

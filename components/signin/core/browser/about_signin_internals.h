@@ -308,21 +308,21 @@ class AboutSigninInternals
   // Used to keep track of observerations.
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
-      identity_manager_observeration_{this};
+      identity_manager_observation_{this};
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::DiagnosticsObserver>
-      diganostics_observeration_{this};
+      diagnostics_observation_{this};
 
   base::ScopedObservation<SigninClient, content_settings::Observer>
-      client_observeration_{this};
+      client_observation_{this};
 
   base::ScopedObservation<SigninErrorController,
                           SigninErrorController::Observer>
-      signin_error_observeration_{this};
+      signin_error_observation_{this};
 
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
-      account_reconcilor_observeration_{this};
+      account_reconcilor_observation_{this};
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ABOUT_SIGNIN_INTERNALS_H_

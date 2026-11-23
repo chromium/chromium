@@ -58,7 +58,7 @@ class TokenBindingHelper {
     // kNone = 0
     kKeyNotFound = 1,
     kLoadKeyFailure = 2,
-    kCreateAssertionFaiure = 3,
+    kCreateAssertionFailure = 3,
     kSignAssertionFailure = 4,
     kAppendSignatureFailure = 5,
     kMaxValue = kAppendSignatureFailure

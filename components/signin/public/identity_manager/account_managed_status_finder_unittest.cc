@@ -492,7 +492,7 @@ TEST_F(AccountManagedStatusFinderTest, TimeoutTriggered) {
 }
 
 TEST_F(AccountManagedStatusFinderTest,
-       TimeoutNotTriggeredIfAvailabeImmediately) {
+       TimeoutNotTriggeredIfAvailableImmediately) {
   AccountInfo account = identity_env_.MakeAccountAvailable("account@gmail.com");
 
   base::MockCallback<base::OnceClosure> outcome_determined;

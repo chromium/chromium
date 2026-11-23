@@ -369,7 +369,7 @@ class ProfileOAuth2TokenServiceDelegate {
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            RetryBackoff);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
-                           BackOffIsTriggerredForTransientErrors);
+                           BackOffIsTriggeredForTransientErrors);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
                            UpdateAuthErrorTransientErrors);
 

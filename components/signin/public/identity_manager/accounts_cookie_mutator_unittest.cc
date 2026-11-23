@@ -88,7 +88,7 @@ class AccountsCookieMutatorTest
   ~AccountsCookieMutatorTest() override = default;
 
   // Make an account available and returns the account ID.
-  CoreAccountId AddAcountWithRefreshToken(const std::string& email) {
+  CoreAccountId AddAccountWithRefreshToken(const std::string& email) {
     return identity_test_env_.MakeAccountAvailable(email).GetAccountId();
   }
 
@@ -209,7 +209,7 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookie_SomeNonExistingAccounts) {
   PrepareURLLoaderResponsesForAction(
       AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
 
-  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
+  CoreAccountId account_id = AddAccountWithRefreshToken(kTestAccountEmail);
   base::RunLoop run_loop;
   MultiloginParameters parameters = {
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
@@ -235,9 +235,9 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookie_AllExistingAccounts) {
   PrepareURLLoaderResponsesForAction(
       AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
 
-  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
+  CoreAccountId account_id = AddAccountWithRefreshToken(kTestAccountEmail);
   CoreAccountId other_account_id =
-      AddAcountWithRefreshToken(kTestOtherAccountEmail);
+      AddAccountWithRefreshToken(kTestOtherAccountEmail);
   base::RunLoop run_loop;
   MultiloginParameters parameters = {
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
@@ -269,9 +269,9 @@ TEST_F(AccountsCookieMutatorTest,
   PrepareURLLoaderResponsesForAction(
       AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
 
-  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
+  CoreAccountId account_id = AddAccountWithRefreshToken(kTestAccountEmail);
   CoreAccountId other_account_id =
-      AddAcountWithRefreshToken(kTestOtherAccountEmail);
+      AddAccountWithRefreshToken(kTestOtherAccountEmail);
   base::RunLoop run_loop;
   MultiloginParameters parameters = {
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
@@ -302,9 +302,9 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookieForPartition_Cancel) {
   PrepareURLLoaderResponsesForAction(
       AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
 
-  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
+  CoreAccountId account_id = AddAccountWithRefreshToken(kTestAccountEmail);
   CoreAccountId other_account_id =
-      AddAcountWithRefreshToken(kTestOtherAccountEmail);
+      AddAccountWithRefreshToken(kTestOtherAccountEmail);
   MultiloginParameters parameters = {
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
       {account_id, other_account_id}};

@@ -514,7 +514,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     bool has_error;
   };
 
-  virtual void CreateReconclior() { GetMockReconcilor(); }
+  virtual void CreateReconcilor() { GetMockReconcilor(); }
 
   // Build Tokens from string.
   std::vector<Token> ParseTokenString(std::string_view token_string) {
@@ -688,7 +688,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     if (testing::Test::IsSkipped()) {
       return;
     }
-    CreateReconclior();
+    CreateReconcilor();
 
     // Setup expectations.
     InSequence mock_sequence;
@@ -3279,7 +3279,7 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
               reconcilor->error_during_last_reconcile_.state());
   }
 
-  void FastForwadTimeToRefillRequests(size_t number_of_requests) {
+  void FastForwardTimeToRefillRequests(size_t number_of_requests) {
     task_environment()->FastForwardBy(
         base::Minutes(minutes_to_refill_per_request_ * number_of_requests));
   }
@@ -3313,7 +3313,7 @@ TEST_F(AccountReconcilorThrottlerTest, RefillOneRequest) {
   VerifyRequestsBlockedByThrottler();
 
   // Allow enough time to refill 1 request.
-  FastForwadTimeToRefillRequests(1);
+  FastForwardTimeToRefillRequests(1);
   ConsumeRequests(1, params);
 
   // The blocked request recorded upon allowing a new request.
@@ -3364,7 +3364,7 @@ TEST_F(AccountReconcilorThrottlerTest, RefillFiveRequests) {
   VerifyRequestsBlockedByThrottler();
 
   // Allow enough time to refill 1 request.
-  FastForwadTimeToRefillRequests(5);
+  FastForwardTimeToRefillRequests(5);
   ConsumeRequests(5, params);
 
   // The blocked request recorded upon allowing a new request.
@@ -3435,7 +3435,7 @@ TEST_F(AccountReconcilorThrottlerTest, BlockFiveRequests) {
   }
 
   // Allow enough time to refill 1 request.
-  FastForwadTimeToRefillRequests(1);
+  FastForwardTimeToRefillRequests(1);
   ConsumeRequests(1, params);
 
   // The blocked request recorded upon allowing a new request.
@@ -3444,7 +3444,7 @@ TEST_F(AccountReconcilorThrottlerTest, BlockFiveRequests) {
       rejected_requests, 1);
 
   // Allow a new request with no blocked requests in between.
-  FastForwadTimeToRefillRequests(1);
+  FastForwardTimeToRefillRequests(1);
   ConsumeRequests(1, params);
   // The number of samples should remain 1.
   histogram_tester()->ExpectTotalCount(

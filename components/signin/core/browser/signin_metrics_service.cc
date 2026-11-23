@@ -30,7 +30,7 @@
 
 namespace {
 
-const char kSigingPendingResolutionTimeBaseHistogram[] =
+const char kSigningPendingResolutionTimeBaseHistogram[] =
     "Signin.SigninPending.ResolutionTime.";
 
 const char kSyncPausedResolutionTimeBaseHistogram[] =
@@ -97,7 +97,7 @@ void RecordSigninPendingResolution(
   profile_metrics_service.UmaHistogramEnumeration(
       "Signin.SigninPending.Resolution", resolution);
 
-  RecordPendingResolutionTime(kSigingPendingResolutionTimeBaseHistogram,
+  RecordPendingResolutionTime(kSigningPendingResolutionTimeBaseHistogram,
                               resolution, signin_pending_start_time);
 }
 

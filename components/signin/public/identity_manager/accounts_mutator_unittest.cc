@@ -48,12 +48,12 @@ class TestIdentityManagerDiagnosticsObserver
     identity_manager_->RemoveDiagnosticsObserver(this);
   }
 
-  const CoreAccountId& token_updator_account_id() {
-    return token_updator_account_id_;
+  const CoreAccountId& token_updater_account_id() {
+    return token_updater_account_id_;
   }
-  const std::string& token_updator_source() { return token_updator_source_; }
-  bool is_token_updator_refresh_token_valid() {
-    return is_token_updator_refresh_token_valid_;
+  const std::string& token_updater_source() { return token_updater_source_; }
+  bool is_token_updater_refresh_token_valid() {
+    return is_token_updater_refresh_token_valid_;
   }
   const CoreAccountId& token_remover_account_id() {
     return token_remover_account_id_;
@@ -66,9 +66,9 @@ class TestIdentityManagerDiagnosticsObserver
       const CoreAccountId& account_id,
       bool is_refresh_token_valid,
       const std::string& source) override {
-    token_updator_account_id_ = account_id;
-    is_token_updator_refresh_token_valid_ = is_refresh_token_valid;
-    token_updator_source_ = source;
+    token_updater_account_id_ = account_id;
+    is_token_updater_refresh_token_valid_ = is_refresh_token_valid;
+    token_updater_source_ = source;
   }
 
   void OnRefreshTokenRemovedForAccountFromSource(
@@ -79,11 +79,11 @@ class TestIdentityManagerDiagnosticsObserver
   }
 
   raw_ptr<signin::IdentityManager> identity_manager_;
-  CoreAccountId token_updator_account_id_;
-  std::string token_updator_source_;
+  CoreAccountId token_updater_account_id_;
+  std::string token_updater_source_;
   CoreAccountId token_remover_account_id_;
   std::string token_remover_source_;
-  bool is_token_updator_refresh_token_valid_;
+  bool is_token_updater_refresh_token_valid_;
 };
 
 }  // namespace
@@ -608,11 +608,11 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   EXPECT_EQ(
       account_id,
-      identity_manager_diagnostics_observer()->token_updator_account_id());
+      identity_manager_diagnostics_observer()->token_updater_account_id());
   EXPECT_TRUE(identity_manager_diagnostics_observer()
-                  ->is_token_updator_refresh_token_valid());
+                  ->is_token_updater_refresh_token_valid());
   EXPECT_EQ("Unknown",
-            identity_manager_diagnostics_observer()->token_updator_source());
+            identity_manager_diagnostics_observer()->token_updater_source());
 
   // Update the default account with different source.
   accounts_mutator()->AddOrUpdateAccount(
@@ -621,11 +621,11 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
   EXPECT_EQ(
       account_id,
-      identity_manager_diagnostics_observer()->token_updator_account_id());
+      identity_manager_diagnostics_observer()->token_updater_account_id());
   EXPECT_TRUE(identity_manager_diagnostics_observer()
-                  ->is_token_updator_refresh_token_valid());
+                  ->is_token_updater_refresh_token_valid());
   EXPECT_EQ("Settings::Signout",
-            identity_manager_diagnostics_observer()->token_updator_source());
+            identity_manager_diagnostics_observer()->token_updater_source());
 }
 
 TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
