@@ -274,6 +274,12 @@ help-bubble {
   --cr-icon-button-icon-size: 20px;
 }
 
+/* Match Omnibox behavior: hide the resting '+' pill container when a Tools
+ * chip is active. */
+:host([in-tool-mode]) #contextEntrypoint::part(entrypoint-button) {
+  --cr-composebox-entrypoint-background-color: transparent;
+}
+
 :host([is-context-menu-open]) #context::part(entrypoint-button),
 :host([is-context-menu-open]) #contextEntrypoint::part(entrypoint-button) {
   --cr-hover-background-color: var(--cr-icon-button-hover-background-color);

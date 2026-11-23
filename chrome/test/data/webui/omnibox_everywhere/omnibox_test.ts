@@ -2467,6 +2467,64 @@ suite('OmniboxEverywhereComposeboxTest', () => {
             'no-drag',
             getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
       });
+
+  test('hides plus button container background in tool mode', async () => {
+    composebox.style.setProperty(
+        '--color-composebox-context-entrypoint-background', 'rgb(10, 20, 30)');
+    const baseInputState = {
+      allowedModels: [],
+      allowedTools: [ToolMode.kImageGen],
+      allowedInputTypes: [InputType.kLensImage],
+      activeModel: ModelMode.kUnspecified,
+      activeTool: ToolMode.kUnspecified,
+      disabledModels: [],
+      disabledTools: [],
+      disabledInputTypes: [],
+      inputTypeConfigs: [],
+      toolConfigs: [],
+      modelConfigs: [],
+      toolsSectionConfig: null,
+      modelSectionConfig: null,
+      hintText: '',
+      maxInputsByType: {},
+      maxTotalInputs: 0,
+      isCanvasQuerySubmitted: false,
+      willFulfillInAim: false,
+    };
+    composebox.inputState = baseInputState;
+    await microtasksFinished();
+
+    const entrypointButton =
+        composebox.shadowRoot.querySelector<HTMLElement>('#contextEntrypoint');
+    assertTrue(!!entrypointButton);
+    const innerButton =
+        entrypointButton.shadowRoot?.querySelector<HTMLElement>('#entrypoint');
+    assertTrue(!!innerButton);
+
+    assertFalse(composebox.hasAttribute('in-tool-mode'));
+    assertEquals(
+        'rgb(10, 20, 30)', getComputedStyle(innerButton).backgroundColor);
+
+    composebox.inputState = {
+      ...baseInputState,
+      activeTool: ToolMode.kImageGen,
+    };
+    await microtasksFinished();
+
+    assertTrue(composebox.hasAttribute('in-tool-mode'));
+    assertEquals(
+        'rgba(0, 0, 0, 0)', getComputedStyle(innerButton).backgroundColor);
+
+    composebox.inputState = {
+      ...baseInputState,
+      activeTool: ToolMode.kUnspecified,
+    };
+    await microtasksFinished();
+
+    assertFalse(composebox.hasAttribute('in-tool-mode'));
+    assertEquals(
+        'rgb(10, 20, 30)', getComputedStyle(innerButton).backgroundColor);
+  });
 });
 
 declare global {
