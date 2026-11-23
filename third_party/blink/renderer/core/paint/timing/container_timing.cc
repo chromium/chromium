@@ -7,9 +7,11 @@
 #include <limits>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "cc/base/region.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_container_timing.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -31,17 +33,12 @@ uint64_t GetRegionSize(const cc::Region& region) {
 
 // static
 ContainerTiming& ContainerTiming::From(LocalDOMWindow& window) {
-  ContainerTiming* timing =
-      Supplement<LocalDOMWindow>::From<ContainerTiming>(window);
-  if (!timing) {
-    timing = MakeGarbageCollected<ContainerTiming>(window);
-    ProvideTo(window, timing);
-  }
-  return *timing;
+  return PaintTiming::From(CHECK_DEREF(window.document()))
+      .EnsureContainerTiming();
 }
 
 ContainerTiming::ContainerTiming(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
+    : window_(&window),
       performance_(DOMWindowPerformance::performance(window)),
       paint_attribution_tracker_(
           MakeGarbageCollected<ContainerTimingPaintAttributionTracker>()) {
@@ -236,8 +233,7 @@ OptionalPaintTimingCallback ContainerTiming::TakePaintTimingCallback() {
   }
   auto* entries = MakeGarbageCollected<GCedHeapVector<PendingEntry>>();
   for (Record* record : dirty_records_) {
-    entries->emplace_back(record,
-                          record->CreatePerformanceEntry(GetSupplementable()));
+    entries->emplace_back(record, record->CreatePerformanceEntry(window_));
   }
   dirty_records_.clear();
   return blink::BindOnce(&ContainerTiming::FlushTimingsOnFramePresented,
@@ -258,7 +254,7 @@ void ContainerTiming::FlushTimingsOnFramePresented(
 }
 
 void ContainerTiming::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(window_);
   visitor->Trace(performance_);
   visitor->Trace(container_root_records_);
   visitor->Trace(dirty_records_);

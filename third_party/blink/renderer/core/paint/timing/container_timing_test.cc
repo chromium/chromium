@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_test_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -1279,6 +1280,14 @@ TEST_F(ContainerTimingTest, Input_ReportsPaintPresentedAfterInput) {
   std::move(*callback).Run(base::TimeTicks::Now(), DOMPaintTimingInfo(),
                            performance->NavigationId().web_exposed_id);
   EXPECT_EQ(2u, GetContainerEntryCount());
+}
+
+// ContainerTiming belongs to the document, through its PaintTiming.
+TEST_F(ContainerTimingTest, OwnedByDocumentPaintTiming) {
+  ContainerTiming& container_timing = GetContainerTiming();
+  PaintTiming& paint_timing = PaintTiming::From(GetDocument());
+  EXPECT_EQ(&container_timing, paint_timing.GetContainerTiming());
+  EXPECT_EQ(&container_timing, &paint_timing.EnsureContainerTiming());
 }
 
 class ContainerTimingIframeIsolationTest : public PageTestBase {

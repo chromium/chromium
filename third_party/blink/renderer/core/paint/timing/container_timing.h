@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -26,17 +25,16 @@ class ContainerTimingPaintAttributionTracker;
 class PerformanceContainerTiming;
 
 // ContainerTiming is responsible for aggregating the text and image element
-// timing events for a given window.
+// timing events for a given document. It is owned by the document's
+// PaintTiming.
 class CORE_EXPORT ContainerTiming final
-    : public GarbageCollected<ContainerTiming>,
-      public Supplement<LocalDOMWindow> {
+    : public GarbageCollected<ContainerTiming> {
  public:
-  static constexpr const char kSupplementName[] = "ContainerTiming";
-
   explicit ContainerTiming(LocalDOMWindow&);
   ContainerTiming(const ContainerTiming&) = delete;
   ContainerTiming& operator=(const ContainerTiming&) = delete;
 
+  // Returns the ContainerTiming of the window's document, created on first use.
   static ContainerTiming& From(LocalDOMWindow&);
 
   // The container-timing decision is made via the paint attribution tracker,
@@ -71,7 +69,7 @@ class CORE_EXPORT ContainerTiming final
     return container_root_records_.Contains(container_root);
   }
 
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
  private:
   class Record final : public GarbageCollected<Record> {
@@ -139,6 +137,7 @@ class CORE_EXPORT ContainerTiming final
                                     uint64_t navigation_id);
   Record* GetOrCreateRecord(HTMLElement* container_root);
 
+  Member<LocalDOMWindow> window_;
   Member<WindowPerformance> performance_;
   HeapHashMap<WeakMember<HTMLElement>, Member<Record>> container_root_records_;
   // Records that grew since the last TakePaintTimingCallback().

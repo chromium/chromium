@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
@@ -688,6 +689,7 @@ void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(fmp_detector_);
   visitor->Trace(element_timing_);
+  visitor->Trace(container_timing_);
   visitor->Trace(largest_contentful_paint_manager_);
   visitor->Trace(callback_manager_);
   visitor->Trace(clients_);
@@ -730,6 +732,14 @@ PaintTiming::PaintTiming(Document& document)
     AddClient(largest_contentful_paint_manager_);
     AddClient(element_timing_);
   }
+}
+
+ContainerTiming& PaintTiming::EnsureContainerTiming() {
+  if (!container_timing_) {
+    container_timing_ = MakeGarbageCollected<ContainerTiming>(
+        CHECK_DEREF(GetSupplementable()->domWindow()));
+  }
+  return *container_timing_;
 }
 
 LocalFrame* PaintTiming::GetFrame() const {
