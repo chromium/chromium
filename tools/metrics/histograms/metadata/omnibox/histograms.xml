@@ -5734,6 +5734,22 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.VoiceSearch.IntentLaunchResult"
+    enum="VoiceSearchIntentLaunchResult" expires_after="2027-10-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the outcome of launching a speech recognition intent (success, start
+    failure, or SecurityException).
+
+    Recorded on Android each time a speech recognition intent is launched (up to
+    twice per voice search attempt if Voice Plate fails to launch or refuses
+    service and falls back to the system recognizer). Not recorded when voice
+    search is disallowed by policy or when audio recording permission is not
+    granted.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.VoiceSearch.VoicePlateEligibility"
     enum="VoicePlateEligibility" expires_after="2027-10-01">
   <owner>ender@google.com</owner>

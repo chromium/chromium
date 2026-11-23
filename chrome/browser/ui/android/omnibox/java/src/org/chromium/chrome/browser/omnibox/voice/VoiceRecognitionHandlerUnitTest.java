@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -44,7 +45,9 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -54,9 +57,11 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.IntentLaunchResult;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -75,6 +80,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
+import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -85,7 +91,7 @@ import java.util.concurrent.ExecutionException;
 
 /** Tests for {@link VoiceRecognitionHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowLog.class})
+@Config(shadows = {ShadowLog.class, ShadowToast.class})
 public class VoiceRecognitionHandlerUnitTest {
     private static final GURL DEFAULT_URL = JUnitTestGURLs.URL_1;
     private static final GURL DEFAULT_SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
@@ -404,12 +410,44 @@ public class VoiceRecognitionHandlerUnitTest {
                 .when(mWindowAndroid)
                 .showCancelableIntent(any(Intent.class), any(), any());
 
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.VoiceSearch.IntentLaunchResult", IntentLaunchResult.FAILED)) {
+            mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
+        }
 
         verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX));
         verify(mObserver).onVoiceAvailabilityImpacted();
-
         verify(mIntentHandler).recordVoiceSearchFailureEvent(eq(VoiceInteractionSource.OMNIBOX));
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        ContextUtils.getApplicationContext().getString(R.string.voice_search_error),
+                        R.id.toast_text));
+        ToastManager.resetForTesting();
+    }
+
+    @Test
+    public void testStartVoiceRecognition_securityException_reportsAvailabilityImpacted() {
+        doThrow(new SecurityException("Permission Denial"))
+                .when(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), any(), any());
+
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.VoiceSearch.IntentLaunchResult",
+                        IntentLaunchResult.SECURITY_EXCEPTION)) {
+            mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+        }
+
+        verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX));
+        verify(mIntentHandler).recordVoiceSearchFailureEvent(eq(VoiceInteractionSource.OMNIBOX));
+        verify(mObserver).onVoiceAvailabilityImpacted();
+        verify(mOnCanceled).run();
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        ContextUtils.getApplicationContext().getString(R.string.voice_search_error),
+                        R.id.toast_text));
+        ToastManager.resetForTesting();
     }
 
     @Test
@@ -594,6 +632,33 @@ public class VoiceRecognitionHandlerUnitTest {
         // The system recognizer result is low confidence, so it is not treated as Voice Plate's.
         verify(mOmniboxStub).beginInput(any());
         verify(mOmniboxStub, never()).loadUrlFromVoice(any());
+    }
+
+    @Test
+    public void testVoicePlate_securityException_fallsBackToSystemRecognizer() {
+        enableVoicePlate();
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK, /* text= */ "testing", /* confidence= */ 0.f);
+        doThrow(new SecurityException("Permission Denial"))
+                .when(mWindowAndroid)
+                .showCancelableIntent(eq(mVoicePlateIntent), any(), any());
+
+        try (var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Omnibox.VoiceSearch.IntentLaunchResult",
+                                IntentLaunchResult.SECURITY_EXCEPTION,
+                                IntentLaunchResult.SUCCESS)
+                        .build()) {
+            mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+        }
+
+        verify(mWindowAndroid, times(2))
+                .showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        assertEquals(mVoicePlateIntent, mIntentCaptor.getAllValues().get(0));
+        assertNull(mIntentCaptor.getAllValues().get(1).getComponent());
+        verify(mOmniboxStub).beginInput(any());
+        assertNull(ShadowToast.getLatestToast());
     }
 
     @Test

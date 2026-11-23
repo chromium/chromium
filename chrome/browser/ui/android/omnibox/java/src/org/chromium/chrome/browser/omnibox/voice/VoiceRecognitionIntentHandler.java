@@ -73,6 +73,24 @@ public class VoiceRecognitionIntentHandler {
         int NUM_ENTRIES = 6;
     }
 
+    // LINT.IfChange(VoiceSearchIntentLaunchResult)
+    @IntDef({
+        IntentLaunchResult.SUCCESS,
+        IntentLaunchResult.FAILED,
+        IntentLaunchResult.SECURITY_EXCEPTION,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface IntentLaunchResult {
+        int SUCCESS = 0;
+        int FAILED = 1;
+        int SECURITY_EXCEPTION = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:VoiceSearchIntentLaunchResult)
+
     /** A storage class that holds voice recognition string matches and confidence scores. */
     public static class VoiceResult {
         private final String mMatch;
@@ -256,6 +274,7 @@ public class VoiceRecognitionIntentHandler {
                 /* ignoreRecognizerConfidence= */ false)) {
             VoiceRecognitionUtil.isRecognitionIntentPresent(/* useCachedValue= */ false);
             recordVoiceSearchFailureEvent(source);
+            WindowAndroid.showError(R.string.voice_search_error);
             callback.onAvailabilityImpacted();
         }
     }
@@ -385,12 +404,25 @@ public class VoiceRecognitionIntentHandler {
                     callback.onCompleted(results);
                 };
 
-        boolean shown =
-                mWindowAndroid.showCancelableIntent(
-                                intent, intentCallback, R.string.voice_search_error)
-                        >= 0;
-        // TODO(ender): consider histograms for 'shown'.
-        return shown;
+        // Some OEM/third-party speech recognizers are not exported or require permissions Chrome
+        // does not hold; treat launch failure as unavailable instead of crashing.
+        try {
+            boolean shown =
+                    mWindowAndroid.showCancelableIntent(
+                                    intent, intentCallback, R.string.voice_search_error)
+                            >= 0;
+            recordIntentLaunchResult(
+                    shown ? IntentLaunchResult.SUCCESS : IntentLaunchResult.FAILED);
+            return shown;
+        } catch (SecurityException e) {
+            recordIntentLaunchResult(IntentLaunchResult.SECURITY_EXCEPTION);
+            return false;
+        }
+    }
+
+    private static void recordIntentLaunchResult(@IntentLaunchResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.VoiceSearch.IntentLaunchResult", result, IntentLaunchResult.NUM_ENTRIES);
     }
 
     /**
