@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/xhtml.html#parsing-xhtml-documents">
+
+<script>
+const deadFrame = document.createElement('iframe');
+document.documentElement.appendChild(deadFrame);
+window.deadDoc = deadFrame.contentDocument;
+deadFrame.remove();
+
+const xhtml = `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<script>
+parent.deadDoc.adoptNode(document.body);
+</scr` + `ipt><template><div></div></template></body></html>`;
+
+const blob = new Blob([xhtml], {type: 'application/xhtml+xml'});
+const iframe = document.createElement('iframe');
+iframe.onload = () => {
+  document.documentElement.classList.remove('test-wait');
+};
+iframe.src = URL.createObjectURL(blob);
+document.documentElement.appendChild(iframe);
+</script>

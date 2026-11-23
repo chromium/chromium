@@ -1266,6 +1266,11 @@ void XMLDocumentParser::StartElementNs(
                                                             is, registry)) {
       throw_on_dynamic_markup_insertions.emplace(document_);
       document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+      // A microtask may synchronously detach the document and stop this parser
+      // (clearing `current_node_`).
+      if (IsStopped()) {
+        return;
+      }
       reactions.emplace(isolate);
     }
   }
@@ -1309,9 +1314,15 @@ void XMLDocumentParser::StartElementNs(
     }
     for (const auto& attribute : prefixed_attributes) {
       new_element->setAttribute(attribute.GetName(), attribute.Value());
+      if (IsStopped()) {
+        return;
+      }
     }
   } else {
     SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
+    if (IsStopped()) {
+      return;
+    }
   }
 
   if (parsing_fragment_ && encountered_namespace_reset &&
@@ -1332,10 +1343,16 @@ void XMLDocumentParser::StartElementNs(
     return;
   }
 
-  if (auto* template_element = DynamicTo<HTMLTemplateElement>(*new_element))
-    PushCurrentNode(template_element->content());
-  else
+  if (auto* template_element = DynamicTo<HTMLTemplateElement>(*new_element)) {
+    DocumentFragment* content = template_element->content();
+    if (!content) {
+      StopParsing();
+      return;
+    }
+    PushCurrentNode(content);
+  } else {
     PushCurrentNode(new_element);
+  }
 
   // Note: |insertedByParser| will perform dispatching if this is an
   // HTMLHtmlElement.

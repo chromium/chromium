@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token">
+
+<script>
+const xhtml = `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<script>
+customElements.define('x-el', class extends HTMLElement {});
+const observer = new MutationObserver(() => {
+  const parentDoc = parent.document;
+  window.frameElement.remove();
+  parentDoc.documentElement.classList.remove('test-wait');
+});
+observer.observe(document.body, {childList: true, subtree: true});
+</scr` + `ipt><b><x-el></x-el></b></body></html>`;
+
+const blob = new Blob([xhtml], {type: 'application/xhtml+xml'});
+const iframe = document.createElement('iframe');
+iframe.src = URL.createObjectURL(blob);
+document.documentElement.appendChild(iframe);
+</script>
