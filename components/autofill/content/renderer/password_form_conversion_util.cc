@@ -4,32 +4,22 @@
 
 #include "components/autofill/content/renderer/password_form_conversion_util.h"
 
-#include <optional>
-
+#include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/no_destructor.h"
-#include "base/strings/string_split.h"
-#include "components/autofill/content/renderer/html_based_username_detector.h"
-#include "components/autofill/content/renderer/synchronous_form_cache.h"
-#include "components/autofill/content/renderer/timing.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
-using blink::WebElement;
 using blink::WebFormControlElement;
 using blink::WebFormElement;
 using blink::WebInputElement;
-using blink::WebLocalFrame;
-using blink::WebString;
 
 namespace autofill {
 
@@ -47,23 +37,6 @@ struct PasswordSiteUrlLazyInstanceTraits
 
 base::LazyInstance<re2::RE2, PasswordSiteUrlLazyInstanceTraits>
     g_password_site_matcher = LAZY_INSTANCE_INITIALIZER;
-
-// Extracts the username predictions. |control_elements| should be all the DOM
-// elements of the form, |form_data| should be the already extracted FormData
-// representation of that form. |username_detector_cache| is optional, and can
-// be used to spare recomputation if called multiple times for the same form.
-std::vector<FieldRendererId> GetUsernamePredictions(
-    const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache) {
-  // Dummy cache stores the predictions in case no real cache was passed to
-  // here.
-  UsernameDetectorCache dummy_cache;
-  if (!username_detector_cache)
-    username_detector_cache = &dummy_cache;
-
-  return GetPredictionsFieldBasedOnHtmlAttributes(form_data,
-                                                  username_detector_cache);
-}
 
 }  // namespace
 
@@ -117,34 +90,6 @@ bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form) {
   if (!net::GetValueForKeyInQuery(url, "ssp", &should_skip_password))
     return false;
   return should_skip_password == "1";
-}
-
-std::optional<FormData> CreateFormData(
-    const blink::WebDocument& document,
-    FormRendererId form_id,
-    const FieldDataManager& field_data_manager,
-    UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache,
-    const CallTimerState& timer_state,
-    const SynchronousFormCache& form_cache) {
-  std::optional<FormData> form_data =
-      form_cache.GetOrExtractForm(form_id, [&](FormRendererId form_id) {
-        // Custom form controls are not supported in Password Manager.
-        return form_util::ExtractFormData(document, form_id, field_data_manager,
-                                          timer_state, button_titles_cache,
-                                          /*custom_controls=*/{});
-      });
-  if (!form_data) {
-    return std::nullopt;
-  }
-  if (WebFormElement web_form = form_util::GetFormByRendererId(form_id)) {
-    form_data->set_is_gaia_with_skip_save_password_form(
-        IsGaiaWithSkipSavePasswordForm(web_form) ||
-        IsGaiaReauthenticationForm(web_form));
-  }
-  form_data->set_username_predictions(
-      GetUsernamePredictions(*form_data, username_detector_cache));
-  return form_data;
 }
 
 std::string GetSignOnRealm(const GURL& origin) {

@@ -23,6 +23,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_label_element.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/re2/src/re2/re2.h"

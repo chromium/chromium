@@ -39,12 +39,14 @@
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/content/renderer/password_form_conversion_util.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/prefilled_values_detector.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -1184,13 +1186,9 @@ PasswordAutofillAgent::CreateSuggestionRequest(
           user_input, [&](const WebDocument& document, FormRendererId form_id) {
             return form_cache.GetOrExtractForm(
                 form_id, [&](FormRendererId form_id) {
-                  // Custom form controls are not supported in Password Manager.
-                  return form_util::ExtractFormData(
-                      document, form_id, field_data_manager(),
-                      autofill_agent_->GetCallTimerState(
-                          CallTimerState::CallSite::kShowSuggestionPopup),
-                      autofill_agent_->button_titles_cache(),
-                      /*custom_controls=*/{});
+                  return autofill_agent_->ExtractFormData(
+                      document, form_id,
+                      CallTimerState::CallSite::kShowSuggestionPopup);
                 });
           });
   if (!form_and_field) {
@@ -1580,6 +1578,11 @@ void PasswordAutofillAgent::DidFinishLoad() {
   // which of the loaded frames are actually visible to the user.  This also
   // triggers the "Save password?" infobar if the user just submitted a password
   // form.
+  // TODO(crbug.com/581337039): Without a populated `SynchronousFormCache`,
+  // `SendPasswordForms()` extracts every visible form individually. When a
+  // custom form control script is loaded, `AutofillAgent::ExtractFormData()`
+  // runs the document-wide detection script on every call instead of once per
+  // page.
   SendPasswordForms(/*only_visible=*/true, /*form_cache=*/{});
 }
 
@@ -1771,12 +1774,23 @@ std::optional<FormData> PasswordAutofillAgent::GetFormData(
   if (!web_frame) {
     return std::nullopt;
   }
-  return CreateFormData(web_frame->GetDocument(), form_id, field_data_manager(),
-                        &username_detector_cache_,
-                        autofill_agent_->button_titles_cache(),
-                        autofill_agent_->GetCallTimerState(
-                            CallTimerState::CallSite::kGetFormData),
-                        form_cache);
+  std::optional<FormData> form_data =
+      form_cache.GetOrExtractForm(form_id, [&](FormRendererId form_id) {
+        return autofill_agent_->ExtractFormData(
+            web_frame->GetDocument(), form_id,
+            CallTimerState::CallSite::kGetFormData);
+      });
+  if (!form_data) {
+    return std::nullopt;
+  }
+  if (WebFormElement web_form = form_util::GetFormByRendererId(form_id)) {
+    form_data->set_is_gaia_with_skip_save_password_form(
+        IsGaiaWithSkipSavePasswordForm(web_form) ||
+        IsGaiaReauthenticationForm(web_form));
+  }
+  form_data->set_username_predictions(GetPredictionsFieldBasedOnHtmlAttributes(
+      *form_data, &username_detector_cache_));
+  return form_data;
 }
 
 void PasswordAutofillAgent::InformAboutFormClearing(
@@ -2389,14 +2403,9 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
 void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
     const WebFormElement& cleared_form) {
   CHECK(cleared_form);
-  // Custom form controls are not supported in Password Manager.
-  if (std::optional<FormData> form_data = form_util::ExtractFormData(
+  if (std::optional<FormData> form_data = autofill_agent_->ExtractFormData(
           cleared_form.GetDocument(), GetFormRendererId(cleared_form),
-          field_data_manager(),
-          autofill_agent_->GetCallTimerState(
-              CallTimerState::CallSite::kNotifyPasswordManagerAboutClearedForm),
-          autofill_agent_->button_titles_cache(),
-          /*custom_controls=*/{})) {
+          CallTimerState::CallSite::kNotifyPasswordManagerAboutClearedForm)) {
     if (auto* driver = unsafe_driver()) {
       driver->PasswordFormCleared(*form_data);
     }
