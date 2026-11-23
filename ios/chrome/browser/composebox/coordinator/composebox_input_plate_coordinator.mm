@@ -437,10 +437,7 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
   [_metricsRecorder recordVoiceSearchButtonUsed];
 
   if (IsVoiceSearchEvolutionPhase1Enabled()) {
-    [self stopVoiceSearchCoordinator];
-    _voiceSearchCoordinator = ios::provider::CreateVoiceSearchCoordinator(
-        _viewController, self.browser, self);
-    [_voiceSearchCoordinator start];
+    [self startVoiceSearchCoordinator];
     return;
   }
 
@@ -741,7 +738,23 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
   [self stopVoiceSearchCoordinator];
 }
 
+- (void)voiceSearchCoordinatorDidRequestRetry:(ChromeCoordinator*)coordinator {
+  if (!_viewController) {
+    return;
+  }
+  // Keeps this composebox and its state.
+  [self startVoiceSearchCoordinator];
+}
+
 #pragma mark - Private helpers
+
+// Starts a new Voice Search coordinator over the composebox.
+- (void)startVoiceSearchCoordinator {
+  [self stopVoiceSearchCoordinator];
+  _voiceSearchCoordinator = ios::provider::CreateVoiceSearchCoordinator(
+      _viewController, self.browser, self);
+  [_voiceSearchCoordinator start];
+}
 
 // Stops the Voice Search coordinator, if any.
 - (void)stopVoiceSearchCoordinator {

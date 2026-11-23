@@ -3146,4 +3146,11 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self stopVoiceSearchCoordinator];
 }
 
+- (void)voiceSearchCoordinatorDidRequestRetry:(ChromeCoordinator*)coordinator {
+  if (!self.started) {
+    return;
+  }
+  [self startVoiceSearch];
+}
+
 @end
