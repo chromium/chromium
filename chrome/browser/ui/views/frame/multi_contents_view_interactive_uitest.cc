@@ -11,9 +11,12 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -993,6 +996,18 @@ class MultiContentsViewOutlineHighlightUiTest : public MultiContentsViewUiTest {
  public:
   MultiContentsViewOutlineHighlightUiTest() = default;
 
+  auto FocusOmniboxAndEnterQuery(const std::u16string& query = u"query") {
+    return Do([this, query]() {
+      chrome::FocusLocationBar(browser());
+      OmniboxView* const omnibox_view =
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetLocationBar()
+              ->GetOmniboxView();
+      ASSERT_TRUE(omnibox_view);
+      omnibox_view->SetUserText(query);
+    });
+  }
+
   auto SimulateTriggeringPermissionPrompt(bool show_prompt) {
     return Do([this, show_prompt]() {
       split_tabs::SplitTabHighlightController* const
@@ -1045,13 +1060,13 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewOutlineHighlightUiTest,
       FocusElement(kNewTab), CheckOutlineHighlightState(0, false),
       CheckOutlineHighlightState(1, false),
       // Focus omnibox and verify the start tab has an outline
-      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      CheckOutlineHighlightState(0, true), CheckOutlineHighlightState(1, false),
-      // Move focus to the end tab and verify start tab outline is hidden
+      FocusOmniboxAndEnterQuery(), CheckOutlineHighlightState(0, true),
+      CheckOutlineHighlightState(1, false),
+      // Move focus to the end tab and verify neither tab is highlighted
       FocusInactiveTabInSplit(), CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false),
       // Focus omnibox and confirm that highlight is shown in the end tab
-      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      CheckOutlineHighlightState(0, false),
+      FocusOmniboxAndEnterQuery(), CheckOutlineHighlightState(0, false),
       CheckOutlineHighlightState(1, true));
 }
 

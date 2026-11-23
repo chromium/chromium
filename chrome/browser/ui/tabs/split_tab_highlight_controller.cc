@@ -118,6 +118,7 @@ void SplitTabHighlightController::AddShowHideElementSubscriptions(
 void SplitTabHighlightController::OnActiveTabChange(
     BrowserWindowInterface* browser_window_interface) {
   omnibox_tab_helper_observation_.Reset();
+  is_omnibox_popup_showing_ = false;
   tabs::TabInterface* const active_tab =
       browser_window_interface->GetActiveTabInterface();
   if (active_tab) {
@@ -132,7 +133,7 @@ void SplitTabHighlightController::OnActiveTabChange(
         base::BindRepeating(&SplitTabHighlightController::OnTabWillDiscard,
                             base::Unretained(this)));
   }
-  // Need to update the highlight because the omnibox focus state
+  // Need to update the highlight because the omnibox popup visibility change
   // event might have already been triggered before the active tab change.
   UpdateHighlight();
 }
