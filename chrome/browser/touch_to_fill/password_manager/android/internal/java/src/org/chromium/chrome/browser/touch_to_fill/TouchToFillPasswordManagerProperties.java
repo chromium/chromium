@@ -135,7 +135,7 @@ class TouchToFillPasswordManagerProperties {
                 new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> TITLE =
                 new PropertyModel.ReadableObjectPropertyKey<>("title");
-        static final PropertyModel.ReadableObjectPropertyKey<String> SUBTITLE =
+        static final PropertyModel.ReadableObjectPropertyKey<CharSequence> SUBTITLE =
                 new PropertyModel.ReadableObjectPropertyKey<>("subtitle");
         static final PropertyModel.WritableObjectPropertyKey<Drawable> AVATAR =
                 new PropertyModel.WritableObjectPropertyKey<>("avatar");

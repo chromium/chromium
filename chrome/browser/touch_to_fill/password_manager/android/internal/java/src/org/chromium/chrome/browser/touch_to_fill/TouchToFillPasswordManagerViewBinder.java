@@ -28,7 +28,6 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillPasswordManag
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillPasswordManagerProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
 import android.content.Context;
-import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -424,8 +423,9 @@ class TouchToFillPasswordManagerViewBinder {
 
             TextView sheetSubtitleText = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
             assumeNonNull(sheetSubtitleText);
-            sheetSubtitleText.setText(
-                    Html.fromHtml(model.get(SUBTITLE), Html.FROM_HTML_MODE_LEGACY));
+            // Never parse as HTML: The subtitle contains website- and
+            // user-provided text.
+            sheetSubtitleText.setText(model.get(SUBTITLE));
 
             ImageView sheetHeaderImage = view.findViewById(R.id.touch_to_fill_sheet_header_image);
             assumeNonNull(sheetHeaderImage);

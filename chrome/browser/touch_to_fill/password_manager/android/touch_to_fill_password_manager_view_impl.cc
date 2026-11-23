@@ -85,6 +85,7 @@ TouchToFillPasswordManagerViewImpl::~TouchToFillPasswordManagerViewImpl() {
 
 bool TouchToFillPasswordManagerViewImpl::Show(
     const GURL& url,
+    const std::u16string& display_origin,
     IsOriginSecure is_origin_secure,
     base::span<const Credential> credentials,
     int flags) {
@@ -97,7 +98,7 @@ bool TouchToFillPasswordManagerViewImpl::Show(
     return false;
   }
   // Serialize the |credentials| span into a Java array and instruct the bridge
-  // to show it together with |url| to the user.
+  // to show it together with |display_origin| to the user.
   JNIEnv* env = AttachCurrentThread();
   jni_zero::ScopedJavaLocalRef<jobjectArray> credential_array =
       Java_TouchToFillPasswordManagerBridge_createCredentialArray(
@@ -127,7 +128,7 @@ bool TouchToFillPasswordManagerViewImpl::Show(
   }
 
   Java_TouchToFillPasswordManagerBridge_showCredentials(
-      env, java_object_internal_, url, is_origin_secure.value(),
+      env, java_object_internal_, url, display_origin, is_origin_secure.value(),
       credential_array,
       !!(flags & TouchToFillPasswordManagerView::kTriggerSubmission),
       !!(flags & TouchToFillPasswordManagerView::kShouldShowHybridOption),

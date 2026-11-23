@@ -82,7 +82,8 @@ public interface TouchToFillComponent {
     /**
      * Displays the given credentials in a new bottom sheet.
      *
-     * @param url A {@link String} that contains the URL to display credentials for.
+     * @param url A {@link GURL} that is only used to request icons.
+     * @param displayOrigin A {@link String} that names the site to display credentials for.
      * @param isOriginSecure A {@link boolean} that indicates whether the current origin is secure.
      * @param credentials A list of {@link CredentialBase}s that will be displayed. These can be
      *     {@link Credential}s and/or {@link WebauthnCredential}s, and will be displayed in the
@@ -96,6 +97,7 @@ public interface TouchToFillComponent {
      */
     void showCredentials(
             GURL url,
+            String displayOrigin,
             boolean isOriginSecure,
             List<CredentialBase> credentials,
             boolean triggerSubmission,

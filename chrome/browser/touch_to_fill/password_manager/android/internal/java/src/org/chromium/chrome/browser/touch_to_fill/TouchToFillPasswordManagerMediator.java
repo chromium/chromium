@@ -28,7 +28,12 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillPasswordManag
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.StyleSpan;
 
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -60,8 +65,6 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -156,6 +159,7 @@ class TouchToFillPasswordManagerMediator {
 
     void showCredentials(
             GURL url,
+            String displayOrigin,
             boolean isOriginSecure,
             List<CredentialBase> credentials,
             boolean showMorePasskeys,
@@ -176,7 +180,11 @@ class TouchToFillPasswordManagerMediator {
                         .with(TITLE, getTitle(credentials))
                         .with(
                                 SUBTITLE,
-                                getSubtitle(url, isOriginSecure, triggerSubmission, credentials))
+                                getSubtitle(
+                                        displayOrigin,
+                                        isOriginSecure,
+                                        triggerSubmission,
+                                        credentials))
                         // TODO(crbug.com/40278443): Use the TTF resource provider instead
                         // and use a 32dp icon.
                         .with(
@@ -303,25 +311,35 @@ class TouchToFillPasswordManagerMediator {
         return mContext.getString(R.string.touch_to_fill_sheet_uniform_title);
     }
 
-    private String getSubtitle(
-            GURL url,
+    private CharSequence getSubtitle(
+            String displayOrigin,
             boolean isOriginSecure,
             boolean triggerSubmission,
             List<CredentialBase> credentials) {
         assert mContext != null;
-        String formattedUrl =
-                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         List<Credential> sharedCredentials = getSharedPasswordsThatRequireNotification(credentials);
         if (sharedCredentials.size() == 1) {
-            return mContext.getString(
-                    R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle,
-                    "<b>" + sharedCredentials.get(0).getSenderName() + "</b>",
-                    formattedUrl);
+            SpannableString senderName =
+                    new SpannableString(sharedCredentials.get(0).getSenderName());
+            senderName.setSpan(
+                    new StyleSpan(Typeface.BOLD),
+                    0,
+                    senderName.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Unlike getString(), expandTemplate() keeps the span of the
+            // sender name.
+            return TextUtils.expandTemplate(
+                    mContext.getString(
+                            R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle,
+                            "^1",
+                            "^2"),
+                    senderName,
+                    displayOrigin);
         }
         if (sharedCredentials.size() > 1) {
             return mContext.getString(
                     R.string.touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle,
-                    formattedUrl);
+                    displayOrigin);
         }
 
         if (triggerSubmission) {
@@ -329,12 +347,12 @@ class TouchToFillPasswordManagerMediator {
                     isOriginSecure
                             ? R.string.touch_to_fill_sheet_subtitle_submission
                             : R.string.touch_to_fill_sheet_subtitle_insecure_submission,
-                    formattedUrl);
+                    displayOrigin);
         } else {
             return isOriginSecure
-                    ? formattedUrl
+                    ? displayOrigin
                     : mContext.getString(
-                            R.string.touch_to_fill_sheet_subtitle_not_secure, formattedUrl);
+                            R.string.touch_to_fill_sheet_subtitle_not_secure, displayOrigin);
         }
     }
 

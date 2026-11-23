@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_ANDROID_TOUCH_TO_FILL_PASSWORD_MANAGER_VIEW_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_ANDROID_TOUCH_TO_FILL_PASSWORD_MANAGER_VIEW_IMPL_H_
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_view.h"
@@ -27,6 +29,7 @@ class TouchToFillPasswordManagerViewImpl
 
   // TouchToFillPasswordManagerView:
   bool Show(const GURL& url,
+            const std::u16string& display_origin,
             IsOriginSecure is_origin_secure,
             base::span<const Credential> credentials,
             int flags) override;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_PASSWORD_MANAGER_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_PASSWORD_MANAGER_VIEW_H_
 
+#include <string>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -44,12 +45,14 @@ class TouchToFillPasswordManagerView {
   virtual ~TouchToFillPasswordManagerView() = default;
 
   // Instructs Touch To Fill to show the provided `credentials` to the user.
-  // `formatted_url` contains a human friendly version of the current origin.
+  // `url` is only used to find icons. `display_origin` names the site that
+  // receives the credential.
   // `is_origin_secure` indicates whether the current frame origin is secure.
   // `flags` is a combination of bits that affect the behaviors listed in the
   // `ShowFlags` enum. After user interaction either OnCredentialSelected() or
   // OnDismiss() gets invoked.
   virtual bool Show(const GURL& url,
+                    const std::u16string& display_origin,
                     IsOriginSecure is_origin_secure,
                     base::span<const Credential> credentials,
                     int flags) = 0;

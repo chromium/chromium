@@ -5,9 +5,11 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_controller.h"
 
 #include <algorithm>
+#include <string>
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_view.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_view_factory.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/url_formatter/elide_url.h"
@@ -143,6 +146,21 @@ bool TouchToFillPasswordManagerController::Show(
       OnShowCredManSelected();
       return true;
     case DisplayTarget::kShowTouchToFill:
+      // The origin decides which credentials are offered. The URL can differ,
+      // e.g. it stays about:blank#<fragment> after document.open().
+      std::u16string display_origin =
+          base::FeatureList::IsEnabled(
+              password_manager::features::kTouchToFillSheetShowsFrameOrigin)
+              ? url_formatter::FormatOriginForSecurityDisplay(
+                    origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)
+              : url_formatter::FormatUrlForSecurityDisplay(
+                    url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+      if (display_origin.empty()) {
+        // An opaque origin has no name to show.
+        OnDismiss();
+        return false;
+      }
+
       if (!view_) {
         view_ = TouchToFillPasswordManagerViewFactory::Create(this);
       }
@@ -170,7 +188,7 @@ bool TouchToFillPasswordManagerController::Show(
         sorted_credentials = DefaultSortCredentials(credentials_);
       }
 
-      return view_->Show(url,
+      return view_->Show(url, display_origin,
                          TouchToFillPasswordManagerView::IsOriginSecure(
                              network::IsOriginPotentiallyTrustworthy(origin)),
                          *sorted_credentials, flags);

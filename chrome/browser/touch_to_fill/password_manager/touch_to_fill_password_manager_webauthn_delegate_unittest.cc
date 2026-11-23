@@ -151,7 +151,11 @@ class MockCredentialReceiver
 struct MockTouchToFillView : public TouchToFillPasswordManagerView {
   MOCK_METHOD(bool,
               Show,
-              (const GURL&, IsOriginSecure, base::span<const Credential>, int),
+              (const GURL&,
+               const std::u16string&,
+               IsOriginSecure,
+               base::span<const Credential>,
+               int),
               (override));
   MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
   MOCK_METHOD(void, OnDismiss, ());
@@ -277,7 +281,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   auto passkey_credential = CreatePasskey();
   std::vector<Credential> credentials{passkey_credential};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -294,7 +298,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   std::vector<Credential> credentials(
       {CreatePasskey(kCredentialId1), passkey_credential2});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -308,7 +312,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest, ShowAndCancel) {
   std::vector<Credential> credentials({CreatePasskey()});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -322,7 +326,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest, ShowAndCancel) {
 TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest, ShowAndCancelImmediate) {
   std::vector<Credential> credentials({CreatePasskey()});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -337,7 +341,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest, ShowAndSelectHybrid) {
   std::vector<Credential> credentials({CreatePasskey()});
 
   EXPECT_CALL(view(),
-              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+              Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                    ElementsAreArray(credentials),
                    TouchToFillPasswordManagerView::kShouldShowHybridOption));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -376,7 +380,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -405,7 +409,7 @@ TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -435,7 +439,7 @@ TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -464,7 +468,7 @@ TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -494,7 +498,7 @@ TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
@@ -583,7 +587,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   std::vector<Credential> sorted_credentials(
       {bob_password, charlie_passkey, alice_passkey});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(sorted_credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,

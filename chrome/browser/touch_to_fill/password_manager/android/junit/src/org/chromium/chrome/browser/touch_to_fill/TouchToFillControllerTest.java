@@ -41,6 +41,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillPasswordManag
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 
 import androidx.annotation.Px;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -75,8 +78,6 @@ import org.chromium.components.image_fetcher.ImageDataFetchResult;
 import org.chromium.components.image_fetcher.ImageFetchResult;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -95,8 +96,7 @@ import java.util.stream.StreamSupport;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TouchToFillControllerTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
-    private static final String TEST_URL_FORMATTED =
-            UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+    private static final String TEST_DISPLAY_ORIGIN = "login.example.org";
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA =
             new Credential.Builder()
@@ -183,6 +183,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsWithMultipleEntries() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
@@ -203,7 +204,7 @@ public class TouchToFillControllerTest {
                 is(
                         mContext.getString(
                                 R.string.touch_to_fill_sheet_subtitle_submission,
-                                TEST_URL_FORMATTED)));
+                                TEST_DISPLAY_ORIGIN)));
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
@@ -218,6 +219,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsWithSingleEntry() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
@@ -233,7 +235,7 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(TITLE),
                 is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
-        assertThat(itemList.get(0).model.get(SUBTITLE), is(TEST_URL_FORMATTED));
+        assertThat(itemList.get(0).model.get(SUBTITLE), is(TEST_DISPLAY_ORIGIN));
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
@@ -246,6 +248,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsWithSingleWebAuthnEntry() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(DINO),
                 /* showMorePasskeys= */ false,
@@ -274,6 +277,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsWithWebAuthnAndPasswordEntries() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(DINO, ANA),
                 /* showMorePasskeys= */ false,
@@ -304,6 +308,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsToSubmit() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
@@ -324,7 +329,7 @@ public class TouchToFillControllerTest {
                 is(
                         mContext.getString(
                                 R.string.touch_to_fill_sheet_subtitle_submission,
-                                TEST_URL_FORMATTED)));
+                                TEST_DISPLAY_ORIGIN)));
 
         assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
         assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(true));
@@ -334,6 +339,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsSetsCredentialListAndRequestsFavicons() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
@@ -376,6 +382,7 @@ public class TouchToFillControllerTest {
                         .build();
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(sharedCredentials),
                 /* showMorePasskeys= */ false,
@@ -391,13 +398,22 @@ public class TouchToFillControllerTest {
                         mContext.getResources()
                                 .getQuantityString(
                                         R.plurals.touch_to_fill_sheet_shared_passwords_title, 1)));
+        Spanned subtitle = (Spanned) itemList.get(0).model.get(SUBTITLE);
         assertThat(
-                itemList.get(0).model.get(SUBTITLE),
+                subtitle.toString(),
                 is(
                         mContext.getString(
                                 R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle,
-                                "<b>Sender Name</b>",
-                                TEST_URL_FORMATTED)));
+                                "Sender Name",
+                                TEST_DISPLAY_ORIGIN)));
+        // Only the sender name is bold.
+        StyleSpan[] bold = subtitle.getSpans(0, subtitle.length(), StyleSpan.class);
+        assertThat(bold.length, is(1));
+        assertThat(bold[0].getStyle(), is(Typeface.BOLD));
+        assertThat(
+                subtitle.subSequence(subtitle.getSpanStart(bold[0]), subtitle.getSpanEnd(bold[0]))
+                        .toString(),
+                is("Sender Name"));
         RobolectricUtil.runAllBackgroundAndUi();
         mImageFetcher.answerWithBitmap();
         RobolectricUtil.runAllBackgroundAndUi();
@@ -444,6 +460,7 @@ public class TouchToFillControllerTest {
                         .build();
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(sharedCredential1, sharedCredential2),
                 /* showMorePasskeys= */ false,
@@ -465,13 +482,14 @@ public class TouchToFillControllerTest {
                         mContext.getString(
                                 R.string
                                         .touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle,
-                                TEST_URL_FORMATTED)));
+                                TEST_DISPLAY_ORIGIN)));
     }
 
     @Test
     public void testFetchFaviconUpdatesModel() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Collections.singletonList(CARL),
                 /* showMorePasskeys= */ false,
@@ -507,6 +525,7 @@ public class TouchToFillControllerTest {
     public void testNoFaviconForBackupCredential() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(CARL, CARL_BACKUP),
                 /* showMorePasskeys= */ false,
@@ -545,6 +564,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsFormatPslOrigins() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, BOB),
                 /* showMorePasskeys= */ false,
@@ -559,6 +579,7 @@ public class TouchToFillControllerTest {
     public void testClearsCredentialListWhenShowingAgain() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Collections.singletonList(ANA),
                 /* showMorePasskeys= */ false,
@@ -573,6 +594,7 @@ public class TouchToFillControllerTest {
         // Showing the sheet a second time should replace all changed credentials.
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Collections.singletonList(BOB),
                 /* showMorePasskeys= */ false,
@@ -589,6 +611,7 @@ public class TouchToFillControllerTest {
     public void testShowCredentialsSetsVisibile() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
@@ -601,6 +624,7 @@ public class TouchToFillControllerTest {
     public void testCallsCallbackAndHidesOnSelectingItemDoesNotRecordIndexForSingleCredential() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
@@ -622,6 +646,7 @@ public class TouchToFillControllerTest {
     public void testCallsCallbackAndHidesOnSelectingItem() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
@@ -643,6 +668,7 @@ public class TouchToFillControllerTest {
     public void testCallsDelegateAndHidesOnDismiss() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
@@ -662,6 +688,7 @@ public class TouchToFillControllerTest {
     public void testHidesWhenSelectingManagePasswords() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
@@ -679,6 +706,7 @@ public class TouchToFillControllerTest {
     public void testManagePasswordsWithPasskeysShown() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(DINO),
                 /* showMorePasskeys= */ false,
@@ -695,6 +723,7 @@ public class TouchToFillControllerTest {
     public void testAddsTheBottomSheetHelperToObserveTheSheet() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, DINO),
                 /* showMorePasskeys= */ false,
@@ -708,6 +737,7 @@ public class TouchToFillControllerTest {
     public void testHybridPasskeysShown() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
@@ -721,6 +751,7 @@ public class TouchToFillControllerTest {
     public void testHidesWhenSelectingHybridSignin() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
@@ -738,6 +769,7 @@ public class TouchToFillControllerTest {
     public void testSelectPasskeyShownAndRan() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ true,
@@ -761,6 +793,7 @@ public class TouchToFillControllerTest {
     public void testMorePasskeysShownAndRan() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA, DINO),
                 /* showMorePasskeys= */ true,
@@ -785,6 +818,7 @@ public class TouchToFillControllerTest {
     public void testHidesConfirmationWhenMorePasskeysShown() {
         mMediator.showCredentials(
                 TEST_URL,
+                TEST_DISPLAY_ORIGIN,
                 true,
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ true,

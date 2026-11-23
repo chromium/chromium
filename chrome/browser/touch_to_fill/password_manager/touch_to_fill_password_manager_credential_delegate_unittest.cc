@@ -111,7 +111,11 @@ class MockPasswordManagerClient
 struct MockTouchToFillView : TouchToFillPasswordManagerView {
   MOCK_METHOD(bool,
               Show,
-              (const GURL&, IsOriginSecure, base::span<const Credential>, int),
+              (const GURL&,
+               const std::u16string&,
+               IsOriginSecure,
+               base::span<const Credential>,
+               int),
               (override));
   MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
   MOCK_METHOD(void, OnDismiss, ());
@@ -285,7 +289,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {
   ON_CALL(*last_mock_filler(), ShouldTriggerSubmission())
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kTriggerSubmission));
   Show(credentials,
@@ -314,7 +318,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Dont_Submit) {
   ON_CALL(*last_mock_filler(), ShouldTriggerSubmission())
       .WillByDefault(Return(false));
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -346,7 +350,7 @@ TEST_F(TouchToFillControllerAutofillTest, Dont_Submit_With_Empty_Username) {
 
   // As we don't know which credential will be selected, don't disable
   // submission for now.
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kTriggerSubmission));
   EXPECT_CALL(*last_mock_filler(), UpdateTriggerSubmission(true));
@@ -381,7 +385,7 @@ TEST_F(TouchToFillControllerAutofillTest,
       .WillByDefault(Return(false));
 
   // Only one credential with empty username - submission is impossible.
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   EXPECT_CALL(*last_mock_filler(), UpdateTriggerSubmission(false));
@@ -420,7 +424,7 @@ TEST_P(TouchToFillControllerAutofillReauthTest,
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
   Credential credentials[] = {credential};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -463,7 +467,7 @@ TEST_P(TouchToFillControllerAutofillReauthTest,
   ON_CALL(*last_mock_filler(), ShouldTriggerSubmission())
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kTriggerSubmission));
   Show(credentials,
@@ -501,7 +505,7 @@ TEST_P(TouchToFillControllerAutofillReauthTest,
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
   Credential credentials[] = {credential};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -537,7 +541,7 @@ TEST_P(TouchToFillControllerAutofillReauthTest, DestroyedWhileAuthRunning) {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
   Credential credentials[] = {credential};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -585,7 +589,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Insecure_Origin) {
   Credential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL("http://example.com")),
+  EXPECT_CALL(view(), Show(Eq(GURL("http://example.com")), Eq(u"example.com"),
                            IsOriginSecure(false), ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -595,6 +599,48 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Insecure_Origin) {
            TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
                false)),
        /*cred_man_delegate=*/nullptr);
+}
+
+TEST_F(TouchToFillControllerAutofillTest, Show_Names_Origin_Of_About_Blank) {
+  auto filler_to_pass = CreateMockFiller();
+  // The URL stays about:blank when a document of example.com writes into the
+  // frame.
+  const GURL url("about:blank#<b>login.example.org</b>");
+  EXPECT_CALL(*last_mock_filler(), GetFrameUrl()).WillOnce(Return(url));
+
+  Credential credentials[] = {
+      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+
+  EXPECT_CALL(view(), Show(Eq(url), Eq(u"example.com"), IsOriginSecure(true),
+                           ElementsAreArray(credentials),
+                           TouchToFillPasswordManagerView::kNone));
+  Show(credentials,
+       MakeTouchToFillPasswordManagerDelegate(
+           SubmissionReadinessState::kNoInformation, std::move(filler_to_pass),
+           form_to_fill(), form_to_fill()->password_element_renderer_id,
+           TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
+               false)),
+       /*cred_man_delegate=*/nullptr);
+}
+
+TEST_F(TouchToFillControllerAutofillTest, Show_Nothing_For_Opaque_Origin) {
+  auto filler_to_pass = CreateMockFiller();
+  EXPECT_CALL(*last_mock_filler(), GetFrameOrigin())
+      .WillRepeatedly(Return(url::Origin()));
+
+  Credential credentials[] = {
+      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+
+  EXPECT_CALL(view(), Show).Times(0);
+  EXPECT_CALL(visibility_controller(), SetShown());
+  EXPECT_FALSE(Show(
+      credentials,
+      MakeTouchToFillPasswordManagerDelegate(
+          SubmissionReadinessState::kNoInformation, std::move(filler_to_pass),
+          form_to_fill(), form_to_fill()->password_element_renderer_id,
+          TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
+              false)),
+      /*cred_man_delegate=*/nullptr));
 }
 
 TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
@@ -615,7 +661,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
       credential2,
   };
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -686,7 +732,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Orders_Credentials) {
   Credential credentials[] = {alice,      charlie_backup, bob,    charlie,
                               bob_backup, david,          ernesto};
   EXPECT_CALL(view(),
-              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+              Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                    testing::ElementsAre(ernesto, charlie, charlie_backup, alice,
                                         bob, bob_backup, david),
                    TouchToFillPasswordManagerView::kNone));
@@ -703,7 +749,7 @@ TEST_F(TouchToFillControllerAutofillTest, Dismiss) {
   Credential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -735,7 +781,7 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
   Credential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -778,7 +824,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
       PasskeyCredential::Username("alice@example.com"));
   std::vector<Credential> credentials({credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            TouchToFillPasswordManagerView::kNone));
   Show(credentials,
@@ -805,7 +851,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowAndSelectHybrid) {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
   EXPECT_CALL(view(),
-              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+              Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                    ElementsAreArray(credentials),
                    TouchToFillPasswordManagerView::kShouldShowHybridOption));
   Show(
@@ -834,7 +880,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowCredManEntryIfThereArePasskeys) {
       .WillRepeatedly(Return(WebAuthnCredManDelegate::State::kHasPasskeys));
   EXPECT_CALL(cred_man_delegate, SetRequestCompletionCallback(_));
   EXPECT_CALL(view(),
-              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+              Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                    ElementsAreArray(credentials),
                    TouchToFillPasswordManagerView::kShouldShowCredManEntry));
   Show(credentials,
@@ -854,7 +900,7 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(
       cred_man_delegate,
       TriggerCredManUi(WebAuthnCredManDelegate::RequestPasswords(false)));
-  EXPECT_CALL(view(), Show(_, _, _, _)).Times(0);
+  EXPECT_CALL(view(), Show(_, _, _, _, _)).Times(0);
   Show({},
        MakeTouchToFillPasswordManagerDelegate(
            SubmissionReadinessState::kNoInformation, CreateMockFiller(),
@@ -870,7 +916,7 @@ TEST_F(TouchToFillControllerAutofillTest, NoCredManEntryIfNoPasskeys) {
   MockWebAuthnCredManDelegate cred_man_delegate;
   EXPECT_CALL(cred_man_delegate, HasPasskeys()).Times(2);
   EXPECT_CALL(cred_man_delegate, SetRequestCompletionCallback(_)).Times(0);
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials), 0));
   Show(credentials,
        MakeTouchToFillPasswordManagerDelegate(
@@ -1020,7 +1066,7 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
   Credential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), _, IsOriginSecure(true),
                            ElementsAreArray(credentials),
                            /*flags=*/_));
   Show(credentials,

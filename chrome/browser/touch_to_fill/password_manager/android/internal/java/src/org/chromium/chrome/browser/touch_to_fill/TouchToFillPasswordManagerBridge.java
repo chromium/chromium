@@ -133,6 +133,7 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
     @CalledByNative
     private void showCredentials(
             @JniType("GURL") GURL url,
+            @JniType("std::u16string") String displayOrigin,
             boolean isOriginSecure,
             CredentialBase[] credentials,
             boolean submitCredential,
@@ -140,6 +141,7 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
             boolean showCredManEntry) {
         mTouchToFillComponent.showCredentials(
                 url,
+                displayOrigin,
                 isOriginSecure,
                 Arrays.asList(credentials),
                 submitCredential,

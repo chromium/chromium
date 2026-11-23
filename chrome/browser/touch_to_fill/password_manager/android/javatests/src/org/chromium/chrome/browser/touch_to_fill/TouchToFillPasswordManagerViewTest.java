@@ -446,6 +446,36 @@ public class TouchToFillPasswordManagerViewTest {
 
     @Test
     @MediumTest
+    public void testSubtitleWithMarkupDisplayedAsText() {
+        String subtitleWithMarkup = "You'll sign in to about:blank#<br><b>login.example.org</b>";
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel header =
+                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                    .with(SUBTITLE, subtitleWithMarkup)
+                                    .with(
+                                            IMAGE_DRAWABLE_ID,
+                                            R.drawable.touch_to_fill_default_header_image)
+                                    .build();
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            new MVCListAdapter.ListItem(
+                                                    TouchToFillPasswordManagerProperties.ItemType
+                                                            .HEADER,
+                                                    header),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        TextView subtitle =
+                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
+
+        assertThat(subtitle.getText().toString(), is(subtitleWithMarkup));
+    }
+
+    @Test
+    @MediumTest
     public void testCredentialsChangedByModel() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

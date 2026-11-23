@@ -82,7 +82,6 @@ robolectric_binary("touch_to_fill_junit_tests") {
     "//components/image_fetcher:java",
     "//components/module_installer/android:module_installer_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
-    "//components/url_formatter/android:url_formatter_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",

@@ -78,6 +78,7 @@ import java.util.Collections;
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626839
 public class TouchToFillPasswordManagerIntegrationTest {
     private static GURL sExampleUrl;
+    private static final String EXAMPLE_DISPLAY_ORIGIN = "www.example.xyz";
     private static final String MOBILE_URL = "https://m.example.xyz";
     private static Credential sAna;
     private static Credential sBob;
@@ -150,6 +151,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
@@ -167,6 +169,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
@@ -189,6 +192,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Arrays.asList(sCam, sAna),
                             /* triggerSubmission= */ false,
@@ -211,6 +215,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
@@ -233,6 +238,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Arrays.asList(sAna, sBob),
                             /* triggerSubmission= */ false,
@@ -254,6 +260,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
@@ -285,6 +292,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
@@ -402,6 +410,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Arrays.asList(sAna, sBob),
                             /* triggerSubmission= */ false,
@@ -432,6 +441,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
                 () -> {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
+                            EXAMPLE_DISPLAY_ORIGIN,
                             true,
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,

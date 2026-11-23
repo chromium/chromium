@@ -234,6 +234,13 @@ BASE_DECLARE_FEATURE(kSkipChromeReauthForCredMan);
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the Touch To Fill sheet names the site by the frame's origin
+// instead of its URL.
+// Kill switch. TODO(crbug.com/585368181): Remove in M163.
+BASE_DECLARE_FEATURE(kTouchToFillSheetShowsFrameOrigin);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Starts passwords resync when undecryptable passwords are detected.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 

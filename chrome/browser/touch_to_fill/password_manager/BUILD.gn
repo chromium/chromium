@@ -68,6 +68,7 @@ if (is_android) {
       "//components/device_reauth",
       "//components/password_manager/content/browser",
       "//components/password_manager/core/browser",
+      "//components/url_formatter",
       "//components/webauthn/android",
       "//content/public/browser",
       "//ui/android",
