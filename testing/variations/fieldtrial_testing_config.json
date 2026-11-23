@@ -7794,18 +7794,21 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledDLS_20261026",
+                    "name": "EnabledDLS_20261120",
                     "enable_features": [
                         "IOSGCR_allow_unsorted_cache_index",
                         "IOSGCR_data_load_strategy_send_updates_when_no_reload",
                         "IOSGCR_disable_data_store_card_cache_expired_check",
                         "IOSGCR_disable_memory_card_cache_clear_cache_on_open_if_expired",
                         "IOSGCR_disable_open_expired_persistent_cache_check",
+                        "IOSGCR_discover_invalidate_metadata_and_guard_empty_state_on_clear",
+                        "IOSGCR_discover_preserve_in_memory_cards_on_new_tab_sync",
                         "IOSGCR_do_not_short_circuit_on_feed_operations_generator_failure",
                         "IOSGCR_dsc_enable_synchronous_feed_sourcer_observer_registration",
                         "IOSGCR_enable_data_loading_strategy",
                         "IOSGCR_enable_persisted_feed_deferred_disk_writes",
                         "IOSGCR_handle_feed_sourcer_processing_errors",
+                        "IOSGCR_populate_default_host_locale_on_bling",
                         "IOSGCR_use_live_feed_sourcer"
                     ],
                     "disable_features": [
