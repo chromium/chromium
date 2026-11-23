@@ -74,8 +74,6 @@ void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {
                                   std::sqrt(Size().Area64()), 1, 5000, 100);
       break;
     case HostType::kOffscreenCanvasHost:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.OffscreenCanvas.SqrtNumberOfPixels",
-                                  std::sqrt(Size().Area64()), 1, 5000, 100);
       break;
   }
 }

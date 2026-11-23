@@ -3963,16 +3963,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.OffscreenCanvas.SqrtNumberOfPixels" units="sqrt(pixels)"
-    expires_after="2025-04-01">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Stores the square root of the number of pixels in a new or resized offscreen
-    canvas. Emitted from CanvasRenderingContextHost::RecordCanvasSizeToUMA.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Paint.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-05-16">
   <owner>pdr@chromium.org</owner>
