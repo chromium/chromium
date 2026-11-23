@@ -85,7 +85,7 @@ public class ImeTest {
         mRule.fullyLoadUrl(UrlUtils.getIsolatedTestFileUrl(ImeActivityTestRule.INPUT_FORM_HTML));
         mRule.assertWaitForKeyboardStatus(false);
 
-        DOMUtils.clickNode(mRule.getWebContents(), "input_text");
+        mRule.clickNode("input_text");
         mRule.assertWaitForKeyboardStatus(true);
 
         // Hide keyboard when navigating.

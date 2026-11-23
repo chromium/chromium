@@ -113,13 +113,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
         WebContentsImpl webContents = (WebContentsImpl) getWebContents();
         mCallbackContainer = new TestCallbackHelperContainer(webContents);
-        DOMUtils.waitForNonZeroNodeBounds(webContents, "input_text");
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
-        boolean result = DOMUtils.clickNode(webContents, "input_text");
-
-        Assert.assertEquals("Failed to dispatch touch event.", true, result);
+        clickNode("input_text");
         assertWaitForKeyboardStatus(true);
 
         mConnection = getInputConnection();
@@ -669,6 +663,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     /**
      * Focus element, wait for a single state update, reset state update list.
+     *
      * @param id ID of the element to focus.
      */
     void focusElementAndWaitForStateUpdate(String id) throws TimeoutException {
@@ -688,6 +683,19 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         waitForFocusedElement(id);
         // When we focus another element, the connection may be recreated.
         mConnection = getInputConnection();
+    }
+
+    /**
+     * Waits for layout bounds, simulates the end of paint holding, and clicks the node.
+     *
+     * @param id ID of the element to click.
+     */
+    void clickNode(final String id) throws TimeoutException {
+        WebContentsImpl webContents = (WebContentsImpl) getWebContents();
+        DOMUtils.waitForNonZeroNodeBounds(webContents, id);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
+        Assert.assertTrue("Failed to dispatch touch event.", DOMUtils.clickNode(webContents, id));
     }
 
     static class TestInputConnectionFactory implements ChromiumBaseInputConnection.Factory {
