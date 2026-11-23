@@ -9687,9 +9687,6 @@ Si la estableces como falsa o no la estableces, se usará el comportamiento pred
 Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="6752711782954612641">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros para la búsqueda de una URL con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
-
-      Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se enviarán solicitudes de búsqueda con el método GET.</translation>
 <translation id="6757413365906304125">Esta política determina el comportamiento para volver a asignar las teclas RePág/AvPág en
 la subpágina "teclas de reasignación". La subpágina "teclas de reasignación" permite a los usuarios
 personalizar las teclas del teclado. Si la habilitas, esta política evita que los usuarios
@@ -12300,9 +12297,6 @@ Si no la estableces, el control con gestos faciales estará inicialmente inhabil
       Si se habilita esta política, no se programarán otros procesos en el mismo núcleo de CPU cuando se ejecute el proceso de renderización.
       Si inhabilitas esta política, todos los demás procesos se pueden programar en el mismo núcleo de CPU si se está ejecutando un proceso de renderizador en él.
       Si no se establece esta política, todos los demás procesos se pueden programar en el mismo núcleo de CPU si un proceso de renderizador se está ejecutando en el núcleo. Esta configuración predeterminada puede variar según la versión de <ph name="PRODUCT_NAME" />, las pruebas de campo actualmente en ejecución y la plataforma.</translation>
-<translation id="8337114537412769126">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros durante la búsqueda de sugerencias con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
-
-      Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se enviarán las solicitudes de búsqueda de sugerencias con el método GET.</translation>
 <translation id="8337200442224446773">Impedir la aleatorización del grupo de sockets para los proxies</translation>
 <translation id="8337961007759352651">Las secuencias de comandos para workers (web workers, service workers, etc.) requieren un tipo de MIME de JavaScript, como <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Se rechazarán las secuencias de comandos para workers con tipos de MIME heredados, como <ph name="MIMETYPE_TEXT_ASCII" />.</translation>
 <translation id="8339089771335211509">WebRTC solo utilizará la interfaz mediante una conexión pública, pero no se conectará mediante direcciones IP privadas.</translation>

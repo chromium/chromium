@@ -10,6 +10,7 @@
 <translation id="2588322182880276190">Chrome logosu</translation>
 <translation id="3444832043240812445">Karşılaştığınız son kilitlenme olayları hakkındaki bilgiler yalnızca <ph name="BEGIN_LINK" />kilitlenme bildirmeyi etkinleştirdiyseniz<ph name="END_LINK" /> bu sayfada gösterilir.</translation>
 <translation id="3512634283363927263">Bu sayfalar Chrome geliştiricilerinin kullanması için tasarlanmış olup etkin şekilde yönetilmiyor veya test edilmemiş olabilir. Bu özellikleri etkinleştirmek için <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> adresine giderek hata ayıklama sayfalarını etkinleştirme düğmesini tıklayın ve tekrar bu sayfaya gelin.</translation>
+<translation id="354621070532799440">Hatırlatıcı: Google'ın en iyi güvenlik özellikleri cebinizde</translation>
 <translation id="3875312571075912821">Güvenlik duvarınızın veya virüsten korunma programınızın ayarlarından,
         Chrome'un ağa erişmesine izin verin.</translation>
 <translation id="3893985792899396936">Chrome İpucu: Lens ile Arama Yapın</translation>
@@ -22,6 +23,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           öğesine gidin ve yapılandırmanızın "proxy yok" veya "doğrudan" olarak ayarlandığından emin olun.</translation>
+<translation id="6117557075995890082">Hareket halindeyken Google'ın güvenliğinden yararlanmak için Chrome uygulamasını kullanın</translation>
 <translation id="6187085551300363958">Chrome İpucu: Şifreleri Kaydedin</translation>
 <translation id="6341737370356890233">Chrome menüsü &gt;
           <ph name="SETTINGS_TITLE" />

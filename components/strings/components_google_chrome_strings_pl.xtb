@@ -10,6 +10,7 @@
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Ta strona zawiera informacje o ostatnich awariach tylko w przypadku <ph name="BEGIN_LINK" />włączenia funkcji zgłaszania awarii<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Te strony są przeznaczone dla programistów Chrome i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
+<translation id="354621070532799440">Przypomnienie: najlepsze funkcje bezpieczeństwa Google na wyciągnięcie ręki</translation>
 <translation id="3875312571075912821">Zezwalaj Chrome na korzystanie z sieci w ustawieniach zapory sieciowej
         lub oprogramowania antywirusowego.</translation>
 <translation id="3893985792899396936">Wskazówka dotycząca Chrome: wyszukuj za pomocą Obiektywu</translation>
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i upewnij się, że w konfiguracji wybrano połączenie bez serwera proxy lub bezpośrednie.</translation>
+<translation id="6117557075995890082">Używaj aplikacji Chrome, aby korzystać z funkcji bezpieczeństwa Google, gdziekolwiek jesteś</translation>
 <translation id="6187085551300363958">Wskazówka od Chrome: zapisuj hasła</translation>
 <translation id="6341737370356890233">Wybierz
         menu Chrome &gt;

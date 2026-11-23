@@ -10,6 +10,7 @@
 <translation id="2588322182880276190">Chrome logo</translation>
 <translation id="3444832043240812445">This page only shows information on your recent crashes if you <ph name="BEGIN_LINK" />enable crash reporting<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">These pages are intended for use by Chrome developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
+<translation id="354621070532799440">Reminder: Google's best safety features in your pocket</translation>
 <translation id="3875312571075912821">Allow Chrome to access the network in your firewall or antivirus
           settings.</translation>
 <translation id="3893985792899396936">Chrome tip: Search with Lens</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           and make sure your configuration is set to "no proxy" or "direct."</translation>
+<translation id="6117557075995890082">Use the Chrome app to take the safety of Google on the go</translation>
 <translation id="6187085551300363958">Chrome tip: Save passwords</translation>
 <translation id="6341737370356890233">Go to
           the Chrome menu &gt;

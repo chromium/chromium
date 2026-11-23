@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Hierdie bladsy wys net inligting oor jou onlangse omvalle as jy <ph name="BEGIN_LINK" />omvalrapportering aktiveer<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Hierdie bladsye is bedoel vir gebruik deur Chrome-ontwikkelaars en word dalk nie aktief onderhou of getoets nie. As jy hulle wil aktiveer, navigeer na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik die knoppie om ontfoutbladsye te aktiveer en navigeer dan terug na hierdie bladsy toe.</translation>
+<translation id="354621070532799440">Onthounota: Google se beste veiligheidkenmerke in jou sak</translation>
 <translation id="3875312571075912821">Laat Chrome in jou brandmuur- of antivirusinstellings toe om by jou netwerk
           in te gaan.</translation>
 <translation id="3893985792899396936">Chromium-wenk: Soek met Lens</translation>
@@ -26,6 +27,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           en maak seker jou opstelling is na "geen instaanbediener nie" of "direk" gestel.</translation>
+<translation id="6117557075995890082">Gebruik die Chrome-app om die veiligheid van Google saam te neem terwyl jy aan die beweeg is</translation>
 <translation id="6187085551300363958">Chrome-wenk: Stoor wagwoorde</translation>
 <translation id="6341737370356890233">Gaan na
         die Chrome-kieslys &gt;

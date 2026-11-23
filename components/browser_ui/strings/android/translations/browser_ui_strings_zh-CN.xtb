@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
-<translation id="1000614056227025171">自定义首页宣传内容底部动作条已以最大高度打开</translation>
+<translation id="1000614056227025171">“自定义首页”功能推广底栏已以最大高度打开</translation>
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1046742265332833834">蓝色主题</translation>
@@ -12,7 +12,7 @@
 <translation id="1126523729897810826">完成下方操作建议，充分利用 Chrome</translation>
 <translation id="113098737392899175">连接到键盘时，使用文本光标浏览网页</translation>
 <translation id="1148624853678088576">搞定了！</translation>
-<translation id="1178015372320901893">“我的快捷方式”底部动作条</translation>
+<translation id="1178015372320901893">“我的快捷方式”底栏</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">此操作会删除 <ph name="ORIGIN" /> 存储的全部数据和 Cookie。</translation>
@@ -50,7 +50,7 @@
 <translation id="1500473259453106018">隐藏“在标签页上显示降价通知”卡片</translation>
 <translation id="1508931164824684991">网站可以使用 JavaScript</translation>
 <translation id="1510341833810331442">网站不得将数据保存在您的设备上</translation>
-<translation id="1532175480576580256">我的快捷方式底部动作条已按最大高度显示</translation>
+<translation id="1532175480576580256">“我的快捷方式”底栏已按最大高度显示</translation>
 <translation id="1538031354170655462">网站通常会通过近距离无线通信 (NFC) 与附近的标签或设备互动，例如扫描徽章或感应式付款</translation>
 <translation id="1547123415014299762">允许使用第三方 Cookie</translation>
 <translation id="1565353932454306569"><ph name="ORIGIN" /> – 从屏幕边缘拖动即可退出全屏模式。</translation>
@@ -73,10 +73,10 @@
 <translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1717218214683051432">移动传感器</translation>
 <translation id="1717996979683942279">开启此设置后，网站可以询问能否管理所有显示屏上的窗口。关闭此设置后，网站无法管理所有显示屏上的窗口。</translation>
-<translation id="1738912554587725807">“新标签页”页面外观主题集合底部动作条</translation>
+<translation id="1738912554587725807">“新标签页”页面外观主题集合底栏</translation>
 <translation id="1743802530341753419">需先询问，得到许可后才允许网站连接设备（推荐）</translation>
 <translation id="1766455884659449403">接收 Chrome 提示通知</translation>
-<translation id="1777815584158991902">探索信息流底部动作条</translation>
+<translation id="1777815584158991902">探索信息流底栏</translation>
 <translation id="1779089405699405702">图片解码器</translation>
 <translation id="1781533683087883868">关闭阅读模式下的链接</translation>
 <translation id="1785415724048343560">建议勾选此选项以获得最佳体验</translation>
@@ -87,7 +87,7 @@
 <translation id="1848033246551405023">字体：Sans Serif</translation>
 <translation id="1861244985839668297">开启此设置后，网站可以请求使用 HID 设备。关闭此设置后，网站无法使用 HID 设备。</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
-<translation id="1881806992065048905">“新标签页”页面外观底部动作条</translation>
+<translation id="1881806992065048905">“新标签页”页面外观底栏</translation>
 <translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="1906181697255754968">网站通常会访问您设备上的文件和文件夹以实现某些功能（例如自动保存您的工作成果）</translation>
 <translation id="1915307458270490472">挂断</translation>
@@ -136,7 +136,7 @@
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
 <translation id="2289270750774289114">在网站想发现附近的蓝牙设备时询问您（推荐）</translation>
 <translation id="2315043854645842844">操作系统不支持选择客户端证书。</translation>
-<translation id="2347601491101454548">我的快捷方式底部动作条已按一半高度显示</translation>
+<translation id="2347601491101454548">“我的快捷方式”底栏已按一半高度打开</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2364212713469273030"><ph name="ORIGIN" /> – 从顶部拖动并从左侧或右侧边缘滑动即可退出全屏模式。</translation>
 <translation id="2379925928934107488">当 Chrome 使用深色主题时，尽可能对网站应用深色主题</translation>
@@ -170,7 +170,7 @@
 <translation id="2597457036804169544">不对网站应用深色主题</translation>
 <translation id="2606760465469169465">自动验证</translation>
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
-<translation id="2626708220538466178">默认浏览器底部动作条已关闭</translation>
+<translation id="2626708220538466178">默认浏览器底栏已关闭</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2665056444046933274">网站可以使用此功能访问此设备上的其他应用和服务</translation>
 <translation id="2670403088701171361">不允许网站查看您剪贴板中的文字或图片</translation>
@@ -260,10 +260,10 @@
 <translation id="3632460243282703117">订阅</translation>
 <translation id="363748948745453283">正在使用大致位置信息</translation>
 <translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
-<translation id="3658847490588580244">默认浏览器底部动作条</translation>
+<translation id="3658847490588580244">默认浏览器底栏</translation>
 <translation id="3676777756440746804">禁止网站向您请求使用其保存的与您相关的信息</translation>
 <translation id="3677897809642449131">网站可以请求使用移动传感器</translation>
-<translation id="3678318839615834650">“新标签页”页面卡片底部动作条已按最大高度显示</translation>
+<translation id="3678318839615834650">“新标签页”页面卡片底栏已按最大高度显示</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
 <translation id="3703430731944883733">管理信息流</translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
@@ -320,7 +320,7 @@
 <translation id="4217710972110098902">已连接到串行端口</translation>
 <translation id="4223404254440398437">已拒绝授予麦克风使用权限</translation>
 <translation id="4226663524361240545">收到通知时设备会振动</translation>
-<translation id="4227965147357783918">自定义首页宣传内容底部动作条已以一半高度打开</translation>
+<translation id="4227965147357783918">“自定义首页”功能推广底栏已以一半高度打开</translation>
 <translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4278390842282768270">允许</translation>
@@ -334,20 +334,20 @@
 <translation id="4340799661701629185">不允许网站发送通知</translation>
 <translation id="4341577178275615435">如需开启或关闭光标浏览模式，请使用快捷键 F7</translation>
 <translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
-<translation id="4412683424767388419">Chrome 颜色底部动作条已按一半高度显示</translation>
+<translation id="4412683424767388419">Chrome 颜色底栏已按一半高度显示</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
 <translation id="4425416282877905577">字体：Serif</translation>
 <translation id="443121186588148776">串行端口</translation>
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
 <translation id="443552056913301231">此操作会删除所有本地数据（包括 Cookie）并重置 <ph name="ORIGIN" /> 的所有权限</translation>
-<translation id="4441527683895888777">已打开 Chrome 颜色底部动作条，并以最大高度显示</translation>
+<translation id="4441527683895888777">已打开 Chrome 颜色底栏，并以最大高度显示</translation>
 <translation id="4468959413250150279">将某个特定网站静音。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 个 Cookie}other{# 个 Cookie}}</translation>
 <translation id="4478158430052450698">更轻松地自定义不同网站的缩放级别</translation>
 <translation id="4479647676395637221">在允许网站使用您的摄像头前先询问（推荐）</translation>
 <translation id="4505788138578415521">网址已展开</translation>
 <translation id="4522570452068850558">详情</translation>
-<translation id="4529207923544043455">底部动作条，显示的是已完成和未完成的设置列表任务</translation>
+<translation id="4529207923544043455">底栏，显示的是已完成和未完成的设置列表任务</translation>
 <translation id="4534723447064627427">若要允许 <ph name="APP_NAME" /> 使用您的麦克风，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启麦克风。</translation>
 <translation id="4545694195887112015">已关闭设置工作表</translation>
 <translation id="4566417217121906555">将麦克风静音</translation>
@@ -382,7 +382,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> 已被禁止使用您在以下网站上的信息</translation>
 <translation id="4953688446973710931">开启此设置后，网站可以请求自动下载多个文件。关闭此设置后，网站无法自动下载多个文件。</translation>
 <translation id="4972737347717125191">网站可以请求使用虚拟现实设备和数据</translation>
-<translation id="4973805849704516244">Chrome 颜色底部动作条</translation>
+<translation id="4973805849704516244">Chrome 颜色底栏</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
 <translation id="4978178243417029856">详细了解探索信息流</translation>
@@ -401,12 +401,12 @@
 <translation id="5099358668261120049">此操作会删除 <ph name="ORIGIN" /> 或其在主屏幕中安装的应用所存储的全部数据和 Cookie。</translation>
 <translation id="5116239826668864748">当您点按消息、文档和其他应用中的链接时，可以随时使用 Chrome 打开链接</translation>
 <translation id="5123685120097942451">无痕式标签页</translation>
-<translation id="512938610812707830">“新标签页”页面外观主题集合底部动作条已按最大高度显示</translation>
-<translation id="5137460097045297858">探索信息流底部动作条已按一半高度显示</translation>
+<translation id="512938610812707830">“新标签页”页面外观主题集合底栏已按最大高度显示</translation>
+<translation id="5137460097045297858">探索信息流底栏已按一半高度显示</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{您打开的标签页中有降价}other{您打开的标签页中有降价}}</translation>
 <translation id="5186036860380548585">选项位于屏幕顶部附近</translation>
 <translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
-<translation id="5198930230016462977">自定义新标签页页面底部动作条已关闭</translation>
+<translation id="5198930230016462977">“自定义新标签页”底栏已关闭</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
 <translation id="5225463052809312700">开启摄像头</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -429,13 +429,13 @@
 <translation id="5489227211564503167">已播时长为 <ph name="ELAPSED_TIME" />，总时长为 <ph name="TOTAL_TIME" />。</translation>
 <translation id="5502860503640766021">已授予“<ph name="PERMISSION_1" />”权限，已禁用“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5505264765875738116">网站无法询问能否向您发送通知</translation>
-<translation id="5515432237048785579">探索信息流底部动作条已按最大高度显示</translation>
+<translation id="5515432237048785579">探索信息流底栏已按最大高度显示</translation>
 <translation id="5516455585884385570">打开通知设置</translation>
 <translation id="5527111080432883924">需先询问，得到许可后才允许网站读取剪贴板中的文字和图片（推荐）</translation>
 <translation id="5555115555607204100">不使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微增强</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5591840828808741583">已为 <ph name="SITE_NAME" /> 禁用此权限</translation>
-<translation id="5617702678271228680">“新标签页”页面卡片底部动作条</translation>
+<translation id="5617702678271228680">“新标签页”页面卡片底栏</translation>
 <translation id="5621413808884657932">开启此设置后，网站可以请求访问此设备上的其他应用和服务。关闭此设置后，网站无法访问此设备上的其他应用和服务。</translation>
 <translation id="5632485077360054581">操作步骤</translation>
 <translation id="5649053991847567735">自动下载项</translation>
@@ -459,7 +459,7 @@
 <translation id="5801457289562671820">由组织推荐</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5817042798620209981">网站信息，对话框</translation>
-<translation id="5822675474983796325">自定义新标签页页面底部动作条已全屏打开</translation>
+<translation id="5822675474983796325">“自定义新标签页”页面底栏已完全展开</translation>
 <translation id="5833899990800318936">不允许网站使用 JavaScript</translation>
 <translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
 <translation id="5844448279347999754">开启此设置后，网站可以请求查看保存到剪贴板中的文字和图片。关闭此设置后，网站无法查看保存到剪贴板中的文字或图片。</translation>
@@ -509,7 +509,7 @@
 <translation id="6218508144653756827">紫红色主题</translation>
 <translation id="6231752747840485235">卸载“<ph name="APP_NAME" />”？</translation>
 <translation id="6234351944623978659">依次点按“浏览器应用”&gt;“Chrome”</translation>
-<translation id="6260830281887654268">“新标签页”页面外观主题集合底部动作条已按一半高度显示</translation>
+<translation id="6260830281887654268">“新标签页”页面外观主题集合底栏已按一半高度显示</translation>
 <translation id="6262279340360821358">已禁用“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6295158916970320988">所有网站</translation>
@@ -589,7 +589,7 @@
 <translation id="7219254577985949841">删除网站数据？</translation>
 <translation id="7225256190577194089">撤销设备“<ph name="DEVICE_NAME" />”的所有权限</translation>
 <translation id="723171743924126238">选择图片</translation>
-<translation id="7243246278722455312">自定义新标签页页面底部动作条</translation>
+<translation id="7243246278722455312">“自定义新标签页”页面底栏</translation>
 <translation id="7243308994586599757">选项在靠近屏幕底部的位置</translation>
 <translation id="7250468141469952378">已选择 <ph name="ITEM_COUNT" /> 项</translation>
 <translation id="7260727271532453612">已授予“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
@@ -602,7 +602,7 @@
 高级保护功能会控制以下 Chrome 设置：</translation>
 <translation id="7366415735885268578">添加网站</translation>
 <translation id="7368695150573390554">所有离线数据都将被删除</translation>
-<translation id="7369678931043226462">自定义“新标签页”页面的底部动作条已按一半高度显示</translation>
+<translation id="7369678931043226462">“自定义新标签页”底栏已按一半高度显示</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> 的设置</translation>
 <translation id="7399802613464275309">安全检查</translation>
 <translation id="7406113532070524618">处于启用状态时，此设置不会识别您的身份，也不会允许网站查看您的浏览记录。不过，在验证过程中，网站可能会分享少量信息</translation>
@@ -643,8 +643,8 @@
 <translation id="7791543448312431591">添加</translation>
 <translation id="780301667611848630">不用了</translation>
 <translation id="7804248752222191302">有一个网站正在使用您的摄像头</translation>
-<translation id="7805832099057502789">“新标签页”页面外观底部动作条已按最大高度显示</translation>
-<translation id="7809029041571842593">“新标签页”页面卡片底部动作条已按一半高度显示</translation>
+<translation id="7805832099057502789">“新标签页”页面外观底栏已按最大高度显示</translation>
+<translation id="7809029041571842593">“新标签页”页面卡片底栏已按一半高度打开</translation>
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7835852323729233924">正在播放媒体</translation>
 <translation id="783819812427904514">将视频取消静音</translation>
@@ -701,7 +701,7 @@
 <translation id="8441146129660941386">后退</translation>
 <translation id="8444433999583714703">若要允许 <ph name="APP_NAME" /> 获取您的位置信息，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启位置信息服务。</translation>
 <translation id="8463843545738141778">此设置已停用，因为您已在 Android 设置中开启高级保护功能。</translation>
-<translation id="8467359479529706065">“新标签页”页面外观底部动作条已按一半高度显示</translation>
+<translation id="8467359479529706065">“新标签页”页面外观底栏已按一半高度显示</translation>
 <translation id="8471525937465764768">网站通常会连接到 USB 设备以实现某些功能（例如打印文档或保存到存储设备）</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />”版本过旧。请重新安装该应用。</translation>
 <translation id="847433688444405067">跨设备浏览</translation>
@@ -722,7 +722,7 @@
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">开启此设置后，系统会显示网站的桌面版视图。关闭此设置后，系统会显示网站的移动版视图。</translation>
 <translation id="8625916342247441948">不允许网站连接到 HID 设备</translation>
-<translation id="8670078035093027626">默认浏览器底部动作条已全屏打开</translation>
+<translation id="8670078035093027626">默认浏览器底栏已全屏打开</translation>
 <translation id="8676316391139423634">开启此设置后，网站可以请求跟踪您的双手。关闭此设置后，网站无法跟踪您的双手。</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8681886425883659911">在已知会展示侵扰性或误导性广告的网站上屏蔽广告</translation>

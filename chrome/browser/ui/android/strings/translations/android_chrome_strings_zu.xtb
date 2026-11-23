@@ -386,6 +386,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="2496180316473517155">Umlando wokuphequlula</translation>
 <translation id="250020030759455918">Uzobona isimo sakho sokungena ngemvume se-<ph name="SITE_NAME" />, idatha yokuphequlula, nedatha yesayithi ku-Chrome</translation>
 <translation id="2501278716633472235">Iya emuva</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{Ukudawuniloda oku-# kuyaqhubeka}one{Okudawuniloda okungu-# kuyaqhubeka}other{Okudawuniloda okungu-# kuyaqhubeka}}</translation>
 <translation id="2510106555128151389">Ifaka i-<ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Sesha okungakhethwa kukho kokuthenga</translation>
 <translation id="2513403576141822879">Ukuze uthole amanye amasethingi ezihambisana nobumfihlo, ukuvikelwa nokuqoqwa kwedatha, bona <ph name="BEGIN_LINK" />amasevisi okuvumelanisa nawe-Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3740290940447881599">Qiniseka ukuthi uyayithemba le sayithi</translation>
 <translation id="3740525748616366977">Ukusesha ngezwi akutholakali kule divayisi</translation>
 <translation id="3749289110408117711">Igama lefayela</translation>
+<translation id="3751708358601675711">Hlela ukulandelela inani</translation>
 <translation id="3756823472711156529">Buyisela iqembu</translation>
 <translation id="3759306015475526475">Lawula ukusetshenziswa namasethingi edatha yokuphahlazeka</translation>
 <translation id="3763110477555836428">Inombolo yekhadi eliku-app izogcwaliswa lapho ukhokha ngaleli khadi ukuze kuvikelwe imininingwane yakho yangempela. Lawula kuGoogle Wallet. <ph name="BEGIN_LINK1" />Funda kabanzi ngekhadi eliku-app<ph name="END_LINK1" /></translation>

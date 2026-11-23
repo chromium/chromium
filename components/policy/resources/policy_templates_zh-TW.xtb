@@ -9057,9 +9057,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
 
 如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
-<translation id="6752711782954612641">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> 政策來指定使用 POST 搜尋網址時的參數。設定值由名稱和值的組合所構成 (以半形逗號分隔多個設定值)。如果值為範本參數 (例如 <ph name="SEARCH_TERM_MARKER" />)，實際的搜尋字詞資料會取代該參數。
-
-      如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> 政策，系統會使用 GET 方法傳送搜尋要求。</translation>
 <translation id="6757413365906304125">這項政策會決定「重新對應按鍵」子頁面中 PageUp/PageDown 鍵重新對應的行為。「重新對應按鍵」子頁面可讓使用者自訂鍵盤按鍵。如果啟用這項政策，會禁止使用者自訂這類特定重新對應；如果不設定這項政策，預設會使用含有搜尋鍵的快速鍵，並允許使用者設定快速鍵。</translation>
 <translation id="6757613329154374267">已啟用備份與還原功能</translation>
 <translation id="6758659208493449452">這項政策可控管已加入進階保護計畫的使用者是否可以享有額外的防護。部分功能可能涉及與 Google 共用資料 (例如，進階保護計畫的使用者可將下載內容傳送至 Google 進行惡意軟體掃描)。如果設為 True 或不予設定，已加入計畫的使用者將能享有額外的防護。如果設為 False，進階保護計畫的使用者只能享有標準的消費者功能。</translation>
@@ -11475,9 +11472,6 @@ Proxy 可讓瀏覽器將網址的部分雜湊傳送給 Google，而不必連結�
       如果啟用這項政策，轉譯器程序執行時，其他程序就不會安排在同一個 CPU 核心上執行。
       如果停用這項政策，轉譯器程序在核心執行時，其他程序都能安排在同一個 CPU 核心上執行。
       如果不設定這項政策，轉譯器程序在核心執行時，其他程序都能安排在同一個 CPU 核心上執行。具體情況可能會因 <ph name="PRODUCT_NAME" /> 版本、目前執行的實測和平台而異。</translation>
-<translation id="8337114537412769126">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 政策來指定使用 POST 提供搜尋建議時的參數。設定值由名稱和值的組合所構成 (以半形逗號分隔多個設定值)。如果值為範本參數 (例如 <ph name="SEARCH_TERM_MARKER" />)，實際的搜尋字詞資料會取代該參數。
-
-      如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 政策，系統會使用 GET 方法傳送建議搜尋要求。</translation>
 <translation id="8337200442224446773">禁止 Proxy 的通訊端集區隨機化</translation>
 <translation id="8337961007759352651">工作站 (網路工作站、Service Worker 等) 指令碼需要使用 JavaScript MIME 類型，例如 <ph name="MIMETYPE_TEXT_JAVASCRIPT" />。系統會拒絕使用舊版 MIME 類型的工作站指令碼，例如 <ph name="MIMETYPE_TEXT_ASCII" />。</translation>
 <translation id="8339089771335211509">WebRTC 只會使用連線至公開網際網路的介面，而且不會使用私人 IP 位址進行連線。</translation>

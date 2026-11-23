@@ -9428,9 +9428,6 @@ Se la policy viene impostata su False o se non viene configurata, verrà utilizz
 Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="6752711782954612641">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di un URL con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
-
-      Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> non viene configurata, le richieste di ricerca vengono inviate utilizzando il metodo Get.</translation>
 <translation id="6757413365906304125">Questa policy determina il comportamento della rimappatura dei tasti Pagina su/Pagina giù
 nella pagina secondaria "Rimappa i tasti". La pagina secondaria "Rimappa i tasti"
 consente di personalizzare i tasti. Se abilitata, questa policy impedisce agli utenti di
@@ -11947,9 +11944,6 @@ Se la policy non viene configurata, inizialmente i controlli con il volto sono d
       Se questa policy è abilitata, nessun altro processo verrà pianificato sullo stesso core della CPU quando è in esecuzione il processo di rendering.
       Se questa policy viene disattivata, tutti gli altri processi possono essere pianificati sullo stesso core della CPU se è in esecuzione un processo di rendering.
       Se questa policy non viene configurata, tutti gli altri processi possono essere pianificati sullo stesso core della CPU se un processo di rendering è in esecuzione sul core. Questa configurazione potrebbe variare in base alla release di <ph name="PRODUCT_NAME" />, alle prove sul campo attualmente in esecuzione e alla piattaforma.</translation>
-<translation id="8337114537412769126">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di suggerimenti con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
-
-      Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> non viene configurata, le richieste di ricerca di suggerimenti vengono inviate utilizzando il metodo Get.</translation>
 <translation id="8337200442224446773">Impedisci la randomizzazione del pool di socket per i proxy</translation>
 <translation id="8337961007759352651">Gli script worker (web worker, service worker ecc.) richiedono un tipo MIME JavaScript, ad esempio <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Gli script worker con tipi MIME precedenti, come <ph name="MIMETYPE_TEXT_ASCII" />, verranno rifiutati.</translation>
 <translation id="8339089771335211509">WebRTC utilizzerà l'interfaccia solo se si connette a una rete pubblica, ma non potrà connettersi utilizzando indirizzi IP privati.</translation>

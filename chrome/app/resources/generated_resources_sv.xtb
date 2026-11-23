@@ -856,6 +856,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1921544956190977703">Du har Chromes starkaste skydd mot farliga webbplatser, nedladdningar och tillägg</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136"><ph name="NAME" /> sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i kontot.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Öppna med</translation>
 <translation id="1925017091976104802">Tryck på <ph name="MODIFIER_KEY_DESCRIPTION" /> för att klistra in</translation>
 <translation id="1925021887439448749">Ange en anpassad webbadress</translation>
@@ -1394,6 +1395,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2519517390894391510">Namn på certifikatprofil</translation>
 <translation id="2520644704042891903">Väntar på tillgänglig plats ...</translation>
 <translation id="2522757085249311407">Tillåt att Bluetooth-enheter i närheten upptäcker och ansluter till den här enheten.</translation>
+<translation id="2523048609826818526">Allmänt skrivande</translation>
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
 <translation id="252513908494776481">Fråga om den här fliken</translation>
 <translation id="2525746158911982776">Uppdateringen misslyckades eftersom systemet inte har tillräckligt med lagringsutrymme.</translation>
@@ -1404,6 +1406,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2528487766183344810">Lås upp <ph name="TOKEN_NAME" /> om du vill exportera klientcertifikatet.</translation>
 <translation id="2532198298278778531">Hantera säker DNS i inställningarna för ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;Paus</translation>
+<translation id="2534439599863644240">Serieport</translation>
 <translation id="253498598929009420">Innehållet på skärmen blir synligt för webbplatsen</translation>
 <translation id="253557089021624350">Antal keepalive</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> har läs- och redigeringsbehörighet till följande filer och mappar</translation>

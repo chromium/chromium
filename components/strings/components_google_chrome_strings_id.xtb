@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Halaman ini hanya menunjukkan informasi tentang kondisi ngadat terkini jika Anda <ph name="BEGIN_LINK" />mengaktifkan pelaporan kondisi ngadat<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Halaman ini ditujukan untuk digunakan oleh developer Chrome, dan mungkin tidak dikelola atau diuji secara aktif. Untuk mengaktifkannya, buka <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik tombol untuk mengaktifkan halaman debug, lalu buka lagi halaman ini.</translation>
+<translation id="354621070532799440">Pengingat: Fitur keamanan terbaik Google ada di genggaman Anda</translation>
 <translation id="3875312571075912821">Izinkan Chrome untuk mengakses jaringan di setelan firewall atau antivirus
           Anda.</translation>
 <translation id="3893985792899396936">Tips Chrome: Telusuri Dengan Lens</translation>
@@ -26,6 +27,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           pastikan konfigurasi Anda disetel ke "tanpa proxy" atau "langsung".</translation>
+<translation id="6117557075995890082">Gunakan aplikasi Chrome untuk mendapatkan keamanan Google kapan saja di mana saja</translation>
 <translation id="6187085551300363958">Tips Chrome: Simpan Sandi</translation>
 <translation id="6341737370356890233">Buka
           menu Chrome &gt;

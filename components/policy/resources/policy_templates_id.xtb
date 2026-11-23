@@ -2445,6 +2445,13 @@ Kebijakan ini merupakan tindakan sementara untuk mengontrol fitur dan akan dihap
 <translation id="2467181864598429837">Perilaku browser default</translation>
 <translation id="2467896267442150508">Interval waktu paling lama satu minggu. Jika waktu mulai melebihi waktu berakhir, maka intervalnya akan berakhir di hari berikutnya.</translation>
 <translation id="2476249479201711962">Aktifkan akses ke menu konteks penyedia penelusuran default</translation>
+<translation id="247659494993692492">Jika kebijakan ini disetel, server yang diizinkan untuk autentikasi terintegrasi akan ditentukan. Autentikasi terintegrasi hanya aktif jika <ph name="PRODUCT_NAME" /> mendapat pernyataan autentikasi dari proxy atau dari server yang ada di daftar yang diizinkan.
+
+      Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mencoba mendeteksi apakah server ada di intranet. Hanya setelah itulah permintaan IWA akan direspons. Jika server terdeteksi sebagai internet, <ph name="PRODUCT_NAME" /> akan mengabaikan permintaan IWA darinya.
+
+      Catatan: Pisahkan beberapa nama server dengan tanda koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+      Di <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="PRODUCT_OS_NAME" />, library GSSAPI/Kerberos sistem dapat melakukan kanonisasi nama host server menjadi host entitas layanan yang berbeda (misalnya melalui pencarian CNAME DNS atau PTR DNS terbalik). Autentikasi Negotiate akan gagal kecuali jika host tersebut juga diizinkan oleh kebijakan ini.</translation>
 <translation id="2478756867046106663">Izinkan situs dengan elemen menyesatkan untuk membuka jendela atau tab baru</translation>
 <translation id="2479760962196319822">Kebijakan ini mengontrol apakah pengguna <ph name="PRODUCT_OS_NAME" /> dapat menyimpan data secara lokal atau tidak.
       Jika kebijakan ini disetel ke Salah (False), penyimpanan lokal di <ph name="PRODUCT_OS_NAME" /> akan diblokir. Pengguna tidak dapat menyimpan data apa pun secara lokal, dan tidak dapat mengakses direktori lokal.
@@ -4870,6 +4877,11 @@ Kebijakan ini dapat digabungkan dengan <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 
       Catatan: Kebijakan ini harus digunakan dengan <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Izinkan pengguna menyetel PIN lemah</translation>
+<translation id="3920151704940430728">Jika kebijakan ini disetel ke Aktif, pencarian CNAME akan dilewati. Nama server akan digunakan sesuai dengan yang dimasukkan saat membuat SPN Kerberos.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pencarian CNAME akan menentukan nama kanonis server saat membuat SPN Kerberos.
+
+Catatan: Di <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="PRODUCT_OS_NAME" />, jika kebijakan ini diaktifkan, pencarian CNAME bawaan <ph name="PRODUCT_NAME" /> akan dilewati, tetapi library GSSAPI/Kerberos sistem mungkin masih melakukan kanonisasi host entitas layanan (misalnya melalui setelan DNS <ph name="KRB5_CONFIG" />). Autentikasi Negotiate akan gagal kecuali jika host tersebut diizinkan oleh <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />, dan delegasi akan ditahan kecuali jika juga diizinkan oleh <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="392227823425989489">Semua pintasan sistem akan selalu diaktifkan seperti yang diharapkan.</translation>
 <translation id="3924506460382372403">Nonaktifkan pelaporan status grafis perangkat</translation>
 <translation id="3925377537407648234">Setel faktor skala dan resolusi tampilan</translation>
@@ -7018,6 +7030,15 @@ Kebijakan ini mendukung pembaruan dinamis.
 Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang.</translation>
 <translation id="5212810195096589189">Tentukan izin CLI VM</translation>
 <translation id="5213038356678567351">Situs yang seharusnya tidak pernah memicu pengalihan browser.</translation>
+<translation id="5213420013031914763">Jika kebijakan ini disetel ke Aktif, screenshot yang diambil dengan pintasan keyboard
+atau API ekstensi tidak akan diizinkan. Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, screenshot akan diizinkan.
+
+Pada <ph name="PRODUCT_NAME" /> versi 155 hingga 158, mengaktifkan kebijakan ini juga dapat mencegah ekstensi menghubungkan debugger melalui 'chrome.debugger.attach()', misalnya saat kebijakan <ph name="CHROME_VARIATIONS_POLICY_NAME" /> menonaktifkan semua variasi.
+
+Perlu diperhatikan bahwa pada <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="LINUX_OS_NAME" />,
+kebijakan ini tidak mencegah pengambilan screenshot yang dilakukan melalui sistem operasi atau aplikasi pihak ketiga.
+
+Di <ph name="IOS_NAME" />, jika kebijakan ini disetel ke Aktif, jendela <ph name="PRODUCT_NAME" /> akan disamarkan dalam screenshot sistem dan rekaman layar, serta membuat screenshot Seluruh Halaman tidak tersedia.</translation>
 <translation id="5216710229085956333">Aktifkan peredam bising Krisp</translation>
 <translation id="5216815237712190041">Mengonfigurasi gambar wallpaper tingkat perangkat yang akan ditampilkan di layar login jika belum ada pengguna yang login ke perangkat. Kebijakan ini disetel dengan menentukan URL tempat perangkat ChromeOS dapat mendownload gambar wallpaper dan hash kriptografi yang digunakan untuk memverifikasi integritas download. Gambar harus dalam format JPEG dan ukuran filenya tidak boleh lebih dari 16 MB. URL harus dapat diakses tanpa autentikasi apa pun. Gambar wallpaper didownload dan disimpan di cache. File akan didownload ulang setiap kali URL atau hash berubah.
 
@@ -9679,9 +9700,6 @@ Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
 Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="6752711782954612641">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> akan menentukan parameter saat menelusuri URL dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti <ph name="SEARCH_TERM_MARKER" />, data istilah penelusuran nyata akan menggantikannya.
-
-      Jika <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran akan dikirimkan menggunakan metode GET.</translation>
 <translation id="6757413365906304125">Kebijakan ini menentukan perilaku untuk konfigurasi ulang tombol PageUp/PageDown
 dalam subhalaman 'konfigurasi ulang tombol'. Subhalaman 'konfigurasi ulang tombol' memungkinkan pengguna
 menyesuaikan tombol keyboard. Jika diaktifkan, kebijakan ini akan mencegah pengguna
@@ -11834,6 +11852,11 @@ Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke p
 <translation id="8062485064082966327">Gunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
 <translation id="8064875716442437829">Aktifkan aksesibilitas perender</translation>
 <translation id="8066428282805800713">Kirim data hardware tambahan di ChromeOS Flex</translation>
+<translation id="8070654368411601340">Jika kebijakan ini disetel, server yang dapat menerima delegasi dari <ph name="PRODUCT_NAME" /> akan ditetapkan. Pisahkan beberapa nama server dengan tanda koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+      Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> tidak akan mendelegasikan kredensial pengguna, meskipun server terdeteksi sebagai intranet.
+
+      Di <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="PRODUCT_OS_NAME" />, saat kebijakan ini mengizinkan delegasi ke server, library GSSAPI/Kerberos sistem dapat melakukan kanonisasi nama host-nya menjadi host entitas layanan yang berbeda (misalnya melalui CNAME DNS atau pencarian PTR DNS terbalik). <ph name="PRODUCT_NAME" /> kemudian akan menahan delegasi dari entitas layanan tersebut, kecuali jika host tersebut juga diizinkan oleh kebijakan ini.</translation>
 <translation id="8071371098891664137">Jika <ph name="PRINTERS_BLOCKLIST" /> dipilih untuk <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> akan menentukan printer yang tidak dapat digunakan oleh pengguna. Semua printer diberikan kepada pengguna kecuali ID yang tercantum dalam kebijakan ini. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Batasi Akun Google yang memenuhi syarat untuk menyimpan file PDF ke Google Drive dari Penampil PDF <ph name="PRODUCT_NAME" /></translation>
 <translation id="8078224178125125527">Jika kebijakan ini disetel, hal ini akan menentukan server proxy yang akan mengizinkan semua skema autentikasi HTTP yang didukung <ph name="PRODUCT_NAME" />, terlepas dari nilai kebijakan <ph name="AUTH_SCHEMES_POLICY_NAME" />.
@@ -12280,9 +12303,6 @@ Jika kebijakan ini tidak disetel, fitur kontrol dengan wajah mula-mula akan dino
       Jika kebijakan ini disetel ke aktif, semua proses lain tidak akan dijadwalkan pada core CPU yang sama saat proses perender berjalan.
       Jika kebijakan ini disetel ke nonaktif, semua proses lain dapat dijadwalkan pada core CPU yang sama jika proses perender berjalan pada core tersebut.
       Jika kebijakan ini tidak disetel, semua proses lain dapat dijadwalkan pada core CPU yang sama jika proses perender berjalan pada core tersebut. Konfigurasi default ini mungkin bervariasi bergantung pada rilis <ph name="PRODUCT_NAME" />, uji coba kolom yang sedang berjalan, dan platform.</translation>
-<translation id="8337114537412769126">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> akan menentukan parameter ketika melakukan penelusuran saran dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti <ph name="SEARCH_TERM_MARKER" />, data istilah penelusuran nyata akan menggantikannya.
-
-      Jika <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran saran dikirimkan menggunakan metode GET.</translation>
 <translation id="8337200442224446773">Cegah pengacakan pool soket untuk proxy</translation>
 <translation id="8337961007759352651">Skrip untuk pekerja (Pekerja Web, Pekerja Layanan, dll.) memerlukan jenis MIME JavaScript, seperti <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Skrip pekerja dengan jenis MIME lama, seperti <ph name="MIMETYPE_TEXT_ASCII" />, akan ditolak.</translation>
 <translation id="8339089771335211509">WebRTC hanya akan menggunakan antarmuka yang terhubung ke internet publik, tetapi tidak dapat terhubung menggunakan alamat IP pribadi.</translation>

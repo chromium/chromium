@@ -10,6 +10,7 @@
 <translation id="2588322182880276190">Logo di Chrome</translation>
 <translation id="3444832043240812445">Questa pagina mostra solo informazioni sugli arresti anomali recenti se <ph name="BEGIN_LINK" />attivi la segnalazione degli arresti anomali<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Queste pagine sono destinate agli sviluppatori di Chrome e potrebbero non essere attivamente gestite o testate. Per attivarle, vai a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fai clic sul pulsante per attivare le pagine di debug, quindi torna a questa pagina.</translation>
+<translation id="354621070532799440">Promemoria: le migliori funzionalità di sicurezza di Google sempre in tasca</translation>
 <translation id="3875312571075912821">Consenti a Chrome di accedere alla rete nelle impostazioni del firewall o del software
         antivirus.</translation>
 <translation id="3893985792899396936">Suggerimento per Chrome: Cerca con Lens</translation>
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           e verifica che la configurazione sia impostata su "nessun proxy" o "diretta".</translation>
+<translation id="6117557075995890082">Usa l'app Chrome per portare con te la sicurezza di Google ovunque ti trovi</translation>
 <translation id="6187085551300363958">Suggerimento per Chrome: salva le password</translation>
 <translation id="6341737370356890233">Seleziona il menu Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> e deseleziona "<ph name="NO_PREFETCH_DESCRIPTION" />".
 Se il problema non si risolve, dovresti riselezionare questa opzione per ottenere prestazioni migliori.</translation>

@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Logotip de Chrome</translation>
 <translation id="3444832043240812445">Aquesta pàgina només mostrarà informació sobre els bloqueigs recents si <ph name="BEGIN_LINK" />activeu la creació d'informes de bloqueig<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Aquestes pàgines estan pensades per a desenvolupadors de Chrome i és possible que no es mantinguin ni es provin activament. Per activar-les, navega fins a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fes clic al botó per activar les pàgines de depuració i, a continuació, torna a aquesta pàgina.</translation>
+<translation id="354621070532799440">Recordatori: les millors funcions de seguretat de Google a la butxaca</translation>
 <translation id="3875312571075912821">Configureu el tallafoc o l'antivirus per permetre que Chrome accedeixi
           a la xarxa.</translation>
 <translation id="3893985792899396936">Consell de Chrome: cerca amb Lens</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i assegureu-vos que la configuració estigui definida sense servidor intermediari o com a directa.</translation>
+<translation id="6117557075995890082">Utilitza l'aplicació Chrome per gaudir de la seguretat de Google mentre et desplaces</translation>
 <translation id="6187085551300363958">Consell de Chrome: desa les contrasenyes</translation>
 <translation id="6341737370356890233">Aneu al
         menú de Chrome &gt;

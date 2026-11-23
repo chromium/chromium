@@ -102,12 +102,14 @@
 <translation id="1896602904211344018">Chrome अ‍ॅप मिळवा</translation>
 <translation id="1919130412786645364">Chrome मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
 <translation id="1925069572871307609">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे Windows 10 आवृत्ती 1809 किंवा त्यापुढील आवृत्ती असणे आवश्यक आहे. हा काँप्युटर Windows 10 ची जुनी आवृत्ती वापरत आहे.</translation>
+<translation id="1975400514743766362">फिरतीवर असताना तुमच्या <ph name="DEVICE_TYPE" /> वरील Chrome अ‍ॅपसह Google ची सुरक्षितता मिळवा</translation>
 <translation id="1979600810166324878">iOS साठी Chrome वर वर्धित सुरक्षित ब्राउझिंग सह फिरतीवर असताना आणखी सुरक्षित रहा</translation>
 <translation id="2001586581944147178">तुमच्या इंटरनेट ट्रॅफिकचा ॲक्सेस असलेल्या लोकांसाठी तुम्ही कोणत्या साइटला भेट देता हे पाहणे कठीण करा. DNS (डोमेन नेम सिस्टीम) मध्ये साइटचा आयपी अ‍ॅड्रेस शोधण्यासाठी Chrome सुरक्षित कनेक्शन वापरते.</translation>
 <translation id="2018879682492276940">इंस्टॉलेशन करता आले नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="2024959665595762054">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="2034233344106846793">Chrome हे शक्य असेल तेव्हा असुरक्षित कनेक्शन HTTPS वर आपोआप अपग्रेड करते</translation>
 <translation id="2039417478970545937">सेटिंग्ज.</translation>
+<translation id="2040220733769034247">Chrome डाउनलोड करण्यासाठी आणि तुमच्या Google खाते मध्ये साइन इन करण्यासाठी तुमचा फोन वापरून QR कोड स्कॅन करा.</translation>
 <translation id="2044908892530830113">Mac मेनू बारमध्ये Chrome मधील शोध दाखवा आणि कीबोर्ड शॉर्टकट सुरू करा</translation>
 <translation id="2050189601866423230">ब्राउझिंग करताना प्रश्न विचारण्यासाठी तुम्ही Google Search AI मोड पिन करू शकता</translation>
 <translation id="2060311596979880693">यशस्वी! तुम्ही आता Chrome मध्ये Google Search वापरून ब्राउझ करत असताना सहजपणे प्रश्न विचारू शकता</translation>
@@ -138,6 +140,7 @@
 <translation id="2295218613066132598">Chrome साइट शॉर्टकट दाखवा</translation>
 <translation id="2301513536169703857">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, Chrome मध्ये साइन इन करा</translation>
 <translation id="2307973900865360088">डॉक मध्ये ठेवा</translation>
+<translation id="2308558013860776484">इतर अ‍ॅप्स किंवा फाइल यांसारख्या Chrome च्या बाहेरील आशयाचा स्क्रीनशॉट शेअर करा</translation>
 <translation id="2309047409763057870">ही Google Chrome ची दुय्यम स्थापना असून त्यास तुमचा डीफॉल्ट ब्राउझर बनवू शकत नाही.</translation>
 <translation id="2345992953227471816">Chrome ला या एक्स्टेंशनमध्ये मालवेअर असल्याचे आढळले:</translation>
 <translation id="2350411688004301551">Gemini Enterprise वर स्विच करा</translation>
@@ -249,6 +252,7 @@
 <translation id="3294686910656423119">वापरविषयक आकडेवारी आणि क्रॅश अहवाल</translation>
 <translation id="3327226547491422998">नंतर, तुमच्यासाठी फॉर्म ऑटोफिल करण्यासाठी तुम्हाला सेव्ह केलेली माहिती वापरायची आहे का हे Chrome विचारू शकते</translation>
 <translation id="3352986031709923790">शोध क्षेत्राचा सर्वात वरचा उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, सर्वात वरती <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">सारांश, शब्दलेखन तपासणी, कॅप्शन आणि आणखी बऱ्याच गोष्टींसारख्या वैशिष्ट्यांसाठी साइट व Chrome थेट तुमच्या डिव्हाइसवर रन होणारे AI वापरू शकतात. हे Chrome मधील Gemini पेक्षा वेगळे आहे. <ph name="BEGIN_LINK" />डिव्हाइसवरील AI बद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">काही Chrome वैशिष्ट्ये आणि एक्स्टेंशन ही शॉर्टकटसह येतात. तुम्ही ती पुन्हा सुरू करणे निवडू शकता.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome आता पुन्हा लॉंच होईल}=1{Chrome एका सेकंदामध्ये पुन्हा लॉंच होईल}other{Chrome # सेकंदांमध्ये पुन्हा लॉंच होईल}}</translation>
 <translation id="3380249972812870825">Chrome मध्ये Gemini उघडण्यासाठी, <ph name="GLOBAL_HOTKEY" /> प्रेस करा</translation>
@@ -348,6 +352,7 @@
 <translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
 <translation id="4434353761996769206">इंस्टॉलर एरर: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">त्वरित अवलोकन मिळवण्यासाठी आणि फॉलो-अप प्रश्न विचारण्यासाठी हा दस्तऐवज Chrome मधील Gemini सोबत शेअर करा</translation>
+<translation id="4440999670272408191">तुम्ही ती कधीही काढून टाकू शकता. साइटला किंवा वैशिष्ट्याला त्यांची आवश्यकता असेल, तेव्हा Chrome ते पुन्हा आपोआप डाउनलोड करू शकते.</translation>
 <translation id="4450664632294415862">Chrome - नेटवर्क साइन इन - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome वर दुसरे ऑपरेशन प्रगतीपथावर आहे. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4493028449971051158">स्टार्टअप एरर: कृपया अ‍ॅडमिनिस्ट्रेटर म्हणून इंस्टॉलर रन करा.</translation>
@@ -355,6 +360,7 @@
 <translation id="4501839397124711198">तुम्ही ब्राउझ करत असताना प्रश्न विचारण्यासाठी साइड पॅनलमध्ये Google Search पिन करू शकता</translation>
 <translation id="4571503333518166079">Chrome सूचना सेटिंग्जवर जा</translation>
 <translation id="4580939929828762295">Google Password Manager वापरून सुरक्षित राहा</translation>
+<translation id="4589544932092381064">Windows टास्कबारमध्ये Chrome वापरून शोध दाखवा आणि कीबोर्ड शॉर्टकट सुरू करा</translation>
 <translation id="459622048091363950">एकदा का Chrome ला ॲक्सेस मिळाला की, वेबसाइट तुम्हाला ॲक्सेससाठी विचारतील.</translation>
 <translation id="4598116752460667024">सूचीमधील कोणतीही प्रक्रिया शोधा.</translation>
 <translation id="4600710005438004015">Chrome नवीनतम आवृत्तीवर अपडेट होऊ शकले नाही, त्यामुळे तुम्ही नवीन वैशिष्ट्ये आणि सुरक्षितता निराकरणे गमावत आहात.</translation>
@@ -370,6 +376,7 @@
 <translation id="4754614261631455953">Google Chrome कॅनरी (mDNS-मध्ये)</translation>
 <translation id="4756182432527369254">Chrome चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chrome ची हल्ले रोखण्याची क्षमता किंचित कमी होते</translation>
 <translation id="4768676935374695498">Google Lens वापरून हा व्हिडिओ शोधा</translation>
+<translation id="4783580253728290203">बंद असताना, Chrome डिव्हाइसवरील AI मॉडेल काढून टाकते आणि ती पुन्हा डाउनलोड करणार नाही. काही साइट आणि Chrome वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="479167709087336770">Google Search मध्ये वापरत असेलेले समान स्पेल चेकर हे वापरते. तुम्ही ब्राउझरमध्ये टाइप करत असलेला मजकूर Google कडे पाठवला जातो. तुम्ही हे वर्तन कधीही सेटिंग्ज मध्ये बदलू शकता.</translation>
 <translation id="4793679854893018356">Chrome तुम्हाला सुरक्षित कसे ठेवते याबद्दल जाणून घ्या</translation>
 <translation id="4803313124144656665">Chrome मधील Google Search बंद करा</translation>
@@ -455,6 +462,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">इंटरनेटशी कनेक्ट करता आले नाही. प्रॉक्सी सर्व्हरसाठी ऑथेंटिकेशन आवश्यक आहे.</translation>
 <translation id="5709557627224531708">Chrome ला तुमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
+<translation id="5715427327524421317">Chrome ही AI मॉडेल आपोआप डाउनलोड आणि अपडेट करते</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{प्रगत संरक्षण यानुसार, अपडेट लागू करण्यासाठी तुम्ही Chrome पुन्हा लाँच करणे आवश्यक आहे. तुमची अलिप्त विंडो पुन्हा उघडणार नाही.}other{प्रगत संरक्षण यानुसार, अपडेट लागू करण्यासाठी तुम्ही Chrome पुन्हा लाँच करणे आवश्यक आहे. तुमची # वेगळी ठेवलेली अलिप्त विंडो पुन्हा उघडणार नाही.}}</translation>
 <translation id="5719246646468301581">Google Chrome आणि ChromeOS अतिरिक्त सेवा अटी</translation>
 <translation id="5736850870166430177">साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानिकारक फाइल डाउनलोड केल्यास, Chrome कदाचित पेज आशयाच्या भागांसह URLs देखील सुरक्षित ब्राउझिंग ला पाठवेल</translation>
@@ -547,6 +555,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6491330562720922580">मोबाइल डिव्हाइसवर Chrome ब्राउझर डाउनलोड करण्यासाठी QR कोड</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" /> याचा प्रयत्न करत आहे</translation>
 <translation id="6497147134301593682">Chrome आपोआप बंद झाले</translation>
+<translation id="650039555447046671">Chrome या डिव्हाइसवरून AI मॉडेल काढून टाकेल. काही साइट आणि Chrome वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="6506909944137591434">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमच्या कॅमेराची परवानगी आवश्यक आहे</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
 <translation id="6520670145826811516">तुमचे स्थान वापरण्यासाठी, Chrome ला <ph name="BEGIN_LINK" />सिस्टीम सेटिंग्ज<ph name="END_LINK" /> मध्ये अ‍ॅक्सेस द्या</translation>
@@ -585,6 +594,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6877155553248388166">शोध क्षेत्राच्या तळाशी उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, तळाशी <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Chrome वापरून शोध उघडा</translation>
 <translation id="6881299373831449287">Chrome अपडेट करत आहे</translation>
+<translation id="6881997500528805781">डिव्हाइस स्टोरेज वापरते. Chrome ४५ दिवसांनंतर किंवा स्टोरेज कमी असताना न वापरलेली AI मॉडेल काढून टाकते</translation>
 <translation id="6885412569789873916">Chrome बीटा ॲप</translation>
 <translation id="6893363893008038481">Chrome मधून खाते काढून टाका</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>

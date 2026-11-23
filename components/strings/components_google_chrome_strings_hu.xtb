@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Chrome embléma</translation>
 <translation id="3444832043240812445">Ez az oldal csak akkor jelenít meg információkat a legutóbbi rendszerösszeomlásokról, ha <ph name="BEGIN_LINK" />engedélyezi a hibabejelentést<ph name="END_LINK" /> .</translation>
 <translation id="3512634283363927263">Ezek az oldalak a Chrome fejlesztői számára készültek, és előfordulhat, hogy nincsenek aktívan karbantartva vagy tesztelve. Az engedélyezésükhöz lépjen a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> oldalra, kattintson a hibaelhárítási oldalak engedélyezéséhez tartozó gombra, majd lépjen ismét erre az oldalra.</translation>
+<translation id="354621070532799440">Emlékeztető: A Google legjobb biztonsági funkciói a zsebében</translation>
 <translation id="3875312571075912821">A hálózat elérésének engedélyezése a Chrome számára a tűzfal-
           vagy vírusirtó-beállításokban.</translation>
 <translation id="3893985792899396936">Chrome-tipp: Kereshet a Lens segítségével</translation>
@@ -26,6 +27,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           és gondoskodjon róla, hogy a konfiguráció beállítása „nincs proxy” vagy „közvetlen” legyen.</translation>
+<translation id="6117557075995890082">A Chrome alkalmazással útközben is élvezheti a Google biztonságát</translation>
 <translation id="6187085551300363958">Chrome-tipp: Jelszavak mentése</translation>
 <translation id="6341737370356890233">Lépjen ide:
         Chrome menü &gt;

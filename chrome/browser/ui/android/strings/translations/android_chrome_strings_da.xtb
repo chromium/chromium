@@ -386,6 +386,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="250020030759455918">Du kan se loginstatus, browserdata og websiteoplysninger for <ph name="SITE_NAME" /> i Chrome</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# download i gang}one{# download er i gang}other{# downloads er i gang}}</translation>
 <translation id="2510106555128151389">Installerer <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Søg efter købsmuligheder</translation>
 <translation id="2513403576141822879">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling ved at gå til <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3740290940447881599">Sørg for, at du har tillid til dette website</translation>
 <translation id="3740525748616366977">Stemmesøgning er ikke tilgængelig på denne enhed</translation>
 <translation id="3749289110408117711">Filnavn</translation>
+<translation id="3751708358601675711">Rediger prissporing</translation>
 <translation id="3756823472711156529">Gendan gruppe</translation>
 <translation id="3759306015475526475">Administrer indstillinger for brugs- og nedbrudsdata</translation>
 <translation id="3763110477555836428">Der udfyldes et virtuelt kortnummer, når du betaler med dette kort, for at beskytte dine faktiske oplysninger. Administrer i Google Wallet. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>

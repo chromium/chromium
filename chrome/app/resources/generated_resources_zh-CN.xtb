@@ -1267,7 +1267,7 @@
 <translation id="2406942743794219791">确认要使用的默认搜索引擎</translation>
 <translation id="2407671304279211586">选择 DNS 提供商</translation>
 <translation id="2408018932941436077">正在保存信用卡信息</translation>
-<translation id="2408601796549249241">Gemini 底部动作条已以最大高度打开</translation>
+<translation id="2408601796549249241">Gemini 底栏已以最大高度打开</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2409709393952490731">使用手机或平板电脑</translation>
 <translation id="2410940059315936967">您访问的网站可以嵌入其他网站的内容，例如图片、广告和文字。由这类其他网站设置的 Cookie 称为第三方 Cookie。</translation>
@@ -1809,7 +1809,7 @@
 <translation id="2996722619877761919">长边翻转</translation>
 <translation id="2998097899774209901">已开启 • 此扩展程序违反了 Chrome 应用商店政策</translation>
 <translation id="3000378525979847272">授予了“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
-<translation id="3002864108328203174">Gemini 底部动作条已以一半高度打开。</translation>
+<translation id="3002864108328203174">Gemini 底栏已以一半高度打开。</translation>
 <translation id="300311730636583518">就此图片提问</translation>
 <translation id="3003152206838282768">正在 Chrome 中处理您的 Gemini 应用任务。查看 Chrome 以了解更多更新</translation>
 <translation id="3003253259757197230">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站，并向您显示有关当前所访问网页的更多信息</translation>
@@ -2506,7 +2506,7 @@
 <translation id="3713091615825314967">已开启自动更新功能。</translation>
 <translation id="3713673533020367620">在拆分视图中打开标签页</translation>
 <translation id="3714610938239537183">步骤 2/4：选择要导出的诊断数据</translation>
-<translation id="3715519518311454566">Gemini 底部动作条已收起。</translation>
+<translation id="3715519518311454566">Gemini 底栏已收起。</translation>
 <translation id="3717133748480414053">技能可帮助您总结网页内容、搜索超值优惠等</translation>
 <translation id="3719245268140483218">设备事件</translation>
 <translation id="3719826155360621982">主页</translation>
@@ -7329,7 +7329,7 @@
 <translation id="9085256200913095638">复制所选标签页</translation>
 <translation id="9088234649737575428">系统已根据企业政策屏蔽 <ph name="PLUGIN_NAME" /></translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
-<translation id="9088578317174654338">Gemini 底部动作条已关闭。</translation>
+<translation id="9088578317174654338">Gemini 底栏已关闭。</translation>
 <translation id="9092594036947304891">回答已就绪</translation>
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9094742965093882613">减小字体</translation>

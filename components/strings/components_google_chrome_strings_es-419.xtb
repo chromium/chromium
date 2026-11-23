@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Logo de Chrome</translation>
 <translation id="3444832043240812445">Esta página sólo muestra información sobre fallas recientes si se <ph name="BEGIN_LINK" />activan los informes sobre fallas<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Estas páginas están destinadas a los desarrolladores de Chrome y es posible que no se prueben ni se mantengan de forma activa. Para habilitarlas, ve a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, haz clic en el botón para habilitar las páginas de depuración y, luego, vuelve a esta página.</translation>
+<translation id="354621070532799440">Recordatorio: Las mejores funciones de seguridad de Google están en tu bolsillo</translation>
 <translation id="3875312571075912821">Permite que Chrome acceda a la red en tu configuración de firewall
           o antivirus.</translation>
 <translation id="3893985792899396936">Sugerencia de Chrome: Busca con Lens</translation>
@@ -26,6 +27,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           y asegúrate de que la configuración seleccionada sea "sin proxy" o "directa".</translation>
+<translation id="6117557075995890082">Con la app de Chrome, aprovecha la seguridad de Google estés donde estés</translation>
 <translation id="6187085551300363958">Sugerencia de Chrome: Guardar contraseñas</translation>
 <translation id="6341737370356890233">Ve
           al menú de Chrome &gt;

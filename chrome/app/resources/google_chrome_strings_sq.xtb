@@ -102,12 +102,14 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1896602904211344018">Merr aplikacionin e Chrome</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1925069572871307609">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10, versioni 1809 ose një version i mëvonshëm. Ky kompjuter përdor një version më të vjetër të Windows 10.</translation>
+<translation id="1975400514743766362">Merr sigurinë e Google kur je në lëvizje me aplikacionin e Chrome në <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Qëndro më i sigurt në lëvizje me "Shfletimin e sigurt të përmirësuar" në Chrome për iOS</translation>
 <translation id="2001586581944147178">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chrome përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="2018879682492276940">Instalimi nuk u krye. Provo përsëri.</translation>
 <translation id="2024959665595762054">Për të përdorur dhe për të ruajtur të dhënat e Chrome në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="2034233344106846793">Chrome i përmirëson lidhjet e pasigurta automatikisht në HTTPS kur është e mundur</translation>
 <translation id="2039417478970545937">Cilësimet.</translation>
+<translation id="2040220733769034247">Skano kodin QR me telefonin tënd për të shkarkuar Chrome dhe identifikohu në "Llogarinë tënde të Google".</translation>
 <translation id="2044908892530830113">Shfaq kërkimin me Chrome në shiritin e menysë së Mac dhe aktivizo shkurtoren e tastierës</translation>
 <translation id="2050189601866423230">Mund ta gozhdosh "Modalitetin e IA-së" të "Kërko në Google" për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="2060311596979880693">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me "Kërko në Google" në Chrome</translation>

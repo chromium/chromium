@@ -10,6 +10,7 @@
 <translation id="2588322182880276190">Chrome lógóið</translation>
 <translation id="3444832043240812445">Þessi síða sýnir aðeins upplýsingar um nýleg hrun ef þú <ph name="BEGIN_LINK" />kveikir á tilkynningum um hrun<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Þessar síður eru ætlaðar til notkunar hjá þróunaraðilum Chrome og er e.t.v. ekki haldið við eða prófaðar reglulega. Til að kveikja á þeim skaltu fara á <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, smella á hnappinn til að kveikja á villuleitarsíðum og fara síðan aftur á þessa síðu.</translation>
+<translation id="354621070532799440">Áminning: Bestu öryggiseiginleikar Google í vasanum</translation>
 <translation id="3875312571075912821">Veittu Chrome aðgang að netkerfinu þínu í eldveggsstillingunum þínum eða
            vírusvarnarstillingunum.</translation>
 <translation id="3893985792899396936">Ábending frá Chrome: Leitaðu með linsu</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           og gakktu úr skugga um að stillt sé á „ekki proxy“ eða „beint“.</translation>
+<translation id="6117557075995890082">Notaðu Chrome-forritið til að tryggja þér öryggi Google á ferðinni</translation>
 <translation id="6187085551300363958">Chrome-ráð: Vistaðu aðgangsorð</translation>
 <translation id="6341737370356890233">Farðu í
         valmynd Chrome &gt;

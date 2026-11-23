@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Logotypen för Chrome</translation>
 <translation id="3444832043240812445">Du måste <ph name="BEGIN_LINK" />aktivera kraschrapportering<ph name="END_LINK" /> för att information om de senaste krascherna ska visas på den här sidan.</translation>
 <translation id="3512634283363927263">Dessa sidor är avsedda för Chrome-utvecklare och kanske inte underhålls eller testas aktivt. Om du vill aktivera dem navigerar du till <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klickar på knappen för att aktivera felsökningssidor och navigerar sedan till den här sidan igen.</translation>
+<translation id="354621070532799440">Påminnelse: Googles bästa säkerhetsfunktioner i fickan</translation>
 <translation id="3875312571075912821">Tillåt att Chrome får åtkomst till nätverket i inställningarna för brandväggen eller
         antivirusprogrammet.</translation>
 <translation id="3893985792899396936">Tips för Chrome: Sök med Lens</translation>
@@ -26,6 +27,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           och kontrollera att "ingen proxy" eller "direkt" har angetts i konfigurationen.</translation>
+<translation id="6117557075995890082">Använd Chrome-appen för att ta med dig Googles säkerhet var du än är</translation>
 <translation id="6187085551300363958">Tips för Chrome: Spara lösenord</translation>
 <translation id="6341737370356890233">Öppna
         Chrome-menyn &gt;

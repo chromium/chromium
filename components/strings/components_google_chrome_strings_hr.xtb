@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Logotip Chrome</translation>
 <translation id="3444832043240812445">Ova stranica prikazuje samo informacije o vašim nedavnim padovima ako <ph name="BEGIN_LINK" />omogućite izvješćivanja o padu<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Te su stranice namijenjene razvojnim programerima Chromea i možda se ne održavaju ili testiraju aktivno. Da biste ih omogućili, otvorite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb za omogućivanje stranica za otklanjanje pogrešaka, a zatim se ponovo vratite na ovu stranicu.</translation>
+<translation id="354621070532799440">Podsjetnik: najbolje Googleove sigurnosne značajke u vašem džepu</translation>
 <translation id="3875312571075912821">U postavkama vatrozida ili antivirusnog programa omogućite Chromeu da pristupa mreži.</translation>
 <translation id="3893985792899396936">Savjet za Chrome: pretražujte pomoću Objektiva</translation>
 <translation id="4949828774841497663">Idite na Aplikacije &gt; Postavke sustava &gt; Mreža, odaberite
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i provjerite je li konfiguracija postavljena na "bez proxyja" ili "izravno".</translation>
+<translation id="6117557075995890082">Preuzmite aplikaciju Chrome da biste uvijek pri ruci imali Googleovu sigurnost</translation>
 <translation id="6187085551300363958">Savjet za Chrome: spremite zaporke</translation>
 <translation id="6341737370356890233">Otvorite
         izbornik Chromea &gt;

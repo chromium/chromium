@@ -81,6 +81,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1688214853608504530">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till organisationens sök-, AI- och agentverktyg för att få förslag.</translation>
 <translation id="1698376642261615901">Google Chrome är en webbläsare som kör webbsidor och program med ljusets hastighet. Den är snabb, stabil och lätt att använda. Surfa säkrare med Google Chrome, som har inbyggt skydd mot skadlig kod och nätfiske.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Om en timme startas Chrome om}other{Om # timmar startas Chrome om}}</translation>
+<translation id="1713866023633141719">AI på enheten är klar</translation>
 <translation id="1722488837206509557">Detta gör att du kan välja bland tillgängliga enheter och visa innehåll på dem.</translation>
 <translation id="1724094881572874997">För att skydda ditt arbete i Chrome kan organisationen visa eller hantera viss information när du är inloggad i Chrome.</translation>
 <translation id="1769661297620183092">Du kan öppna Google Sök-panelen för att ställa frågor medan du surfar</translation>
@@ -102,12 +103,14 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1896602904211344018">Skaffa Chrome-appen</translation>
 <translation id="1919130412786645364">Tillåt inloggning i Chrome</translation>
 <translation id="1925069572871307609">Du behöver Windows 10 version 1809 eller senare för att få framtida Google Chrome-uppdateringar. På den här datorn används en äldre version av Windows 10.</translation>
+<translation id="1975400514743766362">Ta med dig Googles säkerhet var du än är med Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Öka säkerheten var du än är med Förbättrad säker webbsökning i Chrome för iOS</translation>
 <translation id="2001586581944147178">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. Chrome använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>
 <translation id="2018879682492276940">Installationen misslyckades. Försök igen.</translation>
 <translation id="2024959665595762054">Verifiera din identitet om du vill använda och spara Chrome-data i Google-kontot</translation>
 <translation id="2034233344106846793">Chrome uppgraderar automatiskt osäkra anslutningar till HTTPS när det är möjligt</translation>
 <translation id="2039417478970545937">Inställningar.</translation>
+<translation id="2040220733769034247">Skanna QR-koden med telefonen för att ladda ned Chrome och logga in på ditt Google-konto.</translation>
 <translation id="2044908892530830113">Visa Sök med Chrome i menyraden på Mac och aktivera kortkommandot</translation>
 <translation id="2050189601866423230">Du kan fästa AI-läget i Google Sök för att ställa frågor medan du surfar</translation>
 <translation id="2060311596979880693">Klart! Nu kan du enkelt ställa frågor medan du surfar med Google Sök i Chrome</translation>
@@ -153,6 +156,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2513154137948333830">Omstart krävs: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">din organisation</translation>
 <translation id="2521391734665471391">Stäng AI-läget i Google Sök</translation>
+<translation id="2523048609826818526">Allmänt skrivande</translation>
 <translation id="2523492931736391680">Ditt arbete är säkert i Chrome</translation>
 <translation id="2534365042754120737">Låt Chrome ta bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data. Detta stoppar inte aviseringar.</translation>
 <translation id="2556847002339236023">Organisationen avslutar Chrome när det inte har använts på <ph name="TIMEOUT_DURATION" />. Webbinformation har raderats. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
@@ -251,6 +255,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3373752068427117404">Vissa funktioner och tillägg i Chrome har kortkommandon. Du kan välja att aktivera dem igen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startas om nu}=1{Om en sekund startas Chrome om}other{Om # sekunder startas Chrome om}}</translation>
 <translation id="3380249972812870825">Tryck på <ph name="GLOBAL_HOTKEY" /> för att öppna Gemini i Chrome</translation>
+<translation id="3392127217442962664">Chrome har lagt till AI som körs på enheten. Webbplatser och Chrome kan använda den för funktioner som</translation>
 <translation id="3396977131400919238">Ett operativsystemsfel inträffade under installationen. Ladda ned Google Chrome igen.</translation>
 <translation id="3428747202529429621">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad</translation>
 <translation id="3438681572027105609">Logga in i Chrome om du vill få tillgång till dina lösenord med mera på alla dina enheter</translation>
@@ -300,6 +305,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3973161977468201858">Google Chrome vill radera din data i Google Lösenordshantering. Skriv ditt Windows-lösenord om du vill tillåta detta.</translation>
 <translation id="3984557288004650913">Med knappen Google Sök i Chrome i verktygsfältet kan du öppna Google Sök i Chrome för att ställa frågor medan du surfar</translation>
 <translation id="399788104667917863">Fäst i verktygsfältet</translation>
+<translation id="4000385468528550798">AI på enheten har uppdaterats</translation>
 <translation id="400161754580828648">För att dela skärmen tillåter du skärminspelning för Chrome i systeminställningarna.</translation>
 <translation id="4012899077942246412">När du är inloggad kan du använda dina lösenord och annat från ditt Google-konto i Chrome. Om du vill ändra detta öppnar du ditt konto i Chrome.</translation>
 <translation id="4022972681110646219">Översätt text på skärmen</translation>
@@ -559,6 +565,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6632012506031284914">för att söka med Chrome.</translation>
 <translation id="6634299872736643004">Ändringar av den här inställningen tillämpas när Chrome startas om.</translation>
 <translation id="6644846457769259194">Enheten uppdateras(<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">AI på enheten är aktuell</translation>
 <translation id="6660596345553328257">Vill du logga in i Chrome?</translation>
 <translation id="6664219008737641504">Om du har glömt lösenfrasen eller vill ändra den här inställningen kan du <ph name="SETTINGS_LINK" /> Chrome-datan i kontot</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>
@@ -600,6 +607,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7024536598735240744">Uppackningsfel: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Du kan byta mellan Chrome-profiler här</translation>
 <translation id="7026856149118332950">Klicka på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-aviseringen för att fästa Chrome i aktivitetsfältet för snabb åtkomst.</translation>
+<translation id="7033785662379319359">En ny, mer kompakt version av AI på enheten är redo att användas för uppgifter som sammanfattningar, korrekturläsning med mera</translation>
 <translation id="7047386856539490735">Är de här resultaten användbara?</translation>
 <translation id="7051685429025310665">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Anpassa Chrome</translation>

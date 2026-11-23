@@ -10,6 +10,7 @@
 <translation id="2588322182880276190">Sigla Chrome</translation>
 <translation id="3444832043240812445">Această pagină afișează informații cu privire la recentele blocări numai dacă <ph name="BEGIN_LINK" />activezi raportarea blocărilor<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Aceste pagini sunt destinate dezvoltatorilor Chrome și este posibil să nu fie întreținute sau testate în mod activ. Pentru a le activa, accesează <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, dă clic pe butonul pentru a activa paginile de remediere a erorilor, apoi accesează din nou această pagină.</translation>
+<translation id="354621070532799440">Memento: cele mai bune funcții de siguranță de la Google la îndemână</translation>
 <translation id="3875312571075912821">Din setările pentru firewall sau antivirus, permite browserului Chrome să acceseze
           rețeaua.</translation>
 <translation id="3893985792899396936">Sfat pentru Chrome: caută cu Lens</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           și asigurați-vă că aveți configurația setată la „fără proxy” sau „direct”.</translation>
+<translation id="6117557075995890082">Folosește aplicația Chrome pentru a profita de siguranța oferită de Google din mers</translation>
 <translation id="6187085551300363958">Sfat pentru Chrome: salvează parolele</translation>
 <translation id="6341737370356890233">Accesează
           meniul Chrome &gt;

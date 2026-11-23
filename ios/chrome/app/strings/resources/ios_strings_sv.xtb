@@ -1788,6 +1788,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6504541289630702018">Kom enkelt åt dina flikgrupper på datorn</translation>
 <translation id="6505334220040167806">Komprimera flikgruppen.</translation>
 <translation id="6506996418997555004">Dela flikgruppen <ph name="GROUP_NAME" /></translation>
+<translation id="650770261448122895">Sök efter det du ser med Lens</translation>
 <translation id="6507973708545996744">Logga in om du vill ha läslistan på alla dina enheter.</translation>
 <translation id="6518133107902771759">Verifiera</translation>
 <translation id="6523575793810663688">Visa hur man gör</translation>
@@ -2430,6 +2431,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8439758443371991593">Dölj Lägg till i läslistan</translation>
 <translation id="8443986842926457191">Webbadressen är längre än 2 048 tecken</translation>
 <translation id="8449869326050867919">Lösenordet har delats</translation>
+<translation id="8473367210869452063">Om du vill interagera med den här webbplatsen ska du stoppa den aktuella uppgiften eller vänta tills Gemini har slutfört arbetet</translation>
 <translation id="8473815223723723001">Redigera bild med Gemini</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>

@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Pokud zvolíte možnost <ph name="BEGIN_LINK" />povolit zprávy o selhání<ph name="END_LINK" />, tato stránka bude zobrazovat jen informace o posledních selháních.</translation>
 <translation id="3512634283363927263">Tyto stránky jsou určeny pro vývojáře Chromu a nemusí být aktivně udržovány ani testovány. Pokud je chcete povolit, přejděte na adresu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na příslušné tlačítko povolte ladicí stránky a pak znovu přejděte na tuto stránku.</translation>
+<translation id="354621070532799440">Připomenutí: Nejlepší bezpečnostní funkce od Googlu v kapse</translation>
 <translation id="3875312571075912821">V nastavení firewallu a antivirového programu povolte prohlížeči Chrome přístup k síti.</translation>
 <translation id="3893985792899396936">Tip pro Chrome: Vyhledávejte pomocí Lens</translation>
 <translation id="4949828774841497663">Přejděte do části Aplikace &gt; Nastavení systému &gt; Síť, vyberte aktivní síť, klikněte na tlačítko Podrobnosti… a zrušte výběr všech proxy serverů, které jsou vybrány.</translation>
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a zkontrolujte, zda je konfigurace nastavena na možnost „no proxy“ (bez proxy) nebo „direct“ (přímo).</translation>
+<translation id="6117557075995890082">S aplikací Chrome můžete mít zabezpečení od Googlu i na cestách</translation>
 <translation id="6187085551300363958">Tip pro Chrome: Ukládání hesel</translation>
 <translation id="6341737370356890233">Přejděte do nabídky Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> a zrušte výběr možnosti <ph name="NO_PREFETCH_DESCRIPTION" />. Pokud to však problém nevyřeší, doporučujeme vám tuto možnost znovu vybrat (za účelem zlepšení výkonu).</translation>
 <translation id="6581867098636731226">Přejděte do nabídky Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Síť a internet &gt; Proxy a zrušte výběr možnosti Automaticky zjišťovat nastavení.</translation>

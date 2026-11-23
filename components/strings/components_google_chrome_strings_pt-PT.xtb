@@ -11,6 +11,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2588322182880276190">Logótipo do Chrome</translation>
 <translation id="3444832043240812445">Esta página mostra informações sobre falhas recentes apenas se <ph name="BEGIN_LINK" />ativar relatórios de falha<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Estas páginas destinam-se a ser usadas por programadores do Chrome e podem não ser testadas nem mantidas ativamente. Para as ativar, navegue para <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração e, em seguida, navegue para esta página novamente.</translation>
+<translation id="354621070532799440">Lembrete: as melhores funcionalidades de segurança da Google no seu bolso</translation>
 <translation id="3875312571075912821">Permita que o Chrome aceda à rede nas definições da sua firewall ou
           do antívirus.</translation>
 <translation id="3893985792899396936">Dica do Chrome: pesquise com o Lens</translation>
@@ -26,6 +27,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
           &gt;
           <ph name="PROXIES_TITLE" />
           e certifique-se de que a sua configuração está definida como "sem proxy" ou "direta".</translation>
+<translation id="6117557075995890082">Use a app Chrome para beneficiar da segurança da Google em qualquer lugar</translation>
 <translation id="6187085551300363958">Dica do Chrome: guarde palavras-passe</translation>
 <translation id="6341737370356890233">Aceda ao
         menu Chrome &gt;

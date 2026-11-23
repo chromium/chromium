@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Chrome 로고</translation>
 <translation id="3444832043240812445"><ph name="BEGIN_LINK" />비정상 종료 보고를 사용<ph name="END_LINK" />하면 최근 비정상 종료에 대한 정보만 이 페이지에 표시됩니다.</translation>
 <translation id="3512634283363927263">이 페이지는 Chrome 개발자를 위한 것으로, 적극적으로 유지보수되거나 테스트되지 않을 수 있습니다. 사용 설정하려면 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />로 이동하여 버튼을 클릭하여 디버그 페이지를 사용 설정한 다음 이 페이지로 다시 이동하세요.</translation>
+<translation id="354621070532799440">알림: 주머니에 쏙 들어가는 Google 최고의 안전 기능</translation>
 <translation id="3875312571075912821">Chrome이 방화벽이나 백신 프로그램이 설정된
         네트워크에 액세스할 수 있도록 허용합니다.</translation>
 <translation id="3893985792899396936">Chrome 도움말: 렌즈로 검색</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           (으)로 이동하여 '프록시 없음' 또는 '직접 연결'로 설정되어 있는지 확인합니다.</translation>
+<translation id="6117557075995890082">Chrome 앱을 사용하여 이동 중에도 Google의 안전 기능을 활용하세요.</translation>
 <translation id="6187085551300363958">Chrome 도움말: 비밀번호 저장</translation>
 <translation id="6341737370356890233">Chrome 메뉴 &gt;
 

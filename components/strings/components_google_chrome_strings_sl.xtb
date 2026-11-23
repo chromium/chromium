@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Chromov logotip</translation>
 <translation id="3444832043240812445">Ta stran prikazuje informacije o zadnjih zrušitvah, samo če <ph name="BEGIN_LINK" />omogočite poročanje o zrušitvah<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Te strani so namenjene razvijalcem za Chrome in morda niso aktivno vzdrževane ali preizkušane. Če jih želite omogočiti, odprite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb, da omogočite strani za odpravljanje napak, in se znova pomaknite na to stran.</translation>
+<translation id="354621070532799440">Opomnik: Googlove najboljše varnostne funkcije v vašem žepu</translation>
 <translation id="3875312571075912821">V nastavitvah požarnega zidu ali protivirusnega programa omogočite Chromu dostop do
         omrežja.</translation>
 <translation id="3893985792899396936">Nasvet za Chrome: Iščite z Googlom Lens</translation>
@@ -26,6 +27,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           in poskrbite, da je konfiguracija nastavljena na »brez namestniškega strežnika« ali »neposredno«.</translation>
+<translation id="6117557075995890082">Uporabite aplikacijo Chrome, da boste z Googlom varni tudi na poti</translation>
 <translation id="6187085551300363958">Nasvet za Chrome: Shranite gesla</translation>
 <translation id="6341737370356890233">Odprite
         Chromov meni &gt;

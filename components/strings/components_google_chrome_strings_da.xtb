@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Denne side viser kun oplysninger om dine seneste nedbrud, hvis du <ph name="BEGIN_LINK" />aktiverer rapportering af nedbrud<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Disse sider er beregnet til brug af Chrome-udviklere og vedligeholdes eller testes muligvis ikke aktivt. Hvis du vil aktivere dem, skal du gå til <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikke på knappen for at aktivere fejlretningssider og derefter gå til denne side igen.</translation>
+<translation id="354621070532799440">Påmindelse: Få Googles bedste sikkerhedsfunktioner med i lommen</translation>
 <translation id="3875312571075912821">Tillad, at Chrome får adgang til netværket i dine indstillinger for firewall eller
        antivirus.</translation>
 <translation id="3893985792899396936">Tip til Chrome: Søg med Lens</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           og kontrollér, at din konfiguration er indstillet til "ingen proxy" eller "direkte".</translation>
+<translation id="6117557075995890082">Brug Chrome-appen til at få Googles sikkerhedsfunktioner med på farten</translation>
 <translation id="6187085551300363958">Tip til Chrome: Gem adgangskoder</translation>
 <translation id="6341737370356890233">Gå til
         Chrome-menuen &gt;

@@ -386,6 +386,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="250020030759455918">Din inloggningsstatus, webbdata och webbplatsdata för <ph name="SITE_NAME" /> visas i Chrome</translation>
 <translation id="2501278716633472235">Föregående</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# nedladdning pågår}other{# nedladdningar pågår}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> installeras …</translation>
 <translation id="2512234228327349533">Sök efter köpalternativ</translation>
 <translation id="2513403576141822879">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synkronisering och Googles tjänster<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3740290940447881599">Se till att du litar på den här webbplatsen</translation>
 <translation id="3740525748616366977">Röstsökning är inte tillgängligt på enheten</translation>
 <translation id="3749289110408117711">Filnamn</translation>
+<translation id="3751708358601675711">Redigera prisbevakning</translation>
 <translation id="3756823472711156529">Återställ grupp</translation>
 <translation id="3759306015475526475">Hantera inställningar för användnings- och kraschdata</translation>
 <translation id="3763110477555836428">Ett virtuellt kortnummer fylls i när du betalar med det här kortet för att skydda dina faktiska uppgifter. Hantera detta i Google Wallet. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" />.</translation>

@@ -1759,7 +1759,7 @@
 <translation id="3949601375789751990">您的浏览记录会显示在此处</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">尚未保存任何付款方式</translation>
-<translation id="3950560191811267370">商务底部动作条已关闭</translation>
+<translation id="3950560191811267370">商务底栏已关闭</translation>
 <translation id="3950574001630941635">重启教程</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3953505489397572035">此价格即是一般价格</translation>
@@ -2612,7 +2612,7 @@
 <translation id="5331585574693522196">设为默认</translation>
 <translation id="5332219387342487447">送货方式</translation>
 <translation id="5332769172018416402">发消息申请</translation>
-<translation id="533323551986281710">商务底部动作条已全屏打开</translation>
+<translation id="533323551986281710">商务底栏已全屏打开</translation>
 <translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
 <translation id="5342666539242413840">文本已复制到剪贴板</translation>
@@ -2821,7 +2821,7 @@
 <translation id="5663955426505430495">此设备的管理员已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
 <translation id="5664075349639500330">详细了解如何在隔离模式下浏览。</translation>
 <translation id="5675650730144413517">该网页无法正常运作</translation>
-<translation id="567604591393105935">商务底部动作条已半屏打开</translation>
+<translation id="567604591393105935">商务底栏已半屏打开</translation>
 <translation id="5676124785522323481">管理关联的应用</translation>
 <translation id="5676641328629468296">Google Pay、Pix</translation>
 <translation id="5678007133659493065">箔</translation>
@@ -3812,7 +3812,7 @@
 <translation id="73750335798090836">为提高安全性，在使用旅行证件和身份证件等敏感信息时，请始终使用指纹、面孔或其他屏幕解锁方式</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{没有允许任何网站}=1{已允许 1 个网站}other{已允许 # 个网站}}</translation>
 <translation id="7375818412732305729">附加文件</translation>
-<translation id="7376031331622621328">商务底部动作条</translation>
+<translation id="7376031331622621328">商务底栏</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">媒体控件</translation>
 <translation id="7378810950367401542">/</translation>
@@ -4478,7 +4478,7 @@
 <translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
 <translation id="8451518040456311377">保存并自动填充身份文件</translation>
 <translation id="84561192812921051">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="8456383681414356368">底部动作条已关闭。</translation>
+<translation id="8456383681414356368">底栏已关闭。</translation>
 <translation id="8456775115498700722">您的 <ph name="CARD_ISSUER_NAME" /> 账号已关联到 Google Pay，因此您现在可以自动填充 <ph name="CARD_ISSUER_NAME" /> 卡的信息。</translation>
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>

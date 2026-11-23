@@ -10,6 +10,7 @@
 <translation id="2588322182880276190">Chrome ロゴ</translation>
 <translation id="3444832043240812445"><ph name="BEGIN_LINK" />障害レポートを有効<ph name="END_LINK" />にした場合にのみ、このページに最近の障害情報が表示されます。</translation>
 <translation id="3512634283363927263">これらのページは Chrome デベロッパーが使用することを目的としたもので、積極的なメンテナンスやテストが行われていない可能性があります。これらのページを有効にするには、<ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> でデバッグページを有効にするボタンをクリックしてから、このページに戻ります。</translation>
+<translation id="354621070532799440">リマインダー: Google の優れた安全機能をポケットに</translation>
 <translation id="3875312571075912821">ファイアウォールやウイルス対策の設定で、Chrome からネットワークへのアクセスを
         許可します。</translation>
 <translation id="3893985792899396936">Chrome のヒント: レンズで検索</translation>
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           の順に移動して、設定が [プロキシなし] または [直接] になっていることを確認します。</translation>
+<translation id="6117557075995890082">Chrome アプリで、Google の安全機能を外出先でも利用できます</translation>
 <translation id="6187085551300363958">Chrome のヒント: パスワードを保存</translation>
 <translation id="6341737370356890233">Chrome メニュー &gt;
           <ph name="SETTINGS_TITLE" />

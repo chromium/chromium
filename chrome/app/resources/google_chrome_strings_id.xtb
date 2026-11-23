@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke alat penelusuran, AI, dan agen milik organisasi Anda untuk mendapatkan saran.</translation>
 <translation id="1698376642261615901">Google Chrome adalah browser web yang menjalankan halaman dan aplikasi web secepat kilat. Cepat, stabil, dan mudah digunakan. Jelajahi web secara lebih aman dengan perlindungan terhadap software perusak dan phishing yang disertakan dalam Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 jam}other{Chrome akan diluncurkan ulang dalam # jam}}</translation>
+<translation id="1713866023633141719">AI di perangkat sudah siap</translation>
 <translation id="1722488837206509557">Tindakan ini akan memungkinkan Anda memilih dari perangkat yang tersedia dan menampilkan konten di perangkat tersebut.</translation>
 <translation id="1724094881572874997">Untuk mengamankan pekerjaan di Chrome, organisasi Anda akan dapat melihat atau mengelola informasi tertentu saat Anda login ke Chrome.</translation>
 <translation id="1769661297620183092">Anda dapat membuka kembali panel Google Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
@@ -98,12 +99,14 @@
 <translation id="1896602904211344018">Dapatkan aplikasi Chrome</translation>
 <translation id="1919130412786645364">Izinkan login Chrome</translation>
 <translation id="1925069572871307609">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 versi 1809 atau yang lebih baru. Komputer ini menggunakan Windows 10 versi lama.</translation>
+<translation id="1975400514743766362">Dapatkan keamanan Google kapan saja di mana saja dengan aplikasi Chrome di <ph name="DEVICE_TYPE" /> Anda</translation>
 <translation id="1979600810166324878">Tetap aman kapan saja di mana saja dengan Safe Browsing yang Disempurnakan di Chrome untuk iOS</translation>
 <translation id="2001586581944147178">Persulit orang yang memiliki akses ke traffic internet Anda untuk melihat situs yang Anda kunjungi. Chrome menggunakan koneksi aman untuk mencari alamat IP situs di Domain Name System (DNS).</translation>
 <translation id="2018879682492276940">Gagal menginstal. Coba lagi.</translation>
 <translation id="2024959665595762054">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="2034233344106846793">Chrome mengupgrade koneksi tidak aman ke HTTPS secara otomatis jika memungkinkan</translation>
 <translation id="2039417478970545937">Setelan.</translation>
+<translation id="2040220733769034247">Pindai kode QR dengan ponsel Anda untuk mendownload Chrome dan login ke Akun Google Anda.</translation>
 <translation id="2044908892530830113">Tampilkan penelusuran dengan Chrome di panel menu Mac dan aktifkan pintasan keyboard</translation>
 <translation id="2050189601866423230">Anda dapat menyematkan Mode AI Google Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="2060311596979880693">Berhasil! Kini Anda dapat dengan mudah mengajukan pertanyaan saat menjelajah dengan Google Penelusuran di Chrome</translation>
@@ -149,6 +152,7 @@
 <translation id="2513154137948333830">Perlu memulai ulang: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">organisasi Anda</translation>
 <translation id="2521391734665471391">Tutup Mode AI Google Penelusuran</translation>
+<translation id="2523048609826818526">Penulisan tujuan umum</translation>
 <translation id="2523492931736391680">Pekerjaan Anda diamankan di Chrome</translation>
 <translation id="2534365042754120737">Untuk melindungi data Anda, izinkan Chrome menghapus izin dari situs yang tidak Anda kunjungi baru-baru ini. Tindakan ini tidak menghentikan notifikasi.</translation>
 <translation id="2556847002339236023">Organisasi Anda menutup Chrome saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data penjelajahan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.</translation>
@@ -247,6 +251,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3373752068427117404">Beberapa fitur dan ekstensi Chrome dilengkapi pintasan. Anda dapat mengaktifkannya kembali.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan diluncurkan ulang sekarang}=1{Chrome akan diluncurkan ulang dalam 1 detik}other{Chrome akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="3380249972812870825">Untuk membuka Gemini di Chrome, tekan <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome kini dilengkapi AI yang berjalan di perangkat Anda. Situs dan Chrome dapat memanfaatkannya untuk berbagai fitur seperti:</translation>
 <translation id="3396977131400919238">Terjadi error pada sistem operasi saat penginstalan berlangsung. Download kembali Google Chrome.</translation>
 <translation id="3428747202529429621">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login</translation>
 <translation id="3438681572027105609">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login ke Chrome</translation>
@@ -296,6 +301,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3973161977468201858">Google Chrome ingin menghapus data Pengelola Sandi Google Anda. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="3984557288004650913">Dari tombol "Google Penelusuran di Chrome" di toolbar, Anda dapat membuka kembali Google Penelusuran di Chrome untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="399788104667917863">Sematkan ke toolbar</translation>
+<translation id="4000385468528550798">AI di perangkat telah diupdate</translation>
 <translation id="400161754580828648">Untuk membagikan layar Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem.</translation>
 <translation id="4012899077942246412">Saat Anda login, Anda dapat menggunakan sandi Anda dan info lainnya dari Akun Google Anda di Chrome. Untuk mengubahnya, buka “Akun Anda di Chrome”.</translation>
 <translation id="4022972681110646219">Terjemahkan layar</translation>
@@ -551,6 +557,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6632012506031284914">untuk menelusuri dengan Chrome.</translation>
 <translation id="6634299872736643004">Perubahan pada setelan ini akan diterapkan setelah Chrome dimulai ulang.</translation>
 <translation id="6644846457769259194">Memperbarui perangkat (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">AI di perangkat telah diupdate</translation>
 <translation id="6660596345553328257">Login ke Chrome?</translation>
 <translation id="6664219008737641504">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="SETTINGS_LINK" /> data Chrome di akun Anda</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
@@ -592,6 +599,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7024536598735240744">Error ekstrak: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Anda dapat berpindah-pindah profil Chrome di sini</translation>
 <translation id="7026856149118332950">Klik <ph name="BEGIN_BOLD" />Ya<ph name="END_BOLD" /> di notifikasi Windows untuk menyematkan Chrome ke taskbar agar dapat diakses dengan cepat.</translation>
+<translation id="7033785662379319359">Versi baru AI di perangkat yang lebih ringkas siap digunakan untuk berbagai tugas seperti membuat ringkasan, pemeriksaan tata bahasa, dan lainnya</translation>
 <translation id="7047386856539490735">Apakah hasil ini bermanfaat?</translation>
 <translation id="7051685429025310665">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Sesuaikan Chrome dengan Selera Anda</translation>

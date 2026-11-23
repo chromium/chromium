@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Táto stránka zobrazuje informácie o nedávnych zlyhaniach, len ak ste <ph name="BEGIN_LINK" />povolili hlásenia zlyhaní<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Tieto stránky môžu používať vývojári Chromu a nemusia byť aktívne udržiavané ani testované. Ak ich chcete povoliť, prejdite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na tlačidlo povoľte stránky ladenia a potom sa vráťte na túto stránku.</translation>
+<translation id="354621070532799440">Pripomenutie: najlepšie bezpečnostné funkcie Googlu vo vrecku</translation>
 <translation id="3875312571075912821">Chromu povoľte prístup k sieti v nastaveniach brány firewall alebo antivírusového softvéru.</translation>
 <translation id="3893985792899396936">Tip pre Chrome: vyhľadávajte pomocou funkcie Lens</translation>
 <translation id="4949828774841497663">Prejdite do sekcie Aplikácie &gt; Nastavenia systému &gt; Sieť, vyberte aktívnu sieť, kliknite na tlačidlo Podrobnosti… a zrušte výber všetkých vybraných proxy serverov.</translation>
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a uistite sa, že je vaša konfigurácia nastavená na hodnotu „žiadny server proxy“ alebo „priame“.</translation>
+<translation id="6117557075995890082">Vezmite si s aplikáciou Chrome bezpečnosť Googlu so sebou kamkoľvek</translation>
 <translation id="6187085551300363958">Tip pre Chrome: Ukladanie hesiel</translation>
 <translation id="6341737370356890233">Prejdite do
         ponuky Chrome &gt;

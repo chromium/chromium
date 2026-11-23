@@ -11,6 +11,7 @@
 <translation id="2588322182880276190">Chrome લૉગો</translation>
 <translation id="3444832043240812445">જો તમે <ph name="BEGIN_LINK" />ક્રૅશ રિપોર્ટિંગ ચાલુ કરો છો<ph name="END_LINK" /> તો આ પેજ માત્ર તમારા હાલનાં ક્રૅશ પર માહિતી બતાવે છે</translation>
 <translation id="3512634283363927263">આ પેજ Chrome ડેવલપર દ્વારા ઉપયોગમાં લેવાના હેતુથી બનાવવામાં આવ્યા છે અને તેમની સક્રિય રીતે જાળવણી અથવા પરીક્ષણ ન કરવામાં આવે એવું બની શકે છે. તેમને ચાલુ કરવા માટે, નૅવિગેટ કરીને <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> પર જાઓ, પેજને ડિબગ કરવાની સુવિધા ચાલુ કરવા માટેના બટન પર ક્લિક કરો અને નૅવિગેટ કરીને ફરી પાછા આ પેજ પર આવો.</translation>
+<translation id="354621070532799440">રિમાઇન્ડર: Googleની શ્રેષ્ઠ સલામતી સુવિધાઓ તમારા ખિસ્સામાં</translation>
 <translation id="3875312571075912821">Chromeને તમારા ફાયરવૉલ અથવા ઍન્ટિવાયરસ સેટિંગમાં નેટવર્ક ઍક્સેસ કરવાની
         મંજૂરી આપો.</translation>
 <translation id="3893985792899396936">Chrome ટિપ: Lens વડે શોધો</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           પર જાઓ અને ખાતરી કરો કે કન્ફિગ્યુરેશન "પ્રૉક્સી નહીંં" અથવા "પ્રત્યક્ષ" પર સેટ કરેલું છે.</translation>
+<translation id="6117557075995890082">મુસાફરીમાં Googleની સલામતી મેળવવા માટે Chrome ઍપનો ઉપયોગ કરો</translation>
 <translation id="6187085551300363958">Chrome ટિપ: પાસવર્ડ સાચવો</translation>
 <translation id="6341737370356890233">Chrome મેનૂ &gt;
         <ph name="SETTINGS_TITLE" />

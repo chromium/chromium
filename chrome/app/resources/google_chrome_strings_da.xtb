@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Når du skriver i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
 <translation id="1698376642261615901">Google Chrome er en webbrowser, som kører websider og apps med lynets hast. Den er hurtig, stabil og nem at bruge. Surf mere sikkert med indbygget beskyttelse mod malware og phishing i Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome genstarter om en time}one{Chrome genstarter om # time}other{Chrome genstarter om # timer}}</translation>
+<translation id="1713866023633141719">AI på enheden er klar</translation>
 <translation id="1722488837206509557">Dette giver dig mulighed for at vælge mellem tilgængelige enheder og vise indhold på dem.</translation>
 <translation id="1724094881572874997">For at beskytte dit arbejde i Chrome kan din organisation se eller administrere visse oplysninger, når du er logget ind i Chrome.</translation>
 <translation id="1769661297620183092">Du kan genåbne panelet Google Søgning for at stille spørgsmål, mens du browser</translation>
@@ -98,12 +99,14 @@
 <translation id="1896602904211344018">Hent Chrome-appen</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1925069572871307609">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 version 1809 eller nyere. Denne computer anvender en ældre version af Windows 10.</translation>
+<translation id="1975400514743766362">Tag Googles sikkerhedsfunktioner med på farten med Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Øg sikkerheden på farten med Udvidet beskyttet browsing i Chrome til iOS</translation>
 <translation id="2001586581944147178">Gør det sværere for brugere med adgang til din internettrafik at se, hvilke websites du besøger. Chrome anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="2018879682492276940">Installationen mislykkedes. Prøv igen.</translation>
 <translation id="2024959665595762054">Verificer din identitet for at bruge og gemme Chrome-data på din Google-konto</translation>
 <translation id="2034233344106846793">Chrome opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
 <translation id="2039417478970545937">Indstillinger.</translation>
+<translation id="2040220733769034247">Scan QR-koden med din telefon for at downloade Chrome og logge ind på din Google-konto.</translation>
 <translation id="2044908892530830113">Vis søgning med Chrome på Mac-menulinjen, og aktivér tastaturgenvejen</translation>
 <translation id="2050189601866423230">Du kan fastgøre AI-tilstand i Google Søgning for at stille spørgsmål, mens du browser</translation>
 <translation id="2060311596979880693">Sådan! Nu kan du nemt stille spørgsmål, mens du browser, med Google Søgning i Chrome</translation>
@@ -149,6 +152,7 @@
 <translation id="2513154137948333830">Genstart er påkrævet: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">din organisation</translation>
 <translation id="2521391734665471391">Luk AI-tilstand i Google Søgning</translation>
+<translation id="2523048609826818526">Skrivning af generelle tekster</translation>
 <translation id="2523492931736391680">Dit arbejde beskyttes i Chrome</translation>
 <translation id="2534365042754120737">Du kan beskytte dine data ved at lade Chrome fjerne tilladelser fra websites, du ikke har besøgt for nylig. Dette forhindrer ikke notifikationer.</translation>
 <translation id="2556847002339236023">Din organisation lukker Chrome, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />. Browserdataene blev slettet. Disse data kan omfatte historik, Autofyld og downloads.</translation>
@@ -247,6 +251,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3373752068427117404">Nogle Chrome-funktioner og -udvidelser har genveje. Du kan vælge at aktivere dem igen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome genstarter nu}=1{Chrome genstarter om 1 sekund}one{Chrome genstarter om # sekund}other{Chrome genstarter om # sekunder}}</translation>
 <translation id="3380249972812870825">Tryk på <ph name="GLOBAL_HOTKEY" /> for at åbne Gemini i Chrome</translation>
+<translation id="3392127217442962664">Chrome har tilføjet AI, der kører på din enhed. Websites og Chrome kan bruge den til funktioner som f.eks.:</translation>
 <translation id="3396977131400919238">Der opstod en fejl ved operativsystemet under installation. Download Google Chrome igen.</translation>
 <translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
 <translation id="3438681572027105609">For at kunne se dine adgangskoder m.m. på alle dine enheder skal du logge ind på Chrome</translation>
@@ -296,6 +301,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3973161977468201858">Google Chrome anmoder om tilladelse til at slette dine data i Google Adgangskodeadministrator. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="3984557288004650913">Ved hjælp af knappen "Google Søgning i Chrome" på værktøjslinjen kan du genåbne Google Søgning i Chrome, så du kan stille spørgsmål, mens du browser</translation>
 <translation id="399788104667917863">Fastgør til værktøjslinje</translation>
+<translation id="4000385468528550798">AI på enheden er opdateret</translation>
 <translation id="400161754580828648">Tillad skærmoptagelse for Chrome under Systemindstillinger for at dele din skærm.</translation>
 <translation id="4012899077942246412">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. Du kan ændre dette ved at gå til "Din konto i Chrome".</translation>
 <translation id="4022972681110646219">Oversæt skærmen</translation>
@@ -551,6 +557,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6632012506031284914">for at søge med Chrome.</translation>
 <translation id="6634299872736643004">Ændringerne af denne indstilling anvendes, når Chrome genstartes.</translation>
 <translation id="6644846457769259194">Opdaterer din enhed (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">AI på enheden er opdateret</translation>
 <translation id="6660596345553328257">Vil du logge ind i Chrome?</translation>
 <translation id="6664219008737641504">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="SETTINGS_LINK" /> Chrome-dataene på din konto</translation>
 <translation id="6676384891291319759">Få adgang til internettet</translation>
@@ -592,6 +599,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7024536598735240744">Fejl under udpakning: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Her kan du skifte mellem Chrome-profiler</translation>
 <translation id="7026856149118332950">Klik på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-notifikationen for at fastgøre Chrome til proceslinjen og få hurtig adgang.</translation>
+<translation id="7033785662379319359">En ny og mere kompakt version af AI på enheden er klar til opgaver som f.eks. opsummeringer, korrekturlæsning m.m.</translation>
 <translation id="7047386856539490735">Er disse resultater nyttige?</translation>
 <translation id="7051685429025310665">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Tilpas Chrome</translation>

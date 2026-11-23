@@ -53,6 +53,7 @@
 <translation id="1572572333538561328">Search AI मोड पुन्हा उघडा</translation>
 <translation id="1574377791422810894">Chromium ची सुरक्षितता टूल</translation>
 <translation id="1594928384848033697">Chromium ला तुमचा Password Manager डेटा हटवायचा आहे. याला अनुमती देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
+<translation id="1599690375407103815">बंद असताना, Chromium डिव्हाइसवरील AI मॉडेल काढून टाकते आणि ती पुन्हा डाउनलोड करणार नाही. काही साइट आणि Chromium वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे}=1{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1625909126243026060">Chromium मधील महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
 <translation id="1640672724030957280">डाऊनलोड करीत आहे...</translation>
@@ -67,6 +68,7 @@
 <translation id="1745121272106313518"><ph name="REMAINING_TIME" /> मध्ये Chromium रीस्टार्ट होईल</translation>
 <translation id="1749104137266986751">HTTPS उपलब्ध नसल्यास, Chromium तुम्हाला चेतावणी न देता असुरक्षित कनेक्शन वापरेल</translation>
 <translation id="1774152462503052664">Chromium बॅकग्राउंडमध्ये सुरू द्या</translation>
+<translation id="1792680680989393197">तुम्ही ती कधीही काढून टाकू शकता. साइटला किंवा वैशिष्ट्याला त्यांची आवश्यकता असेल, तेव्हा Chromium ते पुन्हा आपोआप डाउनलोड करू शकते.</translation>
 <translation id="1793486931176048546">झटपट अ‍ॅक्सेस करण्याकरिता Chrome तुमच्या टास्कबारवर पिन करण्यासाठी Windows नोटिफिकेशनमध्ये <ph name="BEGIN_BOLD" />होय<ph name="END_BOLD" /> वर क्लिक करा.</translation>
 <translation id="1808667845054772817">Chromium पुनर्स्थापित करा</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> याचा प्रयत्न करत आहे</translation>
@@ -148,6 +150,7 @@
 <translation id="2572494885440352020">Chromium मदतनीस</translation>
 <translation id="2575822587468774919">इमेज शोध वापरून शोधण्यासाठी काहीही निवडा</translation>
 <translation id="2576118232315942160">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी, Chromium मध्ये साइन इन करा</translation>
+<translation id="2587622539943955767">Chromium डाउनलोड करण्यासाठी आणि तुमच्या Google खाते मध्ये साइन इन करण्यासाठी तुमचा फोन वापरून QR कोड स्कॅन करा.</translation>
 <translation id="2587885422541096572">Chromium वापरून शोधण्यासाठी.</translation>
 <translation id="2592940277904433508">Chromium वापरणे पुढे सुरू ठेवा</translation>
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -252,6 +255,7 @@
 <translation id="3751920144677881410">ब्राउझ करताना प्रश्न विचारण्यासाठी टूलबारवरील "Search साइड पॅनल" बटणावरून तुम्ही Search साइड पॅनल पुन्हा उघडू शकता</translation>
 <translation id="3788675262216168505">Chromium ची प्रोफाइल व्यवस्थापित करा</translation>
 <translation id="3790262771324122253">Chromium काही डाउनलोड ब्लॉक का करते हे जाणून घ्या</translation>
+<translation id="3793196697433239004">डिव्हाइस स्टोरेज वापरते. Chromium ४५ दिवसांनंतर किंवा स्टोरेज कमी असताना न वापरलेली AI मॉडेल काढून टाकते</translation>
 <translation id="379589255253486813">तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, Chromium तुम्हाला कळवेल</translation>
 <translation id="3802055581630249637">Chromium तुम्ही भेट देण्याची शक्यता असलेली पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
@@ -333,6 +337,7 @@
 <translation id="4621240073146040695">अद्ययावत करणे जवळजवळ पूर्ण झाले! अपडेट करणे समाप्त करण्यासाठी Chromium रीलाँच करा.</translation>
 <translation id="4625064703209785397">Chromium चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता किंचित कमी होते</translation>
 <translation id="4626321472657185181">Chromium वापरून शोध उघडा</translation>
+<translation id="4639628733881319833">इतर अ‍ॅप्स किंवा फाइल यांसारख्या Chromium च्या बाहेरील आशयाचा स्क्रीनशॉट शेअर करा</translation>
 <translation id="4654639495249754755">Chromium प्रोफाइल</translation>
 <translation id="4665829708273112819">चेतावणी: Chromium हे एक्स्टेंशनना तुमचा ब्राउझिंग इतिहास रेकॉर्ड करण्यापासून रोखू शकत नाही. हे एक्स्टेंशन गुप्त मोडमध्ये बंद करण्यासाठी या पर्यायाची निवड रद्द करा.</translation>
 <translation id="4673151026126227699">तुम्ही Chromium वापर अहवालदेखील शेअर केल्यास, त्या अहवालांमध्ये तुम्ही भेट दिलेल्या URLs चा समावेश होतो</translation>
@@ -391,6 +396,7 @@
 <translation id="5405650547142096840">Chromium मधून काढा</translation>
 <translation id="5424544524441439284">परफॉर्मन्स कमी करते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता वाढते</translation>
 <translation id="5427571867875391349">तुमचा डीफॉल्ट ब्राउझर म्हणून Chromium सेट करा</translation>
+<translation id="5435079900593041559">Windows टास्कबारमध्ये Chromium वापरून शोध दाखवा आणि कीबोर्ड शॉर्टकट सुरू करा</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium बीटा</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium तुमच्या ब्राउझर चा वेग कमी करणारा टॅब थांबवण्याची शिफारस करते}other{Chromium तुमच्या ब्राउझर चा वेग कमी करणारे टॅब थांबवण्याची शिफारस करते}}</translation>
 <translation id="5473971139929175403">या Linux सिस्टीमवर Chromium सपोर्ट नसल्याने कदाचित ते योग्यरितीने काम करू शकत नाही</translation>
@@ -417,6 +423,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium या भाषेत डिस्प्ले करा</translation>
 <translation id="569897634095159764">इंटरनेटशी कनेक्ट करता आले नाही. प्रॉक्सी सर्व्हरसाठी ऑथेंटिकेशन आवश्यक आहे.</translation>
+<translation id="5755377560105094542">सारांश, शब्दलेखन तपासणी, कॅप्शन आणि आणखी बऱ्याच गोष्टींसारख्या वैशिष्ट्यांसाठी साइट व Chromium थेट तुमच्या डिव्हाइसवर रन होणारे AI वापरू शकतात. हे Chromium मधील Gemini पेक्षा वेगळे आहे. <ph name="BEGIN_LINK" />डिव्हाइसवरील AI बद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">ब्राउझ करताना प्रश्न विचारण्यासाठी टूलबारवरील "Search पॅनल" बटणावरून तुम्ही Search पॅनल पुन्हा उघडू शकता</translation>
 <translation id="5768371961535086509">Chromium इनॅक्टिव्ह टॅबमधील मेमरी मोकळी करते. हे अ‍ॅक्टिव्ह टॅब आणि इतर अ‍ॅप्सना आणखी काँप्युटर स्रोत देते व Chromium ला जलद ठेवते. तुम्ही तुमच्या इनॅक्टिव्ह टॅबवर परत गेल्यावर ते पुन्हा आपोआप अ‍ॅक्टिव्ह होतात. <ph name="BEGIN_LINK" />मेमरी सेव्हर बद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, तुमच्या खात्यामधील Chromium डेटा <ph name="SETTINGS_LINK" /> हे करा</translation>
@@ -473,6 +480,7 @@
 <translation id="6245734527075554892">Chromium मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीसह URLs तपासते</translation>
 <translation id="6248213926982192922">Chromium ला डीफॉल्‍ट ब्राउझर बनवा</translation>
 <translation id="6248988683584659830">शोध सेटिंग्ज</translation>
+<translation id="6251986571402453005">Chromium ही AI मॉडेल आपोआप डाउनलोड आणि अपडेट करते</translation>
 <translation id="6268381023930128611">Chromium मधून साइन आउट करायचे?</translation>
 <translation id="6270547683008298381">हे टॅब अतिरिक्त स्रोत वापरत आहेत. तुमच्या परफॉर्मन्समध्ये सुधारणा करण्यासाठी, Chromium ला ते इनॅक्टिव्ह करू द्या.</translation>
 <translation id="6281746429495226318">तुमची Chromium प्रोफाइल कस्टमाइझ करा</translation>
@@ -765,6 +773,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="8981886272598860786">Chromium वापरून शोधण्यासाठी किंवा <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कस्टमाइझ करण्यासाठी</translation>
 <translation id="8988036198400390003">Chromium ची प्रोफाइल व्यवस्थापित करा</translation>
 <translation id="8993855408334954620">Chromium मधील Gemini आणि तुमचा उघडा टॅब यांदरम्यान नेव्हिगेट करण्यासाठी तुमचा कीबोर्ड वापरा.</translation>
+<translation id="9002987346523307190">Chromium या डिव्हाइसवरून AI मॉडेल काढून टाकेल. काही साइट आणि Chromium वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="9018218886431812662">इंस्टॉलेशन पूर्ण झाले</translation>
 <translation id="9022552996538154597">Chromium वर साइन इन करा</translation>
 <translation id="9035791714111278917">Mac मेनू बारमध्ये Chromium सह शोध दाखवा आणि कीबोर्ड शॉर्टकट सुरू करा</translation>

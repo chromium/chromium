@@ -1788,6 +1788,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6504541289630702018">Få nem adgang til dine fanegrupper på computeren</translation>
 <translation id="6505334220040167806">Skjul fanegruppe.</translation>
 <translation id="6506996418997555004">Del fanegruppen "<ph name="GROUP_NAME" />"</translation>
+<translation id="650770261448122895">Søg efter det, du ser, via Lens</translation>
 <translation id="6507973708545996744">Log ind for at se din læseliste på alle dine enheder.</translation>
 <translation id="6518133107902771759">Verificer</translation>
 <translation id="6523575793810663688">Vis mig hvordan</translation>
@@ -2430,6 +2431,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8439758443371991593">Skjul Føj til læseliste</translation>
 <translation id="8443986842926457191">Webadressen indeholder mere end 2.048 tegn</translation>
 <translation id="8449869326050867919">Adgangskoden er delt</translation>
+<translation id="8473367210869452063">Hvis du vil interagere med dette website, skal du stoppe den aktuelle opgave eller vente, til Gemini er færdig med den</translation>
 <translation id="8473815223723723001">Rediger billedet med Gemini</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8474378002946546633">Tillad notifikationer</translation>

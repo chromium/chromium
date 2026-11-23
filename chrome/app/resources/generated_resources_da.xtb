@@ -1395,6 +1395,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2519517390894391510">Navn på certifikatprofil</translation>
 <translation id="2520644704042891903">Venter på tilgængelig socket...</translation>
 <translation id="2522757085249311407">Tillade, at Bluetooth-enheder i nærheden registrerer og opretter forbindelse til denne enhed.</translation>
+<translation id="2523048609826818526">Skrivning af generelle tekster</translation>
 <translation id="2523184218357549926">Sender webadresser på de sider, du besøger, til Google</translation>
 <translation id="252513908494776481">Stil spørgsmål om denne fane</translation>
 <translation id="2525746158911982776">Opdateringen mislykkedes, fordi systemet ikke har tilstrækkelig lagerplads.</translation>
@@ -4244,6 +4245,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5633149627228920745">Få flere oplysninger om systemkrav</translation>
 <translation id="5633597859549257840">Få det bedste fra Google AI. Fastgør Gemini på din værktøjslinje for at få nem adgang, eller åbn den når som helst via Chrome-menuen.</translation>
 <translation id="5635312199252507107">Tillad på bestemte websites</translation>
+<translation id="5636363757061959967">avatar, billede, navn, konto, profil</translation>
 <translation id="5638202526629811571">Vis denne skærm til din forælder eller værge, så vedkommende kan give dig lov til at tilføje denne udvidelse</translation>
 <translation id="563821631542362636">Tillad, at websitet gemmer data</translation>
 <translation id="5638309510554459422">Find udvidelser og temaer i <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
