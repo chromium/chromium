@@ -255,11 +255,6 @@
       },
     },
   },
-  'openscreen_unittests': {
-    'remove_from': [
-      'chromium_win_x64',
-    ],
-  },
   'ozone_unittests': {
     'modifications': {
       'linux-chromeos-chrome': {

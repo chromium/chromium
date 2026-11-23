@@ -61,6 +61,10 @@
   # The following builder group has been migrated to set their targets in the
   # builders' declarations in //infra/config/dev/subprojects/chromium/ci.star
   #   chromium.dev
+  # The following builder group has been migrated to set their targets in the
+  # openscreen repo (//infra/config/global/main.star):
+  #   client.openscreen.chromium
+  #
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -573,41 +577,6 @@
         'test_suites': {
           'gtest_tests': 'devtools_gtests',
           'isolated_scripts': 'devtools_web_isolated_scripts',
-        },
-      },
-    },
-  },
-  {
-    'name': 'client.openscreen.chromium',
-    'machines': {
-      'chromium_linux_x64': {
-        'use_swarming': False,
-        'additional_compile_targets': [
-          'chrome/browser/media/router',
-          'chrome/browser/media/router:unittests',
-        ],
-        'test_suites': {
-          'gtest_tests': 'openscreen_chromium_gtests',
-        },
-      },
-      'chromium_mac_arm64': {
-        'use_swarming': False,
-        'additional_compile_targets': [
-          'chrome/browser/media/router',
-          'chrome/browser/media/router:unittests',
-        ],
-        'test_suites': {
-          'gtest_tests': 'openscreen_chromium_gtests',
-        },
-      },
-      'chromium_win_x64': {
-        'use_swarming': False,
-        'additional_compile_targets': [
-          'chrome/browser/media/router',
-          'chrome/browser/media/router:unittests',
-        ],
-        'test_suites': {
-          'gtest_tests': 'openscreen_chromium_gtests',
         },
       },
     },

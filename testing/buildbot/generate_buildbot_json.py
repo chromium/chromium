@@ -1892,8 +1892,6 @@ class BBJSONGenerator(object):
               'chromium.devtools-frontend',
             ]:
               continue  # pragma: no cover
-            if waterfall['name'] in ['client.openscreen.chromium']:
-              continue  # pragma: no cover
             raise self.unknown_bot(bot_name, waterfall['name'])
 
     # All test suite exceptions must refer to bots on the waterfall.

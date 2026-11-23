@@ -6000,6 +6000,23 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "openscreen_chromium_gtests",
+    targets = [
+        "cast_unittests",
+        "components_unittests",
+        "media_unittests",
+        "openscreen_unittests",
+    ],
+    per_test_modifications = {
+        "components_unittests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "perfetto_diff_tests_bundle",
     targets = [
         "perfetto_diff_tests",
