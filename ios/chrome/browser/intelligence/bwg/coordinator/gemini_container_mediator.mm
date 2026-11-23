@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actor_task_store_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_snackbar_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
@@ -422,6 +423,11 @@ class GeminiContainerMediatorTabHelperObserver
   }
   _initialPageContext = nil;
   [self onFloatyInvoked];
+
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [self.snackbarManager
+        showSnackbarIfAccountMismatchedForStartupState:_startupState];
+  }
 }
 
 - (void)onFloatyInvoked {
@@ -482,6 +488,7 @@ class GeminiContainerMediatorTabHelperObserver
   self.fullscreenHandler = nil;
   _fullscreenController = nullptr;
   self.snackbarHandler = nil;
+  self.snackbarManager = nil;
   _consumer = nil;
   _webStateList = nullptr;
   _prefObserverBridge.reset();
@@ -526,16 +533,17 @@ class GeminiContainerMediatorTabHelperObserver
       [self shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
                 entryPoint]);
 
-  if (startupState.isMismatchedAccount &&
-      IsAppSwitcherAISummarizationEnabled()) {
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    if (!IsAutoSubmitStartupState(startupState)) {
+      [self exitFullscreen];
+      // Assumes it's minimized.
+      [_containerHandler animateAssistantContainerToDetent:kMedium];
+    }
+    [self.snackbarManager
+        showSnackbarIfAccountMismatchedForStartupState:startupState];
+  } else if (startupState.isMismatchedAccount &&
+             IsAppSwitcherAISummarizationEnabled()) {
     ios::provider::ShowAccountSnackbar();
-  }
-
-  if (!IsAutoSubmitStartupState(startupState) &&
-      IsIOSGeminiBottomSheetMigrationEnabled()) {
-    [self exitFullscreen];
-    // Assumes it's minimized.
-    [_containerHandler animateAssistantContainerToDetent:kMedium];
   }
 
   [self requestActivePageContextGeneration];
@@ -932,10 +940,12 @@ class GeminiContainerMediatorTabHelperObserver
   config.shouldAnimatePresentation = YES;
   config.lastInteractionURLDifferent =
       geminiTabHelper->IsLastInteractionUrlDifferent();
+  const bool isBottomSheetMigrationEnabled =
+      IsIOSGeminiBottomSheetMigrationEnabled();
   config.shouldShowSuggestionChips =
       [self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint] &&
-      !IsIOSGeminiBottomSheetMigrationEnabled();
-  if (IsAppSwitcherAISummarizationEnabled() &&
+      !isBottomSheetMigrationEnabled;
+  if (!isBottomSheetMigrationEnabled && IsAppSwitcherAISummarizationEnabled() &&
       startupState.isMismatchedAccount) {
     config.shouldShowAccountSnackbar = YES;
   }

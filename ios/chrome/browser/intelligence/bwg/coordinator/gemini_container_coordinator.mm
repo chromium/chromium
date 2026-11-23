@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_snackbar_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_inline_worklog_view_provider.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_web_modal_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
@@ -61,6 +62,8 @@
   __weak id<AssistantContainerCommands> _containerHandler;
   // Mediator for the Gemini container.
   GeminiContainerMediator* _mediator;
+  // Manager for Chrome-presented snackbars in the container flow.
+  GeminiContainerSnackbarManager* _snackbarManager;
   // Manager for tracking and recording Gemini session metrics.
   GeminiSessionMetricsManager* _sessionMetricsManager;
   // The zero-state suggestions view controller.
@@ -149,6 +152,8 @@
   [self dismissWebModal];
   [_mediator disconnect];
   _mediator = nil;
+  [_snackbarManager disconnect];
+  _snackbarManager = nil;
   _sessionMetricsManager = nil;
   _viewController = nil;
   _containerHandler = nil;
@@ -213,20 +218,25 @@
 
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(self.browser);
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  _snackbarManager =
+      [[GeminiContainerSnackbarManager alloc] initWithBrowser:self.browser
+                                        authenticationService:authService];
   // TODO(crbug.com/535579970): After bottom sheet migration, the startup state
   // can be added to the init params.
   // TODO(crbug.com/571295640): Don't pass the browser instance to mediator.
   _mediator = [[GeminiContainerMediator alloc]
             initWithBrowser:self.browser
                actorService:actorService
-      authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                self.browser->GetProfile())
+      authenticationService:authService
                eventHandler:geminiBrowserAgent
           sharedTabsManager:geminiBrowserAgent
                                 ? geminiBrowserAgent->GetSharedTabsManager()
                                 : nullptr
       sessionMetricsManager:_sessionMetricsManager];
   _mediator.delegate = self;
+  _mediator.snackbarManager = _snackbarManager;
   // TODO(crbug.com/537730178): Delegate the permission prompt request up to
   // a delegate protocol implemented by GeminiContainerCoordinator, which will
   // present the UIAlertController using its own baseViewController.
@@ -301,6 +311,7 @@
       HandlerForProtocol(dispatcher, SnackbarCommands);
   _mediator.gatewayManager.sessionHandler.snackbarHandler = snackbarHandler;
   _mediator.snackbarHandler = snackbarHandler;
+  _snackbarManager.snackbarHandler = snackbarHandler;
 }
 
 // Dismisses Gemini from all other windows and executes `completion`.

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actor_task_store_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_snackbar_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
@@ -3211,6 +3212,64 @@ TEST_F(GeminiContainerMediatorTest,
       kFloatyViewStateTransitionHistogram,
       IOSGeminiViewStateTransition::kCollapsedToExpanded, 1);
   histogram_tester.ExpectTotalCount(kFloatyTimeMinimizedHistogram, 0);
+}
+
+// Tests that `config.shouldShowAccountSnackbar` is disabled for the SDK when
+// `IsIOSGeminiBottomSheetMigrationEnabled()` is true.
+TEST_F(GeminiContainerMediatorTest,
+       TestMigrationAccountSnackbarConfigurationDisabledForSDK) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kAppSwitcherAISummarization, kPageActionMenu},
+      {});
+
+  AppendActiveWebState();
+
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
+  startup_state.isMismatchedAccount = YES;
+
+  GeminiConfiguration* config =
+      [mediator_ createGeminiConfigurationForActiveWebState:startup_state
+                                                pageContext:nil];
+  EXPECT_FALSE(config.shouldShowAccountSnackbar);
+}
+
+// Tests that when `IsIOSGeminiBottomSheetMigrationEnabled()` is true,
+// `didPresentContainer` and `updateWithStartupState:` delegate mismatched
+// account snackbars to `snackbarManager` instead of calling the SDK API.
+TEST_F(GeminiContainerMediatorTest,
+       TestMigrationAccountSnackbarDelegatedToSnackbarManager) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kAppSwitcherAISummarization, kPageActionMenu},
+      {});
+
+  id mock_snackbar_manager =
+      OCMClassMock([GeminiContainerSnackbarManager class]);
+  mediator_.snackbarManager = mock_snackbar_manager;
+
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
+  startup_state.isMismatchedAccount = YES;
+  mediator_.startupState = startup_state;
+
+  OCMExpect([mock_snackbar_manager
+      showSnackbarIfAccountMismatchedForStartupState:startup_state]);
+  [mediator_ didPresentContainer];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_manager);
+
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
+  OCMExpect([mock_snackbar_manager
+      showSnackbarIfAccountMismatchedForStartupState:startup_state]);
+  [mediator_ updateWithStartupState:startup_state];
+
+  EXPECT_FALSE(ios::provider::WasShowAccountSnackbarCalled());
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_manager);
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
 }
 
 }  // namespace

@@ -27,6 +27,7 @@ class FullscreenController;
 class GeminiContainerMediatorEventHandler;
 class GeminiSharedTabsManager;
 @class GeminiConfiguration;
+@class GeminiContainerSnackbarManager;
 @class GeminiGatewayManager;
 @class GeminiPageContext;
 @class GeminiSessionMetricsManager;
@@ -68,6 +69,9 @@ class GeminiSharedTabsManager;
 
 // Handler for displaying snackbars.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
+
+// Manager for Chrome-presented snackbars in the container flow.
+@property(nonatomic, weak) GeminiContainerSnackbarManager* snackbarManager;
 
 // Consumer interface for handling UI updates from the coordinator.
 @property(nonatomic, weak) id<GeminiContainerConsumer> consumer;
