@@ -139,9 +139,10 @@ void IncognitoClearBrowsingDataDialog::
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_EMPHASIZED))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
           .Build());
 
-  views::Label* label = AddChildView(
+  AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
               is_isolated ? IDS_ISOLATED_HISTORY_BUBBLE_SECONDARY_TEXT
@@ -151,8 +152,6 @@ void IncognitoClearBrowsingDataDialog::
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetMultiLine(true)
           .Build());
-  label->SizeToFit(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   // Buttons
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |

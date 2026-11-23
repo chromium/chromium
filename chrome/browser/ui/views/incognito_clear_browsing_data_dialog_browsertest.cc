@@ -48,7 +48,9 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -336,6 +338,30 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
       ui::mojom::DialogButton::kOk));
   ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(
       ui::mojom::DialogButton::kCancel));
+}
+
+// Regression test for crbug.com/589703940: the labels must fit in the space
+// the bubble gives them, without eliding or clipping.
+IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
+                       HistoryDisclaimerBubbleLabelsFit) {
+  OpenDialog(IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
+  views::test::RunScheduledLayout(GetDialogWidget());
+
+  int label_count = 0;
+  for (views::View* child : GetDialogView()->children()) {
+    auto* label = views::AsViewClass<views::Label>(child);
+    if (!label) {
+      continue;
+    }
+    ++label_count;
+    SCOPED_TRACE(label->GetText());
+    EXPECT_FALSE(label->IsDisplayTextTruncated());
+    const gfx::Size needed =
+        label->GetPreferredSize(views::SizeBounds(label->width(), {}));
+    EXPECT_LE(needed.width(), label->width());
+    EXPECT_LE(needed.height(), label->height());
+  }
+  EXPECT_EQ(2, label_count);
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
