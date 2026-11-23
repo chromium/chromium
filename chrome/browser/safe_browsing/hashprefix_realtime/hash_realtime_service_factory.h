@@ -38,6 +38,7 @@ class HashRealTimeServiceFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
+  friend class HashRealTimeServiceFactoryTest;
   friend base::NoDestructor<HashRealTimeServiceFactory>;
 
   HashRealTimeServiceFactory();

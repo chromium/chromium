@@ -8,8 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/db/v5_search_hashes_cache_factory.h"
 #include "chrome/browser/safe_browsing/hashprefix_realtime/ohttp_key_service_factory.h"
+#include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
@@ -66,7 +66,9 @@ HashRealTimeServiceFactory::BuildServiceInstanceForBrowserContext(
 // static
 network::mojom::NetworkContext* HashRealTimeServiceFactory::GetNetworkContext(
     Profile* profile) {
-  return g_browser_process->safe_browsing_service()->GetNetworkContext(profile);
+  return NetworkContextServiceFactory::GetForBrowserContext(
+             profile, /*use_same_instance_in_off_the_record=*/false)
+      ->GetNetworkContext();
 }
 
 }  // namespace safe_browsing

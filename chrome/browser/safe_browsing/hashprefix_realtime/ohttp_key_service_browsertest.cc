@@ -4,7 +4,11 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include <memory>
+
 #include "base/base64.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,9 +19,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/hashprefix_realtime/ohttp_key_service_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/network_context_service.h"
+#include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
@@ -58,6 +64,17 @@ GURL GetTestKeyFetchUrl() {
         "?key=" + base::EscapeQueryParamValue(api_key, /*use_plus=*/true));
   }
   return key_fetch_url;
+}
+
+std::unique_ptr<KeyedService> BuildTestNetworkContextService(
+    network::TestURLLoaderFactory* url_loader_factory,
+    content::BrowserContext* context) {
+  CHECK(url_loader_factory);
+  auto service = std::make_unique<NetworkContextService>(
+      Profile::FromBrowserContext(context));
+  service->SetURLLoaderFactoryForTesting(
+      url_loader_factory->GetSafeWeakWrapper());
+  return service;
 }
 }  // namespace
 
@@ -123,17 +140,17 @@ class SafeBrowsingOhttpKeyServiceIncognitoLookupTest
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     SafeBrowsingOhttpKeyServiceTest::SetUpBrowserContextKeyedServices(context);
-    g_browser_process->safe_browsing_service()->SetURLLoaderFactoryForTesting(
-        test_url_loader_factory_.GetSafeWeakWrapper());
+    network::TestURLLoaderFactory* url_loader_factory =
+        Profile::FromBrowserContext(context)->IsOffTheRecord()
+            ? &otr_url_loader_factory_
+            : &regular_url_loader_factory_;
+    NetworkContextServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildTestNetworkContextService,
+                                     base::Unretained(url_loader_factory)));
   }
 
-  void TearDownOnMainThread() override {
-    g_browser_process->safe_browsing_service()->SetURLLoaderFactoryForTesting(
-        nullptr);
-    SafeBrowsingOhttpKeyServiceTest::TearDownOnMainThread();
-  }
-
-  network::TestURLLoaderFactory test_url_loader_factory_;
+  network::TestURLLoaderFactory regular_url_loader_factory_;
+  network::TestURLLoaderFactory otr_url_loader_factory_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -156,19 +173,22 @@ IN_PROC_BROWSER_TEST_P(
 
   // Populate the regular profile's OHTTP key and prefs end-to-end via a network
   // fetch before opening Incognito.
-  test_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
-                                       initial_ohttp_key);
+  regular_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
+                                          initial_ohttp_key);
   base::test::TestFuture<std::optional<std::string>> regular_init_future;
   regular_ohttp_key_service->GetOhttpKey(regular_init_future.GetCallback());
   EXPECT_EQ(regular_init_future.Get(), initial_ohttp_key);
-  test_url_loader_factory_.ClearResponses();
+  regular_url_loader_factory_.ClearResponses();
 
   PrefService* regular_prefs = regular_profile->GetPrefs();
   ASSERT_EQ(regular_prefs->GetString(prefs::kSafeBrowsingHashRealTimeOhttpKey),
             kEncodedTestOhttpKey);
   base::Time initial_expiration = regular_prefs->GetTime(
       prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime);
-  size_t requests_before_incognito = test_url_loader_factory_.total_requests();
+  size_t regular_requests_before_incognito =
+      regular_url_loader_factory_.total_requests();
+  EXPECT_GT(regular_requests_before_incognito, 0u);
+  EXPECT_EQ(otr_url_loader_factory_.total_requests(), 0u);
 
   BrowserWindowInterface* incognito_browser =
       CreateIncognitoBrowser(regular_profile);
@@ -176,6 +196,11 @@ IN_PROC_BROWSER_TEST_P(
   Profile* incognito_profile = incognito_browser->GetProfile();
   OhttpKeyService* incognito_ohttp_key_service =
       OhttpKeyServiceFactory::GetForProfile(incognito_profile);
+  EXPECT_EQ(
+      GetParam(),
+      NetworkContextServiceFactory::GetForBrowserContextIfExistsForTesting(
+          incognito_profile, /*use_same_instance_in_off_the_record=*/false) !=
+          nullptr);
   if (!GetParam()) {
     EXPECT_EQ(nullptr, incognito_ohttp_key_service);
     return;
@@ -187,22 +212,25 @@ IN_PROC_BROWSER_TEST_P(
   // Flush the posted MaybeStartOrRescheduleAsyncFetch task from OhttpKeyService
   // construction and verify that opening Incognito populated its key from the
   // regular profile's prefs via OverlayUserPrefStore without issuing a network
-  // request.
+  // request on either `URLLoaderFactory`.
   base::test::TestFuture<void> flush_future;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, flush_future.GetCallback());
   ASSERT_TRUE(flush_future.Wait());
-  EXPECT_EQ(test_url_loader_factory_.total_requests(),
-            requests_before_incognito);
+  EXPECT_EQ(regular_url_loader_factory_.total_requests(),
+            regular_requests_before_incognito);
+  EXPECT_EQ(otr_url_loader_factory_.total_requests(), 0u);
 
   base::test::TestFuture<std::optional<std::string>> initial_key_future;
   incognito_ohttp_key_service->GetOhttpKey(initial_key_future.GetCallback());
   EXPECT_EQ(initial_key_future.Get(), initial_ohttp_key);
-  EXPECT_EQ(test_url_loader_factory_.total_requests(),
-            requests_before_incognito);
+  EXPECT_EQ(regular_url_loader_factory_.total_requests(),
+            regular_requests_before_incognito);
+  EXPECT_EQ(otr_url_loader_factory_.total_requests(), 0u);
 
   // Simulate a 422 key-related HTTP error during an Incognito lookup, which
-  // clears the Incognito service's key and requires fetching a new key.
+  // clears the Incognito service's key and requires fetching a new key through
+  // Incognito's isolated `URLLoaderFactory`.
   incognito_ohttp_key_service->NotifyLookupResponse(
       initial_ohttp_key, net::HTTP_UNPROCESSABLE_CONTENT);
   EXPECT_FALSE(
@@ -215,11 +243,12 @@ IN_PROC_BROWSER_TEST_P(
       base::Base64Decode(kRotatedEncodedTestOhttpKey, &rotated_ohttp_key));
   base::test::TestFuture<std::optional<std::string>> rotated_key_future;
   incognito_ohttp_key_service->GetOhttpKey(rotated_key_future.GetCallback());
-  test_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
-                                       rotated_ohttp_key);
+  otr_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
+                                      rotated_ohttp_key);
   EXPECT_EQ(rotated_key_future.Get(), rotated_ohttp_key);
-  EXPECT_EQ(test_url_loader_factory_.total_requests(),
-            requests_before_incognito + 1u);
+  EXPECT_EQ(otr_url_loader_factory_.total_requests(), 1u);
+  EXPECT_EQ(regular_url_loader_factory_.total_requests(),
+            regular_requests_before_incognito);
 
   // Subsequent Incognito lookups continue using the newly fetched key from
   // memory without issuing another network request.
@@ -227,8 +256,9 @@ IN_PROC_BROWSER_TEST_P(
   incognito_ohttp_key_service->GetOhttpKey(
       cached_rotated_key_future.GetCallback());
   EXPECT_EQ(cached_rotated_key_future.Get(), rotated_ohttp_key);
-  EXPECT_EQ(test_url_loader_factory_.total_requests(),
-            requests_before_incognito + 1u);
+  EXPECT_EQ(otr_url_loader_factory_.total_requests(), 1u);
+  EXPECT_EQ(regular_url_loader_factory_.total_requests(),
+            regular_requests_before_incognito);
 
   // The rotated key is stored only in Incognito's in-memory overlay pref store;
   // the regular profile's prefs and service remain untouched.
@@ -274,12 +304,15 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingOhttpKeyServiceGuestLookupTest,
   OhttpKeyService* regular_ohttp_key_service =
       OhttpKeyServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_NE(nullptr, regular_ohttp_key_service);
-  test_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
-                                       regular_ohttp_key);
+  regular_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
+                                          regular_ohttp_key);
   base::test::TestFuture<std::optional<std::string>> regular_init_future;
   regular_ohttp_key_service->GetOhttpKey(regular_init_future.GetCallback());
   EXPECT_EQ(regular_init_future.Get(), regular_ohttp_key);
-  test_url_loader_factory_.ClearResponses();
+  regular_url_loader_factory_.ClearResponses();
+  size_t regular_requests_before_guest =
+      regular_url_loader_factory_.total_requests();
+  EXPECT_GT(regular_requests_before_guest, 0u);
   ASSERT_EQ(browser()->GetProfile()->GetPrefs()->GetString(
                 prefs::kSafeBrowsingHashRealTimeOhttpKey),
             kEncodedTestOhttpKey);
@@ -296,6 +329,11 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingOhttpKeyServiceGuestLookupTest,
 
   OhttpKeyService* guest_ohttp_key_service =
       OhttpKeyServiceFactory::GetForProfile(guest_browser->GetProfile());
+  EXPECT_EQ(
+      GetParam(),
+      NetworkContextServiceFactory::GetForBrowserContextIfExistsForTesting(
+          guest_browser->GetProfile(),
+          /*use_same_instance_in_off_the_record=*/false) != nullptr);
   if (!GetParam()) {
     EXPECT_EQ(nullptr, guest_ohttp_key_service);
     return;
@@ -314,9 +352,14 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingOhttpKeyServiceGuestLookupTest,
 
   base::test::TestFuture<std::optional<std::string>> future;
   guest_ohttp_key_service->GetOhttpKey(future.GetCallback());
-  test_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
-                                       fetched_ohttp_key);
+  otr_url_loader_factory_.AddResponse(GetTestKeyFetchUrl().spec(),
+                                      fetched_ohttp_key);
   EXPECT_EQ(future.Get(), fetched_ohttp_key);
+  EXPECT_GE(otr_url_loader_factory_.total_requests(), 1u);
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(regular_url_loader_factory_.total_requests(),
+            regular_requests_before_guest);
+#endif
 
   // The fetched key is stored in the Guest OTR profile's in-memory prefs, while
   // the Guest parent profile's disk prefs and the Regular profile's prefs

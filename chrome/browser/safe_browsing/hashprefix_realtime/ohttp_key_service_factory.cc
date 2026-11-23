@@ -4,10 +4,12 @@
 
 #include "chrome/browser/safe_browsing/hashprefix_realtime/ohttp_key_service_factory.h"
 
+#include <utility>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -64,8 +66,9 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-              profile));
+          NetworkContextServiceFactory::GetForBrowserContext(
+              profile, /*use_same_instance_in_off_the_record=*/false)
+              ->GetURLLoaderFactory());
   return std::make_unique<OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       profile->GetPrefs(), g_browser_process->local_state(),
