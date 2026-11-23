@@ -192,11 +192,6 @@ class PDFiumPage {
   // filled rectangles, in the same pixel coordinates as text runs.
   std::vector<gfx::RectF> GetFilledRectInfo();
 
-  // Traverses the entire struct tree of the page recursively and extracts the
-  // alt text from struct tree elements corresponding to the marked content IDs
-  // present in `marked_content_id_to_images_map_`.
-  void PopulateImageAltText();
-
   enum Area {
     NONSELECTABLE_AREA,
     TEXT_AREA,       // Area contains regular, selectable text not
@@ -441,6 +436,11 @@ class PDFiumPage {
   // Calculates and return a text run that starts exactly at `start_char_index`.
   AccessibilityTextRunInfo CalculateTextRunInfoAt(uint32_t start_char_index,
                                                   uint32_t chars_count);
+
+  // Traverses the entire struct tree of the page recursively and extracts the
+  // alt text from struct tree elements corresponding to the marked content IDs
+  // present in `marked_content_id_to_images_map_`.
+  void PopulateImageAltText();
 
   // Traverses a struct element and its sub-tree recursively and extracts the
   // alt text from struct elements corresponding to the marked content IDs

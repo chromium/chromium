@@ -22,7 +22,6 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   PDFiumPage* page = engine->GetPage(page_index);
   CHECK(page);
 
-  page->PopulateImageAltText();
   text_runs = page->GetTextRunInfo();
   chars = page->GetCharInfo();
 

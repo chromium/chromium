@@ -1343,7 +1343,7 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo() {
     return image_info;
 
   CalculateTextRuns();
-  CalculateImages();
+  PopulateImageAltText();
   image_info.reserve(images_.size());
   for (const Image& image : images_) {
     AccessibilityImageInfo cur_info;
@@ -2270,16 +2270,13 @@ std::vector<gfx::RectF> PDFiumPage::CalculateFilledRects() {
 }
 
 void PDFiumPage::PopulateImageAltText() {
-  CalculateTextRuns();
   CalculateImages();
-
-  ScopedFPDFStructTree struct_tree(FPDF_StructTree_GetForPage(GetPage()));
-  if (!struct_tree) {
+  if (marked_content_id_to_images_map_.empty()) {
     return;
   }
 
-  if (marked_content_id_to_text_runs_map_.empty() &&
-      marked_content_id_to_images_map_.empty()) {
+  ScopedFPDFStructTree struct_tree(FPDF_StructTree_GetForPage(GetPage()));
+  if (!struct_tree) {
     return;
   }
 
