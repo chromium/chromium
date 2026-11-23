@@ -6,10 +6,12 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -48,6 +50,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -63,6 +66,7 @@
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2261,6 +2265,77 @@ TEST_F(PasswordAutofillAgentTest, PreviewField_ClearPreviewedForm) {
     EXPECT_EQ(0u, element.SelectionEnd());
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Regression test for reentrant preview mutation during `ClearPreviewedForm()`
+// when `SetSuggestedValue()` rebuilds a temporal input's UA shadow tree and
+// synchronously changes focus (temporal subfields are only focusable on
+// desktop; see `blink::DateTimeChooser::ShouldSubfieldsBeFocusable()`).
+TEST_F(PasswordAutofillAgentTest, ClearPreviewedFormHandlesReentrantPreview) {
+  class FocusChangeObserver : public content::RenderFrameObserver {
+   public:
+    FocusChangeObserver(content::RenderFrame* render_frame,
+                        base::OnceClosure on_focus_change)
+        : content::RenderFrameObserver(render_frame),
+          on_focus_change_(std::move(on_focus_change)) {}
+
+    void FocusedElementChanged(const WebElement& element) override {
+      if (on_focus_change_) {
+        std::move(on_focus_change_).Run();
+      }
+    }
+    void OnDestruct() override {}
+
+   private:
+    base::OnceClosure on_focus_change_;
+  };
+
+  WebInputElement random_element = GetInputElementByID("random_field");
+
+  // Switch `username` to `type="date"` with a dirty value (`u.value = ...`) and
+  // focus its UA-shadow subfield before previewing so focus does not change
+  // between previewing and `ClearPreviewedForm()`.
+  GetMainFrame()->View()->SetIsActive(true);
+  ExecuteJavaScriptForTests(
+      "const u = document.getElementById('username');"
+      "u.type = 'date';"
+      "u.value = '2001-02-04';"
+      "u.focus();");
+
+  // Populate `previewed_elements_` with 2 entries (`size == capacity == 2`).
+  constexpr char16_t kPreviewedDate[] = u"2005-06-07";
+  password_autofill_agent_->PreviewField(
+      form_util::GetFieldRendererId(username_element_), kPreviewedDate);
+  password_autofill_agent_->PreviewField(
+      form_util::GetFieldRendererId(password_element_), kAlicePassword16);
+  ASSERT_EQ(u"2005-06-07", username_element_.SuggestedValue().Utf16());
+  ASSERT_EQ(kAlicePassword, password_element_.SuggestedValue().Utf8());
+
+  // Make `StepRange` layout parameters stale via `defaultValue` (which skips
+  // `UpdateView()` when `u` has a dirty value), so `SetSuggestedValue()` in
+  // `ClearPreviewedForm()` rebuilds the date subfields and synchronously
+  // notifies `FocusedElementChanged()`.
+  ExecuteJavaScriptForTests(
+      "document.getElementById('username').defaultValue = '2003-04-05';");
+
+  FocusChangeObserver observer(
+      GetMainRenderFrame(),
+      base::BindOnce(&PasswordAutofillAgent::PreviewField,
+                     base::Unretained(password_autofill_agent_),
+                     form_util::GetFieldRendererId(random_element),
+                     std::u16string(kBobUsername16)));
+
+  password_autofill_agent_->ClearPreviewedForm();
+
+  EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
+  EXPECT_TRUE(password_element_.SuggestedValue().IsEmpty());
+  ASSERT_EQ(kBobUsername, random_element.SuggestedValue().Utf8());
+
+  // The nested preview must remain tracked and clearable on the next call.
+  password_autofill_agent_->ClearPreviewedForm();
+  EXPECT_TRUE(random_element.SuggestedValue().IsEmpty());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that `ClearPreview` properly clears previewed username and password
 // with username and password being previously autofilled.

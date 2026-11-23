@@ -1155,7 +1155,10 @@ void PasswordAutofillAgent::PreviewUsernameAndPasswordElements(
 }
 
 void PasswordAutofillAgent::ClearPreviewedForm() {
-  for (const PreviewInfo& preview_info : previewed_elements_) {
+  // Exchange `previewed_elements_` because `SetSuggestedValue()` can
+  // synchronously dispatch DOM events that mutate `previewed_elements_`.
+  for (const PreviewInfo& preview_info :
+       std::exchange(previewed_elements_, {})) {
     WebInputElement element =
         form_util::GetFormControlByRendererId(preview_info.field_id)
             .DynamicTo<WebInputElement>();
@@ -1165,7 +1168,6 @@ void PasswordAutofillAgent::ClearPreviewedForm() {
     element.SetSuggestedValue(WebString());
     element.SetAutofillState(preview_info.autofill_state);
   }
-  previewed_elements_.clear();
 }
 
 std::optional<PasswordSuggestionRequest>
