@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] scrollsnapchanging doesn't fire if scroll doesn't reach different snap targets.
+  assert_equals: scroller snaps back to the left expected 0 but got 10
+Harness: the test ran to completion.
+
