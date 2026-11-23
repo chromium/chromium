@@ -6,7 +6,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -19,8 +21,10 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -638,7 +642,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
     EXPECT_EQ(dice_request_header != kNoDiceRequestHeader,
               IsReconcilorBlocked());
     dice_request_header_ = dice_request_header;
-    RunClosureIfValid(std::move(signin_requested_quit_closure_));
   }
 
   void OnChromeSigninEmbeddedRequest(const std::string& dice_request_header) {
@@ -830,7 +833,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
   base::OnceClosure unblock_count_quit_closure_;
   base::OnceClosure tokens_loaded_quit_closure_;
   base::OnceClosure on_primary_account_set_quit_closure_;
-  base::OnceClosure signin_requested_quit_closure_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2613,4 +2615,293 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   EXPECT_EQ(1U, g_browser_process->profile_manager()->GetNumberOfProfiles());
   EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfile(),
             initial_profile);
+}
+
+namespace {
+
+constexpr char kLinkedSigninURL[] = "/signin/linked";
+constexpr std::string_view kLinkedAuthCodePrefix = "linked_auth_code_";
+
+std::optional<std::string> ExtractAuthCodeFromRequest(
+    const HttpRequest& request) {
+  if (!request.has_content) {
+    return std::nullopt;
+  }
+  base::StringViewPairs pairs;
+  base::SplitStringIntoKeyValueViewPairs(request.content, '=', '&', &pairs);
+  for (const auto& [key, value] : pairs) {
+    if (key == "code" && !value.empty()) {
+      return base::UnescapeBinaryURLComponent(
+          value, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+    }
+  }
+  return std::nullopt;
+}
+
+}  // namespace
+
+// Test fixture for multi-account DICE linked-account flows.
+//
+// `HandleLinkedSigninRequest()` and `HandleLinkedTokenExchangeRequest()` run on
+// the embedded test server's IO thread and are stateless (configured via
+// request URL query parameters and auth-code prefixes), posting notifications
+// to the UI thread. `pending_token_responses_` is accessed exclusively on the
+// UI thread, and `TearDownOnMainThread()` shuts down `https_server_` before
+// destruction so the `base::Unretained(this)` handlers cannot outlive this
+// fixture.
+class DiceLinkedAccountsBrowserTest : public DiceBrowserTest {
+ public:
+  DiceLinkedAccountsBrowserTest() {
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &DiceLinkedAccountsBrowserTest::HandleLinkedSigninRequest,
+        base::Unretained(this)));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &DiceLinkedAccountsBrowserTest::HandleLinkedTokenExchangeRequest,
+        base::Unretained(this)));
+  }
+
+ protected:
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+    pending_token_responses_.clear();
+    DiceBrowserTest::TearDownOnMainThread();
+  }
+
+  static std::string BuildLinkedSigninURL(
+      const std::vector<std::string>& emails,
+      std::optional<std::string_view> meta_header = std::nullopt) {
+    std::vector<std::string> query_params;
+    query_params.reserve(emails.size() + (meta_header.has_value() ? 1 : 0));
+    for (const std::string& email : emails) {
+      query_params.push_back(base::StrCat(
+          {"email=", base::EscapeQueryParamValue(email, /*use_plus=*/true)}));
+    }
+    if (meta_header.has_value()) {
+      query_params.push_back(
+          base::StrCat({"meta=", base::EscapeQueryParamValue(
+                                     *meta_header, /*use_plus=*/true)}));
+    }
+    if (query_params.empty()) {
+      return kLinkedSigninURL;
+    }
+    return base::StrCat(
+        {kLinkedSigninURL, "?", base::JoinString(query_params, "&")});
+  }
+
+  static std::string FormatMetaHeader(std::string_view initiator_email,
+                                      bool primary_is_connected) {
+    return base::StringPrintf(
+        "initiator_id=%s;primary_is_connected=%d",
+        signin::GetTestGaiaIdForEmail(std::string(initiator_email))
+            .ToString()
+            .c_str(),
+        primary_is_connected ? 1 : 0);
+  }
+
+  CoreAccountId GetAccountIdForEmail(const std::string& email) {
+    return GetIdentityManager()->PickAccountIdForAccount(
+        signin::GetTestGaiaIdForEmail(email), email);
+  }
+
+  bool HasTokenRequest(const std::string& email) const {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return pending_token_responses_.contains(email);
+  }
+
+  void WaitForTokenRequest(const std::string& email) {
+    ASSERT_TRUE(base::test::RunUntil([&] { return HasTokenRequest(email); }));
+  }
+
+  void SendTokenResponseAndWaitForAdded(const std::string& email) {
+    WaitForTokenRequest(email);
+    auto node = pending_token_responses_.extract(email);
+    ASSERT_TRUE(node);
+    std::move(node.mapped()).Run();
+    CoreAccountId account_id = GetAccountIdForEmail(email);
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return GetIdentityManager()->HasAccountWithRefreshToken(account_id);
+    }));
+  }
+
+ private:
+  static std::string GetAuthCodeForEmail(std::string_view email) {
+    return base::StrCat({kLinkedAuthCodePrefix, email});
+  }
+
+  std::unique_ptr<HttpResponse> HandleLinkedSigninRequest(
+      const HttpRequest& request) {
+    if (!net::test_server::ShouldHandle(request, kLinkedSigninURL)) {
+      return nullptr;
+    }
+
+    std::string header_value = kNoDiceRequestHeader;
+    if (auto it = request.headers.find(signin::kDiceRequestHeader);
+        it != request.headers.end()) {
+      header_value = it->second;
+    }
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DiceLinkedAccountsBrowserTest::OnSigninRequest,
+                       base::Unretained(this), header_value));
+
+    auto http_response = std::make_unique<BasicHttpResponse>();
+    http_response->AddCustomHeader("Cache-Control", "no-store");
+
+    net::test_server::RequestQuery queries =
+        net::test_server::ParseQuery(request.GetURL());
+    auto emails_it = queries.find("email");
+    if (header_value == kNoDiceRequestHeader || emails_it == queries.end() ||
+        emails_it->second.empty()) {
+      return http_response;
+    }
+
+    const std::vector<std::string>& emails = emails_it->second;
+    std::vector<std::string> account_entries;
+    account_entries.reserve(emails.size());
+    for (size_t i = 0; i < emails.size(); ++i) {
+      const std::string& email = emails[i];
+      account_entries.push_back(base::StringPrintf(
+          "action=SIGNIN;authuser=%zu;id=%s;email=%s;authorization_code=%s;"
+          "eligible_for_token_binding=ES256 RS256",
+          i + 1, signin::GetTestGaiaIdForEmail(email).ToString().c_str(),
+          email.c_str(), GetAuthCodeForEmail(email).c_str()));
+    }
+    http_response->AddCustomHeader(kDiceResponseHeader,
+                                   base::JoinString(account_entries, ","));
+    if (auto meta_it = queries.find("meta");
+        meta_it != queries.end() && !meta_it->second.empty()) {
+      http_response->AddCustomHeader(signin::kDiceLinkedAccountsMetaHeader,
+                                     meta_it->second.front());
+    }
+    http_response->AddCustomHeader(
+        "Set-Cookie", "SAPISID=fake; Path=/; Secure; Max-Age=86400");
+    return http_response;
+  }
+
+  std::unique_ptr<HttpResponse> HandleLinkedTokenExchangeRequest(
+      const HttpRequest& request) {
+    if (!net::test_server::ShouldHandle(request, kOAuth2TokenExchangeURL)) {
+      return nullptr;
+    }
+
+    std::optional<std::string> auth_code = ExtractAuthCodeFromRequest(request);
+    if (!auth_code.has_value()) {
+      return nullptr;
+    }
+
+    std::optional<std::string_view> email =
+        base::RemovePrefix(*auth_code, kLinkedAuthCodePrefix);
+    if (!email.has_value() || email->empty()) {
+      return nullptr;
+    }
+
+    auto http_response = std::make_unique<BlockedHttpResponse>(
+        base::BindOnce(&DiceLinkedAccountsBrowserTest::OnLinkedTokenRequest,
+                       base::Unretained(this), std::string(*email)));
+    base::DictValue response =
+        base::DictValue()
+            .Set("access_token", "access_" + *auth_code)
+            .Set("refresh_token", "refresh_" + *auth_code)
+            .Set("expires_in", 9999);
+    http_response->set_content(*base::WriteJson(response));
+    http_response->set_content_type("text/plain");
+    http_response->AddCustomHeader("Cache-Control", "no-store");
+    return http_response;
+  }
+
+  void OnLinkedTokenRequest(std::string email,
+                            base::OnceClosure unblock_closure) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    EXPECT_TRUE(IsReconcilorBlocked());
+    EXPECT_FALSE(pending_token_responses_.contains(email));
+    pending_token_responses_[std::move(email)] = std::move(unblock_closure);
+  }
+
+  std::map<std::string, base::OnceClosure> pending_token_responses_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kDiceLinkedAccounts};
+};
+
+// Tests that when a signed-in profile receives a multi-account DICE response
+// with `primary_is_connected=1`, tokens are fetched in parallel (`kAll`),
+// interception is suppressed (`kAbortAccountConnected`), and all accounts are
+// added directly to the active profile.
+IN_PROC_BROWSER_TEST_F(DiceLinkedAccountsBrowserTest,
+                       PrimaryConnected_ParallelFetch_NoInterception) {
+  static constexpr char kInitiatorEmail[] = "initiator@gmail.com";
+  static constexpr char kLinkedSecondaryEmail1[] =
+      "linked_secondary1@gmail.com";
+  std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
+
+  // While signed out, verify `linked_accounts=1` is sent without
+  // `primary_account_id`.
+  NavigateToURL(kLinkedSigninURL);
+  EXPECT_EQ(
+      base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
+                         "linked_accounts=1,"
+                         "signin_mode=all_accounts,"
+                         "signout_mode=show_confirmation",
+                         signin::DiceHeaderHelper::GetDiceProtocolVersion(),
+                         client_id.c_str(), GetDeviceId().c_str()),
+      dice_request_header_);
+  WaitForReconcilorUnblockedCount(1);
+
+  // Sign in the primary account.
+  AccountInfo primary_info = signin::MakePrimaryAccountAvailable(
+      GetIdentityManager(), main_email_, signin::ConsentLevel::kSignin);
+
+  // Configure a 2-account connected response (`primary_is_connected=1`) and
+  // navigate to Gaia.
+  base::HistogramTester histogram_tester;
+  NavigateToURL(BuildLinkedSigninURL(
+      {kInitiatorEmail, kLinkedSecondaryEmail1},
+      FormatMetaHeader(kInitiatorEmail, /*primary_is_connected=*/true)));
+
+  EXPECT_EQ(
+      base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
+                         "primary_account_id=%s,linked_accounts=1,"
+                         "signin_mode=all_accounts,"
+                         "signout_mode=show_confirmation",
+                         signin::DiceHeaderHelper::GetDiceProtocolVersion(),
+                         client_id.c_str(), GetDeviceId().c_str(),
+                         primary_info.GetGaiaId().ToString().c_str()),
+      dice_request_header_);
+
+  // Verify both token requests arrive in parallel (`FetchMode::kAll`) before
+  // either response is sent.
+  WaitForTokenRequest(kInitiatorEmail);
+  WaitForTokenRequest(kLinkedSecondaryEmail1);
+
+  // Fulfill the secondary account first, then the initiator account.
+  SendTokenResponseAndWaitForAdded(kLinkedSecondaryEmail1);
+  SendTokenResponseAndWaitForAdded(kInitiatorEmail);
+  WaitForReconcilorUnblockedCount(2);
+
+  // All 3 accounts remain in the source profile with no interception UI.
+  EXPECT_EQ(1U, g_browser_process->profile_manager()->GetNumberOfProfiles());
+  EXPECT_EQ(
+      primary_info.GetAccountId(),
+      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(GetIdentityManager()->HasAccountWithRefreshToken(
+      GetAccountIdForEmail(kInitiatorEmail)));
+  EXPECT_TRUE(GetIdentityManager()->HasAccountWithRefreshToken(
+      GetAccountIdForEmail(kLinkedSecondaryEmail1)));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.DiceLinkedAccountsMetaHeaderStatus",
+      signin::DiceHeaderHelper::DiceLinkedAccountsMetaHeaderStatus::kValid, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Dice.LinkedAccounts.MultiAccountCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Dice.InvalidPrimaryConnectedInUnsignedProfile", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortAccountConnected, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Dice.LinkedAccounts.SessionResult.All",
+      DiceResponseHandler::LinkedAccountsSessionResult::kAllSucceeded, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration", 1);
 }
