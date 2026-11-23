@@ -7,7 +7,46 @@ states and transitions between them.
 
 ## How to Use Public Transit?
 
-See the [Getting Started with Public Transit](getting_started.md) guide.
+### Write Your First Test {#first-test}
+
+Public Transit tests can be in any instrumentation test target. Targets other
+than `chrome/android/javatests` need these deps:
+
+```gn
+"//base/test:public_transit_java",
+"//chrome/test/android:chrome_java_transit",
+```
+
+Add `//content/public/test/android:content_transit_java` when declaring DOM
+elements with `WebPageFacility` / `HtmlElement`.
+
+A minimal batched test:
+
+```java
+@RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
+public class MyFeatureTest {
+    @Rule
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
+
+    @Test
+    @LargeTest
+    public void testOpenNewTabFromAppMenu() {
+        WebPageStation page = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation ntp = page.openRegularTabAppMenu().openNewTab();
+    }
+}
+```
+
+Run it with `tools/autotest.py -C out/Debug MyFeatureTest`.
+
+From the starting Station, call transition methods to navigate to the state you
+want to test. If a state or affordance isn't modeled yet, add a `Station`,
+`Facility` or transition method to the Transit Layer in
+`//chrome/test/android/javatests/src/org/chromium/chrome/test/transit/` (see
+[Classes and Concepts](#concepts)). [`ViewPrinter`](#viewprinter) helps find the
+Views to declare.
 
 See some example tests:
 
@@ -30,7 +69,7 @@ made in the Framework Layer without the need to update individual tests.
 
 Chrome's integration test failures have historically been difficult to diagnose,
 especially when not reproducible with local debugging. Public Transit's
-extensive logging and assertions provides more upfront information about test
+extensive logging and assertions provide more upfront information about test
 failures.
 
 **Consistency**
@@ -62,65 +101,24 @@ active condition. When transitions fail (due to timeouts), the state of all
 conditions are logged. This step-by-step logging helps contextualizing failures
 like native crashes and allows comparing failing runs with successful runs.
 
-Example Logs Output:
+Example logs (`cr_Transit`) of a successful transition:
 
 ```
-Conditions fulfilled:
-    [1] [ENTER] [OK] View: (with id: org.chromium.chrome.tests:id/tab_switcher_button and is displayed on the screen to the user) (fulfilled after 0-25 ms)
-    [3] [ENTER] [OK] View: (with id: org.chromium.chrome.tests:id/menu_button and is displayed on the screen to the user) (fulfilled after 0-33 ms)
+StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>] to [<S4: WebPageStation>, <S4|F1004: ToolbarFacility>]): started
+StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>] to [<S4: WebPageStation>, <S4|F1004: ToolbarFacility>]): will run trigger on Instrumentation thread
+StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>] to [<S4: WebPageStation>, <S4|F1004: ToolbarFacility>]): finished running trigger
+StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>] to [<S4: WebPageStation>, <S4|F1004: ToolbarFacility>]): waiting for conditions
+StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>] to [<S4: WebPageStation>, <S4|F1004: ToolbarFacility>]): Conditions fulfilled:
+✅ OK ENTER <S4: WebPageStation>:
+    [1] [OK  ] Activity exists and is RESUMED: ChromeTabbedActivity in the same task as previous Station {fulfilled after 0~12 ms}
 ...
-    [9] [ENTER] [OK] URL of activity tab contains "/chrome/test/data/android/navigate/two.html (fulfilled after 5401-5671 ms)
-         34- 2908ms ( 48x): NO | ActivityTab url: "http://127.0.0.1:33010/chrome/test/data/android/popup_test.html"
-       3073- 5401ms ( 41x): NO | ActivityTab url: "http://127.0.0.1:33010/chrome/test/data/android/navigate/one.html"
-       5671- 5726ms (  2x): OK | ActivityTab url: "http://127.0.0.1:33010/chrome/test/data/android/navigate/two.html"
-Trip 4: Arrived at <S4: PageStation>
-...
-org.chromium.base.test.transit.TravelException: Did not complete Trip 11 (<S9: WebPageStation> to <S10: WebPageStation>)
-    at org.chromium.base.test.transit.Transition.newTransitionException(Transition.java:164)
-    at org.chromium.base.test.transit.Transition.waitUntilConditionsFulfilled(Transition.java:140)
-    at org.chromium.base.test.transit.Transition.performTransitionWithRetries(Transition.java:95)
-    at org.chromium.base.test.transit.Transition.transitionSync(Transition.java:55)
-    at org.chromium.base.test.transit.Station.travelToSync(Station.java:102)
-    at org.chromium.chrome.test.transit.page.PageStation.loadPageProgrammatically(PageStation.java:358)
-    at org.chromium.chrome.test.transit.testhtmls.PopupOnLoadPageStation.loadInCurrentTabExpectPopups(PopupOnLoadPageStation.java:70)
-    at org.chromium.chrome.browser.PopupPTTest.test900PopupWindowsAppearWhenAllowed(PopupPTTest.java:130)
-    ... 47 trimmed
-Caused by: org.chromium.base.test.util.CriteriaNotSatisfiedException: Did not meet all conditions:
-    [1] [ENTER] [OK  ] Activity exists and is RESUMED: ChromeTabbedActivity {fulfilled after 0~0 ms}
-            0-10113ms (141x): OK   | matched: org.chromium.chrome.browser.ChromeTabbedActivity@d416c1d (state=RESUMED)
-    [2] [ENTER] [OK  ] View: (view.getId() is <2130773031/org.chromium.chrome.tests:id/home_button>) {fulfilled after 0~12 ms}
-    [3] [ENTER] [OK  ] View: (view.getId() is <2130774255/org.chromium.chrome.tests:id/tab_switcher_button>) {fulfilled after 0~14 ms}
-    [4] [ENTER] [OK  ] View: (view.getId() is <2130773254/org.chromium.chrome.tests:id/menu_button>) {fulfilled after 0~15 ms}
-    [5] [ENTER] [OK  ] View: (view.getId() is <2130774443/org.chromium.chrome.tests:id/url_bar>) {fulfilled after 0~17 ms}
-    [6] [ENTER] [OK  ] Received 2 didAddTab callbacks {fulfilled after 1790~2242 ms}
-           17- 1790ms ( 23x): NO   | Called 0/2 times
-         2242- 3523ms ( 23x): OK   | Called 1/2 times
-         3800-10118ms ( 95x): OK   | Called 2/2 times
-    [7] [ENTER] [OK  ] Received 2 didSelectTab callbacks {fulfilled after 1790~2242 ms}
-           17- 1790ms ( 23x): NO   | Called 0/2 times
-         2242- 3523ms ( 23x): OK   | Called 1/2 times
-         3800-10118ms ( 95x): OK   | Called 2/2 times
-    [8] [ENTER] [OK  ] Activity tab is the expected one {fulfilled after 1790~2242 ms}
-           17- 1790ms ( 23x): WAIT | waiting for suppliers of: ExpectedTab
-         2242- 3523ms ( 23x): OK   | matched expected activityTab: org.chromium.chrome.browser.tab.TabImpl@7eaa6a7
-         3800-10119ms ( 95x): OK   | matched expected activityTab: org.chromium.chrome.browser.tab.TabImpl@4a72320
-    [9] [ENTER] [OK  ] Regular tab loaded {fulfilled after 3523~3808 ms}
-           17- 1790ms ( 23x): WAIT | waiting for suppliers of: ActivityTab
-         2242- 3523ms ( 23x): NO   | incognito false, isLoading true, hasWebContents true, shouldShowLoadingUI true
-         3808-10119ms ( 95x): OK   | incognito false, isLoading false, hasWebContents true, shouldShowLoadingUI false
-    [10] [ENTER] [OK  ] Page interactable or hidden {fulfilled after 3885~4428 ms}
-           17- 3523ms ( 46x): WAIT | waiting for suppliers of: LoadedTab
-         3812- 3885ms (  2x): NO   | isUserInteractable=false, isHidden=false
-         4428-10119ms ( 93x): OK   | isUserInteractable=true, isHidden=false
-    [11] [ENTER] [OK  ] Title of activity tab is "Two" {fulfilled after 3523~3814 ms}
-           17- 3523ms ( 46x): WAIT | waiting for suppliers of: LoadedTab
-         3814-10119ms ( 95x): OK   | ActivityTab title: "Two"
-    [12] [ENTER] [FAIL] URL of activity tab contains "http://127.0.0.1:45439/chrome/test/data/android/popup_test.html" {unfulfilled after 10119 ms}
-           17- 3523ms ( 46x): WAIT | waiting for suppliers of: LoadedTab
-         3815-10119ms ( 95x): NO   | ActivityTab url: "http://127.0.0.1:45439/chrome/test/data/android/navigate/two.html"
-    [13] [ENTER] [OK  ] WebContents present {fulfilled after 3523~3815 ms}
-           18- 3523ms ( 46x): WAIT | waiting for suppliers of: LoadedTab
-         3815-10120ms ( 95x): OK   | 
+    [7] [OK  ] Page URL: a string containing "/chrome/test/data/android/navigate/two.html" {fulfilled after 2908~3073 ms}
+           34- 2908ms ( 48x): NO   | Page URL: "http://127.0.0.1:33010/chrome/test/data/android/navigate/one.html"
+         3073- 3126ms (  2x): OK   | Page URL: "http://127.0.0.1:33010/chrome/test/data/android/navigate/two.html"
+✅ OK ENTER <S4|F1004: ToolbarFacility>:
+    [8] [OK  ] View: (view.getId() is <2130773896/org.chromium.chrome.tests:id/tab_switcher_button>) (>= 51% displayed, effectively VISIBLE, enabled) {fulfilled after 0~25 ms}
+    [9] [OK  ] View: (view.getId() is <2130773201/org.chromium.chrome.tests:id/menu_button>) (>= 51% displayed, effectively VISIBLE, enabled) {fulfilled after 0~33 ms}
+StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>] to [<S4: WebPageStation>, <S4|F1004: ToolbarFacility>]): finished
 ```
 
 ### Code Reuse
@@ -133,9 +131,8 @@ including:
 * Transition methods to go to other states
 * Espresso `ViewMatchers` for the same UI elements
 
-The transition methods shows the "routes" that can be taken to continue from the
+The transition methods show the "routes" that can be taken to continue from the
 current state, increasing discoverability of shared code.
-
 
 ## Additional Framework Features {#features}
 
@@ -144,6 +141,29 @@ current state, increasing discoverability of shared code.
 
 It is recommended to batch Public Transit tests to reduce runtime and save CQ/CI
 resources.
+
+#### How to Batch reusing the Activity between tests but resetting tab state (recommended)
+
+This keeps the `ChromeTabbedActivity`, closes all tabs between tests, and
+returns to a blank page.
+
+Using `AutoResetCtaTransitTestRule`:
+
+1. Add `@Batch(Batch.PER_CLASS)` to the test class.
+2. Use `ChromeTransitTestRules.autoResetCtaActivityRule()` (default; closes all
+   tab state) or `ChromeTransitTestRules.fastAutoResetCtaActivityRule()` (keeps
+   one tab open — faster, though it retains more tab-level state).
+3. Get the first station in each test case from the test rule, e.g.
+   `mCtaTestRule.startOnBlankPage()`, `startOnNtp()`, or
+   `startOnPage(url, builder)`.
+
+Tests do not need to return to the home station. `AutoResetCtaTransitTestRule`
+also finishes leftover non-`ChromeTabbedActivity` activities after each test and
+closes extra `ChromeTabbedActivity` windows on the next `startOnBlankPage()`.
+Only some reset paths are supported — this is best effort since the reset
+transition is not part of a regular user flow.
+
+Example: [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
 
 #### How to Batch restarting the Activity between tests
 
@@ -158,34 +178,15 @@ was used.
    `mCtaTestRule.startOnBlankPage()`.
 
 The `BatchedPublicTransitRule` is not necessary. Returning to the home station
-is not necessary. However, this does not run as fast as "reusing the Activity"
-below, especially in Release.
-
+is not necessary. However, this does not run as fast as reusing the Activity,
+especially in Release.
 
 Example: [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
 
-#### How to Batch reusing the Activity between tests but resetting tab state
-
-This keeps the Activity, but closes all tabs between tests and returns to a
-blank page.
-
-Using `AutoResetCtaTransitTestRule`:
-
-1. Add `@Batch(Batch.PER_CLASS)` to the test class.
-2. Use `ChromeTransitTestRules.autoResetCtaActivityRule()`.
-3. Get the first station in each test case from the test rule:
-   `mCtaTestRule.startOnBlankPage()`.
-
-Tests don't need to return to the home station. Only some reset paths are
-supported - this is best effort since this reset transition is not part of a
-regular user flow.
-
-Example: [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
-
 #### How to Batch reusing the Activity between tests staying on the same state
 
-This both keeps the Activiy and doesn't reset any app state between tests (apart
-from ResettersForTesting) - a test is started immediately after the previous
+This both keeps the Activity and doesn't reset any app state between tests (apart
+from `ResettersForTesting`) - a test is started immediately after the previous
 finished.
 
 Using `ReusedCtaTransitTestRule`:
@@ -202,7 +203,25 @@ The following tests will also fail right at the start.
 
 Example: [ExampleReusedCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleReusedCtaTest.java)
 
-### ViewPrinter
+### Standalone View Waits (`ViewFinder`) {#viewfinder}
+
+Outside a `Station` or `Facility`, [`ViewFinder`] runs standalone View checks
+through the same `DisplayedCondition` / `NotDisplayedAnymoreCondition`
+machinery used by `ViewElement` (defaulting to `RootSpec.focusedRoot()` when no
+`Activity` is passed):
+
+* **Polling waits (5000 ms default)**: `waitForView(...)` and
+  `waitForNoView(...)`.
+* **Immediate zero-timeout checks**: `expectView(...)` and `expectNoView(...)`
+  (replaces `Espresso.onView()` without polling).
+
+`waitForView()` and `expectView()` accept varargs `Matcher<View>...` and return
+a `ViewPresence` with `.click()` (via `ForgivingClickAction`), `.longPress()`,
+`.typeText(...)`, `.performViewAction(...)`, `.check(...)`, and `.getView()`.
+
+[`ViewFinder`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.ViewFinder&ss=chromium
+
+### ViewPrinter {#viewprinter}
 
 [`ViewPrinter`] is useful to print a View hierarchy to write ViewElements and
 debug failures. The output with default options looks like this:
@@ -231,7 +250,7 @@ debug failures. The output with default options looks like this:
             ╰── @id/menu_button | ChromeImageButton
 ```
 
-[`ViewPrinter`]: https://source.chromium.org/search?q=symbol:ViewPrinter%20f:base%2Ftest&ss=chromium
+[`ViewPrinter`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.util.ViewPrinter&ss=chromium
 
 ### Debugging Options {#debugging}
 
@@ -280,7 +299,7 @@ Public Transit is structured as follows:
 
 |Layer|Contents|File names|Location|Width (how many files)
 |-|-|-|-|-|
-|Test Layer|Instrumentation test classes|`*PTTest.java`|`//chrome/**/javatests`|wide|
+|Test Layer|Instrumentation test classes|`*Test.java`|`//chrome/**/javatests`|wide|
 |Transit Layer|Concrete `Stations`, `Facilities`|`*Station.java`, `*Condition.java`, etc.|`//chrome/test/android/javatests`|wide|
 |Framework Layer|Public Transit classes|All classes with package `org.chromium.base.test.transit.*`|[`//base/test/.../transit`]|narrow|
 
@@ -290,7 +309,7 @@ Public Transit is structured as follows:
 
 The **Test Layer** contains the JUnit test classes with `@Test` methods. It should
 be readable at a high level and delegate the logic that can be shared with other
-tests to the to Transit Layer.
+tests to the Transit Layer.
 
 Code in the Test Layer that uses the Transit Layer should contain no explicit
 waits; the waits should be modeled as transition methods.
@@ -300,20 +319,21 @@ An example of Test Layer code:
 ```java
 @Test
 public void testOpenTabSwitcher() {
-    PageStation page = mTransitEntryPoints.startOnBlankPage();
-    AppMenuFacility appMenu = page.openAppMenu();
-    page = appMenu.openNewIncognitoTab();
-    TabSwitcherStation tabSwitcher = page.openTabSwitcher();
+    WebPageStation page = mCtaTestRule.startOnBlankPage();
+    RegularWebPageAppMenuFacility appMenu = page.openRegularTabAppMenu();
+    RegularNewTabPageStation ntp = appMenu.openNewTab();
+    RegularTabSwitcherStation tabSwitcher = ntp.openRegularTabSwitcher();
 }
 ```
 
-Most of the time these transition methods, such as
-`BasePageStation#openAppMenu()`, should be in the Transit Layer for sharing with
-other tests. Transitions specific to the test can be written in the Test Layer.
+Transition methods, such as `WebPageStation#openRegularTabAppMenu()`, should be
+in the Transit Layer for sharing with other tests. A transition that is truly
+specific to one test may be written in the Test Layer, but should still use the
+transition APIs rather than explicit waits.
 
 #### Transit Layer
 
-The **Transit Layer** contains the app-specific `Stations`, `Faciltiies`,
+The **Transit Layer** contains the app-specific `Stations`, `Facilities`,
 `Transitions` and `Conditions`, as well as entry points. This is the bulk of the
 test code.
 
@@ -324,69 +344,105 @@ possible states, and how these states can be navigated.
 
 The **Framework Layer** is the Public Transit library code, which is
 app-agnostic. It contains the Public Transit concepts of `Station`,
-`Transition`, `Condition`, etc.
+`Transition`, `Condition`, etc. Framework unit tests run on the host via
+`base_junit_tests` using [`PublicTransitUnitTestRule`].
+
+[`PublicTransitUnitTestRule`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.PublicTransitUnitTestRule&ss=chromium
 
 
 ## Classes and Concepts {#concepts}
 
-### Stations
+### Stations {#stations}
 
 A [**`Station`**] represents one of the app's "screens", that is, a full (or
-mostly full) window view. Only one `Station` can be active at any time.
+mostly full) window view. Only one `Station` can be active **per window/task**
+at a time (`TrafficControl.getActiveStations()` keeps active `Station`s in
+window order, keeping the initial window first and appending new windows at the
+end).
 
 For each screen in the app, a concrete implementation of `Station` should be
 created in the Transit Layer, implementing:
 
-* **constructor** and/or **`declareExtraElements()`** declaring the `Views` and
-  other enter/exit conditions define this `Station`.
+* **constructor** (calling `super(ActivityClass.class)` or `super(null)`) and/or
+  **`declareExtraElements()`** declaring the `Views` and other enter/exit
+  conditions that define this `Station`.
 * **transition methods** to travel to other `Stations` or to enter `Facilities`.
   These methods are synchronous and return a handle to the entered
   `ConditionalState` only after the transition is done and the new
   `ConditionalState` becomes `ACTIVE`.
+
+Built-in `Station` helpers manage the host window:
+
+* `bringWindowToFront()` focuses the station's task window and waits for window
+  focus.
+* `rotateTo(orientation)` rotates between `Configuration.ORIENTATION_PORTRAIT`
+  and `ORIENTATION_LANDSCAPE` and waits for orientation, `DecorView` bounds, and
+  layout to settle.
+* `finishActivity()` runs `activity.finish()` and completes via
+  `reachLastStop()`, exiting the `Station` and waiting for its `Activity` to be
+  `DESTROYED`.
 
 Example of a concrete `Station`:
 
 ```java
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
 public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
-    public ViewElement<View> newTabButtonElement;
-    public ViewElement<View> incognitoToggleTabsElement;
+    public final ViewElement<View> newTabButtonElement;
+    public final ViewElement<View> incognitoToggleTabsElement;
 
     public TabSwitcherStation() {
+        super(ChromeTabbedActivity.class);
         newTabButtonElement = declareView(withId(R.id.new_tab_button));
         incognitoToggleTabsElement = declareView(withId(R.id.incognito_toggle_tabs));
     }
 
-    public NewTabPageStation openNewTabFromButton() {
-        return newTabButtonElement.clickTo().arriveAt(new NewTabPageStation()))
+    public RegularNewTabPageStation openNewTabFromButton() {
+        return newTabButtonElement
+                .clickTo()
+                .arriveAt(
+                        RegularNewTabPageStation.newBuilder()
+                                .initOpeningNewTab()
+                                .build());
     }
 }
 ```
 
 [**`Station`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Station&ss=chromium
 
-### Facilities
+### Facilities {#facilities}
 
 A [**`Facility`**] represents things like pop-up menus, dialogs or messages that
 are scoped to one of the app's "screens".
 
-Multiple `Facilities` may be active at one time besides the active Station that
+Multiple `Facilities` may be active at one time inside the host `Station` that
 contains them.
 
 As with `Stations`, concrete, app-specific implementations of Facility should be
 created in the Transit Layer declaring **Elements** and **transition
 methods**.
 
-A Station can declare **default Facilities** with `declareDefaultFacility()`.
-They are entered together with the Station in every transition to it, so UI
-that is usually present (e.g. a toolbar) can be modelled as a Facility and
-exited on its own when it goes away.
+Useful patterns and specialized bases:
+
+* **Default Facilities**: A `Station` can declare default `Facility` instances
+  with `declareDefaultFacility()`. They are entered together with the `Station`
+  in every transition to it, so UI that is usually present (e.g. a toolbar) can
+  be modelled as a `Facility` and exited on its own when it goes away. Callers
+  can also attach extra `Facility` instances to a page transition via
+  `BasePageStation.Builder#withFacility(facility)`.
+* **`ScrollableFacility`**: Base for scrollable lists, menus, and RecyclerViews
+  (`declareContainerView(...)` and `declareItems(ItemsBuilder)`), providing item
+  actions like `scrollToAndSelectTo()`.
+* **`WebPageFacility`** (`//content/public/test/android:content_transit_java`):
+  Base `Facility` for declaring DOM elements inside a loaded web page using CSS
+  selectors via `declareHtmlElement(cssSelector)` on any host `Station`
+  implementing `WebContentsElementProvider` (e.g. `WebPageStation` and
+  `CctPageStation`).
 
 [**`Facility`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Facility&ss=chromium
 
-### State
+### State {#states}
 
-A [** State **] represents something not tied to a Station, like data written
+A [**`State`**] represents something not tied to a Station, like data written
 to disk, or a popup that persists through different `Stations`.
 
 Multiple `States` may be active at one time.
@@ -395,7 +451,9 @@ As with `Stations`, concrete, app-specific implementations of State should be
 created in the Transit Layer declaring **Elements**. It usually won't have any
 transition methods.
 
-### ConditionalStates
+[**`State`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.State&ss=chromium
+
+### ConditionalStates {#conditional-states}
 
 `Station`, `Facility` and `State` extend [**`ConditionalState`**], which means
 they declare enter and exit conditions as `Elements` and have a linear
@@ -403,31 +461,84 @@ lifecycle:
 
 * `NEW` -> `TRANSITIONING_TO` -> `ACTIVE` -> `TRANSITIONING_FROM` -> `FINISHED`
 
+`ConditionalState`s form a parent/child hierarchy (for example, a `Facility`'s
+parent is its host `Station`). Exiting a parent `ConditionalState` automatically
+exits all of its active descendants in the same transition.
+
 Once `FINISHED`, a `ConditionalState` should not be navigated to anymore. If a
 test comes back to a previous screen, it should be represented by a new
 `Station` instance.
 
 [**`ConditionalState`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.ConditionalState&ss=chromium
 
-### Conditions
+### Elements {#elements}
+
+`ConditionalState`s declare **`Element`s** in their constructor (or
+`declareExtraElements()`) to define shared enter/exit `Condition`s and typed
+accessors (`value()` while `ACTIVE`, `getFromPast()` after exit):
+
+* **`ViewElement`** (`declareView(...)`): Matches an Android `View` (supports
+  varargs `Matcher<View>...` to avoid `allOf(...)`, plus `descendant()`,
+  `ancestor()`, and `matches(matcher)`). By default it is **scoped** (enters via
+  `DisplayedCondition`, exits via `NotDisplayedAnymoreCondition`) and checks
+  `>= 51%` displayed, effectively `View.VISIBLE`, enabled, and no pending layout
+  (`!isLayoutRequested()` on both the matched `View` and its root `DecorView`,
+  skipping the child check for `View.GONE`). Searches default to
+  `RootSpec.activityOrDialogRoot(...)` (covering focused dialogs automatically);
+  restrict via `ViewElement.rootSpecOption(RootSpec.*)` (`activityRoot`,
+  `dialogRoot`, `focusedRoot`, `specificRoot`, `anyRoot`).
+* **`OptionalViewElement`** (`declareOptionalView(...)`): Lazily checked `View`
+  for flag-gated or conditional UI that does not block entering the owner state.
+  Verify explicitly with `checkPresent()` / `checkAbsent()` or wait via
+  `present()` / `absent()` conditions.
+* **`ActivityElement`** (`declareActivity(...)`, automatically created by
+  `Station(Class)`): Resolves the host `Activity` and exposes `allowSubclasses()`
+  (for `ChromeTabbedActivity2` etc.) and `expectActivityDestroyed()`. Defaults
+  to `ActivityElement.NEW_TASK_TIMEOUT_MS` (10000 ms) for new-task launches.
+* **`FragmentElement`**: Matches a live AndroidX `Fragment` hosted by an
+  `ActivityElement`.
+* **`LogicalElement`**: Symmetric boolean enter/exit check built from a lambda
+  (e.g. `LogicalElement.uiThreadLogicalElement(...)`).
+* **`ElementFactory`** (`declareElementFactory(condition, builder -> ...)`):
+  Dynamically declares delayed elements only after a prerequisite `Condition`
+  is fulfilled mid-transition (shown with a leading `+[N]` in logs).
+* **`HtmlElement`** (`//content/public/test/android:content_transit_java`):
+  DOM node matched by CSS selector (`HtmlElementSpec`), declared via
+  `WebPageFacility#declareHtmlElement(cssSelector)`.
+* **Absence assertions**: `declareNoView(...)` asserts a matching `View` is not
+  displayed when entering the state.
+* **Custom result elements**: `declareEnterConditionAsElement(conditionWithResult)`
+  exposes a `ConditionWithResult<T>`'s produced value as an `Element<T>`.
+
+### Conditions {#conditions}
 
 **`Conditions`** are checks performed to ensure a certain transition is
 finished.
 
 Common `Condition` subclasses are provided by the Framework Layer (e.g.
-[`ViewConditions`] and [`CallbackCondition`]).
+[`DisplayedCondition`], [`CallbackCondition`], and [`PayloadCallbackCondition`]).
 
-A lightweight way to wait for multiple `Conditions` without creating any
-concrete `Stations`, `Facilities` or `States` is to use
-`Condition#runAndWaitFor()`.
+A lightweight way to wait for `Conditions` without creating any concrete
+`Stations`, `Facilities` or `States` is a transition with `waitFor()`, e.g.
+`runTo(trigger).waitFor(condition1, condition2)`.
 
-[`ViewConditions`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.ViewCondition&ss=chromium
+[`DisplayedCondition`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.DisplayedCondition&ss=chromium
 [`CallbackCondition`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.CallbackCondition&ss=chromium
+[`PayloadCallbackCondition`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.PayloadCallbackCondition&ss=chromium
 
-##### Custom Conditions
+#### Custom Conditions
 
 Custom app-specific Conditions should be implemented in the Transit Layer by
-extending [`UIThreadCondition`] or [`InstrumentationThreadConditions`].
+extending [`UiThreadCondition`] or [`InstrumentationThreadCondition`]. Simple
+checks can be built from lambdas instead of subclassing:
+
+* `UiThreadCondition.from(description, check)` /
+  `InstrumentationThreadCondition.from(description, check)`
+* [`SimpleConditions`] (`.uiThreadCondition(...)`,
+  `.instrumentationThreadCondition(...)`, and `*WithResult(...)` factories that
+  can also wire a `Supplier<InputT>` dependency)
+
+[`SimpleConditions`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.SimpleConditions&ss=chromium
 
 A Condition should implement `checkWithSuppliers()`, which should check the
 conditions and return `fulfilled()`, `notFulfilled()` or `awaiting()`. An
@@ -460,11 +571,15 @@ class PageLoadedCondition extends UiThreadCondition {
     @Override
     public ConditionStatus checkWithSuppliers() {
         Tab tab = mTabSupplier.get();
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) {
+            return awaiting("Tab has no WebContents yet");
+        }
 
         boolean isLoading = tab.isLoading();
-        boolean showLoadingUi = tab.getWebContents().shouldShowLoadingUI();
+        boolean showLoadingUi = webContents.shouldShowLoadingUI();
         return whether(
-                !isLoading && !showLoadingUI,
+                !isLoading && !showLoadingUi,
                 "isLoading %b, showLoadingUi %b",
                 isLoading,
                 showLoadingUi);
@@ -472,13 +587,12 @@ class PageLoadedCondition extends UiThreadCondition {
 }
 ```
 
-[`UIThreadCondition`]:  https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.UIThreadCondition&ss=chromium
-[`InstrumentationThreadConditions`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.InstrumentationThreadCondition&ss=chromium
-[crbug.com/343244345]: https://crbug.com/343244345
+[`UiThreadCondition`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.UiThreadCondition&ss=chromium
+[`InstrumentationThreadCondition`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.InstrumentationThreadCondition&ss=chromium
 
-### Transitions
+### Transitions {#transitions}
 
-From the point of view of the Test Layer, transitions methods are blocking. When
+From the point of view of the Test Layer, transition methods are blocking. When
 a `Station` or `Facility` is returned by one of those methods, it is always
 `ACTIVE` and can be immediately acted upon without further waiting.
 
@@ -487,24 +601,38 @@ a `Station` or `Facility` is returned by one of those methods, it is always
 Transitions are triggered by methods that end in `To()`. Some common ones are
 `clickTo()`, `runTo()`, `pressBackTo()`. This doesn't execute the transition,
 but creates a `TripBuilder`. When `arriveAt()`, `enterFacility()`,
-`waitForConditions()` or other methods are called in the `TripBuilder`, the
-transition is executed.
+`replaceFacility()`, `reach()`, `reachLastStop()`, `waitFor()`, `complete()` or
+other terminal methods are called on the `TripBuilder`, the transition is
+executed.
 
-Transitions between `Stations` are done by calling `arriveAt()`.
+Transitions between `Stations` are done by calling `arriveAt()`. To exit a
+`Station` without entering another (e.g. finishing an `Activity` or closing a
+window), call `reachLastStop()` (or `reachLastStopAnd(station)`), which
+automatically sets `expectActivityDestroyed()` on the exited `Station`'s
+`ActivityElement`.
 
 Transitions into and out of `Facilities` are done by calling `enterFacility()`,
-`enterFacilities()` `exitFacility()` or `exitFacilities()`. If the app moves to
-another `Station`, any active `Facilities` have their exit conditions added to
-the transition conditions.
+`enterFacilities()`, `exitFacility()`, `exitFacilities()`, or
+`replaceFacility()` (with `facility.replacedBy(next)` as the `Outcome`
+counterpart). If the app moves to another `Station`, any active `Facilities`
+have their exit conditions added to the transition conditions.
 
 Transitions into and out of `States` are done by calling `enterState()` and
 `exitState()`.
 
-Conditions not tied to Conditional States can be checked with
-`waitForConditions()`.
+Conditions not tied to Conditional States can be checked with `waitFor()`.
 
 Multiple expectations can be chained by the methods ending with `And()`, e.g.
-`clickTo().waitForConditionsAnd(c1, c2).exitFacilityAnd(e).enterFacility(f)`.
+`clickTo().waitForAnd(c1, c2).exitFacilityAnd(e).enterFacility(f)`, or packaged
+as a reusable [`Outcome`] and joined with `trip.reach(outcome)` /
+`outcome.after(trip)`.
+
+Transitions that open a new window or task use `inNewTask()`, e.g.
+`clickTo().inNewTask().arriveAt(station)`. Its `ActivityElement` checks
+`TrafficControl.getActiveStations()` live on every poll and skips tasks owned by
+other active `Station`s.
+
+[`Outcome`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Outcome&ss=chromium
 
 #### Enter, Exit and Transition Conditions {#transition-conditions}
 
@@ -540,10 +668,12 @@ The way a Transition works is:
        layer and then to the test layer.
 
 
-### TransitionOptions
+### TransitionOptions {#transition-options}
 
 [`TransitionOptions`] let individual Transitions be customized, adjusting
-timeouts, adding retries, or disabling the pre-check.
+timeouts, adding retries, or disabling the pre-check. They are set through
+`TripBuilder` methods such as `withTimeout()`, `withRetry()` and
+`withPossiblyAlreadyFulfilled()`.
 
 [`TransitionOptions`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Transition.TransitionOptions&ss=chromium
 
@@ -555,10 +685,7 @@ The Chrome-specific `Stations`, `Facilities`, `States` and `Conditions` that
 comprise the Transit Layer should be owned by the same team responsible for the
 related production code.
 
-The exception is the core of the Transit Layer, for example `PageStation`, which
-is not owned by specific teams, and will be owned by Clank Build/Code Health.
-
-### Hopping Off
+### Hopping Off {#hopping-off}
 
 It is possible to write tests that start as a Public Transit test and use the
 Transit layer to navigate to a certain point, then "hop off" framework and
@@ -570,3 +697,17 @@ there should be no framework impediment to doing so.
 
 Metaphorically, if there is no public transit to an address, you ride it as
 close as possible and continue on foot.
+
+### Hopping On {#hopping-on}
+
+The reverse is also possible: a test that is not using Public Transit, or a
+legacy test util, can "hop on" without an origin `Station`:
+
+* When the UI is **already** in the target state, call
+  `TrafficControl.hopOnAt(activity, station, facilities...)`.
+* When running a **trigger action** to reach the target state, call
+  `tripBuilder.hopOnTo(activity, station, facilities...)`.
+
+Both abandon any previously active `Station`s first via
+`TrafficControl.hopOffPublicTransit()` and match the `Activity` by instance.
+This is how shared test utils are converted to Public Transit incrementally.
