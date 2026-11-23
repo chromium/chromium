@@ -255,6 +255,10 @@ class OAuth2MintAccessTokenFetcherAdapterTest : public testing::Test {
     return histogram_tester_;
   }
 
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -590,9 +594,68 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, UnexpectedConsentResult) {
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, CancelRequest) {
   auto fetcher = CreateFetcher();
   fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  task_environment().FastForwardBy(base::Milliseconds(100));
   fetcher->CancelRequest();
   EXPECT_FALSE(mock_flow());
+  EXPECT_EQ(fetcher->GetNetworkLatency(), std::nullopt);
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix(kBoundFetchAuthErrorHistogram),
       testing::IsEmpty());
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetNetworkLatencyOnSuccess) {
+  auto fetcher = CreateFetcher();
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  task_environment().FastForwardBy(base::Milliseconds(250));
+
+  base::TimeDelta kTimeToLive = base::Hours(4);
+  EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
+                                    kTestAccessToken, kTimeToLive)));
+  mock_flow()->SimulateMintTokenSuccess(kTestAccessToken, {kTestScope},
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/false);
+
+  EXPECT_EQ(fetcher->GetNetworkLatency(), base::Milliseconds(250));
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest,
+       GetNetworkLatencyExcludesDecryption) {
+  const std::string kTestEncryptedToken = "test_encrypted_token";
+  auto fetcher = CreateFetcher();
+  EXPECT_EQ(fetcher->GetNetworkLatency(), std::nullopt);
+
+  base::MockCallback<OAuth2MintAccessTokenFetcherAdapter::TokenDecryptor>
+      mock_decryptor;
+  fetcher->SetTokenDecryptor(mock_decryptor.Get());
+  EXPECT_CALL(mock_decryptor, Run(kTestEncryptedToken))
+      .WillOnce([this](std::string_view) {
+        task_environment().FastForwardBy(base::Milliseconds(50));
+        return std::string(kTestAccessToken);
+      });
+
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  task_environment().FastForwardBy(base::Milliseconds(250));
+  EXPECT_EQ(fetcher->GetNetworkLatency(), std::nullopt);
+
+  base::TimeDelta kTimeToLive = base::Hours(4);
+  EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
+                                    kTestAccessToken, kTimeToLive)));
+  mock_flow()->SimulateMintTokenSuccess(kTestEncryptedToken, {kTestScope},
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/true);
+
+  EXPECT_EQ(fetcher->GetNetworkLatency(), base::Milliseconds(250));
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetNetworkLatencyOnFailure) {
+  auto fetcher = CreateFetcher();
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  task_environment().FastForwardBy(base::Milliseconds(300));
+
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromTokenBindingChallenge("challenge");
+  EXPECT_CALL(*mock_consumer(), OnGetTokenFailure(error));
+  mock_flow()->SimulateMintTokenFailure(error);
+
+  EXPECT_EQ(fetcher->GetNetworkLatency(), base::Milliseconds(300));
 }

@@ -5,11 +5,13 @@
 #ifndef GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_H_
 #define GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 
 class GoogleServiceAuthError;
@@ -45,6 +47,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcher {
 
   // Cancels the current request and informs the consumer.
   virtual void CancelRequest() = 0;
+
+  // Returns the network latency of this fetch attempt, or `std::nullopt` if no
+  // network request completed (e.g., if the request failed immediately or was
+  // cancelled).
+  virtual std::optional<base::TimeDelta> GetNetworkLatency() const;
 
  protected:
   // Fires |OnGetTokenSuccess| on |consumer_|.

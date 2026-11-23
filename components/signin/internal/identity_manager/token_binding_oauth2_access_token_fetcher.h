@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 
@@ -43,6 +44,7 @@ class TokenBindingOAuth2AccessTokenFetcher : public OAuth2AccessTokenFetcher {
              const std::string& client_secret,
              const std::vector<std::string>& scopes) override;
   void CancelRequest() override;
+  std::optional<base::TimeDelta> GetNetworkLatency() const override;
 
   base::WeakPtr<TokenBindingOAuth2AccessTokenFetcher> GetWeakPtr();
 

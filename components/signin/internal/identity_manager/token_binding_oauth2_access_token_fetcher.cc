@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -66,6 +67,11 @@ void TokenBindingOAuth2AccessTokenFetcher::Start(
 
 void TokenBindingOAuth2AccessTokenFetcher::CancelRequest() {
   fetcher_->CancelRequest();
+}
+
+std::optional<base::TimeDelta>
+TokenBindingOAuth2AccessTokenFetcher::GetNetworkLatency() const {
+  return fetcher_->GetNetworkLatency();
 }
 
 base::WeakPtr<TokenBindingOAuth2AccessTokenFetcher>

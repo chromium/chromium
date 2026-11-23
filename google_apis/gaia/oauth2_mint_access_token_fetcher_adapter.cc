@@ -4,6 +4,7 @@
 
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -124,11 +126,18 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     mint_token_flow_ =
         std::make_unique<OAuth2MintTokenFlow>(this, std::move(params));
   }
+  network_request_timer_.emplace();
   mint_token_flow_->Start(url_loader_factory_, refresh_token_);
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::CancelRequest() {
+  network_request_timer_.reset();
   mint_token_flow_.reset();
+}
+
+std::optional<base::TimeDelta>
+OAuth2MintAccessTokenFetcherAdapter::GetNetworkLatency() const {
+  return network_latency_;
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::SetBindingKeyAssertion(
@@ -158,6 +167,7 @@ void OAuth2MintAccessTokenFetcherAdapter::
 
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
     const OAuth2MintTokenFlow::MintTokenResult& result) {
+  RecordNetworkLatency();
   std::string decrypted_token;
   if (result.is_token_encrypted) {
     if (token_decryptor_.is_null()) {
@@ -210,6 +220,7 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
 }
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(
     const GoogleServiceAuthError& error) {
+  RecordNetworkLatency();
   // Reclassify `CREDENTIALS_REJECTED_BY_SERVER` for bound tokens according to
   // the token binding assertion sent in the request (see
   // `gaia::ClassifyTokenBindingAssertionFailure()`).
@@ -229,10 +240,16 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(
 }
 void OAuth2MintAccessTokenFetcherAdapter::OnRemoteConsentSuccess(
     const RemoteConsentResolutionData& resolution_data) {
+  RecordNetworkLatency();
   RecordMetricsAndFireError(
       GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
               kRemoteConsentResolutionRequired));
+}
+
+void OAuth2MintAccessTokenFetcherAdapter::RecordNetworkLatency() {
+  network_latency_ = network_request_timer_->Elapsed();
+  network_request_timer_.reset();
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::RecordMetricsAndFireError(

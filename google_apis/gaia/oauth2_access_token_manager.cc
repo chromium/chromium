@@ -5,6 +5,7 @@
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -201,10 +202,15 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   // and false otherwise.
   bool RetryIfPossible(const GoogleServiceAuthError& error);
 
-  // Records the latency of the current fetch attempt, measured from the last
-  // call to `Start()`. Must only be called while `fetcher_` is set, which
-  // guarantees that `Start()` was called.
+  // Records the latency of the current fetch attempt (measured from the last
+  // call to `Start()`) and accumulates the attempt's network latency. Must only
+  // be called while `fetcher_` is set, which guarantees that `Start()` was
+  // called.
   void RecordAttemptLatency(bool success);
+
+  // Records the cumulative network latency across all attempts when this
+  // `Fetcher` finishes.
+  void RecordCumulativeNetworkLatency(bool success);
 
   const raw_ptr<OAuth2AccessTokenManager> oauth2_access_token_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -220,6 +226,10 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   // Time at which the current fetch attempt was started. Used to record the
   // latency of each individual attempt (retries are recorded separately).
   base::TimeTicks attempt_start_time_;
+
+  // Sum of network latencies across all attempts of this fetch, if at least one
+  // network request completed.
+  std::optional<base::TimeDelta> cumulative_network_latency_;
 
   // Token binding challenge from the last server response or an empty string if
   // the response didn't contain any challenge.
@@ -326,6 +336,13 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
 }
 
 void OAuth2AccessTokenManager::Fetcher::RecordAttemptLatency(bool success) {
+  if (std::optional<base::TimeDelta> network_latency =
+          fetcher_->GetNetworkLatency()) {
+    cumulative_network_latency_ =
+        cumulative_network_latency_.value_or(base::TimeDelta()) +
+        *network_latency;
+  }
+
   // `fetcher_` is only set by `Start()`, right after `attempt_start_time_`, so
   // the start time is always set here.
   CHECK(!attempt_start_time_.is_null(), base::NotFatalUntil::M161);
@@ -341,6 +358,17 @@ void OAuth2AccessTokenManager::Fetcher::RecordAttemptLatency(bool success) {
   // Guard against recording the same attempt twice. `Start()` sets it again
   // for the next attempt.
   attempt_start_time_ = base::TimeTicks();
+}
+
+void OAuth2AccessTokenManager::Fetcher::RecordCumulativeNetworkLatency(
+    bool success) {
+  if (cumulative_network_latency_.has_value()) {
+    base::UmaHistogramMediumTimes(
+        success ? "Signin.AccessTokenFetch.Latency.Network.Success"
+                : "Signin.AccessTokenFetch.Latency.Network.Failure",
+        *cumulative_network_latency_);
+    cumulative_network_latency_.reset();
+  }
 }
 
 std::string OAuth2AccessTokenManager::Fetcher::GetConsumerName() const {
@@ -391,6 +419,7 @@ bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
 void OAuth2AccessTokenManager::Fetcher::InformFetchCompleted(
     base::expected<OAuth2AccessTokenConsumer::TokenResponse,
                    GoogleServiceAuthError> response) {
+  RecordCumulativeNetworkLatency(/*success=*/response.has_value());
   oauth2_access_token_manager_->OnFetchComplete(client_id_, account_id_,
                                                 scopes_, response);
   // `this` might be deleted.

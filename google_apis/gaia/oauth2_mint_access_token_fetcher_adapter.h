@@ -6,6 +6,7 @@
 #define GOOGLE_APIS_GAIA_OAUTH2_MINT_ACCESS_TOKEN_FETCHER_ADAPTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -13,6 +14,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "crypto/sign.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -59,6 +62,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
              const std::string& client_secret,
              const std::vector<std::string>& scopes) override;
   void CancelRequest() override;
+  std::optional<base::TimeDelta> GetNetworkLatency() const override;
 
   // Virtual for testing.
   virtual void SetBindingKeyAssertion(std::string assertion);
@@ -81,6 +85,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
   void OnRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data) override;
 
+  void RecordNetworkLatency();
   void RecordMetricsAndFireError(const GoogleServiceAuthError& error);
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -99,6 +104,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
 
   OAuth2MintTokenFlowFactory mint_token_flow_factory_for_testing_;
 
+  std::optional<base::ElapsedTimer> network_request_timer_;
+  std::optional<base::TimeDelta> network_latency_;
   std::unique_ptr<OAuth2MintTokenFlow> mint_token_flow_;
 };
 

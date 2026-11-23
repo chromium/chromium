@@ -267,6 +267,7 @@ to monitor/debug fetching OAuth2 Token issues. -->
 <histogram name="Signin.AccessTokenFetch.Latency.{Stage}.{Result}" units="ms"
     expires_after="2027-10-01">
   <owner>samarchehade@google.com</owner>
+  <owner>oussamajb@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the duration of an OAuth2 access token fetch, or of one of its
@@ -275,8 +276,8 @@ to monitor/debug fetching OAuth2 Token issues. -->
     the Signin.AccessTokenFetch.Failure.* histograms: with REQUEST_CANCELED when
     the refresh token is updated (on Android, every time the device accounts are
     reloaded) or on shutdown, and with ACCOUNT_NOT_FOUND when the refresh token
-    is revoked (e.g. on sign-out). The TokenService stage is not recorded for
-    these cancellations. The EndToEnd and Request stages are not recorded if the
+    is revoked (e.g. on sign-out). Other stages are not recorded for these
+    cancellations. The EndToEnd and Request stages are not recorded if the
     fetcher is destroyed before the fetch completes, nor for device tokens on
     iOS.
   </summary>
@@ -287,6 +288,14 @@ to monitor/debug fetching OAuth2 Token issues. -->
                  refresh token to become available. Includes requests served
                  from the cache. Recorded when the fetcher returns its
                  result."/>
+    <variant name="Network"
+        summary="The cumulative latency of all HTTP token requests to Gaia
+                 (IssueToken) across all retry attempts of a token service
+                 fetch on Windows/Mac/Linux, excluding any DBSC challenge
+                 signing or retry backoff delays. Only recorded if at least
+                 one HTTP request completed during the fetch (cache hits and
+                 immediate non-network rejections are excluded). Recorded
+                 once when the token service fetch completes."/>
     <variant name="Request"
         summary="From the start of the access token request until the result
                  is returned to the client, excluding any wait for a refresh
