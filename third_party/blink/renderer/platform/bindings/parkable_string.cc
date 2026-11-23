@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
@@ -428,7 +429,6 @@ void RecordStringImplMemoryUsage(ParkableStringImpl::MemoryUsage* result,
 
 ParkableStringImpl::MemoryUsage ParkableStringImpl::MemoryUsageForSnapshot()
     const {
-  AssertOnValidThread();
   MemoryUsage result = {0, nullptr, 0};
   result.this_size = sizeof(ParkableStringImpl);
 
@@ -437,6 +437,7 @@ ParkableStringImpl::MemoryUsage ParkableStringImpl::MemoryUsageForSnapshot()
     return result;
   }
 
+  AssertOnValidThread();
   result.this_size += sizeof(ParkableMetadata);
 
   base::AutoLock locker(metadata_->lock_);
@@ -1028,7 +1029,20 @@ ParkableString::ParkableString(scoped_refptr<StringImpl>&& impl,
   }
 }
 
+ParkableString::ParkableString(scoped_refptr<ParkableStringImpl>&& impl)
+    : impl_(std::move(impl)) {}
+
 ParkableString::~ParkableString() = default;
+
+ParkableString ParkableString::CreateNonParkableCopy() const {
+  if (!may_be_parked()) {
+    return *this;
+  }
+  CHECK(IsMainThread());
+  const String& unparked = ToString();
+  return ParkableString(ParkableStringImpl::MakeNonParkable(
+      scoped_refptr<StringImpl>(unparked.Impl())));
+}
 
 void ParkableString::Lock() const {
   if (impl_)

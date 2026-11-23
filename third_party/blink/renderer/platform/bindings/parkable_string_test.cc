@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1430,6 +1431,51 @@ TEST_P(ParkableStringTest, EncodingAndDeduplication) {
   // Same content, but the hash must be different because the encoding is.
   EXPECT_EQ(large_string_16.RawByteSpan(), large_string_8.RawByteSpan());
   EXPECT_NE(*parkable_16.Impl()->digest(), *parkable_8.Impl()->digest());
+}
+
+TEST_P(ParkableStringTest, CreateNonParkableCopy) {
+  ParkableString null_copy = ParkableString().CreateNonParkableCopy();
+  EXPECT_TRUE(null_copy.IsNull());
+  EXPECT_FALSE(null_copy.may_be_parked());
+
+  ParkableString small(String("abc").ReleaseImpl());
+  ASSERT_FALSE(small.may_be_parked());
+  ParkableString small_copy = small.CreateNonParkableCopy();
+  EXPECT_FALSE(small_copy.may_be_parked());
+  EXPECT_EQ(small.Impl(), small_copy.Impl());
+
+  ParkableString parkable = CreateAndParkAll();
+  ASSERT_TRUE(parkable.Impl()->is_parked());
+
+  {
+    ParkableString non_parkable = parkable.CreateNonParkableCopy();
+    EXPECT_FALSE(non_parkable.may_be_parked());
+    EXPECT_FALSE(parkable.Impl()->is_parked());
+    EXPECT_EQ(parkable.ToString().Impl(), non_parkable.ToString().Impl());
+    EXPECT_FALSE(parkable.Impl()->Park(
+        ParkableStringImpl::ParkingMode::kSynchronousOnly));
+    EXPECT_FALSE(parkable.Impl()->is_parked());
+
+    base::WaitableEvent done;
+    LambdaThreadDelegate snapshot_delegate(base::BindLambdaForTesting([&]() {
+      ParkableString off_thread_copy = non_parkable.CreateNonParkableCopy();
+      EXPECT_FALSE(off_thread_copy.may_be_parked());
+      EXPECT_EQ(non_parkable.Impl(), off_thread_copy.Impl());
+
+      ParkableStringImpl::MemoryUsage usage =
+          off_thread_copy.Impl()->MemoryUsageForSnapshot();
+      EXPECT_EQ(usage.string_impl, off_thread_copy.ToString().Impl());
+      done.Signal();
+    }));
+    base::PlatformThreadHandle thread;
+    ASSERT_TRUE(base::PlatformThread::Create(0, &snapshot_delegate, &thread));
+    done.Wait();
+    base::PlatformThread::Join(thread);
+  }
+
+  EXPECT_TRUE(
+      parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kSynchronousOnly));
+  EXPECT_TRUE(parkable.Impl()->is_parked());
 }
 
 class ParkableStringTestWithQueuedThreadPool : public ParkableStringTest {

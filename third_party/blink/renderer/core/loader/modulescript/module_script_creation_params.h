@@ -134,7 +134,9 @@ class CORE_EXPORT ModuleScriptCreationParams {
   ScriptCacheConsumer* CacheConsumer() const { return cache_consumer_; }
 
   bool IsSafeToSendToAnotherThread() const {
-    return !script_streamer_ && !cache_handler_ && !cache_consumer_;
+    return !script_streamer_ && !cache_handler_ && !cache_consumer_ &&
+           (module_type_ == ResolvedModuleType::kWasm ||
+            !GetSourceText().may_be_parked());
   }
 
   ScriptStreamer* GetScriptStreamer() const { return script_streamer_; }
