@@ -76,7 +76,7 @@ bool IsBulkDataEntryConnectorEnabled(ConnectorsServiceBase* service);
 // (affiliated). This is determined by comparing affiliation IDs obtained in the
 // policy fetching response. If either policies has no affiliation IDs, this
 // function returns false.
-bool IsProfileAffilicated(ProfileIOS* profile);
+bool IsProfileAffiliated(ProfileIOS* profile);
 
 // Map the `FinalContentAnalysisResult` to action level: kAudit, kWarn and
 // kBlock.

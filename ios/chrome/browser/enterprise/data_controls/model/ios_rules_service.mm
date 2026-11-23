@@ -16,14 +16,14 @@ IOSRulesService::IOSRulesService(ProfileIOS* profile)
 IOSRulesService::~IOSRulesService() = default;
 
 Verdict IOSRulesService::GetPasteVerdict(const GURL& source_url,
-                                         const GURL& destionation_url,
+                                         const GURL& destination_url,
                                          ProfileIOS* source_profile,
                                          ProfileIOS* destination_profile) {
   return GetVerdict(Rule::Restriction::kClipboard,
                     {
                         .source = GetAsActionSource(source_url, source_profile),
                         .destination = GetAsActionDestination(
-                            destionation_url, destination_profile),
+                            destination_url, destination_profile),
                     });
 }
 

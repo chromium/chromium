@@ -197,7 +197,7 @@ bool IsBulkDataEntryConnectorEnabled(ConnectorsServiceBase* service) {
          service->IsConnectorEnabled(AnalysisConnector::BULK_DATA_ENTRY);
 }
 
-bool IsProfileAffilicated(ProfileIOS* profile) {
+bool IsProfileAffiliated(ProfileIOS* profile) {
   return policy::IsAffiliated(GetUserAffiliationIds(profile),
                               GetApplicationContext()
                                   ->GetBrowserPolicyConnector()

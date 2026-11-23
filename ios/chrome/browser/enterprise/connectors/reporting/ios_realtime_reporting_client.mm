@@ -149,7 +149,7 @@ std::string IOSRealtimeReportingClient::GetBrowserClientId() {
 }
 
 bool IOSRealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
-  return IncludeDeviceInfo(per_profile, IsProfileAffilicated(profile_));
+  return IncludeDeviceInfo(per_profile, IsProfileAffiliated(profile_));
 }
 
 void IOSRealtimeReportingClient::UploadCallback(

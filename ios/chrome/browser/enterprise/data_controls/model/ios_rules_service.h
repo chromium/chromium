@@ -26,11 +26,11 @@ class IOSRulesService : public RulesServiceBase {
 
   // Returns a clipboard verdict to be applied to a paste action. A nullptr
   // `source_profile` represents data coming from the OS clipboard.
-  // `destionation_profile` is always expected to have a valid profile.
+  // `destination_profile` is always expected to have a valid profile.
   virtual Verdict GetPasteVerdict(const GURL& source_url,
-                                  const GURL& destionation_url,
+                                  const GURL& destination_url,
                                   ProfileIOS* source_profile,
-                                  ProfileIOS* destionation_profile);
+                                  ProfileIOS* destination_profile);
 
  private:
   // RulesServiceBase override.

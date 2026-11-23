@@ -39,6 +39,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -188,7 +189,7 @@ TEST_F(CloudContentScanningHelperTest, ScanResultSuccess) {
 
 // Tests that file download can proceed if scan result is warning and user
 // choose to ignore.
-TEST_F(CloudContentScanningHelperTest, ScanResultWarnProcceed) {
+TEST_F(CloudContentScanningHelperTest, ScanResultWarnProceed) {
   base::test::TestFuture<bool> future;
 
   RequestHandlerResult result =
