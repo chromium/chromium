@@ -5,15 +5,16 @@
 // cc_file_path: chrome/browser/glic/gemini_enterprise/geic_api_browsertest.cc
 
 import type {GeicBrowserHost} from '/glic/glic_api/glic_api.js';
-import {                  //
-  AssistantTarget,        //
-  AuthTabPurpose,         //
-  CloseAuthTabResult,     //
-  CloseSignInTabResult,   //
-  HostCapability,         //
-  OpenAuthTabResult,      //
-  OpenSignInTabResult,    //
-  SwitchAssistantResult,  //
+import {                     //
+  AssistantTarget,           //
+  AuthTabPurpose,            //
+  CloseAuthTabResult,        //
+  CloseSignInTabResult,      //
+  HostCapability,            //
+  OpenAuthTabResult,         //
+  OpenSignInTabResult,       //
+  SelectRolloutStageResult,  //
+  SwitchAssistantResult,     //
 } from '/glic/glic_api/glic_api.js';
 
 import {               //
@@ -231,8 +232,62 @@ class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
         })).result,
         SwitchAssistantResult.ERROR_NOT_ALLOWED);
   }
+
+  async testGeicRolloutStagesSuppressedBySwitch() {
+    const geic = this.geic;
+    assertDefined(geic.getRolloutStages);
+    assertDefined(geic.selectRolloutStage);
+
+    const info = await geic.getRolloutStages();
+    assertEquals(info.stages.length, 0);
+    assertEquals(info.currentStageId, undefined);
+
+    assertEquals(
+        (await geic.selectRolloutStage({stageId: 'autopush'})).result,
+        SelectRolloutStageResult.NOT_SUPPORTED);
+  }
+}
+
+class GlicGeicRolloutStageApiBrowserTest extends GlicGeicApiBrowserTest {
+  async testGeicRolloutStages() {
+    const geic = this.geic;
+    assertDefined(geic.getRolloutStages);
+    assertDefined(geic.selectRolloutStage);
+
+    const initialInfo = await geic.getRolloutStages();
+    assertEquals(initialInfo.stages.length, 3);
+    assertEquals(initialInfo.stages[0]!.id, 'autopush');
+    assertEquals(initialInfo.stages[0]!.label, 'Autopush');
+    assertEquals(initialInfo.stages[1]!.id, 'staging');
+    assertEquals(initialInfo.stages[1]!.label, 'Staging');
+    assertEquals(initialInfo.stages[2]!.id, 'prod');
+    assertEquals(initialInfo.stages[2]!.label, 'Prod');
+    assertEquals(initialInfo.currentStageId, 'staging');
+
+    assertEquals(
+        (await geic.selectRolloutStage({stageId: 'unknown_stage'})).result,
+        SelectRolloutStageResult.UNKNOWN_STAGE);
+
+    await this.advanceToNextStep();
+
+    assertEquals(
+        (await geic.selectRolloutStage({stageId: 'staging'})).result,
+        SelectRolloutStageResult.SUCCESS);
+
+    await this.advanceToNextStep();
+
+    assertEquals(
+        (await geic.selectRolloutStage({stageId: 'autopush'})).result,
+        SelectRolloutStageResult.SUCCESS);
+
+    // Before the browser actually restarts, `currentStageId` continues to
+    // reflect the session's latched stage ('staging').
+    const afterSelectInfo = await geic.getRolloutStages();
+    assertEquals(afterSelectInfo.currentStageId, 'staging');
+  }
 }
 
 testMain([
   GlicGeicApiBrowserTest,
+  GlicGeicRolloutStageApiBrowserTest,
 ]);

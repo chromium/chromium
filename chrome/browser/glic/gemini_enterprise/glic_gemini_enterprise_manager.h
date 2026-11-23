@@ -38,6 +38,9 @@ class GlicGeminiEnterpriseManager : public mojom::GeminiEnterpriseHandler {
                    OpenAuthTabCallback callback) override;
   void CloseAuthTab(mojom::CloseAuthTabOptionsPtr options,
                     CloseAuthTabCallback callback) override;
+  void GetRolloutStages(GetRolloutStagesCallback callback) override;
+  void SelectRolloutStage(mojom::SelectRolloutStageOptionsPtr options,
+                          SelectRolloutStageCallback callback) override;
 
  private:
   GlicGeminiEnterpriseManager(Profile* profile,

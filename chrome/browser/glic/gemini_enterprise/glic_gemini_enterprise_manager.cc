@@ -4,18 +4,25 @@
 
 #include "chrome/browser/glic/gemini_enterprise/glic_gemini_enterprise_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/glic/common/glic_relaunch.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/glic_provider_switch_notice.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -265,6 +272,64 @@ void GlicGeminiEnterpriseManager::CloseSignInTab(
     CloseSignInTabCallback callback) {
   std::move(callback).Run(ToCloseSignInTabResult(
       CloseAuthTabImpl(mojom::AuthTabPurpose::kSignIn)->result));
+}
+
+void GlicGeminiEnterpriseManager::GetRolloutStages(
+    GetRolloutStagesCallback callback) {
+  auto info = mojom::GeicRolloutStagesInfo::New();
+  std::vector<geic::GeicSelectableStage> stages =
+      geic::GetSelectableRolloutStages(profile_);
+  const std::string current_stage_id =
+      geic::GetCurrentRolloutStageId(profile_, stages);
+  if (!current_stage_id.empty()) {
+    info->current_stage_id = current_stage_id;
+  }
+  info->stages.reserve(stages.size());
+  for (auto& stage : stages) {
+    info->stages.push_back(mojom::GeicRolloutStage::New(
+        std::move(stage.id), std::move(stage.label)));
+  }
+  std::move(callback).Run(std::move(info));
+}
+
+void GlicGeminiEnterpriseManager::SelectRolloutStage(
+    mojom::SelectRolloutStageOptionsPtr options,
+    SelectRolloutStageCallback callback) {
+  auto response = mojom::SelectRolloutStageResponse::New(
+      mojom::SelectRolloutStageResult::kUnknown);
+  bool should_relaunch = false;
+  const std::vector<geic::GeicSelectableStage> stages =
+      geic::GetSelectableRolloutStages(profile_);
+  if (stages.empty()) {
+    response->result = mojom::SelectRolloutStageResult::kNotSupported;
+  } else if (options->stage_id.empty() ||
+             !std::ranges::contains(stages, options->stage_id,
+                                    &geic::GeicSelectableStage::id)) {
+    response->result = mojom::SelectRolloutStageResult::kUnknownStage;
+  } else {
+    should_relaunch =
+        options->stage_id != geic::GetCurrentRolloutStageId(profile_, stages);
+    profile_->GetPrefs()->SetString(geic::prefs::kGeicSelectedStageId,
+                                    options->stage_id);
+    if (should_relaunch) {
+      RecordUserInitiatedProviderSwitch(*profile_);
+    }
+    profile_->GetPrefs()->CommitPendingWrite();
+    response->result = mojom::SelectRolloutStageResult::kSuccess;
+  }
+
+  DVLOG(1) << "[glic_gemini_enterprise] SelectRolloutStage result="
+           << response->result;
+  // Justification: GEiC-only handler metric (`GeminiEnterpriseHandler` only
+  // binds for `GlicProvider::kGeminiEnterprise`, so provider splitting via
+  // `GlicMetricReporter` does not apply).
+  base::UmaHistogramEnumeration("Geic.SelectRolloutStage.Result",
+                                response->result);
+  std::move(callback).Run(std::move(response));
+
+  if (should_relaunch) {
+    RestartBrowserNow();
+  }
 }
 
 }  // namespace glic

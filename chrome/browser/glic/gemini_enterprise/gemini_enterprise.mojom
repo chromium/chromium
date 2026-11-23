@@ -151,6 +151,58 @@ struct CloseAuthTabResponse {
   CloseAuthTabResult result;
 };
 
+// @generate glic_api
+// A selectable Gemini Enterprise rollout stage.
+struct GeicRolloutStage {
+  // Stable identifier for the stage, persisted in preferences when selected.
+  string id;
+  // Human-readable display label shown in the stage switcher UI.
+  string label;
+};
+
+// @generate glic_api
+// Available Gemini Enterprise rollout stages and the active stage for the
+// current session.
+struct GeicRolloutStagesInfo {
+  // Selectable rollout stages. Empty when stage switching is unavailable or
+  // overridden by enterprise policy or command-line flags.
+  array<GeicRolloutStage> stages;
+  // Identifier of the stage active in the current session, if known.
+  string? current_stage_id;
+};
+
+// @generate glic_api
+// Options for selecting a Gemini Enterprise rollout stage.
+struct SelectRolloutStageOptions {
+  // Identifier of the rollout stage to switch to on the next browser launch.
+  string stage_id;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SelectRolloutStageResult)
+// @generate glic_api
+// Result of attempting to select a Gemini Enterprise rollout stage.
+enum SelectRolloutStageResult {
+  kUnknown = 0,
+  // The stage preference was saved, and a browser restart was initiated if the
+  // target stage differs from the current session's stage.
+  kSuccess = 1,
+  // The requested stage ID does not match any selectable rollout stage.
+  kUnknownStage = 2,
+  // Stage switching is not supported (e.g. overridden by policy or switch).
+  kNotSupported = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GeicSelectRolloutStageResult)
+
+// @generate glic_api
+// Response for `SelectRolloutStage`. Wrapped in a struct so fields can be
+// added later without breaking backwards compatibility.
+struct SelectRolloutStageResponse {
+  // The result of attempting to select the rollout stage.
+  SelectRolloutStageResult result;
+};
+
 // Interface for Gemini Enterprise functionality, used by the web client.
 interface GeminiEnterpriseHandler {
   // Deprecated: use `OpenAuthTab` with `AuthTabPurpose::kSignIn`.
@@ -184,4 +236,13 @@ interface GeminiEnterpriseHandler {
   // same purpose, or one the user has navigated elsewhere.
   CloseAuthTab(CloseAuthTabOptions options)
       => (CloseAuthTabResponse response);
+
+  // Returns the selectable Gemini Enterprise rollout stages for the profile
+  // and the stage active in the current session.
+  GetRolloutStages() => (GeicRolloutStagesInfo info);
+
+  // Persists `options.stage_id` as the selected rollout stage for the profile
+  // and triggers a browser restart when switching to a different stage.
+  SelectRolloutStage(SelectRolloutStageOptions options)
+      => (SelectRolloutStageResponse response);
 };

@@ -7,14 +7,18 @@ source_set("common") {
     "future_browser_features.h",
     "glic_navigation.cc",
     "glic_navigation.h",
+    "glic_relaunch.cc",
+    "glic_relaunch.h",
     "glic_tab_observer.cc",
     "glic_tab_observer.h",
     "glic_tab_util.cc",
     "glic_tab_util.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
+    "//chrome/browser/lifetime",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",

@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_ENABLING_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/common/chrome_switches.h"
 #include "url/gurl.h"
@@ -96,6 +99,31 @@ bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
 // Returns `GeicGuestUrl::SkillsUrl()` for `profile`'s latched Gemini Enterprise
 // guest URL, or an empty `GURL` if none.
 GURL GetGeicSkillsUrl(Profile* profile);
+
+// A validated Gemini Enterprise rollout stage parsed from
+// `features::kGeicSelectableStages`.
+struct GeicSelectableStage {
+  std::string id;
+  std::string label;
+  GeicGuestUrl guest_url;
+
+  friend bool operator==(const GeicSelectableStage&,
+                         const GeicSelectableStage&) = default;
+};
+
+// Returns the selectable Finch rollout stages available to `profile`. Returns
+// an empty list when `profile` is null or off-the-record, GEiC is disabled,
+// `features::kGeic` is filtered out by `GoogleGroupsManager` for `profile`, or
+// a higher-priority source (`--geic-guest-url` or `GeminiEnterpriseUrl` policy)
+// is configured.
+std::vector<GeicSelectableStage> GetSelectableRolloutStages(Profile* profile);
+
+// Returns the identifier from `stages` matching `profile`'s active rollout
+// stage for the current session (from `GlicProviderLatch` when latched, or
+// `ResolveGeicGuestUrl()` if unlatched), or an empty string if none matches.
+std::string GetCurrentRolloutStageId(
+    Profile* profile,
+    base::span<const GeicSelectableStage> stages);
 
 }  // namespace geic
 

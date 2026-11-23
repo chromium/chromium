@@ -28,6 +28,9 @@ void SwitchAssistant(
     mojom::AssistantTarget target,
     base::OnceCallback<void(mojom::SwitchAssistantResponsePtr)> callback);
 
+// Relaunches Chrome if `profile` has a pending provider change.
+void MaybeRelaunchForProviderChange(Profile* profile);
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_GLIC_ASSISTANT_SWITCHER_H_

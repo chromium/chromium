@@ -12,11 +12,15 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/common/glic_relaunch.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -497,6 +501,163 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
       open_future.GetCallback());
   EXPECT_EQ(open_future.Take()->result,
             mojom::OpenAuthTabResult::kErrorFailure);
+}
+
+TEST_F(GlicGeminiEnterpriseManagerUnitTest,
+       RolloutStagesGetAndSelectPersistPrefAndTriggerRestart) {
+  constexpr char kStagesJson[] = R"([
+    {"id": "autopush", "label": "Autopush",
+     "url": "https://business-autopush.gemini.google/side-panel"},
+    {"id": "staging", "label": "Staging",
+     "url": "https://business-staging.gemini.google/side-panel"},
+    {"id": "prod", "label": "Prod",
+     "url": "https://business.gemini.google/side-panel"}
+  ])";
+
+  base::test::ScopedFeatureList stages_feature_list;
+  stages_feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url",
+          "https://business-staging.gemini.google/side-panel"},
+         {"geic-selectable-stages", kStagesJson}}}},
+      {});
+
+  TestingProfile staged_profile;
+  staged_profile.GetPrefs()->SetString(
+      prefs::kGlicProviderSwitchNoticeKnownProviderKey,
+      "https://business-staging.gemini.google/side-panel");
+  GlicGeminiEnterpriseManager manager(&staged_profile);
+  mojo::Remote<mojom::GeminiEnterpriseHandler> remote;
+  manager.Bind(remote.BindNewPipeAndPassReceiver());
+
+  int restart_count = 0;
+  auto restart_override = SetRestartCallbackForTesting(
+      base::BindRepeating([](int* count) { ++(*count); }, &restart_count));
+
+  base::HistogramTester histogram_tester;
+
+  {
+    base::test::TestFuture<mojom::GeicRolloutStagesInfoPtr> info_future;
+    remote->GetRolloutStages(info_future.GetCallback());
+    mojom::GeicRolloutStagesInfoPtr info = info_future.Take();
+    ASSERT_EQ(info->stages.size(), 3u);
+    EXPECT_EQ(info->stages[0]->id, "autopush");
+    EXPECT_EQ(info->stages[0]->label, "Autopush");
+    EXPECT_EQ(info->stages[1]->id, "staging");
+    EXPECT_EQ(info->stages[1]->label, "Staging");
+    EXPECT_EQ(info->stages[2]->id, "prod");
+    EXPECT_EQ(info->stages[2]->label, "Prod");
+    EXPECT_EQ(info->current_stage_id, "staging");
+  }
+
+  // Empty or unknown stage is rejected without writing prefs, clearing the
+  // known provider notice key, or restarting.
+  {
+    base::test::TestFuture<mojom::SelectRolloutStageResponsePtr> select_future;
+    remote->SelectRolloutStage(mojom::SelectRolloutStageOptions::New(""),
+                               select_future.GetCallback());
+    EXPECT_EQ(select_future.Take()->result,
+              mojom::SelectRolloutStageResult::kUnknownStage);
+  }
+  {
+    base::test::TestFuture<mojom::SelectRolloutStageResponsePtr> select_future;
+    remote->SelectRolloutStage(mojom::SelectRolloutStageOptions::New("unknown"),
+                               select_future.GetCallback());
+    EXPECT_EQ(select_future.Take()->result,
+              mojom::SelectRolloutStageResult::kUnknownStage);
+    EXPECT_TRUE(staged_profile.GetPrefs()
+                    ->GetString(geic::prefs::kGeicSelectedStageId)
+                    .empty());
+    EXPECT_EQ(staged_profile.GetPrefs()->GetString(
+                  prefs::kGlicProviderSwitchNoticeKnownProviderKey),
+              "https://business-staging.gemini.google/side-panel");
+    EXPECT_EQ(restart_count, 0);
+  }
+
+  // Selecting the already-latched stage ("staging") persists the pref and
+  // returns kSuccess without clearing the known provider notice key or
+  // restarting Chrome.
+  {
+    base::test::TestFuture<mojom::SelectRolloutStageResponsePtr> select_future;
+    remote->SelectRolloutStage(mojom::SelectRolloutStageOptions::New("staging"),
+                               select_future.GetCallback());
+    EXPECT_EQ(select_future.Take()->result,
+              mojom::SelectRolloutStageResult::kSuccess);
+    EXPECT_EQ(
+        staged_profile.GetPrefs()->GetString(geic::prefs::kGeicSelectedStageId),
+        "staging");
+    EXPECT_EQ(staged_profile.GetPrefs()->GetString(
+                  prefs::kGlicProviderSwitchNoticeKnownProviderKey),
+              "https://business-staging.gemini.google/side-panel");
+    EXPECT_EQ(restart_count, 0);
+  }
+
+  // Selecting a different stage persists `kGeicSelectedStageId`, clears the
+  // known provider switch notice key, and triggers restart.
+  {
+    base::test::TestFuture<mojom::SelectRolloutStageResponsePtr> select_future;
+    remote->SelectRolloutStage(
+        mojom::SelectRolloutStageOptions::New("autopush"),
+        select_future.GetCallback());
+    EXPECT_EQ(select_future.Take()->result,
+              mojom::SelectRolloutStageResult::kSuccess);
+    EXPECT_EQ(
+        staged_profile.GetPrefs()->GetString(geic::prefs::kGeicSelectedStageId),
+        "autopush");
+    EXPECT_TRUE(
+        staged_profile.GetPrefs()
+            ->GetString(prefs::kGlicProviderSwitchNoticeKnownProviderKey)
+            .empty());
+    EXPECT_EQ(restart_count, 1);
+  }
+
+  // If the restart was aborted, re-selecting the session's latched stage
+  // ("staging") reverts `kGeicSelectedStageId` without triggering another
+  // restart.
+  {
+    base::test::TestFuture<mojom::SelectRolloutStageResponsePtr> select_future;
+    remote->SelectRolloutStage(mojom::SelectRolloutStageOptions::New("staging"),
+                               select_future.GetCallback());
+    EXPECT_EQ(select_future.Take()->result,
+              mojom::SelectRolloutStageResult::kSuccess);
+    EXPECT_EQ(
+        staged_profile.GetPrefs()->GetString(geic::prefs::kGeicSelectedStageId),
+        "staging");
+    EXPECT_EQ(restart_count, 1);
+  }
+
+  // When overridden by enterprise policy, stages are hidden and selection
+  // returns kNotSupported.
+  staged_profile.GetPrefs()->SetString(
+      prefs::kGlicGeminiEnterpriseUrl,
+      "https://business.gemini.google/side-panel");
+  {
+    base::test::TestFuture<mojom::GeicRolloutStagesInfoPtr> info_future;
+    remote->GetRolloutStages(info_future.GetCallback());
+    mojom::GeicRolloutStagesInfoPtr info = info_future.Take();
+    EXPECT_TRUE(info->stages.empty());
+    EXPECT_FALSE(info->current_stage_id.has_value());
+  }
+  {
+    base::test::TestFuture<mojom::SelectRolloutStageResponsePtr> select_future;
+    remote->SelectRolloutStage(mojom::SelectRolloutStageOptions::New("prod"),
+                               select_future.GetCallback());
+    EXPECT_EQ(select_future.Take()->result,
+              mojom::SelectRolloutStageResult::kNotSupported);
+    EXPECT_EQ(restart_count, 1);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      "Geic.SelectRolloutStage.Result",
+      mojom::SelectRolloutStageResult::kUnknownStage, 2);
+  histogram_tester.ExpectBucketCount("Geic.SelectRolloutStage.Result",
+                                     mojom::SelectRolloutStageResult::kSuccess,
+                                     3);
+  histogram_tester.ExpectBucketCount(
+      "Geic.SelectRolloutStage.Result",
+      mojom::SelectRolloutStageResult::kNotSupported, 1);
+  histogram_tester.ExpectTotalCount("Geic.SelectRolloutStage.Result", 6);
 }
 
 }  // namespace

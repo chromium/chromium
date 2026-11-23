@@ -5,19 +5,23 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/common/glic_relaunch.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_fre.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_provider_change_relaunch.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -34,14 +38,15 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "url/gurl.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include <optional>
 
 #include "base/types/optional_util.h"
-#include "base/values.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/browser/glic/public/glic_provider_change.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -352,6 +357,104 @@ IN_PROC_BROWSER_TEST_F(GlicGeicFreApiBrowserTest,
   histogram_tester.ExpectUniqueSample("Glic.Fre.Accept.InvocationSource",
                                       mojom::InvocationSource::kTopChromeButton,
                                       1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest,
+                       testGeicRolloutStagesSuppressedBySwitch) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+// Configures GEiC via Finch (`kGeicGuestURL` + `kGeicSelectableStages`) without
+// `--geic-guest-url` so the rollout stage switcher API is active end-to-end.
+class GlicGeicRolloutStageApiBrowserTest : public GlicApiBrowserTest {
+ public:
+  GlicGeicRolloutStageApiBrowserTest()
+      : GlicApiBrowserTest(GlicTestJsPath("./geic_api_browsertest.js")) {
+    const std::string test_path_and_query = base::StrCat(
+        {"/glic/browser_tests/test.html?test=",
+         url::EncodeUriComponent(
+             ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+         "&testsrc=", url::EncodeUriComponent("./geic_api_browsertest.js")});
+    const std::string autopush_url = base::StrCat(
+        {"https://business-autopush.gemini.google", test_path_and_query});
+    const std::string staging_url = base::StrCat(
+        {"https://business-staging.gemini.google", test_path_and_query});
+    const std::string prod_url =
+        base::StrCat({"https://business.gemini.google", test_path_and_query});
+
+    base::ListValue stages_list;
+    for (const auto& [id, label, url] : std::initializer_list<
+             std::tuple<const char*, const char*, const std::string&>>{
+             {"autopush", "Autopush", autopush_url},
+             {"staging", "Staging", staging_url},
+             {"prod", "Prod", prod_url},
+         }) {
+      base::DictValue stage;
+      stage.Set("id", id);
+      stage.Set("label", label);
+      stage.Set("url", url);
+      stages_list.Append(std::move(stage));
+    }
+    const std::string stages_json = base::WriteJson(stages_list).value_or("[]");
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{features::kGeicGuestURL.name, staging_url},
+           {features::kGeicSelectableStages.name, stages_json}}}},
+        {});
+    embedded_https_test_server().SetCertHostnames(
+        {"business-autopush.gemini.google", "business-staging.gemini.google",
+         "business.gemini.google", "127.0.0.1"});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicApiBrowserTest::SetUpCommandLine(command_line);
+    const int port = embedded_https_test_server().port();
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        base::StringPrintf("MAP business-autopush.gemini.google 127.0.0.1:%d, "
+                           "MAP business-staging.gemini.google 127.0.0.1:%d, "
+                           "MAP business.gemini.google 127.0.0.1:%d",
+                           port, port, port));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicGeicRolloutStageApiBrowserTest,
+                       testGeicRolloutStages) {
+  int restart_count = 0;
+  auto restart_override = SetRestartCallbackForTesting(
+      base::BindRepeating([](int* count) { ++(*count); }, &restart_count));
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Unknown stage selection neither writes the pref nor restarts Chrome.
+  EXPECT_EQ(restart_count, 0);
+  EXPECT_TRUE(GetProfile()
+                  ->GetPrefs()
+                  ->GetString(geic::prefs::kGeicSelectedStageId)
+                  .empty());
+
+  ContinueJsTest();
+
+  // Selecting the already-latched stage saves the pref without restarting.
+  EXPECT_EQ(restart_count, 0);
+  EXPECT_EQ(
+      GetProfile()->GetPrefs()->GetString(geic::prefs::kGeicSelectedStageId),
+      "staging");
+
+  ContinueJsTest();
+
+  // Selecting a different stage writes the pref and invokes the restart
+  // callback.
+  EXPECT_EQ(restart_count, 1);
+  EXPECT_EQ(
+      GetProfile()->GetPrefs()->GetString(geic::prefs::kGeicSelectedStageId),
+      "autopush");
 }
 
 }  // namespace

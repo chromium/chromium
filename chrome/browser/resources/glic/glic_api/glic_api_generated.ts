@@ -85,6 +85,18 @@ export enum CloseAuthTabResult {
   NAVIGATED_AWAY = 6,
 }
 
+// Result of attempting to select a Gemini Enterprise rollout stage.
+export enum SelectRolloutStageResult {
+  UNKNOWN = 0,
+  // The stage preference was saved, and a browser restart was initiated if the
+  // target stage differs from the current session's stage.
+  SUCCESS = 1,
+  // The requested stage ID does not match any selectable rollout stage.
+  UNKNOWN_STAGE = 2,
+  // Stage switching is not supported (e.g. overridden by policy or switch).
+  NOT_SUPPORTED = 3,
+}
+
 export enum FileUploadPolicyState {
   ENABLED = 0,
   DISABLED = 1,
@@ -908,6 +920,37 @@ export declare interface OpenAuthTabResponse {
 export declare interface CloseAuthTabResponse {
   // The result of attempting to close the auth tab.
   result: CloseAuthTabResult;
+}
+
+// A selectable Gemini Enterprise rollout stage.
+export declare interface GeicRolloutStage {
+  // Stable identifier for the stage, persisted in preferences when selected.
+  id: string;
+  // Human-readable display label shown in the stage switcher UI.
+  label: string;
+}
+
+// Available Gemini Enterprise rollout stages and the active stage for the
+// current session.
+export declare interface GeicRolloutStagesInfo {
+  // Selectable rollout stages. Empty when stage switching is unavailable or
+  // overridden by enterprise policy or command-line flags.
+  stages: GeicRolloutStage[];
+  // Identifier of the stage active in the current session, if known.
+  currentStageId?: string;
+}
+
+// Options for selecting a Gemini Enterprise rollout stage.
+export declare interface SelectRolloutStageOptions {
+  // Identifier of the rollout stage to switch to on the next browser launch.
+  stageId: string;
+}
+
+// Response for `SelectRolloutStage`. Wrapped in a struct so fields can be
+// added later without breaking backwards compatibility.
+export declare interface SelectRolloutStageResponse {
+  // The result of attempting to select the rollout stage.
+  result: SelectRolloutStageResult;
 }
 
 // TODO(b/570016708): Remove once web client usages are eliminated.

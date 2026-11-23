@@ -9,12 +9,16 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/glic/common/glic_relaunch.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_provider_change_relaunch.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_provider_switch_notice.h"
@@ -102,6 +106,20 @@ void SwitchAssistant(
   if (should_relaunch) {
     RestartBrowserNow();
   }
+}
+
+void MaybeRelaunchForProviderChange(Profile* profile) {
+  if (GlicEnabling::GetPendingProviderChange(profile) ==
+      GlicProviderChange::kNone) {
+    return;
+  }
+
+  base::RecordAction(
+      base::UserMetricsAction("Glic.ProviderChange.RelaunchClicked"));
+  // Only `profile` is marked: other profiles that pick up a provider change
+  // from this relaunch didn't see the prompt, so they still get the notice.
+  RecordUserInitiatedProviderSwitch(*profile);
+  RestartBrowserNow();
 }
 
 }  // namespace glic

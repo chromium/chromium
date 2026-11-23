@@ -77,6 +77,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom:OpenAuthTabResult) -->
 
+<!-- LINT.IfChange(GeicSelectRolloutStageResult) -->
+
+<enum name="GeicSelectRolloutStageResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Unknown stage"/>
+  <int value="3" label="Not supported"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom:SelectRolloutStageResult) -->
+
 <!-- LINT.IfChange(GeminiNavigationCaptureResult) -->
 
 <enum name="GeminiNavigationCaptureResult">

@@ -61,6 +61,8 @@ export import ExperimentalTriggeringUpdate =
 export import FormFillingRequest = generated.FormFillingRequest;
 export import FormFillingResponse = generated.FormFillingResponse;
 export import FrameMetadata = generated.FrameMetadata;
+export import GeicRolloutStage = generated.GeicRolloutStage;
+export import GeicRolloutStagesInfo = generated.GeicRolloutStagesInfo;
 export import GeminiEnterpriseSettings = generated.GeminiEnterpriseSettings;
 export import GetPinCandidatesOptions = generated.GetPinCandidatesOptions;
 export import GmailOtpConfirmationRequest =
@@ -104,6 +106,8 @@ export import SelectCredentialDialogRequest =
     generated.SelectCredentialDialogRequest;
 export import SelectCredentialDialogResponse =
     generated.SelectCredentialDialogResponse;
+export import SelectRolloutStageOptions = generated.SelectRolloutStageOptions;
+export import SelectRolloutStageResponse = generated.SelectRolloutStageResponse;
 export import SendTabToSelfDevice = generated.SendTabToSelfDevice;
 export import Skill = generated.Skill;
 export import SkillPreview = generated.SkillPreview;
@@ -172,6 +176,7 @@ export import ScreenshotCompressionQuality =
 export import ScreenshotEncryptionScheme = generated.ScreenshotEncryptionScheme;
 export import ScreenshotImageFormat = generated.ScreenshotImageFormat;
 export import ScrollToErrorReason = generated.ScrollToErrorReason;
+export import SelectRolloutStageResult = generated.SelectRolloutStageResult;
 export import SettingsPageField = generated.SettingsPageField;
 export import SkillSource = generated.SkillSource;
 export import SkillsWebClientEvent = generated.SkillsWebClientEvent;

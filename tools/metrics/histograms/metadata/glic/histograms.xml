@@ -334,6 +334,17 @@ chromium-metrics-reviews@google.com.
   <token key="Purpose" variants="GeicAuthTabPurpose"/>
 </histogram>
 
+<histogram name="Geic.SelectRolloutStage.Result"
+    enum="GeicSelectRolloutStageResult" expires_after="2027-06-01">
+  <owner>landry@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the result of a Gemini Enterprise in Chrome (GEiC) web client
+    request to switch the active Finch rollout stage. Recorded each time the web
+    client calls selectRolloutStage.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Actor.JournalEvent.{EventType}" units="ms"
     expires_after="2027-04-11">
   <owner>dtapuska@google.com</owner>

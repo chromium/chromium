@@ -37,6 +37,12 @@ enum class GeicFreStatus : int {
 // keyed by, or reset for, the GE account signed in within the side panel.
 inline constexpr char kGeicCompletedFre[] = "geic.completed_fre";
 
+// String pref storing the user-selected Finch rollout stage ID for Gemini
+// Enterprise in Chrome (matched against `features::kGeicSelectableStages`).
+// Profile-scoped and not synced; evaluated at profile startup, so changing it
+// requires a browser restart.
+inline constexpr char kGeicSelectedStageId[] = "geic.selected_stage_id";
+
 // Registers GEiC profile prefs. Called from `RegisterProfilePrefs()` in
 // chrome/browser/prefs/browser_prefs.cc.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

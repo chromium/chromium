@@ -7,20 +7,29 @@
 #include <algorithm>
 #include <iterator>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
+#include "base/no_destructor.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -91,14 +100,87 @@ base::expected<GeicGuestUrl, GuestUrlError> GetPolicyGuestUrl(
              : base::unexpected(GuestUrlError::kUnset);
 }
 
+bool IsRegularUserProfile(content::BrowserContext* browser_context) {
+  if (!browser_context) {
+    return false;
+  }
+  static const base::NoDestructor<ProfileSelections> kRegularProfiles(
+      ProfileSelections::BuildForRegularProfile());
+  return kRegularProfiles->ApplyProfileSelection(
+             Profile::FromBrowserContext(browser_context)) != nullptr;
+}
+
+bool IsGeicFinchGroupEnabledForContext(
+    content::BrowserContext* browser_context) {
+  if (!IsRegularUserProfile(browser_context)) {
+    return false;
+  }
+  const GoogleGroupsManager* google_groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(browser_context);
+  return !google_groups_manager ||
+         google_groups_manager->IsFeatureEnabledForProfile(features::kGeic);
+}
+
+std::vector<GeicSelectableStage> ParseSelectableFinchStages() {
+  const std::string raw_json = features::kGeicSelectableStages.Get();
+  if (raw_json.empty()) {
+    return {};
+  }
+  std::optional<base::ListValue> list =
+      base::JSONReader::ReadList(raw_json, base::JSON_PARSE_RFC);
+  if (!list) {
+    return {};
+  }
+
+  std::vector<GeicSelectableStage> stages;
+  std::set<std::string> seen_ids;
+  for (const base::Value& entry : *list) {
+    const base::DictValue* dict = entry.GetIfDict();
+    if (!dict) {
+      continue;
+    }
+    const std::string* id = dict->FindString("id");
+    const std::string* label = dict->FindString("label");
+    const std::string* url_spec = dict->FindString("url");
+    if (!id || id->empty() || !label || label->empty() || !url_spec ||
+        url_spec->empty()) {
+      continue;
+    }
+    base::expected<GeicGuestUrl, GuestUrlError> guest_url =
+        GeicGuestUrl::FromFinch(*url_spec);
+    if (!guest_url.has_value()) {
+      continue;
+    }
+    if (!seen_ids.insert(*id).second) {
+      continue;
+    }
+    stages.push_back(GeicSelectableStage{
+        .id = *id,
+        .label = *label,
+        .guest_url = std::move(*guest_url),
+    });
+  }
+  return stages;
+}
+
 base::expected<GeicGuestUrl, GuestUrlError> GetFinchGuestUrl(
     content::BrowserContext* browser_context) {
-  if (browser_context) {
-    const GoogleGroupsManager* google_groups_manager =
-        GoogleGroupsManagerFactory::GetForBrowserContext(browser_context);
-    if (google_groups_manager &&
-        !google_groups_manager->IsFeatureEnabledForProfile(features::kGeic)) {
-      return base::unexpected(GuestUrlError::kUnset);
+  if (!IsGeicFinchGroupEnabledForContext(browser_context)) {
+    return base::unexpected(GuestUrlError::kUnset);
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (profile && profile->GetPrefs()) {
+    const std::string& selected_stage_id =
+        profile->GetPrefs()->GetString(prefs::kGeicSelectedStageId);
+    if (!selected_stage_id.empty()) {
+      std::vector<GeicSelectableStage> stages = ParseSelectableFinchStages();
+      auto it = std::ranges::find_if(
+          stages, [&selected_stage_id](const GeicSelectableStage& stage) {
+            return stage.id == selected_stage_id;
+          });
+      if (it != stages.end()) {
+        return std::move(it->guest_url);
+      }
     }
   }
   return GeicGuestUrl::FromFinch(features::kGeicGuestURL.Get());
@@ -183,6 +265,57 @@ GURL GetGeicSkillsUrl(Profile* profile) {
   const GeicGuestUrl* guest_url =
       geic_spec ? geic_spec->GetGeicGuestUrl() : nullptr;
   return guest_url ? guest_url->SkillsUrl() : GURL();
+}
+
+std::vector<GeicSelectableStage> GetSelectableRolloutStages(Profile* profile) {
+  if (!IsRegularUserProfile(profile) || !profile->GetPrefs() ||
+      !IsGeicEnabledByFeature()) {
+    return {};
+  }
+  const base::expected<GeicGuestUrl, GuestUrlError> switch_url =
+      GetSwitchGuestUrl();
+  if (switch_url.has_value() || switch_url.error() != GuestUrlError::kUnset) {
+    return {};
+  }
+  const base::expected<GeicGuestUrl, GuestUrlError> policy_url =
+      GetPolicyGuestUrl(profile);
+  if (policy_url.has_value() || policy_url.error() != GuestUrlError::kUnset) {
+    return {};
+  }
+  if (!IsGeicFinchGroupEnabledForContext(profile)) {
+    return {};
+  }
+  return ParseSelectableFinchStages();
+}
+
+std::string GetCurrentRolloutStageId(
+    Profile* profile,
+    base::span<const GeicSelectableStage> stages) {
+  if (!IsRegularUserProfile(profile) || stages.empty()) {
+    return std::string();
+  }
+
+  auto find_stage_by_url =
+      [&stages](const GeicGuestUrl* guest_url) -> std::string {
+    if (!guest_url) {
+      return std::string();
+    }
+    auto it = std::ranges::find_if(
+        stages, [guest_url](const GeicSelectableStage& stage) {
+          return stage.guest_url == *guest_url;
+        });
+    return it != stages.end() ? it->id : std::string();
+  };
+
+  if (const glic::GlicProviderLatch* latch =
+          glic::GlicProviderLatch::GetIfLatched(*profile)) {
+    const glic::GeicSpec* geic_spec = latch->GetSpec().GetGeicSpec();
+    return find_stage_by_url(geic_spec ? geic_spec->GetGeicGuestUrl()
+                                       : nullptr);
+  }
+
+  std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(profile);
+  return find_stage_by_url(resolved ? &*resolved : nullptr);
 }
 
 }  // namespace geic

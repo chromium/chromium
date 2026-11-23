@@ -15,10 +15,11 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/glic/common/glic_relaunch.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_assistant_switcher.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/host/glic_overlay.mojom.h"
-#include "chrome/browser/glic/host/glic_provider_change_relaunch.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -439,9 +440,9 @@ IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticeWebviewBrowserTest,
   ASSERT_OK(
       WaitForWebUiState(mojom::WebUiState::kProviderSwitchNoticeGeicToGemini));
 
-  ASSERT_TRUE(content::ExecJs(
-      instance->host().webui_contents(),
-      "document.getElementById('continueButton').click()"));
+  ASSERT_TRUE(
+      content::ExecJs(instance->host().webui_contents(),
+                      "document.getElementById('continueButton').click()"));
 
   EXPECT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
   EXPECT_EQ(KnownProviderKey(), GlicProviderKey::Gemini());

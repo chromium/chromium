@@ -290,6 +290,9 @@ BASE_FEATURE(kGeicProviderSwitchNotice,
 const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
                                                     ""};
 
+const base::FeatureParam<std::string> kGeicSelectableStages{
+    &kGeic, "geic-selectable-stages", ""};
+
 // Default-enabled platforms: all (gates FRE completion whenever GEiC is
 // active).
 BASE_FEATURE(kGeicFre, base::FEATURE_ENABLED_BY_DEFAULT);

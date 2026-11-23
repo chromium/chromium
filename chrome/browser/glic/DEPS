@@ -18,6 +18,9 @@ specific_include_rules = {
     "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
     "+chrome/browser/glic/gemini_enterprise/geic_fre.h",
   ],
+  "glic_gemini_enterprise_manager(_unittest)?\\.cc": [
+    "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
+  ],
   "glic_provider_latch_factory\\.cc": [
     "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
   ],

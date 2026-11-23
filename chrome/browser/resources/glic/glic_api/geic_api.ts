@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {                       //
-             CloseAuthTabOptions,   //
-             CloseAuthTabResponse,  //
-             CloseSignInTabOptions, //
-             CloseSignInTabResult,  //
-             OpenAuthTabOptions,    //
-             OpenAuthTabResponse,   //
-             OpenSignInTabOptions,  //
-             OpenSignInTabResult,   //
+import type {                            //
+             CloseAuthTabOptions,        //
+             CloseAuthTabResponse,       //
+             CloseSignInTabOptions,      //
+             CloseSignInTabResult,       //
+             GeicRolloutStagesInfo,      //
+             OpenAuthTabOptions,         //
+             OpenAuthTabResponse,        //
+             OpenSignInTabOptions,       //
+             OpenSignInTabResult,        //
+             SelectRolloutStageOptions,  //
+             SelectRolloutStageResponse, //
 } from './glic_api_generated.js';
 
 /**
  * Provides Gemini Enterprise in Chrome functionality to the web client.
  */
-export interface GeicBrowserHost {
+export declare interface GeicBrowserHost {
   /**
    * Opens the authentication endpoint in a new top-level browser tab
    * and captures the originating tab for focus restoration.
@@ -72,4 +75,25 @@ export interface GeicBrowserHost {
    * @returns The response, whose `result` is the outcome of the close attempt.
    */
   closeAuthTab?(options: CloseAuthTabOptions): Promise<CloseAuthTabResponse>;
+
+  /**
+   * Returns the selectable Gemini Enterprise rollout stages for the profile
+   * and the stage active in the current session.
+   *
+   * Not available in older Chrome versions.
+   */
+  getRolloutStages?(): Promise<GeicRolloutStagesInfo>;
+
+  /**
+   * Persists `options.stageId` as the selected rollout stage for the profile
+   * and initiates a browser restart when switching to a different stage.
+   *
+   * Not available in older Chrome versions.
+   *
+   * @param options The target rollout stage identifier.
+   * @returns The response, whose `result` is the outcome of selecting the
+   *     rollout stage.
+   */
+  selectRolloutStage?
+      (options: SelectRolloutStageOptions): Promise<SelectRolloutStageResponse>;
 }

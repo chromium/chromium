@@ -16,23 +16,27 @@ source_set("geic_enabling") {
     "geic_enabling.h",
   ]
 
-  public_deps = [ ":guest_url" ]
+  public_deps = [
+    ":guest_url",
+    "//base",
+    "//chrome/common:constants",
+    "//url",
+  ]
 
   deps = [
-    "//base",
+    ":geic_pref_names",
     "//chrome/browser/glic",
     "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/public:provider",
     "//chrome/browser/metrics",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//components/optimization_guide/core:features",
     "//components/policy:generated",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/variations/service",
     "//content/public/browser",
-    "//url",
   ]
 }
 
@@ -117,16 +121,20 @@ source_set("gemini_enterprise") {
   ]
 
   deps = [
+    ":geic_enabling",
+    ":geic_pref_names",
     ":url_allowlist",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/common",
+    "//chrome/browser/glic/public:provider",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/common:constants",
+    "//components/prefs",
     "//components/tabs:public",
     "//content/public/browser",
     "//google_apis",
@@ -159,6 +167,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic/common",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/public:provider",
     "//chrome/browser/metrics",
@@ -201,6 +210,7 @@ source_set("browser_tests") {
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic/common",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/public:provider",
     "//chrome/browser/glic/test_support",
@@ -217,6 +227,7 @@ source_set("browser_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//url",
   ]

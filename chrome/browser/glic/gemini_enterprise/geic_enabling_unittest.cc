@@ -19,9 +19,12 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_switches.h"
@@ -108,6 +111,11 @@ class GeicEnablingTest : public testing::Test {
   GURL ResolveSwitchUrl(const std::string& url) {
     SetSwitchUrl(url);
     std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(profile());
+    return resolved ? resolved->url() : GURL();
+  }
+
+  GURL ResolvedGuestUrl(content::BrowserContext* context) {
+    std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(context);
     return resolved ? resolved->url() : GURL();
   }
 
@@ -377,6 +385,22 @@ TEST_F(GeicEnablingTest, GoogleGroupsFilterEnablesOnlyMatchingProfile) {
       create_profile_with_groups({"111111111"});
   EXPECT_FALSE(ResolveGeicGuestUrl(personal_profile.get()).has_value());
 
+  // Off-the-record and Guest profiles have no GoogleGroupsManager and must fail
+  // closed rather than bypassing the Google Groups filter.
+  EXPECT_FALSE(ResolveGeicGuestUrl(corp_profile->GetPrimaryOTRProfile(
+                                       /*create_if_needed=*/true))
+                   .has_value());
+  EXPECT_FALSE(ResolveGeicGuestUrl(personal_profile->GetPrimaryOTRProfile(
+                                       /*create_if_needed=*/true))
+                   .has_value());
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+  EXPECT_FALSE(ResolveGeicGuestUrl(guest_profile.get()).has_value());
+  EXPECT_FALSE(ResolveGeicGuestUrl(guest_profile->GetPrimaryOTRProfile(
+                                       /*create_if_needed=*/true))
+                   .has_value());
+
   // Unsynced profile with no groups also has the Finch guest URL ignored.
   std::unique_ptr<TestingProfile> unsynced_profile =
       create_profile_with_groups({});
@@ -616,6 +640,265 @@ TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
       ::switches::kGlicGuestURL,
       "https://gemini.google.com/work/cid/abc123/side-panel");
   EXPECT_EQ(GetGeicSkillsUrl(profile()), GURL());
+}
+
+TEST_F(GeicEnablingTest, SelectableStagesParsesValidJsonAndIgnoresInvalid) {
+  EXPECT_TRUE(GetSelectableRolloutStages(nullptr).empty());
+
+  {
+    base::test::ScopedFeatureList malformed_json;
+    malformed_json.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{"enabled", "true"}, {"geic-selectable-stages", "not-json"}}}},
+        {});
+    EXPECT_TRUE(GetSelectableRolloutStages(profile()).empty());
+  }
+
+  {
+    base::test::ScopedFeatureList non_list_json;
+    non_list_json.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{"enabled", "true"}, {"geic-selectable-stages", "{}"}}}},
+        {});
+    EXPECT_TRUE(GetSelectableRolloutStages(profile()).empty());
+  }
+
+  constexpr char kStagesJson[] = R"([
+    {"id": "autopush", "label": "Autopush",
+     "url": "https://business-autopush.gemini.google/side-panel"},
+    {"id": "staging", "label": "Staging",
+     "url": "https://business-staging.gemini.google/home/cid/stg"},
+    {"id": "staging", "label": "Duplicate Staging",
+     "url": "https://business.gemini.google/side-panel"},
+    {"id": "http_only", "label": "Insecure",
+     "url": "http://business.gemini.google/side-panel"},
+    {"id": "disallowed", "label": "Disallowed Host",
+     "url": "https://stage1.example.com/side-panel"},
+    {"id": "", "label": "Missing Id",
+     "url": "https://business.gemini.google/side-panel"},
+    {"id": "missing_label", "label": "",
+     "url": "https://business.gemini.google/side-panel"},
+    "not-a-dict",
+    {"id": "prod", "label": "Prod",
+     "url": "https://business.gemini.google/side-panel"}
+  ])";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url", "https://business.gemini.google/side-panel"},
+         {"geic-selectable-stages", kStagesJson}}}},
+      {});
+
+  std::vector<GeicSelectableStage> stages =
+      GetSelectableRolloutStages(profile());
+  ASSERT_EQ(stages.size(), 3u);
+  EXPECT_EQ(stages[0].id, "autopush");
+  EXPECT_EQ(stages[0].label, "Autopush");
+  EXPECT_EQ(stages[0].guest_url.url(),
+            GURL("https://business-autopush.gemini.google/side-panel"));
+  EXPECT_EQ(stages[1].id, "staging");
+  EXPECT_EQ(stages[1].label, "Staging");
+  EXPECT_EQ(
+      stages[1].guest_url.url(),
+      GURL("https://business-staging.gemini.google/side-panel?configId=stg"));
+  EXPECT_EQ(stages[2].id, "prod");
+  EXPECT_EQ(stages[2].label, "Prod");
+  EXPECT_EQ(stages[2].guest_url.url(),
+            GURL("https://business.gemini.google/side-panel"));
+
+  // Off-the-record and Guest profiles do not expose selectable stages.
+  EXPECT_TRUE(GetSelectableRolloutStages(
+                  profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true))
+                  .empty());
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+  EXPECT_FALSE(ResolveGeicGuestUrl(guest_profile.get()).has_value());
+  EXPECT_TRUE(GetSelectableRolloutStages(guest_profile.get()).empty());
+  EXPECT_TRUE(GetCurrentRolloutStageId(guest_profile.get(), stages).empty());
+}
+
+TEST_F(GeicEnablingTest, SelectedStageIdResolvesAndFallsBackToDefaultFinchUrl) {
+  constexpr char kStagesJson[] = R"([
+    {"id": "autopush", "label": "Autopush",
+     "url": "https://business-autopush.gemini.google/side-panel"},
+    {"id": "staging", "label": "Staging",
+     "url": "https://business-staging.gemini.google/side-panel"},
+    {"id": "prod", "label": "Prod",
+     "url": "https://business.gemini.google/side-panel"}
+  ])";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url", "https://business.gemini.google/side-panel"},
+         {"geic-selectable-stages", kStagesJson}}},
+       {features::kGeicProviderChangePrompt, {}}},
+      {});
+
+  // Fresh profile latches to default `geic-guest-url` ("prod").
+  TestingProfile latched_profile;
+  std::vector<GeicSelectableStage> stages =
+      GetSelectableRolloutStages(&latched_profile);
+  ASSERT_EQ(stages.size(), 3u);
+  EXPECT_EQ(ResolvedGuestUrl(&latched_profile),
+            GURL("https://business.gemini.google/side-panel"));
+  EXPECT_EQ(GetCurrentRolloutStageId(&latched_profile, stages), "prod");
+
+  // Selecting "staging" updates the resolved guest URL for next launch, while
+  // `GetCurrentRolloutStageId` continues reporting the latched stage ("prod")
+  // for the running session.
+  latched_profile.GetPrefs()->SetString(prefs::kGeicSelectedStageId, "staging");
+  EXPECT_EQ(ResolvedGuestUrl(&latched_profile),
+            GURL("https://business-staging.gemini.google/side-panel"));
+  EXPECT_EQ(GetCurrentRolloutStageId(&latched_profile, stages), "prod");
+  EXPECT_EQ(glic::GlicEnabling::GetPendingProviderChange(&latched_profile),
+            glic::GlicProviderChange::kGeicToOtherGeic);
+
+  // Unknown stage ID falls back to `kGeicGuestURL`.
+  latched_profile.GetPrefs()->SetString(prefs::kGeicSelectedStageId,
+                                        "unknown_stage");
+  EXPECT_EQ(ResolvedGuestUrl(&latched_profile),
+            GURL("https://business.gemini.google/side-panel"));
+}
+
+TEST_F(GeicEnablingTest,
+       LatchedUrlOutsideSelectableStagesKeepsCurrentStageEmptyUntilRestart) {
+  constexpr char kStagesJson[] = R"([
+    {"id": "autopush", "label": "Autopush",
+     "url": "https://business-autopush.gemini.google/side-panel"},
+    {"id": "staging", "label": "Staging",
+     "url": "https://business-staging.gemini.google/side-panel"}
+  ])";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url", "https://enterprise.gemini.google.com/side-panel"},
+         {"geic-selectable-stages", kStagesJson}}}},
+      {});
+
+  // Profile latches to `enterprise.gemini.google.com`, which is not in
+  // `stages`.
+  TestingProfile latched_profile;
+  std::vector<GeicSelectableStage> stages =
+      GetSelectableRolloutStages(&latched_profile);
+  ASSERT_EQ(stages.size(), 2u);
+  EXPECT_TRUE(GetCurrentRolloutStageId(&latched_profile, stages).empty());
+
+  // Selecting "staging" in prefs must NOT cause `GetCurrentRolloutStageId` to
+  // report "staging" while the session is still latched to the initial URL
+  // (e.g. if a restart was aborted by `beforeunload`).
+  latched_profile.GetPrefs()->SetString(prefs::kGeicSelectedStageId, "staging");
+  EXPECT_EQ(ResolvedGuestUrl(&latched_profile),
+            GURL("https://business-staging.gemini.google/side-panel"));
+  EXPECT_TRUE(GetCurrentRolloutStageId(&latched_profile, stages).empty());
+}
+
+TEST_F(GeicEnablingTest, PolicyAndSwitchOverrideSelectedStage) {
+  constexpr char kStagesJson[] = R"([
+    {"id": "autopush", "label": "Autopush",
+     "url": "https://business-autopush.gemini.google/side-panel"},
+    {"id": "staging", "label": "Staging",
+     "url": "https://business-staging.gemini.google/side-panel"}
+  ])";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url",
+          "https://business-staging.gemini.google/side-panel"},
+         {"geic-selectable-stages", kStagesJson}}}},
+      {});
+
+  profile()->GetPrefs()->SetString(prefs::kGeicSelectedStageId, "autopush");
+  EXPECT_EQ(ResolvedGuestUrl(profile()),
+            GURL("https://business-autopush.gemini.google/side-panel"));
+  EXPECT_EQ(GetSelectableRolloutStages(profile()).size(), 2u);
+
+  // Enterprise policy outranks `kGeicSelectedStageId` and hides selectable
+  // stages.
+  SetPolicyUrl("https://business.gemini.google/home/cid/policy");
+  EXPECT_EQ(ResolvedGuestUrl(profile()),
+            GURL("https://business.gemini.google/side-panel?configId=policy"));
+  EXPECT_TRUE(GetSelectableRolloutStages(profile()).empty());
+
+  // Command-line switch outranks both policy and `kGeicSelectedStageId`, and
+  // hides selectable stages.
+  SetSwitchUrl("https://business.gemini.google/home/cid/switch");
+  EXPECT_EQ(ResolvedGuestUrl(profile()),
+            GURL("https://business.gemini.google/side-panel?configId=switch"));
+  EXPECT_TRUE(GetSelectableRolloutStages(profile()).empty());
+}
+
+TEST_F(GeicEnablingTest,
+       CurrentStageIdIgnoresWorkforceCsesidxAndConsumerLatch) {
+  constexpr char kStagesJson[] = R"([
+    {"id": "workforce", "label": "Workforce",
+     "url": "https://vertexaisearch.cloud.google/home/cid/abc123"},
+    {"id": "prod", "label": "Prod",
+     "url": "https://business.gemini.google/side-panel"}
+  ])";
+
+  // After Workforce Identity sign-in adds `csesidx` via `GeicSignInController`,
+  // `GetCurrentRolloutStageId` still matches the raw latched `GeicGuestUrl`.
+  {
+    base::test::ScopedFeatureList workforce_feature_list;
+    workforce_feature_list.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{"enabled", "true"},
+           {"geic-guest-url",
+            "https://vertexaisearch.cloud.google/home/cid/abc123"},
+           {"geic-selectable-stages", kStagesJson}}}},
+        {});
+    TestingProfile workforce_profile;
+    std::vector<GeicSelectableStage> stages =
+        GetSelectableRolloutStages(&workforce_profile);
+    ASSERT_EQ(stages.size(), 2u);
+
+    content::RenderViewHostTestEnabler rvh_test_enabler;
+    std::unique_ptr<content::WebContents> signin_contents =
+        content::WebContentsTester::CreateTestWebContents(&workforce_profile,
+                                                          nullptr);
+    glic::GeicSignInController* controller =
+        glic::GeicSignInController::GetForProfile(&workforce_profile);
+    base::RunLoop run_loop;
+    controller->ObserveSignInContentsForTesting(
+        signin_contents.get(),
+        url::Origin::Create(GURL("https://vertexaisearch.cloud.google")),
+        run_loop.QuitClosure());
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        signin_contents.get(),
+        GURL("https://vertexaisearch.cloud.google/side-panel?csesidx=42"));
+    run_loop.Run();
+    ASSERT_EQ(
+        controller->ResolveGuestUrl(GURL(
+            "https://vertexaisearch.cloud.google/side-panel?configId=abc123")),
+        GURL("https://vertexaisearch.cloud.google/"
+             "side-panel?configId=abc123&csesidx=42"));
+    EXPECT_EQ(GetCurrentRolloutStageId(&workforce_profile, stages),
+              "workforce");
+  }
+
+  // Consumer-latched profile returns an empty stage ID even if `stages` is
+  // non-empty.
+  {
+    base::test::ScopedFeatureList consumer_feature_list;
+    consumer_feature_list.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{"enabled", "true"}, {"geic-selectable-stages", kStagesJson}}}},
+        {});
+    TestingProfile consumer_profile;
+    std::vector<GeicSelectableStage> stages =
+        GetSelectableRolloutStages(&consumer_profile);
+    ASSERT_EQ(stages.size(), 2u);
+    EXPECT_TRUE(GetCurrentRolloutStageId(&consumer_profile, stages).empty());
+  }
 }
 }  // namespace
 }  // namespace geic

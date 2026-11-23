@@ -552,8 +552,6 @@ source_set("impl") {
     "host/glic_no_webview_contents_manager.h",
     "host/glic_overlay_ui.cc",
     "host/glic_page_handler.cc",
-    "host/glic_provider_change_relaunch.cc",
-    "host/glic_provider_change_relaunch.h",
     "host/glic_pwc_permission_delegate.cc",
     "host/glic_pwc_permission_delegate.h",
     "host/glic_pwc_policy_delegate.cc",
@@ -1067,6 +1065,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/browser_ui:unit_tests",
+    "//chrome/browser/glic/common",
     "//chrome/browser/glic/gemini_enterprise:geic_fre",
     "//chrome/browser/glic/gemini_enterprise:guest_url",
     "//chrome/browser/glic/gemini_enterprise:unit_tests",
@@ -1195,7 +1194,6 @@ source_set("unit_tests") {
 
     deps += [
       "//chrome/browser/glic/android",
-      "//chrome/browser/glic/common",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/common:chrome_features",
