@@ -282,6 +282,13 @@ to monitor/debug fetching OAuth2 Token issues. -->
     iOS.
   </summary>
   <token key="Stage">
+    <variant name="Backoff"
+        summary="The cumulative time spent waiting on exponential backoff
+                 timers after transient failures across all retry attempts of
+                 a token service fetch. Immediate retries (such as on a DBSC
+                 challenge) do not enter backoff. Only recorded if at least
+                 one backoff wait completed during the fetch. Recorded once
+                 when the token service fetch completes."/>
     <variant name="EndToEnd"
         summary="From the creation of the access token fetcher until the
                  result is returned to the client, including any wait for a

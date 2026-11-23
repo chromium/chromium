@@ -33,6 +33,8 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -490,6 +492,10 @@ TEST_F(OAuth2AccessTokenManagerTest,
       "Signin.AccessTokenFetch.Latency.Network.Failure", 0);
   histogram_tester.ExpectTotalCount(
       "Signin.AccessTokenFetch.Latency.Network.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Backoff.Failure", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Backoff.Success", 0);
 }
 
 // Test that Latency.Network sums the network latencies across retry attempts
@@ -613,6 +619,95 @@ TEST_F(OAuth2AccessTokenManagerTest,
       "Signin.AccessTokenFetch.Latency.Network.Failure", 0);
   histogram_tester.ExpectTotalCount(
       "Signin.AccessTokenFetch.Latency.Network.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Backoff.Failure", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Backoff.Success", 0);
+}
+
+// Test that Latency.Backoff records the retry backoff delay (excluding network
+// latencies) on retry success.
+TEST_F(OAuth2AccessTokenManagerTest,
+       RecordsCumulativeBackoffLatencyAcrossRetries) {
+  base::HistogramTester histogram_tester;
+  const std::string token_url =
+      GaiaUrls::GetInstance()->oauth2_token_url().spec();
+
+  const base::TimeTicks start = base::TimeTicks::Now();
+  base::RunLoop run_loop;
+  consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request =
+      token_manager_->StartRequest(account_id_, {"scope"}, &consumer_);
+
+  // First attempt fails with a transient 500 error after 150ms of network wait,
+  // entering backoff; pre-stage a valid response for the retry.
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      token_url, "", net::HTTP_INTERNAL_SERVER_ERROR));
+  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
+  run_loop.Run();
+
+  const base::TimeDelta expected_backoff =
+      (base::TimeTicks::Now() - start) - base::Milliseconds(150);
+  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
+  EXPECT_GE(expected_backoff, base::Seconds(1));
+  EXPECT_LT(expected_backoff, base::Seconds(2));
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.Backoff.Success", expected_backoff, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Backoff.Failure", 0);
+}
+
+// Test that Latency.Backoff.Failure sums all 5 default exponential backoff
+// delays when every attempt fails.
+TEST_F(OAuth2AccessTokenManagerTest, RecordsCumulativeBackoffLatencyOnFailure) {
+  base::HistogramTester histogram_tester;
+  SimulateOAuthTokenResponse("", net::HTTP_INTERNAL_SERVER_ERROR);
+
+  const base::TimeTicks start = base::TimeTicks::Now();
+  CreateRequestAndBlockUntilComplete(account_id_,
+                                     OAuth2AccessTokenManager::ScopeSet());
+
+  // 5 exponential backoffs: (1 + 2 + 4 + 8 + 16)s = 31s plus <5s of jitter.
+  const base::TimeDelta expected_backoff = base::TimeTicks::Now() - start;
+  EXPECT_EQ(1, consumer_.number_of_errors_);
+  EXPECT_GE(expected_backoff, base::Seconds(31));
+  EXPECT_LT(expected_backoff, base::Seconds(36));
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.Backoff.Failure", expected_backoff, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Backoff.Success", 0);
+}
+
+// Test that Latency.Backoff is not recorded when a fetch retries immediately on
+// a DBSC token binding challenge without waiting on `retry_timer_`.
+TEST_F(OAuth2AccessTokenManagerTest,
+       DoesNotRecordBackoffLatencyForImmediateChallengeRetry) {
+  base::HistogramTester histogram_tester;
+  delegate_.SetUseMintTokenFetcher(true);
+  const GURL issue_token_url =
+      GaiaUrls::GetInstance()->oauth2_issue_token_url();
+
+  base::RunLoop run_loop;
+  consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request =
+      token_manager_->StartRequest(
+          account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_);
+
+  auto head = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
+  head->headers->AddHeader("X-Chrome-Auth-Token-Binding-Challenge",
+                           "challenge");
+  ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      issue_token_url, network::URLLoaderCompletionStatus(net::OK),
+      std::move(head), std::string()));
+  gaia::FakeOAuth2TokenResponse::Success("token").AddToTestURLLoaderFactory(
+      test_url_loader_factory_);
+  run_loop.Run();
+
+  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.AccessTokenFetch.Latency.Backoff."),
+              testing::IsEmpty());
 }
 
 // Test that destroying `OAuth2AccessTokenManager` triggers
