@@ -82,6 +82,10 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
     return CssPropertyId() != CSSPropertyID::kInvalid;
   }
   bool HasContentAttribute() const {
+    return HasValidContentAttribute() ||
+           content_attribute_state_ == kHasInvalidValue;
+  }
+  bool HasValidContentAttribute() const {
     return content_attribute_state_ == kHasValue ||
            content_attribute_state_ == kUnsynchronizedValue;
   }
@@ -127,6 +131,9 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
     // would be removed, and is waiting to be synchronized to content attribute
     // storage.
     kUnsynchronizedRemoval,
+
+    // The content attribute is set, but the value is in error.
+    kHasInvalidValue,
   };
 
   void SetContentAttributeState(ContentAttributeState content_attribute_state) {
@@ -142,7 +149,7 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
 
   // Tracks the state of the associated content attribute. See
   // ContentAttributeState above for details.
-  unsigned content_attribute_state_ : 2;
+  unsigned content_attribute_state_ : 3;
 
   Member<SVGElement> context_element_;
   const raw_ref<const QualifiedName, UnprotectedInRelease | DanglingUntriaged>
@@ -178,6 +185,7 @@ SVGParsingError SVGAnimatedPropertyBase::UpdateBaseValueFromAttribute(
           return parse_status;
         }
       }
+      SetContentAttributeState(kHasInvalidValue);
     } else {
       SetContentAttributeState(kNotSet);
     }
@@ -194,6 +202,9 @@ SVGParsingError SVGAnimatedPropertyBase::UpdateBaseValueFromAttribute(
     // If parsing succeeded, check for semantic errors.
     if (parse_status == SVGParseStatus::kNoError) [[likely]] {
       parse_status = validator(base_value);
+    }
+    if (parse_status != SVGParseStatus::kNoError) {
+      SetContentAttributeState(kHasInvalidValue);
     }
     return parse_status;
   }

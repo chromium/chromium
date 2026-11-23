@@ -68,17 +68,22 @@ class SVGAnimatedPathLength final : public SVGAnimatedNumber {
   const CSSValue* CssValue() const final;
 
   SVGParsingError AttributeChanged(const String& value) override {
-    SVGParsingError parse_status = SVGAnimatedNumber::AttributeChanged(value);
-    if (parse_status == SVGParseStatus::kNoError && BaseValue()->Value() < 0)
-      parse_status = SVGParseStatus::kNegativeValue;
-    return parse_status;
+    return UpdateBaseValueFromAttribute(
+        *BaseValue(), value, [](const SVGNumber& base_value) {
+          return base_value.Value() < 0 ? SVGParseStatus::kNegativeValue
+                                        : SVGParseStatus::kNoError;
+        });
   }
 };
 
 const CSSValue* SVGAnimatedPathLength::CssValue() const {
   DCHECK(HasPresentationAttributeMapping());
-  // A negative animated value is an error; treat it as 'none'.
-  if (CurrentValue()->Value() < 0) {
+  // The initial value is 'none'. We can still get negative values via
+  // animation or the IDL attribute - treat those as 'none' as well. Values
+  // originating from animation probably ought to be clamped to the valid
+  // range.
+  if (CurrentValue()->Value() < 0 || !IsSpecified() ||
+      !HasValidContentAttribute()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   return CSSNumericLiteralValue::Create(CurrentValue()->Value(),
@@ -279,7 +284,8 @@ float SVGGeometryElement::AuthorPathLength() const {
     return ValueForLength(style->PathLength(), *style, /*dimension=*/0);
   }
   // Read from the animated SVG attribute directly.
-  if (!path_length_ || !path_length_->IsSpecified()) {
+  if (!path_length_ || !path_length_->IsSpecified() ||
+      !path_length_->HasValidContentAttribute()) {
     return std::numeric_limits<float>::quiet_NaN();
   }
   float author_path_length = path_length_->CurrentValue()->Value();
