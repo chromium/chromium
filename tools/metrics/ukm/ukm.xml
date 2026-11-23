@@ -8209,7 +8209,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ContentIndex.Added">
-  <owner>rayankans@chromium.org</owner>
+  <owner>dibyapal@chromium.org</owner>
+  <owner>platform-capabilities@chromium.org</owner>
   <summary>
     Collected when a new Content Index entry is registered.
   </summary>
@@ -8222,7 +8223,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ContentIndex.DeletedByUser">
-  <owner>rayankans@chromium.org</owner>
+  <owner>dibyapal@chromium.org</owner>
+  <owner>platform-capabilities@chromium.org</owner>
   <summary>
     Collected when a Content Index entry is deleted by the user from the
     Downloads page.
@@ -8235,7 +8237,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ContentIndex.Opened">
-  <owner>rayankans@chromium.org</owner>
+  <owner>dibyapal@chromium.org</owner>
+  <owner>platform-capabilities@chromium.org</owner>
   <summary>
     Collected when a Content Index entry is opened from the Downloads page.
   </summary>
