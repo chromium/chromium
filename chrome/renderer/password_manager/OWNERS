@@ -1,0 +1,3 @@
+file://components/password_manager/OWNERS
+
+per-file remote_actor*=file://components/password_manager/core/browser/remote_actor/OWNERS
