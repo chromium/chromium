@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_consumer.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/test/toolbar_test_navigation_manager.h"
@@ -153,6 +154,12 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         startDispatchingToTarget:mock_gemini_handler_
                      forProtocol:@protocol(GeminiCommands)];
 
+    mock_voice_search_handler_ =
+        OCMStrictProtocolMock(@protocol(VoiceSearchCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_voice_search_handler_
+                     forProtocol:@protocol(VoiceSearchCommands)];
+
     [[UIPasteboard generalPasteboard] setItems:@[]];
 
     ClipboardRecentContent::SetInstance(
@@ -222,6 +229,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
   id mock_gemini_handler_;
+  id mock_voice_search_handler_;
   collaboration::messaging::MockMessagingBackendService messaging_backend_;
 
  private:

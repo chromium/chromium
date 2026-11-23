@@ -111,6 +111,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -764,13 +765,13 @@ inline LayoutStateScenePassKey PassKey() {
 
 - (void)stopAllVoiceSearch {
   // Stop voice search on the regular browser.
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  id<VoiceSearchCommands> handler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), VoiceSearchCommands);
   [handler stopVoiceSearch];
 
   // Stop voice search on the incognito browser.
   handler = HandlerForProtocol(_incognitoBrowser->GetCommandDispatcher(),
-                               BrowserCoordinatorCommands);
+                               VoiceSearchCommands);
   [handler stopVoiceSearch];
 }
 

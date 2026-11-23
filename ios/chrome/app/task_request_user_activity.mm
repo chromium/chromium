@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
@@ -475,8 +476,8 @@ void ShowPasswordManagerForCredentialImportWithBrowser(NSUUID* uuid,
 
 // Starts voice search.
 void OpenVoiceSearchWithBrowser(Browser* browser) {
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  id<VoiceSearchCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), VoiceSearchCommands);
   [handler startVoiceSearch];
 }
 

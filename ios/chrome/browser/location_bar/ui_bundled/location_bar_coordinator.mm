@@ -103,6 +103,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -289,9 +290,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands
   // protocol clean up.
-  self.viewController.dispatcher = static_cast<
-      id<ActivityServiceCommands, SceneCommands, BrowserCoordinatorCommands,
-         LensCommands, LensOverlayCommands, OmniboxCommands>>(
+  self.viewController.dispatcher = static_cast<id<
+      ActivityServiceCommands, SceneCommands, BrowserCoordinatorCommands,
+      LensCommands, LensOverlayCommands, OmniboxCommands, VoiceSearchCommands>>(
       self.browser->GetCommandDispatcher());
   self.viewController.pageActionMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);

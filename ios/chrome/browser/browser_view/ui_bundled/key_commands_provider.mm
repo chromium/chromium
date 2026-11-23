@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -469,7 +470,7 @@ using base::UserMetricsAction;
   [LayoutGuideCenterForBrowser(_browser.get())
       referenceView:nil
           underName:kVoiceSearchButtonGuide];
-  [_browserCoordinatorHandler startVoiceSearch];
+  [_voiceSearchHandler startVoiceSearch];
 }
 
 - (void)keyCommand_showSettings {

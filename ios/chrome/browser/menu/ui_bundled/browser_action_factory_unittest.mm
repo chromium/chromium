@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -90,6 +91,12 @@ class BrowserActionFactoryTest : public PlatformTest {
     [test_browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_gemini_handler_
                      forProtocol:@protocol(GeminiCommands)];
+
+    mock_voice_search_handler_ =
+        OCMStrictProtocolMock(@protocol(VoiceSearchCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_voice_search_handler_
+                     forProtocol:@protocol(VoiceSearchCommands)];
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -104,6 +111,7 @@ class BrowserActionFactoryTest : public PlatformTest {
   id mock_qr_scanner_commands_handler_;
   id mock_save_to_photos_commands_handler_;
   id mock_gemini_handler_;
+  id mock_voice_search_handler_;
 };
 
 // Tests that the Open in New Tab actions have the right titles and images.

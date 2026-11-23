@@ -9,12 +9,12 @@
 
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
-@protocol BrowserCoordinatorCommands;
 @protocol LensCommands;
 @class OmniboxAssistiveKeyboardMediator;
 @protocol OmniboxTextInput;
 @protocol QRScannerCommands;
 @protocol SceneCommands;
+@protocol VoiceSearchCommands;
 
 @protocol OmniboxAssistiveKeyboardMediatorDelegate <NSObject>
 
@@ -32,8 +32,8 @@
     : NSObject <OmniboxAssistiveKeyboardDelegate>
 
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
-@property(nonatomic, weak) id<BrowserCoordinatorCommands>
-    browserCoordinatorCommandsHandler;
+// Handler used to preload and start voice search.
+@property(nonatomic, weak) id<VoiceSearchCommands> voiceSearchHandler;
 @property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
 @property(nonatomic, weak) id<OmniboxTextInput> omniboxTextInput;

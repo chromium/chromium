@@ -154,6 +154,7 @@
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -571,9 +572,9 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   switch (action) {
     case START_VOICE_SEARCH:
       return ^{
-        id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+        id<VoiceSearchCommands> handler = HandlerForProtocol(
             weakSelf.currentInterface.browser->GetCommandDispatcher(),
-            BrowserCoordinatorCommands);
+            VoiceSearchCommands);
         [handler startVoiceSearch];
       };
     case START_QR_CODE_SCANNER:

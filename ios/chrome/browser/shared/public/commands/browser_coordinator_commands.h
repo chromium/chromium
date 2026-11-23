@@ -103,17 +103,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the spotlight debugger.
 - (void)showSpotlightDebugger;
 
-// Preloads voice search in the current BVC.
-- (void)preloadVoiceSearch;
-
-// Shows the voice search UI after stopping it on all other browsers in the
-// scene.
-- (void)startVoiceSearch;
-
-// Stops voice search on this browser. To stop voice search on all browsers in
-// a scene, `stopAllVoiceSearch` from `SceneCommands` can be used.
-- (void)stopVoiceSearch;
-
 // Dismiss the card unmask authentication prompt.
 // Deprecated: use AutofillCommands instead.
 - (void)legacyDismissCardUnmaskAuthentication;

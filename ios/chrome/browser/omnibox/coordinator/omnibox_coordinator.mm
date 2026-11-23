@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
@@ -208,9 +209,8 @@
   _keyboardMediator.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  _keyboardMediator.browserCoordinatorCommandsHandler =
-      static_cast<id<BrowserCoordinatorCommands>>(
-          browser->GetCommandDispatcher());
+  _keyboardMediator.voiceSearchHandler =
+      static_cast<id<VoiceSearchCommands>>(browser->GetCommandDispatcher());
   _keyboardMediator.omniboxTextInput = textInput;
   _keyboardMediator.delegate = self;
 

@@ -163,6 +163,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
@@ -2727,9 +2728,9 @@
 }
 
 - (void)preloadVoiceSearch {
-  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [browserCoordinatorHandler preloadVoiceSearch];
+  id<VoiceSearchCommands> voiceSearchHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), VoiceSearchCommands);
+  [voiceSearchHandler preloadVoiceSearch];
 }
 
 - (void)loadVoiceSearchFromView:(UIView*)voiceSearchSourceView {
@@ -2742,8 +2743,8 @@
   [layoutGuideCenter referenceView:voiceSearchSourceView
                          underName:kVoiceSearchButtonGuide];
 
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  id<VoiceSearchCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), VoiceSearchCommands);
   [handler startVoiceSearch];
 }
 

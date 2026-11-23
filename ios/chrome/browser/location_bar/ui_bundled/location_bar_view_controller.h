@@ -34,6 +34,7 @@ class PrefService;
 @protocol ReaderModeChipVisibilityDelegate;
 @protocol SceneCommands;
 @protocol TextFieldViewContaining;
+@protocol VoiceSearchCommands;
 namespace feature_engagement {
 class Tracker;
 }
@@ -120,7 +121,8 @@ enum class CustomLeadingViewType;
                               LensCommands,
                               LensOverlayCommands,
                               OmniboxCommands,
-                              SceneCommands>
+                              SceneCommands,
+                              VoiceSearchCommands>
     dispatcher;
 
 // Delegate for this location bar view controller.

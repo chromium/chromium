@@ -210,6 +210,7 @@
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -324,6 +325,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     SnapshotGeneratorDelegate,
     TextZoomCommands,
     URLLoadingDelegate,
+    VoiceSearchCommands,
     VoiceSearchCoordinatorDelegate,
     WebNavigationNTPDelegate,
     WebUsageEnablerBrowserAgentObserving>
@@ -948,6 +950,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     @protocol(NewTabPageCommands),
     @protocol(PrimaryAccountReauthCommands),
     @protocol(TextZoomCommands),
+    @protocol(VoiceSearchCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -976,6 +979,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
   _keyCommandsProvider.quickDeleteHandler =
       HandlerForProtocol(_dispatcher, QuickDeleteCommands);
+  _keyCommandsProvider.voiceSearchHandler =
+      HandlerForProtocol(_dispatcher, VoiceSearchCommands);
 
   // TODO(crbug.com/40937114): This can't use HandlerForProtocol because
   // dispatch for BookmarksCommands is set up when the tab grid coordinator
@@ -1760,52 +1765,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self.spotlightDebuggerCoordinator start];
 }
 
-- (void)preloadVoiceSearch {
-  if (IsVoiceSearchEvolutionPhase1Enabled()) {
-    return;
-  }
-  // Preload VoiceSearchController and views and view controllers needed
-  // for voice search.
-  [_voiceSearchController prepareToAppear];
-}
-
-- (void)startVoiceSearch {
-  id<SceneCommands> sceneHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler stopAllVoiceSearch];
-
-  if (!IsVoiceSearchEvolutionPhase1Enabled()) {
-    [_viewController startVoiceSearch];
-    return;
-  }
-
-  [IntentDonationHelper donateIntent:IntentType::kOpenVoiceSearch];
-
-  // Voice Search shouldn't be covered by other UI. The composebox is dismissed
-  // asynchronously, so wait for it before presenting Voice Search.
-  [self closeFindInPage];
-  __weak __typeof(self) weakSelf = self;
-  [self hideComposeboxImmediately:NO
-                       completion:^{
-                         [weakSelf startVoiceSearchCoordinator];
-                       }];
-}
-
-- (void)stopVoiceSearch {
-  if (IsVoiceSearchEvolutionPhase1Enabled()) {
-    // TODO(crbug.com/571184218): Stop spoken result playback.
-    [self stopVoiceSearchCoordinator];
-    return;
-  }
-
-  if (!_voiceSearchController.audioPlaying) {
-    return;
-  }
-
-  // Calling showVoiceSearch stops TTS audio if it is playing.
-  [_viewController startVoiceSearch];
-}
-
 - (void)legacyDismissCardUnmaskAuthentication {
   // TODO(crbug.com/543382844): Remove this.
   [HandlerForProtocol(self.dispatcher, AutofillCommands)
@@ -2048,6 +2007,54 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
       clearPresentedStateWithCompletion:completion
                          dismissOmnibox:dismissOmnibox
          dismissPresentedViewController:dismissPresentedViewController];
+}
+
+#pragma mark - VoiceSearchCommands
+
+- (void)preloadVoiceSearch {
+  if (IsVoiceSearchEvolutionPhase1Enabled()) {
+    return;
+  }
+  // Preload VoiceSearchController and views and view controllers needed
+  // for voice search.
+  [_voiceSearchController prepareToAppear];
+}
+
+- (void)startVoiceSearch {
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler stopAllVoiceSearch];
+
+  if (!IsVoiceSearchEvolutionPhase1Enabled()) {
+    [_viewController startVoiceSearch];
+    return;
+  }
+
+  [IntentDonationHelper donateIntent:IntentType::kOpenVoiceSearch];
+
+  // Voice Search shouldn't be covered by other UI. The composebox is dismissed
+  // asynchronously, so wait for it before presenting Voice Search.
+  [self closeFindInPage];
+  __weak __typeof(self) weakSelf = self;
+  [self hideComposeboxImmediately:NO
+                       completion:^{
+                         [weakSelf startVoiceSearchCoordinator];
+                       }];
+}
+
+- (void)stopVoiceSearch {
+  if (IsVoiceSearchEvolutionPhase1Enabled()) {
+    // TODO(crbug.com/571184218): Stop spoken result playback.
+    [self stopVoiceSearchCoordinator];
+    return;
+  }
+
+  if (!_voiceSearchController.audioPlaying) {
+    return;
+  }
+
+  // Calling showVoiceSearch stops TTS audio if it is playing.
+  [_viewController startVoiceSearch];
 }
 
 #pragma mark - Voice Search helpers

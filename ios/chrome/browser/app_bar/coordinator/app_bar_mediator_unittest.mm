@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -289,6 +290,15 @@ class AppBarMediatorTest : public PlatformTest,
     [incognito_browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_browser_coordinator_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+    mock_voice_search_handler_ =
+        OCMProtocolMock(@protocol(VoiceSearchCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_voice_search_handler_
+                     forProtocol:@protocol(VoiceSearchCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_voice_search_handler_
+                     forProtocol:@protocol(VoiceSearchCommands)];
 
     mock_qr_scanner_handler_ = OCMProtocolMock(@protocol(QRScannerCommands));
     [regular_browser_->GetCommandDispatcher()
@@ -646,6 +656,7 @@ class AppBarMediatorTest : public PlatformTest,
   id mock_fullscreen_handler_;
   id mock_scene_handler_;
   id mock_browser_coordinator_handler_;
+  id mock_voice_search_handler_;
   id mock_qr_scanner_handler_;
   id mock_help_handler_;
   id mock_page_side_swipe_handler_;

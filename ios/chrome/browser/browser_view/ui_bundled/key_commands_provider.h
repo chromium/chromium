@@ -16,6 +16,7 @@ class Browser;
 @protocol QuickDeleteCommands;
 @protocol SceneCommands;
 @protocol SettingsCommands;
+@protocol VoiceSearchCommands;
 
 // Handles the keyboard commands registration and handling for the
 // BrowserViewController.
@@ -29,6 +30,8 @@ class Browser;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
 @property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
+// Handler used to start voice search from the keyboard shortcut.
+@property(nonatomic, weak) id<VoiceSearchCommands> voiceSearchHandler;
 
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

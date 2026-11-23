@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -306,8 +307,8 @@
 }
 
 - (UIAction*)actionToStartVoiceSearch {
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  id<VoiceSearchCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), VoiceSearchCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH)
                 image:SymbolWithPointSize(SymbolMicrophone,

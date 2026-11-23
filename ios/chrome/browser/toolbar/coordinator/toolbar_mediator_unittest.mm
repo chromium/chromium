@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -120,6 +121,11 @@ class ToolbarMediatorTest : public PlatformTest,
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:browser_coordinator_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+    voice_search_handler_ = OCMProtocolMock(@protocol(VoiceSearchCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:voice_search_handler_
+                     forProtocol:@protocol(VoiceSearchCommands)];
 
     page_side_swipe_handler_ =
         OCMProtocolMock(@protocol(PageSideSwipeCommands));
@@ -221,6 +227,7 @@ class ToolbarMediatorTest : public PlatformTest,
   id page_side_swipe_handler_;
   id scene_handler_;
   id browser_coordinator_handler_;
+  id voice_search_handler_;
   id mock_app_agent_;
   id settings_handler_;
   raw_ptr<AuthenticationService> auth_service_;

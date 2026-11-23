@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -177,6 +178,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(lens_handler_mock_);
     EXPECT_OCMOCK_VERIFY(browser_coordinator_handler_mock_);
     EXPECT_OCMOCK_VERIFY(popup_menu_commands_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(voice_search_handler_mock_);
   }
 
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
@@ -306,6 +308,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
 
     popup_menu_commands_handler_mock_ =
         OCMProtocolMock(@protocol(PopupMenuCommands));
+    voice_search_handler_mock_ =
+        OCMProtocolMock(@protocol(VoiceSearchCommands));
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_mock_
                      forProtocol:@protocol(SceneCommands)];
@@ -330,6 +334,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:popup_menu_commands_handler_mock_
                      forProtocol:@protocol(PopupMenuCommands)];
+    [browser_.get()->GetCommandDispatcher()
+        startDispatchingToTarget:voice_search_handler_mock_
+                     forProtocol:@protocol(VoiceSearchCommands)];
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:OCMProtocolMock(@protocol(LevelUpCommands))
                      forProtocol:@protocol(LevelUpCommands)];
@@ -405,6 +412,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id lens_handler_mock_;
   id browser_coordinator_handler_mock_;
   id popup_menu_commands_handler_mock_;
+  id voice_search_handler_mock_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
@@ -798,7 +806,7 @@ TEST_F(NewTabPageCoordinatorTest, NTPShortcutsMetricLogging) {
 
   // Stub mock handlers to avoid unexpected call failures.
   OCMStub([lens_handler_mock_ openLensInputSelection:[OCMArg any]]);
-  OCMStub([browser_coordinator_handler_mock_ startVoiceSearch]);
+  OCMStub([voice_search_handler_mock_ startVoiceSearch]);
   OCMStub([application_handler_mock_ openURLInNewTab:[OCMArg any]]);
 
   id<NewTabPageShortcutsHandler> shortcutsHandler =
