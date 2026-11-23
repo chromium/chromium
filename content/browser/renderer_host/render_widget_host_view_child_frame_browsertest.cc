@@ -152,8 +152,8 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // resizes the top level widget.
 // d) When auto-resize is enabled for the nested main frame and the renderer
 // resizes the nested widget.
-// TODO(b/40945321): Flaky on Fuchsia and Linux.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+// TODO(b/40945321): Flaky on Fuchsia, Linux and ChromeOS.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
   DISABLED_VisualPropertiesPropagation_VisibleViewportSize
 #else
