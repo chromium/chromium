@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/page_search_utils.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "base/i18n/string_search.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -83,9 +85,9 @@ bool AreUrlsEquivalentForDeduplication(const GURL& a, const GURL& b) {
   return a.EqualsIgnoringRef(b);
 }
 
-std::vector<TabMatch> FindMatchingTabs(BrowserWindowInterface* browser,
-                                       std::string_view query,
-                                       UrlMatchFilter filter) {
+TabSearchResult FindMatchingTab(BrowserWindowInterface* browser,
+                                std::string_view query,
+                                UrlMatchFilter filter) {
   if (query.empty() || !browser) {
     return {};
   }
@@ -96,7 +98,9 @@ std::vector<TabMatch> FindMatchingTabs(BrowserWindowInterface* browser,
   }
 
   const std::u16string query16 = base::UTF8ToUTF16(query);
-  std::vector<TabMatch> matched_tabs;
+  bool active_tab_matched = false;
+  std::optional<TabMatch> best_background_match;
+  base::TimeTicks best_background_ticks;
 
   for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
     if (!tab) {
@@ -113,14 +117,38 @@ std::vector<TabMatch> FindMatchingTabs(BrowserWindowInterface* browser,
     }
 
     const std::u16string title = contents->GetTitle();
-    if (ContainsCaseInsensitive(title, query16) ||
-        ContainsCaseInsensitive(base::UTF8ToUTF16(committed_url.spec()),
-                                query16)) {
-      matched_tabs.emplace_back(tab->GetHandle(), committed_url, title);
+    if (!ContainsCaseInsensitive(title, query16) &&
+        !ContainsCaseInsensitive(base::UTF8ToUTF16(committed_url.spec()),
+                                 query16)) {
+      continue;
+    }
+
+    if (tab->IsActivated()) {
+      active_tab_matched = true;
+      continue;
+    }
+
+    const base::TimeTicks last_active_ticks =
+        contents->GetLastActiveTimeTicks();
+    if (!best_background_match.has_value() ||
+        last_active_ticks > best_background_ticks) {
+      best_background_match = TabMatch{tab->GetHandle(), committed_url, title};
+      best_background_ticks = last_active_ticks;
     }
   }
 
-  return matched_tabs;
+  if (best_background_match.has_value()) {
+    return TabSearchResult{
+        .status = TabSearchResult::Status::kMatchedBackgroundTab,
+        .match = std::move(best_background_match),
+    };
+  }
+  if (active_tab_matched) {
+    return TabSearchResult{
+        .status = TabSearchResult::Status::kAlreadyOnActiveTab,
+    };
+  }
+  return {};
 }
 
 tabs::TabInterface* ResolveTabInWindow(const TabMatch& match,

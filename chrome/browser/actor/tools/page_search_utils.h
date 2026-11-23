@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_PAGE_SEARCH_UTILS_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_PAGE_SEARCH_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -54,11 +55,30 @@ struct PageMatch {
 };
 
 // A matching open tab. `handle` is safe to persist; resolve it with
-// tabs::TabHandle::Get() immediately before use, and null-check the result.
+// `ResolveTabInWindow()` immediately before use, and null-check the result.
 struct TabMatch {
   tabs::TabHandle handle;
   GURL url;
   std::u16string title;
+};
+
+// Outcome of searching open tabs in a single browser window via
+// `FindMatchingTab()`.
+struct TabSearchResult {
+  enum class Status {
+    // Neither the active tab nor any background tab matched `query`.
+    kNoMatch,
+    // Only the window's currently active tab matched `query` (`match` is
+    // `std::nullopt`).
+    kAlreadyOnActiveTab,
+    // One or more background tabs matched `query`; `match` holds the one with
+    // the highest `WebContents::GetLastActiveTimeTicks()` (breaking ties by
+    // tab-strip order).
+    kMatchedBackgroundTab,
+  };
+
+  Status status = Status::kNoMatch;
+  std::optional<TabMatch> match;
 };
 
 // Returns true if `url` is a valid navigation target for page search matches
@@ -70,20 +90,23 @@ bool IsAllowedMatchUrl(const GURL& url,
 // page ignoring `#ref` fragments.
 bool AreUrlsEquivalentForDeduplication(const GURL& a, const GURL& b);
 
-// Searches open tabs in `browser` in tab-strip order.
-// Returns all tabs with an allowed committed URL (see `IsAllowedMatchUrl`)
-// whose title or URL contains `query` (case-insensitive substring match).
-// Returns an empty vector if `browser` is null, `query` is empty, or no
-// eligible tab matches.
+// Searches open tabs in `browser` whose committed URL passes
+// `IsAllowedMatchUrl` and whose title or URL contains `query` (case- and
+// accent-insensitive substring match):
+// - Ignores the currently active tab (`tab->IsActivated()`) whenever at least
+//   one background tab also matches, returning `kMatchedBackgroundTab` with the
+//   most recently active matching background tab.
+// - Returns `kAlreadyOnActiveTab` if only the currently active tab matches.
+// - Returns `kNoMatch` if `browser` is null, `query` is empty, or no eligible
+//   tab matches.
 //
 // SINGLE WINDOW ONLY. Only tabs in `browser` are ever considered; tabs in
 // other windows are never returned, even when they match. This is intended
 // behavior, not a limitation: a tab switch acts on the window the user is
 // looking at and must not pull focus to a different window.
-std::vector<TabMatch> FindMatchingTabs(
-    BrowserWindowInterface* browser,
-    std::string_view query,
-    UrlMatchFilter filter = UrlMatchFilter::All());
+TabSearchResult FindMatchingTab(BrowserWindowInterface* browser,
+                                std::string_view query,
+                                UrlMatchFilter filter = UrlMatchFilter::All());
 
 // Resolves `match` back to a live tab, or returns nullptr if the tab has been
 // closed *or* has moved to a window other than `browser` since the search ran.

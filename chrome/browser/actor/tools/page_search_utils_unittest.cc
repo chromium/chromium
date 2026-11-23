@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/page_search_utils.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -49,14 +50,17 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
-// Matches a PageMatch by its URL. (TabMatch has its own matcher, MatchTab.)
+// Matches a PageMatch by its URL.
 auto MatchUrl(std::string_view url) {
   return Field("url", &PageMatch::url, GURL(url));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-auto MatchTab(tabs::TabInterface* tab) {
-  return Field("handle", &TabMatch::handle, tab->GetHandle());
+void ExpectBackgroundTabMatch(const TabSearchResult& result,
+                              tabs::TabInterface* expected_tab) {
+  EXPECT_EQ(result.status, TabSearchResult::Status::kMatchedBackgroundTab);
+  ASSERT_TRUE(result.match.has_value());
+  EXPECT_EQ(result.match->handle, expected_tab->GetHandle());
 }
 
 class TestBrowserInstance {
@@ -64,7 +68,7 @@ class TestBrowserInstance {
   explicit TestBrowserInstance(Profile* profile)
       : profile_(profile),
         tab_strip_model_(&tab_strip_model_delegate_, profile),
-        // Registers the TabListInterface that FindMatchingTabs() looks up on
+        // Registers the TabListInterface that FindMatchingTab() looks up on
         // the window.
         tab_list_bridge_(tab_strip_model_, mock_bwi_.GetUnownedUserDataHost()) {
     tab_strip_model_delegate_.SetBrowserWindowInterface(&mock_bwi_);
@@ -85,7 +89,11 @@ class TestBrowserInstance {
 
   BrowserWindowInterface* browser() { return &mock_bwi_; }
 
-  tabs::TabInterface* AddTab(const GURL& url, const std::u16string& title) {
+  tabs::TabInterface* AddTab(
+      const GURL& url,
+      const std::u16string& title,
+      std::optional<base::TimeTicks> last_active_ticks = std::nullopt,
+      bool foreground = true) {
     std::unique_ptr<content::WebContents> contents =
         content::WebContentsTester::CreateTestWebContents(
             profile_, content::SiteInstance::Create(profile_));
@@ -94,12 +102,15 @@ class TestBrowserInstance {
     // controller (chrome://settings builds SettingsUI, which requires a
     // TemplateURLService that TestingProfile does not register), and these
     // tests only read the committed URL and the title.
+    content::WebContents* raw_contents = contents.get();
     content::WebContentsTester* tester =
-        content::WebContentsTester::For(contents.get());
+        content::WebContentsTester::For(raw_contents);
     tester->SetLastCommittedURL(url);
     tester->SetTitle(title);
-    tab_strip_model_.AppendWebContents(std::move(contents),
-                                       /*foreground=*/true);
+    tab_strip_model_.AppendWebContents(std::move(contents), foreground);
+    if (last_active_ticks.has_value()) {
+      tester->SetLastActiveTimeTicks(*last_active_ticks);
+    }
     return tab_strip_model_.GetTabAtIndex(tab_strip_model_.count() - 1);
   }
 
@@ -362,20 +373,29 @@ TEST_F(PageSearchUtilsTest, FindMatchingHistory_MatchesVisits) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(PageSearchUtilsTest, FindMatchingTabs_EmptyAndNull) {
+TEST_F(PageSearchUtilsTest, FindMatchingTab_EmptyAndNull) {
   TestBrowserInstance browser_instance(profile());
-  EXPECT_THAT(FindMatchingTabs(nullptr, "test"), IsEmpty());
-  EXPECT_THAT(FindMatchingTabs(browser_instance.browser(), ""), IsEmpty());
+  TabSearchResult null_browser = FindMatchingTab(nullptr, "test");
+  EXPECT_EQ(null_browser.status, TabSearchResult::Status::kNoMatch);
+  EXPECT_FALSE(null_browser.match.has_value());
+
+  TabSearchResult empty_query = FindMatchingTab(browser_instance.browser(), "");
+  EXPECT_EQ(empty_query.status, TabSearchResult::Status::kNoMatch);
+  EXPECT_FALSE(empty_query.match.has_value());
 }
 
-TEST_F(PageSearchUtilsTest, FindMatchingTabs_MatchesTitleAndUrlInSingleWindow) {
+TEST_F(PageSearchUtilsTest, FindMatchingTab_MatchesTitleAndUrlInSingleWindow) {
   TestBrowserInstance browser_instance(profile());
+  const base::TimeTicks ticks_now = base::TimeTicks::Now();
   tabs::TabInterface* chromium_tab1 = browser_instance.AddTab(
-      GURL("https://chromium.org/home"), u"Chromium Projects");
+      GURL("https://chromium.org/home"), u"Chromium Projects",
+      ticks_now - base::Seconds(10));
   tabs::TabInterface* chromium_tab2 = browser_instance.AddTab(
-      GURL("https://chromium.org/developers"), u"Chromium Developers");
+      GURL("https://chromium.org/developers"), u"Chromium Developers",
+      ticks_now - base::Seconds(30));
   tabs::TabInterface* example_tab = browser_instance.AddTab(
-      GURL("https://example.com/search"), u"Example Search Page");
+      GURL("https://example.com/search"), u"Example Search Page",
+      ticks_now - base::Seconds(20));
   // Disallowed URL scheme should be skipped even when title matches.
   browser_instance.AddTab(GURL("chrome://settings"), u"Chromium Settings");
   browser_instance.AddTab(GURL("file:///tmp/chromium.html"), u"Chromium File");
@@ -386,79 +406,146 @@ TEST_F(PageSearchUtilsTest, FindMatchingTabs_MatchesTitleAndUrlInSingleWindow) {
   other_browser_instance.AddTab(GURL("https://chromium.org/other"),
                                 u"Other Window Chromium");
 
-  // Match multiple tabs in tab-strip order.
-  EXPECT_THAT(FindMatchingTabs(browser_instance.browser(), "chromium"),
-              ElementsAre(MatchTab(chromium_tab1), MatchTab(chromium_tab2)));
+  // Multiple background matches resolve to the most recently active tab.
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "chromium"), chromium_tab1);
+
+  // Specific match on the older Chromium tab.
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "developers"), chromium_tab2);
 
   // Case-insensitive title match.
-  EXPECT_THAT(FindMatchingTabs(browser_instance.browser(), "PROJECTS"),
-              ElementsAre(MatchTab(chromium_tab1)));
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "PROJECTS"), chromium_tab1);
 
   // Match by URL substring.
-  EXPECT_THAT(FindMatchingTabs(browser_instance.browser(), "example.com"),
-              ElementsAre(MatchTab(example_tab)));
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "example.com"), example_tab);
 
   // No match.
-  EXPECT_THAT(FindMatchingTabs(browser_instance.browser(), "nonexistent"),
-              IsEmpty());
+  EXPECT_EQ(FindMatchingTab(browser_instance.browser(), "nonexistent").status,
+            TabSearchResult::Status::kNoMatch);
 }
 
-TEST_F(PageSearchUtilsTest, FindMatchingTabs_HonorsFilter) {
+TEST_F(PageSearchUtilsTest, FindMatchingTab_ActiveVsBackgroundTabStates) {
   TestBrowserInstance browser_instance(profile());
-  browser_instance.AddTab(GURL("chrome://newtab"), u"New Tab");
+  const base::TimeTicks ticks_now = base::TimeTicks::Now();
+  tabs::TabInterface* background_tab =
+      browser_instance.AddTab(GURL("https://docs.example.com/bg"),
+                              u"Shared Keyword", ticks_now - base::Minutes(10));
+  // Appended with `foreground = true`, so this becomes the window's active tab
+  // with a newer `LastActiveTimeTicks`.
+  browser_instance.AddTab(GURL("https://docs.example.com/active"),
+                          u"Shared Keyword OnlyOnActive", ticks_now);
 
-  EXPECT_EQ(FindMatchingTabs(browser_instance.browser(), "New Tab").size(), 1u);
-  EXPECT_THAT(
-      FindMatchingTabs(browser_instance.browser(), "New Tab",
-                       UrlMatchFilter({UrlMatchCategory::kHttpOrHttps})),
-      IsEmpty());
+  // Only the active tab matches: report `kAlreadyOnActiveTab` with no target.
+  TabSearchResult active_only =
+      FindMatchingTab(browser_instance.browser(), "OnlyOnActive");
+  EXPECT_EQ(active_only.status, TabSearchResult::Status::kAlreadyOnActiveTab);
+  EXPECT_FALSE(active_only.match.has_value());
+
+  // Both active and background tabs match: ignore the active tab even though
+  // its `LastActiveTimeTicks` is newer, and select `background_tab`.
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "Shared Keyword"),
+      background_tab);
+}
+
+TEST_F(PageSearchUtilsTest,
+       FindMatchingTab_SelectsMostRecentlyActiveBackgroundTab) {
+  TestBrowserInstance browser_instance(profile());
+  const base::TimeTicks ticks_now = base::TimeTicks::Now();
+
+  // Even when all matching background tabs are hours old, the most recently
+  // active one wins.
+  browser_instance.AddTab(GURL("https://docs.example.com/1"), u"Project Docs 1",
+                          ticks_now - base::Hours(6));
+  tabs::TabInterface* newest_tab =
+      browser_instance.AddTab(GURL("https://docs.example.com/2"),
+                              u"Project Docs 2", ticks_now - base::Hours(2));
+  browser_instance.AddTab(GURL("https://docs.example.com/3"), u"Project Docs 3",
+                          ticks_now - base::Hours(4));
+  // Tied timestamps preserve tab-strip order.
+  tabs::TabInterface* tie_first =
+      browser_instance.AddTab(GURL("https://tie.example.com/1"), u"Tied Tab 1",
+                              ticks_now - base::Hours(1));
+  browser_instance.AddTab(GURL("https://tie.example.com/2"), u"Tied Tab 2",
+                          ticks_now - base::Hours(1));
+  // Unrelated active foreground tab.
+  browser_instance.AddTab(GURL("https://unrelated.test/"), u"Unrelated",
+                          ticks_now);
+
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "Project Docs"), newest_tab);
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "Tied Tab"), tie_first);
+}
+
+TEST_F(PageSearchUtilsTest, FindMatchingTab_HonorsFilter) {
+  TestBrowserInstance browser_instance(profile());
+  tabs::TabInterface* ntp_tab =
+      browser_instance.AddTab(GURL("chrome://newtab"), u"New Tab");
+  browser_instance.AddTab(GURL("https://unrelated.test/"), u"Unrelated");
+
+  ExpectBackgroundTabMatch(
+      FindMatchingTab(browser_instance.browser(), "New Tab"), ntp_tab);
+  EXPECT_EQ(FindMatchingTab(browser_instance.browser(), "New Tab",
+                            UrlMatchFilter({UrlMatchCategory::kHttpOrHttps}))
+                .status,
+            TabSearchResult::Status::kNoMatch);
 }
 
 // Page titles are routinely non-ASCII. ASCII-only lowercasing silently fails
 // to match them, so this guards the ICU-backed matcher.
-TEST_F(PageSearchUtilsTest, FindMatchingTabs_MatchesNonAsciiTitles) {
+TEST_F(PageSearchUtilsTest, FindMatchingTab_MatchesNonAsciiTitles) {
   TestBrowserInstance browser_instance(profile());
   tabs::TabInterface* umlaut_tab =
       browser_instance.AddTab(GURL("https://example.com/de"), u"ÄPFEL Kaufen");
   tabs::TabInterface* accent_tab =
       browser_instance.AddTab(GURL("https://example.com/fr"), u"Café Crème");
+  browser_instance.AddTab(GURL("https://unrelated.test/"), u"Unrelated");
 
   // Case-insensitive across a non-ASCII case pair (Ä/ä).
-  EXPECT_THAT(FindMatchingTabs(browser_instance.browser(), "äpfel"),
-              ElementsAre(MatchTab(umlaut_tab)));
+  ExpectBackgroundTabMatch(FindMatchingTab(browser_instance.browser(), "äpfel"),
+                           umlaut_tab);
 
   // Accent-insensitive: an unaccented query matches an accented title.
-  EXPECT_THAT(FindMatchingTabs(browser_instance.browser(), "cafe"),
-              ElementsAre(MatchTab(accent_tab)));
+  ExpectBackgroundTabMatch(FindMatchingTab(browser_instance.browser(), "cafe"),
+                           accent_tab);
 }
 
 // Tab search must never cross window boundaries, even when another window
 // holds a better match. Regression guard for the single-window guarantee.
-TEST_F(PageSearchUtilsTest, FindMatchingTabs_NeverReturnsTabsFromOtherWindows) {
+TEST_F(PageSearchUtilsTest, FindMatchingTab_NeverReturnsTabsFromOtherWindows) {
   TestBrowserInstance window_a(profile());
   TestBrowserInstance window_b(profile());
 
   // An exact-title match lives in window B only.
-  window_b.AddTab(GURL("https://example.com/exact"), u"Exact Match");
+  tabs::TabInterface* exact_tab =
+      window_b.AddTab(GURL("https://example.com/exact"), u"Exact Match");
+  window_b.AddTab(GURL("https://other.test/"), u"Active B");
   // Window A has nothing matching at all.
   window_a.AddTab(GURL("https://unrelated.test/"), u"Unrelated");
 
-  EXPECT_THAT(FindMatchingTabs(window_a.browser(), "Exact Match"), IsEmpty());
-  EXPECT_EQ(FindMatchingTabs(window_b.browser(), "Exact Match").size(), 1u);
+  EXPECT_EQ(FindMatchingTab(window_a.browser(), "Exact Match").status,
+            TabSearchResult::Status::kNoMatch);
+  ExpectBackgroundTabMatch(FindMatchingTab(window_b.browser(), "Exact Match"),
+                           exact_tab);
 
   // And the reverse direction.
-  EXPECT_THAT(FindMatchingTabs(window_b.browser(), "Unrelated"), IsEmpty());
+  EXPECT_EQ(FindMatchingTab(window_b.browser(), "Unrelated").status,
+            TabSearchResult::Status::kNoMatch);
 }
 
 TEST_F(PageSearchUtilsTest, ResolveTabInWindow_ResolvesTabInSameWindow) {
   TestBrowserInstance window_a(profile());
   tabs::TabInterface* tab =
       window_a.AddTab(GURL("https://example.com/"), u"Example");
+  window_a.AddTab(GURL("https://active.test/"), u"Active");
 
-  std::vector<TabMatch> matches =
-      FindMatchingTabs(window_a.browser(), "example");
-  ASSERT_EQ(matches.size(), 1u);
-  EXPECT_EQ(ResolveTabInWindow(matches[0], window_a.browser()), tab);
+  TabSearchResult result = FindMatchingTab(window_a.browser(), "example");
+  ASSERT_TRUE(result.match.has_value());
+  EXPECT_EQ(ResolveTabInWindow(*result.match, window_a.browser()), tab);
 }
 
 // A tab can be dragged into another window between the search and the action
@@ -468,37 +555,37 @@ TEST_F(PageSearchUtilsTest, ResolveTabInWindow_RejectsTabInDifferentWindow) {
   TestBrowserInstance window_a(profile());
   TestBrowserInstance window_b(profile());
   window_a.AddTab(GURL("https://example.com/"), u"Example");
+  window_a.AddTab(GURL("https://active.test/"), u"Active");
 
-  std::vector<TabMatch> matches =
-      FindMatchingTabs(window_a.browser(), "example");
-  ASSERT_EQ(matches.size(), 1u);
+  TabSearchResult result = FindMatchingTab(window_a.browser(), "example");
+  ASSERT_TRUE(result.match.has_value());
 
   // The handle is live, but it does not belong to window B.
-  EXPECT_EQ(ResolveTabInWindow(matches[0], window_b.browser()), nullptr);
+  EXPECT_EQ(ResolveTabInWindow(*result.match, window_b.browser()), nullptr);
   // Sanity: it does still resolve against its own window.
-  EXPECT_NE(ResolveTabInWindow(matches[0], window_a.browser()), nullptr);
+  EXPECT_NE(ResolveTabInWindow(*result.match, window_a.browser()), nullptr);
 }
 
 TEST_F(PageSearchUtilsTest, ResolveTabInWindow_RejectsClosedTab) {
   TestBrowserInstance window_a(profile());
   window_a.AddTab(GURL("https://example.com/"), u"Example");
+  window_a.AddTab(GURL("https://active.test/"), u"Active");
 
-  std::vector<TabMatch> matches =
-      FindMatchingTabs(window_a.browser(), "example");
-  ASSERT_EQ(matches.size(), 1u);
+  TabSearchResult result = FindMatchingTab(window_a.browser(), "example");
+  ASSERT_TRUE(result.match.has_value());
 
   window_a.CloseAllTabs();
-  EXPECT_EQ(ResolveTabInWindow(matches[0], window_a.browser()), nullptr);
+  EXPECT_EQ(ResolveTabInWindow(*result.match, window_a.browser()), nullptr);
 }
 
 TEST_F(PageSearchUtilsTest, ResolveTabInWindow_RejectsNullBrowser) {
   TestBrowserInstance window_a(profile());
   window_a.AddTab(GURL("https://example.com/"), u"Example");
+  window_a.AddTab(GURL("https://active.test/"), u"Active");
 
-  std::vector<TabMatch> matches =
-      FindMatchingTabs(window_a.browser(), "example");
-  ASSERT_EQ(matches.size(), 1u);
-  EXPECT_EQ(ResolveTabInWindow(matches[0], nullptr), nullptr);
+  TabSearchResult result = FindMatchingTab(window_a.browser(), "example");
+  ASSERT_TRUE(result.match.has_value());
+  EXPECT_EQ(ResolveTabInWindow(*result.match, nullptr), nullptr);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

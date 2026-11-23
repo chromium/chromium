@@ -32,12 +32,11 @@ class ToolDelegate;
 
 // Opens a known page matching `query_` in a single browser window
 // (`window_id_`) using a strict cascading search order:
-//   1. Tabs (Sync): Searches open tabs in `window_id_` via
-//      `FindMatchingTabs()`.
-//      - Ignores the currently active tab when a background tab also matches.
+//   1. Tabs (Sync): Searches open tabs in `window_id_` via `FindMatchingTab()`.
+//      - Ignores the currently active tab whenever a background tab also
+//        matches, selecting the most recently active matching background tab.
 //      - Fails with `kPageSearchAlreadyOnMatchingTab` if only the active tab
-//        matches, or `kPageSearchAmbiguousMatch` if more than one background
-//        tab matches.
+//        matches.
 //   2. History (Async): If no open tab in `window_id_` matches, searches
 //      browsing history via `FindMatchingHistory()`.
 //   3. Bookmarks (Sync fallback): Inside the history callback, if history
@@ -82,7 +81,8 @@ class OpenKnownPageTool : public Tool {
   SessionID window_id_;
   std::string query_;
 
-  // Set when Stage 1 (Tabs) resolves to a single open background tab.
+  // Set when Stage 1 (Tabs) or URL deduplication resolves to an open
+  // background tab.
   std::optional<TabMatch> matched_tab_;
 
   // Set when Stage 2 (History) or Stage 3 (Bookmarks) resolves to a URL to be

@@ -29,20 +29,17 @@ class ToolDelegate;
 // fuzzy-matching a query against the titles and URLs of the tabs in a single
 // window.
 //
-// Validate() resolves the query:
-// 1. Searches tabs in `window_id_` via `FindMatchingTabs()`.
-// 2. Ignores the currently active tab (`tab->IsActivated()`), so the tool
-//    always switches away from the active tab and does not report false
-//    ambiguity when the active tab and a single background tab both match.
-// 3. Fails with `kPageSearchAlreadyOnMatchingTab` if only the active tab
-//    matches, `kPageSearchNoMatch` if no tab matches, or
-//    `kPageSearchAmbiguousMatch` if more than one background tab matches.
-// 4. Validates the matched tab's URL via
+// Validate() resolves the query via `FindMatchingTab()`:
+// 1. Ignores the currently active tab whenever at least one background tab
+//    matches, selecting the most recently active matching background tab.
+// 2. Fails with `kPageSearchAlreadyOnMatchingTab` if only the active tab
+//    matches, or `kPageSearchNoMatch` if no tab matches.
+// 3. Validates the matched tab's URL via
 //    `ValidateUrlIsAcceptableNavigationDestination()`.
 //
-// Once the query resolves to a single allowed background tab, the activation
-// itself is delegated to an owned TabManagementTool so that its tab-strip
-// observation and completion machinery isn't duplicated here.
+// Once the query resolves to an allowed background tab, the activation itself
+// is delegated to an owned TabManagementTool so that its tab-strip observation
+// and completion machinery isn't duplicated here.
 class SwitchTabTool : public Tool {
  public:
   SwitchTabTool(TaskId task_id,
@@ -69,7 +66,7 @@ class SwitchTabTool : public Tool {
   SessionID window_id_;
   std::string query_;
 
-  // The single background tab `query_` matched. Set by a successful Validate().
+  // The background tab `query_` matched. Set by a successful Validate().
   std::optional<TabMatch> match_;
 
   // Performs the activation. Created in Invoke(), once `match_` is known to

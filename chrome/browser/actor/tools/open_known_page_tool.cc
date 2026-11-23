@@ -12,8 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -54,60 +53,25 @@ void OpenKnownPageTool::Validate(DeprecatedToolCallback callback) {
   // Stage 1: Tabs (Synchronous).
   // TODO(b/565736154): Delegate Stage 1 directly to SwitchTabTool once
   // composite tools are supported (b/555808355).
-  std::vector<TabMatch> tab_matches = FindMatchingTabs(browser, query_);
-  size_t erased_active_tabs = 0;
-  std::erase_if(tab_matches, [&](const TabMatch& match) {
-    tabs::TabInterface* tab = match.handle.Get();
-    if (!tab) {
-      return true;
-    }
-    if (tab->IsActivated()) {
-      ++erased_active_tabs;
-      return true;
-    }
-    return false;
-  });
-
-  if (!tab_matches.empty()) {
-    if (tab_matches.size() > 1) {
-      // TODO(b/565736354): Once tools support returning structured values for
-      // TTC, return a JSON payload of candidate tabs (with tab ID, title, and
-      // URL) and consider returning ActionResultCode::kOk instead of an actor
-      // error (pending security review for prompt injection risk).
-      std::vector<std::string> titles;
-      titles.reserve(tab_matches.size());
-      for (const TabMatch& match : tab_matches) {
-        titles.push_back(match.title.empty() ? match.url.spec()
-                                             : base::UTF16ToUTF8(match.title));
-      }
+  TabSearchResult tab_result = FindMatchingTab(browser, query_);
+  switch (tab_result.status) {
+    case TabSearchResult::Status::kMatchedBackgroundTab:
+      matched_tab_ = std::move(*tab_result.match);
+      ValidateDestinationUrl(matched_tab_->url, std::move(callback));
+      return;
+    case TabSearchResult::Status::kAlreadyOnActiveTab:
+      // The query matched the currently active tab and no background tabs.
+      // Return early rather than falling through to History/Bookmarks, which
+      // would redundantly re-navigate the tab the user is already viewing.
       PostResponseTask(
           std::move(callback),
-          MakeResult(
-              mojom::ActionResultCode::kPageSearchAmbiguousMatch,
-              /*requires_page_stabilization=*/false,
-              absl::StrFormat(
-                  "%zu open tabs matched \"%s\": %s. Retry with a query "
-                  "that matches only one of them.",
-                  tab_matches.size(), query_, base::JoinString(titles, ", "))));
+          MakeResult(mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab,
+                     /*requires_page_stabilization=*/false,
+                     absl::StrFormat("The active tab already matches \"%s\".",
+                                     query_)));
       return;
-    }
-
-    matched_tab_ = tab_matches.front();
-    ValidateDestinationUrl(matched_tab_->url, std::move(callback));
-    return;
-  }
-
-  if (erased_active_tabs > 0) {
-    // The query matched the currently active tab and no background tabs. Return
-    // early rather than falling through to History/Bookmarks, which would
-    // redundantly re-navigate the tab the user is already viewing.
-    PostResponseTask(
-        std::move(callback),
-        MakeResult(
-            mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab,
-            /*requires_page_stabilization=*/false,
-            absl::StrFormat("The active tab already matches \"%s\".", query_)));
-    return;
+    case TabSearchResult::Status::kNoMatch:
+      break;
   }
 
   // Stage 2: History (Asynchronous).
@@ -185,6 +149,8 @@ void OpenKnownPageTool::OnHistoryMatches(
     return;
   }
 
+  std::optional<TabMatch> best_dedup_tab;
+  base::TimeTicks best_dedup_ticks;
   for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
     if (tab == active_tab) {
       continue;
@@ -198,8 +164,16 @@ void OpenKnownPageTool::OnHistoryMatches(
         !AreUrlsEquivalentForDeduplication(committed_url, chosen_page->url)) {
       continue;
     }
-    matched_tab_ =
-        TabMatch{tab->GetHandle(), committed_url, contents->GetTitle()};
+    const base::TimeTicks last_active_ticks =
+        contents->GetLastActiveTimeTicks();
+    if (!best_dedup_tab.has_value() || last_active_ticks > best_dedup_ticks) {
+      best_dedup_tab =
+          TabMatch{tab->GetHandle(), committed_url, contents->GetTitle()};
+      best_dedup_ticks = last_active_ticks;
+    }
+  }
+  if (best_dedup_tab.has_value()) {
+    matched_tab_ = std::move(*best_dedup_tab);
     ValidateDestinationUrl(matched_tab_->url, std::move(callback));
     return;
   }

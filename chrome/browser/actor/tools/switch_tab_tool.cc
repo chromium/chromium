@@ -5,13 +5,11 @@
 #include "chrome/browser/actor/tools/switch_tab_tool.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/tools/page_search_utils.h"
 #include "chrome/browser/actor/tools/tab_management_tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -42,20 +40,9 @@ void SwitchTabTool::Validate(DeprecatedToolCallback callback) {
     return;
   }
 
-  std::vector<TabMatch> matches = FindMatchingTabs(browser, query_);
-
-  // Ignore the already-active tab: switching to the tab the user is currently
-  // viewing would be a no-op, and keeping it in `matches` would cause a false
-  // ambiguity error whenever both the active tab and a single background tab
-  // match `query_`.
-  const size_t erased_active_tabs =
-      std::erase_if(matches, [](const TabMatch& match) {
-        tabs::TabInterface* tab = match.handle.Get();
-        return !tab || tab->IsActivated();
-      });
-
-  if (matches.empty()) {
-    if (erased_active_tabs > 0) {
+  TabSearchResult search_result = FindMatchingTab(browser, query_);
+  switch (search_result.status) {
+    case TabSearchResult::Status::kAlreadyOnActiveTab:
       PostResponseTask(
           std::move(callback),
           MakeResult(mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab,
@@ -63,44 +50,19 @@ void SwitchTabTool::Validate(DeprecatedToolCallback callback) {
                      absl::StrFormat("The active tab already matches \"%s\".",
                                      query_)));
       return;
-    }
-    PostResponseTask(
-        std::move(callback),
-        MakeResult(mojom::ActionResultCode::kPageSearchNoMatch,
-                   /*requires_page_stabilization=*/false,
-                   absl::StrFormat("No open tab matched \"%s\".", query_)));
-    return;
+    case TabSearchResult::Status::kNoMatch:
+      PostResponseTask(
+          std::move(callback),
+          MakeResult(mojom::ActionResultCode::kPageSearchNoMatch,
+                     /*requires_page_stabilization=*/false,
+                     absl::StrFormat("No open tab matched \"%s\".", query_)));
+      return;
+    case TabSearchResult::Status::kMatchedBackgroundTab:
+      match_ = std::move(*search_result.match);
+      ValidateUrlIsAcceptableNavigationDestination(match_->url, tool_delegate(),
+                                                   std::move(callback));
+      return;
   }
-
-  if (matches.size() > 1) {
-    // TODO(b/565736354): Once tools support returning structured values for
-    // TTC, return a JSON payload of candidate tabs (with tab ID, title, and
-    // URL) and consider returning ActionResultCode::kOk instead of an actor
-    // error (pending security review for prompt injection risk).
-    // Ambiguity across multiple background tabs is an error rather than a
-    // guess: the caller is the only one that can say which tab it meant, so
-    // hand back the candidates and let it retry with a more specific query.
-    std::vector<std::string> titles;
-    titles.reserve(matches.size());
-    for (const TabMatch& match : matches) {
-      titles.push_back(base::UTF16ToUTF8(match.title));
-    }
-    PostResponseTask(
-        std::move(callback),
-        MakeResult(
-            mojom::ActionResultCode::kPageSearchAmbiguousMatch,
-            /*requires_page_stabilization=*/false,
-            absl::StrFormat(
-                "%d open tabs matched \"%s\": %s. Retry with a query "
-                "that matches only one of them.",
-                matches.size(), query_, base::JoinString(titles, ", "))));
-    return;
-  }
-
-  match_ = matches.front();
-
-  ValidateUrlIsAcceptableNavigationDestination(match_->url, tool_delegate(),
-                                               std::move(callback));
 }
 
 void SwitchTabTool::Invoke(DeprecatedToolCallback callback) {

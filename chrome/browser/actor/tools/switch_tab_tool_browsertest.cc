@@ -4,8 +4,9 @@
 
 #include <memory>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -95,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ActorSwitchTabToolBrowserTest,
 
 // When both the currently active tab and a single background tab match `query`,
 // the active tab is ignored so the tool switches to the background tab rather
-// than failing with `kPageSearchAmbiguousMatch`.
+// than failing with `kPageSearchAlreadyOnMatchingTab`.
 IN_PROC_BROWSER_TEST_F(ActorSwitchTabToolBrowserTest,
                        SwitchTabTool_IgnoresActiveTabWhenBackgroundTabMatches) {
   const GURL background_url =
@@ -142,8 +143,24 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(active_index(), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorSwitchTabToolBrowserTest,
-                       SwitchTabTool_AmbiguousBackgroundMatches) {
+// When multiple background tabs match `query`, SwitchTabTool activates the most
+// recently active matching background tab regardless of tab-strip index.
+IN_PROC_BROWSER_TEST_F(
+    ActorSwitchTabToolBrowserTest,
+    SwitchTabTool_MultipleBackgroundMatchesSelectsMostRecentlyActiveTab) {
+  auto activate_after = [&](int index, base::TimeTicks min_ticks) {
+    tabs::TabInterface* tab = tab_list()->GetTab(index);
+    ASSERT_TRUE(tab);
+    ASSERT_TRUE(base::test::RunUntil(
+        [min_ticks]() { return base::TimeTicks::Now() > min_ticks; }));
+    tab_list()->ActivateTab(tab->GetHandle());
+    ASSERT_TRUE(base::test::RunUntil([tab, min_ticks]() {
+      return tab->IsActivated() &&
+             tab->GetContents()->GetLastActiveTimeTicks() > min_ticks;
+    }));
+  };
+
+  // Tab 0 and Tab 1 both have title "Title Of Awesomeness".
   const GURL background_url1 =
       embedded_https_test_server().GetURL("example.com", "/title2.html?bg1");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), background_url1));
@@ -152,18 +169,43 @@ IN_PROC_BROWSER_TEST_F(ActorSwitchTabToolBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/title2.html?bg2");
   ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(background_url2));
 
+  // Tab 2 (unrelated active page).
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
   ASSERT_EQ(active_index(), 2);
 
-  std::unique_ptr<ToolRequest> action =
-      std::make_unique<SwitchTabToolRequest>("Awesomeness");
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kPageSearchAmbiguousMatch);
+  // Case 1: Make Tab 0 more recently active than Tab 1, then return to Tab 2.
+  // Tab 0 (lower tab-strip index) must be chosen over Tab 1.
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      0, tab_list()->GetTab(1)->GetContents()->GetLastActiveTimeTicks()));
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      2, tab_list()->GetTab(0)->GetContents()->GetLastActiveTimeTicks()));
 
-  EXPECT_EQ(active_index(), 2);
+  {
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<SwitchTabToolRequest>("Awesomeness");
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(active_index(), 0);
+  }
+
+  // Case 2: Make Tab 1 more recently active than Tab 0, then return to Tab 2.
+  // Tab 1 must now be chosen over Tab 0.
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      1, tab_list()->GetTab(0)->GetContents()->GetLastActiveTimeTicks()));
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      2, tab_list()->GetTab(1)->GetContents()->GetLastActiveTimeTicks()));
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<SwitchTabToolRequest>("Awesomeness");
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(active_index(), 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ActorSwitchTabToolBrowserTest, SwitchTabTool_NoMatch) {

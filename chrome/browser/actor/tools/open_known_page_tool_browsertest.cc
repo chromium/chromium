@@ -5,9 +5,9 @@
 #include <memory>
 #include <string>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -211,32 +211,74 @@ IN_PROC_BROWSER_TEST_F(
                     mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
-                       OpenKnownPageTool_AmbiguousBackgroundTabMatches) {
-  // Tab 0 (background): title is "Title Of Awesomeness".
+// When multiple background tabs match `query`, Stage 1 activates the most
+// recently active matching background tab rather than failing or falling
+// through to History.
+IN_PROC_BROWSER_TEST_F(
+    ActorOpenKnownPageToolBrowserTest,
+    OpenKnownPageTool_MultipleBackgroundMatchesSelectsMostRecentlyActiveTab) {
+  auto activate_after = [&](int index, base::TimeTicks min_ticks) {
+    tabs::TabInterface* tab = tab_list()->GetTab(index);
+    ASSERT_TRUE(tab);
+    ASSERT_TRUE(base::test::RunUntil(
+        [min_ticks]() { return base::TimeTicks::Now() > min_ticks; }));
+    tab_list()->ActivateTab(tab->GetHandle());
+    ASSERT_TRUE(base::test::RunUntil([tab, min_ticks]() {
+      return tab->IsActivated() &&
+             tab->GetContents()->GetLastActiveTimeTicks() > min_ticks;
+    }));
+  };
+
   const GURL background_url1 =
       embedded_https_test_server().GetURL("example.com", "/title2.html?bg1");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), background_url1));
 
-  // Tab 1 (background): title is also "Title Of Awesomeness".
   const GURL background_url2 =
       embedded_https_test_server().GetURL("example.com", "/title2.html?bg2");
   ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(background_url2));
 
-  // Tab 2 (foreground/active): has no <title> (defaults to URL
-  // "example.com/title1.html").
+  const GURL history_url = embedded_https_test_server().GetURL(
+      "example.com", "/title2.html?history");
+  AddHistoryEntry(history_url, u"Title Of Awesomeness History");
+
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
   ASSERT_EQ(active_index(), 2);
 
-  std::unique_ptr<ToolRequest> action =
-      std::make_unique<OpenKnownPageToolRequest>("Awesomeness");
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kPageSearchAmbiguousMatch);
+  // Case 1: Make Tab 0 more recently active than Tab 1, then return to Tab 2.
+  // Stage 1 must switch to Tab 0.
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      0, tab_list()->GetTab(1)->GetContents()->GetLastActiveTimeTicks()));
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      2, tab_list()->GetTab(0)->GetContents()->GetLastActiveTimeTicks()));
 
-  EXPECT_EQ(active_index(), 2);
+  {
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<OpenKnownPageToolRequest>("Awesomeness");
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(active_index(), 0);
+    EXPECT_EQ(active_tab_url(), background_url1);
+  }
+
+  // Case 2: Make Tab 1 more recently active than Tab 0, then return to Tab 2.
+  // Stage 1 must now switch to Tab 1.
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      1, tab_list()->GetTab(0)->GetContents()->GetLastActiveTimeTicks()));
+  ASSERT_NO_FATAL_FAILURE(activate_after(
+      2, tab_list()->GetTab(1)->GetContents()->GetLastActiveTimeTicks()));
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<OpenKnownPageToolRequest>("Awesomeness");
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(active_index(), 1);
+    EXPECT_EQ(active_tab_url(), background_url2);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
