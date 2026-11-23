@@ -225,23 +225,6 @@ void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
         /*min=*/base::Microseconds(100),
         /*max=*/base::Milliseconds(33), /*bucket_count=*/30);
   }
-
-  total_delta_ += delta.magnitude();
-  frames_since_last_recording_++;
-
-  // Emit the histogram every 3600 frames.
-  constexpr int kFramesToEmitHistogram = 3600;
-  if (frames_since_last_recording_ < kFramesToEmitHistogram) {
-    return;
-  }
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Viz.BeginFrameSource.Accuracy.AverageDelta2",
-      total_delta_ / kFramesToEmitHistogram,
-      /*min=*/base::Microseconds(100),
-      /*max=*/base::Milliseconds(33), /*bucket_count=*/30);
-  frames_since_last_recording_ = 0;
-  total_delta_ = base::TimeDelta();
 }
 #endif
 

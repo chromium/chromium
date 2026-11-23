@@ -285,12 +285,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   GpuBusyThrottlingState gpu_busy_response_state_ =
       GpuBusyThrottlingState::kIdle;
 
-#if BUILDFLAG(IS_MAC)
-  base::TimeDelta total_delta_;
-  // The frame count since this histogram was recorded last time. It is recorded
-  // every 3600 frames, which is equivalent to every minute on a 60Hz monitors .
-  int frames_since_last_recording_ = 0;
-#endif
   raw_ptr<SchedulerClient> scheduler_client_ = nullptr;
   raw_ptr<InputClient> input_client_ = nullptr;
 };
