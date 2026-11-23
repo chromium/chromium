@@ -48,6 +48,10 @@
 #include "v8/include/v8-initialization.h"
 #include "v8/include/v8-snapshot.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include <lib/zx/vmar.h>
+#endif
+
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
@@ -637,10 +641,15 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   }
   // The V8 sandbox is guaranteed to be large enough to host the pool.
   CHECK(pool_base);
-  partition_alloc::internal::PartitionAddressSpace::InitConfigurablePool(
-      pool_base, pool_size,
-      sandbox_address_space->ActiveMemoryProtectionKey().value_or(
-          partition_alloc::internal::kInvalidPkey));
+  partition_alloc::internal::PartitionAddressSpace::InitConfigurablePool({
+      .pool_base = pool_base,
+      .size = pool_size,
+      .pkey = sandbox_address_space->ActiveMemoryProtectionKey().value_or(
+          partition_alloc::internal::kInvalidPkey),
+#if BUILDFLAG(IS_FUCHSIA)
+      .vmar = zx::unowned_vmar(sandbox_address_space->GetVmarHandle()),
+#endif  // BUILDFLAG(IS_FUCHSIA)
+  });
   // TODO(saelo) maybe record the size of the Pool into UMA.
 #endif  // V8_ENABLE_SANDBOX
 
