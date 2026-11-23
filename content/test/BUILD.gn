@@ -3694,6 +3694,7 @@ test("content_unittests") {
     sources += [
       "../browser/android/android_overlay_provider_impl_unittest.cc",
       "../browser/android/battery_metrics_unittest.cc",
+      "../browser/android/java/gin_java_bridge_dispatcher_host_unittest.cc",
       "../browser/android/java/gin_java_method_invocation_helper_unittest.cc",
       "../browser/android/java/java_type_unittest.cc",
       "../browser/android/message_payload_unittest.cc",
@@ -3716,6 +3717,7 @@ test("content_unittests") {
       "//cc/slim",
       "//components/crash/android:anr_collector_java",
       "//components/download/internal/common:internal_java",
+      "//components/origin_matcher",
       "//content/browser:fontations_name_table_ffi",
       "//content/public/android:content_java",
       "//content/public/android:content_jni_headers",

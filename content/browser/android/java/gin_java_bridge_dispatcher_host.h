@@ -21,6 +21,7 @@
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/browser/android/java/gin_java_method_invocation_helper.h"
 #include "content/common/buildflags.h"
+#include "content/common/content_export.h"
 #include "content/common/gin_java_bridge.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -31,17 +32,12 @@ namespace content {
 
 class WebContentsImpl;
 
-struct NamedObject {
-  GinJavaBoundObject::ObjectID object_id;
-  origin_matcher::OriginMatcher matcher;
-};
-
 // This class handles injecting Java objects into a single WebContents /
 // WebView. The Java object itself lives in the browser process on a background
 // thread, while multiple JavaScript wrapper objects (one per frame) are created
 // on the renderer side.  The injected Java objects are identified by ObjectID,
 // while wrappers are identified by a pair of (ObjectID, frame_routing_id).
-class GinJavaBridgeDispatcherHost
+class CONTENT_EXPORT GinJavaBridgeDispatcherHost
     : public base::RefCountedDeleteOnSequence<GinJavaBridgeDispatcherHost>,
       public WebContentsObserver,
       public mojom::GinJavaBridgeHost,
@@ -147,6 +143,10 @@ class GinJavaBridgeDispatcherHost
       EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
 
   // The following objects are used only on the UI thread.
+  struct NamedObject {
+    GinJavaBoundObject::ObjectID object_id;
+    origin_matcher::OriginMatcher matcher;
+  };
   typedef std::map<std::string, NamedObject> NamedObjectMap;
   NamedObjectMap named_objects_;
 

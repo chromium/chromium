@@ -16,11 +16,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/android/java/java_method.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
-class GinJavaBoundObject
+class CONTENT_EXPORT GinJavaBoundObject
     : public base::RefCountedThreadSafe<GinJavaBoundObject> {
  public:
   typedef int32_t ObjectID;

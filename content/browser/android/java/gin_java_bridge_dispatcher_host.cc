@@ -107,7 +107,7 @@ void GinJavaBridgeDispatcherHost::RemoteDisconnected(
 
   auto* frame_host = RenderFrameHost::FromID(routing_id);
   // If the RenderHost is still alive try to reconnect.
-  if (frame_host->IsRenderFrameLive()) {
+  if (frame_host && frame_host->IsRenderFrameLive()) {
     LOG(ERROR) << "Reconnecting to RenderFrame";
     GetJavaBridge(frame_host, true);
   }
