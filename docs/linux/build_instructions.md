@@ -619,6 +619,18 @@ other settings):
     command to set it in the current session from the shell, or add the
     `vm.max_map_count=262144` to /etc/sysctl.conf to save it permanently.
 
+### "No usable sandbox"
+
+Recent versions of Ubuntu have enabled a security feature that interferes with
+Chromium's sandbox in developer builds:
+
+```
+[...:FATAL:content/browser/zygote_host/zygote_host_impl_linux.cc:145] No usable sandbox! ...
+```
+
+For more information and workarounds, refer to
+[AppArmor User Namespace Restrictions](../security/apparmor-userns-restrictions.md).
+
 ### More links
 
 * Information about [building with Clang](../clang.md).

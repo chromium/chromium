@@ -143,17 +143,17 @@ void ZygoteHostImpl::Init(const base::CommandLine& command_line) {
     use_suid_sandbox_for_adj_oom_score_ = use_suid_sandbox_;
   } else {
     LOG(FATAL)
-        << "No usable sandbox! If you are running on Ubuntu 23.10+ or another "
-           "Linux distro that has disabled unprivileged user namespaces with "
-           "AppArmor, see "
+        << "No usable sandbox!\n\n"
+           "If you are running on Ubuntu 23.10+ or another Linux distro that "
+           "has disabled unprivileged user namespaces with AppArmor, see:\n"
            "https://chromium.googlesource.com/chromium/src/+/main/"
-           "docs/security/apparmor-userns-restrictions.md. Otherwise see "
+           "docs/security/apparmor-userns-restrictions.md\n\n"
+           "Or, to develop with the older SUID sandbox, see:\n"
            "https://chromium.googlesource.com/chromium/src/+/main/"
-           "docs/linux/suid_sandbox_development.md for more information on "
-           "developing with the (older) SUID sandbox. "
+           "docs/linux/suid_sandbox_development.md\n\n"
            "If you want to live dangerously and need an immediate workaround, "
            "you can try using --"
-        << sandbox::policy::switches::kNoSandbox << ".";
+        << sandbox::policy::switches::kNoSandbox << ".\n";
   }
 }
 
