@@ -12,12 +12,13 @@
 #include <unistd.h>
 
 #include <algorithm>
-#include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -391,16 +392,16 @@ int InstallFromArchive(const base::FilePath& file_path,
                        std::optional<base::FilePath> installer_data_file,
                        const bool usage_stats_enabled,
                        base::TimeDelta timeout) {
-  const std::map<std::string,
-                 int (*)(const base::FilePath&,
-                         base::OnceCallback<int(const base::FilePath&)>)>
-      handlers = {
+  using Handler = int (*)(const base::FilePath&,
+                          base::OnceCallback<int(const base::FilePath&)>);
+  static constexpr auto kHandlers =
+      base::MakeFixedFlatMap<std::string_view, Handler>({
           {".dmg", &InstallFromDMG},
           {".app", &InstallFromApp},
           {"", &InstallFromDir},
-      };
-  auto handler = handlers.find(file_path.Extension());
-  if (handler == handlers.end()) {
+      });
+  auto handler = kHandlers.find(file_path.Extension());
+  if (handler == kHandlers.end()) {
     VLOG(0) << "Install failed: no handler for " << file_path.Extension();
     return std::to_underlying(InstallErrors::kNotSupportedInstallerType);
   }
