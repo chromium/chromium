@@ -1,8 +1,8 @@
 Name: SPIRV-Cross
 Short Name: SPIRV-Cross
 URL: https://github.com/KhronosGroup/SPIRV-Cross
-Version: vulkan-sdk-1.4.363.0
-Revision: 57e4efcc84112abcd426dc5ec248b5339bee04f2
+Version: N/A
+Revision: b8fcf307f1f347089e3c46eb4451d27f32ebc8d3
 Update Mechanism: Autoroll
 Security Critical: yes
 Shipped: no
