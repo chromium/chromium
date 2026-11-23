@@ -37,7 +37,15 @@ const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
     base::Minutes(1)};
 
 const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
-    &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount", 10};
+    &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount",
+#if BUILDFLAG(IS_ANDROID)
+    // Each service is a separate sandboxed process that holds about 79 to 84
+    // MiB per loaded language pair.
+    2
+#else
+    10
+#endif  // BUILDFLAG(IS_ANDROID)
+};
 
 const base::FeatureParam<base::TimeDelta> kTranslationAPIModelIdleUnloadTimeout{
     &blink::features::kTranslationAPI, "TranslationAPIModelIdleUnloadTimeout",
