@@ -100,15 +100,6 @@ inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
 // of the pixels.
 SK_API SkBitmap ReadPixels(SkCanvas* canvas);
 
-// Gives the pixmap passed in *writable* access to the pixels backing this
-// canvas. All writes to the pixmap should be visible if the canvas is
-// raster-backed.
-//
-// Returns false on failure: if either argument is nullptr, or if the
-// pixels can not be retrieved from the canvas. In the latter case resets
-// the pixmap to empty.
-SK_API bool GetWritablePixels(SkCanvas* canvas, SkPixmap* pixmap);
-
 }  // namespace skia
 
 #endif  // SKIA_EXT_PLATFORM_CANVAS_H_

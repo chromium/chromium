@@ -365,8 +365,6 @@ component("gfx") {
     sources += [
       "bidi_line_iterator.cc",
       "bidi_line_iterator.h",
-      "blit.cc",
-      "blit.h",
       "canvas.cc",
       "canvas.h",
       "canvas_skia.cc",
@@ -782,6 +780,7 @@ test("gfx_unittests") {
   }
   if (is_win) {
     sources += [
+      "blit_unittest.cc",
       "font_fallback_win_unittest.cc",
       "win/get_elevation_icon_unittest.cc",
       "win/hwnd_util_unittest.cc",
@@ -813,7 +812,6 @@ test("gfx_unittests") {
       "animation/slide_animation_unittest.cc",
       "animation/tween_unittest.cc",
       "bidi_line_iterator_unittest.cc",
-      "blit_unittest.cc",
       "break_list_unittest.cc",
       "canvas_unittest.cc",
       "codec/jpeg_codec_unittest.cc",
