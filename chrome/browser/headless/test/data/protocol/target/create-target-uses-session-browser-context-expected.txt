@@ -1,0 +1,7 @@
+Tests that Target.createTarget on a page session creates targets in the browser context of that page.
+
+Page session: page context
+Page session, hidden: page context
+Page session with browserContextId: error: browserContextId is only allowed for Browser target
+Page session with browserContextId, hidden: error: browserContextId is only allowed for Browser target
+Browser session: default context

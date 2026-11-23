@@ -1430,6 +1430,11 @@ Response TargetHandler::CreateTarget(
         "Navigating to a URL with a privileged scheme is not allowed");
   }
 
+  if (access_mode_ != AccessMode::kBrowser && browser_context_id.has_value()) {
+    return Response::InvalidParams(
+        "browserContextId is only allowed for Browser target");
+  }
+
   if (hidden.value_or(false)) {
     // Hidden target can be created only when remote debugging is enabled.
     DevToolsManagerDelegate* delegate =
@@ -1455,10 +1460,22 @@ Response TargetHandler::CreateTarget(
     }
 
     BrowserContext* browser_context = nullptr;
-    Response response = BrowserHandler::FindBrowserContext(browser_context_id,
-                                                           &browser_context);
-    if (!response.IsSuccess()) {
-      return response;
+    if (access_mode_ != AccessMode::kBrowser) {
+      // Non-browser targets must only create hidden targets in their own
+      // browser context; never fall back to the default browser context.
+      DevToolsAgentHost* const agent_host =
+          session() ? session()->GetAgentHost() : nullptr;
+      browser_context = agent_host ? agent_host->GetBrowserContext() : nullptr;
+      if (!browser_context) {
+        return Response::ServerError(
+            "Failed to find browser context for target");
+      }
+    } else {
+      Response response = BrowserHandler::FindBrowserContext(browser_context_id,
+                                                             &browser_context);
+      if (!response.IsSuccess()) {
+        return response;
+      }
     }
 
     *out_target_id =

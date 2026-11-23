@@ -117,6 +117,11 @@ class TargetHandler : public DevToolsDomainHandler,
   Response GetBrowserContexts(
       std::unique_ptr<protocol::Array<String>>* browser_context_ids,
       std::optional<std::string>* default_browser_context_id) override;
+  // `browser_context_id` is only permitted in `AccessMode::kBrowser`. Hidden
+  // targets created from other sessions are scoped to the attached
+  // `BrowserContext`; non-hidden targets are created by the embedder via
+  // `DevToolsManagerDelegate::CreateNewTarget()`, which is responsible for
+  // choosing the `BrowserContext` (the Chrome embedder uses the attached one).
   Response CreateTarget(const std::string& url,
                         std::optional<int> left,
                         std::optional<int> top,

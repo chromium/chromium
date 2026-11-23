@@ -22,7 +22,7 @@ class TargetHandler : public protocol::Target::Backend {
   TargetHandler(protocol::UberDispatcher* dispatcher,
                 bool is_trusted,
                 bool may_read_local_files,
-                content::DevToolsAgentHostClientChannel* channel = nullptr);
+                content::DevToolsAgentHostClientChannel* channel);
 
   TargetHandler(const TargetHandler&) = delete;
   TargetHandler& operator=(const TargetHandler&) = delete;
@@ -35,6 +35,10 @@ class TargetHandler : public protocol::Target::Backend {
   protocol::Response SetRemoteLocations(
       std::unique_ptr<protocol::Array<protocol::Target::RemoteLocation>>
           in_locations) override;
+  // Creates a new target. For Browser-level sessions, creates the target in
+  // `browser_context_id` if specified or the last-used profile otherwise. For
+  // non-Browser sessions, rejects `browser_context_id` and creates the target
+  // in the attached target's own BrowserContext.
   protocol::Response CreateTarget(
       const std::string& url,
       std::optional<int> left,
@@ -55,6 +59,7 @@ class TargetHandler : public protocol::Target::Backend {
   RemoteLocations remote_locations_;
   const bool is_trusted_;
   const bool may_read_local_files_;
+  // Owned by the enclosing `content::DevToolsSession`, which outlives `this`.
   const raw_ptr<content::DevToolsAgentHostClientChannel> channel_;
 };
 

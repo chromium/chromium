@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -23,6 +24,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
@@ -115,7 +117,24 @@ protocol::Response TargetHandler::CreateTarget(
     return protocol::Response::FallThrough();
   }
   Profile* profile = nullptr;
-  if (browser_context_id.has_value()) {
+  content::DevToolsAgentHost* const agent_host =
+      channel_ ? channel_->GetAgentHost() : nullptr;
+  if (!agent_host) {
+    return protocol::Response::InternalError();
+  }
+  if (agent_host->GetType() != content::DevToolsAgentHost::kTypeBrowser) {
+    if (browser_context_id.has_value()) {
+      return protocol::Response::InvalidParams(
+          "browserContextId is only allowed for Browser target");
+    }
+    // Non-browser targets must only create targets in their own browser
+    // context; never fall back to the last used profile.
+    profile = Profile::FromBrowserContext(agent_host->GetBrowserContext());
+    if (!profile) {
+      return protocol::Response::ServerError(
+          "Failed to find browser context for target");
+    }
+  } else if (browser_context_id.has_value()) {
     std::string profile_id = browser_context_id.value();
     profile =
         DevToolsBrowserContextManager::GetInstance().GetProfileById(profile_id);

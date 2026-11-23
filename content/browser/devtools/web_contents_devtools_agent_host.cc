@@ -254,7 +254,7 @@ void WebContentsDevToolsAgentHost::ConnectWebContents(
 }
 
 BrowserContext* WebContentsDevToolsAgentHost::GetBrowserContext() {
-  return web_contents()->GetBrowserContext();
+  return web_contents() ? web_contents()->GetBrowserContext() : nullptr;
 }
 
 WebContents* WebContentsDevToolsAgentHost::GetWebContents() {

@@ -65,12 +65,14 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
@@ -87,6 +89,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/base_window.h"
 #include "url/origin.h"
 
@@ -113,7 +116,6 @@
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1151,7 +1153,11 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
   }
 
   void TearDownOnMainThread() override {
-    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
+    otr_profile_ = nullptr;
+    if (profile()->HasPrimaryOTRProfile()) {
+      ProfileDestroyer::DestroyOTRProfileWhenAppropriate(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/false));
+    }
     DebuggerApiTest::TearDownOnMainThread();
   }
 
@@ -1230,6 +1236,207 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
         debugger_attach_function.get(), target_in_otr_profile.c_str(),
         profile(), api_test_utils::FunctionMode::kIncognito));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest,
+                       CreateTargetStaysInSessionProfile) {
+  const GURL base_url = embedded_test_server()->GetURL("a.test", "/");
+  ASSERT_TRUE(
+      content::SetCookie(profile(), base_url,
+                         "session_id=primary_profile; HttpOnly; SameSite=Lax"));
+  ASSERT_TRUE(content::SetCookie(
+      other_profile(), base_url,
+      "session_id=secondary_profile; HttpOnly; SameSite=Lax"));
+
+  BrowserWindowInterface* other_browser = CreateBrowser(other_profile());
+  ASSERT_TRUE(other_browser);
+  TabListInterface* other_tab_list = TabListInterface::From(other_browser);
+  ASSERT_TRUE(other_tab_list);
+  ASSERT_EQ(1, other_tab_list->GetTabCount());
+
+  // Create a browser for `profile()` after `other_browser` so that
+  // `ProfileManager::GetLastUsedProfile()` resolves to `profile()` across all
+  // desktop platforms (including ChromeOS).
+  BrowserWindowInterface* primary_browser = CreateBrowser(profile());
+  ASSERT_TRUE(primary_browser);
+  TabListInterface* primary_tab_list = TabListInterface::From(primary_browser);
+  ASSERT_TRUE(primary_tab_list);
+  const int initial_primary_tabs = primary_tab_list->GetTabCount();
+  ASSERT_EQ(profile(), ProfileManager::GetLastUsedProfile());
+
+  scoped_refptr<const Extension> other_extension =
+      ExtensionBuilder("Other Profile Debugger")
+          .AddAPIPermission("debugger")
+          .Build();
+  content::WebContents* other_contents =
+      other_tab_list->GetActiveTab()->GetContents();
+  ASSERT_TRUE(other_contents);
+  const std::string other_target_id =
+      content::DevToolsAgentHost::GetOrCreateFor(other_contents)->GetId();
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(other_extension.get());
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(),
+      base::StringPrintf(R"([{"targetId": "%s"}, "1.3"])",
+                         other_target_id.c_str()),
+      other_profile()))
+      << attach_function->GetError();
+
+  const GURL echo_cookie_url =
+      embedded_test_server()->GetURL("a.test", "/echoheader?Cookie");
+
+  // Omitting browserContextId must create the new tab in the attached target's
+  // profile (`other_profile()`) rather than `GetLastUsedProfile()`.
+  {
+    auto create_target_cmd =
+        base::MakeRefCounted<DebuggerSendCommandFunction>();
+    create_target_cmd->set_extension(other_extension.get());
+    std::optional<base::Value> create_result =
+        api_test_utils::RunFunctionAndReturnSingleResult(
+            create_target_cmd.get(),
+            base::StringPrintf(
+                R"([{"targetId": "%s"}, "Target.createTarget", )"
+                R"({"url": "%s", "newWindow": false, "background": true}])",
+                other_target_id.c_str(), echo_cookie_url.spec().c_str()),
+            other_profile());
+    ASSERT_TRUE(create_result && create_result->is_dict());
+    const std::string* created_target_id =
+        create_result->GetDict().FindString("targetId");
+    ASSERT_TRUE(created_target_id);
+
+    scoped_refptr<content::DevToolsAgentHost> created_host =
+        content::DevToolsAgentHost::GetForId(*created_target_id);
+    ASSERT_TRUE(created_host);
+    EXPECT_EQ(other_profile(), created_host->GetBrowserContext());
+    EXPECT_EQ(initial_primary_tabs, primary_tab_list->GetTabCount());
+    EXPECT_EQ(2, other_tab_list->GetTabCount());
+
+    content::WebContents* created_contents = created_host->GetWebContents();
+    ASSERT_TRUE(created_contents);
+    ASSERT_TRUE(content::WaitForLoadStop(created_contents));
+    EXPECT_EQ("session_id=secondary_profile",
+              content::EvalJs(created_contents, "document.body.textContent"));
+  }
+
+  // Creating a target in a new window must also stay in the session's profile.
+  ASSERT_EQ(profile(), ProfileManager::GetLastUsedProfile());
+  {
+    auto create_window_cmd =
+        base::MakeRefCounted<DebuggerSendCommandFunction>();
+    create_window_cmd->set_extension(other_extension.get());
+    std::optional<base::Value> create_result =
+        api_test_utils::RunFunctionAndReturnSingleResult(
+            create_window_cmd.get(),
+            base::StringPrintf(
+                R"([{"targetId": "%s"}, "Target.createTarget", )"
+                R"({"url": "%s", "newWindow": true, "background": true}])",
+                other_target_id.c_str(), echo_cookie_url.spec().c_str()),
+            other_profile());
+    ASSERT_TRUE(create_result && create_result->is_dict());
+    const std::string* created_target_id =
+        create_result->GetDict().FindString("targetId");
+    ASSERT_TRUE(created_target_id);
+
+    scoped_refptr<content::DevToolsAgentHost> created_host =
+        content::DevToolsAgentHost::GetForId(*created_target_id);
+    ASSERT_TRUE(created_host);
+    EXPECT_EQ(other_profile(), created_host->GetBrowserContext());
+    EXPECT_EQ(initial_primary_tabs, primary_tab_list->GetTabCount());
+
+    content::WebContents* created_contents = created_host->GetWebContents();
+    ASSERT_TRUE(created_contents);
+    ASSERT_TRUE(content::WaitForLoadStop(created_contents));
+    EXPECT_EQ("session_id=secondary_profile",
+              content::EvalJs(created_contents, "document.body.textContent"));
+
+    content::WebContentsDestroyedWatcher destroyed_watcher(created_contents);
+    created_contents->Close();
+    destroyed_watcher.Wait();
+  }
+
+  // Passing an explicit browserContextId on a non-Browser target must fail.
+  for (const std::string& context_id :
+       {profile()->UniqueId(), other_profile()->UniqueId(),
+        otr_profile()->UniqueId()}) {
+    auto explicit_context_cmd =
+        base::MakeRefCounted<DebuggerSendCommandFunction>();
+    explicit_context_cmd->set_extension(other_extension.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        explicit_context_cmd.get(),
+        base::StringPrintf(
+            R"([{"targetId": "%s"}, "Target.createTarget", )"
+            R"({"url": "about:blank", "browserContextId": "%s"}])",
+            other_target_id.c_str(), context_id.c_str()),
+        other_profile());
+    EXPECT_THAT(error,
+                testing::HasSubstr(
+                    "browserContextId is only allowed for Browser target"));
+  }
+
+  auto detach_other = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_other->set_extension(other_extension.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_other.get(),
+      base::StringPrintf(R"([{"targetId": "%s"}])", other_target_id.c_str()),
+      other_profile()))
+      << detach_other->GetError();
+
+  // An incognito-enabled session attached to an OTR tab must create new
+  // targets in that OTR profile rather than the parent or last-used profile.
+  BrowserWindowInterface* otr_browser = CreateIncognitoBrowser(profile());
+  ASSERT_TRUE(otr_browser);
+  TabListInterface* otr_tab_list = TabListInterface::From(otr_browser);
+  ASSERT_TRUE(otr_tab_list);
+  ASSERT_EQ(1, otr_tab_list->GetTabCount());
+  content::WebContents* otr_contents =
+      otr_tab_list->GetActiveTab()->GetContents();
+  ASSERT_TRUE(otr_contents);
+  ASSERT_EQ(otr_profile(), otr_contents->GetBrowserContext());
+  const std::string otr_target_id =
+      content::DevToolsAgentHost::GetOrCreateFor(otr_contents)->GetId();
+
+  auto otr_attach = base::MakeRefCounted<DebuggerAttachFunction>();
+  otr_attach->set_extension(extension());
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      otr_attach.get(),
+      base::StringPrintf(R"([{"targetId": "%s"}, "1.3"])",
+                         otr_target_id.c_str()),
+      profile(), api_test_utils::FunctionMode::kIncognito))
+      << otr_attach->GetError();
+
+  auto otr_create_cmd = base::MakeRefCounted<DebuggerSendCommandFunction>();
+  otr_create_cmd->set_extension(extension());
+  std::optional<base::Value> otr_result =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          otr_create_cmd.get(),
+          base::StringPrintf(
+              R"([{"targetId": "%s"}, "Target.createTarget", )"
+              R"({"url": "about:blank", "newWindow": false, "background": true}])",
+              otr_target_id.c_str()),
+          profile(), api_test_utils::FunctionMode::kIncognito);
+  ASSERT_TRUE(otr_result && otr_result->is_dict());
+  const std::string* created_otr_target_id =
+      otr_result->GetDict().FindString("targetId");
+  ASSERT_TRUE(created_otr_target_id);
+  scoped_refptr<content::DevToolsAgentHost> created_otr_host =
+      content::DevToolsAgentHost::GetForId(*created_otr_target_id);
+  ASSERT_TRUE(created_otr_host);
+  EXPECT_EQ(otr_profile(), created_otr_host->GetBrowserContext());
+  EXPECT_EQ(2, otr_tab_list->GetTabCount());
+  EXPECT_EQ(initial_primary_tabs, primary_tab_list->GetTabCount());
+
+  auto otr_detach = base::MakeRefCounted<DebuggerDetachFunction>();
+  otr_detach->set_extension(extension());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      otr_detach.get(),
+      base::StringPrintf(R"([{"targetId": "%s"}])", otr_target_id.c_str()),
+      profile(), api_test_utils::FunctionMode::kIncognito))
+      << otr_detach->GetError();
+
+  CloseBrowserSynchronously(otr_browser);
+  CloseBrowserSynchronously(primary_browser);
+  CloseBrowserSynchronously(other_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
