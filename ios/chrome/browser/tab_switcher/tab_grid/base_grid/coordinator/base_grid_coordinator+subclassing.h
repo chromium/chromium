@@ -42,6 +42,10 @@
 // Hides the potentially displayed Tab Group view.
 - (void)hideTabGroup;
 
+// Stops everything that captured the current `Browser`, without stopping
+// `self`.
+- (void)stopBrowserDependentChildren;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_GRID_BASE_GRID_COORDINATOR_BASE_GRID_COORDINATOR_SUBCLASSING_H_

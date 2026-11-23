@@ -52,7 +52,7 @@
   // Web state list where the tab group belong.
   raw_ptr<WebStateList> _webStateList;
   // Tab group to edit.
-  raw_ptr<const TabGroup, DanglingUntriaged> _tabGroup;
+  raw_ptr<const TabGroup> _tabGroup;
   // Item to fetch pictures.
   TabGroupItem* _groupItem;
   // Helper class to configure tab item images.
@@ -68,6 +68,9 @@
       _scopedWebStateListObservation;
   // Whether a new tab should be inserted into the new group.
   BOOL _createNewTabForGroup;
+  // Whether the mediator is editing an existing group rather than creating a
+  // new one.
+  BOOL _editMode;
 }
 
 - (instancetype)
@@ -158,6 +161,7 @@
     CHECK(tabGroup);
     CHECK(browser);
     _consumer = consumer;
+    _editMode = YES;
     _tabGroup = tabGroup;
     _webStateList = browser->GetWebStateList();
     // Observe the WebStateList in the case the group disappears.
@@ -194,12 +198,16 @@
 }
 
 - (void)disconnect {
-  if (_tabGroup) {
+  if (_scopedWebStateListObservation) {
     _scopedWebStateListObservation->RemoveAllObservations();
     _scopedWebStateListObservation.reset();
     _webStateListObserverBridge.reset();
-    _webStateList = nullptr;
   }
+  _tabImagesConfigurator.reset();
+  _webStateList = nullptr;
+  _groupItem = nil;
+  _tabGroup = nullptr;
+  _browser = nullptr;
 }
 
 #pragma mark - TabGroupCreationMutator
@@ -210,7 +218,8 @@
                      completion:(void (^)())completion {
   tab_groups::TabGroupVisualData visualData =
       tab_groups::TabGroupVisualData(base::SysNSStringToUTF16(title), colorID);
-  if (_tabGroup) {
+  if (_editMode) {
+    CHECK(_tabGroup);
     base::RecordAction(
         base::UserMetricsAction("MobileTabGroupUserUpdatedGroup"));
     if (![_tabGroup->GetRawTitle() isEqualToString:title]) {
@@ -287,6 +296,8 @@
       const WebStateListChangeGroupDelete& deletion =
           change.As<WebStateListChangeGroupDelete>();
       if (_tabGroup == deletion.deleted_group()) {
+        _groupItem = nil;
+        _tabGroup = nullptr;
         // Dismiss the editor.
         [self.delegate
             createTabGroupMediatorEditedGroupWasExternallyMutated:self];

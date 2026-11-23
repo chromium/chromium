@@ -160,6 +160,7 @@
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
   if (_browser) {
+    [self stopBrowserDependentChildren];
     [_browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
   _mediator.browser = incognitoBrowser;

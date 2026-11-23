@@ -208,6 +208,13 @@ using collaboration::CollaborationControllerDelegate;
   return _tabGroupCoordinator;
 }
 
+- (void)stopBrowserDependentChildren {
+  [self clearLeaveOrDeleteCompletion];
+  [self stopChildCoordinators];
+  if (_tabGroupCoordinator) {
+    [self hideTabGroup];
+  }
+}
 
 #pragma mark - ChromeCoordinator
 
@@ -232,12 +239,8 @@ using collaboration::CollaborationControllerDelegate;
 }
 
 - (void)stop {
-  [self clearLeaveOrDeleteCompletion];
+  [self stopBrowserDependentChildren];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  if (_tabGroupCoordinator) {
-    [self hideTabGroup];
-  }
-
   [self.mediator disconnect];
 }
 

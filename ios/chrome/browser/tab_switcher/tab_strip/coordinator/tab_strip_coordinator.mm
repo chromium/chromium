@@ -176,6 +176,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
 - (void)stop {
   [self clearLeaveOrDeleteCompletion];
+  [self hideTabStripGroupCreation];
   if (_tabGroupConfirmationCoordinator) {
     [_tabGroupConfirmationCoordinator stop];
     _tabGroupConfirmationCoordinator = nil;

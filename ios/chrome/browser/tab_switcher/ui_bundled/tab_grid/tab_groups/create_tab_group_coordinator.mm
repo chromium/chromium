@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_coordinator.h"
 
 #import "base/check.h"
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -37,12 +37,15 @@
   CreateTabGroupViewController* _viewController;
   // List of tabs to add to the tab group.
   std::set<web::WebStateID> _identifiers;
-  // Tab group to edit.
-  raw_ptr<const TabGroup> _tabGroup;
+  // Tab group to edit. Only needed until `-start` creates `_mediator`.
+  base::WeakPtr<const TabGroup> _tabGroup;
   // Transition delegate for the animation to show/hide.
   CreateTabGroupTransitionDelegate* _transitionDelegate;
   // Whether a new tab should be inserted into the new group.
   BOOL _createNewTabForGroup;
+  // Whether the coordinator is editing an existing group rather than creating a
+  // new one.
+  BOOL _editMode;
 }
 
 #pragma mark - Public
@@ -81,7 +84,8 @@
   CHECK(tabGroup) << "You need to pass a tab group in order to edit it.";
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _tabGroup = tabGroup;
+    _editMode = YES;
+    _tabGroup = tabGroup->GetWeakPtr();
   }
   return self;
 }
@@ -107,13 +111,12 @@
 - (void)start {
   Browser* browser = self.browser;
   ProfileIOS* profile = browser->GetProfile();
-  BOOL editMode = _tabGroup != nullptr;
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   BOOL tabSynced =
       syncService && syncService->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kTabs);
   _viewController = [[CreateTabGroupViewController alloc]
-          initWithEditMode:editMode
+          initWithEditMode:_editMode
                  tabSynced:tabSynced
       createNewTabForGroup:_createNewTabForGroup];
 
@@ -127,13 +130,15 @@
     faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   }
 
-  if (_tabGroup) {
+  if (_editMode) {
+    CHECK(_tabGroup);
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupEditionWithConsumer:_viewController
-                               tabGroup:_tabGroup
+                               tabGroup:_tabGroup.get()
                                 browser:browser
                           faviconLoader:faviconLoader];
     _mediator.delegate = self;
+    _tabGroup = nullptr;
   } else if (_createNewTabForGroup) {
     _mediator = [[CreateTabGroupMediator alloc]
         initEmptyTabGroupCreationWithConsumer:_viewController
@@ -159,6 +164,7 @@
 }
 
 - (void)stop {
+  _tabGroup = nullptr;
   [_mediator disconnect];
   _mediator = nil;
 
