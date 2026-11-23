@@ -10,9 +10,6 @@
 
 namespace actor {
 
-BASE_FEATURE(kActorBypassTOUValidationForGuestView,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseTabHandleAsSurfaceHandle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicExternalProtocolActionResultCode,

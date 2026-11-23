@@ -14,8 +14,6 @@
 
 namespace actor {
 
-BASE_DECLARE_FEATURE(kActorBypassTOUValidationForGuestView);
-
 // Temporary migration flag: when enabled, a tab-backed ActorSurface uses its
 // TabHandle value as its ActorSurfaceHandle (> 0), and headless surfaces
 // allocate negative handles (< 0) so the two ranges never collide. When

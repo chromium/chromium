@@ -42,16 +42,11 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace actor {
 
@@ -90,25 +85,8 @@ bool ValidateTargetFrameCandidate(
   // Only return the candidate if its RenderWidgetHost matches the target
   // and it's also a local root frame(i.e. has no parent or parent has
   // a different RenderWidgetHost)
-  if (apc_target_frame && apc_target_frame->GetRenderWidgetHost() ==
-                              candidate_frame->GetRenderWidgetHost()) {
-    return true;
-  }
-
-#if BUILDFLAG(ENABLE_PDF)
-  // TODO(b/458776473): Remove once PdfOopif is shipped. The APC is sent
-  // correctly for these pages.
-  if (base::FeatureList::IsEnabled(kActorBypassTOUValidationForGuestView) &&
-      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      apc_target_frame && !candidate_frame->GetParent() &&
-      !candidate_frame->IsFencedFrameRoot() &&
-      candidate_frame->GetParentOrOuterDocumentOrEmbedder() ==
-          apc_target_frame) {
-    return true;
-  }
-#endif
-
-  return false;
+  return apc_target_frame && apc_target_frame->GetRenderWidgetHost() ==
+                                 candidate_frame->GetRenderWidgetHost();
 }
 
 mojom::ActionResultPtr ValidateTargetInLastApc(
