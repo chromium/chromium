@@ -819,11 +819,18 @@ void ChromeAutofillClient::ShowAutofillSettings(
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
         chrome::ShowSettingsSubPage(browser, chrome::kShoppingSubPage);
         return;
+      case SuggestionType::kManageOffers:
+        base::UmaHistogramEnumeration(
+            "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+            autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
+        chrome::ShowSettingsSubPage(
+            browser, base::FeatureList::IsEnabled(
+                         features::kAutofillEnableOffersAndLoyaltyCardsSettings)
+                         ? chrome::kOffersAndLoyaltyCardsSubPage
+                         : chrome::kPaymentsSubPage);
+        return;
       case SuggestionType::kManageCreditCard:
       case SuggestionType::kManageIban:
-      // TODO(crbug.com/546252995): Open up the shopping leaf for Wallet Direct
-      // Offers when navigating to settings.
-      case SuggestionType::kManageOffers:
         base::UmaHistogramEnumeration(
             "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);

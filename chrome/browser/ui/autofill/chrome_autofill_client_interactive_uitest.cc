@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/webui_url_constants.h"
@@ -355,6 +356,21 @@ class ChromeAutofillClientOffersAndLoyaltyCardsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class ChromeAutofillClientOffersAndLoyaltyCardsDisabledBrowserTest
+    : public ChromeAutofillClientBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ChromeAutofillClientBrowserTest::SetUpInProcessBrowserTestFixture();
+    // Initialized after the base fixture's feature list, so that it is
+    // destroyed first.
+    feature_list_.InitAndDisableFeature(
+        features::kAutofillEnableOffersAndLoyaltyCardsSettings);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that calling `ShowAutofillSettings()` with
 // `SuggestionType::kManageLoyaltyCard` navigates the active tab to the Offers
 // and loyalty cards settings subpage and records the visit referrer metric.
@@ -366,11 +382,39 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientOffersAndLoyaltyCardsBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
       autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
-  content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(active_contents->GetVisibleURL(),
-            GURL(std::string("chrome://settings/") +
-                 chrome::kOffersAndLoyaltyCardsSubPage));
+  EXPECT_EQ(web_contents()->GetVisibleURL(),
+            chrome::GetSettingsUrl(chrome::kOffersAndLoyaltyCardsSubPage));
+}
+
+// Tests that calling `ShowAutofillSettings()` with
+// `SuggestionType::kManageOffers` navigates the active tab to the Offers and
+// loyalty cards settings subpage and records the visit referrer metric.
+IN_PROC_BROWSER_TEST_F(ChromeAutofillClientOffersAndLoyaltyCardsBrowserTest,
+                       ShowAutofillSettings_ManageOffersNavigatesToLeaf) {
+  base::HistogramTester histogram_tester;
+  client()->ShowAutofillSettings(SuggestionType::kManageOffers);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+  EXPECT_EQ(web_contents()->GetVisibleURL(),
+            chrome::GetSettingsUrl(chrome::kOffersAndLoyaltyCardsSubPage));
+}
+
+// Tests that calling `ShowAutofillSettings()` with
+// `SuggestionType::kManageOffers` navigates the active tab to the Payments
+// settings subpage when the Offers and loyalty cards page is disabled.
+IN_PROC_BROWSER_TEST_F(
+    ChromeAutofillClientOffersAndLoyaltyCardsDisabledBrowserTest,
+    ShowAutofillSettings_ManageOffersNavigatesToPayments) {
+  base::HistogramTester histogram_tester;
+  client()->ShowAutofillSettings(SuggestionType::kManageOffers);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+  EXPECT_EQ(web_contents()->GetVisibleURL(),
+            chrome::GetSettingsUrl(chrome::kPaymentsSubPage));
 }
 
 }  // namespace
