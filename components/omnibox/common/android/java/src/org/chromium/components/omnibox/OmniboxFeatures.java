@@ -124,11 +124,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sInlineLocationSignaling =
             newFlag(OmniboxFeatureList.INLINE_LOCATION_SIGNALING, FeatureState.ENABLED_IN_TEST);
 
-    public static final CachedFlag sFuseboxAsyncInflation =
-            newFlag(
-                    OmniboxFeatureList.OMNIBOX_FUSEBOX_ASYNC_INFLATION,
-                    FeatureState.ENABLED_IN_TEST);
-
     public static final CachedFlag sEarlyInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_EARLY_INFLATION, FeatureState.ENABLED_IN_TEST);
 

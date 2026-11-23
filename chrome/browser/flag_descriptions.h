@@ -3616,12 +3616,6 @@ inline constexpr char kOmniboxDuiPrerenderingName[] =
 inline constexpr char kOmniboxDuiPrerenderingDescription[] =
     "Enables Direct URL Input (DUI) prerendering in the Omnibox.";
 
-inline constexpr char kOmniboxFuseboxAsyncInflationName[] =
-    "Fusebox Async View Inflation";
-inline constexpr char kOmniboxFuseboxAsyncInflationDescription[] =
-    "When enabled, Fusebox RecyclerView will be inflated on a background thread"
-    " instead of the UI thread.";
-
 inline constexpr char kOmniboxEarlyInflationName[] = "Omnibox Early Inflation";
 inline constexpr char kOmniboxEarlyInflationDescription[] =
     "When enabled, the omnibox suggestions container starts inflating on a "

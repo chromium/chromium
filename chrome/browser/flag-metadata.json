@@ -7570,11 +7570,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "omnibox-fusebox-async-inflation",
-    "owners": ["peterkang@google.com", "ender@google.com", "chrome-mobile-search@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "omnibox-fusebox-popup-variations",
     "owners": ["peterkang@google.com", "ender@google.com", "chrome-mobile-search@google.com"],
     "expiry_milestone": 160

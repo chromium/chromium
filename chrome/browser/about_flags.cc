@@ -6958,11 +6958,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxUrlBarAimNaturalTextImeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxUrlBarAimNaturalTextIme)},
 
-    {"omnibox-fusebox-async-inflation",
-     flag_descriptions::kOmniboxFuseboxAsyncInflationName,
-     flag_descriptions::kOmniboxFuseboxAsyncInflationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxAsyncInflation)},
-
     {"omnibox-early-inflation", flag_descriptions::kOmniboxEarlyInflationName,
      flag_descriptions::kOmniboxEarlyInflationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxEarlyInflation)},
