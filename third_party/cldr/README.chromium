@@ -2,8 +2,7 @@ Name: Unicode Common Locale Data Repository
 Short Name: cldr
 URL: https://github.com/unicode-org/cldr
      https://packages.debian.org/sid/unicode-cldr-core
-Version: release-45
-Revision: dd5776f650183c9172abe2a57313ed41619d41fb
+Version: 44-0.1
 Update Mechanism: Static (https://crbug.com/584852234)
 License: Unicode-DFS-2016
 License File: LICENSE
