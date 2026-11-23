@@ -239,14 +239,13 @@ public class AccountPickerBottomSheetMediator
         mInitialViewState = initialViewState;
         mIsWebSignin = isWebSignin;
         mSigninAccessPoint = signinAccessPoint;
-        mDismissalLogger = new AccountPickerDismissalLogger(mSigninAccessPoint, mIsWebSignin);
+        mIsSeamlessSignin = launchMode == AccountPickerLaunchMode.SEAMLESS_SIGNIN;
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         switch (launchMode) {
             case AccountPickerLaunchMode.CHOOSE_ACCOUNT:
             case AccountPickerLaunchMode.DEFAULT:
-                mIsSeamlessSignin = false;
                 mModel =
                         AccountPickerBottomSheetProperties.createModel(
                                 this::onSelectedAccountClicked,
@@ -264,7 +263,6 @@ public class AccountPickerBottomSheetMediator
                 assert requestDisplayBottomSheet != null
                         : "Seamless sign-in requires a display request callback.";
                 assert accountId != null : "Seamless sign-in requires an initial account ID.";
-                mIsSeamlessSignin = true;
                 mModel =
                         AccountPickerBottomSheetProperties.createModelForSeamlessSignin(
                                 this::onContinueAsClicked,
@@ -279,6 +277,10 @@ public class AccountPickerBottomSheetMediator
                 throw new IllegalStateException(
                         "All values of AccountPickerLaunchMode should be handled.");
         }
+
+        mDismissalLogger =
+                new AccountPickerDismissalLogger(
+                        mSigninAccessPoint, mIsWebSignin, this::isAccountPickerShown);
 
         mModelPropertyChangedObserver =
                 (source, propertyKey) -> {
@@ -313,6 +315,12 @@ public class AccountPickerBottomSheetMediator
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void addAccount() {
+        SigninMetricsUtils.logSigninFunnelEvent(
+                mSigninAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_ADD_ACCOUNT_CLICKED);
+        startAddAccountFlow();
+    }
+
+    private void startAddAccountFlow() {
         assert !mIsSeamlessSignin
                 : "Adding an account is not supported in the seamless sign-in flow.";
         SigninMetricsUtils.logAccountConsistencyPromoAction(
@@ -381,6 +389,10 @@ public class AccountPickerBottomSheetMediator
     @Override
     public boolean onBackPressed() {
         if (shouldHandleBackPress()) {
+            if (isAccountPickerShown()) {
+                SigninMetricsUtils.logSigninFunnelEvent(
+                        mSigninAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED);
+            }
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
             return true;
         }
@@ -505,6 +517,12 @@ public class AccountPickerBottomSheetMediator
         return mModel;
     }
 
+    /** Returns whether the expanded account picker list is currently shown. */
+    boolean isAccountPickerShown() {
+        return mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
+                == ViewState.EXPANDED_ACCOUNT_LIST;
+    }
+
     void destroy() {
         mCallbackController.destroy();
         mAccountPickerDelegate.onAccountPickerDestroy();
@@ -523,9 +541,7 @@ public class AccountPickerBottomSheetMediator
             return false;
         }
         boolean hasExpandedAccountList =
-                mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
-                                == ViewState.EXPANDED_ACCOUNT_LIST
-                        && mInitialViewState != ViewState.EXPANDED_ACCOUNT_LIST;
+                isAccountPickerShown() && mInitialViewState != ViewState.EXPANDED_ACCOUNT_LIST;
         boolean isOnConfirmManagement =
                 mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
                         == ViewState.CONFIRM_MANAGEMENT;
@@ -566,7 +582,10 @@ public class AccountPickerBottomSheetMediator
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
     }
 
-    /** Logs that the bottom sheet was shown with or without accounts in the sign-in funnel. */
+    /**
+     * Logs that the bottom sheet was shown with or without accounts, or with the account list
+     * expanded, in the sign-in funnel.
+     */
     private void logBottomSheetShown() {
         if (mInitializedWithNoAccount) {
             SigninMetricsUtils.logSigninFunnelEvent(
@@ -574,6 +593,9 @@ public class AccountPickerBottomSheetMediator
         } else if (mInitialViewState == ViewState.COLLAPSED_ACCOUNT_LIST) {
             SigninMetricsUtils.logSigninFunnelEvent(
                     mSigninAccessPoint, SigninFunnelEvent.BOTTOM_SHEET_SHOWN_WITH_ACCOUNT);
+        } else if (mInitialViewState == ViewState.EXPANDED_ACCOUNT_LIST) {
+            SigninMetricsUtils.logSigninFunnelEvent(
+                    mSigninAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_SHOWN);
         }
     }
 
@@ -680,6 +702,8 @@ public class AccountPickerBottomSheetMediator
         SigninMetricsUtils.logSigninFunnelEvent(
                 mSigninAccessPoint, SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.EXPANDED_ACCOUNT_LIST);
+        SigninMetricsUtils.logSigninFunnelEvent(
+                mSigninAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_SHOWN);
     }
 
     /**
@@ -709,7 +733,8 @@ public class AccountPickerBottomSheetMediator
                 assert !mIsSeamlessSignin;
                 SigninMetricsUtils.logSigninFunnelEvent(
                         mSigninAccessPoint, SigninFunnelEvent.ADD_ACCOUNT_CLICKED);
-                addAccount();
+                // Skip addAccount(), which logs the account picker add account event.
+                startAddAccountFlow();
             }
             case ViewState.SIGNIN_AUTH_ERROR -> {
                 assert !mIsSeamlessSignin;

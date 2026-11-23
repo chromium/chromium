@@ -12,17 +12,29 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
+
+import java.util.function.BooleanSupplier;
 
 @NullMarked
 class AccountPickerDismissalLogger {
 
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final boolean mIsWebSignin;
+    private final BooleanSupplier mIsAccountPickerShown;
 
     AccountPickerDismissalLogger(@SigninAccessPoint int signinAccessPoint, boolean isWebSignin) {
+        this(signinAccessPoint, isWebSignin, () -> false);
+    }
+
+    AccountPickerDismissalLogger(
+            @SigninAccessPoint int signinAccessPoint,
+            boolean isWebSignin,
+            BooleanSupplier isAccountPickerShown) {
         mSigninAccessPoint = signinAccessPoint;
         mIsWebSignin = isWebSignin;
+        mIsAccountPickerShown = isAccountPickerShown;
     }
 
     /**
@@ -73,6 +85,10 @@ class AccountPickerDismissalLogger {
 
     private void logActiveDismissal(@AccountConsistencyPromoAction int promoAction) {
         SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction, mSigninAccessPoint);
+        if (mIsAccountPickerShown.getAsBoolean()) {
+            SigninMetricsUtils.logSigninFunnelEvent(
+                    mSigninAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED);
+        }
         if (mIsWebSignin) {
             SigninPreferencesManager.getInstance()
                     .incrementWebSigninAccountPickerActiveDismissalCount();

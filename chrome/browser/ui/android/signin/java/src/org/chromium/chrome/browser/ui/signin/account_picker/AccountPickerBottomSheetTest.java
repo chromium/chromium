@@ -327,7 +327,8 @@ public class AccountPickerBottomSheetTest {
                         .expectIntRecords(
                                 "Signin.SigninFunnel.WebSignin",
                                 SigninFunnelEvent.BOTTOM_SHEET_SHOWN_WITH_ACCOUNT,
-                                SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED)
+                                SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED,
+                                SigninFunnelEvent.ACCOUNT_PICKER_SHOWN)
                         .build();
 
         buildAndShowCollapsedThenExpandedBottomSheet();
@@ -779,6 +780,87 @@ public class AccountPickerBottomSheetTest {
                 1,
                 SigninPreferencesManager.getInstance()
                         .getWebSigninAccountPickerActiveDismissalCount());
+    }
+
+    @Test
+    @LargeTest
+    public void testExpandedSheetAtLaunch_addAccount_logsFunnelEvents() {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        var funnelHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.BookmarkManager",
+                                SigninFunnelEvent.ACCOUNT_PICKER_SHOWN,
+                                SigninFunnelEvent.ACCOUNT_PICKER_ADD_ACCOUNT_CLICKED)
+                        .build();
+        buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
+        addAccountAndSignin(TestAccounts.ACCOUNT2);
+
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        waitForBottomSheetView(withId(R.id.account_picker_signin_spinner_view));
+        assertSignInProceeded(bottomSheetView);
+        funnelHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandedSheetAtLaunch_backPress_logsFunnelEvents() {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        var funnelHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.BookmarkManager",
+                                SigninFunnelEvent.ACCOUNT_PICKER_SHOWN,
+                                SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED)
+                        .build();
+        buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
+        waitForBottomSheetView(withId(R.id.account_picker_state_expanded));
+
+        Espresso.pressBack();
+
+        Assert.assertFalse(getBottomSheetController().isSheetOpen());
+        funnelHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandedSheetAtLaunch_swipeDown_logsFunnelEvents() {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        var funnelHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.BookmarkManager",
+                                SigninFunnelEvent.ACCOUNT_PICKER_SHOWN,
+                                SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED)
+                        .build();
+        buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
+        waitForBottomSheetView(withId(R.id.account_picker_state_expanded));
+
+        waitForView(withId(R.id.account_picker_state_expanded)).performViewAction(swipeDown());
+
+        Assert.assertFalse(getBottomSheetController().isSheetOpen());
+        funnelHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandFromCollapsedSheet_thenBackPress_logsFunnelEvents() {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        var funnelHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.BookmarkManager",
+                                SigninFunnelEvent.BOTTOM_SHEET_SHOWN_WITH_ACCOUNT,
+                                SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED,
+                                SigninFunnelEvent.ACCOUNT_PICKER_SHOWN,
+                                SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED)
+                        .build();
+        buildAndShowCollapsedThenExpandedBottomSheet();
+
+        Espresso.pressBack();
+
+        checkCollapsedAccountList(TestAccounts.ACCOUNT1);
+        funnelHistogram.assertExpected();
     }
 
     @Test

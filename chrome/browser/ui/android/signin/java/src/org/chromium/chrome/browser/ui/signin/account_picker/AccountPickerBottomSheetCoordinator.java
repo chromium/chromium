@@ -66,7 +66,6 @@ public class AccountPickerBottomSheetCoordinator
         Activity activity = assumeNonNull(windowAndroid.getActivity().get());
         mActivity = activity;
         mIdentityManager = identityManager;
-        var dismissalLogger = new AccountPickerDismissalLogger(signinAccessPoint, isWebSignin);
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.SHOWN, signinAccessPoint);
 
@@ -85,6 +84,12 @@ public class AccountPickerBottomSheetCoordinator
                         signinAccessPoint,
                         selectedAccountId,
                         /* delegate= */ this);
+
+        var dismissalLogger =
+                new AccountPickerDismissalLogger(
+                        signinAccessPoint,
+                        isWebSignin,
+                        mAccountPickerBottomSheetMediator::isAccountPickerShown);
 
         boolean showAsDialog = SigninUtils.shouldShowAccountPickerDialog(activity);
         mManagementNoticePresentationMode =
