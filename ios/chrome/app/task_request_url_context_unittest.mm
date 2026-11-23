@@ -7,11 +7,13 @@
 #import <UIKit/UIKit.h>
 
 #import <optional>
+#import <string>
 
 #import "base/command_line.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/password_manager/core/common/remote_actor/remote_actor_features.h"
@@ -205,6 +207,16 @@ class TaskRequestForURLContextTest : public PlatformTest {
   void WriteRecentAppGroupCommand(NSString* command,
                                   NSString* caller_app,
                                   NSString* external_text) {
+    WriteRecentAppGroupCommand(command, caller_app, external_text,
+                               /*external_data=*/nil);
+  }
+
+  // Writes a recent App Group `command` sent by `caller_app`, with an optional
+  // `external_text` and `external_data`, to the shared defaults.
+  void WriteRecentAppGroupCommand(NSString* command,
+                                  NSString* caller_app,
+                                  NSString* external_text,
+                                  NSData* external_data) {
     NSMutableDictionary* dictionary = [@{
       base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandAppPreference) :
           caller_app,
@@ -216,6 +228,10 @@ class TaskRequestForURLContextTest : public PlatformTest {
     if (external_text) {
       dictionary[base::SysUTF8ToNSString(
           app_group::kChromeAppGroupCommandTextPreference)] = external_text;
+    }
+    if (external_data) {
+      dictionary[base::SysUTF8ToNSString(
+          app_group::kChromeAppGroupCommandDataPreference)] = external_data;
     }
     WriteAppGroupCommand(dictionary);
   }
@@ -262,13 +278,29 @@ class TaskRequestForURLContextTest : public PlatformTest {
 
   // Sets a default search engine so that search URLs can be generated.
   void SetUpDefaultSearchEngine() {
+    SetUpDefaultSearchEngine(u"test", /*supports_image_search=*/false);
+  }
+
+  // Sets a default search engine that can also search images.
+  void SetUpImageSearchDefaultSearchEngine() {
+    SetUpDefaultSearchEngine(u"image", /*supports_image_search=*/true);
+  }
+
+  // Sets a default search engine named `keyword`, which supports searching
+  // images if `supports_image_search` is true.
+  void SetUpDefaultSearchEngine(const std::u16string& keyword,
+                                bool supports_image_search) {
     TemplateURLService* template_url_service =
         ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     template_url_service->Load();
     TemplateURLData data;
-    data.SetShortName(u"Test");
-    data.SetKeyword(u"test");
+    data.SetShortName(keyword);
+    data.SetKeyword(keyword);
     data.SetURL(kTestSearchURL);
+    if (supports_image_search) {
+      data.image_url = kTestImageSearchURL;
+      data.image_url_post_params = kTestImageSearchPostParams;
+    }
     TemplateURL* template_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
@@ -284,6 +316,26 @@ class TaskRequestForURLContextTest : public PlatformTest {
       GURL("https://www.example.com/search?q=chromium");
   NSString* const kAppGroupCommandURL =
       @"googlechrome://x-callback-url/app-group-command";
+  // Image search URL and POST parameters of the default search engine used in
+  // tests.
+  const std::string kTestImageSearchURL = "https://www.example.com/image";
+  const std::string kTestImageSearchPostParams =
+      "encoded_image={google:imageThumbnail}";
+  // Image search commands and the mode they request.
+  struct ImageSearchTestCase {
+    NSString* command;
+    ApplicationModeForTabOpening expected_mode;
+  };
+  const ImageSearchTestCase kImageSearchTestCases[2] = {
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchImageCommand),
+       ApplicationModeForTabOpening::UNDETERMINED},
+      {app_group::kChromeAppGroupIncognitoSearchImageCommand,
+       ApplicationModeForTabOpening::INCOGNITO},
+  };
+  // Image data shared by an extension. Not a decodable image, which image
+  // search sends as is.
+  NSData* const kTestImageData =
+      [@"image" dataUsingEncoding:NSUTF8StringEncoding];
 
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1370,8 +1422,60 @@ TEST_F(TaskRequestForURLContextTest,
   EXPECT_TRUE(tab_opener.completionActionExecuted);
 }
 
-// Tests that unknown App Group commands, and the image search commands not yet
-// supported by the new startup flow, don't open a tab.
+// Tests that App Group image search commands open the image search results of
+// the default search engine, without the new tab animation.
+TEST_F(TaskRequestForURLContextTest,
+       TestAppGroupImageSearchCommandWithDefaultSearchEngine) {
+  SetUpImageSearchDefaultSearchEngine();
+  for (const auto& test_case : kImageSearchTestCases) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(test_case.command));
+    WriteRecentAppGroupCommand(test_case.command,
+                               app_group::kOpenCommandSourceShareExtension, nil,
+                               kTestImageData);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequest();
+
+    // The image is resized asynchronously before the tab is opened.
+    ASSERT_TRUE(base::test::RunUntil(^{
+      return tab_opener.completionActionExecuted;
+    }));
+    EXPECT_EQ(tab_opener.targetMode, test_case.expected_mode);
+    EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+              GURL(kTestImageSearchURL));
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.post_data);
+    EXPECT_TRUE(tab_opener.urlLoadParams.from_external);
+    EXPECT_TRUE(tab_opener.dismissOmnibox);
+    EXPECT_EQ(tab_opener.completionAction,
+              TabOpeningPostOpeningAction::NO_ACTION);
+  }
+}
+
+// Tests that App Group image search commands only open the NTP when the default
+// search engine can't search images.
+TEST_F(TaskRequestForURLContextTest,
+       TestAppGroupImageSearchCommandWithoutImageSearchSupport) {
+  SetUpDefaultSearchEngine();
+  for (const auto& test_case : kImageSearchTestCases) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(test_case.command));
+    WriteRecentAppGroupCommand(test_case.command,
+                               app_group::kOpenCommandSourceShareExtension, nil,
+                               kTestImageData);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequest();
+
+    EXPECT_EQ(tab_opener.targetMode, test_case.expected_mode);
+    EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+              GURL(kChromeUINewTabURL));
+    EXPECT_TRUE(tab_opener.urlLoadParams.from_external);
+    EXPECT_TRUE(tab_opener.dismissOmnibox);
+    EXPECT_TRUE(tab_opener.completionActionExecuted);
+  }
+}
+
+// Tests that unknown App Group commands, and image search commands without an
+// image, don't open a tab.
 TEST_F(TaskRequestForURLContextTest, TestUnhandledAppGroupCommandIgnored) {
   NSString* commands[] = {
       @"unknowncommand",

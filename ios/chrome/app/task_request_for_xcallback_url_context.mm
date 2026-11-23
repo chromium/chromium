@@ -10,6 +10,7 @@
 #import <optional>
 #import <string>
 
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -19,9 +20,12 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/app/task_request_utils.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
@@ -236,9 +240,19 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
   }
   NSString* externalText = _appGroupCommand.external_text;
   ProfileIOS* profile = sceneState.profileState.profile;
-  // Opens `tab`, unless it is `std::nullopt` and the command is discarded.
+  // Image searches don't map to a single tab, as how they open a tab depends on
+  // the default search engine and may be asynchronous. Every other command
+  // opens `tab`, unless it is `std::nullopt` and the command is discarded.
   std::optional<AppGroupCommandTab> tab;
   switch (*type) {
+    case AppGroupCommandType::kSearchImage:
+      [self searchAppGroupImageInMode:ApplicationModeForTabOpening::UNDETERMINED
+                           sceneState:sceneState];
+      return;
+    case AppGroupCommandType::kIncognitoSearchImage:
+      [self searchAppGroupImageInMode:ApplicationModeForTabOpening::INCOGNITO
+                           sceneState:sceneState];
+      return;
     case AppGroupCommandType::kOpenURL:
       tab = OpenURLTabForAppGroupCommand(
           externalText, ApplicationModeForTabOpening::UNDETERMINED);
@@ -255,11 +269,6 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
       tab = SearchTextTabForAppGroupCommand(
           externalText, ApplicationModeForTabOpening::INCOGNITO, profile);
       break;
-    case AppGroupCommandType::kSearchImage:
-    case AppGroupCommandType::kIncognitoSearchImage:
-      // TODO(crbug.com/493816082): Search the image sent by the extension,
-      // discarding commands without one, as the legacy startup flow does.
-      return;
     case AppGroupCommandType::kVoiceSearch:
       tab = AppGroupCommandTab{GURL(kChromeUINewTabURL),
                                ApplicationModeForTabOpening::NORMAL,
@@ -303,6 +312,82 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
                 urlLoadParams:urlLoadParams
                    targetMode:tab->target_mode
             postOpeningAction:tab->post_opening_action
+        postOpeningCompletion:nil];
+}
+
+// Searches the image sent by the extension in `targetMode` as the legacy
+// startup flow does when Lens is unavailable: with the default search engine if
+// it supports image search, otherwise by only opening the NTP. Commands without
+// an image are discarded.
+// TODO(crbug.com/493816082): Search the image with Lens when available.
+- (void)searchAppGroupImageInMode:(ApplicationModeForTabOpening)targetMode
+                       sceneState:(SceneState*)sceneState {
+  NSData* imageData = _appGroupCommand.external_data;
+  if (!imageData) {
+    return;
+  }
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForProfile(
+          sceneState.profileState.profile);
+  if (!search_engines::SupportsSearchByImage(templateURLService)) {
+    [self openImageSearchTabWithURLLoadParams:UrlLoadParams::InNewTab(
+                                                  GURL(kChromeUINewTabURL))
+                                   targetMode:targetMode
+                                   sceneState:sceneState];
+    return;
+  }
+  // The block retains `self` until the image is resized for the search
+  // request, while `sceneState` is captured weakly to avoid retaining a scene
+  // that disconnects in the meantime.
+  __weak SceneState* weakSceneState = sceneState;
+  ImageSearchParamGenerator::PrepareImageDataFromDataAsync(
+      imageData, base::BindOnce(^(NSData* resizedImageData) {
+        [self openImageSearchResultsForResizedImageData:resizedImageData
+                                             targetMode:targetMode
+                                             sceneState:weakSceneState];
+      }));
+}
+
+// Opens the default search engine results for `resizedImageData`. Does nothing
+// if the scene or its profile went away, or if the default search engine
+// stopped supporting image search while the image was resized.
+- (void)openImageSearchResultsForResizedImageData:(NSData*)resizedImageData
+                                       targetMode:(ApplicationModeForTabOpening)
+                                                      targetMode
+                                       sceneState:(SceneState*)sceneState {
+  ProfileIOS* profile = sceneState.profileState.profile;
+  if (!profile) {
+    // The scene was disconnected or its profile unloaded during the resize.
+    return;
+  }
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
+  if (!search_engines::SupportsSearchByImage(templateURLService)) {
+    // The default search engine changed during the resize. Loading the
+    // results would fail the checks of `LoadParamsForResizedImageData()`.
+    return;
+  }
+  UrlLoadParams urlLoadParams =
+      UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
+  urlLoadParams.web_params =
+      ImageSearchParamGenerator::LoadParamsForResizedImageData(
+          resizedImageData, GURL(), templateURLService);
+  [self openImageSearchTabWithURLLoadParams:urlLoadParams
+                                 targetMode:targetMode
+                                 sceneState:sceneState];
+}
+
+// Opens a tab loading `urlLoadParams` in `targetMode` for an image search.
+// Image searches are external requests, so they skip the new tab animation.
+- (void)openImageSearchTabWithURLLoadParams:(UrlLoadParams)urlLoadParams
+                                 targetMode:
+                                     (ApplicationModeForTabOpening)targetMode
+                                 sceneState:(SceneState*)sceneState {
+  urlLoadParams.from_external = true;
+  [self openTabWithSceneState:sceneState
+                urlLoadParams:urlLoadParams
+                   targetMode:targetMode
+            postOpeningAction:TabOpeningPostOpeningAction::NO_ACTION
         postOpeningCompletion:nil];
 }
 
