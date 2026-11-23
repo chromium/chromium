@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -711,6 +712,34 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
 
   // From Backend::Iterator:
   EntryResult OpenNextEntry(EntryResultCallback callback) override {
+    return OpenNextEntryWithCallback(
+        base::MakeRefCounted<CallbackHolder>(std::move(callback)));
+  }
+
+ private:
+  // Shared by the retries of one OpenNextEntry() call. References are acquired
+  // and released on the backend sequence, so atomic refcounting is unnecessary.
+  class CallbackHolder final : public base::RefCounted<CallbackHolder> {
+   public:
+    explicit CallbackHolder(EntryResultCallback callback)
+        : callback_(std::move(callback)) {}
+
+    CallbackHolder(const CallbackHolder&) = delete;
+    CallbackHolder& operator=(const CallbackHolder&) = delete;
+
+    void Run(EntryResult result) {
+      std::move(callback_).Run(std::move(result));
+    }
+
+   private:
+    friend class base::RefCounted<CallbackHolder>;
+    ~CallbackHolder() = default;
+
+    EntryResultCallback callback_;
+  };
+
+  EntryResult OpenNextEntryWithCallback(
+      scoped_refptr<CallbackHolder> callback) {
     if (!backend_) {
       return EntryResult::MakeError(net::ERR_FAILED);
     }
@@ -721,14 +750,14 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
     return EntryResult::MakeError(net::ERR_IO_PENDING);
   }
 
-  void OpenNextEntryImpl(EntryResultCallback callback,
+  void OpenNextEntryImpl(scoped_refptr<CallbackHolder> callback,
                          int index_initialization_error_code) {
     if (!backend_) {
-      std::move(callback).Run(EntryResult::MakeError(net::ERR_FAILED));
+      callback->Run(EntryResult::MakeError(net::ERR_FAILED));
       return;
     }
     if (index_initialization_error_code != net::OK) {
-      std::move(callback).Run(EntryResult::MakeError(
+      callback->Run(EntryResult::MakeError(
           static_cast<net::Error>(index_initialization_error_code)));
       return;
     }
@@ -740,35 +769,32 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
       uint64_t entry_hash = hashes_to_enumerate_->back();
       hashes_to_enumerate_->pop_back();
       if (backend_->index()->Has(entry_hash)) {
-        auto split_callback = base::SplitOnceCallback(std::move(callback));
-        callback = std::move(split_callback.first);
-        EntryResultCallback continue_iteration = base::BindOnce(
-            &SimpleIterator::CheckIterationReturnValue,
-            weak_factory_.GetWeakPtr(), std::move(split_callback.second));
+        EntryResultCallback continue_iteration =
+            base::BindOnce(&SimpleIterator::CheckIterationReturnValue,
+                           weak_factory_.GetWeakPtr(), callback);
         EntryResult open_result = backend_->OpenEntryFromHash(
             entry_hash, std::move(continue_iteration));
         if (open_result.net_error() == net::ERR_IO_PENDING) {
           return;
         }
         if (open_result.net_error() != net::ERR_FAILED) {
-          std::move(callback).Run(std::move(open_result));
+          callback->Run(std::move(open_result));
           return;
         }
       }
     }
-    std::move(callback).Run(EntryResult::MakeError(net::ERR_FAILED));
+    callback->Run(EntryResult::MakeError(net::ERR_FAILED));
   }
 
-  void CheckIterationReturnValue(EntryResultCallback callback,
+  void CheckIterationReturnValue(scoped_refptr<CallbackHolder> callback,
                                  EntryResult result) {
     if (result.net_error() == net::ERR_FAILED) {
-      OpenNextEntry(std::move(callback));
+      OpenNextEntryWithCallback(std::move(callback));
       return;
     }
-    std::move(callback).Run(std::move(result));
+    callback->Run(std::move(result));
   }
 
- private:
   base::WeakPtr<SimpleBackendImpl> backend_;
   std::unique_ptr<std::vector<uint64_t>> hashes_to_enumerate_;
   base::WeakPtrFactory<SimpleIterator> weak_factory_{this};

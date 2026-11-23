@@ -38,6 +38,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -4241,6 +4242,103 @@ TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationCorruption) {
 
   EXPECT_EQ(key_pool.size(), count);
   EXPECT_TRUE(keys_to_match.empty());
+}
+
+TEST_F(DiskCacheBackendTest,
+       SimpleCacheEnumerationManyMissingFilesThenValidEntry) {
+  SetBackendToTest(BackendToTest::kSimple);
+
+  // Before the fix, a Linux Debug reproduction with 20,000 consecutive failed
+  // opens exhausted its default 8 MiB stack, causing SIGSEGV when the
+  // accumulated callback chain ran. Stack defaults and the failure threshold
+  // depend on the platform and build configuration.
+  //
+  // Opening that many missing entries incurs substantial filesystem work and
+  // warning output. Reduce both the real thread's stack size and the number of
+  // failed opens to keep this regression fast. The 128 KiB stack and 600 failed
+  // opens still reproduce the overflow before the fix and pass with it.
+  base::Thread thread("EnumerationStackTest");
+  base::Thread::Options options;
+  options.stack_size = 128 * 1024;  // 128 KiB
+  ASSERT_TRUE(thread.StartWithOptions(std::move(options)));
+
+  base::RunLoop run_loop;
+  ASSERT_TRUE(thread.task_runner()->PostTaskAndReply(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        base::RunLoop cleanup_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        auto cleanup_tracker = disk_cache::BackendCleanupTracker::TryCreate(
+            cache_path_, base::DoNothing());
+        ASSERT_TRUE(cleanup_tracker);
+        cleanup_tracker->AddPostCleanupCallback(cleanup_loop.QuitClosure());
+        // Wait after all backend and entry references leave scope, including
+        // when a fatal assertion returns early from this task.
+        base::ScopedClosureRunner wait_for_cleanup(
+            base::BindLambdaForTesting([&] {
+              cleanup_tracker.reset();
+              cleanup_loop.Run();
+            }));
+        auto backend = std::make_unique<disk_cache::SimpleBackendImpl>(
+            /*file_operations_factory=*/nullptr, cache_path_, cleanup_tracker,
+            /*file_tracker=*/nullptr, /*max_bytes=*/0, net::DISK_CACHE,
+            /*entry_hasher=*/nullptr, /*net_log=*/nullptr);
+        net::TestCompletionCallback init_callback;
+        backend->Init(init_callback.callback());
+        ASSERT_THAT(init_callback.WaitForResult(), IsOk());
+        net::TestCompletionCallback index_callback;
+        backend->index()->ExecuteWhenReady(index_callback.callback());
+        ASSERT_THAT(index_callback.WaitForResult(), IsOk());
+
+        // Keep entry I/O on this thread as well so the nested idle drain below
+        // completes the valid entry's asynchronous creation and close.
+        backend->SetTaskRunnerForTesting(thread.task_runner());
+
+        constexpr int kMissingEntryCount = 600;
+        constexpr int kEntryCount = kMissingEntryCount + 1;
+        std::map<uint64_t, std::string> indexed_keys;
+        for (int i = 0; i < kEntryCount; ++i) {
+          std::string key = "entry-" + base::NumberToString(i);
+          const uint64_t entry_hash =
+              disk_cache::simple_util::GetEntryHashKey(key);
+          indexed_keys.emplace(entry_hash, key);
+          backend->index()->Insert(entry_hash);
+        }
+        ASSERT_EQ(kEntryCount, backend->index()->GetEntryCount());
+
+        // The iterator consumes hashes from the back, so this entry is last.
+        const uint64_t valid_entry_hash =
+            backend->index()->GetAllHashes()->front();
+        const std::string valid_key = indexed_keys.at(valid_entry_hash);
+        {
+          TestEntryResultCompletionCallback create_callback;
+          EntryResult result = create_callback.GetResult(backend->CreateEntry(
+              valid_key, net::HIGHEST, create_callback.callback()));
+          ASSERT_THAT(result.net_error(), IsOk());
+        }
+        base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed)
+            .RunUntilIdle();
+        ASSERT_EQ(0u, backend->GetNumActiveEntriesForTesting());
+        ASSERT_EQ(valid_entry_hash, backend->index()->GetAllHashes()->front());
+
+        auto iterator = backend->CreateIterator();
+        TestEntryResultCompletionCallback callback;
+        EntryResult result = iterator->OpenNextEntry(callback.callback());
+        ASSERT_THAT(result.net_error(), IsError(net::ERR_IO_PENDING));
+        result = callback.GetResult(std::move(result));
+        ASSERT_THAT(result.net_error(), IsOk());
+        disk_cache::ScopedEntryPtr opened_entry(result.ReleaseEntry());
+        ASSERT_TRUE(opened_entry);
+        EXPECT_EQ(valid_key, opened_entry->GetKey());
+        EXPECT_EQ(1, backend->index()->GetEntryCount());
+
+        TestEntryResultCompletionCallback end_callback;
+        result = iterator->OpenNextEntry(end_callback.callback());
+        result = end_callback.GetResult(std::move(result));
+        ASSERT_THAT(result.net_error(), IsError(net::ERR_FAILED));
+        EXPECT_EQ(nullptr, result.ReleaseEntry());
+      }),
+      run_loop.QuitClosure()));
+  run_loop.Run();
+  thread.Stop();
 }
 
 // Tests that enumerations don't leak memory when the backend is destructed
