@@ -32,7 +32,7 @@ const base::FeatureParam<std::string> kFcpPopulationNameContextualCues{
 
 const base::FeatureParam<std::string> kFcpPopulationNameStorageAccess{
     &kPrivateInsightsFeature, "fcp_population_name_storage_access",
-    "private_insights/storage_access"};
+    "chrome/private_insights/storage_access"};
 
 const base::FeatureParam<base::TimeDelta> kFcpConditionPollingPeriod{
     &kPrivateInsightsFeature, "fcp_condition_polling_period",
