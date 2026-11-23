@@ -94,6 +94,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/live_activity/model/first_run_live_activity_service_factory.h"
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
@@ -122,6 +123,7 @@
 #import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
+#import "ios/chrome/browser/live_activity/model/ios_chrome_live_activity_manager_factory.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
@@ -371,6 +373,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   EnterpriseProxyServiceFactoryIOS::GetInstance();
   ExtensionServiceFactory::GetInstance();
   ExternalFileRemoverFactory::GetInstance();
+  FirstRunLiveActivityServiceFactory::GetInstance();
   GeminiCapabilitiesManagerFactory::GetInstance();
   GeminiServiceFactory::GetInstance();
   GoogleGroupsManagerFactory::GetInstance();
@@ -403,6 +406,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSChromeInstanceIDProfileServiceFactory::GetInstance();
   IOSChromeLargeIconCacheFactory::GetInstance();
   IOSChromeLargeIconServiceFactory::GetInstance();
+  IOSChromeLiveActivityManagerFactory::GetInstance();
   IOSChromeOnDeviceEncryptionMetricsReporterFactory::GetInstance();
   IOSChromePasswordCheckManagerFactory::GetInstance();
   IOSChromePasswordReceiverServiceFactory::GetInstance();
