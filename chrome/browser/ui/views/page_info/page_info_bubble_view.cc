@@ -358,11 +358,6 @@ void PageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
   }
 }
 
-void PageInfoBubbleView::WebContentsDestroyed() {
-  PageInfoBubbleViewBase::WebContentsDestroyed();
-  weak_factory_.InvalidateWeakPtrs();
-}
-
 gfx::Size PageInfoBubbleView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   if (page_container_ == nullptr) {

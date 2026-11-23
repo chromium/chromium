@@ -75,7 +75,7 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // WebContentsObserver:
-  void WebContentsDestroyed() override;
+  void WebContentsDestroyed() final;
 
  private:
   friend class SafetyTipPageInfoBubbleViewBrowserTest;

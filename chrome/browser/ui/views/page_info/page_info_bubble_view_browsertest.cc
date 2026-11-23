@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/escape.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -75,6 +78,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -417,6 +421,51 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   closed_contents->Close();
   destroyed_waiter.Wait();
   EXPECT_FALSE(PageInfoBubbleView::IsShowing(web_contents()));
+}
+
+// Regression test for crbug.com/587263538: clicking "Site settings" posts an
+// asynchronous task while closing the tab destroys WebContents synchronously.
+// Verify that WebContents destruction synchronously closes and destroys the
+// Page Info bubble widget, cancelling pending UI tasks before WebContents
+// teardown completes.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       OpenSiteSettingsWhenWebContentsDestroyed) {
+  // Open a background tab so closing the active tab does not close the
+  // browser window.
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
+                            ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  OpenPageInfoBubble(browser());
+  EXPECT_TRUE(PageInfoBubbleView::IsShowing(web_contents()));
+
+  auto* bubble = static_cast<PageInfoBubbleView*>(
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(web_contents()));
+  ASSERT_NE(nullptr, bubble);
+  ASSERT_NE(nullptr, bubble->GetWidget());
+  base::WeakPtr<views::Widget> bubble_widget =
+      bubble->GetWidget()->GetWeakPtr();
+  views::View* site_settings_button = GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
+  ASSERT_NE(nullptr, site_settings_button);
+
+  // Post `PageInfoMainView::HandleMoreInfoRequestAsync` before destroying the
+  // WebContents, then synchronously destroy the WebContents.
+  PerformMouseClickOnView(site_settings_button);
+  browser()->GetTabStripModel()->CloseWebContentsAt(
+      browser()->GetTabStripModel()->active_index(), TabCloseTypes::CLOSE_NONE);
+
+  // The bubble widget (and its views/delegates) must already be destroyed
+  // synchronously before `CloseWebContentsAt` returns.
+  EXPECT_FALSE(bubble_widget);
+
+  // Drain the UI thread task queue past `HandleMoreInfoRequestAsync` to ensure
+  // the cancelled task is a safe no-op and does not open a Site Settings tab.
+  base::RunLoop run_loop;
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ChromeURL) {
