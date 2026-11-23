@@ -1,12 +1,14 @@
 #![allow(non_snake_case)]
 
+use std::hint;
+
 macro_rules! test {
     ($($name:ident($value:expr, $expected:expr))*) => {
         $(
             #[test]
             fn $name() {
                 let mut buffer = itoa::Buffer::new();
-                let s = buffer.format($value);
+                let s = buffer.format(hint::black_box($value));
                 assert_eq!(s, $expected);
             }
         )*

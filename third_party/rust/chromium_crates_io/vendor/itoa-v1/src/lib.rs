@@ -37,7 +37,7 @@
 //!
 //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/itoa-benchmark.png)
 
-#![doc(html_root_url = "https://docs.rs/itoa/1.0.18")]
+#![doc(html_root_url = "https://docs.rs/itoa/1.0.19")]
 #![no_std]
 #![allow(
     clippy::cast_lossless,
@@ -173,7 +173,7 @@ macro_rules! impl_Integer {
                 );
                 if self < 0 {
                     offset -= 1;
-                    buf[offset].write(b'-');
+                    unsafe { buf.get_unchecked_mut(offset).write(b'-') };
                 }
                 // SAFETY: Starting from `offset`, all elements of the slice have been set.
                 unsafe { slice_buffer_to_str(buf, offset) }
@@ -284,13 +284,13 @@ macro_rules! impl_Unsigned {
                     remain /= scale;
                     let (pair1, pair2) = divmod100(quad as u32);
                     unsafe {
-                        buf[offset + 0]
+                        buf.get_unchecked_mut(offset + 0)
                             .write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 0));
-                        buf[offset + 1]
+                        buf.get_unchecked_mut(offset + 1)
                             .write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 1));
-                        buf[offset + 2]
+                        buf.get_unchecked_mut(offset + 2)
                             .write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 0));
-                        buf[offset + 3]
+                        buf.get_unchecked_mut(offset + 3)
                             .write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 1));
                     }
                 }
@@ -302,9 +302,9 @@ macro_rules! impl_Unsigned {
                     let (last, pair) = divmod100(remain as u32);
                     remain = last as Self;
                     unsafe {
-                        buf[offset + 0]
+                        buf.get_unchecked_mut(offset + 0)
                             .write(*DECIMAL_PAIRS.0.get_unchecked(pair as usize * 2 + 0));
-                        buf[offset + 1]
+                        buf.get_unchecked_mut(offset + 1)
                             .write(*DECIMAL_PAIRS.0.get_unchecked(pair as usize * 2 + 1));
                     }
                 }
@@ -316,7 +316,7 @@ macro_rules! impl_Unsigned {
                     // Either the compiler sees that remain < 10, or it prevents
                     // a boundary check up next.
                     let last = remain as u8 & 15;
-                    buf[offset].write(b'0' + last);
+                    unsafe { buf.get_unchecked_mut(offset).write(b'0' + last) };
                     // not used: remain = 0;
                 }
 
@@ -370,10 +370,14 @@ impl Unsigned for u128 {
             remain /= 1_00_00;
             let (pair1, pair2) = divmod100(quad as u32);
             unsafe {
-                buf[offset + 0].write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 0));
-                buf[offset + 1].write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 1));
-                buf[offset + 2].write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 0));
-                buf[offset + 3].write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 1));
+                buf.get_unchecked_mut(offset + 0)
+                    .write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 0));
+                buf.get_unchecked_mut(offset + 1)
+                    .write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 1));
+                buf.get_unchecked_mut(offset + 2)
+                    .write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 0));
+                buf.get_unchecked_mut(offset + 3)
+                    .write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 1));
             }
         }
 
@@ -384,8 +388,10 @@ impl Unsigned for u128 {
             let (last, pair) = divmod100(remain as u32);
             remain = last as u64;
             unsafe {
-                buf[offset + 0].write(*DECIMAL_PAIRS.0.get_unchecked(pair as usize * 2 + 0));
-                buf[offset + 1].write(*DECIMAL_PAIRS.0.get_unchecked(pair as usize * 2 + 1));
+                buf.get_unchecked_mut(offset + 0)
+                    .write(*DECIMAL_PAIRS.0.get_unchecked(pair as usize * 2 + 0));
+                buf.get_unchecked_mut(offset + 1)
+                    .write(*DECIMAL_PAIRS.0.get_unchecked(pair as usize * 2 + 1));
             }
         }
 
@@ -396,7 +402,7 @@ impl Unsigned for u128 {
             // Either the compiler sees that remain < 10, or it prevents
             // a boundary check up next.
             let last = remain as u8 & 15;
-            buf[offset].write(b'0' + last);
+            unsafe { buf.get_unchecked_mut(offset).write(b'0' + last) };
             // not used: remain = 0;
         }
         offset
