@@ -25,7 +25,7 @@
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/mock_chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
@@ -344,26 +344,6 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
       .WillRepeatedly(Return(nullptr));
   return form_manager;
 }
-
-class MockPasswordChangeService : public ChromePasswordChangeService {
- public:
-  MockPasswordChangeService()
-      : ChromePasswordChangeService(/*pref_service*/ nullptr,
-                                    /*affiliation_service=*/nullptr,
-                                    /*optimization_keyed_service=*/nullptr,
-                                    /*settings_service=*/nullptr,
-                                    /*feature_manager=*/nullptr,
-                                    /*log_router*/ nullptr) {}
-
-  MOCK_METHOD(void,
-              OfferPasswordChangeUi,
-              (password_manager::LeakedPasswordDetails, content::WebContents*),
-              (override));
-  MOCK_METHOD(PasswordChangeDelegate*,
-              GetPasswordChangeDelegate,
-              (content::WebContents*),
-              (override));
-};
 
 password_manager::PasswordForm CreatePasswordForm(
     const std::string& url,
@@ -2803,10 +2783,10 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeFinishedSuccessfully) {
       profile(),
       base::BindLambdaForTesting([](content::BrowserContext* context)
                                      -> std::unique_ptr<KeyedService> {
-        return std::make_unique<MockPasswordChangeService>();
+        return std::make_unique<MockChromePasswordChangeService>();
       }));
 
-  auto* password_change_service = static_cast<MockPasswordChangeService*>(
+  auto* password_change_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile()));
 
   // Assuming, the password form was just submitted and this is a new password.
@@ -3144,9 +3124,9 @@ TEST_F(ManagePasswordsUIControllerTest,
       profile(),
       base::BindLambdaForTesting([](content::BrowserContext* context)
                                      -> std::unique_ptr<KeyedService> {
-        return std::make_unique<MockPasswordChangeService>();
+        return std::make_unique<MockChromePasswordChangeService>();
       }));
-  auto* password_change_service = static_cast<MockPasswordChangeService*>(
+  auto* password_change_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile()));
 
   // Emulate password change flow has started.
@@ -3170,7 +3150,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutomatedPasswordChangeOffered) {
       profile(),
       base::BindLambdaForTesting([](content::BrowserContext* context)
                                      -> std::unique_ptr<KeyedService> {
-        return std::make_unique<MockPasswordChangeService>();
+        return std::make_unique<MockChromePasswordChangeService>();
       }));
 
   std::vector<PasswordForm> matches = {test_local_form()};
@@ -3179,7 +3159,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutomatedPasswordChangeOffered) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
 
-  auto* password_change_service = static_cast<MockPasswordChangeService*>(
+  auto* password_change_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile()));
   EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
       .WillRepeatedly(Return(nullptr));

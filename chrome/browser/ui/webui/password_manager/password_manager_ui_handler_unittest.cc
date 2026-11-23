@@ -17,7 +17,7 @@
 #include "chrome/browser/extensions/api/passwords_private/mock_passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
-#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/mock_chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
@@ -127,24 +127,6 @@ class MockPasswordChangeActuator : public PasswordChangeActuator {
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-};
-
-class MockPasswordChangeService : public ChromePasswordChangeService {
- public:
-  MockPasswordChangeService()
-      : ChromePasswordChangeService(/*pref_service*/ nullptr,
-                                    /*affiliation_service=*/nullptr,
-                                    /*optimization_keyed_service=*/nullptr,
-                                    /*settings_service=*/nullptr,
-                                    /*feature_manager=*/nullptr,
-                                    /*log_router*/ nullptr) {}
-
-  MOCK_METHOD(base::WeakPtr<PasswordChangeFromCheckupDelegate>,
-              StartPasswordChangeFromCheckup,
-              (password_manager::StoredCredential,
-               content::WebContents*,
-               PasswordChangeFromCheckupDelegate::StateChangeCallback),
-              (override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -628,10 +610,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
                                               -> std::unique_ptr<KeyedService> {
-        return std::make_unique<testing::NiceMock<MockPasswordChangeService>>();
+        return std::make_unique<
+            testing::NiceMock<MockChromePasswordChangeService>>();
       }));
 
-  auto* mock_service = static_cast<MockPasswordChangeService*>(
+  auto* mock_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile_.get()));
   ASSERT_TRUE(mock_service);
 
@@ -674,10 +657,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
                                               -> std::unique_ptr<KeyedService> {
-        return std::make_unique<testing::NiceMock<MockPasswordChangeService>>();
+        return std::make_unique<
+            testing::NiceMock<MockChromePasswordChangeService>>();
       }));
 
-  auto* mock_service = static_cast<MockPasswordChangeService*>(
+  auto* mock_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile_.get()));
   ASSERT_TRUE(mock_service);
 
@@ -737,10 +721,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
                                               -> std::unique_ptr<KeyedService> {
-        return std::make_unique<testing::NiceMock<MockPasswordChangeService>>();
+        return std::make_unique<
+            testing::NiceMock<MockChromePasswordChangeService>>();
       }));
 
-  auto* mock_service = static_cast<MockPasswordChangeService*>(
+  auto* mock_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile_.get()));
   ASSERT_TRUE(mock_service);
 
@@ -831,10 +816,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
                                               -> std::unique_ptr<KeyedService> {
-        return std::make_unique<testing::NiceMock<MockPasswordChangeService>>();
+        return std::make_unique<
+            testing::NiceMock<MockChromePasswordChangeService>>();
       }));
 
-  auto* mock_service = static_cast<MockPasswordChangeService*>(
+  auto* mock_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile_.get()));
   ASSERT_TRUE(mock_service);
 
@@ -910,10 +896,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
                                               -> std::unique_ptr<KeyedService> {
-        return std::make_unique<testing::NiceMock<MockPasswordChangeService>>();
+        return std::make_unique<
+            testing::NiceMock<MockChromePasswordChangeService>>();
       }));
 
-  auto* mock_service = static_cast<MockPasswordChangeService*>(
+  auto* mock_service = static_cast<MockChromePasswordChangeService*>(
       PasswordChangeServiceFactory::GetForProfile(profile_.get()));
   ASSERT_TRUE(mock_service);
 
@@ -1028,8 +1015,7 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
        StartTrustedVaultUnlock_NullClient_NoOp) {
   MockPage mock_page;
   auto handler = std::make_unique<PasswordManagerUIHandler>(
-      mojo::PendingReceiver<mojom::PageHandler>(),
-      mock_page.BindAndGetRemote(),
+      mojo::PendingReceiver<mojom::PageHandler>(), mock_page.BindAndGetRemote(),
       base::MakeRefCounted<NiceMock<MockPasswordsPrivateDelegate>>(),
       web_contents_, /*password_manager_client=*/nullptr);
   handler->StartTrustedVaultUnlock();

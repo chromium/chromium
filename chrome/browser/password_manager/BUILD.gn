@@ -309,6 +309,8 @@ source_set("test_support") {
 
   # These helpers are used by tests on all platforms, including Android.
   sources = [
+    "mock_chrome_password_change_service.cc",
+    "mock_chrome_password_change_service.h",
     "password_change_delegate_mock.cc",
     "password_change_delegate_mock.h",
     "password_manager_test_util.cc",

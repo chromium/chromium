@@ -31,9 +31,9 @@
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_at_memory_accessory_controller.h"
-#include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
+#include "chrome/browser/password_manager/mock_chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/safe_browsing/interstitials/user_interaction_observer.h"
@@ -399,34 +399,14 @@ class MockPasswordAccessoryControllerImpl
 
 #endif
 
-class MockPasswordChangeService : public ChromePasswordChangeService {
- public:
-  MockPasswordChangeService()
-      : ChromePasswordChangeService(/*pref_service*/ nullptr,
-                                    /*affiliation_service=*/nullptr,
-                                    /*optimization_keyed_service=*/nullptr,
-                                    /*settings_service=*/nullptr,
-                                    /*feature_manager=*/nullptr,
-                                    /*log_router*/ nullptr) {}
-
-  MOCK_METHOD(void,
-              OfferPasswordChangeUi,
-              (password_manager::LeakedPasswordDetails, content::WebContents*),
-              (override));
-  MOCK_METHOD(PasswordChangeDelegate*,
-              GetPasswordChangeDelegate,
-              (content::WebContents*),
-              (override));
-};
-
 std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
 }
 
-std::unique_ptr<KeyedService> CreateMockPasswordChangeService(
+std::unique_ptr<KeyedService> CreateMockChromePasswordChangeService(
     content::BrowserContext* context) {
-  return std::make_unique<MockPasswordChangeService>();
+  return std::make_unique<MockChromePasswordChangeService>();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -484,9 +464,9 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
         }));
   }
 
-  void SetupMockPasswordChangeService() {
+  void SetupMockChromePasswordChangeService() {
     PasswordChangeServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(&CreateMockPasswordChangeService));
+        profile(), base::BindRepeating(&CreateMockChromePasswordChangeService));
   }
 
  protected:
@@ -503,8 +483,8 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->GetForProfile(profile()));
   }
-  MockPasswordChangeService* password_change_service() {
-    return static_cast<MockPasswordChangeService*>(
+  MockChromePasswordChangeService* password_change_service() {
+    return static_cast<MockChromePasswordChangeService*>(
         PasswordChangeServiceFactory::GetInstance()->GetForProfile(profile()));
   }
 
@@ -556,7 +536,7 @@ void ChromePasswordManagerClientTest::SetUp() {
   ChromePasswordManagerClient::CreateForWebContents(web_contents());
 
   SetupSettingsServiceFactory();
-  SetupMockPasswordChangeService();
+  SetupMockChromePasswordChangeService();
 }
 
 void ChromePasswordManagerClientTest::TearDown() {
