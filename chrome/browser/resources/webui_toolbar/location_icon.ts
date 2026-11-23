@@ -10,13 +10,13 @@ import './toolbar_chip_button.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {isMac} from '//resources/js/platform.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
 import {TimerHelper} from '/shared/timer_helper.js';
+import {isMacContextClick} from '/shared/toolbar_button.js';
 import {LhsChipIdentifier, SecurityChipRole, SecurityLevel} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SecurityChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -306,7 +306,7 @@ export class LocationIconElement extends LocationIconElementBase {
     // suppresses both 'click' and 'auxclick' (the button is still 0), so handle
     // it here. This mirrors Blink's suppression condition, which also checks
     // the modifier on release, so it never double-fires with onClick_.
-    if (isMac && e.button === 0 && e.ctrlKey) {
+    if (isMacContextClick(e)) {
       this.onClick_(e);
     }
   }

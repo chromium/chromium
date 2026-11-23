@@ -5,6 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -508,6 +509,37 @@ suite('ContentSettingIcon', function() {
     // auxclick should open the bubble.
     button.dispatchEvent(new PointerEvent('auxclick', {button: 2}));
     assertEquals(1, handler.getCallCount('showContentSettingsBubble'));
+  });
+
+  test('CtrlLeftClick', () => {
+    const button = icon.$.chip;
+    const ctrlMouse = {
+      button: 0,
+      ctrlKey: true,
+      pointerType: 'mouse',
+    };
+
+    // contextmenu should prevent default and NOT open the bubble on mousedown.
+    const contextMenuEvent = new PointerEvent('contextmenu', {
+      ...ctrlMouse,
+      cancelable: true,
+    });
+    button.dispatchEvent(contextMenuEvent);
+    assertTrue(contextMenuEvent.defaultPrevented);
+    assertEquals(0, handler.getCallCount('showContentSettingsBubble'));
+
+    // On Mac, Ctrl+LeftClick opens the bubble on pointerup because Blink
+    // suppresses both 'click' and 'auxclick'. On other platforms, pointerup
+    // does not open the bubble (handled by 'click').
+    button.dispatchEvent(new PointerEvent('pointerup', ctrlMouse));
+    assertEquals(
+        isMac ? 1 : 0, handler.getCallCount('showContentSettingsBubble'));
+    if (isMac) {
+      assertEquals(
+          ContentSettingImageType.kCookies,
+          handler.getArgs('showContentSettingsBubble')[0][0]);
+      assertTrue(handler.getArgs('showContentSettingsBubble')[0][1]);
+    }
   });
 
   test('Start tracking when identifier is set', async () => {

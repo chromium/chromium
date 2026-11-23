@@ -15,10 +15,9 @@ import {AnimationTracker} from './animation_tracker.js';
 import {getCss} from './permission_chip.css.js';
 import {getHtml} from './permission_chip.html.js';
 import type {PermissionChipDelegate} from './permission_chip_delegate.js';
+import {isPrimaryClick} from './toolbar_button.js';
 import {LhsChipIdentifier, PermissionAction, PermissionChipTheme, PermissionPromptStyle} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {PermissionChipState} from './toolbar_ui_api_data_model.mojom-webui.js';
-
-const BUTTON_LEFT = 0;
 
 const PermissionChipElementBase = HelpBubbleMixinLit(CrLitElement);
 
@@ -175,7 +174,7 @@ export class PermissionChipElement extends PermissionChipElementBase {
   }
 
   protected onPointerdown_(e: PointerEvent) {
-    if (e.button !== BUTTON_LEFT) {
+    if (!isPrimaryClick(e)) {
       return;
     }
     this.delegate?.onChipMousePressed(this.getIdentifier_());

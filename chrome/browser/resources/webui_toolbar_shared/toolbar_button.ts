@@ -17,6 +17,22 @@ export const BUTTON_LEFT = 0;
 export const BUTTON_MIDDLE = 1;
 export const BUTTON_RIGHT = 2;
 
+/**
+ * Returns true if `e` is a Mac Ctrl+LeftClick, which macOS treats as a
+ * secondary (context menu) click rather than a primary click.
+ */
+export function isMacContextClick(e: MouseEvent): boolean {
+  return isMac && e.button === BUTTON_LEFT && e.ctrlKey;
+}
+
+/**
+ * Returns true if `e` is a primary (left) button interaction, excluding Mac
+ * Ctrl+LeftClick which macOS treats as a secondary (context menu) click.
+ */
+export function isPrimaryClick(e: MouseEvent): boolean {
+  return e.button === BUTTON_LEFT && !isMacContextClick(e);
+}
+
 
 export interface GetEventDispositionFlagsOptions {
   ignoreCtrlKey?: boolean;
@@ -126,7 +142,7 @@ export class HighlightTracker {
   onPointerdown = (e: PointerEvent) => {
     // Ignore non-primary clicks or clicks not coming from a pointer (i.e.
     // keyboard).
-    if (e.button !== BUTTON_LEFT || e.pointerType === '') {
+    if (!isPrimaryClick(e) || e.pointerType === '') {
       this.skipNextClick_ = false;
       return;
     }
@@ -373,7 +389,7 @@ export class PressHandler {
     // On Mac, Ctrl+LeftClick is a Context Menu action. We return early to
     // bypass pointer capture and short-press logic, and let the native
     // contextmenu event handle it.
-    if (isMac && e.button === BUTTON_LEFT && e.ctrlKey) {
+    if (isMacContextClick(e)) {
       return;
     }
 
@@ -445,7 +461,7 @@ export class PressHandler {
     }
 
     // If it's Ctrl+LeftClick on Mac, abort the click.
-    if (isMac && e.button === BUTTON_LEFT && e.ctrlKey) {
+    if (isMacContextClick(e)) {
       this.resetContextMenuState_();
       return;
     }

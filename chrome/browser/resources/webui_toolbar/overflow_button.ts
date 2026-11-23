@@ -8,7 +8,7 @@ import '//resources/cr_elements/icons.html.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
+import {getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin, isPrimaryClick} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import type {OverflowButtonControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -57,7 +57,7 @@ export class OverflowButtonElement extends OverflowButtonElementBase {
     // Mouse events trigger the menu immediately on press.
     // Touch/Gesture events are ignored on press and instead trigger on tap
     // (release).
-    if (e.pointerType !== 'mouse' || e.button !== BUTTON_LEFT) {
+    if (e.pointerType !== 'mouse' || !isPrimaryClick(e)) {
       return;
     }
     this.handleMenuClick_(e);

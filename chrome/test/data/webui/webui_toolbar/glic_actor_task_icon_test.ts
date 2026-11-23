@@ -6,6 +6,7 @@ import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {GlicActorTaskIconElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
@@ -384,6 +385,19 @@ suite('GlicActorTaskIconTest', function() {
     }));
     assertEquals(
         2,
+        browserProxy.toolbarUIHandler.getCallCount(
+            'onGlicActorTaskIconClicked'));
+  });
+
+  test('CtrlLeftClickOnDown', function() {
+    element.$.button.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true,
+      button: 0,
+      ctrlKey: true,
+      pointerType: 'mouse',
+    }));
+    assertEquals(
+        isMac ? 0 : 1,
         browserProxy.toolbarUIHandler.getCallCount(
             'onGlicActorTaskIconClicked'));
   });

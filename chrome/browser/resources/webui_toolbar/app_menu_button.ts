@@ -12,7 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {AnimationTracker} from '/shared/animation_tracker.js';
 import {TimerHelper} from '/shared/timer_helper.js';
-import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
+import {getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin, isPrimaryClick} from '/shared/toolbar_button.js';
 import {AppMenuIconType, AppMenuSeverity, ContextMenuType, FocusRequestTarget} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {AppMenuControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -202,7 +202,7 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
     // Mouse events trigger the menu immediately on press.
     // Touch/Gesture events are ignored on press and instead trigger on tap
     // (release).
-    if (e.pointerType !== 'mouse' || e.button !== BUTTON_LEFT) {
+    if (e.pointerType !== 'mouse' || !isPrimaryClick(e)) {
       return;
     }
     this.handleMenuClick_(e);

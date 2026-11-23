@@ -8,11 +8,38 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import type {MediaButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
-import {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHandler} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {MediaButtonElement, OverflowButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
+import {BrowserProxyImpl, ContextMenuType, getClickSourceType, getContextMenuSourceType, HighlightTracker, isMacContextClick, isPrimaryClick, PressHandler} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import type {SplitTabsButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+
+import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 
 suite('ToolbarButtonTest', function() {
+  test('IsMacContextClick', function() {
+    assertFalse(
+        isMacContextClick(new PointerEvent('pointerdown', {button: 0})));
+    assertFalse(isMacContextClick(
+        new PointerEvent('pointerdown', {button: 1, ctrlKey: true})));
+    assertFalse(isMacContextClick(
+        new PointerEvent('pointerdown', {button: 2, ctrlKey: true})));
+    assertEquals(
+        isMac,
+        isMacContextClick(
+            new PointerEvent('pointerdown', {button: 0, ctrlKey: true})));
+  });
+
+  test('IsPrimaryClick', function() {
+    assertTrue(isPrimaryClick(new PointerEvent('pointerdown', {button: 0})));
+    assertFalse(isPrimaryClick(new PointerEvent('pointerdown', {button: 1})));
+    assertFalse(isPrimaryClick(new PointerEvent('pointerdown', {button: 2})));
+    assertEquals(
+        !isMac,
+        isPrimaryClick(
+            new PointerEvent('pointerdown', {button: 0, ctrlKey: true})));
+  });
+
   test('GetClickSourceType', function() {
     // PointerEvent touch -> kTouch
     assertEquals(
@@ -159,6 +186,13 @@ suite('ToolbarButtonTest', function() {
       assertFalse(clickSkipped(
           createHighlightedTracker(),
           new PointerEvent('pointerdown', {button: 2, pointerType: 'mouse'})));
+      assertEquals(
+          !isMac,
+          clickSkipped(
+              createHighlightedTracker(),
+              new PointerEvent(
+                  'pointerdown',
+                  {button: 0, ctrlKey: true, pointerType: 'mouse'})));
     });
 
     test('KeyboardNotSkipped', function() {
@@ -781,5 +815,125 @@ suite('MediaButton', function() {
         el.remove();
       }
     }
+  });
+});
+
+suite('SplitTabsButton', function() {
+  let splitTabsButton: SplitTabsButtonElement;
+  let browserProxy: TestToolbarBrowserProxy;
+  let browserControlsHandler: TestBrowserProxy;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    browserProxy = new TestToolbarBrowserProxy();
+    browserControlsHandler = new TestBrowserProxy(['splitActiveTab']);
+    browserProxy.browserControlsHandler = {
+      splitActiveTab: () =>
+          browserControlsHandler.methodCalled('splitActiveTab'),
+    };
+    BrowserProxyImpl.setInstance(browserProxy);
+
+    splitTabsButton = document.createElement('split-tabs-button');
+    splitTabsButton.state = {
+      ...splitTabsButton.state,
+      shouldBeShown: true,
+    };
+    document.body.appendChild(splitTabsButton);
+    await microtasksFinished();
+  });
+
+  test('CtrlLeftClickUnsplit', () => {
+    const button = splitTabsButton.shadowRoot.querySelector('cr-icon-button')!;
+    button.dispatchEvent(new PointerEvent('pointerdown', {
+      button: 0,
+      ctrlKey: true,
+      pointerType: 'mouse',
+      detail: 1,
+    }));
+
+    if (isMac) {
+      assertEquals(0, browserControlsHandler.getCallCount('splitActiveTab'));
+      button.dispatchEvent(new PointerEvent('contextmenu', {
+        button: 0,
+        ctrlKey: true,
+        pointerType: 'mouse',
+        detail: 1,
+      }));
+      assertEquals(
+          1, browserProxy.toolbarUIHandler.getCallCount('showContextMenu'));
+      assertEquals(
+          ContextMenuType.kSplitTabsContext,
+          browserProxy.toolbarUIHandler.getArgs('showContextMenu')[0][0]);
+    } else {
+      assertEquals(1, browserControlsHandler.getCallCount('splitActiveTab'));
+    }
+  });
+
+  test('CtrlLeftClickWhileSplit', async () => {
+    splitTabsButton.state = {
+      ...splitTabsButton.state,
+      isCurrentTabSplit: true,
+      shouldBeShown: true,
+    };
+    await microtasksFinished();
+
+    const button = splitTabsButton.shadowRoot.querySelector('cr-icon-button')!;
+    button.dispatchEvent(new PointerEvent('pointerdown', {
+      button: 0,
+      ctrlKey: true,
+      pointerType: 'mouse',
+      detail: 1,
+    }));
+
+    if (isMac) {
+      assertEquals(
+          0, browserProxy.toolbarUIHandler.getCallCount('showContextMenu'));
+      button.dispatchEvent(new PointerEvent('contextmenu', {
+        button: 0,
+        ctrlKey: true,
+        pointerType: 'mouse',
+        detail: 1,
+      }));
+      assertEquals(
+          1, browserProxy.toolbarUIHandler.getCallCount('showContextMenu'));
+      assertEquals(
+          ContextMenuType.kSplitTabsContext,
+          browserProxy.toolbarUIHandler.getArgs('showContextMenu')[0][0]);
+    } else {
+      assertEquals(
+          1, browserProxy.toolbarUIHandler.getCallCount('showContextMenu'));
+      assertEquals(
+          ContextMenuType.kSplitTabsAction,
+          browserProxy.toolbarUIHandler.getArgs('showContextMenu')[0][0]);
+    }
+  });
+});
+
+suite('OverflowButton', function() {
+  let overflowButton: OverflowButtonElement;
+  let browserProxy: TestToolbarBrowserProxy;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    browserProxy = new TestToolbarBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
+
+    overflowButton = document.createElement('overflow-button');
+    document.body.appendChild(overflowButton);
+    await microtasksFinished();
+  });
+
+  test('CtrlLeftClickOnDown', () => {
+    const button = overflowButton.shadowRoot.querySelector('cr-icon-button')!;
+    button.dispatchEvent(new PointerEvent('pointerdown', {
+      button: 0,
+      ctrlKey: true,
+      pointerType: 'mouse',
+      detail: 1,
+    }));
+
+    assertEquals(
+        isMac ? 0 : 1,
+        browserProxy.toolbarUIHandler.getCallCount('showOverflowMenu'));
   });
 });

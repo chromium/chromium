@@ -9,7 +9,7 @@ import './icons.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {BUTTON_LEFT, HelpBubbleAnchorMixin, HighlightTracker} from '/shared/toolbar_button.js';
+import {HelpBubbleAnchorMixin, HighlightTracker, isPrimaryClick} from '/shared/toolbar_button.js';
 import type {GlicActorTaskIconState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -101,7 +101,7 @@ export class GlicActorTaskIconElement extends GlicActorTaskIconElementBase {
     this.highlightTracker.onPointerdown(e);
     // Matches Views' MenuButtonController: a left mouse press activates
     // immediately; touch activates on tap (click).
-    if (e.pointerType !== 'mouse' || e.button !== BUTTON_LEFT) {
+    if (e.pointerType !== 'mouse' || !isPrimaryClick(e)) {
       return;
     }
     this.activate_(e);

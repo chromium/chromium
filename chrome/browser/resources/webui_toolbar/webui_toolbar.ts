@@ -11,7 +11,7 @@ export {EventDispositionFlag} from '/shared/browser_controls_api_data_model.mojo
 export {CrLazyIconset} from '/shared/cr_lazy_iconset.js';
 export {IconType} from '/shared/icon_handle.mojom-webui.js';
 export {IconTable} from '/shared/icon_table.js';
-export {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHandler} from '/shared/toolbar_button.js';
+export {getClickSourceType, getContextMenuSourceType, HighlightTracker, isMacContextClick, isPrimaryClick, PressHandler} from '/shared/toolbar_button.js';
 export type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
 export {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, ContentSettingImageType, ContextMenuType, DownloadProgressRingStatus, FocusRequestTarget, LhsChipIdentifier, OmniboxTextColor, PageActionAnimationStyle, PageActionId, PageActionTrigger, PermissionAction, PermissionChipTheme, PermissionPromptStyle, PinnedToolbarAction, PinnedToolbarActionEngagedIndicatorStyle, SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 export type {GlicButtonState, LocationBarState, OmniboxAction, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -21,3 +21,4 @@ export type {BackForwardButtonElement} from './back_forward_button.js';
 export {BrowserProxyImpl, createDefaultLocationBarState, InitialStateReader, INVALID_FOCUS_REQUEST_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from './browser_proxy.js';
 export type {BrowserProxy, FocusRequestHandle, FocusRequestListener, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener, ToolbarFlatStateSchema, ToolbarStateListener, ToolbarStateListenerHandle} from './browser_proxy.js';
 export type {ReloadButtonElement} from './reload_button.js';
+export type {SplitTabsButtonElement} from './split_tabs_button.js';

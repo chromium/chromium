@@ -10,7 +10,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
-import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, roundedIconsEnabled} from '/shared/toolbar_button.js';
+import {getClickSourceType, getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, isPrimaryClick, roundedIconsEnabled} from '/shared/toolbar_button.js';
 import {ContextMenuType, SplitTabActiveLocation} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SplitTabsControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -147,9 +147,10 @@ export class SplitTabsButtonElement extends SplitTabsButtonElementBase {
    * @returns
    */
   protected onPointerdown(e: PointerEvent) {
-    // Only handle primary (left) clicks. Right clicks are handled by the
-    // @contextmenu listener. Split tabs button does not support middle click.
-    if (e.button !== BUTTON_LEFT) {
+    // Only handle primary (left) clicks. Right clicks (including Mac
+    // Ctrl+LeftClick) are handled by the @contextmenu listener. Split tabs
+    // button does not support middle click.
+    if (!isPrimaryClick(e)) {
       return;
     }
     this.handleAction_(getClickSourceType(e));

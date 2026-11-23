@@ -45,6 +45,7 @@ export {GlicButtonElement} from './glic_button.js';
 export {LocationBarElement} from './location_bar.js';
 export {LocationIconElement} from './location_icon.js';
 export {MediaButtonElement} from './media_button.js';
+export type {OverflowButtonElement} from './overflow_button.js';
 export {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
 export {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixin.js';
 export type {OverflowableToolbarActionElement} from './overflowable_toolbar_action_mixin.js';

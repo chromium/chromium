@@ -5,6 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {PermissionChipElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
@@ -127,6 +128,13 @@ suite('PermissionChipTest', function() {
     // Right press should not trigger pressed
     chipEl.dispatchEvent(new PointerEvent('pointerdown', {button: 2}));
     assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+
+    // Ctrl+Left press is ignored on Mac (context click) and triggers pressed on
+    // other platforms.
+    chipEl.dispatchEvent(
+        new PointerEvent('pointerdown', {button: 0, ctrlKey: true}));
+    assertEquals(
+        isMac ? 1 : 2, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
 
     // Programmatic click (e.g. keyboard)
     chipEl.click();

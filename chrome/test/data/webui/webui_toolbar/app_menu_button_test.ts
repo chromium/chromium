@@ -5,6 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -208,6 +209,20 @@ suite('AppMenuButtonTest', function() {
     }));
 
     assertEquals(0, toolbarUiHandler.getCallCount('showContextMenu'));
+  });
+
+  test('CtrlLeftClickOnDown', function() {
+    const button = appMenuButton.$.button;
+
+    button.dispatchEvent(new PointerEvent('pointerdown', {
+      button: 0,
+      ctrlKey: true,
+      pointerType: 'mouse',
+      detail: 1,
+    }));
+
+    assertEquals(
+        isMac ? 0 : 1, toolbarUiHandler.getCallCount('showContextMenu'));
   });
 
   test('Attribute Bindings', async function() {
