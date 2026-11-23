@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_image_annotator.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_image_annotator.h"
+
+#include <stdint.h>
 
 #include <cmath>
 #include <limits>
@@ -21,7 +23,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ttc {
+namespace actor {
 namespace {
 
 // A 2x viewport of 400x300 DIPs, filled with a flat blue.
@@ -35,9 +37,8 @@ SkBitmap MakeViewport() {
   return bitmap;
 }
 
-SkBitmap Decode(const VisualContent& content) {
-  EXPECT_EQ(content.mime_type, "image/jpeg");
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(content.image_data);
+SkBitmap Decode(const std::vector<uint8_t>& jpeg) {
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(jpeg);
   EXPECT_FALSE(bitmap.isNull());
   return bitmap;
 }
@@ -73,11 +74,11 @@ TEST(PointerImageAnnotatorTest, CropsToDevicePixelsAndMarksThePoint) {
   // Crop (50, 40)-(250, 140) DIP, i.e. 400x200 px; the point at (150, 90)
   // DIP is its center, (200, 100) px.
   const gfx::PointF point(150, 90);
-  std::optional<VisualContent> content =
+  std::optional<std::vector<uint8_t>> jpeg =
       AnnotatePointerImage(MakeViewport(), gfx::Rect(50, 40, 200, 100),
                            base::span_from_ref(point), kScaleFactor);
-  ASSERT_TRUE(content);
-  const SkBitmap image = Decode(*content);
+  ASSERT_TRUE(jpeg);
+  const SkBitmap image = Decode(*jpeg);
   EXPECT_EQ(image.width(), 400);
   EXPECT_EQ(image.height(), 200);
 
@@ -100,7 +101,7 @@ TEST(PointerImageAnnotatorTest, CropsToDevicePixelsAndMarksThePoint) {
 TEST(PointerImageAnnotatorTest, SeveralPointsGetBadgesOffTheUiThread) {
   base::test::TaskEnvironment task_environment;
   const std::vector<gfx::PointF> points = {{100, 80}, {300, 200}};
-  base::test::TestFuture<std::optional<VisualContent>> future;
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&AnnotatePointerImage, MakeViewport(),
@@ -128,11 +129,11 @@ TEST(PointerImageAnnotatorTest, CropIsClippedToTheViewport) {
   // A crop running off the bottom right is cut to the part inside; one
   // entirely outside, or an empty one, gives nothing.
   const gfx::PointF point(390, 290);
-  std::optional<VisualContent> content =
+  std::optional<std::vector<uint8_t>> jpeg =
       AnnotatePointerImage(MakeViewport(), gfx::Rect(300, 250, 200, 100),
                            base::span_from_ref(point), kScaleFactor);
-  ASSERT_TRUE(content);
-  const SkBitmap image = Decode(*content);
+  ASSERT_TRUE(jpeg);
+  const SkBitmap image = Decode(*jpeg);
   EXPECT_EQ(image.width(), 200);
   EXPECT_EQ(image.height(), 100);
   EXPECT_TRUE(IsReddish(image.getColor(180, 80)));
@@ -151,10 +152,10 @@ TEST(PointerImageAnnotatorTest, CropIsClippedToTheViewport) {
 TEST(PointerImageAnnotatorTest, BadgeStaysInsideTheImage) {
   const std::vector<gfx::PointF> points = {
       {100, 290}, {300, 100}, {std::nanf(""), 50}};
-  std::optional<VisualContent> content = AnnotatePointerImage(
+  std::optional<std::vector<uint8_t>> jpeg = AnnotatePointerImage(
       MakeViewport(), gfx::Rect(0, 0, 400, 300), points, kScaleFactor);
-  ASSERT_TRUE(content);
-  const SkBitmap image = Decode(*content);
+  ASSERT_TRUE(jpeg);
+  const SkBitmap image = Decode(*jpeg);
 
   // The first point is 10 DIP from the bottom. Its badge, 22 DIP tall and
   // 18 DIP away, is above it: 36 to 80 px up.
@@ -176,4 +177,4 @@ TEST(PointerImageAnnotatorTest, BadScaleGivesNothing) {
 }
 
 }  // namespace
-}  // namespace ttc
+}  // namespace actor

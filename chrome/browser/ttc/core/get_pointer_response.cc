@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ttc/core/get_pointer_response.h"
 
+#include <stdint.h>
+
 #include <optional>
 #include <utility>
 #include <vector>
@@ -16,9 +18,9 @@
 #include "chrome/browser/actor/tools/get_pointer/pointer_crop_geometry.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_frame_redaction.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_hit_test.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_image_annotator.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/pointer_context_capturer.h"
-#include "chrome/browser/ttc/core/pointer_image_annotator.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
@@ -37,6 +39,7 @@ namespace ttc {
 
 namespace {
 
+using actor::AnnotatePointerImage;
 using actor::ComputePointerCropRect;
 using actor::DescribeNode;
 using actor::DescribeNodeAtPoint;
@@ -52,6 +55,12 @@ base::DictValue RectToDict(const gfx::Rect& rect) {
       .Set("y", rect.y())
       .Set("width", rect.width())
       .Set("height", rect.height());
+}
+
+// Returns `jpeg`, the bytes of a JPEG, as the image of a response.
+VisualContent JpegContent(std::vector<uint8_t> jpeg) {
+  return VisualContent{.image_data = std::move(jpeg),
+                       .mime_type = "image/jpeg"};
 }
 
 // The most selected things described in a result; enough to tell the model
@@ -210,9 +219,9 @@ std::optional<ToolResponse> BuildSelectionResponse(
                                  gfx::PointF(bounds.bottom_right())};
   const gfx::Rect crop = ComputePointerCropRect(corners, viewport);
   // No crosshair: the page itself shows what is selected.
-  std::optional<VisualContent> image =
+  std::optional<std::vector<uint8_t>> jpeg =
       AnnotatePointerImage(screenshot, crop, {}, context.scale_factor);
-  if (!image) {
+  if (!jpeg) {
     return std::nullopt;
   }
   description.Set("bounds", RectToDict(bounds));
@@ -224,7 +233,7 @@ std::optional<ToolResponse> BuildSelectionResponse(
           .Set("viewport", base::DictValue()
                                .Set("width", viewport.width())
                                .Set("height", viewport.height())),
-      std::move(*image));
+      JpegContent(std::move(*jpeg)));
 }
 
 }  // namespace
@@ -276,9 +285,9 @@ ToolResponse BuildGetPointerResponse(
   }
 
   const gfx::Rect crop = ComputePointerCropRect(points, viewport);
-  std::optional<VisualContent> image =
+  std::optional<std::vector<uint8_t>> jpeg =
       AnnotatePointerImage(screenshot, crop, points, context.scale_factor);
-  if (!image) {
+  if (!jpeg) {
     return ToolResponse::Error(
         actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
         "The image of the pointer could not be made");
@@ -314,7 +323,7 @@ ToolResponse BuildGetPointerResponse(
           .Set("viewport", base::DictValue()
                                .Set("width", viewport.width())
                                .Set("height", viewport.height())),
-      std::move(*image));
+      JpegContent(std::move(*jpeg)));
 }
 
 }  // namespace ttc

@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_image_annotator.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_image_annotator.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,7 +28,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ttc {
+namespace actor {
 
 namespace {
 
@@ -109,7 +110,7 @@ void DrawBadge(SkCanvas& canvas,
 
 }  // namespace
 
-std::optional<VisualContent> AnnotatePointerImage(
+std::optional<std::vector<uint8_t>> AnnotatePointerImage(
     const SkBitmap& viewport,
     const gfx::Rect& crop_dip,
     base::span<const gfx::PointF> points,
@@ -156,13 +157,7 @@ std::optional<VisualContent> AnnotatePointerImage(
     }
   }
 
-  std::optional<std::vector<uint8_t>> jpeg =
-      gfx::JPEGCodec::Encode(image, kJpegQuality);
-  if (!jpeg) {
-    return std::nullopt;
-  }
-  return VisualContent{.image_data = std::move(*jpeg),
-                       .mime_type = "image/jpeg"};
+  return gfx::JPEGCodec::Encode(image, kJpegQuality);
 }
 
-}  // namespace ttc
+}  // namespace actor

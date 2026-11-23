@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_CORE_POINTER_IMAGE_ANNOTATOR_H_
-#define CHROME_BROWSER_TTC_CORE_POINTER_IMAGE_ANNOTATOR_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_IMAGE_ANNOTATOR_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_IMAGE_ANNOTATOR_H_
+
+#include <stdint.h>
 
 #include <optional>
+#include <vector>
 
 #include "base/containers/span.h"
-#include "components/ttc/app/public/tool_types.h"
 
 class SkBitmap;
 
@@ -17,7 +19,7 @@ class PointF;
 class Rect;
 }  // namespace gfx
 
-namespace ttc {
+namespace actor {
 
 // Returns the part `crop_dip` of `viewport`, a screenshot of the viewport in
 // device pixels, as a JPEG with a crosshair on each of `points`, for the model
@@ -30,12 +32,12 @@ namespace ttc {
 //
 // Drawing and encoding are CPU-bound; this uses only Skia, so the caller can
 // run it on a worker thread.
-std::optional<VisualContent> AnnotatePointerImage(
+std::optional<std::vector<uint8_t>> AnnotatePointerImage(
     const SkBitmap& viewport,
     const gfx::Rect& crop_dip,
     base::span<const gfx::PointF> points,
     float scale_factor);
 
-}  // namespace ttc
+}  // namespace actor
 
-#endif  // CHROME_BROWSER_TTC_CORE_POINTER_IMAGE_ANNOTATOR_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_IMAGE_ANNOTATOR_H_
