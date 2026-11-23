@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.text.Spannable;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ import android.view.Gravity;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -41,6 +43,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionIconType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.BadgeType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -129,6 +132,34 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected void setOmniboxDrawableState(
             PropertyModel model, @Nullable OmniboxDrawableState decoration) {
         model.set(BaseSuggestionViewProperties.ICON, decoration);
+    }
+
+    /**
+     * Returns {@code icon} with the server's badge on its top-right corner, or {@code icon} itself
+     * if the server sent no badge for the suggestion.
+     */
+    private OmniboxDrawableState addTypeIconBadge(
+            AutocompleteMatch suggestion, OmniboxDrawableState icon) {
+        if (!hasTypeIconBadge(suggestion)) return icon;
+        // The border takes the suggestion background color, so the dot looks cut out of the icon
+        // in light and dark themes and in Incognito.
+        @Px
+        int border =
+                mUiContext.resourceProvider.getDimen(R.dimen.omnibox_suggestion_icon_badge_border);
+        Drawable badge =
+                mUiContext.resourceProvider.getDrawable(R.drawable.type_icon_badge_dot).mutate();
+        if (badge instanceof GradientDrawable) {
+            ((GradientDrawable) badge)
+                    .setStroke(
+                            border,
+                            mUiContext.resourceProvider.getStandardSuggestionBackgroundColor());
+        }
+        return icon.withBadge(badge, border);
+    }
+
+    /** Returns whether the server sent a badge for the suggestion's type icon. */
+    protected static boolean hasTypeIconBadge(AutocompleteMatch suggestion) {
+        return suggestion.getTypeIconBadgeType() == BadgeType.DOT;
     }
 
     /**
@@ -322,8 +353,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
         var icon = getFallbackIcon(suggestion);
         assert icon != null;
-        setOmniboxDrawableState(model, icon);
-        if (suggestion.isSearchSuggestion()) {
+        setOmniboxDrawableState(model, addTypeIconBadge(suggestion, icon));
+        // A fetched image would replace the icon and drop the badge, so keep the icon.
+        if (suggestion.isSearchSuggestion() && !hasTypeIconBadge(suggestion)) {
             fetchImage(model, suggestion.getImageUrl());
         }
 

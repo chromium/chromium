@@ -328,9 +328,11 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                                     header));
         }
 
+        // A favicon would replace the icon and drop its badge.
         if (!isSearchSuggestion
                 && !mBookmarkState.isBookmarked(suggestion.getUrl())
-                && !isDocumentSuggestion) {
+                && !isDocumentSuggestion
+                && !hasTypeIconBadge(suggestion)) {
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
 

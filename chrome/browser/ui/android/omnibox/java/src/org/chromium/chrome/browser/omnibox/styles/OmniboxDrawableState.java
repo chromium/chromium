@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -187,5 +188,19 @@ public class OmniboxDrawableState {
     public OmniboxDrawableState(
             Drawable drawable, boolean useRoundedCorners, @IconSize int size, boolean allowTint) {
         this(drawable, useRoundedCorners, size, allowTint, Resources.ID_NULL);
+    }
+
+    /**
+     * Returns a copy of this state with {@code badge} drawn on the top-right corner of the icon.
+     *
+     * @param badge The badge to draw. It keeps its own colors when the icon is tinted.
+     * @param badgeBorder The width of the border around the badge, which sits outside the icon.
+     */
+    public OmniboxDrawableState withBadge(Drawable badge, @Px int badgeBorder) {
+        return new OmniboxDrawableState(
+                new BadgedIconDrawable(drawable, badge, badgeBorder),
+                useRoundedCorners,
+                size,
+                allowTint);
     }
 }
