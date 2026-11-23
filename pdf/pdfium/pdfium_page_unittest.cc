@@ -847,7 +847,7 @@ TEST_P(PDFiumPageImageTest, ImagesWithAltText) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
-  page.PopulateTextRunTypeAndImageAltText();
+  page.PopulateImageAltText();
   ASSERT_EQ(3u, page.images_.size());
   EXPECT_EQ(gfx::Rect(380, 78, 67, 68), page.images_[0].bounding_rect);
   EXPECT_EQ("Image 1", page.images_[0].alt_text);
@@ -865,7 +865,7 @@ TEST_P(PDFiumPageImageTest, TextAndImagesWithAltText) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
-  page.PopulateTextRunTypeAndImageAltText();
+  page.PopulateImageAltText();
   ASSERT_EQ(3u, page.images_.size());
   EXPECT_EQ(gfx::Rect(380, 78, 67, 68), page.images_[0].bounding_rect);
   EXPECT_EQ("Image 1", page.images_[0].alt_text);
@@ -887,7 +887,7 @@ TEST_P(PDFiumPageImageBitmapTest, LowResolutionImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
-  page.PopulateTextRunTypeAndImageAltText();
+  page.PopulateImageAltText();
   ASSERT_EQ(3u, page.images_.size());
 
   ASSERT_FALSE(page.images_[0].alt_text.empty());
@@ -915,7 +915,7 @@ TEST_P(PDFiumPageImageBitmapTest, HighResolutionImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
-  page.PopulateTextRunTypeAndImageAltText();
+  page.PopulateImageAltText();
   ASSERT_EQ(1u, page.images_.size());
 
   SkBitmap image_bitmap = page.GetImageBitmap(page.images_[0].page_object_index,
@@ -937,7 +937,7 @@ TEST_P(PDFiumPageImageBitmapTest, RotatedPage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
-  page.PopulateTextRunTypeAndImageAltText();
+  page.PopulateImageAltText();
   ASSERT_EQ(1u, page.images_.size());
 
   SkBitmap image_bitmap = page.GetImageBitmap(page.images_[0].page_object_index,
@@ -956,7 +956,7 @@ TEST_P(PDFiumPageImageBitmapTest, NonImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
-  page.PopulateTextRunTypeAndImageAltText();
+  page.PopulateImageAltText();
   ASSERT_EQ(3u, page.images_.size());
   ASSERT_EQ(1, page.images_[0].page_object_index);
 

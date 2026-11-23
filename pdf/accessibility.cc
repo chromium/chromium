@@ -4,16 +4,12 @@
 
 #include "pdf/accessibility.h"
 
-#include <algorithm>
-#include <utility>
 #include <vector>
 
-#include "base/check_op.h"
-#include "base/numerics/safe_math.h"
-#include "pdf/accessibility_helper.h"
+#include "base/check.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_engine.h"
-#include "ui/gfx/geometry/rect_f.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace chrome_pdf {
 
@@ -26,7 +22,7 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   PDFiumPage* page = engine->GetPage(page_index);
   CHECK(page);
 
-  page->PopulateTextRunTypeAndImageAltText();
+  page->PopulateImageAltText();
   text_runs = page->GetTextRunInfo();
   chars = page->GetCharInfo();
 

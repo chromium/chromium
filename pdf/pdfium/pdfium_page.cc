@@ -1120,10 +1120,9 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureSubtree(
   tree_node->actual_text = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDF_StructElement_GetActualText, element),
       /*check_expected_size=*/true));
-  std::string alt_text = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+  tree_node->alt_text = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDF_StructElement_GetAltText, element),
       /*check_expected_size=*/true));
-  tree_node->alt_text = alt_text;
   std::string tag_type = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDF_StructElement_GetType, element),
       /*check_expected_size=*/true));
@@ -2270,7 +2269,7 @@ std::vector<gfx::RectF> PDFiumPage::CalculateFilledRects() {
   return filled_rects;
 }
 
-void PDFiumPage::PopulateTextRunTypeAndImageAltText() {
+void PDFiumPage::PopulateImageAltText() {
   CalculateTextRuns();
   CalculateImages();
 
@@ -2289,12 +2288,11 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltText() {
   for (int i = 0; i < tree_children_count; ++i) {
     FPDF_STRUCTELEMENT current_element =
         FPDF_StructTree_GetChildAtIndex(struct_tree.get(), i);
-    PopulateTextRunTypeAndImageAltTextForStructElement(current_element,
-                                                       visited_elements);
+    PopulateImageAltTextForStructElement(current_element, visited_elements);
   }
 }
 
-void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
+void PDFiumPage::PopulateImageAltTextForStructElement(
     FPDF_STRUCTELEMENT current_element,
     std::set<FPDF_STRUCTELEMENT>& visited_elements) {
   if (!current_element) {
@@ -2327,7 +2325,7 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
   for (int i = 0; i < children_count; ++i) {
     FPDF_STRUCTELEMENT child =
         FPDF_StructElement_GetChildAtIndex(current_element, i);
-    PopulateTextRunTypeAndImageAltTextForStructElement(child, visited_elements);
+    PopulateImageAltTextForStructElement(child, visited_elements);
   }
 }
 

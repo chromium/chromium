@@ -15,11 +15,9 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/ui/thumbnail.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -28,10 +26,13 @@
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_text.h"
 #include "third_party/pdfium/public/fpdfview.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "third_party/skia/include/core/SkBitmap.h"
+#endif
 
 namespace gfx {
 class Point;
@@ -41,7 +42,6 @@ namespace chrome_pdf {
 
 class PDFiumEngine;
 class PdfRect;
-class Thumbnail;
 struct AccessibilityCharInfo;
 struct AccessibilityFormGraphicInfo;
 struct AccessibilityHighlightInfo;
@@ -49,7 +49,6 @@ struct AccessibilityImageInfo;
 struct AccessibilityLineSegment;
 struct AccessibilityLinkInfo;
 struct AccessibilityStructureElement;
-struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
 
 // Wrapper around a page from the document.
@@ -148,11 +147,7 @@ class PDFiumPage {
   // bounding boxes.
   std::vector<AccessibilityLinkInfo> GetLinkInfo();
 
-  // For all the images on the page, get their alt texts and bounding boxes. If
-  // the alt text is empty or unavailable, and if the user has requested that
-  // the OCR service tag the PDF so that it is made accessible, transfer the raw
-  // image pixels in the `image_data` field. Otherwise do not populate the
-  // `image_data` field.
+  // For all the images on the page, get their alt texts and bounding boxes.
   std::vector<AccessibilityImageInfo> GetImageInfo();
 
   // Returns the indices of image objects.
@@ -198,10 +193,9 @@ class PDFiumPage {
   std::vector<gfx::RectF> GetFilledRectInfo();
 
   // Traverses the entire struct tree of the page recursively and extracts the
-  // text run type or the alt text from struct tree elements corresponding to
-  // the marked content IDs present in `marked_content_id_to_text_runs_map_` or
-  // `marked_content_id_to_images_map_` respectively.
-  void PopulateTextRunTypeAndImageAltText();
+  // alt text from struct tree elements corresponding to the marked content IDs
+  // present in `marked_content_id_to_images_map_`.
+  void PopulateImageAltText();
 
   enum Area {
     NONSELECTABLE_AREA,
@@ -449,11 +443,10 @@ class PDFiumPage {
                                                   uint32_t chars_count);
 
   // Traverses a struct element and its sub-tree recursively and extracts the
-  // text run type or the alt text from struct elements corresponding to the
-  // marked content IDs present in `marked_content_id_to_text_runs_map_` or
-  // `marked_content_id_to_images_map_` respectively. Uses `visited_elements` to
+  // alt text from struct elements corresponding to the marked content IDs
+  // present in `marked_content_id_to_images_map_`. Uses `visited_elements` to
   // guard against malformed struct trees.
-  void PopulateTextRunTypeAndImageAltTextForStructElement(
+  void PopulateImageAltTextForStructElement(
       FPDF_STRUCTELEMENT current_element,
       std::set<FPDF_STRUCTELEMENT>& visited_elements);
 
