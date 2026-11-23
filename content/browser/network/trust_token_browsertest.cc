@@ -157,7 +157,13 @@ void TrustTokenBrowsertest::OnTrustTokensAccessed(
   access_count_++;
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
+// TODO(crbug.com/512796428): Flaky on Android due to access_count_ race.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FetchEndToEnd DISABLED_FetchEndToEnd
+#else
+#define MAYBE_FetchEndToEnd FetchEndToEnd
+#endif
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, MAYBE_FetchEndToEnd) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -192,7 +198,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
 
 // Fetch is called directly from top level (a.test), issuer origin (b.test)
 // is different from top frame origin.
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndThirdParty) {
+// TODO(crbug.com/512796428): Flaky on Android due to access_count_ race.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FetchEndToEndThirdParty DISABLED_FetchEndToEndThirdParty
+#else
+#define MAYBE_FetchEndToEndThirdParty FetchEndToEndThirdParty
+#endif
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, MAYBE_FetchEndToEndThirdParty) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"b.test"});
 
   const GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -231,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndThirdParty) {
 }
 
 // TODO(crbug.com/512796428): Re-enable this test.
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_XhrEndToEnd DISABLED_XhrEndToEnd
 #else
 #define MAYBE_XhrEndToEnd XhrEndToEnd
@@ -452,7 +464,14 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ(1, access_count_);
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
+// TODO(crbug.com/512796428): Flaky on Android due to access_count_ race.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FetchEndToEndInIsolatedWorld DISABLED_FetchEndToEndInIsolatedWorld
+#else
+#define MAYBE_FetchEndToEndInIsolatedWorld FetchEndToEndInIsolatedWorld
+#endif
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       MAYBE_FetchEndToEndInIsolatedWorld) {
   // Ensure an isolated world can execute Trust Tokens operations when its
   // window's main world can. In particular, this ensures that the
   // redemtion-and-signing permissions policy is appropriately propagated by the
@@ -1474,8 +1493,16 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ(4, access_count_);
 }
 
+// TODO(crbug.com/512796428): Flaky on Android due to access_count_ race.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SigningRequiresRedemptionRecordInStorage \
+  DISABLED_SigningRequiresRedemptionRecordInStorage
+#else
+#define MAYBE_SigningRequiresRedemptionRecordInStorage \
+  SigningRequiresRedemptionRecordInStorage
+#endif
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
-                       SigningRequiresRedemptionRecordInStorage) {
+                       MAYBE_SigningRequiresRedemptionRecordInStorage) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -1515,7 +1542,15 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ(3, access_count_);
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndWithServiceWorker) {
+// TODO(crbug.com/512796428): Flaky on Android due to access_count_ race.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FetchEndToEndWithServiceWorker \
+  DISABLED_FetchEndToEndWithServiceWorker
+#else
+#define MAYBE_FetchEndToEndWithServiceWorker FetchEndToEndWithServiceWorker
+#endif
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       MAYBE_FetchEndToEndWithServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const char* const hostname = "a.test";
   ProvideRequestHandlerKeyCommitmentsToNetworkService({hostname});
