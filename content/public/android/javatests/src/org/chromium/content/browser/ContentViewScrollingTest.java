@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -26,6 +27,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule.RerunWithUpdatedContainerView;
@@ -133,12 +135,16 @@ public class ContentViewScrollingTest {
                 });
     }
 
-    private void waitForViewportInitialization() {
-        CriteriaHelper.pollInstrumentationThread(
+    private void waitForViewportInitialization(WebContents webContents) {
+        CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             mCoordinates.getLastFrameViewportWidthPixInt(), Matchers.not(0));
                 });
+        // End browser paint-holding so InputRouterImpl is active before tests dispatch input;
+        // mLastFrameViewportWidthPix is updated pre-activation, before MakeActive() runs.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
     }
 
     private void fling(final int vx, final int vy) {
@@ -218,8 +224,9 @@ public class ContentViewScrollingTest {
         mActivityTestRule.launchContentShellWithUrl(LARGE_PAGE);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mCoordinates = mActivityTestRule.getRenderCoordinates();
-        WebContentsUtils.reportAllFrameSubmissions(mActivityTestRule.getWebContents(), true);
-        waitForViewportInitialization();
+        WebContents webContents = mActivityTestRule.getWebContents();
+        WebContentsUtils.reportAllFrameSubmissions(webContents, true);
+        waitForViewportInitialization(webContents);
 
         Assert.assertEquals(0, mCoordinates.getScrollXPixInt());
         Assert.assertEquals(0, mCoordinates.getScrollYPixInt());
