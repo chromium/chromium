@@ -64,17 +64,26 @@ export class SettingsSafetyHubEntryPointElement extends
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private entryPointDataFetched_: Promise<void> = Promise.resolve();
+  private fetchRequestId_: number = 0;
 
   override connectedCallback() {
-    this.entryPointDataFetched_ =
-        this.safetyHubBrowserProxy_.getSafetyHubEntryPointData().then(
-            (entryPoint: EntryPointInfo) => {
-              this.hasRecommendations_ = entryPoint.hasRecommendations;
-              this.headerString_ = entryPoint.header;
-              this.subheaderString_ = entryPoint.subheader;
-            });
+    if (Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
+      this.fetchEntryPointData_(++this.fetchRequestId_);
+    }
     super.connectedCallback();
+  }
+
+  private fetchEntryPointData_(requestId: number): Promise<boolean> {
+    return this.safetyHubBrowserProxy_.getSafetyHubEntryPointData().then(
+        (entryPoint: EntryPointInfo) => {
+          if (requestId !== this.fetchRequestId_) {
+            return false;
+          }
+          this.hasRecommendations_ = entryPoint.hasRecommendations;
+          this.headerString_ = entryPoint.header;
+          this.subheaderString_ = entryPoint.subheader;
+          return true;
+        });
   }
 
   override async currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -83,11 +92,14 @@ export class SettingsSafetyHubEntryPointElement extends
     if (Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
       return;
     }
-    // super.connectedCallback() calls this synchronously, so wait for the
-    // entry point data to avoid recording a stale `hasRecommendations_`.
-    await this.entryPointDataFetched_;
-    // The user may have navigated away while waiting.
-    if (Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
+    // Fetch fresh entry point data whenever the privacy page becomes active
+    // (including initial attach via super.connectedCallback() and returning
+    // from Safety Check or Security subpages).
+    const requestId = ++this.fetchRequestId_;
+    const isLatest = await this.fetchEntryPointData_(requestId);
+    // Ignore stale responses or navigations away while waiting.
+    if (!isLatest ||
+        Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
       return;
     }
     // Only record the metrics when the user navigates to the privacy page
