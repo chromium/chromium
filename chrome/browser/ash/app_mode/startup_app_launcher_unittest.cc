@@ -13,6 +13,7 @@
 
 #include "ash/constants/chrome_switches.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -537,7 +538,6 @@ class StartupAppLauncherNoCreateTest
   void SetUp() override {
     ash_test_helper_.SetUp();
 
-    UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     command_line_.GetProcessCommandLine()->AppendSwitch(
         ash::chrome_switches::kForceAppMode);
     command_line_.GetProcessCommandLine()->AppendSwitch(
@@ -688,6 +688,8 @@ class StartupAppLauncherNoCreateTest
 
   std::unique_ptr<extensions::ExternalProviderImpl> primary_app_provider_;
   std::unique_ptr<extensions::ExternalProviderImpl> secondary_apps_provider_;
+  base::AutoReset<bool> skip_default_user_image_download_ =
+      UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 };
 
 // Tests that extension download backoff is reduced during Chrome app Kiosk

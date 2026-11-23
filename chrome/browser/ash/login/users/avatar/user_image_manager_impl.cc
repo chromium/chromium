@@ -13,6 +13,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -813,13 +814,15 @@ void UserImageManagerImpl::IgnoreProfileDataDownloadDelayForTesting() {
 }
 
 // static
-void UserImageManagerImpl::SkipProfileImageDownloadForTesting() {
-  g_skip_profile_download = true;
+base::AutoReset<bool>
+UserImageManagerImpl::SkipProfileImageDownloadForTesting() {
+  return base::AutoReset<bool>(&g_skip_profile_download, true);
 }
 
 // static
-void UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting() {
-  g_skip_default_user_image_download = true;
+base::AutoReset<bool>
+UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting() {
+  return base::AutoReset<bool>(&g_skip_default_user_image_download, true);
 }
 
 bool UserImageManagerImpl::NeedsProfilePicture() const {

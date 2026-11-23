@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -139,8 +140,10 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   void SetDownloadedProfileImageForTesting(const gfx::ImageSkia& image);
 
   static void IgnoreProfileDataDownloadDelayForTesting();
-  static void SkipProfileImageDownloadForTesting();
-  static void SkipDefaultUserImageDownloadForTesting();
+
+  // Skips the respective download for as long as the returned object lives.
+  static base::AutoReset<bool> SkipProfileImageDownloadForTesting();
+  static base::AutoReset<bool> SkipDefaultUserImageDownloadForTesting();
 
   // Key for a dictionary that maps user IDs to user image data with images
   // stored in JPEG format.

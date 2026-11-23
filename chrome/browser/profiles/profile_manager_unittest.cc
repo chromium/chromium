@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -215,7 +216,6 @@ class ProfileManagerTestBase : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS)
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
-    ash::UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
@@ -411,6 +411,8 @@ class ProfileManagerTestBase : public testing::Test {
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  base::AutoReset<bool> skip_default_user_image_download_ =
+      ash::UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 #endif
 };
 

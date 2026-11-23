@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -380,7 +381,8 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
       user_manager::UserManager::Get()->FindUser(test_account_id1_);
   ASSERT_TRUE(user);
 
-  UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+  base::AutoReset<bool> skip_default_image_download =
+      UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 
   UserImageManagerImpl* user_image_manager =
       UserImageManagerRegistry::Get()->GetManager(test_account_id1_);
@@ -685,7 +687,8 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   EXPECT_EQ(policy_image_.width(), saved_image.width());
   EXPECT_EQ(policy_image_.height(), saved_image.height());
 
-  UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+  base::AutoReset<bool> skip_default_image_download =
+      UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 
   // Clear policy. Verify that the user image switches to a random default
   // image.
@@ -739,7 +742,8 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   policy::CloudPolicyStore* store = GetStoreForUser(user);
   ASSERT_TRUE(store);
 
-  UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+  base::AutoReset<bool> skip_default_image_download =
+      UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 
   // Choose a user image. Verify that the chosen user image is set and
   // persisted.

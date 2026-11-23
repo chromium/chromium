@@ -12,6 +12,7 @@
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -211,7 +212,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_user_manager_controller_ =
         std::make_unique<ash::ProfileUserManagerController>(
@@ -234,7 +234,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     web_ui_.set_web_contents(web_contents_.get());
-    ash::UserImageManagerImpl::SkipProfileImageDownloadForTesting();
     user_provider_ =
         std::make_unique<PersonalizationAppUserProviderImpl>(&web_ui_);
     user_provider_->camera_image_decoder_ =
@@ -342,6 +341,10 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
       user_provider_remote_;
   std::unique_ptr<PersonalizationAppUserProviderImpl> user_provider_;
   base::HistogramTester histogram_tester_;
+  base::AutoReset<bool> skip_default_user_image_download_ =
+      UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+  base::AutoReset<bool> skip_profile_image_download_ =
+      UserImageManagerImpl::SkipProfileImageDownloadForTesting();
 };
 
 TEST_F(PersonalizationAppUserProviderImplTest, GetsUserInfo) {

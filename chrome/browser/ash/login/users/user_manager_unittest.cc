@@ -13,6 +13,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -143,9 +144,6 @@ class UserManagerTest : public testing::Test {
     command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
 
     UserDataAuthClient::InitializeFake();
-
-    UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
-    UserImageManagerImpl::SkipProfileImageDownloadForTesting();
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
@@ -328,6 +326,10 @@ class UserManagerTest : public testing::Test {
   std::unique_ptr<PolicyUserManagerController> policy_user_manager_controller_;
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
   base::ScopedTempDir temp_dir_;
+  base::AutoReset<bool> skip_default_user_image_download_ =
+      UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+  base::AutoReset<bool> skip_profile_image_download_ =
+      UserImageManagerImpl::SkipProfileImageDownloadForTesting();
 };
 
 TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
