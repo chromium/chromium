@@ -27,8 +27,8 @@ export const THIS_MEMBER_EXPRESSION_QUERY = esquery.parse(
     'MemberExpression[object.type="ThisExpression"], ' +
     'MemberExpression[object.type="Identifier"][object.name="this"]');
 
-export function isCrLitElementType(
-    type: ts.Type, checker: ts.TypeChecker,
+export function matchesTypeInHierarchy(
+    type: ts.Type, checker: ts.TypeChecker, predicate: (t: ts.Type) => boolean,
     visited: Set<ts.Type> = new Set()): boolean {
   const nonNullableType = checker.getNonNullableType(type);
   if (visited.has(nonNullableType)) {
@@ -36,7 +36,7 @@ export function isCrLitElementType(
   }
   visited.add(nonNullableType);
 
-  if (nonNullableType.symbol?.name === 'CrLitElement') {
+  if (predicate(nonNullableType)) {
     return true;
   }
 
@@ -47,20 +47,22 @@ export function isCrLitElementType(
 
   if ((nonNullableType.flags & ts.TypeFlags.TypeParameter) !== 0) {
     const constraint = checker.getBaseConstraintOfType(nonNullableType);
-    return !!constraint && isCrLitElementType(constraint, checker, visited);
+    return !!constraint &&
+        matchesTypeInHierarchy(constraint, checker, predicate, visited);
   }
 
   if ((nonNullableType.flags & ts.TypeFlags.Union) !== 0) {
     const union = nonNullableType as ts.UnionType;
     return union.types.length > 0 &&
         union.types.every(
-            (t: ts.Type) => isCrLitElementType(t, checker, visited));
+            (t: ts.Type) =>
+                matchesTypeInHierarchy(t, checker, predicate, visited));
   }
 
   if ((nonNullableType.flags & ts.TypeFlags.Intersection) !== 0) {
     const intersection = nonNullableType as ts.IntersectionType;
     return intersection.types.some(
-        (t: ts.Type) => isCrLitElementType(t, checker, visited));
+        (t: ts.Type) => matchesTypeInHierarchy(t, checker, predicate, visited));
   }
 
   if ((nonNullableType.flags & ts.TypeFlags.Object) !== 0 &&
@@ -69,10 +71,16 @@ export function isCrLitElementType(
     const baseTypes = checker.getBaseTypes(nonNullableType as ts.InterfaceType);
     return baseTypes.some(
         (baseType: ts.BaseType) =>
-            isCrLitElementType(baseType, checker, visited));
+            matchesTypeInHierarchy(baseType, checker, predicate, visited));
   }
 
   return false;
+}
+
+export function isCrLitElementType(
+    type: ts.Type, checker: ts.TypeChecker): boolean {
+  return matchesTypeInHierarchy(
+      type, checker, t => t.symbol?.name === 'CrLitElement');
 }
 
 export function isCrLitElementSubclass(

@@ -12,7 +12,11 @@ export class InlineTemplateDummyTestElement extends CrLitElement {
   }
 
   override render() {
-    return html`<div>${this.usedProtectedInlineAccessor_}</div>`;
+    return html`
+      <div>${this.usedProtectedInlineAccessor_}</div>
+      <div>${this.usedProtectedInlineMethod_()}</div>
+      <div>${this.usedProtectedInlineGetter_}</div>
+    `;
   }
 
   static override get properties() {
@@ -24,6 +28,24 @@ export class InlineTemplateDummyTestElement extends CrLitElement {
 
   protected accessor usedProtectedInlineAccessor_: string = '';
   protected accessor unusedProtectedInlineAccessor_: string = '';
+
+  protected usedProtectedInlineMethod_(): string {
+    return 'used';
+  }
+
+  protected get usedProtectedInlineGetter_(): string {
+    return 'used';
+  }
+
+  protected unusedProtectedInlineMethod_(): string {
+    return 'unused';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'inline-template-dummy-test': InlineTemplateDummyTestElement;
+  }
 }
 
 customElements.define(
@@ -35,7 +57,82 @@ export class NoTemplateDummyTestElement extends CrLitElement {
   }
 
   protected unusedProtectedNoTemplateProp_: string = '';
+
+  protected unusedProtectedNoTemplateMethod_(): void {}
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'no-template-dummy-test': NoTemplateDummyTestElement;
+  }
 }
 
 customElements.define(
     NoTemplateDummyTestElement.is, NoTemplateDummyTestElement);
+
+// Concrete CrLitElement class extended by another class: its protected members
+// should not be flagged, whereas unused protected members on the leaf subclass
+// should still be flagged.
+export class ExtendedConcreteParentElement extends CrLitElement {
+  static get is() {
+    return 'extended-concrete-parent';
+  }
+
+  protected parentProtectedProp_: string = 'parent';
+
+  protected parentProtectedMethod_(): string {
+    return this.parentProtectedProp_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extended-concrete-parent': ExtendedConcreteParentElement;
+  }
+}
+
+customElements.define(
+    ExtendedConcreteParentElement.is, ExtendedConcreteParentElement);
+
+export class ExtendedConcreteChildElement extends
+    ExtendedConcreteParentElement {
+  static override get is() {
+    return 'extended-concrete-child';
+  }
+
+  callParentMethod(): string {
+    return this.parentProtectedMethod_();
+  }
+
+  protected unusedChildProtectedMethod_(): void {}
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extended-concrete-child': ExtendedConcreteChildElement;
+  }
+}
+
+customElements.define(
+    ExtendedConcreteChildElement.is, ExtendedConcreteChildElement);
+
+export class ExtendedViaExprParentElement extends CrLitElement {
+  static get is() {
+    return 'extended-via-expr-parent';
+  }
+
+  protected exprParentMethod_(): string {
+    return 'parent';
+  }
+}
+
+export const ExtendedViaExprChildElement =
+    class extends ExtendedViaExprParentElement {
+  static override get is() {
+    return 'extended-via-expr-child';
+  }
+
+  callParentMethod(): string {
+    return this.exprParentMethod_();
+  }
+};
