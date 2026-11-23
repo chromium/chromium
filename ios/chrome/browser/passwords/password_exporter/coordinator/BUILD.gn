@@ -33,6 +33,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "password_exporter_unittest.mm" ]
   deps = [
+    ":coordinator",
     ":test_support",
     "//base",
     "//base/test:test_support",

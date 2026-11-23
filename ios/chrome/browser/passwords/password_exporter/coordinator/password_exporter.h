@@ -97,7 +97,7 @@ enum class ExportState {
 // The designated initializer. `reauthenticationModule` and `delegate` must
 // not be nil.
 - (instancetype)initWithReauthenticationModule:
-                    (id<ReauthenticationProtocol>)reuthenticationModule
+                    (id<ReauthenticationProtocol>)reauthenticationModule
                                       delegate:
                                           (id<PasswordExporterDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

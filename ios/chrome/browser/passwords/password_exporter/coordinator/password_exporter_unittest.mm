@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/passwords/password_exporter/coordinator/password_exporter.h"
+
+#import <Foundation/Foundation.h>
+
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
@@ -18,7 +22,7 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface FakePasswordSerialzerBridge : NSObject <PasswordSerializerBridge>
+@interface FakePasswordSerializerBridge : NSObject <PasswordSerializerBridge>
 
 // Allows for on demand execution of the block that handles the serialized
 // passwords.
@@ -26,7 +30,7 @@
 
 @end
 
-@implementation FakePasswordSerialzerBridge {
+@implementation FakePasswordSerializerBridge {
   // Handler processing the serialized passwords.
   void (^_serializedPasswordsHandler)(std::string);
 }
@@ -227,8 +231,8 @@ TEST_F(PasswordExporterTest, WritingFailedUnknownError) {
 TEST_F(PasswordExporterTest, ExportInterruptedWhenReauthFails) {
   fake_reauthentication_module_.expectedResult =
       ReauthenticationResult::kFailure;
-  FakePasswordSerialzerBridge* fake_password_serializer_bridge =
-      [[FakePasswordSerialzerBridge alloc] init];
+  FakePasswordSerializerBridge* fake_password_serializer_bridge =
+      [[FakePasswordSerializerBridge alloc] init];
   [password_exporter_
       setPasswordSerializerBridge:fake_password_serializer_bridge];
 
@@ -273,8 +277,8 @@ TEST_F(PasswordExporterTest, ExportInterruptedWhenReauthFails) {
 TEST_F(PasswordExporterTest, CancelWaitsForSerializationFinished) {
   fake_reauthentication_module_.expectedResult =
       ReauthenticationResult::kSuccess;
-  FakePasswordSerialzerBridge* fake_password_serializer_bridge =
-      [[FakePasswordSerialzerBridge alloc] init];
+  FakePasswordSerializerBridge* fake_password_serializer_bridge =
+      [[FakePasswordSerializerBridge alloc] init];
   [password_exporter_
       setPasswordSerializerBridge:fake_password_serializer_bridge];
 

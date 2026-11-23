@@ -10,7 +10,7 @@
 @interface PasswordExporter (ForTesting)
 
 - (void)setPasswordSerializerBridge:
-    (id<PasswordSerializerBridge>)passwordSerialzerBridge;
+    (id<PasswordSerializerBridge>)passwordSerializerBridge;
 
 - (void)setPasswordFileWriter:(id<FileWriterProtocol>)passwordFileWriter;
 
