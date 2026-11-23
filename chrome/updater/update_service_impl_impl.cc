@@ -1458,20 +1458,23 @@ void UpdateServiceImplImpl::RunInstallerImpl(
     return;
   }
 
+  scoped_refptr<PersistedData> persisted_data =
+      config_->GetUpdaterPersistedData();
   if (!IsUpdaterOrCompanionApp(app_id)) {
-    config_->GetUpdaterPersistedData()->SetHadApps();
+    persisted_data->SetHadApps();
   }
 
-  const base::Version pv =
-      config_->GetUpdaterPersistedData()->GetProductVersion(app_id);
+  const base::Version pv = persisted_data->GetProductVersion(app_id);
   const bool new_install = !pv.IsValid();
-  AppInfo app_info(
-      GetUpdaterScope(), app_id,
-      config_->GetUpdaterPersistedData()->GetAP(app_id),
-      !language.empty() ? language
-                        : config_->GetUpdaterPersistedData()->GetLang(app_id),
-      config_->GetUpdaterPersistedData()->GetBrandCode(app_id), pv,
-      config_->GetUpdaterPersistedData()->GetExistenceCheckerPath(app_id));
+  const AppInfo app_info = {
+      .scope = GetUpdaterScope(),
+      .app_id = app_id,
+      .ap = persisted_data->GetAP(app_id),
+      .lang = !language.empty() ? language : persisted_data->GetLang(app_id),
+      .brand = persisted_data->GetBrandCode(app_id),
+      .version = pv,
+      .ecp = persisted_data->GetExistenceCheckerPath(app_id),
+  };
 
   std::unique_ptr<base::Value> install_settings_deserialized =
       JSONStringValueDeserializer(install_settings)
@@ -1639,10 +1642,9 @@ void UpdateServiceImplImpl::RunInstallerImpl(
                                         ? Result::kSuccess
                                         : Result::kInstallFailed);
           },
-          config_, config_->GetUpdaterPersistedData(), update_client_,
-          installer_version, state_update, app_info.app_id, app_info.ap,
-          app_info.brand, language, install_source, new_install,
-          std::move(callback)));
+          config_, persisted_data, update_client_, installer_version,
+          state_update, app_info.app_id, app_info.ap, app_info.brand, language,
+          install_source, new_install, std::move(callback)));
 }
 
 void UpdateServiceImplImpl::GetUpdaterState(

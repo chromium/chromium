@@ -57,31 +57,18 @@ AppInfo MakeAppInfo(UpdaterScope scope,
                     const base::FilePath& ec_path) {
   const base::Version pv_lookup =
       LookupVersion(scope, app_id, pv_path, pv_key, pv);
-  return AppInfo(scope, app_id, LookupString(ap_path, ap_key, ap), lang,
-                 LookupString(brand_path, brand_key, brand),
-                 pv_lookup.IsValid() ? pv_lookup : base::Version(kNullVersion),
-                 ec_path);
+  return {
+      .scope = scope,
+      .app_id = app_id,
+      .ap = LookupString(ap_path, ap_key, ap),
+      .lang = lang,
+      .brand = LookupString(brand_path, brand_key, brand),
+      .version = pv_lookup.IsValid() ? pv_lookup : base::Version(kNullVersion),
+      .ecp = ec_path,
+  };
 }
 
 }  // namespace
-
-AppInfo::AppInfo(const UpdaterScope scope,
-                 const std::string& app_id,
-                 const std::string& ap,
-                 const std::string& lang,
-                 const std::string& brand,
-                 const base::Version& app_version,
-                 const base::FilePath& ecp)
-    : scope(scope),
-      app_id(app_id),
-      ap(ap),
-      lang(lang),
-      brand(brand),
-      version(app_version),
-      ecp(ecp) {}
-AppInfo::AppInfo(const AppInfo&) = default;
-AppInfo& AppInfo::operator=(const AppInfo&) = default;
-AppInfo::~AppInfo() = default;
 
 Installer::Installer(
     const std::string& app_id,
@@ -113,7 +100,7 @@ Installer::Installer(
       persisted_data_(persisted_data),
       crx_verifier_format_(crx_verifier_format),
       crx_public_key_hash_(crx_public_key_hash),
-      app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {}, {})) {}
+      app_info_{.scope = updater_scope_, .app_id = app_id} {}
 
 Installer::~Installer() = default;
 

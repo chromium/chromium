@@ -30,24 +30,17 @@ class TimeDelta;
 
 namespace updater {
 
+// Describes an app to update or install.
 struct AppInfo {
-  AppInfo(const UpdaterScope scope,
-          const std::string& app_id,
-          const std::string& ap,
-          const std::string& lang,
-          const std::string& brand,
-          const base::Version& app_version,
-          const base::FilePath& ecp);
-  AppInfo(const AppInfo&);
-  AppInfo& operator=(const AppInfo&);
-  ~AppInfo();
-
-  UpdaterScope scope;
+  UpdaterScope scope = UpdaterScope::kUser;
   std::string app_id;
   std::string ap;
   std::string lang;
   std::string brand;
+  // Installed version; invalid or `kNullVersion` if the app isn't installed.
   base::Version version;
+  // Existence checker path: a file exists at this path if and only if the app
+  // is installed. Empty if the app has none.
   base::FilePath ecp;
 };
 
@@ -178,8 +171,8 @@ class Installer final : public update_client::CrxInstaller {
   const crx_file::VerifierFormat crx_verifier_format_;
   const std::optional<std::vector<uint8_t>> crx_public_key_hash_;
 
-  // AppInfo is set only after MakeCrxComponent is called, and is not updated
-  // when the installer succeeds.
+  // Holds only `scope` and `app_id` until `MakeCrxComponent` runs its
+  // callback. Not updated when the installer succeeds.
   AppInfo app_info_;
 };
 
