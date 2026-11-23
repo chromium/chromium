@@ -30,9 +30,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/picture_snapshot.h"
 
+#include <cmath>
 #include <memory>
 
+#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/profiling_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/replaying_canvas.h"
@@ -41,8 +44,13 @@
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -52,6 +60,25 @@ namespace blink {
 PictureSnapshot::PictureSnapshot(sk_sp<const SkPicture> picture)
     : picture_(std::move(picture)) {}
 
+sk_sp<SkPicture> PictureSnapshot::DeserializePicture(
+    base::span<const uint8_t> data) {
+  if (data.empty()) {
+    return nullptr;
+  }
+  SkDeserialProcs procs{
+      .fTypefaceStreamProc = [](SkStream& stream, void*) -> sk_sp<SkTypeface> {
+        // Trace snapshots serialize typefaces with kDontIncludeData. Resolve
+        // descriptor-only typefaces via the default font manager and reject
+        // any embedded raw font stream data.
+        return SkTypeface::MakeDeserialize(
+            &stream, skia::DefaultFontMgr(),
+            [](sk_sp<const SkData>) -> sk_sp<SkData> { return nullptr; });
+      },
+      .fAllowSkSL = false,
+  };
+  return SkPicture::MakeFromData(data.data(), data.size(), &procs);
+}
+
 scoped_refptr<PictureSnapshot> PictureSnapshot::Load(
     const Vector<scoped_refptr<TilePictureStream>>& tiles) {
   DCHECK(!tiles.empty());
@@ -60,15 +87,27 @@ scoped_refptr<PictureSnapshot> PictureSnapshot::Load(
   gfx::RectF union_rect;
   for (const auto& tile_stream : tiles) {
     sk_sp<SkPicture> picture = std::move(tile_stream->picture);
-    if (!picture)
+    // Check the Skia rect directly: SkRectToRectF() clamps a NaN size to zero,
+    // which would hide it from the IsFinite() check below.
+    if (!picture || !picture->cullRect().isFinite()) {
       return nullptr;
+    }
     gfx::RectF cull_rect = gfx::SkRectToRectF(picture->cullRect());
     cull_rect.Offset(tile_stream->layer_offset.OffsetFromOrigin());
+    // Rejects non-finite tile offsets and edges that overflow float.
+    if (!cull_rect.IsFinite()) {
+      return nullptr;
+    }
     union_rect.Union(cull_rect);
     pictures.push_back(std::move(picture));
   }
-  if (tiles.size() == 1)
+  // Each tile is finite, but their union can still overflow float.
+  if (!union_rect.IsFinite()) {
+    return nullptr;
+  }
+  if (tiles.size() == 1) {
     return base::AdoptRef(new PictureSnapshot(std::move(pictures[0])));
+  }
   SkPictureRecorder recorder;
   SkCanvas* canvas =
       recorder.beginRecording(union_rect.width(), union_rect.height());
@@ -84,20 +123,36 @@ scoped_refptr<PictureSnapshot> PictureSnapshot::Load(
 }
 
 bool PictureSnapshot::IsEmpty() const {
-  return picture_->cullRect().isEmpty();
+  // Also reject rects whose integer bounds would overflow int32 (see
+  // SkIRect::isEmpty()).
+  return picture_->cullRect().isEmpty() ||
+         picture_->cullRect().roundOut().isEmpty();
 }
 
 Vector<uint8_t> PictureSnapshot::Replay(unsigned from_step,
                                         unsigned to_step,
                                         double scale) const {
+  if (IsEmpty()) {
+    return Vector<uint8_t>();
+  }
   const SkIRect bounds = picture_->cullRect().roundOut();
-  int width = ceil(scale * bounds.width());
-  int height = ceil(scale * bounds.height());
+  // A NaN, infinite, zero or negative `scale`, or a scaled size that does not
+  // fit in an int, all end up as a non-positive size and are rejected below.
+  const int width = base::CheckedNumeric<int>(std::ceil(scale * bounds.width()))
+                        .ValueOrDefault(0);
+  const int height =
+      base::CheckedNumeric<int>(std::ceil(scale * bounds.height()))
+          .ValueOrDefault(0);
+  if (width <= 0 || height <= 0) {
+    return Vector<uint8_t>();
+  }
 
   // TODO(fmalita): convert this to SkSurface/SkImage, drop the intermediate
   // SkBitmap.
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(width, height));
+  if (!bitmap.tryAllocPixels(SkImageInfo::MakeN32Premul(width, height))) {
+    return Vector<uint8_t>();
+  }
   bitmap.eraseARGB(0, 0, 0, 0);
   {
     ReplayingCanvas canvas(bitmap, from_step, to_step);
@@ -131,19 +186,25 @@ Vector<Vector<base::TimeDelta>> PictureSnapshot::Profile(
     base::TimeDelta min_duration,
     const gfx::RectF* clip_rect) const {
   Vector<Vector<base::TimeDelta>> timings;
-  timings.ReserveInitialCapacity(min_repeat_count);
+  if (IsEmpty()) {
+    return timings;
+  }
   const SkIRect bounds = picture_->cullRect().roundOut();
   SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(bounds.width(), bounds.height()));
+  if (!bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(bounds.width(), bounds.height()))) {
+    return timings;
+  }
   bitmap.eraseARGB(0, 0, 0, 0);
+  timings.ReserveInitialCapacity(min_repeat_count);
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeTicks stop_time = now + min_duration;
   for (unsigned step = 0; step < min_repeat_count || now < stop_time; ++step) {
     Vector<base::TimeDelta> current_timings;
-    if (!timings.empty())
+    if (!timings.empty()) {
       current_timings.ReserveInitialCapacity(timings.front().size());
+    }
     ProfilingCanvas canvas(bitmap);
     if (clip_rect) {
       canvas.clipRect(SkRect::MakeXYWH(clip_rect->x(), clip_rect->y(),

@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_layer_tree_agent.h"
 
+#include <cmath>
 #include <memory>
 
 #include "cc/base/region.h"
@@ -425,7 +426,7 @@ protocol::Response InspectorLayerTreeAgent::loadSnapshot(
     decoded_tiles[i]->layer_offset.SetPoint(tile->getX(), tile->getY());
     const protocol::Binary& data = tile->getPicture();
     decoded_tiles[i]->picture =
-        SkPicture::MakeFromData(data.data(), data.size());
+        PictureSnapshot::DeserializePicture(data.Span());
   }
   scoped_refptr<PictureSnapshot> snapshot =
       PictureSnapshot::Load(decoded_tiles);
@@ -469,8 +470,20 @@ protocol::Response InspectorLayerTreeAgent::replaySnapshot(
   protocol::Response response = GetSnapshotById(snapshot_id, snapshot);
   if (!response.IsSuccess())
     return response;
-  auto png_data = snapshot->Replay(from_step.value_or(0), to_step.value_or(0),
-                                   scale.value_or(1.0));
+  const int first_step = from_step.value_or(0);
+  const int last_step = to_step.value_or(0);
+  if (first_step < 0 || last_step < 0) {
+    return protocol::Response::ServerError(
+        "Invalid argument, fromStep and toStep must be non-negative");
+  }
+  const double scale_factor = scale.value_or(1.0);
+  if (!std::isfinite(scale_factor) || scale_factor <= 0) {
+    return protocol::Response::ServerError(
+        "Invalid argument, scale must be positive and finite");
+  }
+  auto png_data =
+      snapshot->Replay(static_cast<unsigned>(first_step),
+                       static_cast<unsigned>(last_step), scale_factor);
   if (png_data.empty())
     return protocol::Response::ServerError("Image encoding failed");
   *data_url = StrCat({"data:image/png;base64,", Base64Encode(png_data)});
@@ -492,12 +505,22 @@ protocol::Response InspectorLayerTreeAgent::profileSnapshot(
   protocol::Response response = GetSnapshotById(snapshot_id, snapshot);
   if (!response.IsSuccess())
     return response;
+  const int repeat_count = min_repeat_count.value_or(1);
+  if (repeat_count <= 0) {
+    return protocol::Response::ServerError(
+        "Invalid argument, minRepeatCount must be positive");
+  }
+  const double duration_seconds = min_duration.value_or(0);
+  if (!std::isfinite(duration_seconds) || duration_seconds < 0) {
+    return protocol::Response::ServerError(
+        "Invalid argument, minDuration must be non-negative and finite");
+  }
   gfx::RectF rect;
   if (clip_rect) {
     ParseRect(*clip_rect, &rect);
   }
-  auto timings = snapshot->Profile(min_repeat_count.value_or(1),
-                                   base::Seconds(min_duration.value_or(0)),
+  auto timings = snapshot->Profile(static_cast<unsigned>(repeat_count),
+                                   base::Seconds(duration_seconds),
                                    clip_rect ? &rect : nullptr);
   *out_timings = std::make_unique<Array<Array<double>>>();
   for (const auto& row : timings) {

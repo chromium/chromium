@@ -239,6 +239,10 @@ class COMPONENT_EXPORT(GEOMETRY) RectF {
   // clamping.
   bool IsExpressibleAsRect() const;
 
+  // Returns true if all edges of the rectangle are finite, i.e. none of x(),
+  // y(), right() or bottom() is NaN or infinite.
+  bool IsFinite() const;
+
   std::string ToString() const;
 
   bool ApproximatelyEqual(const RectF& rect,

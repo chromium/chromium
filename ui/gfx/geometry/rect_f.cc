@@ -5,6 +5,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 
 #include "base/check.h"
@@ -271,6 +272,11 @@ bool RectF::IsExpressibleAsRect() const {
          base::IsValueInRangeForNumericType<int>(height()) &&
          base::IsValueInRangeForNumericType<int>(right()) &&
          base::IsValueInRangeForNumericType<int>(bottom());
+}
+
+bool RectF::IsFinite() const {
+  return std::isfinite(x()) && std::isfinite(y()) && std::isfinite(right()) &&
+         std::isfinite(bottom());
 }
 
 RectF IntersectRects(const RectF& a, const RectF& b) {

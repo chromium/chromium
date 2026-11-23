@@ -33,12 +33,12 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -57,6 +57,11 @@ class PLATFORM_EXPORT PictureSnapshot : public RefCounted<PictureSnapshot> {
     gfx::PointF layer_offset;
     sk_sp<SkPicture> picture;
   };
+
+  // Deserializes an SkPicture from encoded bytes using restricted
+  // SkDeserialProcs (disallowing SkSL runtime effects and embedded typeface
+  // streams).
+  static sk_sp<SkPicture> DeserializePicture(base::span<const uint8_t> data);
 
   static scoped_refptr<PictureSnapshot> Load(
       const Vector<scoped_refptr<TilePictureStream>>&);

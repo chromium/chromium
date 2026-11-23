@@ -306,6 +306,27 @@ TEST(RectFTest, IsExpressibleAsRect) {
   EXPECT_FALSE(RectF(0, 0, 1, kInfinity).IsExpressibleAsRect());
 }
 
+TEST(RectFTest, IsFinite) {
+  constexpr float kMaxFloat = std::numeric_limits<float>::max();
+  constexpr float kInfinity = std::numeric_limits<float>::infinity();
+  constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
+
+  EXPECT_TRUE(RectF().IsFinite());
+  EXPECT_TRUE(RectF(-10, -20, 30, 40).IsFinite());
+  EXPECT_TRUE(RectF(-kMaxFloat, -kMaxFloat, kMaxFloat, kMaxFloat).IsFinite());
+
+  EXPECT_FALSE(RectF(kInfinity, 0, 1, 1).IsFinite());
+  EXPECT_FALSE(RectF(0, -kInfinity, 1, 1).IsFinite());
+  EXPECT_FALSE(RectF(0, 0, kInfinity, 1).IsFinite());
+  EXPECT_FALSE(RectF(0, 0, 1, kInfinity).IsFinite());
+  EXPECT_FALSE(RectF(kNaN, 0, 1, 1).IsFinite());
+  EXPECT_FALSE(RectF(0, kNaN, 1, 1).IsFinite());
+
+  // Finite origin and size, but the right/bottom edge overflows float.
+  EXPECT_FALSE(RectF(kMaxFloat, 0, kMaxFloat, 1).IsFinite());
+  EXPECT_FALSE(RectF(0, kMaxFloat, 1, kMaxFloat).IsFinite());
+}
+
 TEST(RectFTest, Offset) {
   RectF f(1.1f, 2.2f, 3.3f, 4.4f);
   EXPECT_EQ(RectF(2.2f, 1.1f, 3.3f, 4.4f), (f + Vector2dF(1.1f, -1.1f)));
