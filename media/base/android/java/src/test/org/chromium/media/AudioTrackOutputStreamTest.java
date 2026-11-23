@@ -219,7 +219,7 @@ public class AudioTrackOutputStreamTest {
 
         AudioTrackOutputStream stream = AudioTrackOutputStream.create(provider);
         stream.open(2, 44100, AudioFormat.ENCODING_E_AC3);
-        stream.start(0x888);
+        stream.start(JniRawPtr.createForTesting(0x888L));
 
         // Wait until the single buffer is written and onMoreData() returns null.
         provider.waitForOutOfData();
