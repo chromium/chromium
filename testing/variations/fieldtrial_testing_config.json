@@ -4144,7 +4144,7 @@
             ]
         }
     ],
-    "BrowsingHistoryFilterDropdownPhase1Clank": [
+    "BrowsingHistoryFilterDropdownPhase2Clank": [
         {
             "platforms": [
                 "android",
@@ -4155,13 +4155,14 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BrowsingHistoryFilterByActor",
-                        "BrowsingHistoryFilterByDevice"
+                        "BrowsingHistoryFilterByDevice",
+                        "BrowsingHistoryFilterByTime"
                     ]
                 }
             ]
         }
     ],
-    "BrowsingHistoryFilterDropdownPhase1Desktop": [
+    "BrowsingHistoryFilterDropdownPhase2Desktop": [
         {
             "platforms": [
                 "chromeos",
@@ -4174,7 +4175,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BrowsingHistoryFilterByActor",
-                        "BrowsingHistoryFilterByDevice"
+                        "BrowsingHistoryFilterByDevice",
+                        "BrowsingHistoryFilterByDomain",
+                        "BrowsingHistoryFilterByTime"
                     ]
                 }
             ]
