@@ -34,6 +34,7 @@ class AccountsInCookieJarInfo;
 namespace trusted_vault {
 
 class EnrollmentHandler;
+struct TrustedVaultKeyAndVersion;
 
 // Provides interfaces to store/remove keys to/from file storage.
 // This class performs expensive operations and expected to be run from
@@ -43,7 +44,7 @@ class StandaloneTrustedVaultBackend
     : public TrustedVaultDegradedRecoverabilityHandler::Observer {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
-      const std::vector<std::vector<uint8_t>>& vault_keys)>;
+      const std::vector<TrustedVaultKeyAndVersion>& vault_keys)>;
   using EnrollCallback =
       base::OnceCallback<void(const std::vector<uint8_t>& new_shared_key,
                               int new_key_version)>;

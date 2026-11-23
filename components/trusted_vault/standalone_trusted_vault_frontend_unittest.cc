@@ -25,6 +25,7 @@
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #if BUILDFLAG(IS_MAC)
 #include "crypto/apple/scoped_fake_keychain_v2.h"
@@ -108,7 +109,7 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
   frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
                       /*last_key_version=*/1,
                       TrustedVaultUserActionTriggerForUMA::kProfileMenu);
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
+  base::test::TestFuture<const std::vector<TrustedVaultKeyAndVersion>&>
       fetch_keys_future;
   frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,
                       fetch_keys_future.GetCallback());
@@ -135,7 +136,8 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
                   Eq(TrustedVaultUserActionTriggerForUMA::kProfileMenu)));
   frontend->InitializeBackendForTesting(LocalDomainsStorage::CreateForTesting(
       std::make_unique<FakeLocalDomainsStorageFileAccess>()));
-  EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
+  EXPECT_THAT(fetch_keys_future.Get(),
+              ElementsAre(TrustedVaultKeyAndVersion(kKey, 1)));
   EXPECT_FALSE(can_enroll_future.Get());
   EXPECT_TRUE(enroll_future.Get<0>().empty());
   EXPECT_EQ(enroll_future.Get<1>(), -1);
@@ -168,12 +170,13 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
 
   frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
                       /*last_key_version=*/2, /*trigger=*/std::nullopt);
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
+  base::test::TestFuture<const std::vector<TrustedVaultKeyAndVersion>&>
       fetch_keys_future;
   frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,
                       fetch_keys_future.GetCallback());
 
-  EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
+  EXPECT_THAT(fetch_keys_future.Get(),
+              ElementsAre(TrustedVaultKeyAndVersion(kKey, 2)));
 }
 
 TEST_F(StandaloneTrustedVaultFrontendTest,
@@ -202,12 +205,13 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
 
   frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
                       /*last_key_version=*/2, /*trigger=*/std::nullopt);
-  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
+  base::test::TestFuture<const std::vector<TrustedVaultKeyAndVersion>&>
       fetch_keys_future;
   frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,
                       fetch_keys_future.GetCallback());
 
-  EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
+  EXPECT_THAT(fetch_keys_future.Get(),
+              ElementsAre(TrustedVaultKeyAndVersion(kKey, 2)));
 }
 
 }  // namespace

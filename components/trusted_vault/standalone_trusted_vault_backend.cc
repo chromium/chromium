@@ -35,6 +35,7 @@
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection_impl.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -1040,8 +1041,11 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
       vault_keys.front() == GetConstantTrustedVaultKey()) {
     vault_keys.erase(vault_keys.begin());
   }
+  const int last_key_version =
+      storage_->GetLastKeyVersion(gaia_id, security_domain);
 
-  std::move(callback).Run(vault_keys);
+  std::move(callback).Run(
+      GetTrustedVaultKeysWithVersions(vault_keys, last_key_version));
   NotifyIdleForTestingIfNecessary();
 }
 

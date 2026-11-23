@@ -43,6 +43,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection_impl.h"
@@ -730,10 +731,12 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   trusted_vault_pb::DomainData* domain_data1 = user_data1->add_domain_data();
   domain_data1->set_domain_id(static_cast<int32_t>(security_domain_id()));
   domain_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
+  domain_data1->set_last_vault_key_version(1);
   trusted_vault_pb::DomainData* domain_data2 = user_data2->add_domain_data();
   domain_data2->set_domain_id(static_cast<int32_t>(security_domain_id()));
   domain_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
   domain_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
+  domain_data2->set_last_vault_key_version(5);
 
   file_access()->SetStoredLocalDomainsData(initial_data);
   backend()->ReadDataFromDisk();
@@ -741,10 +744,13 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   // Keys should be fetched immediately for both accounts.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey1, 1))));
   backend()->FetchKeys(kAccountInfo1, security_domain_id(),
                        fetch_keys_callback.Get());
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey2, 4),
+                                       TrustedVaultKeyAndVersion(kKey3, 5))));
   backend()->FetchKeys(kAccountInfo2, security_domain_id(),
                        fetch_keys_callback.Get());
 }
@@ -761,6 +767,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   domain_data->add_vault_key()->set_key_material(
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
   domain_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
+  domain_data->set_last_vault_key_version(101);
 
   file_access()->SetStoredLocalDomainsData(initial_data);
   backend()->ReadDataFromDisk();
@@ -768,7 +775,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   // Keys should be fetched immediately, constant key must be filtered out.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey, 101))));
   backend()->FetchKeys(kAccountInfo, security_domain_id(),
                        fetch_keys_callback.Get());
 }
@@ -786,6 +794,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   domain_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
   domain_data->add_vault_key()->set_key_material(
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
+  domain_data->set_last_vault_key_version(6);
 
   file_access()->SetStoredLocalDomainsData(initial_data);
   backend()->ReadDataFromDisk();
@@ -796,7 +805,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback,
-              Run(/*keys=*/ElementsAre(kKey, GetConstantTrustedVaultKey())));
+              Run(/*keys=*/ElementsAre(
+                  TrustedVaultKeyAndVersion(kKey, 5),
+                  TrustedVaultKeyAndVersion(GetConstantTrustedVaultKey(), 6))));
   backend()->FetchKeys(kAccountInfo, security_domain_id(),
                        fetch_keys_callback.Get());
 }
@@ -861,9 +872,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
 
   backend()->StoreKeys(kAccountInfo1.gaia, security_domain_id(), {kKey1},
-                       /*last_key_version=*/0);
-  backend()->StoreKeys(kAccountInfo2.gaia, security_domain_id(), {kKey2, kKey3},
                        /*last_key_version=*/1);
+  backend()->StoreKeys(kAccountInfo2.gaia, security_domain_id(), {kKey2, kKey3},
+                       /*last_key_version=*/3);
 
   // Reset the backend, which makes it re-read the data stored above.
   ResetBackend();
@@ -871,10 +882,13 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
   // Keys should be fetched immediately for both accounts.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey1, 1))));
   backend()->FetchKeys(kAccountInfo1, security_domain_id(),
                        fetch_keys_callback.Get());
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey2, 2),
+                                       TrustedVaultKeyAndVersion(kKey3, 3))));
   backend()->FetchKeys(kAccountInfo2, security_domain_id(),
                        fetch_keys_callback.Get());
 }
@@ -886,7 +900,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
 
   backend()->StoreKeys(kAccountInfo.gaia, security_domain_id(), {kKey},
-                       /*last_key_version=*/0);
+                       /*last_key_version=*/1);
 
   // Reset the backend without a connection, which makes it re-read the data
   // stored above.
@@ -895,7 +909,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Keys should be fetched immediately.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey, 1))));
   backend()->FetchKeys(kAccountInfo, security_domain_id(),
                        fetch_keys_callback.Get());
 }
@@ -944,14 +959,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
   backend()->StoreKeys(kAccountInfo.gaia, security_domain_id(), {kKey},
-                       /*last_key_version=*/0);
+                       /*last_key_version=*/1);
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Keys should not be removed immediately.
   backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey, 1))));
   backend()->FetchKeys(kAccountInfo, security_domain_id(),
                        fetch_keys_callback.Get());
 
@@ -973,14 +989,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
   backend()->StoreKeys(kAccountInfo.gaia, security_domain_id(), {kKey},
-                       /*last_key_version=*/0);
+                       /*last_key_version=*/1);
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Keys should not be removed immediately.
   backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(kKey, 1))));
   backend()->FetchKeys(kAccountInfo, security_domain_id(),
                        fetch_keys_callback.Get());
 
@@ -1412,7 +1429,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
   // Callback should be called immediately.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/Eq(kVaultKeys)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(
+                  TrustedVaultKeyAndVersion(kVaultKeys[0], kLastKeyVersion))));
   backend()->FetchKeys(kAccountInfo, security_domain_id(),
                        fetch_keys_callback.Get());
 }
@@ -1444,7 +1463,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Note that |fetch_keys_callback| should not receive kInitialVaultKey.
   EXPECT_CALL(*delegate(),
               NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
-  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kNewVaultKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(ElementsAre(TrustedVaultKeyAndVersion(
+                  kNewVaultKey, kInitialLastKeyVersion + 1))));
 
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
@@ -1470,7 +1491,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                        fetch_keys_callback.Get());
 
   EXPECT_CALL(*delegate(), NotifyVaultKeysChanged).Times(0);
-  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kInitialVaultKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(ElementsAre(TrustedVaultKeyAndVersion(
+                  kInitialVaultKey, kInitialLastKeyVersion))));
 
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
@@ -1510,9 +1533,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*delegate(),
               NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
   EXPECT_CALL(fetch_keys_callback1,
-              Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
+              Run(ElementsAre(TrustedVaultKeyAndVersion(kInitialVaultKey,
+                                                        kInitialLastKeyVersion),
+                              TrustedVaultKeyAndVersion(
+                                  kNewVaultKey, kInitialLastKeyVersion + 1))));
   EXPECT_CALL(fetch_keys_callback2,
-              Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
+              Run(ElementsAre(TrustedVaultKeyAndVersion(kInitialVaultKey,
+                                                        kInitialLastKeyVersion),
+                              TrustedVaultKeyAndVersion(
+                                  kNewVaultKey, kInitialLastKeyVersion + 1))));
 
   base::HistogramTester histogram_tester;
   GetOrCreateRecoveryFactor(kAccountInfo)
@@ -1592,7 +1621,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
   EXPECT_CALL(*delegate(),
               NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
-  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kVaultKey, kNewVaultKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(ElementsAre(
+                  TrustedVaultKeyAndVersion(kVaultKey, kInitialLastKeyVersion),
+                  TrustedVaultKeyAndVersion(kNewVaultKey,
+                                            kInitialLastKeyVersion + 1))));
 
   std::vector<FakeLocalRecoveryFactor*> recovery_factors =
       GetOrCreateRecoveryFactors(kAccountInfo);
@@ -1630,7 +1663,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
   EXPECT_CALL(*delegate(),
               NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
-  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kVaultKey, kNewVaultKey)));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(ElementsAre(
+                  TrustedVaultKeyAndVersion(kVaultKey, kInitialLastKeyVersion),
+                  TrustedVaultKeyAndVersion(kNewVaultKey,
+                                            kInitialLastKeyVersion + 1))));
 
   std::vector<FakeLocalRecoveryFactor*> recovery_factors =
       GetOrCreateRecoveryFactors(kAccountInfo);
@@ -1721,7 +1758,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<std::vector<uint8_t>> kNewVaultKeys = {{1, 2, 3}};
   EXPECT_CALL(*delegate(),
               NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/kNewVaultKeys));
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(TrustedVaultKeyAndVersion(
+                  kNewVaultKeys[0], kServerConstantKeyVersion + 1))));
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
           LocalRecoveryFactor::RecoveryStatus::kSuccess, kNewVaultKeys,
@@ -2047,7 +2086,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                         kNoPersistentAuthErrors);
 
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback> cb;
-  EXPECT_CALL(cb, Run(testing::ElementsAre(kVaultKey)));
+  EXPECT_CALL(cb, Run(testing::ElementsAre(
+                      TrustedVaultKeyAndVersion(kVaultKey, kLastKeyVersion))));
   backend()->FetchKeys(kAccountInfo, SecurityDomainId::kPasskeys, cb.Get());
 }
 
@@ -2256,7 +2296,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldCallEnrollmentHandlerInEnroll) {
       /*expected_bucket_count=*/1);
 
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback> fetch_cb;
-  EXPECT_CALL(fetch_cb, Run(ElementsAre(kRotatedKey)));
+  EXPECT_CALL(
+      fetch_cb,
+      Run(ElementsAre(TrustedVaultKeyAndVersion(kRotatedKey, kNewKeyVersion))));
   backend()->FetchKeys(kAccountInfo, SecurityDomainId::kChromeSync,
                        fetch_cb.Get());
   EXPECT_THAT(

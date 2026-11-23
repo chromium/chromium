@@ -43,6 +43,7 @@ class OSCryptAsync;
 namespace trusted_vault {
 
 class StandaloneTrustedVaultClient;
+struct TrustedVaultKeyAndVersion;
 
 // UI-thread frontend that owns and manages sequence-posting to a single
 // background StandaloneTrustedVaultBackend instance. Shared across multiple
@@ -84,7 +85,8 @@ class StandaloneTrustedVaultFrontend
   void FetchKeys(
       const CoreAccountInfo& account_info,
       SecurityDomainId security_domain,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb);
+      base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
+          cb);
   void StoreKeys(const GaiaId& gaia_id,
                  SecurityDomainId security_domain,
                  const std::vector<std::vector<uint8_t>>& keys,

@@ -30,6 +30,7 @@
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -410,7 +411,8 @@ void StandaloneTrustedVaultFrontend::UnregisterClient(
 void StandaloneTrustedVaultFrontend::FetchKeys(
     const CoreAccountInfo& account_info,
     SecurityDomainId security_domain,
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
+    base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
+        cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!backend_) {
     pending_tasks_.push_back(base::BindOnce(
