@@ -199,6 +199,15 @@ enum class GeminiFeatureMode {
   kNanoBanana,
 };
 
+// Enum representing the type of discovery banner shown in the Gemini UI.
+// This needs to stay in sync with `GCRGeminiDiscoveryBannerType` internally.
+enum class GeminiDiscoveryBannerType {
+  // Unknown or unsupported discovery banner type.
+  kUnknown,
+  // Personalization notice.
+  kPersonalization,
+};
+
 // Configures Gemini with the given startup configuration.
 void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* startup_configuration);

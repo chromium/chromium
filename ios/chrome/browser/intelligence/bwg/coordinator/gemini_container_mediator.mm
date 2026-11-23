@@ -344,7 +344,8 @@ class GeminiContainerMediatorTabHelperObserver
   BOOL pageContextDetached =
       ios::provider::GetCurrentPageContextAttachmentState() ==
       ios::provider::GeminiPageContextAttachmentState::kDetached;
-  if (!geminiTabHelper || pageContextDetached || _activePageContextIneligible ||
+  if (_stateManager.zeroStateSuggestionChipsSuppressed || !geminiTabHelper ||
+      pageContextDetached || _activePageContextIneligible ||
       ![self isPageContextEligibleForTabHelper:geminiTabHelper] ||
       ![self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint]) {
     [self setZeroStateSuggestions:@[]];
@@ -776,6 +777,33 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)inputPlateDidChangeNanoBananaAttachment:(BOOL)isSelected {
   [self updateZeroStateMediumDetentHeight];
+}
+
+- (void)didPresentDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID {
+  if (bannerType !=
+      ios::provider::GeminiDiscoveryBannerType::kPersonalization) {
+    return;
+  }
+  [_stateManager handlePersonalizationNoticeVisibilityChanged:YES];
+  [self setZeroStateSuggestions:@[]];
+}
+
+- (void)didDismissDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID {
+  if (bannerType !=
+          ios::provider::GeminiDiscoveryBannerType::kPersonalization ||
+      !_stateManager.zeroStateSuggestionChipsSuppressed) {
+    return;
+  }
+  [_stateManager handlePersonalizationNoticeVisibilityChanged:NO];
+  // Outside of the zero state (e.g. when the notice is dismissed on query
+  // submission), suggestions are fetched again on the next zero state.
+  if (_stateManager.currentUIState.zeroStateVisible) {
+    [self fetchZeroStateSuggestions:_startupState];
+  }
 }
 
 - (void)didRequestToDetachTabWithID:(NSString*)tabID {

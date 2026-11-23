@@ -2487,6 +2487,42 @@ TEST_F(GeminiContainerMediatorZeroStateTest,
   EXPECT_FALSE(zero_state_consumer_.hidden);
 }
 
+// Tests that the suggestion chips are hidden while the personalization notice
+// is shown, even when suggestions are refetched (e.g. on tab attachment), and
+// fetched again once it is dismissed. The zero-state view itself stays visible.
+TEST_F(GeminiContainerMediatorZeroStateTest,
+       TestSuggestionsHiddenWhilePersonalizationNoticeShown) {
+  ASSERT_FALSE(zero_state_consumer_.hidden);
+  ASSERT_TRUE(container_consumer_.zeroState);
+
+  [mediator_ didPresentDiscoveryBannerWithType:
+                 ios::provider::GeminiDiscoveryBannerType::kPersonalization
+                                conversationID:kTestConversationID];
+  EXPECT_TRUE(zero_state_consumer_.hidden);
+  EXPECT_TRUE(container_consumer_.zeroState);
+
+  [mediator_ didAttachTabWithID:ActiveTabID()];
+  EXPECT_TRUE(zero_state_consumer_.hidden);
+
+  [mediator_ didDismissDiscoveryBannerWithType:
+                 ios::provider::GeminiDiscoveryBannerType::kPersonalization
+                                conversationID:kTestConversationID];
+  EXPECT_FALSE(zero_state_consumer_.hidden);
+  EXPECT_TRUE(container_consumer_.zeroState);
+}
+
+// Tests that discovery banners other than the personalization notice don't
+// hide the suggestion chips.
+TEST_F(GeminiContainerMediatorZeroStateTest,
+       TestSuggestionsShownForUnknownDiscoveryBanner) {
+  ASSERT_FALSE(zero_state_consumer_.hidden);
+
+  [mediator_ didPresentDiscoveryBannerWithType:
+                 ios::provider::GeminiDiscoveryBannerType::kUnknown
+                                conversationID:kTestConversationID];
+  EXPECT_FALSE(zero_state_consumer_.hidden);
+}
+
 // Tests that zero-state suggestions are hidden when the computed page context
 // turns out to be ineligible.
 TEST_F(GeminiContainerMediatorZeroStateTest,

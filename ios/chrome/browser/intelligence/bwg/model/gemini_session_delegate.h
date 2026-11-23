@@ -218,6 +218,19 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 // Called when the Nano Banana attachment selection in the input plate changes.
 - (void)inputPlateDidChangeNanoBananaAttachment:(BOOL)isSelected;
 
+// Called when a discovery banner of `bannerType` (e.g. the personalization
+// notice) is shown above the input plate for `conversationID`.
+- (void)didPresentDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID;
+
+// Called when a previously presented discovery banner of `bannerType` is fully
+// dismissed for `conversationID`, either because the user acknowledged it or
+// because the zero state was torn down (e.g. on query submission).
+- (void)didDismissDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID;
+
 #pragma mark - Chat Message Interception
 
 // Called on the main thread when the user submits a chat message, before it is

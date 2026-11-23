@@ -556,6 +556,7 @@ TEST_F(GeminiContainerUIStateManagerTest, TestReset) {
       transitionToProcessingStatus:ios::provider::GeminiClientMode::kThinking
                              error:nil];
   state_manager_.hasConversation = YES;
+  [state_manager_ handlePersonalizationNoticeVisibilityChanged:YES];
   [state_manager_ reset];
   EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown, state_manager_.viewMode);
   EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown,
@@ -563,6 +564,7 @@ TEST_F(GeminiContainerUIStateManagerTest, TestReset) {
   EXPECT_EQ(ios::provider::GeminiClientMode::kUnknown,
             state_manager_.processingStatus);
   EXPECT_FALSE(state_manager_.hasConversation);
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
 }
 
 // Tests that shouldBeDismissed returns YES only when Floaty is minimized in

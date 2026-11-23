@@ -513,6 +513,22 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
       inputPlateDidChangeNanoBananaAttachment:isSelected];
 }
 
+- (void)didPresentDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID {
+  [self.geminiViewStateDelegate
+      didPresentDiscoveryBannerWithType:bannerType
+                         conversationID:conversationID];
+}
+
+- (void)didDismissDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID {
+  [self.geminiViewStateDelegate
+      didDismissDiscoveryBannerWithType:bannerType
+                         conversationID:conversationID];
+}
+
 - (void)handleChatMessageRequest:(GeminiChatMessageRequest*)request
                       completion:(void (^)(GeminiChatMessageResponse* response))
                                      completion {

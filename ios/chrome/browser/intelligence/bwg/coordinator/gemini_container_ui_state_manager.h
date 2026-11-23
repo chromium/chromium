@@ -70,6 +70,10 @@ struct GeminiContainerUIState {
 @property(nonatomic, readonly)
     ios::provider::GeminiViewMode lastProcessingStatusUpdateViewMode;
 
+// Whether the zero-state suggestion chips are suppressed because Gemini shows
+// the personalization notice in their place. Restored to NO by `reset`.
+@property(nonatomic, readonly) BOOL zeroStateSuggestionChipsSuppressed;
+
 // Resets and applies the initial container UI state. `hasConversation`
 // indicates whether the container is starting with an existing conversation.
 - (void)setupInitialUIStateWithConversation:(BOOL)hasConversation;
@@ -93,6 +97,10 @@ struct GeminiContainerUIState {
 // Handles response cancellation and notifies the delegate with the expanded
 // state if cancelled via the stop button.
 - (void)handleResponseCancellationWithReason:(GeminiCancelType)reason;
+
+// Handles the personalization notice being shown or hidden, which suppresses or
+// restores the zero-state suggestion chips.
+- (void)handlePersonalizationNoticeVisibilityChanged:(BOOL)visible;
 
 // Handles completion of loading a previous conversation.
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID
