@@ -48,6 +48,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "local_actuation_peer_verifier_unittest.cc",
     "local_actuation_service_name_unittest.cc",
     "local_actuation_wire_format_unittest.cc",
   ]
@@ -56,6 +57,7 @@ source_set("unit_tests") {
     ":peer_verifier",
     ":service_name",
     "//base",
+    "//build:branding_buildflags",
     "//testing/gtest",
   ]
 }
