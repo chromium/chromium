@@ -283,6 +283,11 @@ void AndroidAutofillProviderBridgeImpl::OnTriggerPasskeyRequest(JNIEnv* env) {
   delegate_->OnTriggerPasskeyRequest();
 }
 
+void AndroidAutofillProviderBridgeImpl::OnSessionEndedByContextSwitch(
+    JNIEnv* env) {
+  delegate_->OnSessionEndedByContextSwitch();
+}
+
 }  // namespace autofill
 
 DEFINE_JNI(AutofillProvider)

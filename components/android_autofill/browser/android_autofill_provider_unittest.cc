@@ -364,6 +364,45 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillStartsSession) {
       form, form.fields().front().global_id());
 }
 
+// Tests that a context switch cancels and resets an active session so a new
+// session starts for the same form afterwards.
+TEST_F(AndroidAutofillProviderTest,
+       OnAskForValuesToFillStartsNewSessionAfterContextSwitch) {
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  MockFunction<void(int)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(provider_bridge(), StartAutofillSession);
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(provider_bridge(), CancelSession());
+    EXPECT_CALL(provider_bridge(), Reset());
+    EXPECT_CALL(provider_bridge(), StartAutofillSession);
+  }
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+  check.Call(1);
+
+  provider_bridge_delegate().OnSessionEndedByContextSwitch();
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
+// Tests that an idle context switch does not cancel an unrelated framework
+// autofill session.
+TEST_F(AndroidAutofillProviderTest,
+       OnSessionEndedByContextSwitchWhenIdleDoesNotCancelSession) {
+  EXPECT_CALL(provider_bridge(), CancelSession()).Times(0);
+  EXPECT_CALL(provider_bridge(), Reset());
+  provider_bridge_delegate().OnSessionEndedByContextSwitch();
+}
+
 // Tests that a focus change within the form of an ongoing autofill session
 // results in a focus change event that is sent to Java.
 TEST_F(AndroidAutofillProviderTest, OnFocusChangeInsideCurrentAutofillForm) {
@@ -3448,6 +3487,36 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   android_autofill_manager().OnAskForValuesToFillTest(
       changed_form, changed_form.fields().front().global_id());
   Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
+// Tests that a context switch cancels and clears a cached prefill request.
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
+       OnSessionEndedByContextSwitchCancelsAndClearsCachedPrefillRequest) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormDataWithSessionId(
+                                     form, SessionId(1))));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(provider_bridge(), CancelSession());
+  EXPECT_CALL(provider_bridge(), Reset());
+  provider_bridge_delegate().OnSessionEndedByContextSwitch();
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormDataWithSessionId(
+                                     form, SessionId(1))));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
 }
 
 // Tests that metrics are emitted when the bottom sheet is shown.

@@ -113,15 +113,17 @@ public class AutofillProvider {
     }
 
     /**
-     * This method ensures that a new context will reinitialize the autofill framework to use the
-     * changed context. WebViews should always be created with an activity context which remains
-     * constant. Therefore, this method should be called exactly once and with a valid context. On
-     * Chrome, the context may change with the attachment of the tab to the window and temporarily,
-     * there may be no context.
+     * Reinitializes the autofill framework to use the new context and resets any active session.
+     * The context may change both on Chrome (as a tab attaches to or detaches from a window) and on
+     * WebView (when WebView content is reparented to another WebView or Activity, or when a {@link
+     * android.content.MutableContextWrapper}'s base context changes), and may temporarily be null.
      *
-     * @param context a {@link WeakReference} to an activity {@link Context} or null.
+     * @param context a {@link WeakReference} to a {@link Context} or null.
      */
     public void switchToContext(WeakReference<Context> context) {
+        if (mNativeAutofillProvider != 0) {
+            AutofillProviderJni.get().onSessionEndedByContextSwitch(mNativeAutofillProvider);
+        }
         reset();
         mContextRef = assumeNonNull(context);
         if (mAutofillUMA != null) mAutofillUMA.recordSession();
@@ -1074,5 +1076,7 @@ public class AutofillProvider {
         void onDidShowSuggestions(long nativeAndroidAutofillProviderBridgeImpl);
 
         void onTriggerPasskeyRequest(long nativeAndroidAutofillProviderBridgeImpl);
+
+        void onSessionEndedByContextSwitch(long nativeAndroidAutofillProviderBridgeImpl);
     }
 }

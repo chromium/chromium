@@ -132,6 +132,7 @@ class AndroidAutofillProvider : public AutofillProvider,
   void OnDidShowSuggestions() override;
   bool HasPasskeyRequest() override;
   void OnTriggerPasskeyRequest() override;
+  void OnSessionEndedByContextSwitch() override;
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

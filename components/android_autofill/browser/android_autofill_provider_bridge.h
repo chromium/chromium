@@ -50,6 +50,8 @@ class AndroidAutofillProviderBridge {
     // The user explicitly requested passkeys to be shown. Even if no passkeys
     // are available, call the framework to allow using fallback entry points.
     virtual void OnTriggerPasskeyRequest() = 0;
+
+    virtual void OnSessionEndedByContextSwitch() = 0;
   };
 
   // A helper struct to reference a field in a form.

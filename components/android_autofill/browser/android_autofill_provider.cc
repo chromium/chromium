@@ -488,6 +488,10 @@ bool AndroidAutofillProvider::HasPasskeyRequest() {
       GetRenderFrameHost(session_state_->manager.get(), field->host_frame()));
 }
 
+void AndroidAutofillProvider::OnSessionEndedByContextSwitch() {
+  Reset();
+}
+
 void AndroidAutofillProvider::OnTriggerPasskeyRequest() {
   if (credman_sheet_status_ == CredManBottomSheetLifecycle::kIsShowing) {
     return;
@@ -877,6 +881,7 @@ gfx::RectF AndroidAutofillProvider::ToClientAreaBound(
 }
 
 void AndroidAutofillProvider::Reset() {
+  const bool has_active_session = session_state_ || cached_data_;
   ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
 
   // Clear all session-specific state.
@@ -885,7 +890,9 @@ void AndroidAutofillProvider::Reset() {
   was_shown_bottom_sheet_timer_.Stop();
   was_bottom_sheet_just_shown_ = false;
 
-  CancelSession();
+  if (has_active_session) {
+    CancelSession();
+  }
 
   // Resets the Java instance and hides the datalist popup if there is one.
   bridge_->Reset();

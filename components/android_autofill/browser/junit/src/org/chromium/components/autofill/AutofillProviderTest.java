@@ -264,6 +264,29 @@ public class AutofillProviderTest {
     }
 
     @Test
+    public void testContextChangeEndsNativeSession() {
+        FormData form =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(new FormFieldDataBuilder().build()));
+        mAutofillProvider.startAutofillSession(
+                form,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 10,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        mAutofillProvider.switchToContext(
+                new WeakReference<>(Robolectric.buildActivity(Activity.class).get()));
+
+        verify(mNativeMock).onSessionEndedByContextSwitch(eq(mMockedNativeAndroidAutofillProvider));
+    }
+
+    @Test
     public void testTransformFormFieldToContainViewCoordinates() {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mBounds =

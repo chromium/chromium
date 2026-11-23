@@ -89,6 +89,9 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   // Informs the `Delegate` that the user explicitly requested passkeys options.
   void OnTriggerPasskeyRequest(JNIEnv* env);
 
+  // Informs the `Delegate` that the context switch ended the session.
+  void OnSessionEndedByContextSwitch(JNIEnv* env);
+
  private:
   // The delegate of the bridge.
   raw_ref<Delegate> delegate_;
