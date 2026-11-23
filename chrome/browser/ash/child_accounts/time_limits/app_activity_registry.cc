@@ -700,17 +700,15 @@ void AppActivityRegistry::SaveAppActivity() {
     for (base::Value& entry : list) {
       std::optional<AppId> app_id =
           policy::AppIdFromAppInfoDict(entry.GetIfDict());
-      // TODO(crbug.com/576424768): CHECK-exclusion: Convert to a CHECK once we
-      // are confident it won't be triggered.
-      DCHECK(app_id.has_value());
+      if (!app_id.has_value()) {
+        continue;
+      }
       stored_apps.insert(app_id.value());
 
+      // Entries which were not restored, e.g. because the app is uninstalled
+      // or the entry is invalid, are kept as they are.
       auto it = activity_registry_.find(app_id.value());
       if (it == activity_registry_.end()) {
-        std::optional<AppState> state =
-            PersistedAppInfo::GetAppStateFromDict(entry.GetIfDict());
-        CHECK(state.has_value() && state.value() == AppState::kUninstalled,
-              base::NotFatalUntil::M160);
         continue;
       }
 
@@ -781,7 +779,11 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
     base::Value& entry = list[index];
     std::optional<PersistedAppInfo> info =
         PersistedAppInfo::PersistedAppInfoFromDict(entry.GetIfDict(), true);
-    CHECK(info.has_value(), base::NotFatalUntil::M160);
+    if (!info.has_value()) {
+      // The entry can't be used, so remove it.
+      list.erase(list.begin() + index);
+      continue;
+    }
     info->RemoveActiveTimeEarlierThan(timestamp);
     info->UpdateAppActivityPreference(entry.GetDict(), /* replace */ true);
 

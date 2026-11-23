@@ -46,6 +46,10 @@ std::optional<AppActivity::ActiveTime> AppActivityFromDict(
       base::Microseconds(active_from_microseconds));
   base::Time active_to_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(active_to_microseconds));
+  if (active_to_time <= active_from_time) {
+    VLOG(1) << "Invalid active time range.";
+    return std::nullopt;
+  }
 
   return AppActivity::ActiveTime(active_from_time, active_to_time);
 }
@@ -242,15 +246,16 @@ void PersistedAppInfo::UpdateAppActivityPreference(
   // If the last entry in |list| can be merged with the first entry in
   // |active_times_| merge them.
   base::ListValue& list_view = *list;
-  if (list_view.size() > 0) {
-    base::Value& mergeable_entry = list_view[list_view.size() - 1];
-    CHECK(mergeable_entry.is_dict());
+  if (list_view.size() > 0 && list_view.back().is_dict()) {
+    base::Value& mergeable_entry = list_view.back();
     std::optional<AppActivity::ActiveTime> active_time =
         AppActivityFromDict(mergeable_entry.GetDict());
-    CHECK(active_time.has_value());
 
-    std::optional<AppActivity::ActiveTime> merged =
-        AppActivity::ActiveTime::Merge(active_time.value(), active_times_[0]);
+    std::optional<AppActivity::ActiveTime> merged;
+    if (active_time.has_value()) {
+      merged =
+          AppActivity::ActiveTime::Merge(active_time.value(), active_times_[0]);
+    }
     if (merged.has_value()) {
       mergeable_entry = base::Value(AppActivityToDict(merged.value()));
       start_index = 1;

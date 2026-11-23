@@ -1031,6 +1031,34 @@ TEST_F(AppActivityRegistryTest, DuplicateEntriesInPref) {
   registry().SaveAppActivity();
 }
 
+TEST_F(AppActivityRegistryTest, InvalidEntriesInPref) {
+  registry().SaveAppActivity();
+  {
+    ScopedListPrefUpdate update(prefs(),
+                                ash::prefs::kPerAppTimeLimitsAppActivities);
+    // An entry without app info.
+    update->Append(base::DictValue());
+
+    // An entry without running active time, for an app which is not
+    // installed.
+    base::DictValue entry;
+    PersistedAppInfo(AppId(apps::AppType::kArc, "not_installed"),
+                     AppState::kAvailable, base::TimeDelta(), {})
+        .UpdateAppActivityPreference(entry, /* replace */ true);
+    ASSERT_TRUE(entry.Remove("running_active_time"));
+    update->Append(std::move(entry));
+  }
+
+  // Invalid entries are skipped, and removed when the registry is cleaned.
+  ReInitializeRegistry();
+  registry().SaveAppActivity();
+  EXPECT_EQ(
+      5u, prefs()->GetList(ash::prefs::kPerAppTimeLimitsAppActivities).size());
+  registry().OnSuccessfullyReported(base::Time::Now());
+  EXPECT_EQ(
+      3u, prefs()->GetList(ash::prefs::kPerAppTimeLimitsAppActivities).size());
+}
+
 TEST_F(AppActivityRegistryTest, LimitSetAfterActivity) {
   AppStateObserverMock state_observer_mock;
   registry().AddAppStateObserver(&state_observer_mock);

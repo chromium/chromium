@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/child_accounts/time_limits/persisted_app_info.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
@@ -96,6 +98,45 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
   EXPECT_TRUE(final_entry.has_value());
   EXPECT_EQ(final_entry->active_times().size(), 1u);
   EXPECT_EQ(final_entry->active_times()[0], to_append);
+}
+
+TEST_F(PersistedAppInfoTest, InvalidActiveTimeInPref) {
+  const AppId app = AppId(apps::AppType::kArc, "1");
+  const base::Time start_time = base::Time::Now();
+  const AppActivity::ActiveTime active_time =
+      AppActivity::ActiveTime(start_time, start_time + base::Hours(1));
+
+  base::DictValue entry;
+  PersistedAppInfo(app, AppState::kAvailable, base::Hours(1), {active_time})
+      .UpdateAppActivityPreference(entry, /* replace */ true);
+
+  // Make the stored active time end before it starts.
+  base::DictValue& stored_active_time =
+      entry.FindList("active_times")->back().GetDict();
+  const std::string active_from = *stored_active_time.FindString("active_from");
+  const std::string active_to = *stored_active_time.FindString("active_to");
+  stored_active_time.Set("active_from", active_to);
+  stored_active_time.Set("active_to", active_from);
+
+  // The invalid active time is skipped.
+  std::optional<PersistedAppInfo> info =
+      PersistedAppInfo::PersistedAppInfoFromDict(
+          &entry, /* include_app_activity_array */ true);
+  ASSERT_TRUE(info.has_value());
+  EXPECT_TRUE(info->active_times().empty());
+
+  // A new active time is appended after it.
+  const AppActivity::ActiveTime next_active_time = AppActivity::ActiveTime(
+      start_time + base::Hours(2), start_time + base::Hours(3));
+  PersistedAppInfo(app, AppState::kAvailable, base::Hours(2),
+                   {next_active_time})
+      .UpdateAppActivityPreference(entry, /* replace */ false);
+
+  info = PersistedAppInfo::PersistedAppInfoFromDict(
+      &entry, /* include_app_activity_array */ true);
+  ASSERT_TRUE(info.has_value());
+  ASSERT_EQ(info->active_times().size(), 1u);
+  EXPECT_EQ(info->active_times()[0], next_active_time);
 }
 
 }  // namespace ash::app_time
