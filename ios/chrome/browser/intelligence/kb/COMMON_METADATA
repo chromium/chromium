@@ -2571,7 +2571,7 @@ agentic_review {
   capability_groups {
     path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bHandlerForProtocol\\s*\\([^,)]*GetCommandDispatcher\\(\\),\\s*Browser(?:Coordinator)?Commands\\)"
+    content_patterns: "\\bHandlerForProtocol\\s*\\([^,)]*GetCommandDispatcher\\(\\),\\s*BrowserCoordinatorCommands\\)"
     content_patterns: "\\b(?:browserCoordinatorHandler|browserHandler)\\b"
     content_patterns: "\\bSceneLayoutState(?:Observer)?\\b"
     content_patterns: "\\b(?:SceneViewController|SceneCoordinator)\\b"
