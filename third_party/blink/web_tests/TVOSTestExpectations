@@ -7560,7 +7560,6 @@ crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/sr
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/sri-message-signatures/validation-failed-signature-expired.js [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/sri-message-signatures/validation-failed-signature-mismatch.js [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/stylesheet-loading-issues.js [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/third-party-cookie-phaseout-warning.js [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/unencoded-digest-incorrect-digest-length.js [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/inspector-protocol/issues/unencoded-digest-incorrect-digest-type.js [ Failure ]

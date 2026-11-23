@@ -17,7 +17,6 @@ import sys
 # add more formal support.
 EXEMPTED_FROM_RENDERER_GENERATION = {
     "ExampleBrowserProcessDeprecation": True,
-    "RelatedWebsiteSets": True,
 }
 
 

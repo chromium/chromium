@@ -81,7 +81,6 @@ namespace {
 
 const char kExampleBrowserProcessDeprecation[] =
     "ExampleBrowserProcessDeprecation";
-const char kRelatedWebsiteSets[] = "RelatedWebsiteSets";
 
 template <typename Handler, typename... MethodArgs, typename... Args>
 void DispatchToAgents(DevToolsAgentHostImpl* host,
@@ -654,8 +653,6 @@ const char* DeprecationIssueTypeToProtocol(
   switch (error_type) {
     case blink::mojom::DeprecationIssueType::kExampleBrowserProcessDeprecation:
       return kExampleBrowserProcessDeprecation;
-    case blink::mojom::DeprecationIssueType::kRelatedWebsiteSets:
-      return kRelatedWebsiteSets;
   }
 }
 

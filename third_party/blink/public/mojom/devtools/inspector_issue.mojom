@@ -336,7 +336,6 @@ struct GenericIssueDetails {
 
 enum DeprecationIssueType {
   kExampleBrowserProcessDeprecation,
-  kRelatedWebsiteSets,
 };
 
 struct DeprecationIssueDetails {
