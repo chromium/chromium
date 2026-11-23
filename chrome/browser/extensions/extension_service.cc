@@ -367,6 +367,13 @@ void ExtensionService::Init() {
     InstalledLoader(profile_).LoadAllExtensions();
   }
 
+  // Start the updater before CheckManagementPolicy(), which can call
+  // ExtensionUpdater::CheckNow() for extensions that are disabled only because
+  // they fail minimum_version_required.
+  if (updater_ && updater_->enabled()) {
+    updater_->Start();
+  }
+
   CheckManagementPolicy();
   OnInstalledExtensionsLoaded();
 
@@ -934,10 +941,6 @@ void ExtensionService::UnloadAllExtensionsInternal() {
 }
 
 void ExtensionService::OnInstalledExtensionsLoaded() {
-  if (updater_ && updater_->enabled()) {
-    updater_->Start();
-  }
-
   // Enable any Shared Modules that incorrectly got disabled previously.
   // This is temporary code to fix incorrect behavior from previous versions of
   // Chrome and can be removed after several releases (perhaps M60).
