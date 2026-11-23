@@ -62,6 +62,16 @@ bool UpdateVaryContext(const HttpRequestHeaders& request_headers,
   }
   return processed_header;
 }
+
+bool HandleAsVaryStar(const HttpResponseHeaders& response_headers) {
+  // Because authorization headers aren't visible to the cache layer,
+  // treat anything dependent on them as always requiring validation
+  // as a conservative measure.
+  return response_headers.HasHeaderValue("vary", "*") ||
+         response_headers.HasHeaderValue("vary",
+                                         HttpRequestHeaders::kAuthorization);
+}
+
 }  // namespace
 
 HttpVaryData::HttpVaryData() = default;
@@ -77,7 +87,7 @@ bool HttpVaryData::Init(const HttpRequestHeaders& request_headers,
   // us handle this case. See section 4.1 of RFC 7234.
   //
 
-  if (response_headers.HasHeaderValue("vary", "*")) {
+  if (HandleAsVaryStar(response_headers)) {
     // What's in request_digest_ will never be looked at, but make it
     // deterministic so we don't serialize out uninitialized memory content.
     hash_ = Sha256Hash{};
@@ -181,7 +191,7 @@ bool HttpVaryData::MatchesRequest(
     const HttpRequestHeaders& request_headers,
     const HttpResponseHeaders& cached_response_headers) const {
   // Vary: * never matches.
-  if (cached_response_headers.HasHeaderValue("vary", "*")) {
+  if (HandleAsVaryStar(cached_response_headers)) {
     return false;
   }
 

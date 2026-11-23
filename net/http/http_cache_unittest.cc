@@ -1677,6 +1677,33 @@ TEST_F(HttpCacheSimpleGetTest, LoadSkipCacheValidationVaryStar) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
+// Vary: Authorization forces revalidation since it's not actually evaluable
+// at the cache layer.
+// See crbug.com/578657348.
+TEST_F(HttpCacheSimpleGetTest, LoadSkipCacheValidationVaryAuth) {
+  MockHttpCache cache;
+
+  // Write to the cache.
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.response_headers =
+      "Cache-Control: max-age=10000\n"
+      "Vary: Authorization\n";
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  // Attempt to read from the cache... we will still load it from network,
+  // since we can't check vary; and even if LOAD_SKIP_CACHE_VALIDATION is
+  // set.
+  transaction.load_flags |= LOAD_SKIP_CACHE_VALIDATION;
+  LoadTimingInfo load_timing_info;
+  RunTransactionTestAndGetTiming(cache.http_cache(), transaction,
+                                 NetLogWithSource::Make(NetLogSourceType::NONE),
+                                 &load_timing_info);
+
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+}
+
 // Tests that was_cached was set properly on a failure, even if the cached
 // response wasn't returned.
 TEST_F(HttpCacheSimpleGetTest, CacheSignalFailure) {

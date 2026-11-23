@@ -119,6 +119,24 @@ TEST(HttpVaryDataTest, DoesVaryStar) {
   EXPECT_FALSE(v.MatchesRequest(b.request_headers, *b.response.get()));
 }
 
+TEST(HttpVaryDataTest, DoesVaryAuthorization) {
+  // Vary: Authorization varies even when headers are identical, since
+  // they're added too late to check.
+  const ExtraHeaders kRequestHeaders = {{"Foo", "1"}};
+  const char kResponse[] = "HTTP/1.1 200 OK\nVary: Authorization\n\n";
+
+  TestTransaction a;
+  a.Init(kRequestHeaders, kResponse);
+
+  TestTransaction b;
+  b.Init(kRequestHeaders, kResponse);
+
+  HttpVaryData v;
+  EXPECT_TRUE(v.Init(a.request_headers, *a.response.get()));
+
+  EXPECT_FALSE(v.MatchesRequest(b.request_headers, *b.response.get()));
+}
+
 TEST(HttpVaryDataTest, DoesntVary) {
   TestTransaction a;
   a.Init({{"Foo", "1"}}, "HTTP/1.1 200 OK\nVary: foo\n\n");
