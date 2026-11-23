@@ -159,6 +159,12 @@ void ChromePluginServiceFilter::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderProcessHostDestroyed(host);
+}
+
+void ChromePluginServiceFilter::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::AutoLock auto_lock(lock_);
   plugin_details_.erase(host->GetDeprecatedID());
   host_observation_.RemoveObservation(host);
