@@ -121,6 +121,28 @@ public class QuickDeleteBridgeTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288938
+    public void testRestartCounterForTimePeriod_SingleDomainVisited() throws TimeoutException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mQuickDeleteBridge.restartCounterForTimePeriod(TimePeriod.LAST_15_MINUTES));
+        mDomainVisitsCallback.mCallbackHelper.waitForCallback(0);
+        assertEquals("", mDomainVisitsCallback.mLastVisitedDomain);
+        assertEquals(0, mDomainVisitsCallback.mDomainCount);
+
+        EmbeddedTestServer server = mActivityTestRule.getEmbeddedTestServerRule().getServer();
+        mActivityTestRule.loadUrl(server.getURLWithHostName("www.example.com", TEST_PAGE));
+
+        int callCount = mDomainVisitsCallback.mCallbackHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mQuickDeleteBridge.restartCounterForTimePeriod(TimePeriod.LAST_15_MINUTES));
+        mDomainVisitsCallback.mCallbackHelper.waitForCallback(callCount);
+
+        assertEquals("example.com", mDomainVisitsCallback.mLastVisitedDomain);
+        assertEquals(1, mDomainVisitsCallback.mDomainCount);
+    }
+
+    @Test
+    @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288938
     public void testRestartCounterForTimePeriod_WhenVisitsExistInRange() throws TimeoutException {
         visitUrls();
 
@@ -130,6 +152,6 @@ public class QuickDeleteBridgeTest {
         mDomainVisitsCallback.mCallbackHelper.waitForCallback(0);
 
         assertEquals("google.com", mDomainVisitsCallback.mLastVisitedDomain);
-        assertEquals(1, mDomainVisitsCallback.mDomainCount);
+        assertEquals(2, mDomainVisitsCallback.mDomainCount);
     }
 }

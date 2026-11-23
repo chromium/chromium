@@ -40,11 +40,10 @@ QuickDeleteDomainResult GetLastVisitedDomainAndUniqueDomainCountFromResult(
   std::u16string last_visited_domain =
       base::UTF8ToUTF16(result->last_visited_domain());
 
-  // Subtract one from the unique_domains_count since one of the domains will be
-  // shown as the last_visited_domain.
+  // Return the total unique domain count; QuickDeleteViewBinder subtracts one
+  // when formatting the "+ N sites" suffix next to last_visited_domain.
   if (unique_domains_count > 0) {
     CHECK(!last_visited_domain.empty());
-    unique_domains_count--;
   }
 
   return {last_visited_domain, static_cast<int>(unique_domains_count)};
