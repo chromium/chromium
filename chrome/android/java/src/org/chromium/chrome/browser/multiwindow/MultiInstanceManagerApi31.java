@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -79,7 +80,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -583,7 +583,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         }
 
         // Determine the active tasks that need to be finished.
-        Map<Integer, Integer> tasksToDelete = new HashMap<>();
+        SparseIntArray tasksToDelete = new SparseIntArray();
         for (Integer i : lruInstanceIds.values()) {
             tasksToDelete.put(ChromeMultiInstancePersistentStore.readTaskId(i), i);
         }
@@ -595,10 +595,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         for (AppTask appTask : appTasks) {
             var taskInfo = AndroidTaskUtils.getTaskInfoFromTask(appTask);
             if (taskInfo == null) continue;
-            if (tasksToDelete.containsKey(taskInfo.taskId)) {
+            int taskIndex = tasksToDelete.indexOfKey(taskInfo.taskId);
+            if (taskIndex >= 0) {
                 appTask.finishAndRemoveTask();
                 appTaskIds.remove(taskInfo.taskId);
-                int instanceId = assertNonNull(tasksToDelete.get(taskInfo.taskId));
+                int instanceId = tasksToDelete.valueAt(taskIndex);
                 ChromeMultiInstancePersistentStore.removeTaskId(instanceId);
             }
         }
