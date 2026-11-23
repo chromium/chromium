@@ -68,12 +68,11 @@ public class EdgeToEdgePTTest {
     public void openNewTabInGroupAtPageBottom() {
         ThreadUtils.runOnUiThread(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
-        var topBottomLinkPageAndTop =
+        TopBottomLinksPageStation topBottomLinkPage =
                 TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), blankPage);
-        TopBottomLinksPageStation topBottomLinkPage = topBottomLinkPageAndTop.first;
-        TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPageAndTop.second;
 
-        TopBottomLinksPageStation.BottomFacility bottomFacility = topFacility.scrollToBottom();
+        TopBottomLinksPageStation.BottomFacility bottomFacility =
+                topBottomLinkPage.topFacility.scrollToBottom();
         var tabGroupUiFacility = bottomFacility.openContextMenuOnBottomLink().openTabInNewGroup();
 
         TransitAsserts.assertFinalDestination(
@@ -92,9 +91,8 @@ public class EdgeToEdgePTTest {
                 chinOnNtp.bottomChinElement.value().getLayerVisibility());
 
         // Navigate the page to another web page, ensure the page has the chin visible.
-        var pair =
+        TopBottomLinksPageStation regularPage =
                 TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), newTabPage);
-        TopBottomLinksPageStation regularPage = pair.first;
         var chinOnWebPage = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(false));
         assertEquals(
                 "On a regular page the bottom chin should be always VISIBLE.",

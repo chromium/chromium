@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.test.transit.testhtmls;
 
-import android.util.Pair;
-
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -29,66 +26,23 @@ public class TopBottomLinksPageStation extends WebPageStation {
     private static final HtmlElementSpec TOP_LINK = new HtmlElementSpec("#top_link");
     private static final HtmlElementSpec BOTTOM_LINK = new HtmlElementSpec("#bottom_link");
 
+    /** The top of the page, entered by default when the page loads. */
+    public final TopFacility topFacility;
+
     protected TopBottomLinksPageStation(Config config) {
         super(config);
+        topFacility = declareDefaultFacility(new TopFacility());
     }
 
-    /** Load the page, land at the {@link TopFacility} of a {@link TopBottomLinksPageStation}. */
-    public static Pair<TopBottomLinksPageStation, TopFacility> loadPage(
-            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
-        Trip trip =
-                loadPageNoFacilityAnd(activityTestRule, currentPageStation)
-                        .enterFacilityAnd(new TopFacility())
-                        .complete();
-
-        return Pair.create(trip.get(TopBottomLinksPageStation.class), trip.get(TopFacility.class));
-    }
-
-    /** Load the page, land at the {@link TopBottomLinksPageStation}. */
-    public static TopBottomLinksPageStation loadPageNoFacility(
-            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
-        return loadPageNoFacilityAnd(activityTestRule, currentPageStation)
-                .completeAndGet(TopBottomLinksPageStation.class);
-    }
-
-    private static TripBuilder loadPageNoFacilityAnd(
+    /** Load the page, landing at its {@link TopFacility} by default. */
+    public static TopBottomLinksPageStation loadPage(
             ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
         String url = activityTestRule.getTestServer().getURL(PATH);
         TopBottomLinksPageStation station =
                 new Builder<>(TopBottomLinksPageStation::new)
                         .initForLoadingUrlOnSameTab(url, currentPageStation)
                         .build();
-        return currentPageStation.loadUrlTo(url).arriveAtAnd(station);
-    }
-
-    /** Scroll to the bottom of the page. */
-    public void scrollToBottom(
-            @Nullable BrowserControlsFacility<TopBottomLinksPageStation> browserControlsState) {
-        TripBuilder builder =
-                scrollPageDownWithGestureTo()
-                        .withRetry()
-                        .waitForAnd(new ScrollToBottomCondition(webContentsElement));
-
-        if (browserControlsState != null) {
-            builder.enterFacilities(browserControlsState, new BottomFacility());
-        } else {
-            builder.enterFacility(new BottomFacility());
-        }
-    }
-
-    /** Scroll to the top of the page. */
-    public void scrollToTop(
-            @Nullable BrowserControlsFacility<TopBottomLinksPageStation> browserControlsState) {
-        TripBuilder builder =
-                scrollPageUpWithGestureTo()
-                        .withRetry()
-                        .waitForAnd(new ScrollToTopCondition(webContentsElement));
-
-        if (browserControlsState != null) {
-            builder.enterFacilities(browserControlsState, new TopFacility());
-        } else {
-            builder.enterFacility(new TopFacility());
-        }
+        return currentPageStation.loadUrlTo(url).arriveAt(station);
     }
 
     /** The page is scrolled to the top, and the top link is displayed. */
@@ -103,6 +57,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
                                     TOP_LINK,
                                     mHostStation.webContentsElement,
                                     HtmlElement.inViewportOption()));
+            declareEnterCondition(new ScrollToTopCondition(mHostStation.webContentsElement));
         }
 
         /** Open context menu on the top link. */
@@ -112,11 +67,21 @@ public class TopBottomLinksPageStation extends WebPageStation {
 
         /** Scroll to the bottom of the page. */
         public BottomFacility scrollToBottom() {
-            return mHostStation
-                    .scrollPageDownWithGestureTo()
-                    .withRetry()
-                    .exitFacilityAnd(this)
-                    .enterFacility(new BottomFacility());
+            return scrollToBottom(/* browserControlsState= */ null);
+        }
+
+        /** Scroll to the bottom of the page and assert browser controls state. */
+        public BottomFacility scrollToBottom(
+                @Nullable BrowserControlsFacility<TopBottomLinksPageStation> browserControlsState) {
+            BottomFacility bottomFacility = new BottomFacility();
+            TripBuilder builder =
+                    mHostStation.scrollPageDownWithGestureTo().withRetry().exitFacilityAnd(this);
+            if (browserControlsState != null) {
+                builder.enterFacilities(browserControlsState, bottomFacility);
+            } else {
+                builder.enterFacility(bottomFacility);
+            }
+            return bottomFacility;
         }
     }
 
@@ -140,13 +105,23 @@ public class TopBottomLinksPageStation extends WebPageStation {
             return bottomElement.longPressTo().enterFacility(new LinkContextMenuFacility());
         }
 
-        /** Scroll to the bottom of the page. */
+        /** Scroll to the top of the page. */
         public TopFacility scrollToTop() {
-            return mHostStation
-                    .scrollPageUpWithGestureTo()
-                    .withRetry()
-                    .exitFacilityAnd(this)
-                    .enterFacility(new TopFacility());
+            return scrollToTop(/* browserControlsState= */ null);
+        }
+
+        /** Scroll to the top of the page and assert browser controls state. */
+        public TopFacility scrollToTop(
+                @Nullable BrowserControlsFacility<TopBottomLinksPageStation> browserControlsState) {
+            TopFacility topFacility = new TopFacility();
+            TripBuilder builder =
+                    mHostStation.scrollPageUpWithGestureTo().withRetry().exitFacilityAnd(this);
+            if (browserControlsState != null) {
+                builder.enterFacilities(browserControlsState, topFacility);
+            } else {
+                builder.enterFacility(topFacility);
+            }
+            return topFacility;
         }
     }
 }

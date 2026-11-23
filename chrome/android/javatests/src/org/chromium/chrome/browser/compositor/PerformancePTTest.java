@@ -79,10 +79,9 @@ public class PerformancePTTest {
                     TabStateBrowserControlsVisibilityDelegate.disablePageLoadDelayForTests();
                 });
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
-        var topBottomLinkPageAndTop =
+        TopBottomLinksPageStation topBottomLinkPage =
                 TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), blankPage);
-        TopBottomLinksPageStation topBottomLinkPage = topBottomLinkPageAndTop.first;
-        TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPageAndTop.second;
+        TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPage.topFacility;
 
         CompositorViewHolder compositorViewHolder =
                 mCtaTestRule.getActivity().getCompositorViewHolderForTesting();

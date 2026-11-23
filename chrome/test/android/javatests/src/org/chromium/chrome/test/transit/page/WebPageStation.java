@@ -209,7 +209,7 @@ public class WebPageStation extends CtaPageStation implements WebContentsElement
 
         public ScrollToBottomCondition(Supplier<WebContents> webContentsSupplier) {
             super(/* isRunOnUiThread= */ false);
-            mWebContentsSupplier = webContentsSupplier;
+            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
         }
 
         @Override
@@ -244,16 +244,16 @@ public class WebPageStation extends CtaPageStation implements WebContentsElement
 
         public ScrollToTopCondition(Supplier<WebContents> webContentsSupplier) {
             super(/* isRunOnUiThread= */ false);
-            mWebContentsSupplier = webContentsSupplier;
+            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() throws Exception {
             String code = "window.visualViewport.pageTop";
-            int currentPageTop;
+            double currentPageTop;
             try {
                 currentPageTop =
-                        Integer.parseInt(
+                        Double.parseDouble(
                                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                                         mWebContentsSupplier.get(), code));
             } catch (TimeoutException e) {
@@ -264,7 +264,7 @@ public class WebPageStation extends CtaPageStation implements WebContentsElement
                 return fulfilled();
             }
             return notFulfilled(
-                    "Not scrolled to the top yet. Current page top: %d", currentPageTop);
+                    "Not scrolled to the top yet. Current page top: %.2f", currentPageTop);
         }
 
         @Override

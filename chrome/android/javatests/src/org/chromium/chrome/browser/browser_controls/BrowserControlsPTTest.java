@@ -108,7 +108,7 @@ public class BrowserControlsPTTest {
 
         var blankPage = mActivityTestRule.startOnBlankPage();
         mPage =
-                TopBottomLinksPageStation.loadPageNoFacility(
+                TopBottomLinksPageStation.loadPage(
                         mActivityTestRule.getActivityTestRule(), blankPage);
         mActivity = mActivityTestRule.getActivity();
     }
@@ -120,8 +120,9 @@ public class BrowserControlsPTTest {
     public void topControlsScroll() {
         BrowserControlsFacility.waitForBrowserControlsToBeMoveable(mPage);
 
-        mPage.scrollToBottom(BrowserControlsFacility.scrolledOff());
-        mPage.scrollToTop(BrowserControlsFacility.shown());
+        var bottomFacility =
+                mPage.topFacility.scrollToBottom(BrowserControlsFacility.scrolledOff());
+        bottomFacility.scrollToTop(BrowserControlsFacility.shown());
     }
 
     @Test
@@ -131,7 +132,7 @@ public class BrowserControlsPTTest {
     public void topControlsScrollingDisabled() {
         var lockedControls =
                 mPage.noopTo().enterFacility(BrowserControlsFacility.shownAndHeightSynced());
-        mPage.scrollToBottom(null);
+        mPage.topFacility.scrollToBottom();
         mPage.noopTo()
                 .exitFacilityAnd(lockedControls)
                 .enterFacility(BrowserControlsFacility.shownAndHeightSynced());
@@ -145,10 +146,8 @@ public class BrowserControlsPTTest {
     public void twoStepPullToRefreshWhenTopControlsHiddenAcrossSameOriginNav() {
         BrowserControlsFacility.waitForBrowserControlsToBeMoveable(mPage);
 
-        var bottomFacility = new TopBottomLinksPageStation.BottomFacility();
-        mPage.scrollPageDownWithGestureTo()
-                .withRetry()
-                .enterFacilities(BrowserControlsFacility.scrolledOff(), bottomFacility);
+        var bottomFacility =
+                mPage.topFacility.scrollToBottom(BrowserControlsFacility.scrolledOff());
 
         // Same-origin link navigation keeps top controls scrolled off on the new page (scrollY==0).
         String destinationUrl =
