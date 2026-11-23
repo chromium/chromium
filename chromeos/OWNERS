@@ -7,6 +7,8 @@ set noparent
 
 per-file BUILD.gn=*
 per-file CHROMEOS_LKGM=*
+# Translation artifacts:
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 # Tast test control
 per-file tast_control_disabled_tests.txt=*
 per-file tast_control_flaky_tests.txt=*
