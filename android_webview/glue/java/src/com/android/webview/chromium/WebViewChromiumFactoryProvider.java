@@ -492,9 +492,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                     BaseFeatures.SHUTDOWN_PRE_NATIVE_THREAD_POOL_AFTER_STARTUP));
 
             mAwInit = createAwInit();
-            // TODO(crbug.com/544990736): Ideally StartupController should be initialized at the end
-            // of provider init once all early usages (e.g. runNonUiThreadCapableStartupTasks) are
-            // removed.
+            // TODO(crbug.com/544990681): Ideally StartupController should be initialized at the end
+            // of provider init once early Stage 1 usages (e.g. runNonUiThreadCapableStartupTasks)
+            // are refactored.
             mStartupDelegate =
                     new StartupDelegateImpl(webViewDelegate, mAwInit::initializeDefaultProfileOnUI);
             StartupController startupController = StartupController.initialize(mStartupDelegate);

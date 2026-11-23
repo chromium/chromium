@@ -56,9 +56,8 @@ public class AwCrashyClassUtilsTest extends AwParameterizedTest {
     public void testJavaCrashWhenEnabled() throws Exception {
         mRule.startBrowserProcess();
         // The switch is appended here rather than declared with @CommandLineFlags.Add because
-        // once startup is unified it runs maybeCrashIfEnabled() itself, and a startup failure
-        // leaves the pre-native UI task queue permanently wedged, which hangs test teardown.
-        // TODO(crbug.com/544990736): assert on startup crashing once that is recoverable.
+        // browser startup runs maybeCrashIfEnabled() itself, and a startup failure leaves the
+        // pre-native UI task queue wedged during test teardown.
         CommandLine.getInstance().appendSwitch(AwSwitches.WEBVIEW_FORCE_CRASH_JAVA);
         Assert.assertTrue(AwCrashyClassUtils.shouldCrashJava());
         AwCrashyClassUtils.maybeCrashIfEnabled();

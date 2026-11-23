@@ -10,7 +10,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.accessibility.AwAccessibilityStateVisibilityManager;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -88,18 +87,6 @@ public final class AwBrowserProcess {
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
-    }
-
-    /**
-     * onStartupComplete performs the final steps of Chromium startup, e.g enabling the task
-     * runners. It's called when WebViewChromiumAwInit startup tasks are done. Tests that start the
-     * browser process directly should use this.
-     */
-    public static void startForTesting() {
-        StartupTasks.preBrowserProcessStartStepTwo();
-        StartupTasks.finishBrowserProcessStart();
-        AwAccessibilityStateVisibilityManager.initializeOnStartup();
-        onStartupComplete();
     }
 
     public static void setWebViewPackageName(String webViewPackageName) {

@@ -144,7 +144,37 @@ public final class StartupTasks {
         ThreadUtils.assertOnUiThread();
         try (DualTraceEvent e1 =
                 DualTraceEvent.scoped("StartupTasks.postBrowserProcessStartStepOne")) {
-            finishBrowserProcessStart();
+            try (DualTraceEvent e2 =
+                    DualTraceEvent.scoped("StartupTasks.finishBrowserProcessStart")) {
+                if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
+                    BrowserStartupController.getInstance()
+                            .startBrowserProcessesSync(
+                                    LibraryProcessType.PROCESS_WEBVIEW,
+                                    !isMultiProcess(),
+                                    /* startGpuProcess= */ false);
+                }
+                try (DualTraceEvent ignored =
+                        DualTraceEvent.scoped(
+                                "StartupTasks.finishBrowserProcessStart.createPowerMonitor")) {
+                    PowerMonitor.create();
+                }
+                try (DualTraceEvent ignored =
+                        DualTraceEvent.scoped(
+                                "StartupTasks.finishBrowserProcessStart.setSafeBrowsingHandler")) {
+                    PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    AwContentsLifecycleNotifier.initialize();
+                }
+
+                PostTask.postTask(
+                        TaskTraits.BEST_EFFORT,
+                        () -> {
+                            RecordHistogram.recordSparseHistogram(
+                                    "Android.PlayServices.Version",
+                                    PlatformServiceBridge.getInstance().getGmsVersionCode());
+                        });
+            }
 
             // TODO(crbug.com/332706093): See if this can be moved before loading native.
             if (!WebViewCachedFlags.get()
@@ -217,43 +247,6 @@ public final class StartupTasks {
                     !CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_ALL_CLEARTEXT_TRAFFIC));
         } finally {
             sNonUiThreadCapableStartupTasksLatch.countDown();
-        }
-    }
-
-    // TODO(crbug.com/544990736): This is only a separate package-private method because it is used
-    // by AwBrowserProcess.startForTesting(). Inline this into postBrowserProcessStartStepOne once
-    // test startup is migrated.
-    /* package */ static void finishBrowserProcessStart() {
-        ThreadUtils.assertOnUiThread();
-        try (DualTraceEvent e1 = DualTraceEvent.scoped("StartupTasks.finishBrowserProcessStart")) {
-            if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                BrowserStartupController.getInstance()
-                        .startBrowserProcessesSync(
-                                LibraryProcessType.PROCESS_WEBVIEW,
-                                !isMultiProcess(),
-                                /* startGpuProcess= */ false);
-            }
-            try (DualTraceEvent ignored =
-                    DualTraceEvent.scoped(
-                            "StartupTasks.finishBrowserProcessStart.createPowerMonitor")) {
-                PowerMonitor.create();
-            }
-            try (DualTraceEvent ignored =
-                    DualTraceEvent.scoped(
-                            "StartupTasks.finishBrowserProcessStart.setSafeBrowsingHandler")) {
-                PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                AwContentsLifecycleNotifier.initialize();
-            }
-
-            PostTask.postTask(
-                    TaskTraits.BEST_EFFORT,
-                    () -> {
-                        RecordHistogram.recordSparseHistogram(
-                                "Android.PlayServices.Version",
-                                PlatformServiceBridge.getInstance().getGmsVersionCode());
-                    });
         }
     }
 
