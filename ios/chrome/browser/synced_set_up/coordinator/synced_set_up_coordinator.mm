@@ -62,6 +62,8 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   syncer::DeviceInfoSyncService* deviceInfoSyncService =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
+  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
+  // `startupParameters` is always nil, so external intents aren't considered.
   AppStartupParameters* startupParameters =
       self.browser->GetSceneState().controller.startupParameters;
   signin::IdentityManager* identityManager =

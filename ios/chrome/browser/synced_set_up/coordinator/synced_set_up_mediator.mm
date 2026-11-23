@@ -245,6 +245,8 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   raw_ptr<WebStateList> _webStateList;
   // Parameters relevant to understanding the app startup, used to determine
   // how the Synced Set Up flow should be presented.
+  // TODO(crbug.com/493816082): Replace with values that are also set in the new
+  // startup flow, where `AppStartupParameters` don't exist.
   AppStartupParameters* _startupParameters;
   // Caches profile prefs that differ between this device and a remote device.
   // The map stores the pref name and a pair of values of the pref on a remote

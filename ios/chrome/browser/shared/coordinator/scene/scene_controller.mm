@@ -765,6 +765,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     }
   }
 
+  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
+  // `self.startupParameters` is always nil.
   BOOL forceNewTabForIntentSearch =
       base::FeatureList::IsEnabled(kForceNewTabForIntentSearch) &&
       (self.startupParameters.postOpeningAction == FOCUS_OMNIBOX);
@@ -866,6 +868,9 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     }
   }
 
+  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
+  // `self.startupParameters` is always nil, so an NTP may be opened in addition
+  // to the tab opened by an external intent.
   if (self.startupParameters) {
     return NO;
   }
@@ -979,6 +984,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   WrangledBrowser* targetInterface = targetMode == ApplicationMode::NORMAL
                                          ? self.mainInterface
                                          : self.incognitoInterface;
+  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
+  // `self.startupParameters` is always nil.
   AppStartupParameters* startupParameters = self.startupParameters;
   _imageSearchData = [startupParameters imageSearchData];
   if (startupParameters && startupParameters.remoteActorRequest) {
@@ -1023,6 +1030,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       // Voice search, QRScanner, Lens, and the omnibox are presented by the
       // BVC. They must be started after the BVC view is added in the
       // hierarchy.
+      // TODO(crbug.com/493816082): Adapt for the new startup flow, where
+      // `self.startupParameters` is always nil.
       self.NTPActionAfterTabSwitcherDismissal =
           [self.startupParameters postOpeningAction];
       [self setStartupParameters:nil];
@@ -1857,6 +1866,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     return NO;
   }
   // Don't show promos if the app was launched from a URL.
+  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
+  // `self.startupParameters` is always nil.
   if (self.startupParameters) {
     return NO;
   }

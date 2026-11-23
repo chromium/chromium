@@ -1555,6 +1555,9 @@
   }
   OmniboxFocusBrowserAgent* omniboxFocusAgent =
       OmniboxFocusBrowserAgent::FromBrowser(self.browser);
+  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
+  // `startupParameters` is always nil, so the post-opening action of external
+  // intents isn't considered.
   AppStartupParameters* startupParameters =
       self.browser->GetSceneState().controller.startupParameters;
   return self.willFocusOmniboxAfterNewTabAnimation || _isBrowserViewObscured ||
