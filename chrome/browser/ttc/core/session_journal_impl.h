@@ -26,6 +26,7 @@ class FilePath;
 
 namespace actor {
 class AggregatedJournalFileSerializer;
+class AggregatedJournalInMemorySerializer;
 }
 
 namespace ttc {
@@ -43,6 +44,12 @@ class SessionJournalImpl : public SessionJournal {
   // An async event that ends when EndEntry() is called on it or when it's
   // destroyed.
   using PendingAsyncEvent = actor::AggregatedJournal::PendingAsyncEntry;
+
+  // Whether a session's actor journal should be serialized in memory. On
+  // desktop platforms, enabled when `kTtcInMemoryJournal` is enabled, or by
+  // default on dogfood clients when `kTtcInMemoryJournal` is not explicitly
+  // disabled.
+  static bool IsInMemoryJournalEnabled();
 
   // `journal` must outlive `this`.
   SessionJournalImpl(actor::AggregatedJournal& journal, actor::TaskId task_id);
@@ -79,6 +86,14 @@ class SessionJournalImpl : public SessionJournal {
   actor::TaskId task_id() const { return task_id_; }
   base::TimeDelta server_clock_delta() const { return server_clock_delta_; }
 
+  bool HasInMemorySerializer() const {
+    return in_memory_journal_serializer_ != nullptr;
+  }
+
+  // Returns a snapshot of the trace serialized in memory so far, or empty if
+  // in-memory serialization is not enabled.
+  std::vector<uint8_t> GetSnapshot();
+
  private:
   void StartSerializingToFile(const base::FilePath& file_path);
   void OnSerializerInitDone(bool success);
@@ -89,6 +104,8 @@ class SessionJournalImpl : public SessionJournal {
   base::TimeDelta server_clock_delta_;
   std::unique_ptr<actor::AggregatedJournalFileSerializer>
       file_journal_serializer_;
+  std::unique_ptr<actor::AggregatedJournalInMemorySerializer>
+      in_memory_journal_serializer_;
   absl::flat_hash_map<int32_t, std::unique_ptr<PendingAsyncEvent>>
       pending_server_async_events_;
   base::WeakPtrFactory<SessionJournalImpl> weak_ptr_factory_{this};

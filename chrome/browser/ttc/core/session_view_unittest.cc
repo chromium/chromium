@@ -40,6 +40,8 @@ class FakeSessionViewDelegate : public SessionViewDelegate {
   }
   bool IsMicMuted() const override { return app_mic_muted_; }
   Speaker GetSpeaker() const override { return Speaker::kIdle; }
+  bool CanSaveDebugTrace() const override { return false; }
+  void SaveDebugTrace() override {}
 
  private:
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;

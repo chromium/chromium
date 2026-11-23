@@ -47,6 +47,8 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
   base::CallbackListSubscription RegisterAudioLevelCallback(
       base::RepeatingCallback<void(float)> callback) override;
   void ToggleMicMuted() override;
+  bool CanSaveDebugTrace() const override;
+  void SaveDebugTrace() override;
 
   OverlayController& overlay_controller_for_testing() {
     return *overlay_controller_;

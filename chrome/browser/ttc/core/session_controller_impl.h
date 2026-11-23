@@ -97,6 +97,8 @@ class SessionControllerImpl : public SessionController,
   bool SetMicMuted(bool muted) override;
   bool IsMicMuted() const override;
   Speaker GetSpeaker() const override;
+  bool CanSaveDebugTrace() const override;
+  void SaveDebugTrace() override;
 
   // VoiceFocusedContentsTracker::Observer implementation:
   void OnVoiceFocusedContentsChanged(

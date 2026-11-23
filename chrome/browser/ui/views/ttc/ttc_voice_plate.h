@@ -43,6 +43,7 @@ class TtcVoicePlate : public voice::VoicePlate, public TtcView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMuteButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveDebugTraceButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
 
  private:

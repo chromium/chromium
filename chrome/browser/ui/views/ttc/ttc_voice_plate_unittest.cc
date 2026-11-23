@@ -56,6 +56,8 @@ class FakeTtcViewDelegate : public TtcViewDelegate {
     return audio_level_callbacks_.Add(std::move(callback));
   }
   void ToggleMicMuted() override { ++toggle_mic_muted_count_; }
+  bool CanSaveDebugTrace() const override { return false; }
+  void SaveDebugTrace() override {}
 
  private:
   int end_session_count_ = 0;

@@ -119,6 +119,8 @@ source_set("impl") {
     "get_pointer_tool.h",
     "hotl/hotl_transcript_matcher.cc",
     "hotl/hotl_transcript_matcher.h",
+    "journal_trace_saver.cc",
+    "journal_trace_saver.h",
     "output_volume_monitor.cc",
     "output_volume_monitor.h",
     "page_context.cc",
@@ -167,6 +169,7 @@ source_set("impl") {
   deps = [
     "//base",
     "//base:i18n",
+    "//chrome/browser:browser_process",
     "//chrome/browser/actor/tools/registry",
     "//chrome/browser/actor/ui",
     "//chrome/browser/critical_actions",
@@ -177,6 +180,7 @@ source_set("impl") {
     "//chrome/browser/ttc/app:impl",
     "//chrome/browser/ttc/app:public",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/select_file_policy",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
     "//chrome/services/speech/buildflags",
@@ -188,15 +192,20 @@ source_set("impl") {
     "//components/sessions:session_id",
     "//components/tabs:public",
     "//components/ttc/app/public",
+    "//components/variations/service",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
     "//skia",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//ui/base",
     "//ui/base/idle",
+    "//ui/gfx",
     "//ui/gfx/codec",
     "//ui/gfx/geometry",
+    "//ui/shell_dialogs",
     "//url",
   ]
   if (enable_ttc_debug_tools) {
@@ -210,7 +219,6 @@ source_set("impl") {
       "hotl/soda_hotl_speech_recognizer.h",
     ]
     deps += [
-      "//chrome/browser:browser_process",
       "//chrome/browser/speech",
       "//components/live_caption:constants",
       "//components/prefs",
@@ -284,7 +292,6 @@ source_set("impl") {
         "//components/session_manager:base",
         "//components/session_manager/core",
         "//components/user_manager",
-        "//ui/base",
       ]
     } else {
       sources += [ "hotl/hotl_sound_player_linux.cc" ]

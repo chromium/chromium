@@ -17,6 +17,7 @@
 #include "chrome/browser/ttc/core/states.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace actor {
@@ -25,14 +26,17 @@ class EnterprisePolicyChecker;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace ttc {
 
 class Conversation;
+class JournalTraceSaver;
 class PointerTracker;
 class SessionController;
 class SessionControllerImpl;
+class SessionJournalImpl;
 class SessionView;
 class SessionViewDelegate;
 class TtcActorUiStateManager;
@@ -92,6 +96,13 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
       base::PassKey<SessionControllerImpl>,
       SessionViewDelegate& delegate);
 
+  // Prompts the user for a destination file and writes a snapshot of `journal`
+  // to it. Used only for developer debugging.
+  void SaveDebugTrace(base::PassKey<SessionControllerImpl>,
+                      content::WebContents* web_contents,
+                      BrowserWindowInterface* browser,
+                      SessionJournalImpl& journal);
+
   // The active session's controller, or null if there's none.
   SessionController* session_controller();
 
@@ -128,6 +139,7 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // Must outlive `session_controller_`, which indirectly holds a reference to
   // it, as do the actor tasks created during a session.
   std::unique_ptr<TtcActorUiStateManager> actor_ui_state_manager_;
+  std::unique_ptr<JournalTraceSaver> journal_trace_saver_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
 
   base::RepeatingCallbackList<void(ServiceState)> state_changed_callbacks_;

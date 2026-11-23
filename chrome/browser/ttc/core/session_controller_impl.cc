@@ -421,6 +421,16 @@ Speaker SessionControllerImpl::GetSpeaker() const {
   return speaker_;
 }
 
+bool SessionControllerImpl::CanSaveDebugTrace() const {
+  return SessionJournalImpl::IsInMemoryJournalEnabled();
+}
+
+void SessionControllerImpl::SaveDebugTrace() {
+  service_->SaveDebugTrace(base::PassKey<SessionControllerImpl>(),
+                           GetVoiceFocusedWebContents(),
+                           GetBrowserWindowInterface(), journal_);
+}
+
 bool SessionControllerImpl::SetMicMuted(bool muted) {
   // Only a live session can be muted.
   if (session_lifecycle_ != SessionLifecycle::kLive ||

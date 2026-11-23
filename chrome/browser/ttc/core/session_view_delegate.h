@@ -40,6 +40,16 @@ class SessionViewDelegate {
 
   // Returns the party currently speaking.
   virtual Speaker GetSpeaker() const = 0;
+
+  // Returns whether the session is recording an in-memory debug trace that can
+  // be saved to disk. Only used for developer debugging. Ideally trace saving
+  // would be independent of a session, but it lives here for now since we don't
+  // have another convenient UI surface outside of the session.
+  virtual bool CanSaveDebugTrace() const = 0;
+
+  // Prompts the user to save a snapshot of the session's in-memory debug trace
+  // to disk. Only used for developer debugging.
+  virtual void SaveDebugTrace() = 0;
 };
 
 }  // namespace ttc

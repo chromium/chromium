@@ -14,7 +14,9 @@
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
+#include "chrome/browser/ttc/core/journal_trace_saver.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
@@ -41,7 +43,10 @@ TtcKeyedService::TtcKeyedService(Profile* profile,
           profile_
               ? std::make_unique<actor::ActorEnterprisePolicyChecker>(profile_)
               : nullptr),
-      actor_ui_state_manager_(std::make_unique<TtcActorUiStateManager>()) {}
+      actor_ui_state_manager_(std::make_unique<TtcActorUiStateManager>()),
+      journal_trace_saver_(SessionJournalImpl::IsInMemoryJournalEnabled()
+                               ? std::make_unique<JournalTraceSaver>()
+                               : nullptr) {}
 
 TtcKeyedService::~TtcKeyedService() = default;
 
@@ -80,6 +85,7 @@ void TtcKeyedService::SetEnterprisePolicyCheckerForTesting(
 
 void TtcKeyedService::Shutdown() {
   EndSession();
+  journal_trace_saver_.reset();
   // Drop platform bridges (e.g. the Android JNI counterpart) now, during
   // KeyedService shutdown, rather than in the destructor, so nothing can reach
   // this service through them once it has shut down.
@@ -130,6 +136,15 @@ std::unique_ptr<SessionView> TtcKeyedService::MakeSessionView(
 #else
   return std::make_unique<SessionViewImpl>(delegate);
 #endif
+}
+
+void TtcKeyedService::SaveDebugTrace(base::PassKey<SessionControllerImpl>,
+                                     content::WebContents* web_contents,
+                                     BrowserWindowInterface* browser,
+                                     SessionJournalImpl& journal) {
+  CHECK(profile_);
+  CHECK(journal_trace_saver_);
+  journal_trace_saver_->SaveDebugTrace(web_contents, browser, journal);
 }
 
 std::unique_ptr<Conversation> TtcKeyedService::MakeConversation(

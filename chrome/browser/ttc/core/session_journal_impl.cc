@@ -4,28 +4,43 @@
 
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 
+#include <stddef.h>
+
 #include <optional>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ttc/core/switches.h"
 #include "components/actor/core/aggregated_journal_file_serializer.h"
+#include "components/actor/core/aggregated_journal_in_memory_serializer.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/ttc/app/public/server_journal_event.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "components/variations/service/variations_service.h"
+#endif
+
 namespace ttc {
 
 namespace {
+
+constexpr base::ByteSize kInMemoryJournalMaxSize = base::MiB(128);
 
 uint64_t MakeTrackUUID(SessionJournal::Track track, actor::TaskId task_id) {
   switch (track) {
@@ -50,9 +65,34 @@ void EnsureUniquePath(
 
 }  // namespace
 
+// static
+bool SessionJournalImpl::IsInMemoryJournalEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/589701268): Add a UI surface to export the in-memory trace on
+  // Android before enabling this.
+  return false;
+#else
+  if (std::optional<bool> overridden =
+          base::FeatureList::GetStateIfOverridden(kTtcInMemoryJournal)) {
+    return *overridden;
+  }
+  variations::VariationsService* variations_service =
+      g_browser_process ? g_browser_process->variations_service() : nullptr;
+  return variations_service && variations_service->IsLikelyDogfoodClient();
+#endif
+}
+
 SessionJournalImpl::SessionJournalImpl(actor::AggregatedJournal& journal,
                                        actor::TaskId task_id)
     : journal_(journal), task_id_(task_id) {
+  if (IsInMemoryJournalEnabled()) {
+    in_memory_journal_serializer_ =
+        std::make_unique<actor::AggregatedJournalInMemorySerializer>(
+            *journal_,
+            base::checked_cast<size_t>(kInMemoryJournalMaxSize.InBytes()));
+    in_memory_journal_serializer_->Init();
+  }
+
   base::FilePath path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           switches::kTtcActorJournal);
@@ -64,6 +104,13 @@ SessionJournalImpl::SessionJournalImpl(actor::AggregatedJournal& journal,
 }
 
 SessionJournalImpl::~SessionJournalImpl() = default;
+
+std::vector<uint8_t> SessionJournalImpl::GetSnapshot() {
+  if (!in_memory_journal_serializer_) {
+    return {};
+  }
+  return in_memory_journal_serializer_->Snapshot();
+}
 
 void SessionJournalImpl::SetTaskId(actor::TaskId new_task_id) {
   CHECK_NE(new_task_id, task_id_);

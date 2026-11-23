@@ -108,6 +108,14 @@ void SessionViewImpl::ToggleMicMuted() {
   delegate().SetMicMuted(!delegate().IsMicMuted());
 }
 
+bool SessionViewImpl::CanSaveDebugTrace() const {
+  return delegate().CanSaveDebugTrace();
+}
+
+void SessionViewImpl::SaveDebugTrace() {
+  delegate().SaveDebugTrace();
+}
+
 void SessionViewImpl::OnUiStateChanged(UiState state) {
   overlay_controller_->ApplyUiState(state);
 }

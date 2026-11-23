@@ -72,6 +72,8 @@ std::u16string GetAccessibleStatus(UiState state) {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate, kViewElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate, kWaveformElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate, kMuteButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate,
+                                      kSaveDebugTraceButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate, kCloseButtonElementId);
 
 TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
@@ -106,6 +108,35 @@ TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
               DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING),
           0, 0));
   mute_button_->SetProperty(views::kElementIdentifierKey, kMuteButtonElementId);
+
+  // Debug-only surface for dogfooders and developers to save a debug trace to
+  // disk.
+  if (delegate.CanSaveDebugTrace()) {
+    const std::u16string save_trace_label = u"Save trace";
+    views::ImageButton* save_trace_button =
+        contents->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+            base::BindRepeating(&TtcViewDelegate::SaveDebugTrace,
+                                base::Unretained(&delegate)),
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kDownloadIcon
+                : vector_icons::kFileDownloadChromeRefreshOldIcon,
+            lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
+            ui::kColorSysOnSurface, ui::kColorIconDisabled,
+            ui::kColorSysOnSurface));
+    save_trace_button->SetBorder(views::CreateEmptyBorder(
+        lp->GetInsetsMetric(views::InsetsMetric::INSETS_VECTOR_IMAGE_BUTTON)));
+    views::InstallCircleHighlightPathGenerator(save_trace_button);
+    save_trace_button->SetAccessibleName(save_trace_label);
+    save_trace_button->SetTooltipText(save_trace_label);
+    save_trace_button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(
+            0,
+            lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING),
+            0, 0));
+    save_trace_button->SetProperty(views::kElementIdentifierKey,
+                                   kSaveDebugTraceButtonElementId);
+  }
 
   views::ImageButton* close_button =
       contents->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
