@@ -107,7 +107,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384568202352682721">另存为…</translation>
 <translation id="1390418506739274310">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
-<translation id="139752016751285248">显示价格分析的底部动作条已全屏打开</translation>
+<translation id="139752016751285248">显示价格分析的底栏已完全打开</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 进行搜索</translation>
 <translation id="1398057416966591719">您可以<ph name="BEGIN_LINK1" />管理要将哪些 Chrome 数据保存<ph name="END_LINK1" />到您的 Google 账号。
 
@@ -204,7 +204,7 @@
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> 无法继续使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />，正在录制内容的标签页</translation>
 <translation id="1819443852740954262">在无痕式窗口中打开全部网址</translation>
-<translation id="1820408774134375111">用于选择登录账号的底部动作条</translation>
+<translation id="1820408774134375111">用于选择登录账号的底栏</translation>
 <translation id="1824902652744048041">点按“删除浏览数据”</translation>
 <translation id="1829244130665387512">在网页中查找</translation>
 <translation id="1832459821645506983">立即开启</translation>
@@ -215,10 +215,10 @@
 <translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
 <translation id="1877073879466606884">您登录的个人资料是受管个人资料。您的管理员可以远程更改您的个人资料设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。</translation>
-<translation id="1879904908408734349">已关闭用于选择登录账号的底部动作条</translation>
+<translation id="1879904908408734349">已关闭用于选择登录账号的底栏</translation>
 <translation id="1883903952484604915">我的文件</translation>
 <translation id="189358972401248634">其他语言</translation>
-<translation id="1899175549411605574">显示价格分析的底部动作条</translation>
+<translation id="1899175549411605574">显示价格分析的底栏</translation>
 <translation id="1900260903084164610">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />《服务条款》<ph name="END_TOS_LINK" />。</translation>
 <translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1905582086181351638">登录即可获取<ph name="DEVICE_TYPE" />中保存的信息等内容</translation>
@@ -666,7 +666,7 @@
 <translation id="3662595332590803433">一律在 Chrome 中打开自定义标签页</translation>
 <translation id="3674208116086565128">在 Google 应用中打开“首页”标签页</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
-<translation id="3684540848053703310">显示价格分析的底部动作条已关闭</translation>
+<translation id="3684540848053703310">显示价格分析的底栏已关闭</translation>
 <translation id="3687645719033307815">您正在查看此页面的预览视图</translation>
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 # 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="3692944402865947621">未能成功下载“<ph name="FILE_NAME" />”，因为无法访问它的存储位置。</translation>
@@ -677,7 +677,7 @@
 <translation id="3709577906275923507">“<ph name="FILE_NAME" />”可能包含敏感信息，请勿分享</translation>
 <translation id="3710501561113687889">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。</translation>
 <translation id="3710560693796335511">协作</translation>
-<translation id="3714430408451673233">标签页底部动作条已半屏打开。</translation>
+<translation id="3714430408451673233">标签页底栏以一半高度打开。</translation>
 <translation id="3718765429352682176">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。</translation>
 <translation id="3721119614952978349">我与 Google</translation>
 <translation id="3727000368239390918">登录后即可将标签页等信息同步到您的所有设备上</translation>
@@ -708,7 +708,7 @@
 <translation id="3824259034819781947">附加文件</translation>
 <translation id="38243391581572867">此账号无法使用智能镜头。</translation>
 <translation id="38258275871320156">仅适用于小窗口</translation>
-<translation id="3826529618131025925">提示通知选择启用帮助和指导底部动作条</translation>
+<translation id="3826529618131025925">提示通知启用帮助和指导底栏</translation>
 <translation id="3845098929839618392">在无痕式标签页中打开</translation>
 <translation id="3847319713229060696">帮助我们为所有人改善网络安全环境</translation>
 <translation id="385051799172605136">返回</translation>
@@ -733,7 +733,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">过去 4 周</translation>
 <translation id="393697183122708255">无法启用语音搜索功能</translation>
-<translation id="3941718885865495207">Chrome 查找功能选择启用底部动作条</translation>
+<translation id="3941718885865495207">Chrome 查找功能启用底栏</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />，固定的画中画标签页</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="395377504920307820">在不登录账号的情况下使用</translation>
@@ -756,7 +756,7 @@
 <translation id="4027569221211770437">“<ph name="FOLDER_TITLE" />”文件夹</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小时}other{# 小时}}</translation>
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
-<translation id="4044708993631234325">底部动作条</translation>
+<translation id="4044708993631234325">底栏</translation>
 <translation id="4045441967987592849">重新打开</translation>
 <translation id="4049920046559074950">“<ph name="INSTANCE_TITLE" />”的更多选项</translation>
 <translation id="4051548576872472315">在此处可以找到最近关闭的标签页和窗口</translation>
@@ -1006,7 +1006,7 @@
 <translation id="4943703118917034429">虚拟现实</translation>
 <translation id="4943872375798546930">找不到结果</translation>
 <translation id="4957722034734105353">了解详情...</translation>
-<translation id="4959115606310463263">已打开用于选择登录账号的底部动作条，并以一半高度显示</translation>
+<translation id="4959115606310463263">已打开用于选择登录账号的底栏，并以一半高度显示</translation>
 <translation id="4961107849584082341">将此页面翻译成任何语言</translation>
 <translation id="4964614743143953889">在检测到不安全的网站和下载内容时，Chrome 会向您发出警告</translation>
 <translation id="496607651705915226">若要将新密码保存到您的 Google 账号中并使用新密码，请更新 Google Play 服务</translation>
@@ -1128,7 +1128,7 @@
 <translation id="5444999712122199445">返回网站</translation>
 <translation id="544776284582297024">若要打开多个标签页并同时访问不同网页，请点按“打开的标签页”按钮</translation>
 <translation id="5456381639095306749">下载网页</translation>
-<translation id="5465437530117042974">标签页底部动作条已关闭。</translation>
+<translation id="5465437530117042974">标签页底栏已关闭。</translation>
 <translation id="5469852975082458401">您可以使用文本光标浏览网页。按 F7 可关闭。</translation>
 <translation id="5471273988133666918">无法移动标签页“<ph name="TAB_TITLE" />”</translation>
 <translation id="5478718673237429220">需要人机接口设备访问权限</translation>
@@ -1137,7 +1137,7 @@
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />，多选状态下的画中画标签页</translation>
 <translation id="5494920125229734069">全选</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身份加入</translation>
-<translation id="5517326820028369152">显示近期活动的底部动作条</translation>
+<translation id="5517326820028369152">显示近期活动的底栏</translation>
 <translation id="5526281268548144413">无法在多个窗口中关闭</translation>
 <translation id="5532536403031755365">借助增强型保护功能，再添一层保障，抵御网络威胁</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{打开书签}other{打开全部（# 个）书签}}</translation>
@@ -1229,7 +1229,7 @@
 <translation id="5870416898561279542">重复的标签页和分组或已闲置 <ph name="DAYS_INACTIVE" /> 天的标签页和分组会移至此处，<ph name="AUTODELETE_SECTION" />。您随时可在<ph name="DECLUTTER_SETTINGS_TITLE" />中更改此设置。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为此网站具有危险性</translation>
 <translation id="5895138241574237353">重新启动</translation>
-<translation id="5896944002928653773">企业信号免责声明底部动作条已关闭</translation>
+<translation id="5896944002928653773">企业信号免责声明底栏已关闭</translation>
 <translation id="5899667542927581604">未关闭任何通行密钥表格</translation>
 <translation id="5907542076239273525">书签已保存到“<ph name="FOLDER_NAME" />”中。</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />，已选择的无痕式标签页，正在播放音频</translation>
@@ -1263,7 +1263,7 @@
 <translation id="6047066316630165190">打开网格标签页切换器</translation>
 <translation id="604996488070107836">出现未知错误，未能下载 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="606985262342505139">标签页底部动作条已全屏打开</translation>
+<translation id="606985262342505139">标签页底栏已完全打开</translation>
 <translation id="6070608977567243308">使用 Google 智能镜头识图购物</translation>
 <translation id="6071995715087444295">若要检查是否存在已泄露的密码，请登录您的 Google 账号</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
@@ -1320,7 +1320,7 @@
 <translation id="6251449557817521191">在此处查看您的 Chrome 历史记录</translation>
 <translation id="6254139308321626268">您正在查看 PDF 文件</translation>
 <translation id="6255809143828972562">借助 Chrome 中的工具，您可以安全地浏览并掌控个人数据的安全</translation>
-<translation id="6259107733340311168">企业信号免责声明底部动作条已以最大高度打开</translation>
+<translation id="6259107733340311168">企业信号免责声明底栏已以最大高度打开</translation>
 <translation id="6259539576554609209">常用功能，尽在工具栏。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中切换回来</translation>
 <translation id="6260260490042862943">网站控件</translation>
 <translation id="6264376385120300461">仍然下载</translation>
@@ -1483,7 +1483,7 @@
 <translation id="6817747507826986771">快速分享此页面。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google 密码管理工具更新动作条已关闭</translation>
-<translation id="6824933543577433709">显示近期活动的底部动作条已关闭</translation>
+<translation id="6824933543577433709">显示近期活动的底栏已关闭</translation>
 <translation id="6828070228333235514">停止跟踪价格</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻译</translation>
@@ -1728,7 +1728,7 @@
 <translation id="7695610746377249436">网站（包括 Google）可自行决定是否响应此请求。</translation>
 <translation id="7697383401610880082">拖动手柄</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
-<translation id="7702420606070050505">显示近期活动的底部动作条已全屏打开</translation>
+<translation id="7702420606070050505">近期活动底栏已完全展开</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7708994397325774423">获取您的所有密码</translation>
 <translation id="7714077993070342304">打开 Chrome 菜单</translation>
@@ -1836,7 +1836,7 @@
 <translation id="8090732854597034573">如需帮助，请找家长帮忙</translation>
 <translation id="8095180473590852507">Chrome 推出全新工具栏，让操作更顺手。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中切换回来。</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />内没有要关闭的标签页</translation>
-<translation id="810433609302852">提示通知功能宣传内容和使用步骤底部动作条</translation>
+<translation id="810433609302852">提示通知功能推广和使用步骤底栏</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8110024788458304985">帮助改进 Chrome 的功能和性能</translation>
 <translation id="8110087112193408731">在“数字健康”应用中显示您的 Chrome 活动记录？</translation>
@@ -1859,7 +1859,7 @@
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) 个闲置标签页}other{(#) 个闲置标签页}}</translation>
 <translation id="8186512483418048923">还剩 <ph name="FILES" /> 个文件</translation>
 <translation id="8190358571722158785">还剩 1 天</translation>
-<translation id="8192765420340770300">已打开用于选择登录账号的底部动作条，并以最大高度显示</translation>
+<translation id="8192765420340770300">已打开用于选择登录账号的底栏，并以最大高度显示</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8201752259339925400">清空搜索查询</translation>
 <translation id="820568752112382238">最常访问的网站</translation>

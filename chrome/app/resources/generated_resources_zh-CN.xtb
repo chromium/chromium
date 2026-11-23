@@ -1817,7 +1817,7 @@
 <translation id="2406942743794219791">确认要使用的默认搜索引擎</translation>
 <translation id="2407671304279211586">选择 DNS 提供商</translation>
 <translation id="2408018932941436077">正在保存信用卡信息</translation>
-<translation id="2408601796549249241">Gemini 底部动作条已以最大高度打开</translation>
+<translation id="2408601796549249241">Gemini 底栏已以最大高度打开</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2409378541210421746">修改语言选择</translation>
 <translation id="2409709393952490731">使用手机或平板电脑</translation>
@@ -2629,7 +2629,7 @@
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3001144475369593262">儿童账号</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{未自定义任何键}=1{1 个自定义键}other{{COUNT} 个自定义键}}</translation>
-<translation id="3002864108328203174">Gemini 底部动作条已以一半高度打开。</translation>
+<translation id="3002864108328203174">Gemini 底栏已以一半高度打开。</translation>
 <translation id="300311730636583518">就此图片提问</translation>
 <translation id="3003144360685731741">首选网络</translation>
 <translation id="3003152206838282768">正在 Chrome 中处理您的 Gemini 应用任务。查看 Chrome 以了解更多更新</translation>
@@ -3598,7 +3598,7 @@
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="37143699183660101">光标稳定性</translation>
 <translation id="3714610938239537183">步骤 2/4：选择要导出的诊断数据</translation>
-<translation id="3715519518311454566">Gemini 底部动作条已收起。</translation>
+<translation id="3715519518311454566">Gemini 底栏已收起。</translation>
 <translation id="3717133748480414053">技能可帮助您总结网页内容、搜索超值优惠等</translation>
 <translation id="3719245268140483218">设备事件</translation>
 <translation id="3719310907809321183">已填充<ph name="CARD_IDENTIFIER" />。</translation>
@@ -10607,7 +10607,7 @@
 <translation id="9087949559523851360">添加受限用户</translation>
 <translation id="9088234649737575428">系统已根据企业政策屏蔽 <ph name="PLUGIN_NAME" /></translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
-<translation id="9088578317174654338">Gemini 底部动作条已关闭。</translation>
+<translation id="9088578317174654338">Gemini 底栏已关闭。</translation>
 <translation id="9089416786594320554">输入法</translation>
 <translation id="9090044809052745245">您的设备向他人显示的名称</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{无法将文件移到 <ph name="CLOUD_PROVIDER" />}other{无法将文件移到 <ph name="CLOUD_PROVIDER" />}}</translation>
