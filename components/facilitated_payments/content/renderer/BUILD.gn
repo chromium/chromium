@@ -16,6 +16,7 @@ static_library("renderer") {
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
+    "//ui/base",
     "//ui/gfx/geometry",
     "//url",
   ]
@@ -34,6 +35,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
+    "//ui/base",
   ]
 }
 

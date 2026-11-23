@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
+#include "ui/base/page_transition_types.h"
 
 namespace blink {
 class AssociatedInterfaceRegistry;
@@ -34,6 +35,11 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
                                  public mojom::FacilitatedPaymentsAgent {
  public:
   static constexpr base::TimeDelta kRescanDebounceDelay = base::Seconds(1);
+  // The interval and number of the rescans that follow a load, which catch QR
+  // codes that a page renders after loading without any layout, scroll or
+  // navigation event, e.g. from a timer or a network response.
+  static constexpr base::TimeDelta kFollowUpRescanInterval = base::Seconds(3);
+  static constexpr int kMaxFollowUpRescans = 4;
 
   FacilitatedPaymentsAgent(content::RenderFrame* render_frame,
                            blink::AssociatedInterfaceRegistry* registry);
@@ -50,6 +56,7 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void DidChangeScrollOffset(blink::mojom::ScrollType) override;
   void DidFinishLoad() override;
+  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFinishSameDocumentNavigation() override;
   void OnDestruct() override;
 
@@ -69,6 +76,9 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
   void SetDriverForTesting(
       mojo::AssociatedRemote<mojom::FacilitatedPaymentsDriver> driver);
   base::OneShotTimer& GetTimerForTesting() { return rescan_timer_; }
+  base::RepeatingTimer& GetFollowUpTimerForTesting() {
+    return follow_up_rescan_timer_;
+  }
   bool is_qr_code_detection_enabled() const {
     return is_qr_code_detection_enabled_;
   }
@@ -87,9 +97,28 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
   // Lazily obtains or returns the remote driver interface to the browser.
   const mojo::AssociatedRemote<mojom::FacilitatedPaymentsDriver>& GetDriver();
 
+  // Runs one of the rescans that follow a load, and stops the follow-up timer
+  // after `kMaxFollowUpRescans` of them.
+  void OnFollowUpRescan();
+
+  // Collects the page signals and logs how long that took.
+  mojom::HeuristicSignalsPtr ScanSignals();
+
+  // Reports `signals` to the browser process and remembers them.
+  void ReportSignals(mojom::HeuristicSignalsPtr signals);
+
   // Debounce timer to prevent running expensive heuristics while the user
   // is actively scrolling or layout is shifting rapidly.
   base::OneShotTimer rescan_timer_;
+
+  // Runs the rescans that follow a load, every `kFollowUpRescanInterval`.
+  base::RepeatingTimer follow_up_rescan_timer_;
+
+  // The number of follow-up rescans run since the last load.
+  int follow_up_rescan_count_ = 0;
+
+  // The signals last reported for the current document, if any.
+  mojom::HeuristicSignalsPtr last_reported_signals_;
 
   // Tracks whether autonomous QR code detection heuristics are enabled. The
   // agent starts dormant so that sites the browser has not opted in never run

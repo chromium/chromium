@@ -3,6 +3,9 @@ include_rules = [
   "+content/public/test",
   "+mojo/public/cpp/bindings",
   "+third_party/blink/public",
+  # `content::RenderFrameObserver::DidCommitProvisionalLoad()` takes a
+  # `ui::PageTransition`.
+  "+ui/base/page_transition_types.h",
   # `blink::WebElement::BoundsInWidget()` returns a `gfx::Rect`.
   "+ui/gfx/geometry",
 ]

@@ -126,6 +126,7 @@ void FacilitatedPaymentsAgent::SetQrCodeDetectionEnabled(bool enabled) {
   is_qr_code_detection_enabled_ = enabled;
   if (!is_qr_code_detection_enabled_) {
     rescan_timer_.Stop();
+    follow_up_rescan_timer_.Stop();
   }
 }
 
@@ -140,6 +141,45 @@ void FacilitatedPaymentsAgent::DidChangeScrollOffset(blink::mojom::ScrollType) {
 
 void FacilitatedPaymentsAgent::DidFinishLoad() {
   OnTriggeredRescan();
+  if (!is_qr_code_detection_enabled_) {
+    return;
+  }
+  // Payment QR codes are often rendered after the page loads, e.g. once an
+  // order is created, with no event that triggers a rescan, so a few rescans
+  // follow every load.
+  follow_up_rescan_count_ = 0;
+  follow_up_rescan_timer_.Start(
+      FROM_HERE, kFollowUpRescanInterval,
+      base::BindRepeating(&FacilitatedPaymentsAgent::OnFollowUpRescan,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FacilitatedPaymentsAgent::OnFollowUpRescan() {
+  if (++follow_up_rescan_count_ >= kMaxFollowUpRescans) {
+    follow_up_rescan_timer_.Stop();
+  }
+  // A pending debounced scan already covers this rescan.
+  if (!is_qr_code_detection_enabled_ || rescan_timer_.IsRunning()) {
+    return;
+  }
+  // Each report can start a decoding pass, and a page has only a few, so
+  // unchanged signals are not reported again; otherwise, e.g. a square logo
+  // would use up the passes before a QR code is rendered.
+  mojom::HeuristicSignalsPtr signals = ScanSignals();
+  if (signals == last_reported_signals_) {
+    return;
+  }
+  ReportSignals(std::move(signals));
+}
+
+void FacilitatedPaymentsAgent::DidCommitProvisionalLoad(
+    ui::PageTransition transition) {
+  // A new document starts dormant until the browser opts it in, so that a
+  // pending rescan never reports it under the previous document's opt-in.
+  is_qr_code_detection_enabled_ = false;
+  rescan_timer_.Stop();
+  follow_up_rescan_timer_.Stop();
+  last_reported_signals_.reset();
 }
 
 void FacilitatedPaymentsAgent::DidFinishSameDocumentNavigation() {
@@ -172,17 +212,21 @@ void FacilitatedPaymentsAgent::RescanAndReportSignals() {
   if (!is_qr_code_detection_enabled_) {
     return;
   }
+  ReportSignals(ScanSignals());
+}
 
-  mojom::HeuristicSignalsPtr signals;
-  {
-    // The scan runs synchronously on the main thread, so its duration is the
-    // jank that the heuristics add to the page.
-    base::ScopedUmaHistogramTimer timer(
-        kHeuristicsLatencyHistogram,
-        base::ScopedUmaHistogramTimer::ScopedHistogramTiming::
-            kMicrosecondTimes);
-    signals = CalculateHeuristicSignals();
-  }
+mojom::HeuristicSignalsPtr FacilitatedPaymentsAgent::ScanSignals() {
+  // The scan runs synchronously on the main thread, so its duration is the
+  // jank that the heuristics add to the page.
+  base::ScopedUmaHistogramTimer timer(
+      kHeuristicsLatencyHistogram,
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+  return CalculateHeuristicSignals();
+}
+
+void FacilitatedPaymentsAgent::ReportSignals(
+    mojom::HeuristicSignalsPtr signals) {
+  last_reported_signals_ = signals.Clone();
   const auto& driver = GetDriver();
   if (driver) {
     driver->ReportHeuristicSignals(std::move(signals));

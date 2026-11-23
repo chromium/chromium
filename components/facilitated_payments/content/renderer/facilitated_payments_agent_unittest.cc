@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
+#include "ui/base/page_transition_types.h"
 
 namespace payments::facilitated {
 namespace {
@@ -171,6 +172,115 @@ TEST_F(FacilitatedPaymentsAgentTest, TestDidFinishLoadTriggersDebouncedScan) {
   EXPECT_EQ(driver_.reported_signals()[0], MakeSignals(true, true, true));
 }
 
+// Tests that a load is followed by `kMaxFollowUpRescans` rescans, one every
+// `kFollowUpRescanInterval`, and no more, each reporting only signals that
+// changed since the last report.
+TEST_F(FacilitatedPaymentsAgentTest,
+       TestDidFinishLoadSchedulesFollowUpRescans) {
+  constexpr base::TimeDelta kInterval =
+      FacilitatedPaymentsAgent::kFollowUpRescanInterval;
+  constexpr int kMaxFollowUpRescans =
+      FacilitatedPaymentsAgent::kMaxFollowUpRescans;
+  int scan_count = 0;
+  agent_->SetOnCalculateHeuristicSignals(
+      base::BindLambdaForTesting([&] { ++scan_count; }));
+  agent_->DidFinishLoad();
+  task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
+  ASSERT_EQ(scan_count, 1);
+
+  for (int i = 1; i <= kMaxFollowUpRescans; ++i) {
+    SCOPED_TRACE(i);
+    task_environment_.FastForwardBy(kInterval);
+    EXPECT_EQ(scan_count, 1 + i);
+  }
+
+  EXPECT_FALSE(agent_->GetFollowUpTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(10 * kInterval);
+  EXPECT_EQ(scan_count, 1 + kMaxFollowUpRescans);
+  // The signals never changed, so only the first scan was reported.
+  EXPECT_EQ(driver_.reported_signals().size(), 1u);
+}
+
+// Tests that a QR code rendered after the load, with no event that triggers a
+// rescan, is reported by a follow-up rescan.
+TEST_F(FacilitatedPaymentsAgentTest, TestFollowUpRescanReportsLateQrCode) {
+  agent_->SetSignalsToReturn(MakeSignals(false, true, true));
+  agent_->DidFinishLoad();
+  task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
+  ASSERT_EQ(driver_.reported_signals().size(), 1u);
+  EXPECT_EQ(driver_.reported_signals()[0], MakeSignals(false, true, true));
+
+  // The page inserts its QR code image, e.g. from a timer.
+  agent_->SetSignalsToReturn(MakeSignals(true, true, true));
+  task_environment_.FastForwardBy(
+      FacilitatedPaymentsAgent::kFollowUpRescanInterval);
+
+  ASSERT_EQ(driver_.reported_signals().size(), 2u);
+  EXPECT_EQ(driver_.reported_signals()[1], MakeSignals(true, true, true));
+}
+
+// Tests that committing a new document makes the agent dormant and cancels its
+// pending rescans, so that the new document is only scanned once the browser
+// opts it in.
+TEST_F(FacilitatedPaymentsAgentTest,
+       TestDidCommitProvisionalLoadResetsDetection) {
+  agent_->DidFinishLoad();
+  ASSERT_TRUE(agent_->GetTimerForTesting().IsRunning());
+  ASSERT_TRUE(agent_->GetFollowUpTimerForTesting().IsRunning());
+
+  agent_->DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
+
+  EXPECT_FALSE(agent_->is_qr_code_detection_enabled());
+  EXPECT_FALSE(agent_->GetTimerForTesting().IsRunning());
+  EXPECT_FALSE(agent_->GetFollowUpTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      FacilitatedPaymentsAgent::kMaxFollowUpRescans *
+      FacilitatedPaymentsAgent::kFollowUpRescanInterval);
+  EXPECT_TRUE(driver_.reported_signals().empty());
+}
+
+// Tests that a follow-up rescan is skipped while a debounced scan is pending,
+// since that scan already covers it.
+TEST_F(FacilitatedPaymentsAgentTest,
+       TestFollowUpRescanSkippedWhileDebouncedScanPending) {
+  constexpr base::TimeDelta kInterval =
+      FacilitatedPaymentsAgent::kFollowUpRescanInterval;
+  int scan_count = 0;
+  agent_->SetOnCalculateHeuristicSignals(
+      base::BindLambdaForTesting([&] { ++scan_count; }));
+  agent_->DidFinishLoad();
+  task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
+  ASSERT_EQ(scan_count, 1);
+
+  // A scroll just before the first follow-up rescan leaves a debounced scan
+  // pending when the follow-up timer fires.
+  task_environment_.FastForwardBy(kInterval - kDebounceDelay - 2 * kEpsilon);
+  agent_->DidChangeScrollOffset(blink::mojom::ScrollType::kUser);
+  task_environment_.FastForwardBy(2 * kEpsilon);
+  ASSERT_TRUE(agent_->GetTimerForTesting().IsRunning());
+  EXPECT_EQ(scan_count, 1);
+
+  // Only the debounced scan runs.
+  task_environment_.FastForwardBy(kDebounceDelay);
+  EXPECT_EQ(scan_count, 2);
+}
+
+// Tests that disabling detection stops the follow-up rescans.
+TEST_F(FacilitatedPaymentsAgentTest,
+       TestDisablingDetectionStopsFollowUpRescans) {
+  agent_->DidFinishLoad();
+  task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
+  ASSERT_EQ(driver_.reported_signals().size(), 1u);
+
+  agent_->SetQrCodeDetectionEnabled(false);
+
+  EXPECT_FALSE(agent_->GetFollowUpTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      FacilitatedPaymentsAgent::kMaxFollowUpRescans *
+      FacilitatedPaymentsAgent::kFollowUpRescanInterval);
+  EXPECT_EQ(driver_.reported_signals().size(), 1u);
+}
+
 // Test that `DidFinishSameDocumentNavigation` triggers a debounced rescan.
 TEST_F(FacilitatedPaymentsAgentTest,
        TestDidFinishSameDocumentNavigationTriggersDebouncedScan) {
@@ -240,6 +350,7 @@ TEST_F(FacilitatedPaymentsAgentTest, TestAgentStartsDormant) {
   dormant_agent.DidMeaningfulLayout(
       blink::WebMeaningfulLayout::kVisuallyNonEmpty);
   EXPECT_FALSE(dormant_agent.GetTimerForTesting().IsRunning());
+  EXPECT_FALSE(dormant_agent.GetFollowUpTimerForTesting().IsRunning());
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
   EXPECT_TRUE(dormant_driver.reported_signals().empty());
