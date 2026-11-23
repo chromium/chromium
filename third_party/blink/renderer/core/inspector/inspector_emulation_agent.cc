@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
 
-#include <cmath>
-
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
@@ -91,50 +89,6 @@ void ApplySafeAreaInsetOverride(
   }
 }
 
-constexpr double kMaxVirtualKeyboardGeometryValue = 10'000'000;
-
-protocol::Response ParseVirtualKeyboardRect(protocol::DOM::Rect* keyboard_rect,
-                                            gfx::Rect* parsed_rect) {
-  if (!keyboard_rect) {
-    *parsed_rect = gfx::Rect();
-    return protocol::Response::Success();
-  }
-
-  const double x = keyboard_rect->getX();
-  const double y = keyboard_rect->getY();
-  const double width = keyboard_rect->getWidth();
-  const double height = keyboard_rect->getHeight();
-  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
-      !std::isfinite(height) || x < 0 || y < 0 || width < 0 || height < 0 ||
-      x + width > kMaxVirtualKeyboardGeometryValue ||
-      y + height > kMaxVirtualKeyboardGeometryValue) {
-    return protocol::Response::InvalidParams(
-        "Virtual keyboard geometry must contain finite, non-negative values "
-        "within 10000000 CSS pixels");
-  }
-
-  *parsed_rect = gfx::Rect(static_cast<int>(std::lround(x)),
-                           static_cast<int>(std::lround(y)),
-                           static_cast<int>(std::lround(width)),
-                           static_cast<int>(std::lround(height)));
-  return protocol::Response::Success();
-}
-
-void ApplyVirtualKeyboardGeometryOverride(LocalFrame* frame,
-                                          const gfx::Rect& rect) {
-  if (!frame) {
-    return;
-  }
-
-  // Setting the geometry invalidates styles that use keyboard-inset-*.
-  // Do not force a lifecycle update here because a protocol command can arrive
-  // while the inspector frame overlay is painting.
-  frame->SetVirtualKeyboardOverlayGeometry(rect);
-  if (LocalFrameView* view = frame->LocalFrameRoot().View()) {
-    view->ScheduleAnimation();
-  }
-}
-
 perfetto::NamedTrack GetTracingTrack(InspectorEmulationAgent* ptr) {
   return perfetto::NamedTrack::FromPointer("blink::InspectorEmulationAgent",
                                            ptr);
@@ -187,9 +141,6 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       automation_override_(&agent_state_, /*default_value=*/false),
       safe_area_insets_override_(&agent_state_,
                                  /*default_value=*/std::vector<uint8_t>()),
-      virtual_keyboard_geometry_override_(
-          &agent_state_,
-          /*default_value=*/std::vector<uint8_t>()),
       small_viewport_height_difference_override_(&agent_state_,
                                                  /*default_value=*/0.0) {}
 
@@ -271,17 +222,6 @@ void InspectorEmulationAgent::Restore() {
   if (status_or_insets.ok()) {
     setSafeAreaInsetsOverride(std::move(status_or_insets).value());
   }
-  auto status_or_keyboard_rect =
-      protocol::DOM::Rect::ReadFrom(virtual_keyboard_geometry_override_.Get());
-  if (status_or_keyboard_rect.ok()) {
-    gfx::Rect keyboard_rect;
-    if (ParseVirtualKeyboardRect(status_or_keyboard_rect.value().get(),
-                                 &keyboard_rect)
-            .IsSuccess()) {
-      ApplyVirtualKeyboardGeometryOverride(web_local_frame_->GetFrame(),
-                                           keyboard_rect);
-    }
-  }
   if (double difference = small_viewport_height_difference_override_.Get()) {
     web_local_frame_->FrameWidgetImpl()->SetBrowserControlsTopHeightOverride(
         difference);
@@ -354,9 +294,6 @@ protocol::Response InspectorEmulationAgent::disable() {
   }
   timezone_override_.reset();
   setDefaultBackgroundColorOverride(nullptr);
-  if (!virtual_keyboard_geometry_override_.Get().empty()) {
-    setVirtualKeyboardGeometryOverride(nullptr);
-  }
   disabled_image_types_.Clear();
   return protocol::Response::Success();
 }
@@ -366,18 +303,6 @@ void InspectorEmulationAgent::DidCommitLoadForLocalFrame(LocalFrame* frame) {
       safe_area_insets_override_.Get());
   if (status_or_insets.ok()) {
     ApplySafeAreaInsetOverride(frame, *std::move(status_or_insets).value());
-  }
-  if (frame == web_local_frame_->GetFrame()) {
-    auto status_or_keyboard_rect = protocol::DOM::Rect::ReadFrom(
-        virtual_keyboard_geometry_override_.Get());
-    if (status_or_keyboard_rect.ok()) {
-      gfx::Rect keyboard_rect;
-      if (ParseVirtualKeyboardRect(status_or_keyboard_rect.value().get(),
-                                   &keyboard_rect)
-              .IsSuccess()) {
-        ApplyVirtualKeyboardGeometryOverride(frame, keyboard_rect);
-      }
-    }
   }
 }
 
@@ -821,38 +746,6 @@ protocol::Response InspectorEmulationAgent::setSafeAreaInsetsOverride(
       }
     }
   }
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorEmulationAgent::setVirtualKeyboardGeometryOverride(
-    std::unique_ptr<protocol::DOM::Rect> keyboard_rect) {
-  protocol::Response response = AssertPage();
-  if (!response.IsSuccess()) {
-    return response;
-  }
-
-  gfx::Rect parsed_rect;
-  response = ParseVirtualKeyboardRect(keyboard_rect.get(), &parsed_rect);
-  if (!response.IsSuccess()) {
-    return response;
-  }
-
-  if (keyboard_rect) {
-    InnerEnable();
-    std::vector<uint8_t> serialized_rect = keyboard_rect->Serialize();
-    if (virtual_keyboard_geometry_override_.Get() == serialized_rect) {
-      return protocol::Response::Success();
-    }
-    virtual_keyboard_geometry_override_.Set(std::move(serialized_rect));
-  } else {
-    if (virtual_keyboard_geometry_override_.Get().empty()) {
-      return protocol::Response::Success();
-    }
-    virtual_keyboard_geometry_override_.Clear();
-  }
-
-  ApplyVirtualKeyboardGeometryOverride(web_local_frame_->GetFrame(),
-                                       parsed_rect);
   return protocol::Response::Success();
 }
 

@@ -73,8 +73,6 @@ class CORE_EXPORT InspectorEmulationAgent final
       std::unique_ptr<protocol::DOM::RGBA>) override;
   protocol::Response setSafeAreaInsetsOverride(
       std::unique_ptr<protocol::Emulation::SafeAreaInsets> insets) override;
-  protocol::Response setVirtualKeyboardGeometryOverride(
-      std::unique_ptr<protocol::DOM::Rect> keyboard_rect) override;
   protocol::Response setDeviceMetricsOverride(
       int width,
       int height,
@@ -198,7 +196,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Double cpu_throttling_rate_;
   InspectorAgentState::Boolean automation_override_;
   InspectorAgentState::Bytes safe_area_insets_override_;
-  InspectorAgentState::Bytes virtual_keyboard_geometry_override_;
   InspectorAgentState::Double small_viewport_height_difference_override_;
 };
 
