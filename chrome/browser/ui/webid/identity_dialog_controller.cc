@@ -455,10 +455,14 @@ bool IdentityDialogController::ShowErrorDialog(
     return false;
   }
 
-  // Do not modify any member variables if the error dialog is not shown
-  // because the caller may have destroyed this object.
+  // Do not access any member variables if the error dialog is not shown or if
+  // showing it destroyed this object, e.g. because the dialog was dismissed
+  // right away.
+  base::WeakPtr<IdentityDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (account_view_->ShowErrorDialog(rp_data, idp_for_display, rp_context,
-                                     rp_mode, idp_metadata, error)) {
+                                     rp_mode, idp_metadata, error) &&
+      weak_this) {
     DidInvokeShowUi();
     NotifyEmbedderOfResult(FederatedLoginResult::kIdpReturnedError);
     return true;

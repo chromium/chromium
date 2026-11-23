@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -1914,5 +1917,44 @@ TEST_F(IdentityDialogControllerTest, ControllerDestroyedDuringSetCanShowUi) {
   });
   EXPECT_CALL(dismiss_callback, Run).Times(0);
   controller_ptr->SetActingTaskIdForTesting(actor::TaskId());
+  EXPECT_FALSE(controller);
+}
+
+// Tests that the controller does not access its members or notify the embedder
+// when it gets destroyed while showing the error dialog, e.g. because the view
+// dismissed the dialog synchronously and the request completed.
+TEST_F(IdentityDialogControllerTest, ControllerDestroyedDuringShowErrorDialog) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  IdentityDialogController* controller_ptr = controller.get();
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  base::MockCallback<
+      base::OnceCallback<void(content::webid::FederatedLoginResult)>>
+      embedder_callback;
+  content::webid::FederatedEmbedderLoginRequest::Set(
+      web_contents(), url::Origin::Create(GURL("https://idp.example")),
+      kAccountId, embedder_callback.Get());
+  base::ScopedClosureRunner remove_embedder_request(
+      base::BindOnce(&content::webid::FederatedEmbedderLoginRequest::Remove,
+                     base::Unretained(web_contents())));
+
+  // The view reports that the dialog was shown even though the controller was
+  // destroyed. The controller should report that the dialog was not shown and
+  // must not notify the embedder afterwards.
+  EXPECT_CALL(*mock_view_ptr, ShowErrorDialog).WillOnce([&controller]() {
+    controller.reset();
+    return true;
+  });
+  EXPECT_CALL(embedder_callback, Run).Times(0);
+  EXPECT_FALSE(controller_ptr->ShowErrorDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u""),
+      kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kActive, content::IdentityProviderMetadata(),
+      /*error=*/std::nullopt,
+      /*dismiss_callback=*/base::DoNothing(),
+      /*more_details_callback=*/base::NullCallback()));
   EXPECT_FALSE(controller);
 }
