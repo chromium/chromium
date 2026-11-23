@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_MOCK_CHROME_PASSWORD_CHANGE_SERVICE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_MOCK_CHROME_PASSWORD_CHANGE_SERVICE_H_
 
+#include <cstdint>
+
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
@@ -20,6 +22,9 @@ namespace content {
 class WebContents;
 }
 
+namespace password_manager {
+class PasswordChangeCredentialsProvider;
+}
 class PasswordChangeDelegate;
 
 class MockChromePasswordChangeService : public ChromePasswordChangeService {
@@ -35,6 +40,10 @@ class MockChromePasswordChangeService : public ChromePasswordChangeService {
   MOCK_METHOD(PasswordChangeDelegate*,
               GetPasswordChangeDelegate,
               (content::WebContents*),
+              (override));
+  MOCK_METHOD(password_manager::PasswordChangeCredentialsProvider*,
+              GetCredentialsProviderForActorSurface,
+              (int32_t actor_surface_id),
               (override));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(base::WeakPtr<PasswordChangeFromCheckupDelegate>,

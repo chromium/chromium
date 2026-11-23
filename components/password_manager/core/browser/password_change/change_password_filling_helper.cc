@@ -15,13 +15,13 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
+#include "components/password_manager/core/browser/password_change/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -41,6 +41,15 @@ bool WasFieldFilled(const autofill::FormData& form_data,
                               &autofill::FormFieldData::renderer_id);
   return it != form_data.fields().end() &&
          it->is_autofilled_according_to_renderer();
+}
+
+base::span<const std::unique_ptr<PasswordFormManager>> GetFormManagers(
+    PasswordManagerDriver& driver) {
+  PasswordManagerInterface* password_manager = driver.GetPasswordManager();
+  PasswordFormCache* form_cache =
+      password_manager ? password_manager->GetPasswordFormCache() : nullptr;
+  return form_cache ? form_cache->GetFormManagers()
+                    : base::span<const std::unique_ptr<PasswordFormManager>>{};
 }
 
 // Returns the `PasswordFormManager` in `form_managers` from `driver`'s frame
@@ -64,6 +73,27 @@ PasswordFormManager* FindPasswordFormManagerForField(
                                 &autofill::FormFieldData::renderer_id);
     if (it != observed_form->fields().end() && it->IsPasswordInputElement()) {
       return form_manager.get();
+    }
+  }
+  return nullptr;
+}
+
+// Returns the first parsed `PasswordFormManager` managing either
+// `new_password_field_id` or `confirm_new_password_field_id`, preferring the
+// new-password field's manager. Unparsed managers are skipped so callers never
+// receive a manager whose `GetParsedObservedForm()` is null.
+PasswordFormManager* FindParsedPasswordFormManagerForNewPassword(
+    PasswordManagerDriver& driver,
+    autofill::FieldRendererId new_password_field_id,
+    autofill::FieldRendererId confirm_new_password_field_id) {
+  base::span<const std::unique_ptr<PasswordFormManager>> form_managers =
+      GetFormManagers(driver);
+  for (autofill::FieldRendererId field_id :
+       {new_password_field_id, confirm_new_password_field_id}) {
+    PasswordFormManager* form_manager =
+        FindPasswordFormManagerForField(driver, form_managers, field_id);
+    if (form_manager && form_manager->GetParsedObservedForm()) {
+      return form_manager;
     }
   }
   return nullptr;
@@ -127,6 +157,22 @@ ChangePasswordActionResult BuildChangePasswordActionResult(
       /*requires_page_stabilization=*/true, std::move(message));
 }
 
+ChangePasswordActionResult MapCredentialsProviderError(
+    PasswordChangeCredentialsProvider::Error error) {
+  // TODO(crbug.com/584683291): Introduce a dedicated ActionResultCode for
+  // change-password credential provider errors.
+  switch (error) {
+    case PasswordChangeCredentialsProvider::Error::kNoPasswordChangeFlow:
+      return ChangePasswordActionResult::Error(
+          actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+          "No active password change flow to provide credentials.");
+    case PasswordChangeCredentialsProvider::Error::kGenerationFailed:
+      return ChangePasswordActionResult::Error(
+          actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+          "Failed to generate a new password.");
+  }
+}
+
 }  // namespace
 
 // static
@@ -153,7 +199,12 @@ ChangePasswordActionResult ChangePasswordActionResult::Error(
           .message = std::move(message)};
 }
 
-ChangePasswordFillingHelper::ChangePasswordFillingHelper() = default;
+ChangePasswordFillingHelper::ChangePasswordFillingHelper(
+    int32_t actor_surface_id,
+    PasswordChangeServiceInterface* password_change_service)
+    : actor_surface_id_(actor_surface_id),
+      password_change_service_(password_change_service) {}
+
 ChangePasswordFillingHelper::~ChangePasswordFillingHelper() = default;
 
 // static
@@ -229,12 +280,8 @@ ChangePasswordFillingHelper::ValidateDriverAndTargetFields(
   CHECK(current_password_field_id_ || new_password_field_id_ ||
         confirm_new_password_field_id_);
 
-  PasswordManagerInterface* password_manager = driver.GetPasswordManager();
-  PasswordFormCache* form_cache =
-      password_manager ? password_manager->GetPasswordFormCache() : nullptr;
   base::span<const std::unique_ptr<PasswordFormManager>> form_managers =
-      form_cache ? form_cache->GetFormManagers()
-                 : base::span<const std::unique_ptr<PasswordFormManager>>{};
+      GetFormManagers(driver);
 
   std::vector<std::string> invalid_fields;
   for (auto [label, renderer_id] :
@@ -266,15 +313,53 @@ ChangePasswordFillingHelper::ValidateDriverAndTargetFields(
 void ChangePasswordFillingHelper::FillChangePasswordForm(
     base::OnceCallback<void(ChangePasswordActionResult)> callback) {
   CHECK(driver_ || driver_.WasInvalidated());
+  callback = base::BindPostTaskToCurrentDefault(std::move(callback));
+
   if (!driver_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            ChangePasswordActionResult::Error(
-                actor::mojom::ActionResultCode::kFrameWentAway,
-                "Target frame or password manager driver is unavailable.")));
+    std::move(callback).Run(ChangePasswordActionResult::Error(
+        actor::mojom::ActionResultCode::kFrameWentAway,
+        "Target frame or password manager driver is unavailable."));
     return;
+  }
+
+  PasswordChangeCredentialsProvider* credentials_provider =
+      password_change_service_
+          ? password_change_service_->GetCredentialsProviderForActorSurface(
+                actor_surface_id_)
+          : nullptr;
+
+  if (!credentials_provider) {
+    std::move(callback).Run(MapCredentialsProviderError(
+        PasswordChangeCredentialsProvider::Error::kNoPasswordChangeFlow));
+    return;
+  }
+
+  PasswordString old_password;
+  if (current_password_field_id_) {
+    base::expected<PasswordString, PasswordChangeCredentialsProvider::Error>
+        old_password_result = credentials_provider->GetOldPassword();
+    if (!old_password_result.has_value()) {
+      std::move(callback).Run(
+          MapCredentialsProviderError(old_password_result.error()));
+      return;
+    }
+    old_password = *std::move(old_password_result);
+  }
+
+  PasswordString new_password;
+  if (new_password_field_id_ || confirm_new_password_field_id_) {
+    PasswordFormManager* form_manager =
+        FindParsedPasswordFormManagerForNewPassword(
+            *driver_, new_password_field_id_, confirm_new_password_field_id_);
+    base::expected<PasswordString, PasswordChangeCredentialsProvider::Error>
+        new_password_result =
+            credentials_provider->GetNewPassword(form_manager);
+    if (!new_password_result.has_value()) {
+      std::move(callback).Run(
+          MapCredentialsProviderError(new_password_result.error()));
+      return;
+    }
+    new_password = *std::move(new_password_result);
   }
 
   // Unset (null) or missing `FieldRendererId`s are ignored by the renderer;
@@ -283,14 +368,12 @@ void ChangePasswordFillingHelper::FillChangePasswordForm(
   // TODO(crbug.com/574401623): check actor_login::IsValidFrameAndOriginToFill.
   driver_->FillChangePasswordForm(
       current_password_field_id_, new_password_field_id_,
-      confirm_new_password_field_id_,
-      /*old_password=*/PasswordString(u"dummy_current_password"),
-      /*new_password=*/PasswordString(u"dummy_new_password"),
+      confirm_new_password_field_id_, old_password, new_password,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&BuildChangePasswordActionResult,
                          current_password_field_id_, new_password_field_id_,
                          confirm_new_password_field_id_)
-              .Then(base::BindPostTaskToCurrentDefault(std::move(callback))),
+              .Then(std::move(callback)),
           std::nullopt));
 }
 

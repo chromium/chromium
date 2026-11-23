@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 
+#include <memory>
 #include <optional>
 #include <variant>
 
@@ -12,11 +13,16 @@
 #include "chrome/browser/actor/tool_request_variant.h"
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_id.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -54,7 +60,15 @@ TEST(ChangePasswordToolRequestTest, Properties) {
 }
 
 TEST(ChangePasswordToolRequestTest, CreateTool_ValidTab_Succeeds) {
+  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<TestingProfile> profile =
+      TestingProfile::Builder()
+          .AddTestingFactory(
+              PasswordChangeServiceFactory::GetInstance(),
+              BrowserContextKeyedServiceFactory::TestingFactory())
+          .Build();
   MockToolDelegate delegate;
+  EXPECT_CALL(delegate, GetProfile()).WillOnce(testing::ReturnRef(*profile));
   tabs::MockTabInterface mock_tab;
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  mock_tab.GetHandle());

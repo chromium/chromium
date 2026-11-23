@@ -19,6 +19,8 @@
 #include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/shared_types.h"
@@ -67,7 +69,10 @@ ChangePasswordTool::ChangePasswordTool(
       current_password_field_(std::move(current_password_field)),
       new_password_field_(std::move(new_password_field)),
       confirm_new_password_field_(std::move(confirm_new_password_field)),
-      confirm_button_(std::move(confirm_button)) {}
+      confirm_button_(std::move(confirm_button)),
+      filling_helper_(actor_surface.GetHandle().raw_value(),
+                      PasswordChangeServiceFactory::GetForProfile(
+                          &tool_delegate.GetProfile())) {}
 
 ChangePasswordTool::~ChangePasswordTool() = default;
 

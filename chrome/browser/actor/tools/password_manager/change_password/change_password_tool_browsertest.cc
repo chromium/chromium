@@ -7,9 +7,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -17,9 +22,16 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/mock_chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/shared_types.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -35,6 +47,25 @@ namespace actor {
 namespace {
 
 using ::content::EvalJs;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
+
+constexpr char kDefaultOldPassword[] = "provider_current_password";
+constexpr char kDefaultNewPassword[] = "provider_new_password";
+
+class MockPasswordChangeCredentialsProvider
+    : public password_manager::PasswordChangeCredentialsProvider {
+ public:
+  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
+              GetOldPassword,
+              (),
+              (const, override));
+  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
+              GetNewPassword,
+              (password_manager::PasswordFormManager * form_manager),
+              (override));
+};
 
 class ChangePasswordToolBrowserTest : public ActorToolsTest {
  public:
@@ -44,6 +75,30 @@ class ChangePasswordToolBrowserTest : public ActorToolsTest {
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());
+    mock_password_change_service_ =
+        static_cast<MockChromePasswordChangeService*>(
+            PasswordChangeServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    GetProfile(),
+                    base::BindRepeating([](content::BrowserContext*)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<
+                          NiceMock<MockChromePasswordChangeService>>();
+                    })));
+    ON_CALL(credentials_provider_, GetOldPassword())
+        .WillByDefault(Return(password_manager::PasswordString(
+            base::ASCIIToUTF16(std::string_view(kDefaultOldPassword)))));
+    ON_CALL(credentials_provider_, GetNewPassword(_))
+        .WillByDefault(Return(password_manager::PasswordString(
+            base::ASCIIToUTF16(std::string_view(kDefaultNewPassword)))));
+    ON_CALL(*mock_password_change_service_,
+            GetCredentialsProviderForActorSurface(_))
+        .WillByDefault(Return(&credentials_provider_));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_password_change_service_ = nullptr;
+    ActorToolsTest::TearDownOnMainThread();
   }
 
   [[nodiscard]] bool NavigateAndCaptureApc() {
@@ -55,6 +110,15 @@ class ChangePasswordToolBrowserTest : public ActorToolsTest {
     GetPageApc();
     return true;
   }
+
+  MockChromePasswordChangeService* mock_password_change_service() {
+    return mock_password_change_service_;
+  }
+
+ private:
+  NiceMock<MockPasswordChangeCredentialsProvider> credentials_provider_;
+  raw_ptr<MockChromePasswordChangeService> mock_password_change_service_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
@@ -91,13 +155,13 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
           current_password_node->node_id, new_password_node->node_id,
           confirm_password_node->node_id));
 
-  EXPECT_EQ("dummy_current_password",
+  EXPECT_EQ(kDefaultOldPassword,
             EvalJs(main_frame(),
                    "document.getElementById('current_password').value"));
   EXPECT_EQ(
-      "dummy_new_password",
+      kDefaultNewPassword,
       EvalJs(main_frame(), "document.getElementById('new_password').value"));
-  EXPECT_EQ("dummy_new_password",
+  EXPECT_EQ(kDefaultNewPassword,
             EvalJs(main_frame(),
                    "document.getElementById('confirm_password').value"));
 }
@@ -130,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   EXPECT_EQ("", EvalJs(main_frame(),
                        "document.getElementById('current_password').value"));
   EXPECT_EQ(
-      "dummy_new_password",
+      kDefaultNewPassword,
       EvalJs(main_frame(), "document.getElementById('new_password').value"));
   EXPECT_EQ("", EvalJs(main_frame(),
                        "document.getElementById('confirm_password').value"));
@@ -306,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
                 new_password_node->node_id, confirm_button_node->node_id));
 
   EXPECT_EQ(
-      "dummy_new_password",
+      kDefaultNewPassword,
       EvalJs(main_frame(), "document.getElementById('new_password').value"));
   EXPECT_EQ("click", EvalJs(main_frame(), "getStableEventLog()"));
 }
@@ -347,13 +411,13 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
           current_password_node->node_id, new_password_node->node_id,
           confirm_password_node->node_id, confirm_button_node->node_id));
 
-  EXPECT_EQ("dummy_current_password",
+  EXPECT_EQ(kDefaultOldPassword,
             EvalJs(main_frame(),
                    "document.getElementById('current_password').value"));
   EXPECT_EQ(
-      "dummy_new_password",
+      kDefaultNewPassword,
       EvalJs(main_frame(), "document.getElementById('new_password').value"));
-  EXPECT_EQ("dummy_new_password",
+  EXPECT_EQ(kDefaultNewPassword,
             EvalJs(main_frame(),
                    "document.getElementById('confirm_password').value"));
   EXPECT_THAT(EvalJs(main_frame(), "getStableEventLog()").ExtractString(),
@@ -389,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
                 new_password_node->node_id, confirm_button_point.ToString()));
 
   EXPECT_EQ(
-      "dummy_new_password",
+      kDefaultNewPassword,
       EvalJs(main_frame(), "document.getElementById('new_password').value"));
   EXPECT_EQ("click", EvalJs(main_frame(), "getStableEventLog()"));
 }
@@ -452,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
   ASSERT_EQ(result.Get().size(), 1u);
   EXPECT_EQ(
-      "dummy_new_password",
+      kDefaultNewPassword,
       EvalJs(main_frame(), "document.getElementById('new_password').value"));
   EXPECT_EQ("", EvalJs(main_frame(), "getStableEventLog()"));
 }
@@ -485,13 +549,13 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ("dummy_current_password",
+  EXPECT_EQ(kDefaultOldPassword,
             EvalJs(main_frame(),
                    "document.getElementById('current_password').value"));
   EXPECT_EQ(
-      "dummy_new_password",
+      kDefaultNewPassword,
       EvalJs(main_frame(), "document.getElementById('new_password').value"));
-  EXPECT_EQ("dummy_new_password",
+  EXPECT_EQ(kDefaultNewPassword,
             EvalJs(main_frame(),
                    "document.getElementById('confirm_password').value"));
 }
@@ -563,6 +627,47 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
             EvalJs(main_frame(), "document.getElementById('password').value"));
   EXPECT_EQ("",
             EvalJs(main_frame(), "document.getElementById('username').value"));
+}
+
+IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
+                       Invoke_NoActivePasswordChangeFlow_ReturnsError) {
+  ASSERT_TRUE(NavigateAndCaptureApc());
+
+  std::optional<DomNode> current_password_node =
+      GetDomNodeOnPage(*main_frame(), "#current_password");
+  std::optional<DomNode> new_password_node =
+      GetDomNodeOnPage(*main_frame(), "#new_password");
+  std::optional<DomNode> confirm_button_node =
+      GetDomNodeOnPage(*main_frame(), "#submit");
+  ASSERT_TRUE(current_password_node);
+  ASSERT_TRUE(new_password_node);
+  ASSERT_TRUE(confirm_button_node);
+
+  EXPECT_CALL(
+      *mock_password_change_service(),
+      GetCredentialsProviderForActorSurface(
+          ActorSurfaceHandle::From(active_tab()->GetHandle()).raw_value()))
+      .WillOnce(Return(nullptr));
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<ChangePasswordToolRequest>(
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          PageTarget(*current_password_node), PageTarget(*new_password_node),
+          /*confirm_new_password_field=*/std::nullopt,
+          PageTarget(*confirm_button_node));
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "No active password change flow to provide credentials.");
+  EXPECT_EQ("", EvalJs(main_frame(),
+                       "document.getElementById('current_password').value"));
+  EXPECT_EQ("", EvalJs(main_frame(),
+                       "document.getElementById('new_password').value"));
+  EXPECT_EQ("", EvalJs(main_frame(), "getStableEventLog()"));
 }
 
 }  // namespace

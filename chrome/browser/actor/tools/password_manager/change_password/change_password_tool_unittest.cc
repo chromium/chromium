@@ -12,12 +12,17 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/mock_chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/shared_types.h"
@@ -26,6 +31,8 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -33,8 +40,10 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
+#include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -57,6 +66,20 @@ using ::optimization_guide::DocumentIdentifierUserData;
 using ::optimization_guide::proto::AnnotatedPageContent;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::ReturnRef;
+
+class MockPasswordChangeCredentialsProvider
+    : public password_manager::PasswordChangeCredentialsProvider {
+ public:
+  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
+              GetOldPassword,
+              (),
+              (const, override));
+  MOCK_METHOD((base::expected<password_manager::PasswordString, Error>),
+              GetNewPassword,
+              (password_manager::PasswordFormManager * form_manager),
+              (override));
+};
 
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -74,7 +97,16 @@ class ChangePasswordToolTest : public testing::Test {
   ~ChangePasswordToolTest() override = default;
 
   void SetUp() override {
-    profile_ = TestingProfile::Builder().Build();
+    profile_ =
+        TestingProfile::Builder()
+            .AddTestingFactory(
+                PasswordChangeServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext*)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<
+                      NiceMock<MockChromePasswordChangeService>>();
+                }))
+            .Build();
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -92,6 +124,8 @@ class ChangePasswordToolTest : public testing::Test {
                                     password_manager::PasswordFormManager>> {
           return form_managers_;
         });
+
+    ON_CALL(delegate_, GetProfile()).WillByDefault(ReturnRef(*profile_));
 
     password_manager::ContentPasswordManagerDriverFactory::CreateForWebContents(
         web_contents_, &password_client_);
@@ -170,8 +204,12 @@ class ChangePasswordToolTest : public testing::Test {
     return observation;
   }
 
-  MockToolDelegate& delegate() { return delegate_; }
+  NiceMock<MockToolDelegate>& delegate() { return delegate_; }
   ActorSurface& actor_surface() { return *actor_surface_; }
+  MockChromePasswordChangeService& password_change_service() {
+    return *static_cast<MockChromePasswordChangeService*>(
+        PasswordChangeServiceFactory::GetForProfile(profile_.get()));
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -185,7 +223,7 @@ class ChangePasswordToolTest : public testing::Test {
       form_fetchers_;
   std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
       form_managers_;
-  MockToolDelegate delegate_;
+  NiceMock<MockToolDelegate> delegate_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   std::unique_ptr<ActorSurfaceImpl> actor_surface_;
 };
@@ -439,6 +477,96 @@ TEST_F(ChangePasswordToolTest, Invoke_DriverInvalidated_Fails) {
   EXPECT_FALSE(future.Get()->requires_page_stabilization);
   EXPECT_EQ(future.Get()->message,
             "Target frame or password manager driver is unavailable.");
+}
+
+TEST_F(ChangePasswordToolTest, Invoke_NullPasswordChangeService_Fails) {
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BrowserContextKeyedServiceFactory::TestingFactory());
+  ASSERT_EQ(PasswordChangeServiceFactory::GetForProfile(profile_.get()),
+            nullptr);
+
+  AddFormManager({MakeFormField(10), MakeFormField(20)});
+  std::string doc_token = GetMainFrameDocToken();
+  ChangePasswordTool tool(
+      TaskId(1), delegate(), actor_surface(),
+      PageTarget(DomNode{.node_id = 10, .document_identifier = doc_token}),
+      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
+      /*confirm_new_password_field=*/std::nullopt,
+      /*confirm_button=*/std::nullopt);
+  AnnotatedPageContent observation =
+      CreateObservationWithFieldIds(doc_token, {10, 20});
+
+  ASSERT_EQ(tool.TimeOfUseValidation(&observation)->code,
+            mojom::ActionResultCode::kOk);
+
+  TestFuture<mojom::ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+  mojom::ActionResultPtr result = future.Take();
+  EXPECT_EQ(result->code,
+            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  EXPECT_EQ(result->message,
+            "No active password change flow to provide credentials.");
+}
+
+TEST_F(ChangePasswordToolTest, Invoke_NoPasswordChangeFlow_Fails) {
+  EXPECT_CALL(password_change_service(),
+              GetCredentialsProviderForActorSurface(
+                  actor_surface().GetHandle().raw_value()))
+      .WillOnce(Return(nullptr));
+
+  AddFormManager({MakeFormField(10), MakeFormField(20)});
+  std::string doc_token = GetMainFrameDocToken();
+  ChangePasswordTool tool(
+      TaskId(1), delegate(), actor_surface(),
+      PageTarget(DomNode{.node_id = 10, .document_identifier = doc_token}),
+      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
+      /*confirm_new_password_field=*/std::nullopt,
+      /*confirm_button=*/std::nullopt);
+  AnnotatedPageContent observation =
+      CreateObservationWithFieldIds(doc_token, {10, 20});
+
+  ExpectOkResult(*tool.TimeOfUseValidation(&observation));
+
+  TestFuture<mojom::ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+  mojom::ActionResultPtr result = future.Take();
+  EXPECT_EQ(result->code,
+            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  EXPECT_EQ(result->message,
+            "No active password change flow to provide credentials.");
+}
+
+TEST_F(ChangePasswordToolTest, Invoke_CredentialsProviderFails_ReturnsError) {
+  NiceMock<MockPasswordChangeCredentialsProvider> provider;
+  EXPECT_CALL(password_change_service(),
+              GetCredentialsProviderForActorSurface(
+                  actor_surface().GetHandle().raw_value()))
+      .WillOnce(Return(&provider));
+  EXPECT_CALL(provider, GetOldPassword())
+      .WillOnce(Return(
+          base::unexpected(password_manager::PasswordChangeCredentialsProvider::
+                               Error::kNoPasswordChangeFlow)));
+
+  AddFormManager({MakeFormField(10), MakeFormField(20)});
+  std::string doc_token = GetMainFrameDocToken();
+  ChangePasswordTool tool(
+      TaskId(1), delegate(), actor_surface(),
+      PageTarget(DomNode{.node_id = 10, .document_identifier = doc_token}),
+      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
+      /*confirm_new_password_field=*/std::nullopt,
+      /*confirm_button=*/std::nullopt);
+  AnnotatedPageContent observation =
+      CreateObservationWithFieldIds(doc_token, {10, 20});
+
+  ExpectOkResult(*tool.TimeOfUseValidation(&observation));
+
+  TestFuture<mojom::ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+  mojom::ActionResultPtr result = future.Take();
+  EXPECT_EQ(result->code,
+            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  EXPECT_EQ(result->message,
+            "No active password change flow to provide credentials.");
 }
 
 }  // namespace

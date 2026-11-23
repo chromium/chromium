@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_CHANGE_PASSWORD_FILLING_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_CHANGE_PASSWORD_FILLING_HELPER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/actor/public/mojom/actor_types.mojom-shared.h"
@@ -17,6 +19,7 @@
 namespace password_manager {
 
 class PasswordManagerDriver;
+class PasswordChangeServiceInterface;
 
 // Outcome of validating or executing an actor change-password action.
 struct ChangePasswordActionResult {
@@ -37,7 +40,13 @@ struct ChangePasswordActionResult {
 // form filling logic for the actor change-password tool.
 class ChangePasswordFillingHelper {
  public:
-  ChangePasswordFillingHelper();
+  // `actor_surface_id` is the raw value of the target `ActorSurfaceHandle`.
+  // `password_change_service` may be null (in which case filling fails with no
+  // active password change flow); if non-null, it is retained and must outlive
+  // `this`.
+  ChangePasswordFillingHelper(
+      int32_t actor_surface_id,
+      PasswordChangeServiceInterface* password_change_service);
   ~ChangePasswordFillingHelper();
 
   ChangePasswordFillingHelper(const ChangePasswordFillingHelper&) = delete;
@@ -77,15 +86,17 @@ class ChangePasswordFillingHelper {
   ChangePasswordActionResult ValidateDriverAndTargetFields(
       PasswordManagerDriver& driver);
 
-  // Fills the stored target password fields via the validated driver, evaluates
-  // the returned `FormData`, and asynchronously invokes `callback` with the
-  // resulting status and message. Requires `ValidateDriverAndTargetFields()` to
-  // have succeeded.
+  // Fills the stored target password fields via the validated driver with
+  // credentials provided by the credentials provider, evaluates the returned
+  // `FormData`, and asynchronously invokes `callback` with the resulting status
+  // and message. Requires `ValidateDriverAndTargetFields()` to have succeeded.
   void FillChangePasswordForm(
       base::OnceCallback<void(ChangePasswordActionResult)> callback);
 
  private:
+  const int32_t actor_surface_id_;
   base::WeakPtr<PasswordManagerDriver> driver_;
+  const raw_ptr<PasswordChangeServiceInterface> password_change_service_;
   autofill::FieldRendererId current_password_field_id_;
   autofill::FieldRendererId new_password_field_id_;
   autofill::FieldRendererId confirm_new_password_field_id_;
