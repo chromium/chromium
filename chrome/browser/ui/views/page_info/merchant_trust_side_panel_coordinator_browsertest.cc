@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -21,6 +25,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_info/core/merchant_trust_service.h"
+#include "components/page_info/core/page_info_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -319,4 +324,40 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
 
   EXPECT_EQ(side_panel_view->GetLastUrlForTesting(),
             CreateUrl(kMerchantReviewsUrl).spec() + "?s=CHROME_SIDE_PANEL");
+}
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
+                       PageInfoMerchantTrustHiddenInPopupBrowser) {
+  GURL merchant_url = CreateUrl(kUrlWithMerchantTrustData);
+  ON_CALL(*service(), GetMerchantTrustInfo(_, _))
+      .WillByDefault(
+          [&](const GURL& url, page_info::MerchantDataCallback callback) {
+            std::move(callback).Run(
+                url, url == merchant_url
+                         ? std::make_optional(CreateValidMerchantData())
+                         : std::nullopt);
+          });
+
+  // Pre-action baseline: a normal browser window returns Merchant Trust data.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), merchant_url));
+  ChromePageInfoUiDelegate normal_delegate(web_contents(), merchant_url);
+  base::test::TestFuture<const GURL&, std::optional<page_info::MerchantData>>
+      normal_future;
+  normal_delegate.GetMerchantTrustInfo(normal_future.GetCallback());
+  ASSERT_TRUE(normal_future.Wait());
+  EXPECT_TRUE(normal_future.Get<1>().has_value());
+
+  // Non-normal browser windows (such as popups and installed web apps) do not
+  // support SidePanel, so Page Info must suppress Merchant Trust data.
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(browser()->GetProfile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(popup_browser, merchant_url));
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ChromePageInfoUiDelegate popup_delegate(popup_contents, merchant_url);
+  base::test::TestFuture<const GURL&, std::optional<page_info::MerchantData>>
+      popup_future;
+  popup_delegate.GetMerchantTrustInfo(popup_future.GetCallback());
+  ASSERT_TRUE(popup_future.Wait());
+  EXPECT_FALSE(popup_future.Get<1>().has_value());
 }

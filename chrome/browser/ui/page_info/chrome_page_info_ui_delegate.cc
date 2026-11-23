@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
@@ -53,6 +56,18 @@
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+namespace {
+
+bool IsSidePanelAvailable(content::WebContents* web_contents) {
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  return browser && browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
+}
+
+}  // namespace
 #endif
 
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(
@@ -123,9 +138,7 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
 #if !BUILDFLAG(IS_ANDROID)
 std::optional<page_info::proto::SiteInfo>
 ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
-  if (!browser || browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+  if (!IsSidePanelAvailable(web_contents_)) {
     // TODO(crbug.com/40904874): SidePanel is not available. Evaluate if we can
     //                          show ATP in a different way.
     return std::nullopt;
@@ -327,11 +340,20 @@ void ChromePageInfoUiDelegate::OpenMerchantTrustSidePanel(const GURL& url) {
 
 void ChromePageInfoUiDelegate::GetMerchantTrustInfo(
     page_info::MerchantDataCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!IsSidePanelAvailable(web_contents_)) {
+    // SidePanel is only supported in normal browser windows.
+    std::move(callback).Run(web_contents_->GetVisibleURL(), std::nullopt);
+    return;
+  }
+#endif
   if (auto* service =
           MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
     service->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
                                   std::move(callback));
+    return;
   }
+  std::move(callback).Run(web_contents_->GetVisibleURL(), std::nullopt);
 }
 
 void ChromePageInfoUiDelegate::RecordMerchantTrustButtonShown() {
