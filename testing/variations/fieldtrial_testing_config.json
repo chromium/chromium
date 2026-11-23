@@ -12359,11 +12359,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Hysteresis",
+                    "params": {
+                        "InfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent": "10",
+                        "InfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent": "15",
+                        "InfiniteTabsFreezingOnMemoryPressureLowRamEnterAvailableMemoryPercent": "10",
+                        "InfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent": "15"
+                    },
                     "enable_features": [
                         "InfiniteTabsFreezingOnMemoryPressure"
                     ],
                     "disable_features": [
+                        "DisablePeriodicUnfreezeOnCriticalMemoryPressure",
                         "DiscardOnCommitLimit"
                     ]
                 }
