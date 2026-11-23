@@ -12,13 +12,19 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
-#include "components/download/public/common/base_file.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -32,6 +38,40 @@
 using content::DownloadManager;
 using content::WebContents;
 using download::DownloadItem;
+
+namespace {
+
+bool HasSupportedAuthorityScheme(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
+         url.SchemeIs(url::kFtpScheme);
+}
+
+// Extracts an authority-bearing URL from `url`, unwrapping `blob:` and
+// `filesystem:` URLs to their inner origin and rejecting authority-less
+// schemes such as `about:` and `data:`.
+// For `blob:` / `filesystem:`, accepts any valid non-opaque inner origin
+// (including `chrome://` and `chrome-extension://`) to mirror
+// `download::BaseFile::GetEffectiveAuthorityURL()`.
+GURL ExtractAuthorityURL(const GURL& url) {
+  if (!url.is_valid()) {
+    return GURL();
+  }
+  if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
+    return url::Origin::Create(url).GetTupleOrPrecursorTupleIfOpaque().GetURL();
+  }
+  return HasSupportedAuthorityScheme(url) ? url : GURL();
+}
+
+// Extracts a supported authority URL from `origin`, falling back to its
+// precursor tuple when `origin` is opaque (e.g. `data:` or sandboxed `srcdoc`
+// frames). Uses `SchemeHostPort::GetURL()` so remote `file://host/` origins
+// preserve their host instead of collapsing to `file:///`.
+GURL ExtractAuthorityURL(const url::Origin& origin) {
+  const GURL origin_url = origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
+  return HasSupportedAuthorityScheme(origin_url) ? origin_url : GURL();
+}
+
+}  // namespace
 
 DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
                                        const base::FilePath& suggested_path,
@@ -117,18 +157,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   }
 #endif
 
-  GURL caller = download::BaseFile::GetEffectiveAuthorityURL(
-      download_item_->GetURL(), download_item_->GetReferrerUrl(),
-      download_item_->GetRequestInitiator());
-  // Blob URLs are not set as referrer of downloads of them. If the download url
-  // itself has no authority part, their is no authority url. For dlp we want to
-  // use the blob's origin in that case.
-  auto* render_frame_host =
-      content::DownloadItemUtils::GetRenderFrameHost(download_item_);
-  if (!caller.is_valid() && render_frame_host &&
-      render_frame_host->GetLastCommittedURL().SchemeIsBlob()) {
-    caller = render_frame_host->GetLastCommittedOrigin().GetURL();
-  }
+  GURL caller = GetEffectiveAuthorityURL(download_item_);
 
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
@@ -167,6 +196,99 @@ void DownloadFilePicker::ShowFilePicker(DownloadItem* item,
                                         ConfirmationCallback callback) {
   new DownloadFilePicker(item, suggested_path, std::move(callback));
   // DownloadFilePicker deletes itself.
+}
+
+// static
+GURL DownloadFilePicker::GetEffectiveAuthorityURL(const DownloadItem* item) {
+  if (!item) {
+    return GURL();
+  }
+
+  // 1. Prefer an authority-bearing download URL directly (`http:`, `https:`,
+  //    `file:`, `ftp:`, or unwrapped `blob:` / `filesystem:` inner origin)
+  //    before consulting initiator or referrer metadata.
+  if (GURL url = ExtractAuthorityURL(item->GetURL()); url.is_valid()) {
+    return url;
+  }
+
+  // 2. Mirror `BaseFile::GetEffectiveAuthorityURL()`: when no
+  //    `request_initiator` was provided, prefer an HTTP/S referrer before
+  //    falling back to frame/tab metadata. For browser-initiated navigation
+  //    downloads (e.g. omnibox or bookmark `data:` URLs) with neither an
+  //    initiator nor an HTTP/S referrer, do not attribute the download to the
+  //    tab's previously committed document.
+  if (!item->GetRequestInitiator().has_value()) {
+    if (item->GetReferrerUrl().is_valid() &&
+        item->GetReferrerUrl().SchemeIsHTTPOrHTTPS()) {
+      return item->GetReferrerUrl();
+    }
+    if (item->GetDownloadSource() == download::DownloadSource::NAVIGATION) {
+      return GURL();
+    }
+  }
+
+  WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
+  content::RenderFrameHost* render_frame_host =
+      content::DownloadItemUtils::GetRenderFrameHost(item);
+
+  // 3. Extract authority-bearing URLs from the initiating frame and tab,
+  //    preferring the live committed tab entry's URL over `item->GetTabUrl()`
+  //    (which may snapshot an uncommitted pending navigation entry).
+  const GURL raw_frame_url =
+      render_frame_host ? render_frame_host->GetLastCommittedURL() : GURL();
+  const GURL frame_url = ExtractAuthorityURL(raw_frame_url);
+  const content::NavigationEntry* committed_entry =
+      web_contents ? web_contents->GetController().GetLastCommittedEntry()
+                   : nullptr;
+  const GURL raw_tab_url =
+      (committed_entry && committed_entry->GetURL().is_valid())
+          ? committed_entry->GetURL()
+          : item->GetTabUrl();
+  const GURL tab_url = ExtractAuthorityURL(raw_tab_url);
+
+  // 4. Prefer the browser-validated initiator's (or initiating frame's)
+  //    committed/precursor origin when available. If the initiating frame or
+  //    tab carries a path-bearing URL with that same origin, return it so
+  //    path-based DLP rules still match.
+  GURL initiator_url;
+  if (item->GetRequestInitiator().has_value()) {
+    initiator_url = ExtractAuthorityURL(*item->GetRequestInitiator());
+  }
+  if (!initiator_url.is_valid() && render_frame_host) {
+    initiator_url =
+        ExtractAuthorityURL(render_frame_host->GetLastCommittedOrigin());
+  }
+  if (initiator_url.is_valid()) {
+    const url::Origin initiator_origin = url::Origin::Create(initiator_url);
+    const bool frame_is_origin_only =
+        raw_frame_url.SchemeIsBlob() || raw_frame_url.SchemeIsFileSystem();
+    if (frame_url.is_valid() && !frame_is_origin_only &&
+        initiator_origin.IsSameOriginWith(frame_url)) {
+      return frame_url;
+    }
+    if (tab_url.is_valid() && initiator_origin.IsSameOriginWith(tab_url)) {
+      return tab_url;
+    }
+    return initiator_url;
+  }
+
+  // 5. Fall back to the normalized initiating frame or tab authority URL (e.g.
+  //    `blob:chrome-extension://` frames or tab-only download items).
+  if (frame_url.is_valid()) {
+    return frame_url;
+  }
+  if (tab_url.is_valid()) {
+    return tab_url;
+  }
+
+  // 6. For authority-less tabs such as `window.open('about:blank')`, fall back
+  //    to the primary main frame's inherited or precursor authority origin.
+  if (web_contents && web_contents->GetPrimaryMainFrame()) {
+    return ExtractAuthorityURL(
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  }
+
+  return GURL();
 }
 
 void DownloadFilePicker::OnDownloadDestroyed(DownloadItem* download_item) {

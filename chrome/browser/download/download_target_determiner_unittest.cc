@@ -31,6 +31,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_confirmation_result.h"
 #include "chrome/browser/download/download_crx_util.h"
+#include "chrome/browser/download/download_file_picker.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/browser/download/download_stats.h"
@@ -43,6 +44,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/history_service.h"
@@ -56,10 +58,12 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/buildflags.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
@@ -79,7 +83,10 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -480,6 +487,7 @@ DownloadTargetDeterminerTest::CreateActiveDownloadItem(
       .WillByDefault(ReturnRefOfCopy(download_url));
   ON_CALL(*item, GetRequestInitiator())
       .WillByDefault(ReturnRefOfCopy(std::optional<url::Origin>()));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRefOfCopy(GURL()));
   ON_CALL(*item, GetState())
       .WillByDefault(Return(DownloadItem::IN_PROGRESS));
   ON_CALL(*item, GetTargetDisposition())
@@ -3723,6 +3731,789 @@ TEST_F(DownloadTargetDeterminerDlpTest, PromptAlways_SafeAutomatic) {
                   _, GetPathInDownloadDir(FILE_PATH_LITERAL("automatic.txt")),
                   DownloadConfirmationReason::DLP_BLOCKED, _));
   RunTestCasesWithActiveItem(base::span_from_ref(kSafeAutomatic));
+}
+
+TEST_F(DownloadTargetDeterminerDlpTest, DataUrlWithOpaqueInitiatorUsesTabUrl) {
+  SetupRulesManager();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  GURL empty_referrer;
+  std::optional<url::Origin> opaque_initiator = url::Origin();
+  GURL tab_url("https://example.com/page.html");
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(tab_url));
+
+  EXPECT_CALL(*mock_files_controller_,
+              ShouldPromptBeforeDownload(policy::DlpFileDestination(tab_url),
+                                         test_download_dir()))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*delegate(), RequestConfirmation_).Times(0);
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+
+  const DownloadTestCase kBlockedDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+  EXPECT_CALL(*mock_files_controller_,
+              ShouldPromptBeforeDownload(policy::DlpFileDestination(tab_url),
+                                         test_download_dir()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kBlockedDataUrlTestCase, base::FilePath(), item.get());
+}
+
+TEST_F(DownloadTargetDeterminerDlpTest,
+       DataUrlWithAboutBlankTabAndNoPrecursorReturnsEmptyAndPrompts) {
+  SetupRulesManager();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  GURL empty_referrer;
+  std::optional<url::Origin> opaque_initiator = url::Origin();
+  GURL about_blank("about:blank");
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(about_blank));
+
+  EXPECT_FALSE(
+      DownloadFilePicker::GetEffectiveAuthorityURL(item.get()).is_valid());
+  EXPECT_CALL(*mock_files_controller_, ShouldPromptBeforeDownload).Times(0);
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+}
+
+TEST_F(DownloadTargetDeterminerDlpTest,
+       DataUrlWithDataTabAndNoPrecursorReturnsEmptyAndPrompts) {
+  SetupRulesManager();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  GURL empty_referrer;
+  std::optional<url::Origin> opaque_initiator = url::Origin();
+  GURL data_tab("data:text/html,<h1>sensitive payload</h1>");
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(data_tab));
+
+  EXPECT_FALSE(
+      DownloadFilePicker::GetEffectiveAuthorityURL(item.get()).is_valid());
+  EXPECT_CALL(*mock_files_controller_, ShouldPromptBeforeDownload).Times(0);
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+}
+
+TEST_F(DownloadTargetDeterminerDlpTest,
+       DataUrlWithAboutBlankTabAndPrecursorUsesPrecursorOrigin) {
+  SetupRulesManager();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  GURL empty_referrer;
+  const GURL kRestrictedOriginUrl("https://restricted.corp.example.com/");
+  std::optional<url::Origin> opaque_initiator =
+      url::Origin::Create(kRestrictedOriginUrl).DeriveNewOpaqueOrigin();
+  GURL about_blank("about:blank");
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(about_blank));
+
+  EXPECT_EQ(kRestrictedOriginUrl,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+  EXPECT_CALL(*mock_files_controller_,
+              ShouldPromptBeforeDownload(
+                  policy::DlpFileDestination(kRestrictedOriginUrl),
+                  test_download_dir()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+}
+
+TEST_F(DownloadTargetDeterminerDlpTest,
+       DataUrlWithFilesystemTabUnwrapsInnerOrigin) {
+  SetupRulesManager();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  GURL empty_referrer;
+  std::optional<url::Origin> opaque_initiator = url::Origin();
+  GURL filesystem_tab(
+      "filesystem:https://restricted.corp.example.com/temporary/page.html");
+  const GURL kExpectedOrigin("https://restricted.corp.example.com/");
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(filesystem_tab));
+
+  EXPECT_EQ(kExpectedOrigin,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+  EXPECT_CALL(
+      *mock_files_controller_,
+      ShouldPromptBeforeDownload(policy::DlpFileDestination(kExpectedOrigin),
+                                 test_download_dir()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+}
+
+TEST_F(
+    DownloadTargetDeterminerDlpTest,
+    DataUrlWithPrecursorPreservesSameOriginTabPathAndDistinguishesCrossOrigin) {
+  SetupRulesManager();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  GURL empty_referrer;
+  const GURL kRestrictedOriginUrl("https://restricted.corp.example.com/");
+  std::optional<url::Origin> opaque_initiator =
+      url::Origin::Create(kRestrictedOriginUrl).DeriveNewOpaqueOrigin();
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+
+  // Same-origin tab URL preserves the full path for path-based DLP rules.
+  GURL same_origin_tab("https://restricted.corp.example.com/secret/page.html");
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(same_origin_tab));
+  EXPECT_EQ(same_origin_tab,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+  EXPECT_CALL(
+      *mock_files_controller_,
+      ShouldPromptBeforeDownload(policy::DlpFileDestination(same_origin_tab),
+                                 test_download_dir()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+
+  // Cross-origin embedding tab does not mask a restricted subframe's precursor.
+  GURL cross_origin_tab("https://safe.example.com/wrapper.html");
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(cross_origin_tab));
+  EXPECT_EQ(kRestrictedOriginUrl,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+  EXPECT_CALL(*mock_files_controller_,
+              ShouldPromptBeforeDownload(
+                  policy::DlpFileDestination(kRestrictedOriginUrl),
+                  test_download_dir()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+}
+
+TEST_F(DownloadTargetDeterminerDlpTest,
+       DataUrlWithNonOpaqueInitiatorPreservesSameOriginTabPath) {
+  SetupRulesManager();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  GURL empty_referrer;
+  const GURL kSameOriginTab(
+      "https://restricted.corp.example.com/secret/page.html");
+  std::optional<url::Origin> non_opaque_initiator =
+      url::Origin::Create(kSameOriginTab);
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(non_opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(kSameOriginTab));
+
+  EXPECT_EQ(kSameOriginTab,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+  EXPECT_CALL(
+      *mock_files_controller_,
+      ShouldPromptBeforeDownload(policy::DlpFileDestination(kSameOriginTab),
+                                 test_download_dir()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kDataUrlTestCase, base::FilePath(), item.get());
+}
+
+TEST_F(DownloadTargetDeterminerDlpTest,
+       FilesystemUrlTakesPrecedenceOverCrossOriginInitiator) {
+  SetupRulesManager();
+
+  const DownloadTestCase kFilesystemTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "filesystem:https://restricted.corp.example.com/temporary/secret.txt",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("secret.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  SetPromptForDownload(false);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kFilesystemTestCase);
+  GURL cross_origin_referrer("https://other.example.com/page.html");
+  std::optional<url::Origin> cross_origin_initiator =
+      url::Origin::Create(cross_origin_referrer);
+  const GURL kExpectedOrigin("https://restricted.corp.example.com/");
+  ON_CALL(*item, GetReferrerUrl())
+      .WillByDefault(ReturnRef(cross_origin_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(cross_origin_initiator));
+
+  EXPECT_EQ(kExpectedOrigin,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+  EXPECT_CALL(
+      *mock_files_controller_,
+      ShouldPromptBeforeDownload(policy::DlpFileDestination(kExpectedOrigin),
+                                 test_download_dir()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, GetPathInDownloadDir(FILE_PATH_LITERAL("secret.txt")),
+                  DownloadConfirmationReason::DLP_BLOCKED, _));
+  RunTestCase(kFilesystemTestCase, base::FilePath(), item.get());
+}
+#endif
+
+TEST_F(DownloadTargetDeterminerTest,
+       EffectiveAuthorityUrlFromCrossOriginSubframePreservesSubframePath) {
+  const GURL kMainUrl("https://portal.example.com/wrapper.html");
+  const GURL kSubframeUrl(
+      "https://restricted.corp.example.com/secret/frame.html");
+  NavigateAndCommit(kMainUrl);
+  ASSERT_EQ(kMainUrl, main_rfh()->GetLastCommittedURL());
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      kSubframeUrl, subframe);
+  ASSERT_EQ(kSubframeUrl, subframe->GetLastCommittedURL());
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  content::DownloadItemUtils::AttachInfo(item.get(), profile(), web_contents(),
+                                         subframe->GetGlobalId());
+  ASSERT_EQ(subframe,
+            content::DownloadItemUtils::GetRenderFrameHost(item.get()));
+  GURL empty_referrer;
+  std::optional<url::Origin> opaque_initiator =
+      url::Origin::Create(kSubframeUrl).DeriveNewOpaqueOrigin();
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(kMainUrl));
+
+  EXPECT_EQ(kSubframeUrl,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+
+  // When the initiator's precursor does not match the subframe's origin, the
+  // cross-origin subframe URL is rejected in favor of a same-origin tab URL.
+  std::optional<url::Origin> main_precursor =
+      url::Origin::Create(kMainUrl).DeriveNewOpaqueOrigin();
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(main_precursor));
+  EXPECT_EQ(kMainUrl, DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       EffectiveAuthorityUrlPrefersCommittedTabUrlOverPendingTabUrl) {
+  const GURL kCommittedUrl(
+      "https://restricted.corp.example.com/secret/page.html");
+  const GURL kPendingUrl(
+      "https://restricted.corp.example.com/public/page.html");
+  NavigateAndCommit(kCommittedUrl);
+  ASSERT_EQ(kCommittedUrl, web_contents()->GetLastCommittedURL());
+
+  // Attach and detach a child subframe so `GetRenderFrameHost()` is null while
+  // `GetWebContents()` remains non-null, forcing resolution through `tab_url`.
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  const content::GlobalRenderFrameHostId subframe_id = subframe->GetGlobalId();
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  content::DownloadItemUtils::AttachInfo(item.get(), profile(), web_contents(),
+                                         subframe_id);
+  content::RenderFrameHostTester::For(subframe)->Detach();
+  ASSERT_EQ(nullptr,
+            content::DownloadItemUtils::GetRenderFrameHost(item.get()));
+  ASSERT_EQ(web_contents(),
+            content::DownloadItemUtils::GetWebContents(item.get()));
+
+  GURL empty_referrer;
+  std::optional<url::Origin> opaque_initiator =
+      url::Origin::Create(kCommittedUrl).DeriveNewOpaqueOrigin();
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(opaque_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(kPendingUrl));
+
+  EXPECT_EQ(kCommittedUrl,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       EffectiveAuthorityUrlBlobSubframeFallsBackToSameOriginTabPath) {
+  const GURL kMainUrl("https://restricted.corp.example.com/secret/page.html");
+  const GURL kBlobSubframeUrl(
+      "blob:https://restricted.corp.example.com/12345678");
+  NavigateAndCommit(kMainUrl);
+  ASSERT_EQ(kMainUrl, main_rfh()->GetLastCommittedURL());
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      kBlobSubframeUrl, subframe);
+  ASSERT_EQ(kBlobSubframeUrl, subframe->GetLastCommittedURL());
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  content::DownloadItemUtils::AttachInfo(item.get(), profile(), web_contents(),
+                                         subframe->GetGlobalId());
+  ASSERT_EQ(subframe,
+            content::DownloadItemUtils::GetRenderFrameHost(item.get()));
+  GURL empty_referrer;
+  std::optional<url::Origin> blob_initiator =
+      url::Origin::Create(kBlobSubframeUrl);
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(blob_initiator));
+
+  // The origin-only `blob:` subframe URL does not mask the path-bearing
+  // same-origin tab URL.
+  EXPECT_EQ(kMainUrl, DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       EffectiveAuthorityUrlReferrerAndBrowserNavigationPrecedence) {
+  const GURL kTabUrl("https://tab.example.com/secret/page.html");
+  const GURL kReferrerUrl("https://referrer.example.com/source/page.html");
+  const GURL kDataUrl("data:text/plain;base64,SGVsbG8=");
+  NavigateAndCommit(kTabUrl);
+  ASSERT_EQ(kTabUrl, main_rfh()->GetLastCommittedURL());
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  // Without `request_initiator`, an HTTP/S referrer takes precedence over the
+  // frame's committed origin (matching `BaseFile::GetEffectiveAuthorityURL`).
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  std::optional<url::Origin> no_initiator;
+  ON_CALL(*item, GetRequestInitiator()).WillByDefault(ReturnRef(no_initiator));
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(kReferrerUrl));
+  EXPECT_EQ(kReferrerUrl,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+
+  // Browser-initiated navigation downloads (e.g. omnibox/bookmark `data:` URLs)
+  // without an initiator or HTTP/S referrer must not inherit the tab's
+  // previously committed document.
+  GURL empty_referrer;
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetDownloadSource())
+      .WillByDefault(Return(download::DownloadSource::NAVIGATION));
+  EXPECT_FALSE(
+      DownloadFilePicker::GetEffectiveAuthorityURL(item.get()).is_valid());
+
+  // Non-navigation downloads without an initiator and without a referrer (e.g.
+  // `SaveFrameWithHeaders` on an HTTPS page where referrer is stripped) still
+  // recover the committed frame URL.
+  ON_CALL(*item, GetDownloadSource())
+      .WillByDefault(Return(download::DownloadSource::WEB_CONTENTS_API));
+  EXPECT_EQ(kTabUrl, DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+
+  // A present anonymous opaque initiator (e.g. `<canvas>` Save-As) recovers
+  // the committed frame's origin and full path.
+  std::optional<url::Origin> anonymous_opaque = url::Origin();
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(anonymous_opaque));
+  EXPECT_EQ(kTabUrl, DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
+
+  // When a present anonymous opaque initiator has no frame/tab authority, an
+  // HTTP/S referrer must NOT be trusted.
+  ::testing::NiceMock<download::MockDownloadItem> detached_item;
+  GURL empty_tab;
+  ON_CALL(detached_item, GetURL()).WillByDefault(ReturnRef(kDataUrl));
+  ON_CALL(detached_item, GetTabUrl()).WillByDefault(ReturnRef(empty_tab));
+  ON_CALL(detached_item, GetReferrerUrl())
+      .WillByDefault(ReturnRef(kReferrerUrl));
+  ON_CALL(detached_item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(anonymous_opaque));
+  EXPECT_FALSE(
+      DownloadFilePicker::GetEffectiveAuthorityURL(&detached_item).is_valid());
+
+  // Non-HTTP/S referrers (e.g. `file:`) are ignored even without an initiator.
+  GURL file_referrer("file:///etc/passwd");
+  ON_CALL(detached_item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(no_initiator));
+  ON_CALL(detached_item, GetReferrerUrl())
+      .WillByDefault(ReturnRef(file_referrer));
+  EXPECT_FALSE(
+      DownloadFilePicker::GetEffectiveAuthorityURL(&detached_item).is_valid());
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       EffectiveAuthorityUrlFileOriginsPreserveRemoteHostAndLocalFile) {
+  const GURL kDataUrl("data:text/plain;base64,SGVsbG8=");
+  GURL empty_referrer;
+  GURL empty_tab;
+
+  // Direct `file://server/...`, `ftp://...`, and `blob:file://server/...` URLs.
+  ::testing::NiceMock<download::MockDownloadItem> direct_item;
+  std::optional<url::Origin> no_initiator;
+  ON_CALL(direct_item, GetReferrerUrl())
+      .WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(direct_item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(no_initiator));
+  ON_CALL(direct_item, GetTabUrl()).WillByDefault(ReturnRef(empty_tab));
+
+  const GURL kRemoteFileUrl("file://server/share/doc.txt");
+  ON_CALL(direct_item, GetURL()).WillByDefault(ReturnRef(kRemoteFileUrl));
+  EXPECT_EQ(kRemoteFileUrl,
+            DownloadFilePicker::GetEffectiveAuthorityURL(&direct_item));
+
+  const GURL kFtpUrl("ftp://files.example.com/archive.bin");
+  ON_CALL(direct_item, GetURL()).WillByDefault(ReturnRef(kFtpUrl));
+  EXPECT_EQ(kFtpUrl,
+            DownloadFilePicker::GetEffectiveAuthorityURL(&direct_item));
+
+  const GURL kBlobRemoteFileUrl("blob:file://server/1234");
+  ON_CALL(direct_item, GetURL()).WillByDefault(ReturnRef(kBlobRemoteFileUrl));
+  EXPECT_EQ(GURL("file://server/"),
+            DownloadFilePicker::GetEffectiveAuthorityURL(&direct_item));
+
+  // A local `file://` precursor on `about:blank` resolves to `file:///`.
+  GURL about_blank("about:blank");
+  std::optional<url::Origin> local_file_precursor =
+      url::Origin::Create(GURL("file:///home/user/page.html"))
+          .DeriveNewOpaqueOrigin();
+  ON_CALL(direct_item, GetURL()).WillByDefault(ReturnRef(kDataUrl));
+  ON_CALL(direct_item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(local_file_precursor));
+  ON_CALL(direct_item, GetTabUrl()).WillByDefault(ReturnRef(about_blank));
+  EXPECT_EQ(GURL("file:///"),
+            DownloadFilePicker::GetEffectiveAuthorityURL(&direct_item));
+
+  // A non-opaque `file://server/share/page.html` initiator preserves its
+  // remote host and does NOT falsely match a local `file:///local/other.html`
+  // tab URL.
+  const GURL kRemoteFilePage("file://server/share/page.html");
+  const GURL kLocalFileTab("file:///local/other.html");
+  std::optional<url::Origin> remote_file_initiator =
+      url::Origin::Create(kRemoteFilePage);
+  ON_CALL(direct_item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(remote_file_initiator));
+  ON_CALL(direct_item, GetTabUrl()).WillByDefault(ReturnRef(kLocalFileTab));
+  EXPECT_EQ(GURL("file://server/"),
+            DownloadFilePicker::GetEffectiveAuthorityURL(&direct_item));
+
+  // When the tab itself is on `file://server/...`, the full remote path is
+  // preserved.
+  ON_CALL(direct_item, GetTabUrl()).WillByDefault(ReturnRef(kRemoteFilePage));
+  EXPECT_EQ(kRemoteFilePage,
+            DownloadFilePicker::GetEffectiveAuthorityURL(&direct_item));
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       EffectiveAuthorityUrlBlobStep1NullAndPrimaryMainFrameOrigin) {
+  EXPECT_FALSE(
+      DownloadFilePicker::GetEffectiveAuthorityURL(nullptr).is_valid());
+
+  GURL empty_referrer;
+  GURL empty_tab;
+  ::testing::NiceMock<download::MockDownloadItem> item;
+  ON_CALL(item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(item, GetTabUrl()).WillByDefault(ReturnRef(empty_tab));
+
+  // Step 1: `blob:https://...` takes precedence over a cross-origin initiator.
+  const GURL kBlobHttpsUrl("blob:https://restricted.corp.example.com/1234");
+  const GURL kExpectedOrigin("https://restricted.corp.example.com/");
+  std::optional<url::Origin> cross_origin_initiator =
+      url::Origin::Create(GURL("https://other.example.com/"));
+  ON_CALL(item, GetURL()).WillByDefault(ReturnRef(kBlobHttpsUrl));
+  ON_CALL(item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(cross_origin_initiator));
+  EXPECT_EQ(kExpectedOrigin,
+            DownloadFilePicker::GetEffectiveAuthorityURL(&item));
+
+  // Step 1 -> Step 4: opaque `blob:null/...` falls through to the initiator
+  // precursor (and returns empty when no authority exists).
+  const GURL kBlobNullUrl("blob:null/1234");
+  std::optional<url::Origin> restricted_precursor =
+      url::Origin::Create(kExpectedOrigin).DeriveNewOpaqueOrigin();
+  ON_CALL(item, GetURL()).WillByDefault(ReturnRef(kBlobNullUrl));
+  ON_CALL(item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(restricted_precursor));
+  EXPECT_EQ(kExpectedOrigin,
+            DownloadFilePicker::GetEffectiveAuthorityURL(&item));
+
+  std::optional<url::Origin> anonymous_opaque = url::Origin();
+  ON_CALL(item, GetRequestInitiator())
+      .WillByDefault(ReturnRef(anonymous_opaque));
+  EXPECT_FALSE(DownloadFilePicker::GetEffectiveAuthorityURL(&item).is_valid());
+
+  // Step 6: when an `about:blank` tab inherits an authority origin on the
+  // primary main frame and the initiating subframe is detached
+  // (`render_frame_host == null`), Step 6 recovers the primary main frame's
+  // inherited authority origin.
+  const GURL kOriginTabUrl("https://restricted.corp.example.com/page.html");
+  const GURL kAboutBlankUrl("about:blank");
+  NavigateAndCommit(kOriginTabUrl);
+  ASSERT_EQ(kOriginTabUrl, main_rfh()->GetLastCommittedURL());
+  content::NavigationSimulator::NavigateAndCommitFromDocument(kAboutBlankUrl,
+                                                              main_rfh());
+  ASSERT_EQ(kAboutBlankUrl, main_rfh()->GetLastCommittedURL());
+  ASSERT_EQ(url::Origin::Create(kOriginTabUrl),
+            main_rfh()->GetLastCommittedOrigin());
+
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  const content::GlobalRenderFrameHostId subframe_id = subframe->GetGlobalId();
+  const GURL kDataDownloadUrl("data:text/plain;base64,SGVsbG8=");
+  ON_CALL(item, GetURL()).WillByDefault(ReturnRef(kDataDownloadUrl));
+  content::DownloadItemUtils::AttachInfo(&item, profile(), web_contents(),
+                                         subframe_id);
+  content::RenderFrameHostTester::For(subframe)->Detach();
+  ASSERT_EQ(nullptr, content::DownloadItemUtils::GetRenderFrameHost(&item));
+  ASSERT_EQ(web_contents(), content::DownloadItemUtils::GetWebContents(&item));
+
+  EXPECT_EQ(kExpectedOrigin,
+            DownloadFilePicker::GetEffectiveAuthorityURL(&item));
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(DownloadTargetDeterminerTest,
+       EffectiveAuthorityUrlFromBlobExtensionSubframe) {
+  constexpr char kExtId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("test").SetID(kExtId).Build();
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile());
+  registry->AddEnabled(extension);
+  extensions::RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->OnExtensionLoaded(*extension);
+
+  const GURL kExtPageUrl(
+      "chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/page.html");
+  const GURL kBlobExtUrl(
+      "blob:chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/1234");
+  const GURL kExpectedExtOrigin(
+      "chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/");
+  NavigateAndCommit(kExtPageUrl);
+  ASSERT_EQ(kExtPageUrl, main_rfh()->GetLastCommittedURL());
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      kBlobExtUrl, subframe);
+  ASSERT_EQ(kBlobExtUrl, subframe->GetLastCommittedURL());
+
+  const DownloadTestCase kDataUrlTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "data:text/plain;base64,SGVsbG8=",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+
+      FILE_PATH_LITERAL("download.txt"),
+      DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+      EXPECT_CRDOWNLOAD};
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kDataUrlTestCase);
+  content::DownloadItemUtils::AttachInfo(item.get(), profile(), web_contents(),
+                                         subframe->GetGlobalId());
+  ASSERT_EQ(subframe,
+            content::DownloadItemUtils::GetRenderFrameHost(item.get()));
+  GURL empty_referrer;
+  GURL empty_tab;
+  std::optional<url::Origin> ext_initiator = url::Origin::Create(kBlobExtUrl);
+  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRef(empty_referrer));
+  ON_CALL(*item, GetRequestInitiator()).WillByDefault(ReturnRef(ext_initiator));
+  ON_CALL(*item, GetTabUrl()).WillByDefault(ReturnRef(empty_tab));
+
+  // `tab_url` is unsupported (`chrome-extension://...`) and `initiator_url` is
+  // unsupported, so only Step 5 (`frame_url`) resolves the `blob:` extension
+  // subframe origin.
+  EXPECT_EQ(kExpectedExtOrigin,
+            DownloadFilePicker::GetEffectiveAuthorityURL(item.get()));
 }
 #endif
 

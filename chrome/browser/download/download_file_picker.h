@@ -13,6 +13,8 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
+class GURL;
+
 namespace base {
 class FilePath;
 }
@@ -37,6 +39,17 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
   static void ShowFilePicker(download::DownloadItem* item,
                              const base::FilePath& suggested_path,
                              ConfirmationCallback callback);
+
+  // Resolves the effective authority URL for `item` (used by ChromeOS DLP
+  // checks in both the target determiner and the save-as file picker).
+  // Prefers an authority-bearing download URL (including unwrapped `blob:` /
+  // `filesystem:` inner origins), then falls back to committed/precursor
+  // origins and authority-bearing frame/tab URLs (preserving same-origin paths
+  // for path-based DLP rules). Returns an empty `GURL` for authority-less
+  // schemes such as `about:` and `data:` when no authority can be derived, so
+  // `DownloadTargetDeterminer` prompts instead of auto-saving and callers avoid
+  // passing raw `data:` payloads to the file picker.
+  static GURL GetEffectiveAuthorityURL(const download::DownloadItem* item);
 
  private:
   DownloadFilePicker(download::DownloadItem* item,

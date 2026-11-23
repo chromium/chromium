@@ -77,7 +77,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "components/download/public/common/base_file.h"
+#include "chrome/browser/download/download_file_picker.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1327,9 +1327,8 @@ bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
           rules_manager->GetDlpFilesController());
   if (!files_controller)
     return false;
-  const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(
-      download_->GetURL(), download_->GetReferrerUrl(),
-      download_->GetRequestInitiator());
+  const GURL authority_url =
+      DownloadFilePicker::GetEffectiveAuthorityURL(download_);
   if (!authority_url.is_valid()) {
     return true;
   }
