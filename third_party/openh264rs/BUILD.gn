@@ -31,7 +31,16 @@ rust_static_library("openh264rs_crate") {
   # Pure-Rust codec; unoptimized (-Copt-level=0) Debug builds time out in
   # encoder/decoder tests (crbug.com/587408602). Debug assertions and overflow
   # checks remain enabled via //build/config:feature_flags.
-  configs -= [ "//build/config/compiler:default_optimization" ]
+  #
+  # Disable code coverage instrumentation for this third-party Rust crate
+  # (matching //third_party/rust crates): rustc's -Cinstrument-coverage ignores
+  # Clang's per-CL profile list and instruments hot codec loops and Vec::resize
+  # fills byte-by-byte, causing severe multi-thread counter contention and test
+  # timeouts on coverage bots.
+  configs -= [
+    "//build/config/compiler:default_optimization",
+    "//build/config/coverage:default_coverage",
+  ]
   configs += [ "//build/config/compiler:optimize_speed" ]
 }
 
@@ -46,6 +55,7 @@ if (build_with_chromium) {
     crate_root = "noop_test_attribute.rs"
     edition = "2024"
     sources = [ "noop_test_attribute.rs" ]
+    configs -= [ "//build/config/coverage:default_coverage" ]
   }
 
   # Runtime test bitstreams and reference SHA-1 hashes for OpenH264rs tests.
@@ -82,7 +92,10 @@ if (build_with_chromium) {
     rustenv = [ "CARGO_MANIFEST_DIR=" + rebase_path("src", "//") ]
     no_clippy = true
 
-    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs -= [
+      "//build/config/compiler:default_optimization",
+      "//build/config/coverage:default_coverage",
+    ]
     configs += [ "//build/config/compiler:optimize_speed" ]
   }
 }
