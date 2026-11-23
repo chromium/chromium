@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
@@ -449,7 +451,7 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
   }
 
   if (IsSoftware()) {
-    software_resource->UploadSoftwareRenderingResults(GetSkSurface());
+    UploadSoftwareRenderingResults(*software_resource);
 
     return CreateExportedResource(std::move(software_resource));
   }
@@ -527,6 +529,27 @@ CanvasNon2DResourceProvider::CreateExportedResource(
       /*use_legacy_external_canvas_resource_bitmap_path=*/false);
 }
 
+void CanvasNon2DResourceProvider::UploadSoftwareRenderingResults(
+    gpu::ClientImage& resource) {
+  CHECK(IsSoftware());
+  const scoped_refptr<gpu::ClientSharedImage>& shared_image =
+      resource.GetSharedImage();
+  CHECK(shared_image->is_software());
+
+  // Copy the rendering results from `GetSkSurface()` to the SharedImage backing
+  // this resource.
+  // NOTE: Calling `BackingWasExternallyUpdated()` is not necessary for the
+  // software compositor, as all accesses to the SI's backing happen via shared
+  // memory.
+  auto scoped_mapping = shared_image->Map();
+  if (!scoped_mapping) {
+    LOG(ERROR) << "MapSharedImage failed.";
+    return;
+  }
+
+  GetSkSurface()->readPixels(scoped_mapping->GetSkPixmapForPlane(0), 0, 0);
+}
+
 scoped_refptr<ExportedCanvasResource>
 CanvasNon2DResourceProvider::ProduceCanvasResource() {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::ProduceCanvasResource");
@@ -537,7 +560,7 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
       return nullptr;
     }
 
-    output_resource->UploadSoftwareRenderingResults(GetSkSurface());
+    UploadSoftwareRenderingResults(*output_resource);
 
     return CreateExportedResource(std::move(output_resource));
   }

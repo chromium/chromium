@@ -476,6 +476,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void EndWriteAccess();
   void RasterRecordToSharedImage(cc::PaintRecord last_recording);
   void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
+  void UploadSoftwareRenderingResults(CanvasResource& resource);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
   // Returns a map of frame indexes to be used by
   // PlaybackImageProvider::GetRasterContent, indexed by `id` (one map per

@@ -40,9 +40,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPixmap.h"
-#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
@@ -140,36 +137,6 @@ scoped_refptr<CanvasResource> CanvasResource::CreateForTesting(
 }
 
 CanvasResource::~CanvasResource() = default;
-
-void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
-  // Copy the rendering results from `sk_surface` to the SharedImage backing
-  // this resource.
-  auto scoped_mapping = GetSharedImage()->Map();
-  if (!scoped_mapping) {
-    LOG(ERROR) << "MapSharedImage failed.";
-    return;
-  }
-
-  sk_surface->readPixels(scoped_mapping->GetSkPixmapForPlane(0), 0, 0);
-  scoped_mapping.reset();
-
-  // If using GPU compositing, inform the service that the SharedImage's backing
-  // memory was written to on the CPU and update this resource's sync token to
-  // ensure proper sequencing of future accesses to the SI with respect to this
-  // call on the service side.
-  // NOTE: Giving the GPU service this update is not necessary for the case
-  // where the software compositor is being used, as all accesses to the SI's
-  // backing happen via shared memory.  It's also not currently trivial to add
-  // in this case as setting the sync token here would require it to later be
-  // verified before it is sent to the display compositor.
-  if (!GetSharedImage()->is_software()) {
-    DCHECK(!is_cross_thread());
-    auto sync_token =
-        GetSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
-    SetReleaseSyncToken(sync_token);
-    GetSharedImage()->UpdateDestructionSyncToken(sync_token);
-  }
-}
 
 void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
   DCHECK(!is_cross_thread());

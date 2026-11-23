@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
@@ -149,6 +150,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -916,10 +918,44 @@ void BaseRenderingContext2D::EndWriteAccess() {
     if (!resource_ || !surface_) {
       return;
     }
-    resource_->UploadSoftwareRenderingResults(surface_.get());
+    UploadSoftwareRenderingResults(*resource_);
   }
 
   current_resource_has_write_access_ = false;
+}
+
+void BaseRenderingContext2D::UploadSoftwareRenderingResults(
+    CanvasResource& resource) {
+  DCHECK(surface_);
+  const scoped_refptr<gpu::ClientSharedImage>& shared_image =
+      resource.GetSharedImage();
+
+  // Copy the rendering results from `surface_` to the SharedImage backing this
+  // resource.
+  auto scoped_mapping = shared_image->Map();
+  if (!scoped_mapping) {
+    LOG(ERROR) << "MapSharedImage failed.";
+    return;
+  }
+
+  surface_->readPixels(scoped_mapping->GetSkPixmapForPlane(0), 0, 0);
+  scoped_mapping.reset();
+
+  // If using GPU compositing, inform the service that the SharedImage's backing
+  // memory was written to on the CPU and update this resource's sync token to
+  // ensure proper sequencing of future accesses to the SI with respect to this
+  // call on the service side.
+  // NOTE: Giving the GPU service this update is not necessary for the case
+  // where the software compositor is being used, as all accesses to the SI's
+  // backing happen via shared memory. It's also not currently trivial to add
+  // in this case as setting the sync token here would require it to later be
+  // verified before it is sent to the display compositor.
+  if (!shared_image->is_software()) {
+    auto sync_token =
+        shared_image->BackingWasExternallyUpdated(gpu::SyncToken());
+    resource.SetReleaseSyncToken(sync_token);
+    shared_image->UpdateDestructionSyncToken(sync_token);
+  }
 }
 
 void BaseRenderingContext2D::RasterRecordToSharedImage(
@@ -1211,7 +1247,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
       return nullptr;
     }
 
-    output_resource->UploadSoftwareRenderingResults(surface_.get());
+    UploadSoftwareRenderingResults(*output_resource);
 
     return CreateExportedResource(std::move(output_resource));
   }

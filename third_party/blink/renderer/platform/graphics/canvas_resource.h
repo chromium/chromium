@@ -32,8 +32,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
-class SkSurface;
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 
@@ -117,10 +115,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path) const override;
-
-  // Uploads the contents of |sk_surface| to the resource's backing memory.
-  // Should be called only if the resource is using software raster.
-  void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
   bool is_cross_thread() const {
     return base::PlatformThread::CurrentRef() != owning_thread_ref_;

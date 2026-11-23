@@ -188,6 +188,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void FlushRecording(cc::PaintRecord last_recording);
 
   void EnsureResourceReadyForDraw();
+  void UploadSoftwareRenderingResults(gpu::ClientImage& resource);
 
   scoped_refptr<ExportedCanvasResource> CreateExportedResource(
       scoped_refptr<CanvasResource> resource);
