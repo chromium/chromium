@@ -1,0 +1,10 @@
+Tests content is available for failed image request.
+image load outcome: onerror
+http://127.0.0.1:8000/inspector-protocol/network/resources/image-404.php
+resource.type: Image
+response.status: 404
+loading event: Network.loadingFinished
+resources count = 1
+http://127.0.0.1:8000/inspector-protocol/network/resources/image-404.php
+resource.content after requesting content: 404 - resource was not found.
+
