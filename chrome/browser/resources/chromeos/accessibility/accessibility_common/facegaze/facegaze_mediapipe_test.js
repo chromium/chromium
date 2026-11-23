@@ -25,11 +25,20 @@ FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
   }
 };
 
-AX_TEST_F('FaceGazeMediaPipeTest', 'CreateFaceLandmarker', async function() {
-  const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
-  await this.mockAccessibilityPrivate.initializeFaceGazeAssets();
-  await Messenger.send(
-      OffscreenCommandType.FACEGAZE_CREATE_FACE_LANDMARKER_FOR_TEST);
-  assertTrue(await Messenger.send(
-      OffscreenCommandType.FACEGAZE_HAS_FACE_LANDMARKER_FOR_TEST));
-});
+// TODO(crbug.com/585323606): Flaky (times out) on MSan. Investigate and
+// re-enable.
+AX_TEST_F(
+    'FaceGazeMediaPipeTest', 'MAYBE_CreateFaceLandmarker', async function() {
+      const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
+      await this.mockAccessibilityPrivate.initializeFaceGazeAssets();
+      await Messenger.send(
+          OffscreenCommandType.FACEGAZE_CREATE_FACE_LANDMARKER_FOR_TEST);
+      assertTrue(await Messenger.send(
+          OffscreenCommandType.FACEGAZE_HAS_FACE_LANDMARKER_FOR_TEST));
+    }, `
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_CreateFaceLandmarker DISABLED_CreateFaceLandmarker
+#else
+#define MAYBE_CreateFaceLandmarker CreateFaceLandmarker
+#endif
+`);
