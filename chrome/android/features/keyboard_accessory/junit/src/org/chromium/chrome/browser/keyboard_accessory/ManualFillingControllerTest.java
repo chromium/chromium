@@ -91,7 +91,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -131,8 +130,6 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.Dialog
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
@@ -226,7 +223,6 @@ public class ManualFillingControllerTest {
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
     @Mock private BrowserControlsManager mMockBrowserControlsManager;
     @Mock private SideUiStateProvider mMockSideUiStateProvider;
-    @Mock private ManualFillingComponentBridge.Natives mManualFillingComponentBridgeJniMock;
 
     private TestChromeActivity mActivity;
     private WebContents mLastMockWebContents;
@@ -427,7 +423,6 @@ public class ManualFillingControllerTest {
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(any())).thenReturn(mMockProfile);
-        ManualFillingComponentBridgeJni.setInstanceForTesting(mManualFillingComponentBridgeJniMock);
 
         when(mMockWindow.getKeyboardDelegate()).thenReturn(mMockKeyboardDelegate);
         when(mMockKeyboardDelegate.isKeyboardObscuring(any())).thenReturn(false);
@@ -455,22 +450,6 @@ public class ManualFillingControllerTest {
                 mMockBackPressManager,
                 mMockEdgeToEdgeControllerSupplier,
                 mMockSoftKeyboardDelegate);
-    }
-
-    @Test
-    public void testAtMemoryCallbackNotifiesTrackerAndNative() {
-        Tracker tracker = mock(Tracker.class);
-        when(tracker.isInitialized()).thenReturn(true);
-        TrackerFactory.setTrackerForTests(tracker);
-        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mMockKeyboardAccessory).setAtMemoryCallback(callbackCaptor.capture());
-
-        callbackCaptor.getValue().run();
-
-        verify(tracker).notifyEvent(EventConstants.KEYBOARD_ACCESSORY_AT_MEMORY_USED);
-        verify(mManualFillingComponentBridgeJniMock)
-                .onOptionSelectedForWebContents(
-                        mLastMockWebContents, AccessoryAction.SHOW_AT_MEMORY_BOTTOMSHEET);
     }
 
     @Test
@@ -2203,7 +2182,7 @@ public class ManualFillingControllerTest {
     }
 
     @Test
-    public void testRefreshTabsUpdatesComponentsInExpectedOrderOnAtMemoryEnabled() {
+    public void testRefreshTabsUpdatesComponentsInExpectedOrder() {
         addBrowserTab(mMediator, 1111, null);
 
         // Clear any calls that happened during initialization:
@@ -2215,23 +2194,8 @@ public class ManualFillingControllerTest {
 
         InOrder inOrder = inOrder(mMockAccessorySheet, mMockKeyboardAccessory);
 
-        inOrder.verify(mMockKeyboardAccessory).setAtMemoryEnabled(anyBoolean());
         inOrder.verify(mMockAccessorySheet).setTabs(any());
         inOrder.verify(mMockKeyboardAccessory).setTabs(any());
-    }
-
-    @Test
-    public void testUpdateAtMemoryEnablement_HidesBottomSheetWhenDisabled() {
-        when(mManualFillingComponentBridgeJniMock.isAtMemoryEnabled(any())).thenReturn(true);
-        Tab tab = addBrowserTab(mMediator, 1111, null);
-        reset(mManualFillingComponentBridgeJniMock);
-
-        when(mManualFillingComponentBridgeJniMock.isAtMemoryEnabled(any())).thenReturn(false);
-        mMediator.getTabModelObserverForTesting().didSelectTab(tab, FROM_NEW, INVALID_TAB_ID);
-        ShadowLooper.idleMainLooper();
-
-        verify(mManualFillingComponentBridgeJniMock)
-                .hideAtMemoryBottomSheet(eq(mLastMockWebContents));
     }
 
     @Test

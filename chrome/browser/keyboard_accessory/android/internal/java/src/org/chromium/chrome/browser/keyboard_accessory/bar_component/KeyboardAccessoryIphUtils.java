@@ -28,19 +28,16 @@ import org.chromium.ui.widget.ViewRectProvider;
  * keep any state or perform any logic.
  */
 @NullMarked
-public class KeyboardAccessoryIphUtils {
+class KeyboardAccessoryIphUtils {
     /**
      * Emits a filling event that matches the given feature. Noop if no tracker is available yet.
      *
      * @param tracker The {@link Tracker} associated with the current session.
      * @param feature The feature to emit a filling event for. Fails if no event to emit.
      */
-    public static void emitFillingEvent(Tracker tracker, String feature) {
+    static void emitFillingEvent(Tracker tracker, String feature) {
         if (!tracker.isInitialized()) return;
         switch (feature) {
-            case FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE:
-                tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_AT_MEMORY_USED);
-                return;
             case FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_FEATURE:
                 tracker.notifyEvent(
                         EventConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_USED);
@@ -219,8 +216,6 @@ public class KeyboardAccessoryIphUtils {
                 return R.string.iph_keyboard_accessory_account_name_email_suggestion;
             case FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_FEATURE:
                 return R.string.iph_keyboard_accessory_autofill_ai_valuables_iph;
-            case FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE:
-                return R.string.iph_keyboard_accessory_at_memory;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;

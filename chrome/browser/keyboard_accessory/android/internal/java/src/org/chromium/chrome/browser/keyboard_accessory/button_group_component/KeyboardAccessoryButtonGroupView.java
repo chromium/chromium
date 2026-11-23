@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 
@@ -27,9 +26,6 @@ import java.util.ArrayList;
 public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     private final ArrayList<ImageButton> mButtons = new ArrayList<>();
     private @Nullable KeyboardAccessoryButtonGroupListener mListener;
-    private @Nullable Runnable mAtMemoryCallback;
-    private @Nullable ImageButton mAtMemoryButton;
-    private boolean mAtMemoryEnabled;
     private @Nullable Integer mSelectedButtonIndex;
 
     /**
@@ -44,14 +40,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     public KeyboardAccessoryButtonGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.setGravity(Gravity.CENTER);
-    }
-
-    public void setAtMemoryCallback(Runnable callback) {
-        mAtMemoryCallback = callback;
-    }
-
-    public void setAtMemoryEnabled(boolean enabled) {
-        mAtMemoryEnabled = enabled;
     }
 
     @Override
@@ -96,19 +84,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         return button;
     }
 
-    public void addAtMemoryButton() {
-        if (!mAtMemoryEnabled) return;
-        mAtMemoryButton =
-                createButton(
-                        R.drawable.search_spark,
-                        getContext().getString(R.string.at_memory_icon_description));
-        mAtMemoryButton.setOnClickListener(
-                v -> {
-                    if (mAtMemoryCallback != null) mAtMemoryCallback.run();
-                });
-        appendButton(mAtMemoryButton);
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -124,14 +99,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     void removeAllButtons() {
         mButtons.clear();
         removeAllViews();
-        mAtMemoryButton = null;
-    }
-
-    public @Nullable ViewRectProvider getAtMemoryIphRectProvider() {
-        if (mAtMemoryButton == null) return null;
-        ViewRectProvider provider = new ViewRectProvider(mAtMemoryButton);
-        provider.setIncludePadding(true);
-        return provider;
     }
 
     void setButtonSelectionListener(KeyboardAccessoryButtonGroupListener listener) {

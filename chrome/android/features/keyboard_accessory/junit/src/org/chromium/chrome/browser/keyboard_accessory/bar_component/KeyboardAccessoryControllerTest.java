@@ -176,11 +176,9 @@ public class KeyboardAccessoryControllerTest {
     @Mock private PersonalDataManager mMockPersonalDataManager;
     @Mock private EntityDataManager mMockEntityDataManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
-    @Mock private KeyboardAccessoryCoordinator.AtMemoryDelegate mMockAtMemoryDelegate;
     @Mock private InsetObserver mInsetObserver;
     @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
     @Mock private Runnable mMockDismissRunnable;
-    @Mock private Runnable mMockAtMemoryCallback;
     @Mock private ModalDialogManager mModalDialogManager;
 
     private final KeyboardAccessoryData.Tab mTestTab =
@@ -219,7 +217,6 @@ public class KeyboardAccessoryControllerTest {
                         SuggestionType.FILL_AUTOFILL_AI))
                 .thenReturn(FillingProduct.AUTOFILL_AI);
 
-        when(mMockButtonGroup.getAtMemoryDelegate()).thenReturn(mMockAtMemoryDelegate);
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
                         ApplicationProvider.getApplicationContext(),
@@ -241,12 +238,6 @@ public class KeyboardAccessoryControllerTest {
     @After
     public void tearDown() {
         DeviceInfo.resetIsDesktopForTesting();
-    }
-
-    @Test
-    public void testSetsAtMemoryCallback() {
-        mCoordinator.setAtMemoryCallback(mMockAtMemoryCallback);
-        verify(mMockAtMemoryDelegate).setAtMemoryCallback(mMockAtMemoryCallback);
     }
 
     @Test

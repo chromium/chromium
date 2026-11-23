@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.showHelpBubble;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
@@ -56,12 +55,10 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +92,7 @@ class KeyboardAccessoryViewBinder {
                         uiConfiguration.suggestionDrawableFunction,
                         viewType);
             case BarItem.Type.TAB_LAYOUT:
-                return new SheetOpenerViewHolder(parent, keyboardAccessory);
+                return new SheetOpenerViewHolder(parent, wasClickedWhenObscuredSupplier);
             case BarItem.Type.ACTION_BUTTON:
             case BarItem.Type.DISMISS_CHIP:
                 return new BarItemTextViewHolder(parent, viewType, wasClickedWhenObscuredSupplier);
@@ -575,14 +572,9 @@ class KeyboardAccessoryViewBinder {
     static class SheetOpenerViewHolder
             extends BarItemViewHolder<SheetOpenerBarItem, KeyboardAccessoryButtonGroupView> {
         private @MonotonicNonNull SheetOpenerBarItem mSheetOpenerItem;
-        private final KeyboardAccessoryView mKeyboardAccessory;
 
-        SheetOpenerViewHolder(ViewGroup parent, KeyboardAccessoryView keyboardAccessory) {
-            super(
-                    parent,
-                    R.layout.keyboard_accessory_buttons,
-                    keyboardAccessory::wasClickedWhenObscured);
-            mKeyboardAccessory = keyboardAccessory;
+        SheetOpenerViewHolder(ViewGroup parent, Supplier<Boolean> wasClickedWhenObscuredSupplier) {
+            super(parent, R.layout.keyboard_accessory_buttons, wasClickedWhenObscuredSupplier);
         }
 
         @Override
@@ -596,34 +588,6 @@ class KeyboardAccessoryViewBinder {
                             ? COMPLETE_OPACITY_ALPHA
                             : GRAYED_OUT_OPACITY_ALPHA);
             sheetOpenerItem.notifyAboutViewCreation(itemView);
-
-            // The `ViewRectProvider` used by `getAtMemoryIphRectProvider()` requires
-            // the view to be attached to the window. `post()` ensures that the view
-            // is attached and laid out before attempting to show the IPH.
-            view.post(
-                    () -> {
-                        // The ViewHolder might be recycled before the posted runnable executes.
-                        if (mSheetOpenerItem != sheetOpenerItem) return;
-
-                        RectProvider atMemoryIphRectProvider = view.getAtMemoryIphRectProvider();
-                        if (atMemoryIphRectProvider != null) {
-                            boolean isIphShown =
-                                    showHelpBubble(
-                                            mKeyboardAccessory.getFeatureEngagementTracker(),
-                                            FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE,
-                                            atMemoryIphRectProvider,
-                                            view.getContext(),
-                                            view.getRootView(),
-                                            () ->
-                                                    mKeyboardAccessory.setAllowClicksWhileObscured(
-                                                            false));
-                            // Only set to true so we don't overwrite a true value that was set by
-                            // another IPH.
-                            // The value is reset to false when the user clicks anywhere on the
-                            // screen.
-                            if (isIphShown) mKeyboardAccessory.setAllowClicksWhileObscured(true);
-                        }
-                    });
         }
 
         @Override

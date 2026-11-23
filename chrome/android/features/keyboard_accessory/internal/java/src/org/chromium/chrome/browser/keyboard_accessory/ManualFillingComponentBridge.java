@@ -399,10 +399,6 @@ class ManualFillingComponentBridge {
                                 }));
     }
 
-    public static boolean isAtMemoryEnabled(WebContents webContents) {
-        return ManualFillingComponentBridgeJni.get().isAtMemoryEnabled(webContents);
-    }
-
     @VisibleForTesting
     public static void cachePasswordSheetData(
             WebContents webContents,
@@ -486,15 +482,6 @@ class ManualFillingComponentBridge {
         ManualFillingComponentBridgeJni.get().onOptionSelected(mNativeView, actionType);
     }
 
-    static void onOptionSelectedForWebContents(WebContents webContents, int accessoryAction) {
-        ManualFillingComponentBridgeJni.get()
-                .onOptionSelectedForWebContents(webContents, accessoryAction);
-    }
-
-    static void hideAtMemoryBottomSheet(WebContents webContents) {
-        ManualFillingComponentBridgeJni.get().hideAtMemoryBottomSheet(webContents);
-    }
-
     @NativeMethods
     interface Natives {
         void onFillingTriggered(
@@ -509,10 +496,6 @@ class ManualFillingComponentBridge {
 
         void onOptionSelected(
                 JniPtr<NativeManualFillingViewAndroid> self,
-                @JniType("autofill::AccessoryAction") @AccessoryAction int accessoryAction);
-
-        void onOptionSelectedForWebContents(
-                @JniType("content::WebContents*") @Nullable WebContents webContents,
                 @JniType("autofill::AccessoryAction") @AccessoryAction int accessoryAction);
 
         void onToggleChanged(
@@ -541,9 +524,5 @@ class ManualFillingComponentBridge {
                 @JniType("content::WebContents*") WebContents webContents, boolean available);
 
         void disableServerPredictionsForTesting();
-
-        boolean isAtMemoryEnabled(@JniType("content::WebContents*") WebContents webContents);
-
-        void hideAtMemoryBottomSheet(@JniType("content::WebContents*") WebContents webContents);
     }
 }

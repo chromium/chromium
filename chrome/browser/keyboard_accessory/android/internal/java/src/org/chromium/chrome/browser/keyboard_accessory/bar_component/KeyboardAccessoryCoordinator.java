@@ -120,9 +120,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
          */
         boolean hasTabs();
 
-        /**
-         * Returns the number of buttons (tabs and the optional AtMemory button) in layout order.
-         */
+        /** Returns the number of tab buttons in layout order. */
         int getButtonCount();
 
         /** Returns the index of the keyboard-selected button or null. */
@@ -135,23 +133,6 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
 
         /** Clicks the keyboard-selected button. Returns false if none is selected. */
         boolean clickSelectedButton();
-    }
-
-    /** Interface for callbacks related to the At Memory feature. */
-    public interface AtMemoryDelegate {
-        /**
-         * Set the At Memory enablement.
-         *
-         * @param enabled True if At Memory should be enabled, false otherwise.
-         */
-        void setAtMemoryEnabled(boolean enabled);
-
-        /**
-         * Set the At Memory callback.
-         *
-         * @param callback The callback to be invoked when the At Memory button is clicked.
-         */
-        void setAtMemoryCallback(Runnable callback);
     }
 
     /**
@@ -334,14 +315,6 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
 
     public void setTabs(KeyboardAccessoryData.Tab[] tabs) {
         mButtonGroup.getTabSwitchingDelegate().setTabs(tabs);
-    }
-
-    public void setAtMemoryCallback(Runnable callback) {
-        mButtonGroup.getAtMemoryDelegate().setAtMemoryCallback(callback);
-    }
-
-    public void setAtMemoryEnabled(boolean enabled) {
-        mButtonGroup.getAtMemoryDelegate().setAtMemoryEnabled(enabled);
     }
 
     public void setActiveTab(@AccessoryTabType int tabType) {

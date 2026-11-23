@@ -136,15 +136,6 @@ public class KeyboardAccessoryButtonGroupCoordinator {
     }
 
     /**
-     * Returns a delegate that executes on several AtMemory-related actions.
-     *
-     * @return A {@link KeyboardAccessoryCoordinator.AtMemoryDelegate}.
-     */
-    public KeyboardAccessoryCoordinator.AtMemoryDelegate getAtMemoryDelegate() {
-        return mMediator;
-    }
-
-    /**
      * Adds a {@link AccessoryTabObserver} that is notified about events emitted when a tab changes.
      *
      * @param accessoryTabObserver The component to be notified of tab changes.
