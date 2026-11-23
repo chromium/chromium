@@ -235,30 +235,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
                                           kAudioVideoCallConstraints);
 }
 
-// Flakes on Linux TSan Tests; crbug.com/40249329.
-// Flakes on Mac. crbug.com/430093040.
-#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || BUILDFLAG(IS_MAC)
-#define MAYBE_GetUserMediaTabRegainsFocus DISABLED_GetUserMediaTabRegainsFocus
-#else
-#define MAYBE_GetUserMediaTabRegainsFocus GetUserMediaTabRegainsFocus
-#endif
-IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
-                       MAYBE_GetUserMediaTabRegainsFocus) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url,
-                                     ui::PAGE_TRANSITION_LINK, true));
-
-  content::WebContents* tab =
-      browser()->GetTabStripModel()->GetWebContentsAt(0);
-  GetUserMediaReturnsFalseIfWaitIsTooLong(tab, kAudioVideoCallConstraints);
-  // |tab| gains focus.
-  browser()->GetTabStripModel()->ActivateTabAt(0);
-  EXPECT_TRUE(GetUserMediaWithSpecificConstraintsAndAcceptIfPrompted(
-      tab, kAudioVideoCallConstraints));
-}
-
 IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
                        DeviceIdSameGroupIdDiffersAcrossTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
