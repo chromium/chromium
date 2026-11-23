@@ -34,11 +34,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
@@ -62,6 +65,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.LifecycleObserver;
@@ -121,6 +125,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private TabModel mCurrentTabModel;
     @Mock private Destroyable mOrchestratorLease;
+    @Captor private ArgumentCaptor<Callback<UndoClosureSnapshot>> mUndoClosureCallbackCaptor;
 
     private Activity mActivity;
     private ViewGroup mRootView;
@@ -487,6 +492,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public void testDestroy_cleansUpTranslationLeaseAndSnackbarOverride() {
         mCoordinator.show(mOnTabSelectingListener);
         RobolectricUtil.runAllBackgroundAndUi();
+        verify(mArchivedTabModelOrchestrator)
+                .addUndoClosureObserver(mUndoClosureCallbackCaptor.capture());
         mTabSwitcherView.setTranslationX(-100f);
 
         mCoordinator.destroy();
@@ -495,5 +502,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         assertEquals(0f, mTabSwitcherView.getTranslationX(), 0.01f);
         verify(mOrchestratorLease).destroy();
         verify(mSnackbarManager).popParentViewOverride(eq(ParentOverrideSlot.ARCHIVED_TABS_DIALOG));
+        verify(mArchivedTabModelOrchestrator)
+                .removeUndoClosureObserver(mUndoClosureCallbackCaptor.getValue());
     }
 }

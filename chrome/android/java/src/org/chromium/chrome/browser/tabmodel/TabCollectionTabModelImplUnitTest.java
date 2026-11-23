@@ -878,7 +878,7 @@ public class TabCollectionTabModelImplUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCloseTabs_undoableClosureRework_archivedModelStillPends() {
+    public void testCloseTabs_undoableClosureRework_archivedModelFinalizesImmediately() {
         TabCollectionTabModelImpl archivedModel = createArchivedModel();
         when(mTabModelDelegate.getModel(false)).thenReturn(archivedModel);
         archivedModel.addObserver(mTabModelObserver);
@@ -892,15 +892,18 @@ public class TabCollectionTabModelImplUnitTest {
 
         archivedModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(true).build());
 
-        verify(mPendingTabClosureManager)
-                .addTabClosureEvent(eq(List.of(tab1)), isNull(), eq(TabClosingSource.UNKNOWN));
+        verify(mPendingTabClosureManager, never()).addTabClosureEvent(any(), any(), anyInt());
+        verify(mTabModelObserver, never()).onTabClosePending(any(), anyBoolean(), anyInt());
         verify(mTabModelObserver)
-                .onTabClosePending(eq(List.of(tab1)), eq(false), eq(TabClosingSource.UNKNOWN));
-        verify(mTabModelObserver, never())
                 .onFinishingMultipleTabClosure(
-                        any(), anyBoolean(), anyInt(), any(), anyBoolean(), anyBoolean());
-        verify(mTabModelObserver, never()).onFinishingMultipleTabClosure(any(), anyBoolean());
-        assertFalse(tab1.isDestroyed());
+                        eq(List.of(tab1)),
+                        eq(true),
+                        eq(TabClosingSource.UNKNOWN),
+                        isNull(),
+                        eq(false),
+                        eq(true));
+        verify(mTabModelObserver).tabClosureCommitted(tab1);
+        assertTrue(tab1.isDestroyed());
         archivedModel.destroy();
     }
 
@@ -939,7 +942,7 @@ public class TabCollectionTabModelImplUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCommitAllTabClosures_undoableClosureRework_archivedModelDoesNotNotify() {
+    public void testCommitAllTabClosures_undoableClosureRework_archivedModelNotifiesWhenEmpty() {
         TabCollectionTabModelImpl archivedModel = createArchivedModel();
         archivedModel.addObserver(mTabModelObserver);
         archivedModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
@@ -947,7 +950,7 @@ public class TabCollectionTabModelImplUnitTest {
         archivedModel.commitAllTabClosures();
 
         verify(mPendingTabClosureManager, never()).commitAllTabClosures();
-        verify(mTabModelObserver, never()).allTabsClosureCommitted(anyBoolean());
+        verify(mTabModelObserver).allTabsClosureCommitted(/* isIncognito= */ false);
         archivedModel.destroy();
     }
 

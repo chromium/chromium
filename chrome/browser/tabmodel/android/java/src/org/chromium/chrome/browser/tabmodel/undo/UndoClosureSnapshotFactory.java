@@ -25,6 +25,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -159,6 +160,43 @@ public final class UndoClosureSnapshotFactory {
                             /* wasSelected= */ false));
         }
 
+        return createArchived(
+                closedTabs,
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                syncIds,
+                tabGroupSyncService);
+    }
+
+    /**
+     * Captures a {@link UndoClosureSnapshot.ClosureKind#ARCHIVED} snapshot combining an optional
+     * archived-tab closure snapshot with closed archived saved tab groups.
+     *
+     * @param tabSnapshot The pre-captured tab closure snapshot, or {@code null} if no archived tabs
+     *     were saved for undo.
+     * @param syncIds The sync identifiers of the archived saved tab groups being closed.
+     * @param tabGroupSyncService The service used to look up saved tab group details.
+     * @return The immutable snapshot representing the closure state.
+     */
+    public static UndoClosureSnapshot captureArchivedSavedGroups(
+            @Nullable UndoClosureSnapshot tabSnapshot,
+            List<String> syncIds,
+            @Nullable TabGroupSyncService tabGroupSyncService) {
+        List<ClosedTab> closedTabs =
+                tabSnapshot != null ? tabSnapshot.tabs : Collections.emptyList();
+        @TabRestoreEntryId
+        int entryId =
+                tabSnapshot != null
+                        ? tabSnapshot.entryId
+                        : TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID;
+
+        return createArchived(closedTabs, entryId, syncIds, tabGroupSyncService);
+    }
+
+    private static UndoClosureSnapshot createArchived(
+            List<ClosedTab> closedTabs,
+            @TabRestoreEntryId int entryId,
+            List<String> syncIds,
+            @Nullable TabGroupSyncService tabGroupSyncService) {
         String savedGroupTitle = null;
         int savedGroupTabCount = 0;
         if (syncIds.size() == 1 && tabGroupSyncService != null) {
@@ -169,11 +207,6 @@ public final class UndoClosureSnapshotFactory {
             }
         }
 
-        return forArchived(
-                closedTabs,
-                syncIds,
-                savedGroupTitle,
-                savedGroupTabCount,
-                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
+        return forArchived(closedTabs, syncIds, savedGroupTitle, savedGroupTabCount, entryId);
     }
 }

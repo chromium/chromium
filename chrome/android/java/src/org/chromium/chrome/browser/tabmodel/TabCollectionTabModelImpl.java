@@ -574,12 +574,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public void commitAllTabClosures() {
         assertOnUiThread();
-        // Under the rework, undoable closures on the regular model are finalized immediately, so
-        // there is usually nothing pending here. External callers still rely on this signal to
-        // dismiss any visible undo affordance, so notify even when nothing is pending.
+        // Under the rework, undoable closures are finalized immediately, so nothing is pending
+        // here. Regular-model callers still rely on allTabsClosureCommitted to dismiss any visible
+        // undo affordance, and archived models notify as well for uniform TabModelObserver
+        // semantics.
         commitPendingClosures(
-                /* notifyIfEmpty= */ ChromeFeatureList.sUndoableTabClosureRework.isEnabled()
-                        && !isArchivedTabModel());
+                /* notifyIfEmpty= */ ChromeFeatureList.sUndoableTabClosureRework.isEnabled());
     }
 
     @Override
@@ -1890,14 +1890,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     private boolean closeTabsInternal(TabClosureParams params) {
         boolean allowUndo = !params.uponExit && params.allowUndo && supportsPendingClosures();
-        // Under the undoable closure rework, undoable closures on the regular model are finalized
-        // immediately rather than kept pending.
-        // TODO(crbug.com/557182836): Finalize undoable closures immediately on the archived tab
-        // model once SavedTabGroupUndoBarController stops relying on pending closures.
+        // Under the undoable closure rework, undoable closures are finalized immediately rather
+        // than kept pending.
         boolean finalizeUndoableClosure =
-                allowUndo
-                        && ChromeFeatureList.sUndoableTabClosureRework.isEnabled()
-                        && !isArchivedTabModel();
+                allowUndo && ChromeFeatureList.sUndoableTabClosureRework.isEnabled();
         boolean isPendingClosure = allowUndo && !finalizeUndoableClosure;
 
         if (!allowUndo) {

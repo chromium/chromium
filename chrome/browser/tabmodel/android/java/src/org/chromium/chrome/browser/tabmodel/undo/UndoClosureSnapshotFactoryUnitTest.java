@@ -379,4 +379,53 @@ public class UndoClosureSnapshotFactoryUnitTest {
         assertEquals(TabList.INVALID_TAB_INDEX, closed.indexInGroup);
         assertFalse(closed.wasSelected);
     }
+
+    @Test
+    public void testCaptureArchivedSavedGroups() {
+        ClosedTab closedTab =
+                new ClosedTab(
+                        /* id= */ 1,
+                        "Tab 1",
+                        /* groupId= */ null,
+                        /* indexInGroup= */ TabList.INVALID_TAB_INDEX,
+                        /* modelIndex= */ 3,
+                        /* pinned= */ true,
+                        /* wasSelected= */ false);
+        UndoClosureSnapshot tabSnapshot =
+                UndoClosureSnapshot.forTabModel(
+                        List.of(closedTab),
+                        Collections.emptyMap(),
+                        /* isTabGroupSyncEnabled= */ false,
+                        /* isAllTabs= */ false,
+                        /* entryId= */ 42,
+                        TabClosingSource.UNKNOWN,
+                        /* undoRunnable= */ null);
+
+        SavedTabGroup group = new SavedTabGroup();
+        group.title = "Archived Group";
+        group.savedTabs.add(new SavedTabGroupTab());
+        TabGroupSyncService service = mock(TabGroupSyncService.class);
+        when(service.getGroup("sync-id-1")).thenReturn(group);
+
+        UndoClosureSnapshot withTabs =
+                UndoClosureSnapshotFactory.captureArchivedSavedGroups(
+                        tabSnapshot, List.of("sync-id-1"), service);
+        assertEquals(ClosureKind.ARCHIVED, withTabs.kind);
+        assertEquals(List.of(closedTab), withTabs.tabs);
+        assertEquals(3, withTabs.tabs.get(0).modelIndex);
+        assertEquals(42, withTabs.entryId);
+        assertEquals(List.of("sync-id-1"), withTabs.savedTabGroupSyncIds);
+        assertEquals("Archived Group", withTabs.savedGroupTitle);
+        assertEquals(1, withTabs.savedGroupTabCount);
+
+        UndoClosureSnapshot withoutTabs =
+                UndoClosureSnapshotFactory.captureArchivedSavedGroups(
+                        /* tabSnapshot= */ null, List.of("sync-id-1"), service);
+        assertEquals(ClosureKind.ARCHIVED, withoutTabs.kind);
+        assertTrue(withoutTabs.tabs.isEmpty());
+        assertEquals(TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID, withoutTabs.entryId);
+        assertEquals(List.of("sync-id-1"), withoutTabs.savedTabGroupSyncIds);
+        assertEquals("Archived Group", withoutTabs.savedGroupTitle);
+        assertEquals(1, withoutTabs.savedGroupTabCount);
+    }
 }

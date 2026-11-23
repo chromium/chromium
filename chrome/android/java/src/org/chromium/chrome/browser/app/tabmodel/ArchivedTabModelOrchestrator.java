@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -178,6 +179,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObserverList<Observer> mArchivedModelObservers = new ObserverList<>();
     private final ObserverList<Runnable> mDestroyCallbacks = new ObserverList<>();
+    private final ObserverList<Callback<UndoClosureSnapshot>> mUndoClosureObservers =
+            new ObserverList<>();
 
     // Currently used to perform shadow operations for an alternative storage. Not always enabled.
     private final AccumulatingTabCreator mRegularShadowTabCreator = new AccumulatingTabCreator();
@@ -437,6 +440,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
             mHistoricalTabModelObserver.destroy();
             mHistoricalTabModelObserver = null;
         }
+        mUndoClosureObservers.clear();
 
         if (mTabArchiver != null) {
             mTabArchiver.destroy();
@@ -794,6 +798,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         }
 
         mHistoricalTabModelObserver = new HistoricalTabModelObserver(model);
+        mHistoricalTabModelObserver.setUndoClosureCallback(this::notifyUndoClosureObservers);
         for (TabbedModeTabModelOrchestrator activityOrchestrator : sSavedActivityOrchestrators) {
             Profile activityProfile = activityOrchestrator.getOriginalProfile();
             Supplier<@Nullable TabModel> supplier =
@@ -948,6 +953,30 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
             Supplier<@Nullable TabModel> regularTabModelSupplier) {
         if (mHistoricalTabModelObserver != null) {
             mHistoricalTabModelObserver.removeSecondaryTabModelSupplier(regularTabModelSupplier);
+        }
+    }
+
+    /**
+     * Adds an observer notified when an undoable tab closure is saved to TabRestoreService.
+     *
+     * @param observer The observer to add.
+     */
+    public void addUndoClosureObserver(Callback<UndoClosureSnapshot> observer) {
+        mUndoClosureObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer registered via {@link #addUndoClosureObserver}.
+     *
+     * @param observer The observer to remove.
+     */
+    public void removeUndoClosureObserver(Callback<UndoClosureSnapshot> observer) {
+        mUndoClosureObservers.removeObserver(observer);
+    }
+
+    private void notifyUndoClosureObservers(UndoClosureSnapshot snapshot) {
+        for (Callback<UndoClosureSnapshot> observer : mUndoClosureObservers) {
+            observer.onResult(snapshot);
         }
     }
 

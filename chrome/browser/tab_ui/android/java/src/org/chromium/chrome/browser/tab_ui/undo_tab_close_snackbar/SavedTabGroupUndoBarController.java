@@ -7,14 +7,19 @@ package org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.util.ArraySet;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshotFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -23,6 +28,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -38,6 +44,7 @@ public class SavedTabGroupUndoBarController extends UndoBarController
     private final Supplier<Destroyable> mLeaseSupplier;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final List<Destroyable> mLeases = new ArrayList<>();
+    private @Nullable UndoClosureSnapshot mPendingSnapshot;
 
     /**
      * Creates an instance of a {@link SavedTabGroupUndoBarController}.
@@ -62,6 +69,17 @@ public class SavedTabGroupUndoBarController extends UndoBarController
     }
 
     /**
+     * Records the pre-close {@link UndoClosureSnapshot} captured when archived tabs are finalized
+     * and saved to {@code TabRestoreService}.
+     *
+     * @param snapshot The pre-captured {@link UndoClosureSnapshot} for the archived tab closure.
+     */
+    public void onUndoableClosure(UndoClosureSnapshot snapshot) {
+        if (!ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) return;
+        mPendingSnapshot = snapshot;
+    }
+
+    /**
      * Explicitly queues an undo snackbar to show based on a triggered action.
      *
      * @param tabs The list of closed tabs to be shown by the snackbar.
@@ -69,32 +87,75 @@ public class SavedTabGroupUndoBarController extends UndoBarController
      *     snackbar.
      */
     public void queueUndoBar(List<Tab> tabs, List<String> savedTabGroupSyncIds) {
+        UndoClosureSnapshot pendingSnapshot = consumePendingSnapshot(tabs);
         if (tabs.isEmpty() && savedTabGroupSyncIds.isEmpty()) return;
+
+        boolean reworkEnabled = ChromeFeatureList.sUndoableTabClosureRework.isEnabled();
         if (!mSnackbarManageable.getSnackbarManager().canShowSnackbar()) {
-            for (Tab tab : tabs) {
-                TabModel model = mTabModelSelector.getModelForTabId(tab.getId());
-                if (model != null) model.commitTabClosure(tab.getId());
+            if (!reworkEnabled) {
+                for (Tab tab : tabs) {
+                    TabModel model = mTabModelSelector.getModelForTabId(tab.getId());
+                    if (model != null) model.commitTabClosure(tab.getId());
+                }
             }
             return;
         }
 
-        UndoClosureSnapshot snapshot =
-                UndoClosureSnapshotFactory.captureArchived(
-                        tabs, savedTabGroupSyncIds, mTabGroupSyncService);
+        UndoClosureSnapshot snapshot;
+        if (!reworkEnabled) {
+            snapshot =
+                    UndoClosureSnapshotFactory.captureArchived(
+                            tabs, savedTabGroupSyncIds, mTabGroupSyncService);
+        } else if (savedTabGroupSyncIds.isEmpty()) {
+            snapshot = pendingSnapshot;
+        } else {
+            snapshot =
+                    UndoClosureSnapshotFactory.captureArchivedSavedGroups(
+                            pendingSnapshot, savedTabGroupSyncIds, mTabGroupSyncService);
+        }
+        if (snapshot == null) return;
 
         mLeases.add(mLeaseSupplier.get());
-        queueUndoBar(snapshot);
+        super.queueUndoBar(snapshot);
     }
 
     /** Releases any remaining leases held for pending undo snackbars. */
     @Override
     public void destroy() {
+        mPendingSnapshot = null;
         clearEventQueue();
         mSnackbarManageable.getSnackbarManager().dismissSnackbars(this);
         List<Destroyable> leases = new ArrayList<>(mLeases);
         mLeases.clear();
         for (Destroyable lease : leases) {
             lease.destroy();
+        }
+    }
+
+    @Override
+    protected void handleUndoAction(
+            UndoClosureSnapshot snapshot, Set<@TabId Integer> remainingTabIds) {
+        if (!ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) {
+            super.handleUndoAction(snapshot, remainingTabIds);
+            return;
+        }
+        if (!snapshot.tabs.isEmpty()
+                && snapshot.entryId != TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID) {
+            UndoClosureRestorer.restoreClosure(
+                    mTabModelSelector.getModel(/* incognito= */ false),
+                    snapshot,
+                    /* reselect= */ false,
+                    mContext,
+                    mSnackbarManageable.getSnackbarManager(),
+                    /* tabGroupUiActionHandler= */ null);
+        }
+    }
+
+    @Override
+    protected void handleDismissNoAction(
+            UndoClosureSnapshot snapshot, Set<@TabId Integer> remainingTabIds) {
+        if (!ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) {
+            super.handleDismissNoAction(snapshot, remainingTabIds);
         }
     }
 
@@ -135,6 +196,33 @@ public class SavedTabGroupUndoBarController extends UndoBarController
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.updateArchivalStatus(syncId, true);
         }
+    }
+
+    private @Nullable UndoClosureSnapshot consumePendingSnapshot(List<Tab> tabs) {
+        UndoClosureSnapshot pending = mPendingSnapshot;
+        mPendingSnapshot = null;
+        if (!tabs.isEmpty()
+                && pending != null
+                && pending.entryId != TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID
+                && matchesClosedTabs(pending, tabs)) {
+            return pending;
+        }
+        return null;
+    }
+
+    private static boolean matchesClosedTabs(UndoClosureSnapshot snapshot, List<Tab> tabs) {
+        if (snapshot.tabs.size() != tabs.size()) return false;
+        if (tabs.size() == 1) {
+            return snapshot.tabs.get(0).id == tabs.get(0).getId();
+        }
+        Set<@TabId Integer> snapshotTabIds = new ArraySet<>(snapshot.tabs.size());
+        for (ClosedTab closedTab : snapshot.tabs) {
+            snapshotTabIds.add(closedTab.id);
+        }
+        for (Tab tab : tabs) {
+            if (!snapshotTabIds.remove(tab.getId())) return false;
+        }
+        return snapshotTabIds.isEmpty();
     }
 
     // UndoBarExplicitTrigger implementation.

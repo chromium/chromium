@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsIphMessageCardViewModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties;
 import org.chromium.chrome.browser.tasks.tab_management.ResizableMessageCardViewBinder;
@@ -491,6 +492,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final TabArchiveSettings mTabArchiveSettings;
     private final ModalDialogManager mModalDialogManager;
     private final SavedTabGroupUndoBarController mUndoBarController;
+    private final Callback<UndoClosureSnapshot> mUndoClosureObserver;
     private final ActionConfirmationDialog mActionConfirmationDialog;
     private final ViewGroup mDialogView;
     private final ViewGroup mTabSwitcherView;
@@ -579,6 +581,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                         LeaseReason.ARCHIVED_TABS_DIALOG),
                         /* snackbarManageable= */ this,
                         tabGroupSyncService);
+        mUndoClosureObserver = mUndoBarController::onUndoableClosure;
+        mArchivedTabModelOrchestrator.addUndoClosureObserver(mUndoClosureObserver);
         mTabSwitcherView = tabSwitcherView;
 
         // Inflate the dialog view and hook it up
@@ -626,6 +630,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             mTabListEditorCoordinator.getController().hide();
             tearDownTabListEditorCoordinator();
         }
+        mArchivedTabModelOrchestrator.removeUndoClosureObserver(mUndoClosureObserver);
         mUndoBarController.destroy();
         hideInternal();
 

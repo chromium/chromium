@@ -156,6 +156,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_ui/ThumbnailFetcherUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/close_all_tabs/CloseAllTabsDialogUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/close_all_tabs/CloseAllTabsHelperUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/SavedTabGroupUndoBarControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/TabUndoBarControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoBarContentFactoryTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoClosureRestorerUnitTest.java",
