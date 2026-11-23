@@ -13,7 +13,7 @@
 #include <limits>
 
 #include "base/check.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"  // nocheck
+#include "third_party/boringssl/src/include/openssl/rand.h"
 
 // Prototype for ProcessPrng.
 // See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng
