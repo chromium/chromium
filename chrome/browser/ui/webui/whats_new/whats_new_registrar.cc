@@ -48,6 +48,9 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(WhatsNewModule(::features::kGlicWhatsNewLuminous,
                                           "iwells@chromium.org",
                                           BrowserCommand::kOpenGlic));
+  registry->RegisterModule(WhatsNewModule(::features::kGlicWhatsNewQuizzes,
+                                          "jeffreycohen@google.com",
+                                          BrowserCommand::kOpenGlic));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
