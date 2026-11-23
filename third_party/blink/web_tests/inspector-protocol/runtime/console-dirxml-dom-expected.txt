@@ -1,0 +1,158 @@
+Tests console.dirxml and console.log with DOM nodes, document fragments, and node arrays.
+{
+    arg : {
+        className : HTMLDocument
+        description : #document
+        hasObjectId : true
+        subtype : node
+        type : object
+    }
+    caller : {
+        functionName : logToConsole
+        lineNumber : 5
+    }
+    type : dirxml
+}
+{
+    resolvedNode : {
+        childNodeCount : 1
+        children : [
+            [0] : {
+                localName : html
+                nodeName : HTML
+                nodeType : 1
+            }
+        ]
+        hasInspectorProtocolPageUrl : true
+        hasNodeId : true
+        localName :
+        nodeName : #document
+        nodeType : 9
+    }
+}
+{
+    arg : {
+        className : DocumentFragment
+        description : #document-fragment
+        hasObjectId : true
+        subtype : node
+        type : object
+    }
+    caller : {
+        functionName : logToConsole
+        lineNumber : 6
+    }
+    type : dirxml
+}
+{
+    resolvedNode : {
+        childNodeCount : 1
+        children : [
+            [0] : {
+                localName : p
+                nodeName : P
+                nodeType : 1
+            }
+        ]
+        hasInspectorProtocolPageUrl : false
+        hasNodeId : true
+        localName :
+        nodeName : #document-fragment
+        nodeType : 11
+    }
+}
+{
+    arg : {
+        className : HTMLParagraphElement
+        description : p
+        hasObjectId : true
+        subtype : node
+        type : object
+    }
+    caller : {
+        functionName : logToConsole
+        lineNumber : 7
+    }
+    type : dirxml
+}
+{
+    resolvedNode : {
+        childNodeCount : 0
+        children : [
+        ]
+        hasInspectorProtocolPageUrl : false
+        hasNodeId : true
+        localName : p
+        nodeName : P
+        nodeType : 1
+    }
+}
+{
+    arg : {
+        className : Array
+        description : Array(1)
+        hasObjectId : true
+        preview : {
+            description : Array(1)
+            overflow : false
+            properties : [
+                [0] : {
+                    name : 0
+                    subtype : node
+                    type : object
+                    value : p
+                }
+            ]
+            subtype : array
+            type : object
+        }
+        subtype : array
+        type : object
+    }
+    caller : {
+        functionName : logToConsole
+        lineNumber : 8
+    }
+    type : log
+}
+{
+    arg : {
+        className : Array
+        description : Array(3)
+        hasObjectId : true
+        preview : {
+            description : Array(3)
+            overflow : false
+            properties : [
+                [0] : {
+                    name : 0
+                    subtype : node
+                    type : object
+                    value : #document
+                }
+                [1] : {
+                    name : 1
+                    subtype : node
+                    type : object
+                    value : #document-fragment
+                }
+                [2] : {
+                    name : 2
+                    subtype : node
+                    type : object
+                    value : span
+                }
+            ]
+            subtype : array
+            type : object
+        }
+        subtype : array
+        type : object
+    }
+    caller : {
+        functionName : logToConsole
+        lineNumber : 9
+    }
+    type : dirxml
+}
+

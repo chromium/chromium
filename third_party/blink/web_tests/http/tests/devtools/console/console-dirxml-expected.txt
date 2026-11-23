@@ -1,8 +1,0 @@
-Tests that console logging dumps proper messages.
-
-console-dirxml.js:19 #document (http://127.0.0.1:8000/devtools/resources/inspected-page.html)
-console-dirxml.js:20 #document-fragment
-console-dirxml.js:21 <p></p>
-console-dirxml.js:22 [p]
-console-dirxml.js:23 (3) [document, document-fragment, span]
-
