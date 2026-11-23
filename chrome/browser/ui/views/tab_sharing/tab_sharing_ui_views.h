@@ -99,7 +99,6 @@ class TabSharingUIViews : public TabSharingUI,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChanged(tabs::TabHandle tab, TabChangeType change_type) override;
 
   // InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
@@ -154,6 +153,9 @@ class TabSharingUIViews : public TabSharingUI,
   static void ApplyDlpForAllUsersForTesting();
 #endif
 
+  void StartObservingTab(tabs::TabInterface* tab);
+  void StopObservingTab(tabs::TabInterface* tab);
+  void MaybeCreateInfobarForTab(tabs::TabInterface* tab);
   void CreateInfobarsForAllTabs();
   void CreateInfobarForWebContents(content::WebContents* contents);
   infobars::InfoBar* CreateMigratedInfobarForWebContents(
@@ -163,6 +165,7 @@ class TabSharingUIViews : public TabSharingUI,
       TabSharingInfoBarDelegate::ButtonState
           share_this_tab_instead_button_state);
   void RefreshAllTabSharingInfoBars(bool recreate_shared_tab);
+  void RemoveInfobar(infobars::InfoBar* infobar);
   void RemoveInfobarsForAllTabs();
 
   void CreateTabCaptureIndicator();
@@ -209,6 +212,8 @@ class TabSharingUIViews : public TabSharingUI,
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   InfoBars infobars_;
+  std::map<tabs::TabInterface*, base::CallbackListSubscription>
+      tab_ui_change_subscriptions_;
   std::map<content::WebContents*, std::unique_ptr<SameOriginObserver>>
       same_origin_observers_;
   const content::GlobalRenderFrameHostId capturer_;

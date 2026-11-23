@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -149,22 +148,6 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
             observers_[contents]->SetCallback(barrier_closure_);
           }
         }
-      }
-    }
-  }
-  void OnTabChanged(tabs::TabHandle tab, TabChangeType change_type) override {
-    tabs::TabInterface* tab_interface = tab.Get();
-    if (!tab_interface) {
-      return;
-    }
-    content::WebContents* contents = tab_interface->GetContents();
-    if (observers_.find(contents) == observers_.end()) {
-      observers_[contents] =
-          std::make_unique<InfoBarChangeObserver>(base::BindOnce(
-              &InfobarUIChangeObserver::EraseObserver, base::Unretained(this)));
-      GetInfoBarManager(contents)->AddObserver(observers_[contents].get());
-      if (!barrier_closure_.is_null()) {
-        observers_[contents]->SetCallback(barrier_closure_);
       }
     }
   }

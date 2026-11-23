@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -17,6 +20,9 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -38,14 +44,18 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/captured_surface_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "media/capture/capture_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -67,7 +77,6 @@
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #endif
 
@@ -336,9 +345,11 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
     return browser;
   }
 
-  void CreateUiAndStartSharing(BrowserWindowInterface* browser,
-                               int capturing_tab,
-                               int captured_tab) {
+  void CreateUiAndStartSharing(
+      BrowserWindowInterface* browser,
+      int capturing_tab,
+      int captured_tab,
+      base::OnceClosure stop_callback = base::OnceClosure()) {
     // Explicitly activate the shared tab in testing.
     ActivateTab(browser, captured_tab);
 
@@ -351,7 +362,7 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
                              /*captured_surface_control_active=*/false);
 
     tab_sharing_ui_->OnStarted(
-        base::OnceClosure(),
+        std::move(stop_callback),
         base::BindRepeating(&TabSharingUIViewsBrowserTestBase::OnSourceChange,
                             base::Unretained(this)),
         std::vector<content::DesktopMediaID>{});
@@ -705,6 +716,88 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
 
   // Stop sharing should not result in a crash.
   tab_sharing_ui_views()->StopSharing("reason");
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, ReloadKilledTab) {
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
+  CreateUiAndStartSharing(browser(), /*capturing_tab=*/1, /*captured_tab=*/2);
+
+  // Kill a tab different than the shared one.
+  content::WebContents* web_contents = GetWebContents(browser(), 0);
+  content::RenderProcessHost* process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(content::RESULT_CODE_KILLED);
+  crash_observer.Wait();
+
+  // Verify that the sad tab does not have an infobar.
+  ASSERT_TRUE(web_contents->IsCrashed());
+  ASSERT_EQ(0u, GetInfoBarManager(browser(), 0)->infobars().size());
+
+  // Reload the crashed tab and verify the infobar is recreated via
+  // TabUIHelper's change callback.
+  content::TestNavigationObserver reload_observer(web_contents);
+  web_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                       /*check_for_repost=*/false);
+  reload_observer.Wait();
+
+  VerifyUi(UiExpectations{
+      .browser = browser(), .capturing_tab = 1, .captured_tab = 2});
+
+  // Stop sharing should remove all infobars including the recreated one.
+  tab_sharing_ui_views()->StopSharing("reason");
+  VerifyUi(UiExpectations{.browser = browser(),
+                          .capturing_tab = kNullTabIndex,
+                          .captured_tab = kNullTabIndex,
+                          .infobar_count = 0});
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
+                       ReloadKilledTabAddedAfterSharing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
+  CreateUiAndStartSharing(browser(), /*capturing_tab=*/1, /*captured_tab=*/2);
+
+  // Add a new tab in a separate renderer process after sharing has started.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  AddTab(browser(), url);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
+  constexpr int kNewTab = 3;
+  ASSERT_EQ(1u, GetInfoBarManager(browser(), kNewTab)->infobars().size());
+
+  // Kill the newly inserted tab.
+  content::WebContents* web_contents = GetWebContents(browser(), kNewTab);
+  content::RenderProcessHost* process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_NE(process,
+            GetWebContents(browser(), 2)->GetPrimaryMainFrame()->GetProcess());
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(content::RESULT_CODE_KILLED);
+  crash_observer.Wait();
+
+  // Verify that the sad tab does not have an infobar.
+  ASSERT_TRUE(web_contents->IsCrashed());
+  ASSERT_EQ(0u, GetInfoBarManager(browser(), kNewTab)->infobars().size());
+
+  // Reload the crashed tab and verify the infobar is recreated.
+  content::TestNavigationObserver reload_observer(web_contents);
+  web_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                       /*check_for_repost=*/false);
+  reload_observer.Wait();
+
+  VerifyUi(UiExpectations{
+      .browser = browser(), .capturing_tab = 1, .captured_tab = 2});
+
+  tab_sharing_ui_views()->StopSharing("reason");
+  VerifyUi(UiExpectations{.browser = browser(),
+                          .capturing_tab = kNullTabIndex,
+                          .captured_tab = kNullTabIndex,
+                          .infobar_count = 0});
 }
 
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillSharedTab) {
@@ -1467,3 +1560,154 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsDataProtectionBrowserTest,
   EXPECT_TRUE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
 }
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+
+class TabSharingUIViewsTabDiscardBrowserTest
+    : public TabSharingUIViewsBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  TabSharingUIViewsTabDiscardBrowserTest()
+      : TabSharingUIViewsBrowserTestBase(GetParam()) {
+    // Ensure discarding a tab replaces its WebContents and emits
+    // TabStripModelChange::kReplaced.
+    scoped_feature_list_.InitAndDisableFeature(features::kWebContentsDiscard);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabSharingUIViewsTabDiscardBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsTabDiscardBrowserTest,
+                       DiscardTabRecreatesInfobar) {
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
+  CreateUiAndStartSharing(browser(), /*capturing_tab=*/1, /*captured_tab=*/2);
+
+  // Discard a background tab different from the capturing/captured tabs.
+  content::WebContents* const old_contents = GetWebContents(browser(), 0);
+  ASSERT_NE(browser()->GetTabStripModel()->GetActiveWebContents(),
+            old_contents);
+  auto* const lifecycle_unit =
+      resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+          old_contents);
+  ASSERT_TRUE(lifecycle_unit);
+  ASSERT_TRUE(
+      lifecycle_unit->DiscardTab(::mojom::LifecycleUnitDiscardReason::URGENT));
+  EXPECT_EQ(::mojom::LifecycleUnitState::DISCARDED,
+            lifecycle_unit->GetTabState());
+
+  // Confirm that the WebContents was replaced (TabStripModelChange::kReplaced).
+  content::WebContents* const new_contents = GetWebContents(browser(), 0);
+  ASSERT_NE(new_contents, old_contents);
+
+  // Verify the infobar was recreated on the replacement WebContents immediately
+  // without activating/reloading the tab.
+  infobars::ContentInfoBarManager* infobar_manager =
+      GetInfoBarManager(browser(), 0);
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_EQ(infobars::InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE,
+            infobar_manager->infobars()[0]->delegate()->GetIdentifier());
+  EXPECT_TRUE(HasShareThisTabInsteadButton(browser(), 0));
+
+  // Verify the full UI across all tabs (including border, indicator, and
+  // buttons).
+  VerifyUi(UiExpectations{
+      .browser = browser(), .capturing_tab = 1, .captured_tab = 2});
+
+  // Stopping sharing should remove all infobars cleanly.
+  tab_sharing_ui_views()->StopSharing("reason");
+  VerifyUi(UiExpectations{.browser = browser(),
+                          .capturing_tab = kNullTabIndex,
+                          .captured_tab = kNullTabIndex,
+                          .infobar_count = 0});
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsTabDiscardBrowserTest,
+                       ReplaceNonSharedTabRemovesOldInfobar) {
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
+  CreateUiAndStartSharing(browser(), /*capturing_tab=*/1, /*captured_tab=*/2);
+
+  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
+  content::WebContents* const old_contents_ptr = GetWebContents(browser(), 0);
+  ASSERT_EQ(1u, GetInfoBarManager(browser(), 0)->infobars().size());
+
+  // Replace the WebContents directly while keeping the discarded WebContents
+  // alive, verifying kReplaced does not depend on immediate caller destruction.
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  std::unique_ptr<content::WebContents> old_contents =
+      tab_strip_model->DiscardWebContents(old_contents_ptr,
+                                          std::move(new_contents));
+
+  // Before `old_contents` is destroyed, its old infobar should already be
+  // removed and the replacement WebContents should have a new infobar.
+  EXPECT_EQ(0u,
+            infobars::ContentInfoBarManager::FromWebContents(old_contents.get())
+                ->infobars()
+                .size());
+  ASSERT_EQ(1u, GetInfoBarManager(browser(), 0)->infobars().size());
+  EXPECT_EQ(infobars::InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE,
+            GetInfoBarManager(browser(), 0)
+                ->infobars()[0]
+                ->delegate()
+                ->GetIdentifier());
+
+  // Destroying `old_contents` should leave sharing unaffected.
+  old_contents.reset();
+  VerifyUi(UiExpectations{
+      .browser = browser(), .capturing_tab = 1, .captured_tab = 2});
+
+  tab_sharing_ui_views()->StopSharing("reason");
+  VerifyUi(UiExpectations{.browser = browser(),
+                          .capturing_tab = kNullTabIndex,
+                          .captured_tab = kNullTabIndex,
+                          .infobar_count = 0});
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsTabDiscardBrowserTest,
+                       ReplaceSharedTabStopsSharing) {
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
+  int stop_count = 0;
+  CreateUiAndStartSharing(
+      browser(), /*capturing_tab=*/0, /*captured_tab=*/1,
+      base::BindOnce([](int* count) { ++(*count); }, &stop_count));
+
+  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
+  content::WebContents* const shared_contents_ptr =
+      GetWebContents(browser(), 1);
+
+  // Replace the shared tab's WebContents directly while keeping the discarded
+  // WebContents alive.
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  std::unique_ptr<content::WebContents> old_contents =
+      tab_strip_model->DiscardWebContents(shared_contents_ptr,
+                                          std::move(new_contents));
+
+  // Sharing should stop immediately in kReplaced without creating a throwaway
+  // infobar on the replacement WebContents, even before `old_contents` dies.
+  EXPECT_EQ(1, stop_count);
+  EXPECT_EQ(0u,
+            infobars::ContentInfoBarManager::FromWebContents(old_contents.get())
+                ->infobars()
+                .size());
+  VerifyUi(UiExpectations{.browser = browser(),
+                          .capturing_tab = kNullTabIndex,
+                          .captured_tab = kNullTabIndex,
+                          .infobar_count = 0});
+
+  // Destroying `old_contents` afterward should be a safe no-op.
+  old_contents.reset();
+  EXPECT_EQ(1, stop_count);
+}

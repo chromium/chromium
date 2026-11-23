@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
@@ -340,7 +340,11 @@ void TabSharingUIViews::OnBrowserCreated(BrowserWindowInterface* browser) {
   if (IsCapturableByCapturer(browser->GetProfile())) {
     // TODO(crbug.com/452120900): Observer is auto-unregistered by the
     // TabStripModel destructor.
-    browser->GetTabStripModel()->AddObserver(this);
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+    tab_strip_model->AddObserver(this);
+    for (tabs::TabInterface* tab : *tab_strip_model) {
+      StartObservingTab(tab);
+    }
   }
 }
 
@@ -350,19 +354,42 @@ void TabSharingUIViews::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
     for (const auto& contents : change.GetInsert()->contents) {
-      if (infobars_.find(contents.contents) == infobars_.end()) {
-        CreateInfobarForWebContents(contents.contents);
-      }
+      StartObservingTab(contents.tab);
+      MaybeCreateInfobarForTab(contents.tab);
     }
   }
 
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const auto& contents : change.GetRemove()->contents) {
+      StopObservingTab(contents.tab);
       same_origin_observers_.erase(contents.contents);
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
       screenshot_allowed_subscriptions_.erase(contents.contents);
 #endif
     }
+  }
+
+  if (change.type() == TabStripModelChange::kReplaced) {
+    const TabStripModelChange::Replace* replace = change.GetReplace();
+    if (replace->old_contents == shared_tab_) {
+      // `replace->old_contents` is already detached from `replace->tab`, so
+      // clear the capture border via `replace->new_contents` before stopping.
+      UpdateTabCaptureData(replace->new_contents,
+                           TabCaptureUpdate::kCaptureRemoved);
+      StopSharing("Shared tab replaced");
+      return;
+    }
+    same_origin_observers_.erase(replace->old_contents);
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    screenshot_allowed_subscriptions_.erase(replace->old_contents);
+#endif
+    if (auto it = infobars_.find(replace->old_contents);
+        it != infobars_.end()) {
+      infobars::InfoBar* const old_infobar = it->second;
+      infobars_.erase(it);
+      RemoveInfobar(old_infobar);
+    }
+    MaybeCreateInfobarForTab(replace->tab);
   }
 
   if (selection.active_tab_changed()) {
@@ -373,16 +400,32 @@ void TabSharingUIViews::OnTabStripModelChanged(
   }
 }
 
-void TabSharingUIViews::OnTabChanged(tabs::TabHandle tab,
-                                     TabChangeType change_type) {
-  tabs::TabInterface* tab_interface = tab.Get();
-  if (!tab_interface) {
+void TabSharingUIViews::StartObservingTab(tabs::TabInterface* tab) {
+  if (!tab) {
     return;
   }
-  content::WebContents* contents = tab_interface->GetContents();
+  if (TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab)) {
+    // base::Unretained(this) is safe here because `this` owns
+    // `tab_ui_change_subscriptions_`, and `tab` will outlive `TabUIHelper`.
+    tab_ui_change_subscriptions_[tab] = tab_ui_helper->AddTabUIChangeCallback(
+        base::BindRepeating(&TabSharingUIViews::MaybeCreateInfobarForTab,
+                            base::Unretained(this), tab));
+  }
+}
+
+void TabSharingUIViews::StopObservingTab(tabs::TabInterface* tab) {
+  tab_ui_change_subscriptions_.erase(tab);
+}
+
+void TabSharingUIViews::MaybeCreateInfobarForTab(tabs::TabInterface* tab) {
+  if (!tab->GetTabFeatures()) {
+    return;
+  }
+
+  content::WebContents* const contents = tab->GetContents();
   // Sad tab cannot be shared so don't create an infobar for it.
-  auto* sad_tab_helper = SadTabHelper::From(tab_interface);
-  if (sad_tab_helper && sad_tab_helper->sad_tab()) {
+  auto* sad_tab_helper = SadTabHelper::From(tab);
+  if (contents->IsCrashed() || (sad_tab_helper && sad_tab_helper->sad_tab())) {
     return;
   }
 
@@ -752,28 +795,36 @@ void TabSharingUIViews::RefreshAllTabSharingInfoBars(bool recreate_shared_tab) {
   }
 }
 
-void TabSharingUIViews::RemoveInfobarsForAllTabs() {
-  browser_collection_observer_.Reset();
-  TabStripModelObserver::StopObservingAll(this);
-
+void TabSharingUIViews::RemoveInfobar(infobars::InfoBar* infobar) {
+  CHECK(infobar);
+  if (infobar->owner()) {
+    infobar->owner()->RemoveObserver(this);
+  }
   auto* browser_infobar_manager =
-      (!infobars_.empty() && g_browser_process &&
+      (g_browser_process &&
        infobars::IsInfoBarMigrated(
            infobars::InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE))
           ? infobars::BrowserInfoBarManager::From(g_browser_process)
           : nullptr;
+  if (browser_infobar_manager) {
+    browser_infobar_manager->Hide(infobar);
+  } else {
+    infobar->RemoveSelf();
+  }
+}
 
-  for (const auto& infobars_entry : infobars_) {
-    CHECK(infobars_entry.second);
-    infobars_entry.second->owner()->RemoveObserver(this);
-    if (browser_infobar_manager) {
-      browser_infobar_manager->Hide(infobars_entry.second);
-    } else {
-      infobars_entry.second->RemoveSelf();
-    }
+void TabSharingUIViews::RemoveInfobarsForAllTabs() {
+  browser_collection_observer_.Reset();
+  TabStripModelObserver::StopObservingAll(this);
+
+  while (!infobars_.empty()) {
+    auto it = infobars_.begin();
+    infobars::InfoBar* const infobar = it->second;
+    infobars_.erase(it);
+    RemoveInfobar(infobar);
   }
 
-  infobars_.clear();
+  tab_ui_change_subscriptions_.clear();
   same_origin_observers_.clear();
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   screenshot_allowed_subscriptions_.clear();
