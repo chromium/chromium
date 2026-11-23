@@ -1,14 +1,22 @@
-# //android\_webview/support_library/
+# //android_webview/support_library/
 
-This folder contains a shim layer between the public AndroidX APIs
-([`androidx.webkit.*`](https://developer.android.com/reference/androidx/webkit/package-summary))
-and WebView's implementation, and allows them to (mostly) not directly depend
-on each other.
+This folder contains the boundary interface adapters for the AndroidX WebKit
+Support Library
+([`androidx.webkit.*`](https://developer.android.com/reference/androidx/webkit/package-summary)).
+
+## Architecture & Startup Flow
+
+- **`SupportLibWebViewChromiumFactory`**: Entry point implementing
+  `WebViewProviderFactoryBoundaryInterface`. Adapts AndroidX WebKit boundary
+  interfaces to `StartupController` (`startUpWebView`), `ProfileStore`,
+  `AwTracingController`, `AwServiceWorkerController`, and shared glue adapters
+  via `WebViewChromiumAwInit` and `WebkitToSharedGlueConverter`.
 
 ## Folder Dependencies
 
-`//android_webview/java/` must not depend on this directory.
+- `//android_webview/java/` must **never** depend on this directory.
 
 ## See Also
 
-- [//android\_webview/glue/](/android_webview/glue/README.md)
+- [//android_webview/glue/](/android_webview/glue/README.md)
+- [//android_webview/java/](/android_webview/java/README.md)
