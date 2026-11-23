@@ -379,8 +379,16 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpKeepAliveDisabledBrowserTest,
   exit_watcher.Wait();
 }
 
+// TODO(crbug.com/588690906): Re-enable on MSan once fixed.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ReuseWarmProcessAcrossTabsAndWindows \
+  DISABLED_ReuseWarmProcessAcrossTabsAndWindows
+#else
+#define MAYBE_ReuseWarmProcessAcrossTabsAndWindows \
+  ReuseWarmProcessAcrossTabsAndWindows
+#endif
 IN_PROC_BROWSER_TEST_F(WebUiNtpKeepAliveBrowserTest,
-                       ReuseWarmProcessAcrossTabsAndWindows) {
+                       MAYBE_ReuseWarmProcessAcrossTabsAndWindows) {
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(content::NavigateToURL(tab, chrome::ChromeUINewTabURLAsGURL()));
   ExpectIsWebUiNtp(tab);
