@@ -43,13 +43,14 @@ import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './ent
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './passwords/password_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments/payments_manager_proxy.js';
-import type {PaymentsManagerProxy} from './payments/payments_manager_proxy.js';
+import type {LoyaltyCardsChangedListener, PaymentsManagerProxy} from './payments/payments_manager_proxy.js';
 import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type CreditCardEntry = chrome.autofillPrivate.CreditCardEntry;
 type IbanEntry = chrome.autofillPrivate.IbanEntry;
 type PayOverTimeIssuerEntry = chrome.autofillPrivate.PayOverTimeIssuerEntry;
+type LoyaltyCardEntry = chrome.autofillPrivate.LoyaltyCardEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type EntityType = chrome.autofillPrivate.EntityType;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
@@ -138,6 +139,7 @@ export class SettingsAutofillPageElement extends
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
   private onAutofillAiEntitiesChangedListener_: EntityInstancesChangedListener|
       null = null;
+  private loyaltyCardsChangedListener_: LoyaltyCardsChangedListener|null = null;
 
   constructor() {
     super();
@@ -379,13 +381,15 @@ export class SettingsAutofillPageElement extends
     }
 
     // Wallet: Loyalty cards count.
-    const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
-      this.setChipCount_(
-          YourSavedInfoDataChip.LOYALTY_CARDS, loyaltyCardsCount);
-    };
-    this.addWebUiListener('loyalty-cards-count-changed', setLoyaltyCardsCount);
-    SavedInfoHandlerImpl.getInstance().getLoyaltyCardsCount().then(
-        setLoyaltyCardsCount);
+    const setLoyaltyCardsListener: LoyaltyCardsChangedListener =
+        (loyaltyCards: LoyaltyCardEntry[]) => {
+          this.setChipCount_(
+              YourSavedInfoDataChip.LOYALTY_CARDS, loyaltyCards.length);
+        };
+    this.loyaltyCardsChangedListener_ = setLoyaltyCardsListener;
+    this.paymentsManager_.setLoyaltyCardsChangedListener(
+        setLoyaltyCardsListener);
+    this.paymentsManager_.getLoyaltyCardList().then(setLoyaltyCardsListener);
   }
 
   private onAutofillAiEntitiesChanged(entities: EntityInstanceWithLabels[]) {
@@ -434,6 +438,12 @@ export class SettingsAutofillPageElement extends
       this.autofillAiEntityManager_.removeEntityInstancesChangedListener(
           this.onAutofillAiEntitiesChangedListener_);
       this.onAutofillAiEntitiesChangedListener_ = null;
+    }
+
+    if (this.loyaltyCardsChangedListener_) {
+      this.paymentsManager_.removeLoyaltyCardsChangedListener(
+          this.loyaltyCardsChangedListener_);
+      this.loyaltyCardsChangedListener_ = null;
     }
   }
 

@@ -8,12 +8,10 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestSavedInfoHandlerProxy extends TestBrowserProxy implements
     SavedInfoHandlerProxy {
   private passwordCount_: PasswordCount = {passwordCount: 0, passkeyCount: 0};
-  private loyaltyCardsCount_: number|undefined = undefined;
 
   constructor() {
     super([
       'getPasswordCount',
-      'getLoyaltyCardsCount',
       'requestDataManagementSurvey',
     ]);
   }
@@ -22,18 +20,9 @@ export class TestSavedInfoHandlerProxy extends TestBrowserProxy implements
     this.passwordCount_ = passwordCount;
   }
 
-  setLoyaltyCardsCount(loyaltyCardsCount: number|undefined) {
-    this.loyaltyCardsCount_ = loyaltyCardsCount;
-  }
-
   getPasswordCount(): Promise<PasswordCount> {
     this.methodCalled('getPasswordCount');
     return Promise.resolve(this.passwordCount_);
-  }
-
-  getLoyaltyCardsCount(): Promise<number|undefined> {
-    this.methodCalled('getLoyaltyCardsCount');
-    return Promise.resolve(this.loyaltyCardsCount_);
   }
 
   requestDataManagementSurvey(

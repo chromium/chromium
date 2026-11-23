@@ -5,7 +5,6 @@
 import 'chrome://settings/settings.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxyImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsAutofillPageElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, SavedInfoHandlerImpl, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
@@ -13,7 +12,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {createAddressEntry, createCreditCardEntry, createIbanEntry, createLoyaltyCardEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -314,18 +313,31 @@ suite('AutofillPage', function() {
   });
 
   test('LoyaltyCardsCounterIsUpdated', async function() {
-    savedInfoHandler.setLoyaltyCardsCount(2);
+    paymentsManager.data.loyaltyCards = [
+      createLoyaltyCardEntry(),
+      createLoyaltyCardEntry(),
+    ];
     // `setup()` already created a page, so reset the resolver to wait for the
     // call from the recreated page below.
-    savedInfoHandler.resetResolver('getLoyaltyCardsCount');
+    paymentsManager.resetResolver('getLoyaltyCardList');
     await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
-    await savedInfoHandler.whenCalled('getLoyaltyCardsCount');
+    await paymentsManager.whenCalled('getLoyaltyCardList');
     await microtasksFinished();
     assertEquals(2, getChipCount(loadTimeData.getString('loyaltyCardsTitle')));
 
-    webUIListenerCallback('loyalty-cards-count-changed', 3);
+    paymentsManager.lastCallback.setLoyaltyCardsChangedListener!([
+      createLoyaltyCardEntry(),
+      createLoyaltyCardEntry(),
+      createLoyaltyCardEntry(),
+    ]);
     await microtasksFinished();
     assertEquals(3, getChipCount(loadTimeData.getString('loyaltyCardsTitle')));
+  });
+
+  test('RemovesListenersOnDisconnect', async function() {
+    autofillPage.remove();
+    await autofillManager.whenCalled('removePersonalDataManagerListener');
+    await paymentsManager.whenCalled('removeLoyaltyCardsChangedListener');
   });
 
   test('ClickOnLoyaltyCardsChipNavigatesToLeafPage', async function() {

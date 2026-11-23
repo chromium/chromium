@@ -36,11 +36,6 @@ export interface SavedInfoHandlerProxy {
   getPasswordCount(): Promise<PasswordCount>;
 
   /**
-   * Get the number of loyalty cards.
-   */
-  getLoyaltyCardsCount(): Promise<number|undefined>;
-
-  /**
    * Request launching Happiness Tracking Survey for Your saved info management
    * surface. This will check the user's eligibility to see the survey
    * before displaying it.
@@ -55,10 +50,6 @@ export interface SavedInfoHandlerProxy {
 export class SavedInfoHandlerImpl implements SavedInfoHandlerProxy {
   getPasswordCount() {
     return sendWithPromise<PasswordCount>('getPasswordCount');
-  }
-
-  getLoyaltyCardsCount() {
-    return sendWithPromise<number|undefined>('getLoyaltyCardsCount');
   }
 
   requestDataManagementSurvey(

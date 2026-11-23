@@ -13,7 +13,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} f
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, makeGuid, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {createAddressEntry, createCreditCardEntry, createIbanEntry, createLoyaltyCardEntry, createPayOverTimeIssuerEntry, makeGuid, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -458,13 +458,13 @@ suite('AutofillPageV2', function() {
             new PromiseResolver<chrome.autofillPrivate.IbanEntry[]>();
         const payOverTimeResolver = new PromiseResolver<
             chrome.autofillPrivate.PayOverTimeIssuerEntry[]>();
-        const loyaltyCardsResolver = new PromiseResolver<number|undefined>();
+        const loyaltyCardsResolver =
+            new PromiseResolver<chrome.autofillPrivate.LoyaltyCardEntry[]>();
         paymentsManager.getCreditCardList = () => creditCardsResolver.promise;
         paymentsManager.getIbanList = () => ibansResolver.promise;
         paymentsManager.getPayOverTimeIssuerList = () =>
             payOverTimeResolver.promise;
-        savedInfoHandler.getLoyaltyCardsCount = () =>
-            loyaltyCardsResolver.promise;
+        paymentsManager.getLoyaltyCardList = () => loyaltyCardsResolver.promise;
 
         await setupPage();
         const paymentsRow =
@@ -474,16 +474,11 @@ suite('AutofillPageV2', function() {
         // All 4 payment sources are unresolved.
         assertEquals('', getRowCount(paymentsRow));
 
-        // Even if getLoyaltyCardsCount resolves to undefined while the others
-        // are still pending, paymentsCount_ remains undefined.
-        loyaltyCardsResolver.resolve(undefined);
-        await microtasksFinished();
-        assertEquals('', getRowCount(paymentsRow));
-
         // Once payment lists resolve empty, paymentsCount_ becomes 0.
         creditCardsResolver.resolve([]);
         ibansResolver.resolve([]);
         payOverTimeResolver.resolve([]);
+        loyaltyCardsResolver.resolve([]);
         await microtasksFinished();
         assertEquals('0', getRowCount(paymentsRow));
       });
@@ -498,13 +493,14 @@ suite('AutofillPageV2', function() {
       createPayOverTimeIssuerEntry(),
       createPayOverTimeIssuerEntry(),
     ];
-    savedInfoHandler.setLoyaltyCardsCount(4);
+    paymentsManager.data.loyaltyCards =
+        Array.from({length: 4}, () => createLoyaltyCardEntry());
 
     await setupPage();
     await paymentsManager.whenCalled('getCreditCardList');
     await paymentsManager.whenCalled('getIbanList');
     await paymentsManager.whenCalled('getPayOverTimeIssuerList');
-    await savedInfoHandler.whenCalled('getLoyaltyCardsCount');
+    await paymentsManager.whenCalled('getLoyaltyCardList');
 
     const paymentsRow = autofillPage.shadowRoot.querySelector<CrLinkRowElement>(
         '#paymentManagerButton');
@@ -523,15 +519,16 @@ suite('AutofillPageV2', function() {
     // 1 credit card + 2 IBANs + 0 pay over time + 4 loyalty cards = 7.
     assertEquals('7', getRowCount(paymentsRow));
 
-    // Loyalty cards WebUI listener updates loyalty cards count while
-    // preserving personal data counts.
-    webUIListenerCallback('loyalty-cards-count-changed', 6);
+    // Loyalty cards listener updates loyalty cards count while preserving
+    // personal data counts.
+    paymentsManager.lastCallback.setLoyaltyCardsChangedListener!
+        (Array.from({length: 6}, () => createLoyaltyCardEntry()));
     await microtasksFinished();
     // 1 + 2 + 0 + 6 = 9.
     assertEquals('9', getRowCount(paymentsRow));
 
-    // Undefined loyalty cards count is treated as 0 when other counts exist.
-    webUIListenerCallback('loyalty-cards-count-changed', undefined);
+    // Empty loyalty cards list sets loyalty cards count to 0.
+    paymentsManager.lastCallback.setLoyaltyCardsChangedListener!([]);
     await microtasksFinished();
     assertEquals('3', getRowCount(paymentsRow));
   });
@@ -714,6 +711,7 @@ suite('AutofillPageV2', function() {
     autofillPage.remove();
     await autofillManager.whenCalled('removePersonalDataManagerListener');
     await entityDataManager.whenCalled('removeEntityInstancesChangedListener');
+    await paymentsManager.whenCalled('removeLoyaltyCardsChangedListener');
   });
 
   test('GetFocusConfigReturnsExpectedRouteSelectors', async function() {
@@ -779,11 +777,14 @@ suite('AutofillPageV2', function() {
   test('LoyaltyCardsCountedInPaymentsWhenFlagDisabled', async function() {
     setupProxies();
     paymentsManager.data.creditCards = [createCreditCardEntry()];
-    savedInfoHandler.setLoyaltyCardsCount(2);
+    paymentsManager.data.loyaltyCards = [
+      createLoyaltyCardEntry(),
+      createLoyaltyCardEntry(),
+    ];
 
     await setupPage({offersAndLoyaltyCardsSettingsEnabled: false});
     await paymentsManager.whenCalled('getCreditCardList');
-    await savedInfoHandler.whenCalled('getLoyaltyCardsCount');
+    await paymentsManager.whenCalled('getLoyaltyCardList');
     await microtasksFinished();
 
     // 1 credit card + 2 loyalty cards.
@@ -818,18 +819,22 @@ suite('AutofillPageV2', function() {
   test('LoyaltyCardsCountedInOffersAndLoyaltyCardsRow', async function() {
     setupProxies();
     paymentsManager.data.creditCards = [createCreditCardEntry()];
-    savedInfoHandler.setLoyaltyCardsCount(2);
+    paymentsManager.data.loyaltyCards = [
+      createLoyaltyCardEntry(),
+      createLoyaltyCardEntry(),
+    ];
 
     await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
     await paymentsManager.whenCalled('getCreditCardList');
-    await savedInfoHandler.whenCalled('getLoyaltyCardsCount');
+    await paymentsManager.whenCalled('getLoyaltyCardList');
     await microtasksFinished();
 
     assertEquals('1', getRowCountBySelector('#paymentManagerButton'));
     assertEquals(
         '2', getRowCountBySelector('#offersAndLoyaltyCardsManagerButton'));
 
-    webUIListenerCallback('loyalty-cards-count-changed', 5);
+    paymentsManager.lastCallback.setLoyaltyCardsChangedListener!
+        (Array.from({length: 5}, () => createLoyaltyCardEntry()));
     await microtasksFinished();
 
     assertEquals('1', getRowCountBySelector('#paymentManagerButton'));

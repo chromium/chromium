@@ -11,20 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestPaymentsManager} from './autofill_fake_data.js';
-
-type LoyaltyCardEntry = chrome.autofillPrivate.LoyaltyCardEntry;
-
-function createLoyaltyCardEntry(overrides: Partial<LoyaltyCardEntry> = {}):
-    LoyaltyCardEntry {
-  return {
-    id: 'loyalty_card_id',
-    merchantName: 'Merchant',
-    loyaltyCardNumber: '1234',
-    walletUrl: 'https://wallet.google.com/wallet?p=loyalty',
-    ...overrides,
-  };
-}
+import {createLoyaltyCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
 
 suite('OffersAndLoyaltyCardsPage', function() {
   let paymentsManager: TestPaymentsManager;

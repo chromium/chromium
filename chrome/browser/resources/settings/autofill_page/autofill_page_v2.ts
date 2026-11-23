@@ -39,13 +39,14 @@ import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './ent
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './passwords/password_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments/payments_manager_proxy.js';
-import type {PaymentsManagerProxy} from './payments/payments_manager_proxy.js';
+import type {LoyaltyCardsChangedListener, PaymentsManagerProxy} from './payments/payments_manager_proxy.js';
 import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type CreditCardEntry = chrome.autofillPrivate.CreditCardEntry;
 type IbanEntry = chrome.autofillPrivate.IbanEntry;
 type PayOverTimeIssuerEntry = chrome.autofillPrivate.PayOverTimeIssuerEntry;
+type LoyaltyCardEntry = chrome.autofillPrivate.LoyaltyCardEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 
@@ -111,6 +112,7 @@ export class SettingsAutofillPageV2Element extends
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
   private onAutofillAiEntitiesChangedListener_: EntityInstancesChangedListener|
       null = null;
+  private loyaltyCardsChangedListener_: LoyaltyCardsChangedListener|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -177,17 +179,19 @@ export class SettingsAutofillPageV2Element extends
         this.onAutofillAiEntitiesChangedListener_);
 
     // Wallet: Loyalty cards count.
-    const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
-      this.loyaltyCardsCount_ = loyaltyCardsCount;
-      if (this.isOffersAndLoyaltyCardsEnabled_) {
-        // TODO(crbug.com/546252995): Include the offers count.
-        this.offersAndLoyaltyCardsCount_ = loyaltyCardsCount;
-      }
-      this.updatePaymentsCount_();
-    };
-    this.addWebUiListener('loyalty-cards-count-changed', setLoyaltyCardsCount);
-    SavedInfoHandlerImpl.getInstance().getLoyaltyCardsCount().then(
-        setLoyaltyCardsCount);
+    const setLoyaltyCardsListener: LoyaltyCardsChangedListener =
+        (loyaltyCards: LoyaltyCardEntry[]) => {
+          this.loyaltyCardsCount_ = loyaltyCards.length;
+          if (this.isOffersAndLoyaltyCardsEnabled_) {
+            // TODO(crbug.com/546252995): Include the offers count.
+            this.offersAndLoyaltyCardsCount_ = loyaltyCards.length;
+          }
+          this.updatePaymentsCount_();
+        };
+    this.loyaltyCardsChangedListener_ = setLoyaltyCardsListener;
+    this.paymentsManager_.setLoyaltyCardsChangedListener(
+        setLoyaltyCardsListener);
+    this.paymentsManager_.getLoyaltyCardList().then(setLoyaltyCardsListener);
   }
 
   private updatePaymentsCount_() {
@@ -239,6 +243,12 @@ export class SettingsAutofillPageV2Element extends
       this.autofillAiEntityManager_.removeEntityInstancesChangedListener(
           this.onAutofillAiEntitiesChangedListener_);
       this.onAutofillAiEntitiesChangedListener_ = null;
+    }
+
+    if (this.loyaltyCardsChangedListener_) {
+      this.paymentsManager_.removeLoyaltyCardsChangedListener(
+          this.loyaltyCardsChangedListener_);
+      this.loyaltyCardsChangedListener_ = null;
     }
   }
 

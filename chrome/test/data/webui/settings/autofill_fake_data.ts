@@ -144,6 +144,21 @@ export function createPayOverTimeIssuerEntry():
 }
 
 /**
+ * Creates a new valid loyalty card entry for testing.
+ */
+export function createLoyaltyCardEntry(
+    overrides: Partial<chrome.autofillPrivate.LoyaltyCardEntry> = {}):
+    chrome.autofillPrivate.LoyaltyCardEntry {
+  return {
+    id: makeGuid(),
+    merchantName: 'Merchant',
+    loyaltyCardNumber: '1234',
+    walletUrl: 'https://wallet.google.com/wallet?p=loyalty',
+    ...overrides,
+  };
+}
+
+/**
  * Creates a new random GUID for testing.
  */
 export function makeGuid(): string {

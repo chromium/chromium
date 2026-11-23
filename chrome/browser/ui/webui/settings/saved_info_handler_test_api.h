@@ -20,10 +20,6 @@ class SavedInfoHandlerTestApi {
     handler_->HandleGetPasswordCount(args);
   }
 
-  void HandleGetLoyaltyCardsCount(const base::ListValue& args) {
-    handler_->HandleGetLoyaltyCardsCount(args);
-  }
-
   void HandleRequestDataManagementSurvey(const base::ListValue& args) {
     handler_->HandleRequestDataManagementSurvey(args);
   }
