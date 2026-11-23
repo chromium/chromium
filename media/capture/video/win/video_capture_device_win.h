@@ -176,14 +176,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceWin : public VideoCaptureDevice,
 
   std::optional<int> camera_rotation_;
 
-  // The DirectShow objects below are declared last and in this order on
-  // purpose; members are destroyed in reverse order of declaration.
+  // The DirectShow objects below are declared in this order on purpose;
+  // members are destroyed in reverse order of declaration.
   //
   // Stop() and Disconnect() don't guarantee that an upstream filter has stopped
   // delivering samples: some filters return from Stop() without joining their
   // streaming thread, and only join it when their last COM reference is
-  // released. Until then that thread may call into |input_sink_pin_| and,
-  // through it, into |this|. Therefore:
+  // released. Until then that thread may call into |input_sink_pin_|. It can't
+  // reach |this| any more, because the destructor detaches it from the pin
+  // first (see SinkFilter::Shutdown()). Therefore:
   // - |capture_filter_| must be destroyed after everything else that refers to
   //   the capture filter, so that its destruction releases the last reference
   //   and joins the thread.
@@ -193,8 +194,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceWin : public VideoCaptureDevice,
   //   graph owns any intermediate filters it inserted between the capture
   //   filter and the sink (e.g. an AVI decompressor for HDYC), which the thread
   //   may also call into.
-  // - All of them must be declared after the other members, so that |this| is
-  //   still intact if the thread calls FrameReceived() or FrameDropped().
   const scoped_refptr<SinkFilter> sink_filter_;
   const Microsoft::WRL::ComPtr<IPin> input_sink_pin_;
 

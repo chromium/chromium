@@ -72,6 +72,10 @@ class __declspec(uuid("88cdbbdc-a73b-4afa-acbf-15d5e2ce12c3")) SinkFilter
                                float frame_rate,
                                const BITMAPINFOHEADER& info_header);
 
+  // Detaches the observer from the input pin. When this returns, no observer
+  // callback is in progress and samples delivered later are dropped.
+  void Shutdown();
+
   // Implement FilterBase.
   size_t NoOfPins() override;
   IPin* GetPin(int index) override;

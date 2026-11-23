@@ -358,6 +358,13 @@ VideoCaptureDeviceWin::VideoCaptureDeviceWin(
 
 VideoCaptureDeviceWin::~VideoCaptureDeviceWin() {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  // Detach |this| from the sink pin first. This waits for a streaming thread
+  // that is still inside SinkInputPin::Receive(), which the capture filter's
+  // Stop() doesn't guarantee against. Once it returns, no FrameReceived() or
+  // FrameDropped() call is in progress and none will start.
+  sink_filter_->Shutdown();
+
   if (media_control_) {
     media_control_->Stop();
   }

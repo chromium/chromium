@@ -22,6 +22,10 @@ void SinkFilter::SetRequestedMediaFormat(VideoPixelFormat pixel_format,
   input_pin_->SetRequestedMediaFormat(pixel_format, frame_rate, info_header);
 }
 
+void SinkFilter::Shutdown() {
+  input_pin_->Shutdown();
+}
+
 size_t SinkFilter::NoOfPins() {
   return 1;
 }
@@ -36,6 +40,9 @@ HRESULT SinkFilter::GetClassID(CLSID* clsid) {
 }
 
 SinkFilter::~SinkFilter() {
+  // Owners normally call Shutdown() themselves before releasing the filter;
+  // this is a safety net in case one doesn't.
+  input_pin_->Shutdown();
   input_pin_->SetOwner(nullptr);
 }
 

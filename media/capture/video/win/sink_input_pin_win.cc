@@ -37,6 +37,7 @@ void SinkInputPin::SetRequestedMediaFormat(
     VideoPixelFormat pixel_format,
     float frame_rate,
     const BITMAPINFOHEADER& info_header) {
+  base::AutoLock lock(sink_lock_);
   requested_pixel_format_ = pixel_format;
   requested_frame_rate_ = frame_rate;
   requested_info_header_ = info_header;
@@ -45,7 +46,13 @@ void SinkInputPin::SetRequestedMediaFormat(
   resulting_format_.pixel_format = PIXEL_FORMAT_UNKNOWN;
 }
 
+void SinkInputPin::Shutdown() {
+  base::AutoLock lock(sink_lock_);
+  observer_ = nullptr;
+}
+
 bool SinkInputPin::IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) {
+  base::AutoLock lock(sink_lock_);
   const GUID type = media_type->majortype;
   if (type != MEDIATYPE_Video)
     return false;
@@ -127,6 +134,7 @@ bool SinkInputPin::GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) {
   if (media_type->cbFormat < sizeof(VIDEOINFOHEADER))
     return false;
 
+  base::AutoLock lock(sink_lock_);
   VIDEOINFOHEADER* const pvi =
       reinterpret_cast<VIDEOINFOHEADER*>(media_type->pbFormat);
 
@@ -210,8 +218,16 @@ bool SinkInputPin::GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) {
 }
 
 HRESULT SinkInputPin::Receive(IMediaSample* sample) {
-  const int length = sample->GetActualDataLength();
+  // Hold |sink_lock_| for the whole call, including the calls into |sample|,
+  // so that Shutdown() waits for a streaming thread that is anywhere inside
+  // this method. The upstream filter's Stop() doesn't guarantee that no call
+  // is in flight.
+  base::AutoLock lock(sink_lock_);
+  if (!observer_) {
+    return S_FALSE;
+  }
 
+  const int length = sample->GetActualDataLength();
   if (length <= 0 ||
       static_cast<size_t>(length) <
           media::VideoFrame::AllocationSize(resulting_format_.pixel_format,

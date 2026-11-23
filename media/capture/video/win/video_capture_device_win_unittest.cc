@@ -26,6 +26,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
 #include "base/threading/simple_thread.h"
 #include "base/win/scoped_com_initializer.h"
@@ -79,7 +80,8 @@ void PopulateI420MediaType(AM_MEDIA_TYPE* media_type,
 class FakeMediaSample final
     : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IMediaSample> {
  public:
-  explicit FakeMediaSample(size_t size) : buffer_(size, 0x5A) {}
+  FakeMediaSample(size_t size, uint8_t fill, base::OnceClosure on_get_time)
+      : buffer_(size, fill), on_get_time_(std::move(on_get_time)) {}
 
   // IMediaSample
   IFACEMETHODIMP GetPointer(BYTE** buffer) override {
@@ -90,6 +92,9 @@ class FakeMediaSample final
     return static_cast<long>(buffer_.size());
   }
   IFACEMETHODIMP GetTime(REFERENCE_TIME* start, REFERENCE_TIME* end) override {
+    if (on_get_time_) {
+      std::move(on_get_time_).Run();
+    }
     return VFW_E_SAMPLE_TIME_NOT_SET;
   }
   IFACEMETHODIMP SetTime(REFERENCE_TIME* start, REFERENCE_TIME* end) override {
@@ -122,15 +127,22 @@ class FakeMediaSample final
 
  private:
   std::vector<uint8_t> buffer_;
+  base::OnceClosure on_get_time_;
 };
 
-HRESULT DeliverSampleTo(IPin* pin) {
+// Delivers a sample to |pin|. |on_get_time| runs when the pin queries the
+// sample's time, i.e. while the pin is inside Receive().
+HRESULT DeliverSampleTo(IPin* pin,
+                        size_t size = kI420FrameBytes,
+                        uint8_t fill = 0x5A,
+                        base::OnceClosure on_get_time = {}) {
   ComPtr<IMemInputPin> mem_input_pin;
   HRESULT hr = pin->QueryInterface(IID_PPV_ARGS(&mem_input_pin));
   if (FAILED(hr)) {
     return hr;
   }
-  ComPtr<FakeMediaSample> sample = Make<FakeMediaSample>(kI420FrameBytes);
+  ComPtr<FakeMediaSample> sample =
+      Make<FakeMediaSample>(size, fill, std::move(on_get_time));
   return mem_input_pin->Receive(sample.Get());
 }
 
@@ -298,6 +310,44 @@ class FakeEnumPins final
   bool done_ = false;
 };
 
+// A sample delivery that is still inside SinkInputPin::Receive() when the
+// device is torn down.
+struct InFlightDelivery {
+  // CBaseOutputPin::Deliver() isn't synchronized with BreakConnect(), which
+  // releases the output pin's reference to the input pin. Model a delivery
+  // that has lost that race: the streaming thread uses the input pin without
+  // holding a reference to it.
+  raw_ptr<IMemInputPin, DisableDanglingPtrDetection> input_pin;
+  // The streaming thread's own reference to the capture filter, which keeps
+  // the device's teardown from joining it.
+  ComPtr<IBaseFilter> capture_filter;
+  // Signaled once the delivery is inside Receive().
+  base::WaitableEvent in_receive;
+  // The delivery stays inside Receive() until this is signaled, or for at most
+  // a short timeout.
+  base::WaitableEvent resume;
+  // Set by the test once the device is destroyed.
+  std::atomic<bool> device_destroyed{false};
+  // Whether the device was destroyed while the delivery was inside Receive().
+  bool device_destroyed_during_receive = false;
+  HRESULT hr = E_UNEXPECTED;
+};
+
+void RunInFlightDelivery(InFlightDelivery* delivery) {
+  ComPtr<IBaseFilter> capture_filter = std::move(delivery->capture_filter);
+  ComPtr<FakeMediaSample> sample = Make<FakeMediaSample>(
+      kI420FrameBytes, 0x5A,
+      base::BindOnce(
+          [](InFlightDelivery* delivery) {
+            delivery->in_receive.Signal();
+            delivery->resume.TimedWait(TestTimeouts::tiny_timeout());
+            delivery->device_destroyed_during_receive =
+                delivery->device_destroyed.load();
+          },
+          base::Unretained(delivery)));
+  delivery->hr = delivery->input_pin->Receive(sample.Get());
+}
+
 class ClosureSimpleThread final : public base::SimpleThread {
  public:
   explicit ClosureSimpleThread(base::OnceClosure body)
@@ -428,6 +478,8 @@ class FakeFilterGraph final
                           ChainInterfaces<IGraphBuilder, IFilterGraph>,
                           ChainInterfaces<IMediaControl, IDispatch>> {
  public:
+  void set_stop_result(HRESULT hr) { stop_result_ = hr; }
+
   // IFilterGraph
   IFACEMETHODIMP AddFilter(IBaseFilter* filter, LPCWSTR name) override {
     filters_.emplace_back(filter);
@@ -524,6 +576,9 @@ class FakeFilterGraph final
     return S_OK;
   }
   IFACEMETHODIMP Stop() override {
+    if (FAILED(stop_result_)) {
+      return stop_result_;
+    }
     for (auto& filter : filters_) {
       filter->Stop();
     }
@@ -546,6 +601,7 @@ class FakeFilterGraph final
 
  private:
   std::vector<ComPtr<IBaseFilter>> filters_;
+  HRESULT stop_result_ = S_OK;
 };
 
 class FakeCaptureGraphBuilder final
@@ -612,10 +668,10 @@ class FakeCaptureGraphBuilder final
   ComPtr<IGraphBuilder> graph_;
 };
 
-VideoCaptureParams CreateI420CaptureParams() {
+VideoCaptureParams CreateCaptureParams(VideoPixelFormat pixel_format) {
   VideoCaptureParams params;
   params.requested_format = VideoCaptureFormat(
-      gfx::Size(kTestWidth, kTestHeight), kTestFrameRate, PIXEL_FORMAT_I420);
+      gfx::Size(kTestWidth, kTestHeight), kTestFrameRate, pixel_format);
   return params;
 }
 
@@ -623,30 +679,35 @@ VideoCaptureParams CreateI420CaptureParams() {
 
 class VideoCaptureDeviceWinTest : public ::testing::Test {
  protected:
+  std::unique_ptr<VideoCaptureDeviceWin> CreateDevice(
+      ComPtr<IBaseFilter> capture_filter) {
+    return VideoCaptureDeviceWin::CreateForTesting(
+        VideoCaptureDeviceDescriptor("Fake DirectShow camera", "fake_id",
+                                     VideoCaptureApi::WIN_DIRECT_SHOW),
+        std::move(capture_filter), graph_, Make<FakeCaptureGraphBuilder>());
+  }
+
   base::win::ScopedCOMInitializer com_initializer_;
   base::test::TaskEnvironment task_environment_;
+  ComPtr<FakeFilterGraph> graph_ = Make<FakeFilterGraph>();
 };
 
 // Regression test for a source filter that keeps delivering samples from its
 // streaming thread after Stop() and Disconnect() return, and only joins that
 // thread when its last reference is released. The input pin must stay alive
-// until then.
+// until then, and late samples must not reach the device.
 TEST_F(VideoCaptureDeviceWinTest,
        LateDeliveryFromStreamingThreadDuringTeardown) {
   LateDeliveryResults results;
   ComPtr<FakeCaptureFilter> capture_filter = Make<FakeCaptureFilter>(&results);
-  std::unique_ptr<VideoCaptureDeviceWin> device =
-      VideoCaptureDeviceWin::CreateForTesting(
-          VideoCaptureDeviceDescriptor("Fake DirectShow camera", "fake_id",
-                                       VideoCaptureApi::WIN_DIRECT_SHOW),
-          capture_filter, Make<FakeFilterGraph>(),
-          Make<FakeCaptureGraphBuilder>());
+  std::unique_ptr<VideoCaptureDeviceWin> device = CreateDevice(capture_filter);
   ASSERT_TRUE(device->Init());
 
   auto client = std::make_unique<NiceMock<MockVideoCaptureDeviceClient>>();
   EXPECT_CALL(*client, OnStarted);
   EXPECT_CALL(*client, OnIncomingCapturedData);
-  device->AllocateAndStart(CreateI420CaptureParams(), std::move(client));
+  device->AllocateAndStart(CreateCaptureParams(PIXEL_FORMAT_I420),
+                           std::move(client));
 
   ComPtr<IPin> input_pin = capture_filter->output_pin()->connected_pin();
   ASSERT_TRUE(input_pin);
@@ -656,16 +717,67 @@ TEST_F(VideoCaptureDeviceWinTest,
   capture_filter->StartLateDeliveryThread();
   FakeCaptureFilter* raw_capture_filter = capture_filter.Get();
   capture_filter.Reset();
+  graph_.Reset();
 
   device->StopAndDeAllocate();
   EXPECT_FALSE(raw_capture_filter->output_pin()->connected_pin());
   EXPECT_FALSE(results.filter_destroyed);
 
-  // Releases the last reference to the capture filter, which then delivers a
-  // sample to the disconnected input pin and joins its streaming thread.
+  // Releases the last reference to the capture filter, which then uses the
+  // disconnected input pin and joins its streaming thread.
   device.reset();
   EXPECT_TRUE(results.filter_destroyed);
-  EXPECT_TRUE(SUCCEEDED(results.delivery_hr));
+  EXPECT_EQ(results.delivery_hr, S_FALSE);
+}
+
+// A source filter whose Stop() doesn't wait for an in-flight Receive(), and
+// whose streaming thread holds its own reference to the filter, can still be
+// inside SinkInputPin::Receive() while the device is stopped and destroyed.
+// Teardown must wait for that call instead of freeing the input pin and the
+// device under it. Covers both a successful and a failing Stop().
+TEST_F(VideoCaptureDeviceWinTest, InFlightReceiveDuringStopAndDestruction) {
+  for (const bool stop_fails : {false, true}) {
+    SCOPED_TRACE(stop_fails ? "Stop() fails" : "Stop() succeeds");
+    graph_ = Make<FakeFilterGraph>();
+    LateDeliveryResults results;
+    ComPtr<FakeCaptureFilter> capture_filter =
+        Make<FakeCaptureFilter>(&results);
+    std::unique_ptr<VideoCaptureDeviceWin> device =
+        CreateDevice(capture_filter);
+    ASSERT_TRUE(device->Init());
+    device->AllocateAndStart(
+        CreateCaptureParams(PIXEL_FORMAT_I420),
+        std::make_unique<NiceMock<MockVideoCaptureDeviceClient>>());
+
+    InFlightDelivery delivery;
+    {
+      ComPtr<IPin> input_pin = capture_filter->output_pin()->connected_pin();
+      ASSERT_TRUE(input_pin);
+      ComPtr<IMemInputPin> mem_input_pin;
+      ASSERT_HRESULT_SUCCEEDED(input_pin.As(&mem_input_pin));
+      delivery.input_pin = mem_input_pin.Get();
+    }
+    delivery.capture_filter = capture_filter;
+    ClosureSimpleThread streaming_thread(
+        base::BindOnce(&RunInFlightDelivery, base::Unretained(&delivery)));
+    streaming_thread.Start();
+    ASSERT_TRUE(delivery.in_receive.TimedWait(TestTimeouts::action_timeout()));
+
+    graph_->set_stop_result(stop_fails ? E_FAIL : S_OK);
+    device->StopAndDeAllocate();
+    capture_filter.Reset();
+    graph_.Reset();
+    // With the fix, this blocks until the delivery stops waiting for |resume|
+    // (tiny_timeout()). Without it, a regression is only caught if teardown
+    // finishes within that timeout, which may not hold on a very slow bot.
+    device.reset();
+    delivery.device_destroyed = true;
+    delivery.resume.Signal();
+    streaming_thread.Join();
+    EXPECT_FALSE(delivery.device_destroyed_during_receive);
+    EXPECT_HRESULT_SUCCEEDED(delivery.hr);
+    EXPECT_TRUE(results.filter_destroyed);
+  }
 }
 
 }  // namespace media
