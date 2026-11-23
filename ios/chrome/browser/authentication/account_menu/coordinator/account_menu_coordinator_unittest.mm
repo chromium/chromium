@@ -6,12 +6,12 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/settings/manage_sync/public/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -43,6 +43,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -53,19 +54,6 @@ const FakeSystemIdentity* kManagedIdentity =
     [FakeSystemIdentity fakeManagedIdentity];
 
 }  // namespace
-
-@interface AccountMenuCoordinator (Testing) <
-    AccountMenuMediatorDelegate,
-    SigninReauthCoordinatorDelegate,
-    SignoutActionSheetCoordinatorDelegate,
-    SyncErrorSettingsCommandHandler,
-    UIAdaptivePresentationControllerDelegate,
-    UINavigationControllerDelegate>
-
-@property(nonatomic, weak) AccountMenuViewController* viewController;
-@property(nonatomic, weak) AccountMenuMediator* mediator;
-
-@end
 
 class AccountMenuCoordinatorTest : public PlatformTest {
  public:
@@ -124,6 +112,38 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     SigninWithPrimaryIdentity();
     AddSecondaryIdentity();
 
+    AccountMenuViewController* real_view_controller =
+        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:NO];
+    view_controller_ = OCMPartialMock(real_view_controller);
+    OCMStub(OCMClassMethod([(id)view_controller_ alloc]))
+        .andReturn(real_view_controller);
+    OCMStub([view_controller_ initWithHideEllipsisMenu:NO])
+        .andReturn(real_view_controller);
+    UIView* view = [[UIView alloc] init];
+    OCMStub([view_controller_ view]).andReturn(view);
+
+    id mediator_class_mock = OCMStrictClassMock([AccountMenuMediator class]);
+    mediator_ = mediator_class_mock;
+    OCMExpect([mediator_class_mock alloc]).andReturn(mediator_);
+    OCMExpect(
+        [[mediator_class_mock ignoringNonObjectArgs]
+                       initWithSyncService:nullptr
+                     accountManagerService:nullptr
+                               authService:nullptr
+                           identityManager:nullptr
+                                     prefs:nullptr
+            subscriptionEligibilityService:nullptr
+                               accessPoint:AccountMenuAccessPoint::kNewTabPage
+                                       URL:GURL()
+                      prepareChangeProfile:[OCMArg any]
+                            avatarProvider:nullptr])
+        .andReturn(mediator_);
+    OCMExpect([mediator_ setDelegate:AssignValueToVariable(delegate_)]);
+    OCMExpect([mediator_
+        setSyncErrorSettingsCommandHandler:AssignValueToVariable(
+                                               sync_error_handler_)]);
+    OCMExpect([mediator_ setConsumer:real_view_controller]);
+
     coordinator_ = [[AccountMenuCoordinator alloc]
         initWithBaseViewController:nil
                            browser:browser
@@ -131,16 +151,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                        accessPoint:AccountMenuAccessPoint::kNewTabPage
                                URL:GURL()];
     [coordinator_ start];
-
-    // Replacing the view controller and mediator by mock.
-    view_ = coordinator_.viewController.view;
-    view_controller_ = OCMStrictClassMock([AccountMenuViewController class]);
-    OCMStub([view_controller_ view]).andReturn(view_);
-    coordinator_.viewController = view_controller_;
-
-    [coordinator_.mediator disconnect];
-    mediator_ = OCMStrictClassMock([AccountMenuMediator class]);
-    coordinator_.mediator = mediator_;
   }
 
   void TearDown() override {
@@ -149,6 +159,10 @@ class AccountMenuCoordinatorTest : public PlatformTest {
       [coordinator_ stop];
       [scene_state_ shutdown];
       coordinator_ = nil;
+      delegate_ = nil;
+      sync_error_handler_ = nil;
+      view_controller_ = nil;
+      mediator_ = nil;
       scene_state_ = nil;
     }
     PlatformTest::TearDown();
@@ -178,8 +192,11 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     Stop();
   }
 
-  AccountMenuCoordinator<UIAdaptivePresentationControllerDelegate>*
-      coordinator_;
+  AccountMenuCoordinator* coordinator_;
+  // In practice, `delegate_ == coordinator_`.
+  id<AccountMenuMediatorDelegate> delegate_;
+  // In practice, `sync_error_handler_ == coordinator_`.
+  id<SyncErrorSettingsCommandHandler> sync_error_handler_;
   id<SceneCommands> mock_scene_handler_;
   id<SnackbarCommands> mock_snackbar_commands_handler_;
   id<HelpCommands> mock_help_commands_handler_;
@@ -191,8 +208,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   id<SyncEncryptionPassphraseTableViewControllerPresentationDelegate>
       presentation_delegate_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
-  // The view owned by the view controller.
-  UIView* view_;
 
   syncer::MockSyncService* GetMockSyncService() {
     return static_cast<syncer::MockSyncService*>(
@@ -206,6 +221,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     OCMExpect(mediator_.delegate = nil);
     [coordinator_ stop];
     coordinator_ = nil;
+    delegate_ = nil;
+    sync_error_handler_ = nil;
   }
 
   // Signs in kPrimaryIdentity as primary identity.
@@ -234,7 +251,7 @@ TEST_F(AccountMenuCoordinatorTest, testManageYourGoogleAccount) {
   OCMExpect([view_controller_ presentViewController:[OCMArg any]
                                            animated:YES
                                          completion:nil]);
-  [coordinator_ didTapManageYourGoogleAccount];
+  [delegate_ didTapManageYourGoogleAccount];
   OCMExpect([mediator_ accountMenuIsUsable]);
   AssertOpenAndStop();
 }
@@ -257,7 +274,7 @@ TEST_F(AccountMenuCoordinatorTest, testManageYourGoogleAccountInvalidAuth) {
                                            animated:YES
                                          completion:nil]);
 
-  [coordinator_ didTapManageYourGoogleAccount];
+  [delegate_ didTapManageYourGoogleAccount];
 
   EXPECT_OCMOCK_VERIFY(reauthMock);
   AssertOpenAndStop();
@@ -266,7 +283,7 @@ TEST_F(AccountMenuCoordinatorTest, testManageYourGoogleAccountInvalidAuth) {
 // Tests that `didTapManageAccounts` has no impact on the view controller and
 // mediator.
 TEST_F(AccountMenuCoordinatorTest, testEditAccountList) {
-  [coordinator_ didTapManageAccounts];
+  [delegate_ didTapManageAccounts];
   AssertOpenAndStop();
 }
 
@@ -285,12 +302,12 @@ TEST_F(AccountMenuCoordinatorTest, testSignOut) {
                                                   snackbar_message = message;
                                                   return YES;
                                                 }]]);
-  [coordinator_ signOutFromTargetRect:rect
-                           completion:^(BOOL success, SceneState* scene_state) {
-                             EXPECT_TRUE(success);
-                             AssertOpenAndStop();
-                             closure.Run();
-                           }];
+  [delegate_ signOutFromTargetRect:rect
+                        completion:^(BOOL success, SceneState* scene_state) {
+                          EXPECT_TRUE(success);
+                          AssertOpenAndStop();
+                          closure.Run();
+                        }];
   run_loop.Run();
   ASSERT_NE(snackbar_message, nil);
   ASSERT_NE(snackbar_message.action, nil);
@@ -319,11 +336,11 @@ TEST_F(AccountMenuCoordinatorTest, testTriggerSignout) {
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();
   CGRect rect = CGRect();
-  [coordinator_ signOutFromTargetRect:rect
-                           completion:^(BOOL success, SceneState* scene_state) {
-                             EXPECT_TRUE(success);
-                             closure.Run();
-                           }];
+  [delegate_ signOutFromTargetRect:rect
+                        completion:^(BOOL success, SceneState* scene_state) {
+                          EXPECT_TRUE(success);
+                          closure.Run();
+                        }];
   run_loop.Run();
   AssertOpenAndStop();
 }
@@ -341,7 +358,7 @@ TEST_F(AccountMenuCoordinatorTest, testPassphrase) {
   id classMock =
       OCMClassMock([SyncEncryptionPassphraseTableViewController class]);
   OCMExpect([classMock alloc]).andReturn(passphraseViewController);
-  [coordinator_ openPassphraseDialogWithModalPresentation:YES];
+  [sync_error_handler_ openPassphraseDialogWithModalPresentation:YES];
   AssertOpenAndStop();
   EXPECT_OCMOCK_VERIFY(classMock);
 }
@@ -349,14 +366,14 @@ TEST_F(AccountMenuCoordinatorTest, testPassphrase) {
 // Tests that `openTrustedVaultReauthForFetchKeys` calls
 // `showTrustedVaultReauthForFetchKeysFromViewController`.
 TEST_F(AccountMenuCoordinatorTest, testFetchKeys) {
-  [coordinator_ openTrustedVaultReauthForFetchKeys];
+  [sync_error_handler_ openTrustedVaultReauthForFetchKeys];
   AssertOpenAndStop();
 }
 
 // Tests that `openTrustedVaultReauthForDegradedRecoverability` calls
 // `showTrustedVaultReauthForDegradedRecoverabilityFromViewController`.
 TEST_F(AccountMenuCoordinatorTest, testDegradedRecoverability) {
-  [coordinator_ openTrustedVaultReauthForDegradedRecoverability];
+  [sync_error_handler_ openTrustedVaultReauthForDegradedRecoverability];
   AssertOpenAndStop();
 }
 
@@ -364,7 +381,7 @@ TEST_F(AccountMenuCoordinatorTest, testDegradedRecoverability) {
 // the MDM dialog flow finishes.
 TEST_F(AccountMenuCoordinatorTest, testMDMError) {
   OCMExpect([mediator_ accountMenuIsUsable]);
-  [coordinator_ openMDMErrorDialogWithSystemIdentity:kPrimaryIdentity];
+  [sync_error_handler_ openMDMErrorDialogWithSystemIdentity:kPrimaryIdentity];
   AssertOpenAndStop();
 }
 
@@ -376,6 +393,6 @@ TEST_F(AccountMenuCoordinatorTest, testBookmarksLimitExceededHelp) {
                       kAccountMenu));
 
   OCMExpect([mock_scene_handler_ closePresentedViewsAndOpenURL:[OCMArg any]]);
-  [coordinator_ openBookmarksLimitExceededHelp];
+  [sync_error_handler_ openBookmarksLimitExceededHelp];
   AssertOpenAndStop();
 }
