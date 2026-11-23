@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -28,6 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -42,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -77,6 +80,7 @@ import org.chromium.google_apis.gaia.DeviceManagementErrorDetails;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.IOException;
 
@@ -431,6 +435,28 @@ public class SyncErrorMessageTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    public void testSyncErrorMessageForDeviceManagementErrorViewForSignedInUsers()
+            throws IOException {
+        SyncErrorMessage.setMessageDispatcherForTesting(null);
+        // Sign in.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(mContext, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
+        mFakeSyncServiceImpl.setAuthError(
+                GoogleServiceAuthError.fromDeviceManagementError(
+                        new DeviceManagementErrorDetails(pendingIntent)));
+
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+
+        ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
+        // Wait until the message ui is shown.
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
+        mRenderTestRule.render(view, "identity_error_message_device_management_error");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
     public void testSyncErrorMessageForPassphraseRequiredViewForSignedInUsers() throws IOException {
         SyncErrorMessage.setMessageDispatcherForTesting(null);
         // Sign in.
@@ -457,6 +483,54 @@ public class SyncErrorMessageTest {
         // Wait until the message ui is shown.
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
         mRenderTestRule.render(view, "identity_error_message_client_out_of_date");
+    }
+
+    @Test
+    @LargeTest
+    public void testActionForDeviceManagementErrorForSignedInUsers() throws Exception {
+        SyncErrorMessage.setMessageDispatcherForTesting(null);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Sync.IdentityErrorMessage.DeviceManagementError",
+                                SyncSettingsUtils.ErrorUiAction.SHOWN)
+                        .expectIntRecord(
+                                "Sync.IdentityErrorMessage.DeviceManagementError",
+                                SyncSettingsUtils.ErrorUiAction.BUTTON_CLICKED)
+                        .build();
+
+        // Sign in.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(
+                        mContext,
+                        0,
+                        new Intent(mContext, BlankUiTestActivity.class),
+                        PendingIntent.FLAG_IMMUTABLE);
+        mFakeSyncServiceImpl.setAuthError(
+                GoogleServiceAuthError.fromDeviceManagementError(
+                        new DeviceManagementErrorDetails(pendingIntent)));
+
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+        BlankUiTestActivity resolutionActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        BlankUiTestActivity.class,
+                        Stage.CREATED,
+                        /* uiThreadTrigger= */ null,
+                        /* backgroundThreadTrigger= */ () ->
+                                waitForView(
+                                                allOf(
+                                                        withId(R.id.message_primary_button),
+                                                        withText(
+                                                                R.string
+                                                                        .identity_error_card_button_device_management_error)))
+                                        .click());
+        ApplicationTestUtils.finishActivity(resolutionActivity);
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(getSyncErrorMessage(), Matchers.nullValue()));
+        histogramWatcher.assertExpected();
     }
 
     @Test
