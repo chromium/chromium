@@ -14,8 +14,10 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -30,9 +32,11 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tab_annotation_manager.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -64,6 +68,7 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -116,12 +121,12 @@
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+// TODO(crbug.com/588553212): Depend on the glic targets and remove nogncheck.
 #include "chrome/browser/glic/public/glic_keyed_service.h"  // nogncheck
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"  // nogncheck
 #include "chrome/browser/glic/test_support/glic_browser_test.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_source_info.h"
@@ -168,6 +173,15 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
 
   TabListInterface* tab_list() {
     return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
+  }
+
+  actor::ActorTask& session_actor_task() {
+    auto& session_controller_impl = static_cast<SessionControllerImpl&>(
+        CHECK_DEREF(ttc_service().session_controller()));
+    actor::ActorKeyedService& actor_service =
+        CHECK_DEREF(actor::ActorKeyedService::Get(profile()));
+    return CHECK_DEREF(
+        actor_service.GetTask(session_controller_impl.GetActorTaskId()));
   }
 
   void OpenForegroundTab(const GURL& url) {
@@ -2380,7 +2394,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
@@ -2415,12 +2430,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotDisallowedUrl) {
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kActionsBlockedForScheme);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
@@ -2441,12 +2458,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kActionsBlockedForSiteRisk);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
@@ -2465,12 +2484,15 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_TOOL_ERROR(
+      response,
+      actor::mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
@@ -2542,7 +2564,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
@@ -2552,8 +2575,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   // Focus has moved to the other window's tab, so the captured page is gone.
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(
-      response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
 
   SetBrowser(other_browser);
 }
@@ -2581,19 +2603,19 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      embedded_https_test_server().GetURL("example.com", "/title2.html")));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
 
   allow_safety_check.Signal();
 
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(
-      response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kCrossOriginNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotCrashedTab) {
@@ -2617,7 +2639,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotCrashedTab) {
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
@@ -2644,6 +2667,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
+  // Adding a tab to the task stops its pending navigations, so add it before
+  // starting the navigation below.
+  actor::ActorTask& actor_task = session_actor_task();
+  base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_result;
+  actor_task.AddTab(active_tab()->GetHandle(), /*stop_task_on_detach=*/true,
+                    add_tab_result.GetCallback());
+  ASSERT_TRUE(actor::IsOk(*add_tab_result.Get()));
+
   const GURL target_url =
       embedded_https_test_server().GetURL("example.com", "/title2.html");
   content::TestNavigationManager nav_manager(web_contents(), target_url);
@@ -2654,9 +2685,16 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
+  base::RunLoop tool_invoked;
+  actor_task.GetExecutionEngine().set_tool_invoke_callback_for_testing(
+      tool_invoked.QuitClosure());
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
+
+  // Wait for screenshot capture to start before finishing the navigation.
+  tool_invoked.Run();
 
   nav_manager.ResumeNavigation();
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
@@ -2698,14 +2736,17 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
+  tool_request.name =
+      std::string(actor::GetScreenshotToolRequest::kModelFacingName);
+  base::RunLoop tool_invoked;
+  session_actor_task()
+      .GetExecutionEngine()
+      .set_tool_invoke_callback_for_testing(tool_invoked.QuitClosure());
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
-  // Wait for the asynchronous URL check to finish and screenshot capture to
-  // start before closing the tab.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return web_contents()->IsBeingCaptured(); }));
+  // Wait for screenshot capture to start before closing the tab.
+  tool_invoked.Run();
 
   // Close the active tab while screenshot capture is in flight.
   tab_list()->CloseTab(captured_tab);
@@ -2851,6 +2892,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel,
       actor::ToolId::kSiteBasedSearch,
+      actor::ToolId::kGetScreenshot,
   };
   actor::ToolIdSet expected_tool_ids = kExpectedToolIds;
   if (window_tools_supported) {
@@ -2861,9 +2903,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor_service->tool_registry().GetToolsByIds(expected_tool_ids);
   ASSERT_EQ(expected_tools.size(), expected_tool_ids.size());
 
-  // click_element, set_text, select_option, scroll_page, get_screenshot,
+  // click_element, set_text, select_option, scroll_page,
   // close_voice_interface, and close_window where window tools are supported.
-  const size_t num_legacy_tools = window_tools_supported ? 7 : 6;
+  const size_t num_legacy_tools = window_tools_supported ? 6 : 5;
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
   ASSERT_EQ(tools.size(), expected_tools.size() + num_legacy_tools);
 
@@ -2876,7 +2918,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
               expected_tools[i]->parameters_json_schema);
     EXPECT_EQ(tools[i].behavior, ToolDefinition::Behavior::kBlocking);
     const auto expected_verbalization =
-        expected_tools[i]->id == actor::ToolId::kFindAndHighlight
+        (expected_tools[i]->id == actor::ToolId::kFindAndHighlight ||
+         expected_tools[i]->id == actor::ToolId::kGetScreenshot)
             ? ToolDefinition::Verbalization::kStandard
             : ToolDefinition::Verbalization::kSilentAction;
     EXPECT_EQ(tools[i].verbalization, expected_verbalization);
@@ -3005,16 +3048,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
                                   .Append("direction")
                                   .Append("node_id"));
 
-  const ToolDefinition& get_screenshot = tools[expected_tools.size() + 4];
-  EXPECT_EQ(get_screenshot.name, "get_screenshot");
-  EXPECT_FALSE(get_screenshot.description.empty());
-  EXPECT_EQ(get_screenshot.behavior, ToolDefinition::Behavior::kBlocking);
-  EXPECT_EQ(get_screenshot.verbalization,
-            ToolDefinition::Verbalization::kStandard);
-  EXPECT_TRUE(get_screenshot.parameters_json_schema.empty());
-
   const ToolDefinition& close_voice_interface =
-      tools[expected_tools.size() + 5];
+      tools[expected_tools.size() + 4];
   EXPECT_EQ(close_voice_interface.name, "close_voice_interface");
   EXPECT_FALSE(close_voice_interface.description.empty());
   EXPECT_EQ(close_voice_interface.behavior,
@@ -3024,7 +3059,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   EXPECT_TRUE(close_voice_interface.parameters_json_schema.empty());
 
   if (window_tools_supported) {
-    const ToolDefinition& close_window = tools[expected_tools.size() + 6];
+    const ToolDefinition& close_window = tools[expected_tools.size() + 5];
     EXPECT_EQ(close_window.name,
               actor::CloseWindowToolRequest::kModelFacingName);
     EXPECT_FALSE(close_window.description.empty());

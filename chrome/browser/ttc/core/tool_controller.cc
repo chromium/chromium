@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,9 +27,11 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
@@ -52,10 +54,8 @@
 #include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/get_pointer_tool.h"
-#include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
-#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -63,10 +63,8 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
@@ -378,6 +376,9 @@ void ToolController::RunToolCall(const ToolRequest& tool_request,
       case actor::ToolId::kSiteBasedSearch:
         SiteBasedSearch(tool_request.arguments, std::move(callback));
         return;
+      case actor::ToolId::kGetScreenshot:
+        GetScreenshot(std::move(callback));
+        return;
       default:
         break;
     }
@@ -403,11 +404,6 @@ void ToolController::RunToolCall(const ToolRequest& tool_request,
 
   if (tool_request.name == "scroll_page") {
     ScrollPage(tool_request.arguments, std::move(callback));
-    return;
-  }
-
-  if (tool_request.name == "get_screenshot") {
-    GetScreenshot(std::move(callback));
     return;
   }
 
@@ -443,7 +439,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kCreateTab,        actor::ToolId::kSwitchTab,
       actor::ToolId::kOpenUrl,          actor::ToolId::kEnterFullscreen,
       actor::ToolId::kExitFullscreen,   actor::ToolId::kOpenKnownPage,
-      actor::ToolId::kSiteBasedSearch,
+      actor::ToolId::kSiteBasedSearch,  actor::ToolId::kGetScreenshot,
   };
 
   actor::ToolIdSet supported_tool_ids = kSupportedToolIds;
@@ -454,10 +450,10 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor_service->tool_registry().GetToolsByIds(supported_tool_ids);
 
   // Tools defined below rather than taken from the registry: the legacy
-  // click_element, set_text, select_option, scroll_page, get_screenshot, and
+  // click_element, set_text, select_option, scroll_page, and
   // close_voice_interface; close_window where window tools are supported;
   // get_pointer behind its flag.
-  constexpr size_t kNumLocalTools = 8;
+  constexpr size_t kNumLocalTools = 7;
   std::vector<ToolDefinition> tools;
   tools.reserve(actor_tools.size() + kNumLocalTools);
   for (const actor::ToolDefinition* actor_tool : actor_tools) {
@@ -466,7 +462,8 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
     tool.description = actor_tool->description;
     tool.parameters_json_schema = actor_tool->parameters_json_schema.Clone();
     tool.behavior = ToolDefinition::Behavior::kBlocking;
-    tool.verbalization = actor_tool->id == actor::ToolId::kFindAndHighlight
+    tool.verbalization = (actor_tool->id == actor::ToolId::kFindAndHighlight ||
+                          actor_tool->id == actor::ToolId::kGetScreenshot)
                              ? ToolDefinition::Verbalization::kStandard
                              : ToolDefinition::Verbalization::kSilentAction;
     tools.push_back(std::move(tool));
@@ -591,15 +588,6 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   scroll_page.behavior = ToolDefinition::Behavior::kBlocking;
   scroll_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(scroll_page));
-
-  ToolDefinition get_screenshot;
-  get_screenshot.name = "get_screenshot";
-  get_screenshot.description =
-      "Capture a screenshot of the active webpage's current viewport.";
-  // The tool takes no arguments, so its schema is left empty.
-  get_screenshot.behavior = ToolDefinition::Behavior::kBlocking;
-  get_screenshot.verbalization = ToolDefinition::Verbalization::kStandard;
-  tools.push_back(std::move(get_screenshot));
 
   ToolDefinition close_voice_interface;
   close_voice_interface.name = "close_voice_interface";
@@ -738,107 +726,14 @@ void ToolController::FindAndHighlight(const base::DictValue& arguments,
       std::move(callback));
 }
 
-// TODO(b/573253710): Migrate this to be an actor tool once ActorKeyedService
-// returns `ToolResponse`s.
 void ToolController::GetScreenshot(ToolResponseCallback callback) {
-  content::WebContents* contents =
-      session_controller_->GetVoiceFocusedWebContents();
-  if (!contents) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
-    return;
-  }
-
-  content::Page& page = contents->GetPrimaryPage();
-  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
-  // The session this controller belongs to is owned by the TtcKeyedService.
-  const TtcKeyedService& ttc_service =
-      CHECK_DEREF(TtcKeyedService::Get(GetProfile()));
-
-  IsUrlSupportedForPageContext(
-      url, ttc_service.enterprise_policy_checker(),
-      base::BindOnce(&ToolController::OnGetScreenshotUrlChecked,
-                     weak_factory_.GetWeakPtr(), page.GetWeakPtr(),
-                     std::move(callback)));
-}
-
-void ToolController::OnGetScreenshotUrlChecked(
-    base::WeakPtr<content::Page> page,
-    ToolResponseCallback callback,
-    bool is_url_supported) {
-  content::WebContents* web_contents =
-      session_controller_->GetVoiceFocusedWebContents();
-  if (std::optional<ToolResponse> error =
-          CheckPageForCapture(web_contents, page, is_url_supported)) {
-    std::move(callback).Run(std::move(*error));
-    return;
-  }
-
-  page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions
-      collection_options;
-  collection_options.screenshot_image_format =
-      page_content_annotations::ScreenshotOptions::ScreenshotImageFormat::kJpeg;
-  collection_options.screenshot_compression_quality = page_content_annotations::
-      ScreenshotOptions::ScreenshotCompressionQuality::kHigh;
-
-  page_content_annotations::FetchPageContextOptions options;
-  options.screenshot_options =
-      page_content_annotations::ScreenshotOptions::ViewportOnly(
-          /*paint_preview_options=*/std::nullopt, collection_options);
-
-  screenshot_fetcher_ =
-      std::make_unique<page_content_annotations::PageContextFetcher>(
-          /*get_screenshot_service_callback=*/base::NullCallback(),
-          /*progress_listener=*/nullptr,
-          /*fetch_pdf_content_callback=*/base::NullCallback());
-  screenshot_fetcher_->FetchStart(
-      *web_contents, options,
-      base::BindOnce(&ToolController::OnGetScreenshotFetched,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ToolController::OnGetScreenshotFetched(
-    ToolResponseCallback callback,
-    base::expected<
-        std::unique_ptr<page_content_annotations::FetchPageContextResult>,
-        page_content_annotations::FetchPageContextErrorDetails> result) {
-  screenshot_fetcher_.reset();
-
-  if (!result.has_value()) {
-    std::move(callback).Run(
-        ToolResponse::Error(ToScreenshotErrorCode(result.error().error_code),
-                            result.error().message));
-    return;
-  }
-
-  // `PageContextFetcher` only reports success with a non-null result.
-  CHECK(result.value());
-  if (!result.value()->screenshot_result.has_value()) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
-        result.value()->screenshot_result.error().message));
-    return;
-  }
-
-  page_content_annotations::ScreenshotResult& screenshot_result =
-      *result.value()->screenshot_result;
-  if (screenshot_result.screenshot_data.empty()) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
-        "Captured screenshot data is empty"));
-    return;
-  }
-
-  // The image is sent to the model as visual content, i.e. as image bytes
-  // next to the result, so the result only describes it.
-  base::DictValue result_dict;
-  result_dict.Set("mime_type", screenshot_result.mime_type);
-  result_dict.Set("width", screenshot_result.dimensions.width());
-  result_dict.Set("height", screenshot_result.dimensions.height());
-  std::move(callback).Run(ToolResponse::Success(
-      std::move(result_dict),
-      VisualContent{.image_data = std::move(screenshot_result.screenshot_data),
-                    .mime_type = std::move(screenshot_result.mime_type)}));
+  PerformActionOnTrackedContents(
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::GetScreenshotToolRequest>(
+            actor_surface_handle);
+      },
+      std::move(callback));
 }
 
 void ToolController::GoBack(ToolResponseCallback callback) {
@@ -1254,13 +1149,34 @@ void ToolController::OnActionsFinished(
     actor::TabObservationStrategy strategy) {
   CHECK(!results.empty());
 
-  const actor::mojom::ActionResult& result =
-      *results[0].tool_result.deprecated_action_result();
-  if (!results[0].tool_result.Ok()) {
-    std::move(callback).Run(ToolResponse::Error(result.code, result.message));
+  const actor::ToolResult& tool_result = results[0].tool_result;
+  if (!tool_result.Ok()) {
+    const actor::ToolError& error = *tool_result.error();
+    std::move(callback).Run(
+        ToolResponse::Error(error.code, error.message.value_or(std::string())));
     return;
   }
-  std::move(callback).Run(ToolResponse::Success());
+
+  const actor::ToolResultData* data = tool_result.data();
+  if (!data) {
+    std::move(callback).Run(ToolResponse::Success());
+    return;
+  }
+
+  base::DictValue result_dict = data->ToDict();
+  std::optional<actor::ToolResultImage> image = data->GetImage();
+  if (image) {
+    // The image is sent to the model as visual content, i.e. as image bytes
+    // next to the result, so the result only describes it.
+    result_dict.Remove("image_b64");
+    std::move(callback).Run(ToolResponse::Success(
+        std::move(result_dict),
+        VisualContent{.image_data = base::ToVector(image->data),
+                      .mime_type = std::string(image->mime_type)}));
+    return;
+  }
+
+  std::move(callback).Run(ToolResponse::Success(std::move(result_dict)));
 }
 
 }  // namespace ttc
