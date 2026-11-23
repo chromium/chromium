@@ -60,6 +60,7 @@ class SVGRect final : public SVGPropertyBase {
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
+  void SetInitial();
 
   bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(

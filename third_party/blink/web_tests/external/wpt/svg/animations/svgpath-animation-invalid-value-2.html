@@ -23,8 +23,7 @@ async_test(t => {
         svg.setCurrentTime(2);
 
         requestAnimationFrame(t.step_func_done(() => {
-          assert_animated_path_equals(path,
-                               "M 40 40 L 60 40 L 60 60 L 40 60 z");
+          assert_animated_path_equals(path, "");
         }));
     }));
   });

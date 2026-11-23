@@ -58,6 +58,7 @@ class CORE_EXPORT SVGPath final : public SVGPropertyBase {
   SVGPath* Clone() const;
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
+  void SetInitial() { SetValueAsString(g_empty_string); }
 
   bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(

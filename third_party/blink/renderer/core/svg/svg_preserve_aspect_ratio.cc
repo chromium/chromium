@@ -181,12 +181,6 @@ SVGParsingError SVGPreserveAspectRatio::ParseInternal(
 SVGParsingError SVGPreserveAspectRatio::SetValueAsString(const String& string) {
   SetDefault();
 
-  // We have to allow null Strings here, because it corresponds to an
-  // attribute removal. We should hoist this into the attribute parsing
-  // driver instead.
-  if (string.IsNull()) {
-    return SVGParseStatus::kNoError;
-  }
   return VisitCharacters(
       string, [&](auto chars) { return ParseInternal(chars, true); });
 }

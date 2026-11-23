@@ -100,6 +100,7 @@ class SVGPreserveAspectRatio final : public SVGPropertyBase {
   }
   AnimatedPropertyType GetType() const override { return ClassType(); }
 
+  void SetInitial() { SetDefault(); }
   void SetDefault();
 
  private:

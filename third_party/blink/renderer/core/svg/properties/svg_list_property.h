@@ -73,6 +73,7 @@ class SVGListPropertyBase : public SVGPropertyBase {
 
  public:
   String ValueAsString() const final;
+  void SetInitial() { Clear(); }
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(values_);

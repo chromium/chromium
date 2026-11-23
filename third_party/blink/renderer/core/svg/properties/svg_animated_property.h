@@ -171,43 +171,29 @@ SVGParsingError SVGAnimatedPropertyBase::UpdateBaseValueFromAttribute(
   static_assert(Property::kInitialValueBits <= kInitialValueStorageBits,
                 "enough bits for the initial value");
 
-  if constexpr (Property::kInitialValueBits > 0) {
-    SVGParsingError parse_status = SVGParseStatus::kNoError;
-    if (!value.IsNull()) {
-      SetContentAttributeState(kHasValue);
+  SVGParsingError parse_status = SVGParseStatus::kNoError;
+  if (!value.IsNull()) {
+    SetContentAttributeState(kHasValue);
 
-      parse_status =
-          base_value.SetValueAsString(value, std::forward<Args>(args)...);
-      // If parsing succeeded, check for semantic errors.
-      if (parse_status == SVGParseStatus::kNoError) [[likely]] {
-        parse_status = validator(base_value);
-        if (parse_status == SVGParseStatus::kNoError) {
-          return parse_status;
-        }
-      }
-      SetContentAttributeState(kHasInvalidValue);
-    } else {
-      SetContentAttributeState(kNotSet);
-    }
-    base_value.SetInitial(InitialValueStorage());
-    return parse_status;
-  } else {
-    if (!value.IsNull()) {
-      SetContentAttributeState(kHasValue);
-    } else {
-      SetContentAttributeState(kNotSet);
-    }
-    SVGParsingError parse_status =
+    parse_status =
         base_value.SetValueAsString(value, std::forward<Args>(args)...);
     // If parsing succeeded, check for semantic errors.
     if (parse_status == SVGParseStatus::kNoError) [[likely]] {
       parse_status = validator(base_value);
+      if (parse_status == SVGParseStatus::kNoError) [[likely]] {
+        return parse_status;
+      }
     }
-    if (parse_status != SVGParseStatus::kNoError) {
-      SetContentAttributeState(kHasInvalidValue);
-    }
-    return parse_status;
+    SetContentAttributeState(kHasInvalidValue);
+  } else {
+    SetContentAttributeState(kNotSet);
   }
+  if constexpr (Property::kInitialValueBits > 0) {
+    base_value.SetInitial(InitialValueStorage());
+  } else {
+    base_value.SetInitial();
+  }
+  return parse_status;
 }
 
 template <typename Property>

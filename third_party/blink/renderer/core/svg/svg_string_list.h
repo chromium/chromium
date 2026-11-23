@@ -69,6 +69,7 @@ class SVGStringListBase : public SVGPropertyBase {
   void Replace(uint32_t, const String&);
 
   virtual SVGParsingError SetValueAsString(const String&) = 0;
+  void SetInitial() { Clear(); }
 
   // SVGPropertyBase:
   bool Add(const SVGPropertyBase*, const SVGElement*) override;

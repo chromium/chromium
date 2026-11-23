@@ -64,13 +64,6 @@ class SVGAngle final : public SVGPropertyBase {
   void SetValue(float);
   float Value() const;
 
-  // Technically speaking, we don't need any bits (it's always the
-  // same), but we want SetInitial to be called.
-  static constexpr int kInitialValueBits = 1;
-  void SetInitial(unsigned) {
-    NewValueSpecifiedUnits(kSvgAngletypeUnspecified, 0);
-  }
-
   void SetValueInSpecifiedUnits(float value_in_specified_units) {
     NewValueSpecifiedUnits(unit_type_, value_in_specified_units);
   }
@@ -91,6 +84,7 @@ class SVGAngle final : public SVGPropertyBase {
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
+  void SetInitial() { NewValueSpecifiedUnits(kSvgAngletypeUnspecified, 0); }
 
   bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(

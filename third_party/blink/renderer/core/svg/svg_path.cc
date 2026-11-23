@@ -135,7 +135,9 @@ SVGParsingError SVGPath::SetValueAsString(const String& string) {
   if (parse_status == SVGParseStatus::kNoError) {
     AddToCache(string, path_value_.Get());
   }
-  return parse_status;
+  // Don't signal errors. That would reset the path data, and on errors all
+  // valid data up to that point should be kept.
+  return SVGParseStatus::kNoError;
 }
 
 bool SVGPath::Add(const SVGPropertyBase* other, const SVGElement*) {

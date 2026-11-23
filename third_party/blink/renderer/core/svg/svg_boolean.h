@@ -65,6 +65,7 @@ class SVGBoolean final : public SVGPropertyBase {
 
   bool Value() const { return value_; }
   void SetValue(bool value) { value_ = value; }
+  void SetInitial() { value_ = false; }
 
   static AnimatedPropertyType ClassType() { return kAnimatedBoolean; }
   AnimatedPropertyType GetType() const override { return ClassType(); }

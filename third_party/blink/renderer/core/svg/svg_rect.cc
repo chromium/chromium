@@ -60,20 +60,14 @@ SVGParsingError SVGRect::Parse(base::span<const CharType> span) {
 }
 
 SVGParsingError SVGRect::SetValueAsString(const String& string) {
+  return VisitCharacters(string, [&](auto chars) { return Parse(chars); });
+}
+
+void SVGRect::SetInitial() {
   // In case the string is invalid, the rect will be treated as invalid.
   is_valid_ = false;
   // Also clear the existing values.
   Set(0, 0, 0, 0);
-
-  // We have to allow null Strings here, because it corresponds to an attribute
-  // removal. We should hoist this into the attribute parsing driver instead.
-  if (string.IsNull())
-    return SVGParseStatus::kNoError;
-
-  if (string.empty())
-    return SVGParsingError(SVGParseStatus::kExpectedNumber, 0);
-
-  return VisitCharacters(string, [&](auto chars) { return Parse(chars); });
 }
 
 String SVGRect::ValueAsString() const {

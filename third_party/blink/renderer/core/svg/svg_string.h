@@ -69,6 +69,7 @@ class SVGString final : public SVGPropertyBase {
 
   const String& Value() const { return value_; }
   void SetValue(const String& value) { value_ = value; }
+  void SetInitial() { value_ = String(); }
 
   static AnimatedPropertyType ClassType() { return kAnimatedString; }
   AnimatedPropertyType GetType() const override { return ClassType(); }
