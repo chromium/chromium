@@ -425,7 +425,15 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
       base::RandBytes(temp);
       const auto kFillColor =
           SkColorSetARGB(temp[0], temp[1], temp[2], temp[3]);
-      test_buffers_color[id] = kFillColor;
+      const bool is_transparent =
+          SkColorGetA(kFillColor) == SK_AlphaTRANSPARENT;
+      if (is_transparent) {
+        // Fully transparent pixels do not preserve RGB values through the
+        // round-trip.
+        test_buffers_color[id] = SK_ColorTRANSPARENT;
+      } else {
+        test_buffers_color[id] = kFillColor;
+      }
     }
 
     GetFrameData(true);
