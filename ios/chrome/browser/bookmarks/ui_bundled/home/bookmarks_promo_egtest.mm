@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::BookmarksHomeDoneButton;
@@ -56,6 +58,9 @@ using chrome_test_util::SettingsDoneButton;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testNonModalSignInPromoStartsSignin)]) {
+    config.iph_feature_enabled = "IPH_iOSPromoNonModalSigninBookmark";
+  }
   if ([self isRunningTest:@selector(testSyncTypesListDisabled)]) {
     // Configure the policy.
     config.additional_args.push_back(
@@ -647,6 +652,33 @@ using chrome_test_util::SettingsDoneButton;
       [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kBookmarks],
       @"Bookmarks should be enabled.");
+}
+
+// Tests end-to-end that tapping "Sign in" on the bookmark non-modal sign-in
+// promo banner (presented as an infobar banner overlay after starring a tab)
+// starts the sign-in flow.
+- (void)testNonModalSignInPromoStartsSignin {
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:bookmarkedURL];
+  [ChromeEarlGrey waitForWebStateVisibleURL:bookmarkedURL];
+
+  [BookmarkEarlGreyUI starCurrentTab];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kInfobarBannerAcceptButtonIdentifier)];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kInfobarBannerAcceptButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // With no identities on device, the sign-in flow starts with the add account
+  // screen.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      FakeAddAccountScreenCancelButton()];
+  [[EarlGrey selectElementWithMatcher:FakeAddAccountScreenCancelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      FakeAddAccountScreenCancelButton()];
 }
 
 @end

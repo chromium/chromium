@@ -350,6 +350,7 @@ chromium-metrics-reviews@google.com.
   <int value="138" label="FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS"/>
   <int value="139" label="PASSWORD_SAVED_INFOBAR_DELEGATE_IOS"/>
   <int value="140" label="CONTEXTUAL_CUE_INFOBAR_DELEGATE_IOS"/>
+  <int value="141" label="NON_MODAL_SIGNIN_PROMO_INFOBAR_DELEGATE_IOS"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/infobars/core/infobar_delegate.h:InfoBarIdentifier) -->

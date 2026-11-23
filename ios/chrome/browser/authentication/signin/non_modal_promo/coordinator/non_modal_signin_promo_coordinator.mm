@@ -4,65 +4,47 @@
 
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 
-#import "base/notreached.h"
-#import "components/feature_engagement/public/tracker.h"
+#import "base/check.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_mediator.h"
-#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_metrics_util.h"
-#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
-#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_view_controller.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util_mac.h"
-
-namespace {
-// The size of the logo image.
-constexpr CGFloat kLogoSize = 22;
-}  // namespace
 
 @interface NonModalSignInPromoCoordinator () <
     NonModalSignInPromoMediatorDelegate>
-
-@property(nonatomic, strong) InfobarBannerViewController* bannerViewController;
-
 @end
 
 @implementation NonModalSignInPromoCoordinator {
-  // The mediator responsible for the business logic.
+  // The mediator responsible for the business logic. Set in `-start` and reset
+  // in `-stop`.
   NonModalSignInPromoMediator* _mediator;
   // The type of promo to be displayed.
   NonModalSignInPromoType _promoType;
-  raw_ptr<feature_engagement::Tracker> _tracker;
-  // Whether the latest displayed infobar is not yet tapped.
-  BOOL _infobarUntapped;
   // The sign-in coordinator if it is opened.
   SigninCoordinator* _signinCoordinator;
+  // Whether the mediator ended the promo while `_signinCoordinator` was still
+  // running, so this coordinator should end once sign-in finishes.
+  BOOL _shouldDismissPending;
+  // Whether this coordinator has been stopped.
+  BOOL _stopped;
 }
-
-// Synthesize because readonly property from superclass is changed to readwrite.
-@synthesize bannerViewController = _bannerViewController;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                  promoType:(NonModalSignInPromoType)promoType {
-  self = [super initWithBaseViewController:viewController
-                                   browser:browser
-                                      type:InfobarType::kInfobarTypeSignin];
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     CHECK(viewController);
     CHECK(browser);
-    CHECK_EQ(browser->type(), Browser::Type::kRegular);
-    self.shouldUseDefaultDismissal = NO;
     _promoType = promoType;
-    _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
   }
   return self;
 }
@@ -74,204 +56,75 @@ constexpr CGFloat kLogoSize = 22;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  self.started = YES;
-  // Create and configure the mediator
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.profile);
-
+  // Sign-in is for the regular profile, even from an incognito browser.
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   _mediator = [[NonModalSignInPromoMediator alloc]
-      initWithAuthenticationService:authService
-                    identityManager:identityManager
-           featureEngagementTracker:_tracker
+      initWithAuthenticationService:AuthenticationServiceFactory::GetForProfile(
+                                        profile)
+                    identityManager:IdentityManagerFactory::GetForProfile(
+                                        profile)
+           featureEngagementTracker:feature_engagement::TrackerFactory::
+                                        GetForProfile(profile)
+                       webStateList:self.browser->GetWebStateList()
+                   overlayPresenter:OverlayPresenter::FromBrowser(
+                                        self.browser,
+                                        OverlayModality::kInfobarBanner)
+      browserViewVisibilityNotifier:BrowserViewVisibilityNotifierBrowserAgent::
+                                        FromBrowser(self.browser)
                           promoType:_promoType];
-
   _mediator.delegate = self;
-
   [_mediator startPromoDisplayTimer];
 }
 
 - (void)stop {
+  if (_stopped) {
+    return;
+  }
+  _stopped = YES;
   [_mediator disconnect];
+  _mediator.delegate = nil;
   _mediator = nil;
-  // Clean up the banner if it's being displayed.
-  [self hideBannerUI];
   [self stopSigninCoordinator];
   [super stop];
 }
 
-#pragma mark - Private Methods
-
-// Stops and cleans up the sign-in coordinator.
-- (void)stopSigninCoordinator {
-  [_signinCoordinator stop];
-  _signinCoordinator = nil;
-}
-
-// Notifies the feature engagement tracker that the promo has been dismissed.
-- (void)notifyFeatureEngagementDismissed {
-  if (self.bannerWasPresented) {
-    switch (_promoType) {
-      case NonModalSignInPromoType::kPassword:
-        _tracker->Dismissed(
-            feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
-        break;
-      case NonModalSignInPromoType::kBookmark:
-        _tracker->Dismissed(
-            feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
-        break;
-    }
-  }
-}
-
-// Stops timers, hides banner UI, and dismisses the coordinator if needed.
-- (void)cleanupUIAndDismiss {
-  [_mediator stopTimeOutTimers];
-
-  [self hideBannerUI];
-  if (!_signinCoordinator) {
-    [self.delegate dismissNonModalSignInPromo:self];
-  }
-}
-
-// Dismisses the banner view controller when interaction is finished.
-- (void)hideBannerUI {
-  if (self.bannerViewController) {
-    [self.bannerViewController dismissWhenInteractionIsFinished];
-  }
-}
-
-// Configures the banner with title, subtitle, button text, and icon based on
-// promo type.
-- (void)configureBanner {
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_PROMPT);
-  NSString* buttonLabel =
-      l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_SIGNIN_BUTTON);
-
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  UIImage* icon = MakeSymbolMulticolor(
-      SymbolWithPointSize(SymbolMulticolorChromeball, kLogoSize));
-#else
-  UIImage* icon = SymbolWithPointSize(SymbolChromeProduct, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-
-  NSString* subtitle;
-
-  // Configure subtitle based on promo type
-  switch (_promoType) {
-    case NonModalSignInPromoType::kPassword:
-      subtitle =
-          l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_SAVE_PASSWORD);
-      break;
-
-    case NonModalSignInPromoType::kBookmark:
-      subtitle =
-          l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_ADD_BOOKMARK);
-      break;
-  }
-
-  // Configure the banner with the content
-  [self.bannerViewController setTitleText:title];
-  [self.bannerViewController setSubtitleText:subtitle];
-  [self.bannerViewController setButtonText:buttonLabel];
-  [self.bannerViewController setIconImage:icon];
-  [self.bannerViewController setUseIconBackgroundTint:NO];
-  [self.bannerViewController setPresentsModal:NO];
-}
-
-#pragma mark - InfobarBannerDelegate
-
-- (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  [self performInfobarAction];
-}
-
 #pragma mark - NonModalSignInPromoMediatorDelegate
 
-- (void)nonModalSignInPromoMediatorTimerExpired:
+- (BOOL)nonModalSignInPromoMediatorCanDisplayPromo:
     (NonModalSignInPromoMediator*)mediator {
-  if (mediator != _mediator || self.bannerViewController) {
-    return;
-  }
+  // The banner can only be seen on the browser view, e.g. not in the tab grid.
+  return self.baseViewController.view.window != nil;
+}
 
-  _infobarUntapped = YES;
-  self.bannerViewController = [[InfobarBannerViewController alloc]
-      initWithDelegate:self
-         presentsModal:NO
-                  type:InfobarType::kInfobarTypeSignin];
-
-  [self configureBanner];
-
-  // Record metrics for promo is appearing.
-  LogNonModalSignInPromoAction(NonModalSignInPromoAction::kAppear, _promoType);
-
-  [self presentInfobarBannerAnimated:YES completion:nil];
+- (void)nonModalSignInPromoMediatorDidAccept:
+    (NonModalSignInPromoMediator*)mediator {
+  [self startSignin];
 }
 
 - (void)nonModalSignInPromoMediatorShouldDismiss:
     (NonModalSignInPromoMediator*)mediator {
-  if (mediator != _mediator) {
+  if (_signinCoordinator) {
+    _shouldDismissPending = YES;
     return;
   }
-
-  [self cleanupUIAndDismiss];
+  [self endPromo];
 }
 
-#pragma mark - InfobarCoordinatorImplementation
+#pragma mark - Private
 
-- (BOOL)configureModalViewController {
-  return NO;
-}
-
-- (BOOL)isInfobarAccepted {
-  return NO;
-}
-
-- (BOOL)infobarBannerActionWillPresentModal {
-  return NO;
-}
-
-- (void)infobarBannerWasPresented {
-  // No-op.
-}
-
-- (void)infobarModalPresentedFromBanner:(BOOL)presentedFromBanner {
-  // No-op.
-}
-
-- (void)dismissBannerIfReady {
-  [self.bannerViewController dismissWhenInteractionIsFinished];
-}
-
-- (BOOL)infobarActionInProgress {
-  return NO;
-}
-
-- (void)performInfobarAction {
-  if (!_infobarUntapped) {
-    // Double tap. Ignore
+// Asks the delegate to stop this coordinator.
+- (void)endPromo {
+  if (_stopped) {
     return;
   }
+  [self.delegate dismissNonModalSignInPromo:self];
+}
 
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  if (!signin::SigninIsPossible(authService)) {
-    // The promo is not scheduled if the user is signed-in or if sign-in is
-    // disabled. Still, due to asynchronicity, the state could have changed in
-    // the meantime, so we need to check again before displaying the sign-in
-    // coordinator.
-    [self cleanupUIAndDismiss];
+// Starts the sign-in flow when the user taps the promo's action button.
+- (void)startSignin {
+  if (_signinCoordinator) {
     return;
   }
-  _infobarUntapped = NO;
-  // Log sign-in action when user taps the sign-in button
-  LogNonModalSignInPromoAction(NonModalSignInPromoAction::kAccept, _promoType);
-
-  [self hideBannerUI];
-
-  // Select the appropriate access point based on promo type
   signin_metrics::AccessPoint accessPoint;
   switch (_promoType) {
     case NonModalSignInPromoType::kPassword:
@@ -281,13 +134,15 @@ constexpr CGFloat kLogoSize = 22;
       accessPoint = signin_metrics::AccessPoint::kNonModalSigninBookmarkPromo;
       break;
   }
+  // Sign-in is for the regular profile, even from an incognito browser.
+  Browser* regularBrowser = signin::GetRegularBrowser(self.browser);
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   _signinCoordinator = [SigninCoordinator
       signinAndHistorySyncCoordinatorWithBaseViewController:
           self.baseViewController
-                                                    browser:self.browser
+                                                    browser:regularBrowser
                                                contextStyle:contextStyle
                                                 accessPoint:accessPoint
                                                 promoAction:promoAction
@@ -299,34 +154,25 @@ constexpr CGFloat kLogoSize = 22;
   _signinCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator,
         SigninCoordinatorResultOrIdentity result) {
-        [weakSelf actionCallbackWithCoordinator:coordinator];
+        [weakSelf signinCoordinatorDidFinish:coordinator];
       };
   [_signinCoordinator start];
 }
 
-- (void)actionCallbackWithCoordinator:(SigninCoordinator*)coordinator {
+// Called when the sign-in flow started from the promo is finished.
+- (void)signinCoordinatorDidFinish:(SigninCoordinator*)coordinator {
   CHECK_EQ(_signinCoordinator, coordinator);
   [self stopSigninCoordinator];
-  [self.delegate dismissNonModalSignInPromo:self];
-}
-
-- (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
-  // Stop showing the promo if user manually dismissed it.
-  if (userInitiated) {
-    // Log user dismissal.
-    LogNonModalSignInPromoAction(NonModalSignInPromoAction::kDismiss,
-                                 _promoType);
+  if (_shouldDismissPending) {
+    _shouldDismissPending = NO;
+    [self endPromo];
   }
 }
 
-- (void)infobarWasDismissed {
-  [self notifyFeatureEngagementDismissed];
-  [self cleanupUIAndDismiss];
-  self.bannerViewController = nil;
-}
-
-- (CGFloat)infobarModalHeightForWidth:(CGFloat)width {
-  NOTREACHED();
+// Stops and cleans up the sign-in coordinator.
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 @end

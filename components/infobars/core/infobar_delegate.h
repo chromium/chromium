@@ -218,6 +218,7 @@ class InfoBarDelegate {
     FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS = 138,
     PASSWORD_SAVED_INFOBAR_DELEGATE_IOS = 139,
     CONTEXTUAL_CUE_INFOBAR_DELEGATE_IOS = 140,
+    NON_MODAL_SIGNIN_PROMO_INFOBAR_DELEGATE_IOS = 141,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:InfoBarIdentifier)
 

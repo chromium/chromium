@@ -1,7 +1,10 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/browser_view/model",
+  "+ios/chrome/browser/browser_view/public",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
-  "+ios/chrome/browser/infobars/ui_bundled",
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/signin/model",
   # keep-sorted end
 ]

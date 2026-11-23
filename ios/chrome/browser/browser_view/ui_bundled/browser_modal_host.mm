@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_private_inference_notice_coordinator.h"
@@ -1836,7 +1835,7 @@ const char kContextPanelDismissedHistogram[] =
   }
   _nonModalSignInPromoCoordinator = [[NonModalSignInPromoCoordinator alloc]
       initWithBaseViewController:_baseViewController
-                         browser:signin::GetRegularBrowser(_browser)
+                         browser:_browser
                        promoType:promoType];
   _nonModalSignInPromoCoordinator.delegate = self;
   [_nonModalSignInPromoCoordinator start];

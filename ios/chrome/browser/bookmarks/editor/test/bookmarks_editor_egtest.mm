@@ -2,18 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/infobars/ui_bundled/infobar_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+
+namespace {
+
+// Histogram recording the actions on the non-modal bookmark sign-in promo, and
+// its `NonModalSignInPromoAction` buckets.
+NSString* const kBookmarkPromoHistogram = @"IOS.SignInPromo.NonModal.Bookmark";
+constexpr int kPromoAppearBucket = 1;
+constexpr int kPromoTimeoutBucket = 3;
+
+}  // namespace
 
 // Test suite for the Bookmarks Editor.
 @interface BookmarksEditorTestCase : ChromeTestCase
@@ -224,6 +241,64 @@
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kBookmarkEditViewContainerIdentifier)];
+}
+
+// Tests that the bookmarks editor opened while the non-modal sign-in promo
+// banner is visible is not dismissed when the banner times out. Previously the
+// banner was presented directly on the BVC, so presenting the editor over it
+// caused the banner's timeout dismissal to dismiss the editor too.
+- (void)testEditorStaysOpenAfterPromoBannerTimeout {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.iph_feature_enabled = "IPH_iOSPromoNonModalSigninBookmark";
+  // Let the promo banner time out while the editor is presented.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kUseDefaultInfobarDuration);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [BookmarkEarlGrey waitForBookmarkModelLoaded];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:bookmarkedURL];
+  [ChromeEarlGrey waitForWebStateVisibleURL:bookmarkedURL];
+
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+  [BookmarkEarlGreyUI starCurrentTab];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kInfobarBannerViewIdentifier)];
+
+  // Open the editor from the snackbar while the banner is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kSnackbarButtonAccessibilityId),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kBookmarkEditViewContainerIdentifier)];
+
+  // Wait for the banner to time out.
+  ConditionBlock timedOut = ^{
+    return [MetricsAppInterface expectCount:1
+                                  forBucket:kPromoTimeoutBucket
+                               forHistogram:kBookmarkPromoHistogram] == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kInfobarBannerDefaultPresentationDuration +
+                     base::test::ios::kWaitForUIElementTimeout,
+                 timedOut),
+             @"The promo banner didn't time out.");
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:kPromoAppearBucket
+      forHistogram:kBookmarkPromoHistogram]);
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 }
 
 @end

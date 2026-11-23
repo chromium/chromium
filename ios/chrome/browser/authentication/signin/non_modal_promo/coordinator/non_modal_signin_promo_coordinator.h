@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_NON_MODAL_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_COORDINATOR_H_
 
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
-#import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class NonModalSignInPromoCoordinator;
 
@@ -18,22 +18,22 @@
 
 @end
 
-// Coordinator managing the non modal sign in promo.
-@interface NonModalSignInPromoCoordinator : InfobarCoordinator
+// Coordinator managing the non modal sign in promo, which is displayed as an
+// infobar banner on the active tab of `browser`.
+@interface NonModalSignInPromoCoordinator : ChromeCoordinator
 
 // The delegate to stop this coordinator.
 @property(nonatomic, weak) id<NonModalSignInPromoCoordinatorDelegate> delegate;
 
 // Creates a coordinator that uses `viewController`,`browser` and `promoType`.
+// `viewController` is the browser view of `browser`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                  promoType:(NonModalSignInPromoType)promoType
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                      type:(InfobarType)infobarType
-    NS_UNAVAILABLE;
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

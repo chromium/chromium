@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "non_modal_signin_promo_infobar_delegate.h",
+    "non_modal_signin_promo_infobar_delegate.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/infobars/core",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
