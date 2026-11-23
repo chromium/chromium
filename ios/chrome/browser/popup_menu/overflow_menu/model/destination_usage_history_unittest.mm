@@ -98,6 +98,9 @@ class DestinationUsageHistoryTest : public PlatformTest {
 
   // Create pref registry for tests.
   void CreatePrefs() {
+    // Stop any existing `destination_usage_history_` before replacing `prefs_`.
+    [destination_usage_history_ stop];
+    destination_usage_history_ = nil;
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterDictionaryPref(
         prefs::kOverflowMenuDestinationUsageHistory, PrefRegistry::LOSSY_PREF);

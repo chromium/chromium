@@ -212,7 +212,15 @@ base::DictValue DictFromBadgeData(const BadgeData badgeData) {
 #pragma mark - Property Setters/Getters
 
 - (void)setLocalStatePrefs:(PrefService*)localStatePrefs {
+  [self.destinationUsageHistory stop];
+  self.destinationUsageHistory = nil;
+  [_destinationUsageHistoryEnabled stop];
+  _destinationUsageHistoryEnabled = nil;
+
   _localStatePrefs = localStatePrefs;
+  if (!_localStatePrefs) {
+    return;
+  }
 
   if (!_isIncognito) {
     self.destinationUsageHistory =
