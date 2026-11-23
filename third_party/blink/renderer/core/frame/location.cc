@@ -175,6 +175,13 @@ void Location::setProtocol(v8::Isolate* isolate,
     return;
   }
 
+  // The spec terminates these steps without navigating when the new scheme is
+  // not HTTP or HTTPS.
+  if (RuntimeEnabledFeatures::LocationProtocolSetterHttpOnlyEnabled() &&
+      !url.ProtocolIsInHttpFamily()) {
+    return;
+  }
+
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
 }

@@ -4398,6 +4398,13 @@
       depends_on: ["WebSocketOptionBag"],
     },
     {
+      // Kill switch for https://crbug.com/41293729 which makes the
+      // location.protocol setter stop navigating for non-HTTP(S) schemes,
+      // as required by the HTML spec.
+      name: "LocationProtocolSetterHttpOnly",
+      status: "stable",
+    },
+    {
       name: "LockedMode",
       status: "test",
       // Enabled by features::kLockedMode.
