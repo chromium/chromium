@@ -31,8 +31,8 @@
 
 #button {
   /* Set padding variables for the nested button */
-  --toolbar-chip-padding-start: var(--avatar-chip-padding-left);
-  --toolbar-chip-padding-end: var(--avatar-chip-padding-right);
+  --toolbar-chip-padding-start: var(--avatar-chip-padding-start);
+  --toolbar-chip-padding-end: var(--avatar-chip-padding-end);
   /* Overrides toolbar-chip-button's "min-width: max-content", so its width can
    * be constrained below that of its full label, which then shrinks to fit.
    * It still won't be shrunk by flex layout, since it has "flex-shrink: 0". */
@@ -185,9 +185,9 @@
 
 #button[has-linear-gradient-ring] {
   --toolbar-chip-padding-start:
-      calc(var(--avatar-chip-padding-left) - var(--avatar-ring-delta));
+      calc(var(--avatar-chip-padding-start) - var(--avatar-ring-delta));
   --toolbar-chip-padding-end:
-      calc(var(--avatar-chip-padding-right) - var(--avatar-ring-delta));
+      calc(var(--avatar-chip-padding-end) - var(--avatar-ring-delta));
 }
 
 #button[has-linear-gradient-ring] #icon {

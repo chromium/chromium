@@ -37,7 +37,7 @@ icon-from-table {
 
   overflow: hidden;
   padding-block: var(--location-bar-child-interior-padding);
-  padding-inline-start: var(--location-bar-icon-interior-padding-left);
+  padding-inline-start: var(--location-bar-icon-interior-padding-start);
 
   padding-inline-end: var(--location-bar-icon-label-bubble-space-beside-separator);
 

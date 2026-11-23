@@ -48,8 +48,8 @@ suite('AvatarButtonTest', function() {
     toolbar.style.display = 'flex';
     toolbar.style.setProperty('--toolbar-button-height', `${BUTTON_HEIGHT}px`);
     toolbar.style.setProperty('--toolbar-button-icon-size', '20px');
-    toolbar.style.setProperty('--avatar-chip-padding-left', '10px');
-    toolbar.style.setProperty('--avatar-chip-padding-right', '4px');
+    toolbar.style.setProperty('--avatar-chip-padding-start', '10px');
+    toolbar.style.setProperty('--avatar-chip-padding-end', '4px');
     toolbar.style.setProperty('--avatar-chip-icon-label-spacing', '6px');
     // Remove the inner button's outer margins, which are the difference
     // between these, to keep the widths below simple.

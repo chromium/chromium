@@ -417,15 +417,6 @@ void WebUIToolbarLayoutCssHelper::AddInsets(std::string_view prefix,
   base::StrAppend(
       &css_string,
       {prefix, "-bottom:", base::NumberToString(insets.bottom()), "px;"});
-  // TODO(crbug.com/538651978): Deprecate physical -left and -right variables
-  // in favor of logical -start and -end once all WebUI toolbar components
-  // adopt logical CSS properties.
-  base::StrAppend(
-      &css_string,
-      {prefix, "-left:", base::NumberToString(insets.left()), "px;"});
-  base::StrAppend(
-      &css_string,
-      {prefix, "-right:", base::NumberToString(insets.right()), "px;"});
   // Output logical -start and -end variables so WebUI stylesheets can use
   // logical CSS rules without relying on physical -left or -right variables,
   // correctly accommodating both LTR and RTL layouts.

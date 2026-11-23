@@ -44,8 +44,8 @@
 toolbar-chip-button {
   --toolbar-chip-icon-size: var(--toolbar-button-icon-size);
   --toolbar-chip-icon-label-gap: var(--app-menu-button-image-label-padding);
-  --toolbar-chip-padding-start: var(--app-menu-chip-padding-left);
-  --toolbar-chip-padding-end: var(--app-menu-chip-padding-right);
+  --toolbar-chip-padding-start: var(--app-menu-chip-padding-start);
+  --toolbar-chip-padding-end: var(--app-menu-chip-padding-end);
   --toolbar-chip-font-family: var(--toolbar-button-font-family);
   --toolbar-chip-font-size: var(--toolbar-button-font-size);
   --toolbar-chip-font-weight: var(--toolbar-button-font-weight);
