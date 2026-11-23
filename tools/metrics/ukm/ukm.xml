@@ -8519,7 +8519,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="CookieHasNonAsciiCharacter">
-  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <summary>
     A collection of metrics which are recorded for cookies which include at
     least one non-ascii unicode character in either their name or value fields.
@@ -8541,8 +8542,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Cookies.Blocked.DueToOriginMismatch">
-  <owner>amarjotgill@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
   <summary>
     A collection of metrics which are recorded for cookies which will be blocked
     due to an origin mismatch, this means either the port or scheme it is being
@@ -21468,7 +21468,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SamesiteRedirectContextDowngrade">
-  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <summary>
     A collection of metrics which are recorded for cookies whose inclusion would
     be changed if the redirect chain was considered in their same-site
