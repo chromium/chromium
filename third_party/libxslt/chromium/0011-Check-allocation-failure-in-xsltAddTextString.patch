@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Emmanuele Bassi <ebassi@igalia.com>
+Date: Mon, 16 Nov 2026 09:35:00 +0000
+Subject: [PATCH] Check allocation failure in xsltAddTextString
+
+When appending text to an existing text or CDATA node outside the
+lasttext fast path, xsltAddTextString ignored the return value of
+xmlNodeAddContent and unconditionally stored target->content in
+ctxt->lasttext. If xmlStrncatNew failed (for example due to INT_MAX
+length limits or allocation failure), target->content remained unchanged
+(such as an interned string in style->dict) and a subsequent append
+passed that pointer to xmlRealloc.
+
+Use xmlNodeAddContentLen, reset ctxt->lasttext and report an error when
+it fails, and check that ctxt->lasttext is non-NULL before entering the
+in-place coalescing branch.
+---
+ libxslt/transform.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/libxslt/transform.c b/libxslt/transform.c
+index 7e00995d87145..fedbe1f717795 100644
+--- a/libxslt/transform.c
++++ b/libxslt/transform.c
+@@ -805,7 +805,7 @@ xsltAddChild(xmlNodePtr parent, xmlNodePtr cur) {
+  *
+  * Extend the current text node with the new string, it handles coalescing
+  *
+- * Returns: the text node
++ * Returns: the text node, or NULL in case of error
+  */
+ static xmlNodePtr
+ xsltAddTextString(xsltTransformContextPtr ctxt, xmlNodePtr target,
+@@ -816,7 +816,7 @@ xsltAddTextString(xsltTransformContextPtr ctxt, xmlNodePtr target,
+     if ((len <= 0) || (string == NULL) || (target == NULL))
+         return(target);
+ 
+-    if (ctxt->lasttext == target->content) {
++    if ((ctxt->lasttext != NULL) && (ctxt->lasttext == target->content)) {
+         int minSize;
+ 
+         /* Check for integer overflow accounting for NUL terminator. */
+@@ -857,7 +857,12 @@ xsltAddTextString(xsltTransformContextPtr ctxt, xmlNodePtr target,
+ 	ctxt->lasttuse += len;
+ 	target->content[ctxt->lasttuse] = 0;
+     } else {
+-	xmlNodeAddContent(target, string);
++	if (xmlNodeAddContentLen(target, string, len) != 0) {
++	    ctxt->lasttext = NULL;
++	    xsltTransformError(ctxt, NULL, target,
++		"xsltCopyText: text allocation failed\n");
++	    return(NULL);
++	}
+ 	ctxt->lasttext = target->content;
+ 	len = xmlStrlen(target->content);
+ 	ctxt->lasttsize = len;
+--

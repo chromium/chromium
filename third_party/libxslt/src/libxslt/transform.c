@@ -805,7 +805,7 @@ xsltAddChild(xmlNodePtr parent, xmlNodePtr cur) {
  *
  * Extend the current text node with the new string, it handles coalescing
  *
- * Returns: the text node
+ * Returns: the text node, or NULL in case of error
  */
 static xmlNodePtr
 xsltAddTextString(xsltTransformContextPtr ctxt, xmlNodePtr target,
@@ -816,7 +816,7 @@ xsltAddTextString(xsltTransformContextPtr ctxt, xmlNodePtr target,
     if ((len <= 0) || (string == NULL) || (target == NULL))
         return(target);
 
-    if (ctxt->lasttext == target->content) {
+    if ((ctxt->lasttext != NULL) && (ctxt->lasttext == target->content)) {
         int minSize;
 
         /* Check for integer overflow accounting for NUL terminator. */
@@ -857,7 +857,12 @@ xsltAddTextString(xsltTransformContextPtr ctxt, xmlNodePtr target,
 	ctxt->lasttuse += len;
 	target->content[ctxt->lasttuse] = 0;
     } else {
-	xmlNodeAddContent(target, string);
+	if (xmlNodeAddContentLen(target, string, len) != 0) {
+	    ctxt->lasttext = NULL;
+	    xsltTransformError(ctxt, NULL, target,
+		"xsltCopyText: text allocation failed\n");
+	    return(NULL);
+	}
 	ctxt->lasttext = target->content;
 	len = xmlStrlen(target->content);
 	ctxt->lasttsize = len;
