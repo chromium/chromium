@@ -9,10 +9,8 @@
 #include "base/notreached.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
-#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
-#include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "content/public/browser/web_contents.h"
 
 using ::autofill::AccessoryAction;
@@ -93,17 +91,6 @@ void AtMemoryAccessoryControllerImpl::OnToggleChanged(
     bool enabled) {
   NOTREACHED() << "Unhandled toggled action: "
                << std::to_underlying(toggled_action);
-}
-
-bool AtMemoryAccessoryControllerImpl::IsAtMemoryAvailable() const {
-  const autofill::ContentAutofillClient* autofill_client =
-      autofill::ContentAutofillClient::FromWebContents(&GetWebContents());
-  if (!autofill_client) {
-    return false;
-  }
-  return autofill::MayPerformAtMemoryAction(
-      autofill::AtMemoryAction::kTriggerSearchUI, *autofill_client,
-      GetWebContents().GetLastCommittedURL());
 }
 
 base::WeakPtr<AtMemoryAccessoryController>

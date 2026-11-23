@@ -53,29 +53,6 @@ constexpr char
         "KeyboardAccessory."
         "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions";
 
-// Returns true if `type` represents an unstructured field (contenteditable
-// or textarea) that only supports AtMemory. Textareas only count as such when
-// `kAutofillAtMemorySupportTextAreaOnAndroid` is enabled; otherwise the
-// accessory is never shown on them.
-bool IsUnstructuredFieldType(FocusedFieldType type) {
-  switch (type) {
-    case FocusedFieldType::kFillableTextArea:
-      return base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAtMemorySupportTextAreaOnAndroid);
-    case FocusedFieldType::kContenteditableField:
-      return true;
-    case FocusedFieldType::kUnknown:
-    case FocusedFieldType::kUnfillableElement:
-    case FocusedFieldType::kFillableSearchField:
-    case FocusedFieldType::kFillableNonSearchField:
-    case FocusedFieldType::kFillableWebauthnTaggedField:
-    case FocusedFieldType::kFillableUsernameField:
-    case FocusedFieldType::kFillablePasswordField:
-      return false;
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 // static
@@ -375,30 +352,11 @@ bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
     case FocusedFieldType::kUnknown:
       return available_sources_.contains(FillingSource::AUTOFILL);
 
-    // With `kAutofillAtMemorySupportTextAreaOnAndroid`, textareas show the
-    // accessory with only the AtMemory entry point: `BrowserAutofillManager`
-    // does not generate Autofill suggestions for them. Without the flag,
-    // textareas keep the legacy behavior of never showing the accessory.
-    case FocusedFieldType::kFillableTextArea:
-      if (!base::FeatureList::IsEnabled(
-              autofill::features::kAutofillAtMemorySupportTextAreaOnAndroid)) {
-        // Even if there are suggestions, don't show on textareas.
-        return false;
-      }
-      [[fallthrough]];
-
-    // AtMemory suggestions are supported for contenteditable and textarea
-    // fields on Android.
-    // Unlike database-backed fallback sheets (passwords, addresses, payments)
-    // which signal availability asynchronously via `available_sources_`,
-    // AtMemory availability on contenteditables and textareas is purely
-    // focus-driven and only requires that the `AtMemoryAccessoryController` is
-    // available.
-    // Note: `PasswordAutofillAgent` verifies the feature enablement for
+    // Even if there are suggestions, don't show on textareas or
     // contenteditables.
+    case FocusedFieldType::kFillableTextArea:
     case FocusedFieldType::kContenteditableField:
-      return at_memory_controller_ &&
-             at_memory_controller_->IsAtMemoryAvailable();
+      return false;
   }
 }
 
@@ -411,12 +369,6 @@ void ManualFillingControllerImpl::UpdateVisibility() {
     for (const FillingSource& source : available_sources_) {
       if (source == FillingSource::AUTOFILL) {
         continue;  // Autofill suggestions have no sheet.
-      }
-      // On contenteditable and textarea elements, only AtMemory is supported.
-      // Suppress pushing fallback sheet data (passwords, addresses, payments).
-      if (IsUnstructuredFieldType(last_focused_field_type_) &&
-          source != FillingSource::AT_MEMORY) {
-        continue;
       }
       AccessoryController* controller = GetControllerForFillingSource(source);
       if (!controller) {
@@ -433,10 +385,7 @@ void ManualFillingControllerImpl::UpdateVisibility() {
             last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&
             last_focused_field_type_ != FocusedFieldType::kUnknown),
         ManualFillingViewInterface::ShouldShowOnLargeFormFactor(
-            IsUnstructuredFieldType(last_focused_field_type_) ||
-            available_sources_.contains(FillingSource::AUTOFILL)),
-        ManualFillingViewInterface::IsUnstructuredField(
-            IsUnstructuredFieldType(last_focused_field_type_)));
+            available_sources_.contains(FillingSource::AUTOFILL)));
   } else {
     view_->Hide();
   }
@@ -467,12 +416,7 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
   // instead of waiting to get it pushed.
   if (sheet.has_value() &&
       GetWebContents().GetVisibility() == content::Visibility::VISIBLE) {
-    // Suppress forwarding fallback sheet data for contenteditable and textarea
-    // elements so only the AtMemory sheet is made available to the view.
-    if (!IsUnstructuredFieldType(last_focused_field_type_) ||
-        source == FillingSource::AT_MEMORY) {
-      view_->OnItemsAvailable(std::move(sheet.value()));
-    }
+    view_->OnItemsAvailable(std::move(sheet.value()));
   }
   UpdateSourceAvailability(source, show_filling_source);
 }

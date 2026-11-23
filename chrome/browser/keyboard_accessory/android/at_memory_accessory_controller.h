@@ -27,10 +27,6 @@ class AtMemoryAccessoryController : public AccessoryController {
   static AtMemoryAccessoryController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Returns whether AtMemory is enabled and available for the current
-  // WebContents.
-  virtual bool IsAtMemoryAvailable() const = 0;
-
   virtual base::WeakPtr<AtMemoryAccessoryController> AsWeakPtr() = 0;
 };
 

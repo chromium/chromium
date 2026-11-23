@@ -201,11 +201,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void show(
-            boolean waitForKeyboard,
-            boolean shouldShowOnLargeFormFactor,
-            boolean isUnstructuredField) {
-        mMediator.show(waitForKeyboard, shouldShowOnLargeFormFactor, isUnstructuredField);
+    public void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
+        mMediator.show(waitForKeyboard, shouldShowOnLargeFormFactor);
     }
 
     @Override
@@ -307,10 +304,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void forceShowForTesting() {
-        mMediator.show(
-                /* waitForKeyboard= */ true,
-                /* shouldShowOnLargeFormFactor= */ true,
-                /* isUnstructuredField= */ false);
+        mMediator.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
     }
 
     @Override

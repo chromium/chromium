@@ -31,8 +31,6 @@ class ManualFillingViewInterface {
   using WaitForKeyboard = base::StrongAlias<struct WaitForKeyboardTag, bool>;
   using ShouldShowOnLargeFormFactor =
       base::StrongAlias<struct ShouldShowOnLargeFormFactorTag, bool>;
-  using IsUnstructuredField =
-      base::StrongAlias<struct IsUnstructuredFieldTag, bool>;
   using ShouldShowAction = base::StrongAlias<struct ShouldShowActionTag, bool>;
 
   virtual ~ManualFillingViewInterface() = default;
@@ -55,13 +53,10 @@ class ManualFillingViewInterface {
   // Shows the accessory bar. If `wait_for_keyboard`, shows the bar when the
   // keyboard is also shown. `should_show_on_large_form_factor` controls whether
   // the accessory should be displayed on Large Form Factors (where it is
-  // otherwise suppressed on empty fields). `is_unstructured_field` controls
-  // whether the focused field is an unstructured field like contenteditable or
-  // textarea (where only the AtMemory icon is shown).
+  // otherwise suppressed on empty fields).
   virtual void Show(
       WaitForKeyboard wait_for_keyboard,
-      ShouldShowOnLargeFormFactor should_show_on_large_form_factor,
-      IsUnstructuredField is_unstructured_field) = 0;
+      ShouldShowOnLargeFormFactor should_show_on_large_form_factor) = 0;
 
   // Hides the accessory bar and the accessory sheet (if open).
   virtual void Hide() = 0;

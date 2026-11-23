@@ -44,14 +44,11 @@ using testing::Eq;
 using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
-using testing::Values;
-using testing::WithParamInterface;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using WaitForKeyboard = ManualFillingViewInterface::WaitForKeyboard;
 using ShouldShowOnLargeFormFactor =
     ManualFillingViewInterface::ShouldShowOnLargeFormFactor;
-using IsUnstructuredField = ManualFillingViewInterface::IsUnstructuredField;
 
 AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds")
@@ -91,10 +88,7 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
         .WillOnce(SaveArg<0>(&cc_source_observer_));
     EXPECT_CALL(mock_address_controller_, RegisterFillingSourceObserver)
         .WillOnce(SaveArg<0>(&address_source_observer_));
-    EXPECT_CALL(mock_at_memory_controller_, RegisterFillingSourceObserver)
-        .WillOnce(SaveArg<0>(&at_memory_source_observer_));
-    ON_CALL(mock_at_memory_controller_, IsAtMemoryAvailable)
-        .WillByDefault(Return(true));
+    EXPECT_CALL(mock_at_memory_controller_, RegisterFillingSourceObserver);
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(),
@@ -131,11 +125,6 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
     address_source_observer_.Run(&mock_address_controller_, source_available);
   }
 
-  void NotifyAtMemorySourceObserver(IsFillingSourceAvailable source_available) {
-    at_memory_source_observer_.Run(&mock_at_memory_controller_,
-                                   source_available);
-  }
-
  protected:
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
@@ -146,7 +135,6 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   AccessoryController::FillingSourceObserver pwd_source_observer_;
   AccessoryController::FillingSourceObserver cc_source_observer_;
   AccessoryController::FillingSourceObserver address_source_observer_;
-  AccessoryController::FillingSourceObserver at_memory_source_observer_;
 };
 
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
@@ -156,15 +144,13 @@ TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableSearchField);
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
   testing::Mock::VerifyAndClearExpectations(view());
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true)));
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/true);
   testing::Mock::VerifyAndClearExpectations(view());
@@ -203,8 +189,7 @@ TEST_F(ManualFillingControllerTest,
   EXPECT_CALL(*view(), OnItemsAvailable(filled_passwords_sheet()))
       .Times(AnyNumber());
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false)));
 
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
@@ -236,8 +221,7 @@ TEST_F(ManualFillingControllerTest,
       .WillRepeatedly(Return(kTestAddressSheet));
   EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AnyNumber());
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false)));
 
   NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
@@ -271,8 +255,7 @@ TEST_F(ManualFillingControllerTest,
   EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
       .Times(AnyNumber());
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false)));
 
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
@@ -285,11 +268,9 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false)));
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
@@ -302,8 +283,7 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
   // Hiding just one of two active filling sources won't have any effect at all.
   EXPECT_CALL(*view(), Hide()).Times(0);
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(false)))
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true)))
       .Times(0);
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/false);
@@ -335,8 +315,7 @@ TEST_F(ManualFillingControllerTest,
   FocusFieldAndClearExpectations(FocusedFieldType::kUnknown);
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(false), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(false), ShouldShowOnLargeFormFactor(true)));
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/true);
   // Noop duplicate call.
@@ -354,8 +333,7 @@ TEST_F(ManualFillingControllerTest,
   FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false)));
 
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
@@ -366,8 +344,7 @@ TEST_F(ManualFillingControllerTest,
   FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true)));
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/true);
 }
@@ -377,8 +354,7 @@ TEST_F(ManualFillingControllerTest,
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true)));
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/true);
 }
@@ -388,8 +364,7 @@ TEST_F(ManualFillingControllerTest,
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
   EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
+              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
 }
@@ -511,171 +486,29 @@ TEST_F(ManualFillingControllerTest, LogsHistogramOnOptionSelected) {
       AccessoryAction::MANAGE_CREDIT_CARDS, 3);
 }
 
-class ManualFillingControllerAtMemoryFieldTypeTest
-    : public ManualFillingControllerTest,
-      public WithParamInterface<FocusedFieldType> {
- public:
-  FocusedFieldType focused_field_type() const { return GetParam(); }
-
- private:
-  // Textarea support requires `kAutofillAtMemorySupportTextAreaOnAndroid`.
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillAtMemorySupportTextAreaOnAndroid};
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ManualFillingControllerAtMemoryFieldTypeTest,
-                         Values(FocusedFieldType::kContenteditableField,
-                                FocusedFieldType::kFillableTextArea));
-
-// Tests that without `kAutofillAtMemorySupportTextAreaOnAndroid`, focusing a
-// textarea never shows the keyboard accessory, even if AtMemory is available.
 TEST_F(ManualFillingControllerTest,
-       DoesNotShowAccessoryOnTextAreaWithoutTextAreaSupport) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillAtMemorySupportTextAreaOnAndroid);
+       DoesNotShowAccessoryOnTextAreaOrContentEditable) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  testing::Mock::VerifyAndClearExpectations(view());
 
-  EXPECT_CALL(*view(), Hide());
+  EXPECT_CALL(*view(), Hide()).Times(2);
   EXPECT_CALL(*view(), Show).Times(0);
 
   controller()->NotifyFocusedInputChanged(kFocusedFieldId,
                                           FocusedFieldType::kFillableTextArea);
-}
-
-// Tests that focusing a contenteditable or textarea element shows the keyboard
-// accessory.
-TEST_P(ManualFillingControllerAtMemoryFieldTypeTest, ShowsAccessory) {
-  EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(true)));
-
-  controller()->NotifyFocusedInputChanged(kFocusedFieldId,
-                                          focused_field_type());
-}
-
-// Tests that when sheet data is available for AtMemory, it is forwarded to the
-// view when the AtMemory filling source is updated.
-TEST_P(ManualFillingControllerAtMemoryFieldTypeTest,
-       ShowsAccessoryWithSheetData) {
-  const AccessorySheetData kTestSheet =
-      AccessorySheetData::Builder(AccessoryTabType::ALL, u"AtMemory").Build();
-
-  FocusFieldAndClearExpectations(focused_field_type());
-
-  EXPECT_CALL(mock_at_memory_controller_, GetSheetData)
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(kTestSheet));
-  EXPECT_CALL(*view(), OnItemsAvailable(kTestSheet)).Times(AtLeast(1));
-  EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(true)));
-
-  NotifyAtMemorySourceObserver(IsFillingSourceAvailable(true));
-}
-
-// Tests that the keyboard accessory is hidden when focus shifts away from a
-// contenteditable or textarea element.
-TEST_P(ManualFillingControllerAtMemoryFieldTypeTest,
-       HidesAccessoryWhenFocusLeaves) {
-  EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(true)));
-
-  controller()->NotifyFocusedInputChanged(kFocusedFieldId,
-                                          focused_field_type());
-  testing::Mock::VerifyAndClearExpectations(view());
-
-  EXPECT_CALL(*view(), Hide());
-  controller()->NotifyFocusedInputChanged(autofill::FieldGlobalId(),
-                                          FocusedFieldType::kUnknown);
-}
-
-// Tests that on contenteditable and textarea fields, non-AtMemory sheets
-// (passwords, addresses, credit cards) are not forwarded to the view, while
-// AtMemory sheet data is still forwarded.
-TEST_P(ManualFillingControllerAtMemoryFieldTypeTest, HidesOtherAccessoryTabs) {
-  const AccessorySheetData kTestAddressSheet =
-      populate_sheet(AccessoryTabType::ADDRESSES);
-  const AccessorySheetData kTestCreditCardSheet =
-      populate_sheet(AccessoryTabType::CREDIT_CARDS);
-  const AccessorySheetData kTestAtMemorySheet =
-      AccessorySheetData::Builder(AccessoryTabType::ALL, u"AtMemory").Build();
-
-  EXPECT_CALL(mock_pwd_controller_, GetSheetData)
-      .WillRepeatedly(Return(filled_passwords_sheet()));
-  EXPECT_CALL(mock_address_controller_, GetSheetData)
-      .WillRepeatedly(Return(kTestAddressSheet));
-  EXPECT_CALL(mock_payment_method_controller_, GetSheetData)
-      .WillRepeatedly(Return(kTestCreditCardSheet));
-  EXPECT_CALL(mock_at_memory_controller_, GetSheetData)
-      .WillRepeatedly(Return(kTestAtMemorySheet));
-
-  // None of the fallback sheets should be sent to the view on contenteditable
-  // or textarea, but the AtMemory sheet should be forwarded.
-  EXPECT_CALL(*view(), OnItemsAvailable(filled_passwords_sheet())).Times(0);
-  EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(0);
-  EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet)).Times(0);
-  EXPECT_CALL(*view(), OnItemsAvailable(kTestAtMemorySheet)).Times(AtLeast(1));
-  EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(true)));
-
-  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
-                                         /*has_suggestions=*/true);
-  controller()->UpdateSourceAvailability(FillingSource::ADDRESS_FALLBACKS,
-                                         /*has_suggestions=*/true);
-  controller()->UpdateSourceAvailability(FillingSource::CREDIT_CARD_FALLBACKS,
-                                         /*has_suggestions=*/true);
-  NotifyAtMemorySourceObserver(IsFillingSourceAvailable(true));
-
-  controller()->NotifyFocusedInputChanged(kFocusedFieldId,
-                                          focused_field_type());
-}
-
-// Tests that when focus leaves contenteditable/textarea and moves to a fillable
-// field, non-AtMemory sheets are forwarded to the view again.
-TEST_P(ManualFillingControllerAtMemoryFieldTypeTest,
-       ShowsOtherAccessoryTabsWhenFocusLeaves) {
-  const AccessorySheetData kTestAddressSheet =
-      populate_sheet(AccessoryTabType::ADDRESSES);
-
-  EXPECT_CALL(mock_address_controller_, GetSheetData)
-      .WillRepeatedly(Return(kTestAddressSheet));
-
-  controller()->UpdateSourceAvailability(FillingSource::ADDRESS_FALLBACKS,
-                                         /*has_suggestions=*/true);
-
-  // Focus contenteditable or textarea: address sheet is suppressed.
-  EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(0);
-  EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(true),
-                   IsUnstructuredField(true)));
-  controller()->NotifyFocusedInputChanged(kFocusedFieldId,
-                                          focused_field_type());
-  testing::Mock::VerifyAndClearExpectations(view());
-
-  // Focus regular fillable field: address sheet is forwarded.
-  EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AtLeast(1));
-  EXPECT_CALL(*view(),
-              Show(WaitForKeyboard(true), ShouldShowOnLargeFormFactor(false),
-                   IsUnstructuredField(false)));
   controller()->NotifyFocusedInputChanged(
-      kFocusedFieldId, FocusedFieldType::kFillableNonSearchField);
-}
+      kFocusedFieldId, FocusedFieldType::kContenteditableField);
+  testing::Mock::VerifyAndClearExpectations(view());
 
-// Tests that on contenteditable and textarea fields, if AtMemory is not
-// available, the accessory is hidden.
-TEST_P(ManualFillingControllerAtMemoryFieldTypeTest,
-       HidesAccessoryWhenAtMemoryNotAvailable) {
-  EXPECT_CALL(mock_at_memory_controller_, IsAtMemoryAvailable)
-      .WillRepeatedly(Return(false));
-
+  // Adding another source while focused on an unstructured field still hides.
   EXPECT_CALL(*view(), Hide());
   EXPECT_CALL(*view(), Show).Times(0);
-
-  controller()->NotifyFocusedInputChanged(kFocusedFieldId,
-                                          focused_field_type());
+  controller()->UpdateSourceAvailability(FillingSource::ADDRESS_FALLBACKS,
+                                         /*has_suggestions=*/true);
 }
 
 // Tests that setting the selected suggestion forwards the call to the view.

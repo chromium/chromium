@@ -41,7 +41,6 @@ class AtMemoryAccessoryControllerImpl
                        bool enabled) override;
 
   // AtMemoryAccessoryController:
-  bool IsAtMemoryAvailable() const override;
   base::WeakPtr<AtMemoryAccessoryController> AsWeakPtr() override;
 
  private:

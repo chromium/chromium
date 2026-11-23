@@ -102,13 +102,9 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
-    void show(
-            boolean waitForKeyboard,
-            boolean shouldShowOnLargeFormFactor,
-            boolean isUnstructuredField) {
+    void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
         if (getManualFillingComponent() != null) {
-            getManualFillingComponent()
-                    .show(waitForKeyboard, shouldShowOnLargeFormFactor, isUnstructuredField);
+            getManualFillingComponent().show(waitForKeyboard, shouldShowOnLargeFormFactor);
         }
     }
 

@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.FIELD_BOUNDS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_FULLSCREEN;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_UNSTRUCTURED_FIELD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
@@ -513,12 +512,8 @@ class ManualFillingMediator
         hideSoftKeyboard();
     }
 
-    void show(
-            boolean waitForKeyboard,
-            boolean shouldShowOnLargeFormFactor,
-            boolean isUnstructuredField) {
+    void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
         mModel.set(SHOULD_SHOW_ON_LARGE_FORM_FACTOR, shouldShowOnLargeFormFactor);
-        mModel.set(IS_UNSTRUCTURED_FIELD, isUnstructuredField);
         showWithKeyboardExtensionState(waitForKeyboard);
     }
 
@@ -593,11 +588,6 @@ class ManualFillingMediator
             }
         }
         mKeyboardAccessory.setAtMemoryEnabled(enabled);
-        // If AtMemory becomes disabled while focused on a contenteditable or textarea
-        // element, hide the accessory to avoid displaying an empty bar.
-        if (mModel.get(IS_UNSTRUCTURED_FIELD) && !enabled) {
-            hide();
-        }
     }
 
     void resume() {
@@ -669,11 +659,6 @@ class ManualFillingMediator
         } else if (property == SHOULD_SHOW_ON_LARGE_FORM_FACTOR) {
             // Do nothing. SHOULD_SHOW_ON_LARGE_FORM_FACTOR is used with
             // KEYBOARD_EXTENSION_STATE.
-            return;
-        } else if (property == IS_UNSTRUCTURED_FIELD) {
-            // Unstructured field state dictates whether fallback tabs should be hidden on the
-            // bar.
-            refreshTabs();
             return;
         } else if (property == FIELD_BOUNDS) {
             // For password fields, the accessory is shown before the FIELD_BOUNDS property is set.
@@ -1418,12 +1403,7 @@ class ManualFillingMediator
         ManualFillingState state = mStateCache.getStateFor(mActivity.getCurrentWebContents());
         state.notifyObservers();
         updateAtMemoryEnablement();
-        // For unstructured fields (e.g., contenteditable and textarea), provide empty tabs so that
-        // only the AtMemory button is displayed without clearing cached tabs in ManualFillingState.
-        KeyboardAccessoryData.Tab[] tabs =
-                mModel.get(IS_UNSTRUCTURED_FIELD)
-                        ? new KeyboardAccessoryData.Tab[0]
-                        : state.getTabs();
+        KeyboardAccessoryData.Tab[] tabs = state.getTabs();
         mAccessorySheet.setTabs(tabs); // Set the sheet tabs first to invalidate the tabs properly.
         mKeyboardAccessory.setTabs(tabs);
         state.requestRecentSheets();

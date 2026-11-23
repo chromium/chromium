@@ -565,18 +565,6 @@ BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
 BASE_FEATURE(kAutofillAtMemorySearchStatefulness,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether contenteditable fields on Android are supported for
-// AtMemory.
-BASE_FEATURE(kAutofillAtMemorySupportContenteditableOnAndroid,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether <textarea> fields on Android are supported for AtMemory.
-// When enabled, the keyboard accessory is shown on textareas with only the
-// AtMemory entry point, and regular Autofill suggestions are not generated
-// for them.
-BASE_FEATURE(kAutofillAtMemorySupportTextAreaOnAndroid,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, AtMemory can be triggered with a keyboard shortcut like
 // Ctrl+Space.
 BASE_FEATURE(kAutofillAtMemoryTriggerShortcut,

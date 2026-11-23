@@ -48,7 +48,6 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
@@ -629,23 +628,6 @@ PasswordAutofillAgent::FocusStateNotifier::GetFocusedFieldInfo(
     return {GetFieldType(form_control_element),
             form_util::GetFieldRendererId(form_control_element)};
   }
-  // Contenteditable focus notifications are only needed on Android to show
-  // the Keyboard Accessory via `ManualFillingController` and
-  // `ChromePasswordManagerClient::FocusedInputChanged`.
-  // On Desktop, contenteditable focus and suggestions are driven entirely by
-  // `AutofillAgent`.
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAtMemorySupportContenteditableOnAndroid) &&
-      element && element.IsContentEditable()) {
-    if (std::optional<FormData> form =
-            form_util::FindFormForContentEditable(element)) {
-      CHECK_EQ(form->fields().size(), 1u);
-      return {mojom::FocusedFieldType::kContenteditableField,
-              form->fields().front().renderer_id()};
-    }
-  }
-#endif
   return {mojom::FocusedFieldType::kUnknown, FieldRendererId()};
 }
 
