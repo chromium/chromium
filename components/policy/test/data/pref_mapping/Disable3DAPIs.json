@@ -1,6 +1,7 @@
 [
   {
     "os": [
+      "android",
       "win",
       "linux",
       "mac",

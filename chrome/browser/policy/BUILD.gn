@@ -340,6 +340,7 @@ source_set("policy_specific_browser_tests") {
     "test/autoplay_policy_browsertest.cc",
     "test/back_forward_cache_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
+    "test/disable_3d_apis_policy_browsertest.cc",
     "test/force_permission_policy_unload_default_enabled_policy_browsertest.cc",
     "test/hsts_policy_browsertest.cc",
     "test/network_prediction_policy_browsertest.cc",

@@ -40,8 +40,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "content/common/content_navigation_policy.h"
-#include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -67,55 +65,7 @@ const int kOneHourInMs = 60 * 60 * 1000;
 const int kThreeHoursInMs = 180 * 60 * 1000;
 #endif
 
-// Checks if WebGL is enabled in the given WebContents.
-bool IsWebGLEnabled(content::WebContents* contents) {
-  return content::EvalJs(contents,
-                         "var canvas = document.createElement('canvas');"
-                         "var context = canvas.getContext('webgl');"
-                         "context != null;")
-      .ExtractBool();
-}
-
 }  // namespace
-
-// TODO(crbug.com/40684098): Deflake this test.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_Disable3DAPIs DISABLED_Disable3DAPIs
-#else
-#define MAYBE_Disable3DAPIs Disable3DAPIs
-#endif
-IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
-  // This test assumes Gpu access.
-  if (!content::GpuDataManager::GetInstance()->HardwareAccelerationEnabled())
-    return;
-
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  // WebGL is enabled by default.
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(IsWebGLEnabled(contents));
-  // Disable with a policy.
-  PolicyMap policies;
-  policies.Set(key::kDisable3DAPIs, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  UpdateProviderPolicy(policies);
-  // Crash and reload the tab to get a new renderer.
-  content::CrashTab(contents);
-  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
-  if (content::ShouldSkipEarlyCommitPendingForCrashedFrame())
-    EXPECT_TRUE(content::WaitForLoadStop(contents));
-  EXPECT_FALSE(IsWebGLEnabled(contents));
-  // Enable with a policy.
-  policies.Set(key::kDisable3DAPIs, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
-  UpdateProviderPolicy(policies);
-  content::CrashTab(contents);
-  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
-  if (content::ShouldSkipEarlyCommitPendingForCrashedFrame())
-    EXPECT_TRUE(content::WaitForLoadStop(contents));
-  EXPECT_TRUE(IsWebGLEnabled(contents));
-}
 
 // TODO(crbug.com/40243891): Re-enable this flaky test.
 #if BUILDFLAG(IS_LINUX) || \
