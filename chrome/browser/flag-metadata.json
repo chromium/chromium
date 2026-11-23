@@ -6989,7 +6989,7 @@
   {
     "name": "migrate-syncing-user-to-signed-in",
     "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "migrate-to-signin-reauth-coordinator",
@@ -9721,7 +9721,7 @@
   {
     "name": "undo-migration-of-syncing-user-to-signed-in",
     "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "undoable-tab-closure-rework",
