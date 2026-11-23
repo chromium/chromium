@@ -37,5 +37,5 @@ interface PerformanceEntry {
     readonly attribute DOMHighResTimeStamp startTime;
     readonly attribute DOMHighResTimeStamp duration;
     readonly attribute unsigned long long navigationId;
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

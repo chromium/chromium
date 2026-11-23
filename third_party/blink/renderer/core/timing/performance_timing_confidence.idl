@@ -12,5 +12,5 @@ enum PerformanceTimingConfidenceValue {
 ] interface PerformanceTimingConfidence {
     readonly attribute double randomizedTriggerRate;
     readonly attribute PerformanceTimingConfidenceValue value;
-    [CallWith=ScriptState] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState] object toJSON();
 };

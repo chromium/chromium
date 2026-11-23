@@ -10,5 +10,5 @@ interface TaskAttributionTiming : PerformanceEntry {
     readonly attribute DOMString containerId;
     readonly attribute DOMString containerName;
 
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

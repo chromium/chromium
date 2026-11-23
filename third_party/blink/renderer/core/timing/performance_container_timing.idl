@@ -13,7 +13,7 @@
     [Measure] readonly attribute Element? lastPaintedElement;
     [Measure] readonly attribute DOMHighResTimeStamp firstRenderTime;
 
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
 
 PerformanceContainerTiming includes PaintTimingMixin;

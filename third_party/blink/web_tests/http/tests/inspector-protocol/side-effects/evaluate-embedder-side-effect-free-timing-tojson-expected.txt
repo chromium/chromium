@@ -1,0 +1,22 @@
+Tests that Performance and PerformanceEntry toJSON() serialization is side-effect-free.
+Expression `performance.toJSON()`
+has side effect: false, expected: false
+Expression `performance.timing.toJSON()`
+has side effect: false, expected: false
+Expression `performance.navigation.toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(performance)`
+has side effect: false, expected: false
+Expression `JSON.stringify(performance.getEntries())`
+has side effect: false, expected: false
+Expression `performance.getEntriesByType('navigation')[0].toJSON()`
+has side effect: false, expected: false
+Expression `performance.getEntriesByName('test-mark')[0].toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(performance.getEntriesByName('test-mark'))`
+has side effect: false, expected: false
+Expression `performance.mark('blocked')`
+has side effect: true, expected: true
+Expression `performance.clearResourceTimings()`
+has side effect: true, expected: true
+

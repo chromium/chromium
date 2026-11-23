@@ -35,5 +35,5 @@ interface PerformanceScriptTiming : PerformanceEntry {
     readonly attribute long long sourceCharPosition;
     [RuntimeEnabled=LongAnimationFrameSourceLineColumnInterface] readonly attribute long long sourceLine;
     [RuntimeEnabled=LongAnimationFrameSourceLineColumnInterface] readonly attribute long long sourceColumn;
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

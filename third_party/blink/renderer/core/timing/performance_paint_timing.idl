@@ -6,7 +6,7 @@
 
 [Exposed=Window]
 interface PerformancePaintTiming : PerformanceEntry {
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
 
 PerformancePaintTiming includes PaintTimingMixin;

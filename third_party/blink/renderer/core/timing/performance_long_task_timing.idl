@@ -7,5 +7,5 @@
 interface PerformanceLongTaskTiming : PerformanceEntry {
     [SameObject, SaveSameObject] readonly attribute FrozenArray<TaskAttributionTiming> attribution;
 
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

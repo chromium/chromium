@@ -9,5 +9,5 @@ interface LayoutShiftAttribution {
     readonly attribute DOMRectReadOnly previousRect;
     readonly attribute DOMRectReadOnly currentRect;
 
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

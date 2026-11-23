@@ -7,5 +7,5 @@ interface BackForwardCacheRestoration : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp pageshowEventStart;
     readonly attribute DOMHighResTimeStamp pageshowEventEnd;
 
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

@@ -12,7 +12,7 @@ interface LargestContentfulPaint : PerformanceEntry {
     readonly attribute DOMString url;
     readonly attribute Element? element;
 
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
 
 LargestContentfulPaint includes PaintTimingMixin;

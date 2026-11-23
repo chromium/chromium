@@ -16,5 +16,5 @@
     readonly attribute unsigned long framesProduced;
     readonly attribute DOMHighResTimeStamp checkerboardTime;
 
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+    [Affects=Nothing, CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
