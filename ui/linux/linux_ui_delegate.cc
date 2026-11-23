@@ -35,4 +35,8 @@ void LinuxUiDelegate::SetTransientWindowForParent(
   NOTREACHED();
 }
 
+int LinuxUiDelegate::GetX11ScreenNumber() const {
+  return 0;
+}
+
 }  // namespace ui

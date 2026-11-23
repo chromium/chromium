@@ -4,11 +4,13 @@
 
 #include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -21,6 +23,7 @@
 #include "ui/display/test/test_screen.h"
 #include "ui/linux/fake_linux_ui.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_delegate.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/shell_dialogs/activation_key_tracker_linux.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -94,6 +97,29 @@ class FallbackLinuxUi : public FakeLinuxUi {
 
  private:
   mutable std::vector<SelectFileDialog::Type> fallback_calls_;
+};
+
+class FakeLinuxUiDelegate : public LinuxUiDelegate {
+ public:
+  explicit FakeLinuxUiDelegate(int x11_screen_number)
+      : x11_screen_number_(x11_screen_number) {}
+  ~FakeLinuxUiDelegate() override = default;
+
+  bool exported_window_handle() const { return exported_window_handle_; }
+
+  // LinuxUiDelegate:
+  LinuxUiBackend GetBackend() const override { return LinuxUiBackend::kX11; }
+  int GetX11ScreenNumber() const override { return x11_screen_number_; }
+  void ExportWindowHandle(
+      gfx::AcceleratedWidget window_id,
+      base::OnceCallback<void(std::string)> callback) override {
+    // Don't run `callback`, which would make a D-Bus portal request.
+    exported_window_handle_ = true;
+  }
+
+ private:
+  const int x11_screen_number_;
+  bool exported_window_handle_ = false;
 };
 
 class FakeWindowTreeHost : public aura::WindowTreeHostPlatform {
@@ -188,6 +214,7 @@ class TestableSelectFileDialogLinuxPortal : public SelectFileDialogLinuxPortal {
   using SelectFileDialogLinuxPortal::listener_;
   using SelectFileDialogLinuxPortal::ListenerDestroyed;
   using SelectFileDialogLinuxPortal::OnFileChooserResponse;
+  using SelectFileDialogLinuxPortal::OnPortalAvailable;
   using SelectFileDialogLinuxPortal::OnWidgetActivationChanged;
   using SelectFileDialogLinuxPortal::reenable_window_event_handling_;
   using SelectFileDialogLinuxPortal::StartAcceptDelay;
@@ -441,6 +468,41 @@ TEST_F(SelectFileDialogLinuxPortalTest,
 
   dialog->ListenerDestroyed();
   LinuxUi::SetInstance(old_linux_ui);
+}
+
+// Tests that the portal is used on X11 screen 0.
+TEST_F(SelectFileDialogLinuxPortalTest, UsesPortalOnX11Screen0) {
+  FakeLinuxUiDelegate delegate(/*x11_screen_number=*/0);
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+  FakeWindowTreeHost host(base::DoNothing());
+  dialog->host_ = host.GetWeakPtr();
+
+  dialog->OnPortalAvailable(u"", base::FilePath(), "", std::nullopt,
+                            /*version=*/3);
+
+  EXPECT_TRUE(delegate.exported_window_handle());
+  EXPECT_EQ(0, listener_->cancellations());
+  dialog->ListenerDestroyed();
+}
+
+// Regression test for crbug.com/40917377: The portal shows its dialog on X11
+// screen 0, so it must not be used when Chrome runs on another screen of a
+// multi-screen ("Zaphod") X server. The in-process dialog is used instead,
+// which cancels here since there is no LinuxUi in this test.
+TEST_F(SelectFileDialogLinuxPortalTest, NoPortalOnOtherX11Screen) {
+  FakeLinuxUiDelegate delegate(/*x11_screen_number=*/1);
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+  FakeWindowTreeHost host(base::DoNothing());
+  dialog->host_ = host.GetWeakPtr();
+
+  dialog->OnPortalAvailable(u"", base::FilePath(), "", std::nullopt,
+                            /*version=*/3);
+
+  EXPECT_FALSE(delegate.exported_window_handle());
+  EXPECT_EQ(1, listener_->cancellations());
+  dialog->ListenerDestroyed();
 }
 
 }  // namespace ui

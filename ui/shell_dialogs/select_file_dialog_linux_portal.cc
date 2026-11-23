@@ -190,7 +190,12 @@ void SelectFileDialogLinuxPortal::OnPortalAvailable(
   default_extension_ = default_extension;
   caller_ = std::move(caller);
 
-  if (version < kXdgPortalRequiredVersion) {
+  auto* delegate = ui::LinuxUiDelegate::GetInstance();
+  // The portal shows its dialog on the session's DISPLAY, which is screen 0
+  // on a multi-screen ("Zaphod") X server, so use the in-process dialog when
+  // Chrome runs on another screen.
+  if (version < kXdgPortalRequiredVersion ||
+      (delegate && delegate->GetX11ScreenNumber() != 0)) {
     ShowFallbackDialog();
     return;
   }
@@ -201,7 +206,6 @@ void SelectFileDialogLinuxPortal::OnPortalAvailable(
   // and returned to listeners later.
   filters_ = filter_set.filters;
 
-  auto* delegate = ui::LinuxUiDelegate::GetInstance();
   if (host_ && delegate) {
     delegate->ExportWindowHandle(
         host_->GetAcceleratedWidget(),

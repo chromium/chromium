@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/x11/linux_ui_delegate_x11.h"
 
 #include "base/strings/stringprintf.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
@@ -27,6 +28,10 @@ void LinuxUiDelegateX11::SetTransientWindowForParent(
   if (parent_window) {
     parent_window->SetTransientWindow(static_cast<x11::Window>(transient));
   }
+}
+
+int LinuxUiDelegateX11::GetX11ScreenNumber() const {
+  return x11::Connection::Get()->DefaultScreenId();
 }
 
 void LinuxUiDelegateX11::ExportWindowHandle(

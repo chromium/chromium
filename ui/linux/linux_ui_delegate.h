@@ -36,6 +36,10 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiDelegate {
   virtual void SetTransientWindowForParent(gfx::AcceleratedWidget parent,
                                            gfx::AcceleratedWidget transient);
 
+  // Returns the X11 screen number of Chrome's windows, e.g. 1 for DISPLAY=:0.1
+  // on a multi-screen ("Zaphod") X server. Returns 0 on other platforms.
+  virtual int GetX11ScreenNumber() const;
+
   // Exports a prefixed, platform-dependent (X11 or Wayland) window handle for
   // an Aura window id, then calls the given callback with the handle. Runs
   // `callback` with an empty string on failure or if window exporting is not
