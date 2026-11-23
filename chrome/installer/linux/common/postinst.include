@@ -30,11 +30,11 @@ update_defaults_list() {
                 cut -d '=' -f 2- |
                 tr ';' ' ')"
   for mime_type in ${mime_types}; do
-    if egrep -q "^${mime_type}=" "${DEFAULTS_LIST}"; then
-      if ! egrep -q "^${mime_type}=.*${1}" "${DEFAULTS_LIST}"; then
+    if grep -E -q "^${mime_type}=" "${DEFAULTS_LIST}"; then
+      if ! grep -E -q "^${mime_type}=.*${1}" "${DEFAULTS_LIST}"; then
         default_apps="$(grep ${mime_type}= "${DEFAULTS_LIST}" |
                         cut -d '=' -f 2-)"
-        egrep -v "^${mime_type}=" "${DEFAULTS_LIST}" > "${DEFAULTS_LIST}.new"
+        grep -E -v "^${mime_type}=" "${DEFAULTS_LIST}" > "${DEFAULTS_LIST}.new"
         echo "${mime_type}=${default_apps};${1}" >> "${DEFAULTS_LIST}.new"
         mv "${DEFAULTS_LIST}.new" "${DEFAULTS_LIST}"
       fi
@@ -67,7 +67,7 @@ GNOME_DFL_APPS=/usr/share/gnome-control-center/default-apps/gnome-default-applic
 if [ -f "$GNOME_DFL_APPS" ]; then
 # Conditionally insert the contents of the file "default-app-block" after the
 # first "<web-browsers>" line we find in gnome-default-applications.xml
-  fgrep -q "@@MENUNAME" "$GNOME_DFL_APPS" || insert_after_first_match \
+  grep -Fq "@@MENUNAME" "$GNOME_DFL_APPS" || insert_after_first_match \
     "$GNOME_DFL_APPS" \
     "^[ 	]*<web-browsers>[ 	]*$" \
     "@@INSTALLDIR/default-app-block"
