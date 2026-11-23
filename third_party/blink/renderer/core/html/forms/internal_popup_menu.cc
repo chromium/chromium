@@ -20,8 +20,10 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -688,8 +690,14 @@ void InternalPopupMenu::SetValue(const String& value) {
 void InternalPopupMenu::DidClosePopup() {
   // Clearing popup_ first to prevent from trying to close the popup again.
   popup_ = nullptr;
-  if (owner_element_)
+  if (owner_element_) {
+    // The mousedown that opened the popup suspended caret blinking, but the
+    // matching mouseup may have gone to the popup instead of the owner's frame.
+    if (LocalFrame* frame = owner_element_->GetDocument().GetFrame()) {
+      frame->Selection().SetCaretBlinkingSuspended(false);
+    }
     owner_element_->PopupDidHide();
+  }
 }
 
 Element& InternalPopupMenu::OwnerElement() {

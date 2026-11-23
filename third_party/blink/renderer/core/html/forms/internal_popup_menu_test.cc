@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -1494,6 +1495,73 @@ TEST_F(InternalPopupMenuTest, OpenPopupReentrantlyDuringInitialization) {
     test::RunPendingTasks();
     EXPECT_EQ(nullptr, web_view->GetPagePopup());
   }
+}
+
+// The mousedown that opens a <select> popup suspends caret blinking, and the
+// matching mouseup may go to the popup widget instead of the page. Closing the
+// popup must resume caret blinking.
+// See crbug.com/40899717.
+TEST_F(InternalPopupMenuTest, ClosingPopupResumesCaretBlinking) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  if (web_view->GetChromeClient().UseExternalPopupMenus()) {
+    // <select> doesn't use a WebPagePopupImpl on this platform.
+    return;
+  }
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      select {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100px;
+        height: 50px;
+      }
+    </style>
+    <select id="select">
+      <option>1</option>
+      <option>2</option>
+    </select>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* select =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = WebMouseEvent::Button::kLeft;
+  mouse_event.SetPositionInWidget(10, 10);
+  mouse_event.SetPositionInScreen(10, 10);
+  mouse_event.click_count = 1;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_event, {}));
+
+  ASSERT_TRUE(select->PopupIsVisible());
+  EXPECT_TRUE(document.GetFrame()->Selection().IsCaretBlinkingSuspended());
+
+  WebPagePopupImpl* popup = web_view->GetPagePopup();
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+  popup->ClosePopup();
+
+  EXPECT_FALSE(select->PopupIsVisible());
+  EXPECT_FALSE(document.GetFrame()->Selection().IsCaretBlinkingSuspended());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
