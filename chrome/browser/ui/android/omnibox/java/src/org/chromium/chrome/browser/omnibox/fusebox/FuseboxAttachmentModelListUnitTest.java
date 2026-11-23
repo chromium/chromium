@@ -1052,4 +1052,42 @@ public class FuseboxAttachmentModelListUnitTest {
 
         verify(mListener, never()).onAttachmentUploadStatusChanged();
     }
+
+    @Test
+    public void testRemove_alreadyRemoved_isNoOp() {
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn("test-token");
+        FuseboxAttachment attachment = createTestAttachment("test");
+        mFuseboxAttachmentModelList.add(attachment);
+
+        mFuseboxAttachmentModelList.remove(attachment, /* isFailure= */ false);
+        clearInvocations(mComposeboxQueryControllerBridge, mListener);
+
+        mFuseboxAttachmentModelList.remove(attachment, /* isFailure= */ false);
+
+        assertTrue(mFuseboxAttachmentModelList.isEmpty());
+        verify(mComposeboxQueryControllerBridge, never()).removeAttachment(anyString());
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionAbandoned();
+        verify(mListener, never()).onAttachmentListChanged();
+        verify(mListener, never()).onAttachmentUploadStatusChanged();
+    }
+
+    @Test
+    public void testRemove_afterClear_isNoOp() {
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn("test-token");
+        FuseboxAttachment attachment = createTestAttachment("test");
+        mFuseboxAttachmentModelList.add(attachment);
+
+        mFuseboxAttachmentModelList.clear();
+        clearInvocations(mComposeboxQueryControllerBridge, mListener);
+
+        mFuseboxAttachmentModelList.remove(attachment, /* isFailure= */ true);
+
+        assertTrue(mFuseboxAttachmentModelList.isEmpty());
+        verify(mComposeboxQueryControllerBridge, never()).removeAttachment(anyString());
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionAbandoned();
+        verify(mListener, never()).onAttachmentListChanged();
+        verify(mListener, never()).onAttachmentUploadStatusChanged();
+    }
 }

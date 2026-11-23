@@ -262,7 +262,9 @@ public class FuseboxAttachmentModelList
      * @param isFailure Whether the removal is from a failure or a decision by the user.
      */
     public void remove(FuseboxAttachment attachment, boolean isFailure) {
-        mModelList.remove(attachment);
+        int index = indexOf(attachment);
+        if (index < 0) return;
+        mModelList.removeAt(index);
 
         if (attachment.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
             mAttachedTabIds.remove(attachment.getTabId());
