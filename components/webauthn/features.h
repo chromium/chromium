@@ -53,6 +53,13 @@ BASE_DECLARE_FEATURE(kRejectRpIdsInsideCallersPublicSuffix);
 // passwords for the same account.
 BASE_DECLARE_FEATURE(kWebAuthnGpmPasskeyRecencyTolerance);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Kill switch: allows the WebAuthenticationRemoteDesktopAllowedOrigins policy
+// to apply in ChromeOS kiosk sessions, which are device-local accounts without
+// user affiliation IDs.
+BASE_DECLARE_FEATURE(kWebAuthnRemoteDesktopClientOverrideForKiosk);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace webauthn::features
 
 #endif  // COMPONENTS_WEBAUTHN_FEATURES_H_

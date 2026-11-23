@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,11 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "components/webauthn/features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -62,12 +68,25 @@ bool IsGoogleCorpCrdOrigin(content::BrowserContext* browser_context,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+bool IsAffiliatedForRemoteDesktopClientOverride(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS Kiosk sessions should be allowed to use the policy despite not
+  // being affiliated (see crbug.com/584995345).
+  if (base::FeatureList::IsEnabled(
+          webauthn::features::kWebAuthnRemoteDesktopClientOverrideForKiosk) &&
+      chromeos::IsKioskSession()) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return enterprise_util::IsProfileAffiliated(profile);
+}
+
 bool RemoteDesktopClientOverrideAllowedByPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& caller_origin) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  if (!enterprise_util::IsProfileAffiliated(profile)) {
+  if (!IsAffiliatedForRemoteDesktopClientOverride(profile)) {
     return false;
   }
   const PrefService* prefs = profile->GetPrefs();

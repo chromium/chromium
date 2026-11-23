@@ -21,7 +21,20 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user_type.h"
+#include "components/webauthn/features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
+
+constexpr char kExampleOrigin[] = "https://example.com";
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kTestIsolatedAppOrigin[] =
+    "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+#endif
 
 class OriginMayUseRemoteDesktopClientOverrideTest
     : public ChromeRenderViewHostTestHarness {
@@ -41,12 +54,7 @@ class OriginMayUseRemoteDesktopClientOverrideTest
       kCorpCrdOrigin, kCorpCrdAutopushOrigin, kCorpCrdStagingOrigin,
       kCorpCrdDailyOrigin};
 
-  static constexpr char kExampleOrigin[] = "https://example.com";
   static constexpr char kAnotherExampleOrigin[] = "https://another.example.com";
-#if !BUILDFLAG(IS_ANDROID)
-  static constexpr char kTestIsolatedAppOrigin[] =
-      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-#endif
   static constexpr std::string_view kTestAtExampleDotCom = "test@example.com";
 
   void SetUp() override {
@@ -389,5 +397,96 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       browser_context(),
       url::Origin::Create(GURL("https://example.com/otherpath"))));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Runs each test in a session of a device-local account of the given type.
+// Device-local accounts have no user affiliation IDs, so the generic
+// enterprise affiliation check reports them as unaffiliated.
+class OriginMayUseRemoteDesktopClientOverrideDeviceLocalAccountTest
+    : public ChromeRenderViewHostTestHarness {
+ protected:
+  OriginMayUseRemoteDesktopClientOverrideDeviceLocalAccountTest(
+      user_manager::UserType user_type,
+      policy::DeviceLocalAccountType account_type)
+      : ChromeRenderViewHostTestHarness(LogInParams{
+            .account_id = AccountId::FromUserEmail(
+                policy::GenerateDeviceLocalAccountUserId("dla", account_type)),
+            .user_type = user_type}) {}
+
+  void SetAllowedOriginsPolicy(const char* origin) {
+    profile()->GetPrefs()->SetList(
+        webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+        base::ListValue().Append(origin));
+  }
+};
+
+// Kiosk sessions are always affiliated, so the allowed origins policy applies
+// to them.
+class OriginMayUseRemoteDesktopClientOverrideKioskTest
+    : public OriginMayUseRemoteDesktopClientOverrideDeviceLocalAccountTest {
+ public:
+  OriginMayUseRemoteDesktopClientOverrideKioskTest()
+      : OriginMayUseRemoteDesktopClientOverrideDeviceLocalAccountTest(
+            user_manager::UserType::kKioskIWA,
+            policy::DeviceLocalAccountType::kKioskIsolatedWebApp) {}
+};
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideKioskTest,
+       AllowedOriginsPolicy_IWAAcceptedWithoutAffiliationIds) {
+  ASSERT_FALSE(enterprise_util::IsProfileAffiliated(profile()));
+
+  ChromeWebAuthenticationDelegateBase delegate;
+  SetAllowedOriginsPolicy(kTestIsolatedAppOrigin);
+
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
+  // Origins that are not listed by the policy are still rejected.
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideKioskTest,
+       NoAllowedOriginsPolicy_IWANotAccepted) {
+  ChromeWebAuthenticationDelegateBase delegate;
+
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideKioskTest,
+       KillSwitchDisabled_IWANotAccepted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      webauthn::features::kWebAuthnRemoteDesktopClientOverrideForKiosk);
+
+  ChromeWebAuthenticationDelegateBase delegate;
+  SetAllowedOriginsPolicy(kTestIsolatedAppOrigin);
+
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
+}
+
+// Managed guest sessions are not covered by the kiosk exception and keep using
+// the generic affiliation check, so the policy does not apply to them.
+class OriginMayUseRemoteDesktopClientOverrideManagedGuestSessionTest
+    : public OriginMayUseRemoteDesktopClientOverrideDeviceLocalAccountTest {
+ public:
+  OriginMayUseRemoteDesktopClientOverrideManagedGuestSessionTest()
+      : OriginMayUseRemoteDesktopClientOverrideDeviceLocalAccountTest(
+            user_manager::UserType::kPublicAccount,
+            policy::DeviceLocalAccountType::kPublicSession) {}
+};
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideManagedGuestSessionTest,
+       AllowedOriginsPolicy_IWANotAccepted) {
+  ASSERT_FALSE(enterprise_util::IsProfileAffiliated(profile()));
+
+  ChromeWebAuthenticationDelegateBase delegate;
+  SetAllowedOriginsPolicy(kTestIsolatedAppOrigin);
+
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

@@ -46,4 +46,10 @@ BASE_FEATURE(kRejectRpIdsInsideCallersPublicSuffix,
 BASE_FEATURE(kWebAuthnGpmPasskeyRecencyTolerance,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Kill switch, enabled by default in M160. Remove in or after M163.
+BASE_FEATURE(kWebAuthnRemoteDesktopClientOverrideForKiosk,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace webauthn::features

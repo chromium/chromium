@@ -286,6 +286,7 @@ source_set("chrome_web_authentication_delegate") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/prefs",
+    "//components/webauthn:features",
     "//device/fido",
   ]
 
@@ -308,7 +309,10 @@ source_set("chrome_web_authentication_delegate") {
     ]
 
     if (is_chromeos) {
-      deps += [ "//chromeos/components/webauthn" ]
+      deps += [
+        "//chromeos/components/kiosk",
+        "//chromeos/components/webauthn",
+      ]
     }
   }
 
@@ -453,11 +457,14 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/account_id",
     "//components/cbor",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/sync:test_support",
     "//components/sync/protocol",
+    "//components/user_manager:common",
+    "//components/webauthn:features",
     "//components/webauthn/content/browser",
     "//components/webauthn/core/browser",
     "//components/webauthn/core/browser:passkey_model",
@@ -532,6 +539,7 @@ source_set("unit_tests") {
       ":unexportable_key_utils",
       "//chromeos/ash/components/osauth/impl",
       "//chromeos/ash/components/osauth/public",
+      "//chromeos/ash/components/policy/device_local_account",
     ]
   }
 

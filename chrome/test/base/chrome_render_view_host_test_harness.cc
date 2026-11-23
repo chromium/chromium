@@ -60,6 +60,14 @@ void ChromeRenderViewHostTestHarness::SetUp() {
         CHECK(user_session_test_environment_->AddKioskWebAppUser(
             account_id.GetUserEmail()));
         break;
+      case user_manager::UserType::kKioskIWA:
+        CHECK(user_session_test_environment_->AddKioskIwaUser(
+            account_id.GetUserEmail()));
+        break;
+      case user_manager::UserType::kPublicAccount:
+        CHECK(user_session_test_environment_->AddPublicAccountUser(
+            account_id.GetUserEmail()));
+        break;
       default:
         NOTREACHED() << "Unsupported user type";
     }
