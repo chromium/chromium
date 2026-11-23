@@ -4075,6 +4075,11 @@
     // it. This flag can be used to test the WebView API for this feature.
     "expiry_milestone": -1
   },
+  {
+    "name": "enable-fre-live-activity",
+    "owners": [ "qpubert@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 170
+  },
 
   {
     "name": "enable-fullscreen-to-any-screen-android",

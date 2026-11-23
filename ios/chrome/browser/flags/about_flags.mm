@@ -110,6 +110,7 @@
 #import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/first_run/live_activity/public/features.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
@@ -173,6 +174,52 @@ constexpr FeatureEntry::FeatureParam kActorToolsPageStabilityEnabled[] = {
 constexpr FeatureEntry::FeatureVariation kActorToolsPageStabilityVariations[] =
     {
         {"PageStabilityEnabled", kActorToolsPageStabilityEnabled, nullptr},
+};
+
+constexpr FeatureEntry::FeatureParam kFreLiveActivityNoDynamicIslandParams[] = {
+    {kFreLiveActivityDynamicIslandModeParam, kFreLiveActivityNoDynamicIsland},
+};
+constexpr FeatureEntry::FeatureParam
+    kFreLiveActivityShortDynamicIslandParams[] = {
+        {kFreLiveActivityDynamicIslandModeParam,
+         kFreLiveActivityShortDynamicIsland},
+        {kFreLiveActivityShortDynamicIslandGraceSecondsParam, "20"},
+};
+constexpr FeatureEntry::FeatureParam kFreLiveActivityLongDynamicIslandParams[] =
+    {
+        {kFreLiveActivityDynamicIslandModeParam,
+         kFreLiveActivityLongDynamicIsland},
+};
+constexpr FeatureEntry::FeatureParam
+    kFreLiveActivityNoDynamicIslandShortStaleParams[] = {
+        {kFreLiveActivityDynamicIslandModeParam,
+         kFreLiveActivityNoDynamicIsland},
+        {kFreLiveActivityStaleDurationSecondsParam, "60"},
+};
+constexpr FeatureEntry::FeatureParam
+    kFreLiveActivityShortDynamicIslandShortStaleParams[] = {
+        {kFreLiveActivityDynamicIslandModeParam,
+         kFreLiveActivityShortDynamicIsland},
+        {kFreLiveActivityStaleDurationSecondsParam, "60"},
+        {kFreLiveActivityShortDynamicIslandGraceSecondsParam, "20"},
+};
+constexpr FeatureEntry::FeatureParam
+    kFreLiveActivityLongDynamicIslandShortStaleParams[] = {
+        {kFreLiveActivityDynamicIslandModeParam,
+         kFreLiveActivityLongDynamicIsland},
+        {kFreLiveActivityStaleDurationSecondsParam, "60"},
+};
+
+constexpr FeatureEntry::FeatureVariation kFreLiveActivityVariations[] = {
+    {"No Dynamic Island", kFreLiveActivityNoDynamicIslandParams, nullptr},
+    {"Short Dynamic Island", kFreLiveActivityShortDynamicIslandParams, nullptr},
+    {"Long Dynamic Island", kFreLiveActivityLongDynamicIslandParams, nullptr},
+    {"No Dynamic Island - 1m Stale",
+     kFreLiveActivityNoDynamicIslandShortStaleParams, nullptr},
+    {"Short Dynamic Island - 1m Stale",
+     kFreLiveActivityShortDynamicIslandShortStaleParams, nullptr},
+    {"Long Dynamic Island - 1m Stale",
+     kFreLiveActivityLongDynamicIslandShortStaleParams, nullptr},
 };
 
 constexpr FeatureEntry::FeatureParam
@@ -3104,6 +3151,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kActorBackgroundedSceneRenderingModeDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kActorBackgroundedSceneRenderingMode)},
+    {"enable-fre-live-activity", flag_descriptions::kFreLiveActivityName,
+     flag_descriptions::kFreLiveActivityDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kFreLiveActivity,
+                                    kFreLiveActivityVariations,
+                                    "FreLiveActivity")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

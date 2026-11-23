@@ -896,6 +896,13 @@ inline constexpr char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+inline constexpr char kFreLiveActivityName[] =
+    "Enable First Run Experience Live Activity";
+inline constexpr char kFreLiveActivityDescription[] =
+    "When enabled, starts an iOS Live Activity on the Lock Screen and Dynamic "
+    "Island when the user backgrounds Chrome during the First Run Experience. "
+    "Requires #enable-live-activity-manager to also be enabled.";
+
 inline constexpr char kFullscreenEasedTransitionsName[] =
     "FullscreenEasedTransitions";
 inline constexpr char kFullscreenEasedTransitionsDescription[] =
