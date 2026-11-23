@@ -839,6 +839,7 @@ if (!is_robolectric && enable_java_templates) {
     }
 
     _prepare_target_name = "${target_name}__prepare"
+    _non_java_deps = filter_exclude(_deps, java_target_patterns)
 
     prepare_resources(_prepare_target_name) {
       forward_variables_from(invoker,
@@ -849,7 +850,7 @@ if (!is_robolectric && enable_java_templates) {
 
       # Only depend on non-java targets that might generate input resource
       # files.
-      deps = filter_exclude(_deps, java_target_patterns)
+      deps = _non_java_deps
 
       res_sources_path = _res_sources_path
       sources = _resource_files
@@ -892,6 +893,24 @@ if (!is_robolectric && enable_java_templates) {
         # Expand //foo/java -> //foo/java:java
         _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
         deps += [ "${_lib_dep}__assetres" ]
+      }
+      _manifest_deps = _non_java_deps
+      if (defined(public_deps)) {
+        _manifest_deps += public_deps
+      }
+
+      # Emit deps only if any mergeable manifest is generated (under
+      # root_build_dir).
+      if (_manifest_deps != [] &&
+          defined(invoker.mergeable_android_manifests) &&
+          filter_exclude(
+              rebase_path(invoker.mergeable_android_manifests, root_build_dir),
+              [ "../*" ]) != []) {
+        metadata = {
+          # Consumed by merge_manifests() so it depends on targets generating
+          # mergeable_android_manifests.
+          mergeable_android_manifest_deps = _manifest_deps
+        }
       }
     }
   }
@@ -1109,6 +1128,15 @@ if (!is_robolectric && enable_java_templates) {
         "lint_partials",
       ]
     }
+
+    # Emit deps only if any mergeable manifest is generated (under
+    # root_build_dir).
+    _has_generated_manifest_deps =
+        _other_deps != [] && defined(invoker.mergeable_android_manifests) &&
+        filter_exclude(
+            rebase_path(invoker.mergeable_android_manifests, root_build_dir),
+            [ "../*" ]) != []
+
     foreach(_group_name, _group_names) {
       group("${target_name}__$_group_name") {
         deps = []
@@ -1119,6 +1147,13 @@ if (!is_robolectric && enable_java_templates) {
           # _other_deps are necessary when generating
           # mergeable_android_manifests.
           deps += _assetres_deps + _other_deps
+          if (_has_generated_manifest_deps) {
+            metadata = {
+              # Consumed by merge_manifests() so it depends on targets
+              # generating mergeable_android_manifests.
+              mergeable_android_manifest_deps = _other_deps
+            }
+          }
         } else if ((_group_name == "host" || _group_name == "header") &&
                    defined(invoker.jar_deps)) {
           deps += invoker.jar_deps
@@ -1130,13 +1165,21 @@ if (!is_robolectric && enable_java_templates) {
       forward_variables_from(invoker,
                              "*",
                              _build_config_vars + TESTONLY_AND_VISIBILITY)
-      if (is_cronet_for_aosp_build) {
+      if (is_cronet_for_aosp_build || _has_generated_manifest_deps) {
         metadata = {
-          java_library_deps = []
-          if (defined(invoker.deps)) {
-            foreach(dep, invoker.deps) {
-              java_library_deps += [ get_label_info(dep, "label_no_toolchain") ]
+          if (is_cronet_for_aosp_build) {
+            java_library_deps = []
+            if (defined(invoker.deps)) {
+              foreach(dep, invoker.deps) {
+                java_library_deps +=
+                    [ get_label_info(dep, "label_no_toolchain") ]
+              }
             }
+          }
+          if (_has_generated_manifest_deps) {
+            # Consumed by merge_manifests() when this resource-named
+            # java_group() is walked directly instead of via __assetres.
+            mergeable_android_manifest_deps = _other_deps
           }
         }
       }
@@ -1279,11 +1322,11 @@ if (!is_robolectric && enable_java_templates) {
         manifest_build_config = _manifest_build_config
         min_sdk_version = default_min_sdk_version
         target_sdk_version = default_target_sdk_version
-        deps = _non_java_deps + _java_assetres_deps +
-               [ ":$_build_config_target_name" ]
+        deps = [ ":$_build_config_target_name" ]
         if (defined(invoker.android_manifest_dep)) {
           deps += [ invoker.android_manifest_dep ]
         }
+        manifest_walk_deps = _java_assetres_deps
       }
 
       _resource_arsc_output = "${target_out_dir}/${target_name}.ap_"
@@ -2562,12 +2605,11 @@ if (!is_robolectric && enable_java_templates) {
       # Bundletool will add extractNativeLibraries for us.
       inject_extract_native_libs = _has_native_libs && !_is_bundle_module
 
-      # Depend on android_resources() targets that use generated files
-      # in mergeable_android_manifests (such as android_aar_prebuilt).
-      deps = _java_assetres_deps + [ ":$_build_config_target" ]
+      deps = [ ":$_build_config_target" ]
       if (defined(invoker.android_manifest_dep)) {
         deps += [ invoker.android_manifest_dep ]
       }
+      manifest_walk_deps = _java_assetres_deps
     }
 
     _final_deps = [ ":$_java_target_name" ]

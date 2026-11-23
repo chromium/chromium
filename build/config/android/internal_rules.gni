@@ -2203,11 +2203,26 @@ if (enable_java_templates) {
   }
 
   template("merge_manifests") {
+    # Produces a dep-only target for merge_manifests() by walking __assetres
+    # deps without depending on them and depending only on targets that produce
+    # generated mergeable manifests (e.g. unpacked AARs), so unrelated resource
+    # changes do not trigger manifest merging.
+    _manifest_deps_target = "${target_name}__deps"
+
+    generated_file(_manifest_deps_target) {
+      forward_variables_from(invoker, [ "testonly" ])
+      walk_deps = invoker.manifest_walk_deps
+      outputs = [ "$target_gen_dir/${_manifest_deps_target}.txt" ]
+      data_keys = [ "mergeable_android_manifest_deps" ]
+      dep_keys = [ "mergeable_android_manifest_deps" ]
+    }
+
     action_with_pydeps(target_name) {
       assert(
           invoker.min_sdk_version >= min_supported_sdk_version,
           get_label_info(":$target_name", "label_no_toolchain") + " has an unsupported min_sdk_version of ${invoker.min_sdk_version} (min is $min_supported_sdk_version)")
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+      deps += [ ":$_manifest_deps_target" ]
       script = "//build/android/gyp/merge_manifest.py"
       depfile = "$target_gen_dir/$target_name.d"
 
@@ -4878,6 +4893,21 @@ if (enable_java_templates) {
         if (_supports_android || _requires_robolectric ||
             _bypass_platform_checks) {
           deps = _java_assetres_deps
+
+          # Emit deps only if any mergeable manifest is generated (under
+          # root_build_dir).
+          if (_non_java_deps != [] &&
+              defined(invoker.mergeable_android_manifests) &&
+              filter_exclude(rebase_path(invoker.mergeable_android_manifests,
+                                         root_build_dir),
+                             [ "../*" ]) != []) {
+            deps += _non_java_deps
+            metadata = {
+              # Consumed by merge_manifests() so it depends on targets
+              # generating mergeable_android_manifests.
+              mergeable_android_manifest_deps = _non_java_deps
+            }
+          }
         }
       }
     }
