@@ -94,7 +94,7 @@ export class MetadataModel {
         this.cache_.storeProperties(requestId, requestedEntries, list, names);
 
         // Invoke callbacks and remove the ones that were successful.
-        this.callbackRequests_.filter(
+        this.callbackRequests_ = this.callbackRequests_.filter(
             request =>
                 !request.storeProperties(requestId, requestedEntries, list));
       });

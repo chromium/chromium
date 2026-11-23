@@ -230,3 +230,11 @@ export async function testMetadataModelEmptyResult(done: VoidCallback) {
   assertEquals(undefined, getProperty(results[0], 'thumbnailUrl'));
   done();
 }
+
+export async function testMetadataModelDropsCompletedCallbackRequests(
+    done: VoidCallback) {
+  const model = new MetadataModel(new TestMetadataProvider());
+  await model.get([entryA], ['thumbnailUrl']);
+  assertEquals(0, model['callbackRequests_'].length);
+  done();
+}
