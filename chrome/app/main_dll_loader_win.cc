@@ -89,7 +89,7 @@ class DllPreReader : public base::PlatformThread::Delegate,
 // The entry point signature of all main modules.
 typedef int (*DLL_MAIN)(HINSTANCE,
                         sandbox::SandboxInterfaceInfo*,
-                        int64_t exe_main_entry_point_ticks,
+                        int64_t exe_entry_point_qpc_delta,
                         int64_t preread_begin_ticks,
                         int64_t preread_end_ticks,
                         PrereadExperimentGroup preread_group);
@@ -298,7 +298,7 @@ MainDllLoader::~MainDllLoader() = default;
 // Launching is a matter of loading the right dll and calling the entry point.
 // Derived classes can add custom code in the OnBeforeLaunch callback.
 int MainDllLoader::Launch(HINSTANCE instance,
-                          base::TimeTicks exe_entry_point_ticks) {
+                          base::TimeDelta exe_entry_point_qpc_delta) {
   const base::CommandLine& cmd_line = *base::CommandLine::ForCurrentProcess();
   process_type_ = cmd_line.GetSwitchValueASCII(switches::kProcessType);
 
@@ -332,12 +332,11 @@ int MainDllLoader::Launch(HINSTANCE instance,
   DLL_MAIN chrome_main = reinterpret_cast<DLL_MAIN>(
       ::GetProcAddress(dll_, module_properties.entrypoint_name.c_str()));
   int rc = chrome_main(instance, &sandbox_info,
-                       exe_entry_point_ticks.ToInternalValue(),
+                       exe_entry_point_qpc_delta.InMicroseconds(),
                        preread_begin_ticks.ToInternalValue(),
                        preread_end_ticks.ToInternalValue(), preread_group);
   return rc;
 }
-
 
 //=============================================================================
 

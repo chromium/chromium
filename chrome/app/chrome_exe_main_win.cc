@@ -40,6 +40,7 @@
 #include "chrome/app/delay_load_failure_hook_win.h"
 #include "chrome/app/exit_code_watcher_win.h"
 #include "chrome/app/main_dll_loader_win.h"
+#include "chrome/app/startup_timestamps_win.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/win/chrome_process_finder.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
@@ -355,7 +356,8 @@ int main() {
     return RunFallbackCrashHandler(*command_line);
   }
 
-  const base::TimeTicks exe_entry_point_ticks = base::TimeTicks::Now();
+  const base::TimeDelta exe_entry_point_qpc_delta =
+      GetApplicationStartQpcDelta(*command_line, process_type);
 
   // Signal Chrome Elf that Chrome has begun to start.
   SignalChromeElf();
@@ -376,7 +378,7 @@ int main() {
   // Load and launch the chrome dll. *Everything* happens inside.
   VLOG(1) << "About to load main DLL.";
   MainDllLoader* loader = MakeMainDllLoader();
-  int rc = loader->Launch(instance, exe_entry_point_ticks);
+  int rc = loader->Launch(instance, exe_entry_point_qpc_delta);
   delete loader;
 
   // Process shutdown is hard and some process types have been crashing during

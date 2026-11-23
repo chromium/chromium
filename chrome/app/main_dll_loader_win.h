@@ -25,11 +25,12 @@ class MainDllLoader {
   virtual ~MainDllLoader();
 
   // Loads and calls the entry point of chrome.dll. |instance| is the exe
-  // instance retrieved from wWinMain. |exe_entry_point_ticks| is the time
-  // when wWinMain was entered.
+  // instance retrieved from wWinMain. |exe_entry_point_qpc_delta| is the
+  // QPC-derived entry-point timestamp (microseconds since the QPC epoch via
+  // `base::TimeDelta::FromQPCValue`) when wWinMain was entered.
   // The return value is what the main entry point of chrome.dll returns
   // upon termination.
-  int Launch(HINSTANCE instance, base::TimeTicks exe_entry_point_ticks);
+  int Launch(HINSTANCE instance, base::TimeDelta exe_entry_point_qpc_delta);
 
  protected:
   // Called after chrome.dll has been loaded but before the entry point is

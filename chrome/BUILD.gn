@@ -214,6 +214,7 @@ if (!is_android && !is_mac) {
         "//build/config/compiler:compiler_buildflags",
         "//chrome/app:chrome_exe_main_exports",
         "//chrome/app:exit_code_watcher",
+        "//chrome/app:startup_timestamps_win",
         "//chrome/app/version_assembly:chrome_exe_manifest",
         "//chrome/browser:active_use_util",
         "//chrome/browser/policy:path_parser",
@@ -454,6 +455,7 @@ if (is_win) {
       ":dependencies",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
+      "//chrome/app:startup_timestamps_win",
       "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser:chrome_process_singleton",
@@ -2114,6 +2116,7 @@ if (enable_separate_renderer_binary) {
       if (is_win) {
         deps += [
           ":chrome_renderer_dll_version",
+          "//chrome/app:startup_timestamps_win",
           "//chrome/chrome_elf",
           "//chrome/install_static:secondary_module",
           "//sandbox/win:sandbox",

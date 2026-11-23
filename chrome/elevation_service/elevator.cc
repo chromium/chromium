@@ -449,6 +449,7 @@ std::wstring Elevator::GenerateIsolatedCommandLine(
       ::switches::kHideIcons,
       // Startup related.
       ::switches::kStartupForegroundLaunch,
+      ::switches::kIsolatedStubStartQpcUs,
       // Uninstall related.
       ::switches::kUninstall,
       ::switches::kUninstallAppId,

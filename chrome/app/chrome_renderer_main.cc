@@ -58,7 +58,7 @@ extern "C" {
 DLLEXPORT int __cdecl ChromeRendererMain(
     HINSTANCE instance,
     sandbox::SandboxInterfaceInfo* sandbox_info,
-    int64_t exe_entry_point_ticks,
+    int64_t exe_entry_point_qpc_delta,
     int64_t preread_begin_ticks,
     int64_t preread_end_ticks,
     startup_metric_utils::PrereadExperimentGroup preread_group) {
@@ -79,7 +79,7 @@ DLLEXPORT int __cdecl ChromeRendererMain(
 #endif  // !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
 
   StartupTimestamps timestamps{
-      base::TimeTicks() + base::Microseconds(exe_entry_point_ticks),
+      base::Microseconds(exe_entry_point_qpc_delta),
       base::TimeTicks() + base::Microseconds(preread_begin_ticks),
       base::TimeTicks() + base::Microseconds(preread_end_ticks), preread_group};
   ChromeMainDelegate chrome_main_delegate(timestamps);

@@ -94,7 +94,8 @@ TEST_F(ElevatorTest, GenerateIsolatedCommandLine) {
     const base::CommandLine result = generate_and_parse(
         L"\"C:\\untrusted\\path.exe\" --disable-component-update "
         L"--profile-directory=\"Profile 1\" --no-startup-window "
-        L"--source-shortcut-location=taskbar --source-single-argument");
+        L"--source-shortcut-location=taskbar --source-single-argument "
+        L"--isolated-stub-start-qpc-us=123456");
 
     EXPECT_EQ(kTrustedProgram, result.GetProgram());
     EXPECT_TRUE(result.HasSwitch(::switches::kIsolated));
@@ -103,6 +104,8 @@ TEST_F(ElevatorTest, GenerateIsolatedCommandLine) {
               result.GetSwitchValueASCII(::switches::kProfileDirectory));
     EXPECT_EQ("taskbar",
               result.GetSwitchValueASCII(::switches::kSourceShortcutLocation));
+    EXPECT_EQ("123456",
+              result.GetSwitchValueASCII(::switches::kIsolatedStubStartQpcUs));
     EXPECT_FALSE(result.HasSwitch(::switches::kDisableComponentUpdate));
     EXPECT_FALSE(result.HasSwitch(::switches::kSourceSingleArgument));
     EXPECT_TRUE(result.GetArgs().empty());

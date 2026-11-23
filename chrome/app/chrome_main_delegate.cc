@@ -32,6 +32,7 @@
 #include "base/process/process_handle.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,9 +114,11 @@
 #include "base/win/elevation_util.h"
 #include "base/win/resource_exhaustion.h"
 #include "base/win/win_util.h"
+#include "chrome/app/startup_timestamps_win.h"
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -791,9 +794,26 @@ void RecordMainStartupMetrics(const StartupTimestamps& timestamps) {
   // On all other platforms, `timestamps.exe_entry_point_ticks` contains the exe
   // entry point time (on some platforms this is ChromeMain, on some it is
   // before).
+#if BUILDFLAG(IS_WIN)
+  const base::TimeTicks application_start_ticks =
+      std::visit(absl::Overload{
+                     [](base::TimeTicks ticks) {
+                       CHECK(!ticks.is_null());
+                       return ticks;
+                     },
+                     [now](base::TimeDelta qpc_delta) {
+                       CHECK(!qpc_delta.is_zero());
+                       return ResolveEntryPointQpcDelta(qpc_delta, now);
+                     },
+                 },
+                 timestamps.exe_entry_point_ticks);
+#else
   CHECK(!timestamps.exe_entry_point_ticks.is_null());
+  const base::TimeTicks application_start_ticks =
+      timestamps.exe_entry_point_ticks;
+#endif
   startup_metric_utils::GetCommon().RecordApplicationStartTime(
-      timestamps.exe_entry_point_ticks);
+      application_start_ticks);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
@@ -860,7 +880,15 @@ ChromeMainDelegate::ChromeMainDelegate()
 ChromeMainDelegate::ChromeMainDelegate() = default;
 #endif
 
-ChromeMainDelegate::ChromeMainDelegate(const StartupTimestamps& timestamps) {
+ChromeMainDelegate::ChromeMainDelegate(const StartupTimestamps& timestamps)
+#if BUILDFLAG(IS_WIN) && !defined(BUILDING_CHROME_RENDERER)
+    : exe_entry_point_qpc_delta_(
+          std::holds_alternative<base::TimeDelta>(
+              timestamps.exe_entry_point_ticks)
+              ? std::get<base::TimeDelta>(timestamps.exe_entry_point_ticks)
+              : base::TimeDelta())
+#endif
+{
   // Record startup metrics in the browser process. For component builds, there
   // is no way to know the type of process (process command line is not yet
   // initialized), so the function below will also be called in renderers.
@@ -1343,8 +1371,17 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   // process becomes the stub, and will terminate after the main browser has
   // terminated, with the exit code from the main browser.
   if (is_browser && chrome::IsIsolationEnabled(&command_line)) {
+    base::CommandLine isolated_command_line = command_line;
+    // Pass the stub's entry-point QPC delta so the isolated browser uses the
+    // stub's initial launch time across all clients (capturing stub DLL load,
+    // COM, and elevation service overhead).
+    if (exe_entry_point_qpc_delta_.is_positive()) {
+      isolated_command_line.AppendSwitchASCII(
+          switches::kIsolatedStubStartQpcUs,
+          base::NumberToString(exe_entry_point_qpc_delta_.InMicroseconds()));
+    }
     const auto isolated_process =
-        chrome::IsolatedBrowserProcess::Launch(command_line);
+        chrome::IsolatedBrowserProcess::Launch(isolated_command_line);
     // Record the launch result HRESULT so that it can be reported to UMA once
     // metrics reporting has been initialized. If the launch fails, this process
     // falls through to run unisolated and reports the failure HRESULT. If the

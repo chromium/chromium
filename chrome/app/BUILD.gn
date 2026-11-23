@@ -88,6 +88,17 @@ if (is_win) {
     public_deps = [ "//base" ]
   }
 
+  source_set("startup_timestamps_win") {
+    sources = [
+      "startup_timestamps_win.cc",
+      "startup_timestamps_win.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/common:non_code_constants",
+    ]
+  }
+
   source_set("win_unit_tests") {
     testonly = true
     sources = [
@@ -97,6 +108,7 @@ if (is_win) {
     ]
     deps = [
       ":exit_code_watcher",
+      ":startup_timestamps_win",
       ":test_support",
       "//base",
       "//base/test:test_support",
@@ -245,6 +257,7 @@ static_library("test_support") {
     ]
     deps += [
       ":chrome_crash_user_streams",
+      ":startup_timestamps_win",
       "//chrome/browser/win/isolated_browser:isolated_browser_support",
       "//chrome/chrome_elf:constants",
       "//chrome/chrome_elf:test_stubs",

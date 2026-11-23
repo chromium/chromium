@@ -1031,6 +1031,11 @@ inline constexpr char kUninstallAppId[] = "uninstall-app-id";
 // start a second isolated browser.
 inline constexpr char kIsolated[] = "isolated";
 
+// Passes the stub process's entry-point QPC timestamp (converted to
+// microseconds via `base::TimeDelta::FromQPCValue`) to the isolated browser
+// process so startup metrics reflect the initial stub launch time.
+inline constexpr char kIsolatedStubStartQpcUs[] = "isolated-stub-start-qpc-us";
+
 // Passes the Win32 HANDLE value (as an integer) of the parent process
 // to wait for during relaunch.
 inline constexpr char kWaitForParentHandle[] = "wait-for-parent-handle";

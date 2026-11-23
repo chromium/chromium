@@ -44,9 +44,11 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 #endif
 
   // `timestamps.exe_entry_point_ticks` is the time at which the main function
-  // of the executable was entered. On Windows, StartupTimestamps contains
-  // timing information for calls to base::PreReadFile. `timestamps`' lifetime
-  // does not need to last beyond the constructor call.
+  // of the executable was entered (either a `base::TimeTicks` in the current
+  // process's clock domain, or on Windows a QPC-derived `base::TimeDelta` from
+  // chrome.exe). On Windows, StartupTimestamps also contains timing information
+  // for calls to base::PreReadFile. `timestamps`' lifetime does not need to
+  // last beyond the constructor call.
   explicit ChromeMainDelegate(const StartupTimestamps& timestamps);
 
   ChromeMainDelegate(const ChromeMainDelegate&) = delete;
@@ -111,6 +113,11 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 #if !defined(BUILDING_CHROME_RENDERER)
   std::unique_ptr<ChromeContentBrowserClient> chrome_content_browser_client_;
   std::unique_ptr<ChromeContentUtilityClient> chrome_content_utility_client_;
+#if BUILDFLAG(IS_WIN)
+  // Entry-point QPC delta passed from chrome.exe, forwarded to the isolated
+  // browser process if this process becomes the stub.
+  base::TimeDelta exe_entry_point_qpc_delta_;
+#endif
 #endif  // !defined(BUILDING_CHROME_RENDERER)
   std::unique_ptr<tracing::TracingSamplerProfiler> tracing_sampler_profiler_;
 

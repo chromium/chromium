@@ -84,7 +84,7 @@ extern "C" {
 DLLEXPORT int __cdecl ChromeMain(
     HINSTANCE instance,
     sandbox::SandboxInterfaceInfo* sandbox_info,
-    int64_t exe_main_entry_point_ticks,
+    int64_t exe_entry_point_qpc_delta,
     int64_t preread_begin_ticks,
     int64_t preread_end_ticks,
     startup_metric_utils::PrereadExperimentGroup preread_group);
@@ -105,7 +105,7 @@ NO_STACK_PROTECTOR __attribute__((visibility("default"))) int ChromeMain(
 DLLEXPORT int __cdecl ChromeMain(
     HINSTANCE instance,
     sandbox::SandboxInterfaceInfo* sandbox_info,
-    int64_t exe_entry_point_ticks,
+    int64_t exe_entry_point_qpc_delta,
     int64_t preread_begin_ticks,
     int64_t preread_end_ticks,
     startup_metric_utils::PrereadExperimentGroup preread_group) {
@@ -131,7 +131,7 @@ int ChromeMain(int argc, const char** argv) {
   base::debug::HandleHooks::AddIATPatch(CURRENT_MODULE());
 #endif  // !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
   StartupTimestamps timestamps{
-      base::TimeTicks::FromInternalValue(exe_entry_point_ticks),
+      base::Microseconds(exe_entry_point_qpc_delta),
       base::TimeTicks::FromInternalValue(preread_begin_ticks),
       base::TimeTicks::FromInternalValue(preread_end_ticks), preread_group};
   ChromeMainDelegate chrome_main_delegate(timestamps);
@@ -173,6 +173,15 @@ int ChromeMain(int argc, const char** argv) {
   // This must happen immediately after CommandLine::Init to ensure we capture
   // the state before any internal programmatic mutations.
   if (!command_line->HasSwitch(switches::kProcessType)) {
+#if BUILDFLAG(IS_WIN)
+    // Strip the internal stub start-time switch (consumed in chrome.exe). This
+    // must happen here rather than in chrome.exe so it is removed from
+    // chrome.dll's own copy of `base::CommandLine` (which re-parses
+    // GetCommandLineW() above), preventing it from leaking into
+    // GetInitialBrowserCommandLine, RegisterApplicationRestart, relaunches,
+    // about:version, or child processes.
+    command_line->RemoveSwitch(switches::kIsolatedStubStartQpcUs);
+#endif
     GetInitialCommandLineStorage() = *command_line;
   }
 

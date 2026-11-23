@@ -15,11 +15,14 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
+#include "chrome/app/startup_timestamps_win.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
@@ -109,6 +112,162 @@ TEST_F(ChromeMainDelegateWinDeathTest, ChildModuleUserPathComponent) {
   scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
       switches::kChildModuleUserPathComponent);
   EXPECT_CHECK_DEATH((void)chrome_main_delegate_.BasicStartupComplete());
+}
+
+TEST(StartupTimestampsWinTest, GetApplicationStartQpcDeltaValidStubSwitch) {
+  const base::TimeDelta current_qpc = base::Hours(2);
+  const base::TimeDelta stub_qpc = current_qpc - base::Milliseconds(250);
+
+  base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+  cmd.AppendSwitch(switches::kIsolated);
+  cmd.AppendSwitchASCII(switches::kIsolatedStubStartQpcUs,
+                        base::NumberToString(stub_qpc.InMicroseconds()));
+
+  EXPECT_EQ(GetApplicationStartQpcDeltaForTesting(cmd, "", current_qpc),
+            stub_qpc);
+
+  // Exact boundary values: elapsed == 0 and elapsed == kMaxEntryPointQpcAge.
+  cmd.RemoveSwitch(switches::kIsolatedStubStartQpcUs);
+  cmd.AppendSwitchASCII(switches::kIsolatedStubStartQpcUs,
+                        base::NumberToString(current_qpc.InMicroseconds()));
+  EXPECT_EQ(GetApplicationStartQpcDeltaForTesting(cmd, "", current_qpc),
+            current_qpc);
+
+  const base::TimeDelta oldest_valid = current_qpc - kMaxEntryPointQpcAge;
+  cmd.RemoveSwitch(switches::kIsolatedStubStartQpcUs);
+  cmd.AppendSwitchASCII(switches::kIsolatedStubStartQpcUs,
+                        base::NumberToString(oldest_valid.InMicroseconds()));
+  EXPECT_EQ(GetApplicationStartQpcDeltaForTesting(cmd, "", current_qpc),
+            oldest_valid);
+}
+
+TEST(StartupTimestampsWinTest, GetApplicationStartQpcDeltaIgnoresNonIsolated) {
+  const base::TimeDelta current_qpc = base::Hours(2);
+  const base::TimeDelta stub_qpc = current_qpc - base::Milliseconds(250);
+
+  // Missing --isolated switch.
+  base::CommandLine non_isolated_cmd(base::CommandLine::NO_PROGRAM);
+  non_isolated_cmd.AppendSwitchASCII(
+      switches::kIsolatedStubStartQpcUs,
+      base::NumberToString(stub_qpc.InMicroseconds()));
+  EXPECT_EQ(
+      GetApplicationStartQpcDeltaForTesting(non_isolated_cmd, "", current_qpc),
+      current_qpc);
+
+  // Non-browser process type even with --isolated.
+  base::CommandLine child_cmd(base::CommandLine::NO_PROGRAM);
+  child_cmd.AppendSwitch(switches::kIsolated);
+  child_cmd.AppendSwitchASCII(switches::kIsolatedStubStartQpcUs,
+                              base::NumberToString(stub_qpc.InMicroseconds()));
+  EXPECT_EQ(
+      GetApplicationStartQpcDeltaForTesting(child_cmd, "renderer", current_qpc),
+      current_qpc);
+
+  // Missing stub QPC switch.
+  base::CommandLine no_stub_cmd(base::CommandLine::NO_PROGRAM);
+  no_stub_cmd.AppendSwitch(switches::kIsolated);
+  EXPECT_EQ(GetApplicationStartQpcDeltaForTesting(no_stub_cmd, "", current_qpc),
+            current_qpc);
+}
+
+TEST(StartupTimestampsWinTest, GetApplicationStartQpcDeltaRejectsInvalid) {
+  const base::TimeDelta current_qpc = base::Hours(2);
+
+  const std::string kInvalidValues[] = {
+      "",
+      "not-a-number",
+      "0",
+      "-100",
+      "99999999999999999999999",
+      "9223372036854775807",  // INT64_MAX (future)
+      "1",                    // Untrusted caller passing 1us (> 1h old)
+      base::NumberToString(
+          (current_qpc + base::Microseconds(1)).InMicroseconds()),
+      base::NumberToString(
+          (current_qpc - kMaxEntryPointQpcAge - base::Microseconds(1))
+              .InMicroseconds()),
+  };
+
+  for (const std::string& value : kInvalidValues) {
+    SCOPED_TRACE(value);
+    base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+    cmd.AppendSwitch(switches::kIsolated);
+    cmd.AppendSwitchASCII(switches::kIsolatedStubStartQpcUs, value);
+    EXPECT_EQ(GetApplicationStartQpcDeltaForTesting(cmd, "", current_qpc),
+              current_qpc);
+  }
+}
+
+TEST(StartupTimestampsWinTest, ResolveEntryPointQpcDeltaHighResolution) {
+  const base::TimeTicks now = base::TimeTicks() + base::Seconds(500);
+  const base::TimeDelta qpc_delta = base::Seconds(499);
+
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                qpc_delta, now, /*is_high_resolution=*/true, base::TimeDelta()),
+            base::TimeTicks() + qpc_delta);
+
+  // Zero and negative QPC deltas fall back to `now`.
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(base::TimeDelta(), now,
+                                                /*is_high_resolution=*/true,
+                                                base::TimeDelta()),
+            now);
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(-base::Seconds(1), now,
+                                                /*is_high_resolution=*/true,
+                                                base::TimeDelta()),
+            now);
+}
+
+TEST(StartupTimestampsWinTest, ResolveEntryPointQpcDeltaLowResolution) {
+  const base::TimeTicks now = base::TimeTicks() + base::Hours(2);
+  const base::TimeDelta current_qpc = base::Hours(5);
+
+  // Normal elapsed offset.
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                current_qpc - base::Milliseconds(250), now,
+                /*is_high_resolution=*/false, current_qpc),
+            now - base::Milliseconds(250));
+
+  // Zero elapsed and exact max-age boundary.
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                current_qpc, now, /*is_high_resolution=*/false, current_qpc),
+            now);
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                current_qpc - kMaxEntryPointQpcAge, now,
+                /*is_high_resolution=*/false, current_qpc),
+            now - kMaxEntryPointQpcAge);
+
+  // Negative elapsed (QPC ahead of current) and > max-age fall back to `now`.
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                current_qpc + base::Microseconds(1), now,
+                /*is_high_resolution=*/false, current_qpc),
+            now);
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                current_qpc - kMaxEntryPointQpcAge - base::Microseconds(1), now,
+                /*is_high_resolution=*/false, current_qpc),
+            now);
+
+  // Zero and negative QPC deltas fall back to `now`.
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(base::TimeDelta(), now,
+                                                /*is_high_resolution=*/false,
+                                                base::Seconds(10)),
+            now);
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(-base::Seconds(1), now,
+                                                /*is_high_resolution=*/false,
+                                                base::Seconds(10)),
+            now);
+
+  // Low-res `now` shortly after boot or 32-bit timeGetTime() rollover where
+  // `elapsed >= now.since_origin()` must fall back to `now` rather than
+  // producing a null or negative TimeTicks.
+  const base::TimeTicks early_now = base::TimeTicks() + base::Milliseconds(100);
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                current_qpc - base::Milliseconds(100), early_now,
+                /*is_high_resolution=*/false, current_qpc),
+            early_now);
+  EXPECT_EQ(ResolveEntryPointQpcDeltaForTesting(
+                current_qpc - base::Milliseconds(250), early_now,
+                /*is_high_resolution=*/false, current_qpc),
+            early_now);
 }
 
 }  // namespace
