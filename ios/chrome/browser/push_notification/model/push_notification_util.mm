@@ -62,20 +62,18 @@ const char kAuthorizationStatusHistogram[] =
 
 // The histogram used to record users changes to an authorized push notification
 // permission status.
-const char kNotificationAutorizationStatusChangedToAuthorized[] =
+const char kNotificationAuthorizationStatusChangedToAuthorized[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized";
 
 // The histogram used to record users changes to a denied push notification
 // permission status.
-const char kNotificationAutorizationStatusChangedToDenied[] =
+const char kNotificationAuthorizationStatusChangedToDenied[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToDenied";
 
 // The histogram used to record users changes to a provisional push notification
 // permission status.
-const char kNotificationAutorizationStatusChangedToProvisional[] =
+const char kNotificationAuthorizationStatusChangedToProvisional[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToProvisional";
-
-
 
 // The options to use when requesting notification authorization.
 constexpr UNAuthorizationOptions kAuthorizationOptions =
@@ -419,19 +417,19 @@ UNAuthorizationOptions AuthorizationOptions() {
 
   if (status == SettingsAuthorizationStatus::AUTHORIZED) {
     base::UmaHistogramEnumeration(
-        kNotificationAutorizationStatusChangedToAuthorized, previousStatus);
+        kNotificationAuthorizationStatusChangedToAuthorized, previousStatus);
     return YES;
   }
 
   if (status == SettingsAuthorizationStatus::DENIED) {
     base::UmaHistogramEnumeration(
-        kNotificationAutorizationStatusChangedToDenied, previousStatus);
+        kNotificationAuthorizationStatusChangedToDenied, previousStatus);
     return YES;
   }
 
   if (status == SettingsAuthorizationStatus::PROVISIONAL) {
     base::UmaHistogramEnumeration(
-        kNotificationAutorizationStatusChangedToProvisional, previousStatus);
+        kNotificationAuthorizationStatusChangedToProvisional, previousStatus);
     return YES;
   }
 

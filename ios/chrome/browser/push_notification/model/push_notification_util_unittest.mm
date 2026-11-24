@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -17,10 +18,10 @@ namespace {
 const char kAuthorizationStatusHistogramName[] =
     "IOS.PushNotification.NotificationSettingsAuthorizationStatus";
 
-const char kNotificationAutorizationStatusChangedToAuthorized[] =
+const char kNotificationAuthorizationStatusChangedToAuthorized[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized";
 
-const char kNotificationAutorizationStatusChangedToDenied[] =
+const char kNotificationAuthorizationStatusChangedToDenied[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToDenied";
 
 NSDictionary<NSString*, id>* testPayload =
@@ -79,28 +80,28 @@ TEST_F(PushNotificationUtilTest, loggingAuthorizationStatusChange) {
   [PushNotificationUtil
       updateAuthorizationStatusPref:UNAuthorizationStatusDenied];
   histogram_tester_.ExpectBucketCount(
-      kNotificationAutorizationStatusChangedToDenied,
+      kNotificationAuthorizationStatusChangedToDenied,
       push_notification::SettingsAuthorizationStatus::NOTDETERMINED, 1);
   histogram_tester_.ExpectTotalCount(
-      kNotificationAutorizationStatusChangedToDenied, 1);
+      kNotificationAuthorizationStatusChangedToDenied, 1);
   // A repeat request should not be logged to UMA.
   [PushNotificationUtil
       updateAuthorizationStatusPref:UNAuthorizationStatusDenied];
   histogram_tester_.ExpectTotalCount(
-      kNotificationAutorizationStatusChangedToDenied, 1);
+      kNotificationAuthorizationStatusChangedToDenied, 1);
 
   [PushNotificationUtil
       updateAuthorizationStatusPref:UNAuthorizationStatusAuthorized];
   histogram_tester_.ExpectBucketCount(
-      kNotificationAutorizationStatusChangedToAuthorized,
+      kNotificationAuthorizationStatusChangedToAuthorized,
       push_notification::SettingsAuthorizationStatus::DENIED, 1);
   histogram_tester_.ExpectTotalCount(
-      kNotificationAutorizationStatusChangedToAuthorized, 1);
+      kNotificationAuthorizationStatusChangedToAuthorized, 1);
   // A repeat request should not be logged to UMA.
   [PushNotificationUtil
       updateAuthorizationStatusPref:UNAuthorizationStatusAuthorized];
   histogram_tester_.ExpectTotalCount(
-      kNotificationAutorizationStatusChangedToAuthorized, 1);
+      kNotificationAuthorizationStatusChangedToAuthorized, 1);
 }
 
 // Test the client id Mapping for stable chime client.
@@ -111,7 +112,7 @@ TEST_F(PushNotificationUtilTest, mappingClientIds) {
 }
 
 // Test the client id mapping for unstable chime client.
-TEST_F(PushNotificationUtilTest, mappingUnsableClientIds) {
+TEST_F(PushNotificationUtilTest, mappingUnstableClientIds) {
   ASSERT_EQ([PushNotificationUtil
                 mapToPushNotificationClientIdFromUserInfo:testPayload],
             PushNotificationClientId::kContent);
