@@ -7448,6 +7448,32 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByAscii) {
   EXPECT_EQ("[0->1][2]", GetRunListStructureString());
 }
 
+// Left-to-right ASCII text skips ICU BiDi analysis. Its runs must still be
+// split by script and at special characters.
+TEST_F(RenderTextTest, HarfBuzz_BreakRunsInLtrAscii) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetDirectionalityMode(DIRECTIONALITY_FORCE_LTR);
+
+  render_text->SetText(u"a-b");
+  EXPECT_EQ("[0][1][2]", GetRunListStructureString());
+
+  render_text->SetText(u"Hello, world");
+  EXPECT_EQ("[0->4][5][6][7->11]", GetRunListStructureString());
+
+  render_text->SetText(u"Tab 2");
+  EXPECT_EQ("[0->2][3][4]", GetRunListStructureString());
+
+  render_text->SetText(u"a(b)");
+  EXPECT_EQ("[0][1][2][3]", GetRunListStructureString());
+
+  // ASCII text in a right-to-left paragraph still needs BiDi analysis: the
+  // trailing punctuation takes the paragraph direction, so it comes first
+  // visually.
+  render_text->SetDirectionalityMode(DIRECTIONALITY_FORCE_RTL);
+  render_text->SetText(u"abc.");
+  EXPECT_EQ("[3][0->2]", GetRunListStructureString());
+}
+
 // Test that, on Mac, font fallback mechanisms and Harfbuzz configuration cause
 // the correct glyphs to be chosen for unicode regional indicators.
 TEST_F(RenderTextTest, EmojiFlagGlyphCount) {

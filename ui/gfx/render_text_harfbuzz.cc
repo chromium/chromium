@@ -2156,13 +2156,20 @@ void RenderTextHarfBuzz::ItemizeTextToRuns(
                text.length());
   DCHECK(!text.empty());
   const Font& primary_font = font_list().GetPrimaryFont();
+  const base::i18n::TextDirection text_direction =
+      GetTextDirectionForGivenText(text);
+
+  // ASCII text in a left-to-right paragraph is always a single left-to-right
+  // run, so ICU BiDi analysis can be skipped.
+  const bool is_ltr_ascii =
+      text_direction == base::i18n::LEFT_TO_RIGHT && base::IsStringASCII(text);
 
   // If ICU fails to itemize the text, we create a run that spans the entire
   // text. This is needed because leaving the runs set empty causes some clients
   // to misbehave since they expect non-zero text metrics from a non-empty text.
   ui::gfx::BiDiLineIterator bidi_iterator;
 
-  if (!bidi_iterator.Open(text, GetTextDirectionForGivenText(text))) {
+  if (!is_ltr_ascii && !bidi_iterator.Open(text, text_direction)) {
     auto run = std::make_unique<internal::TextRunHarfBuzz>(
         font_list().GetPrimaryFont());
     run->range = Range(0, text.length());
@@ -2183,10 +2190,13 @@ void RenderTextHarfBuzz::ItemizeTextToRuns(
   for (size_t bidi_run_start = 0; bidi_run_start < text.length();) {
     // Determine the longest logical run (e.g. same bidi direction) from this
     // point.
-    int32_t bidi_run_break = 0;
+    size_t bidi_run_end = text.length();
     UBiDiLevel bidi_level = 0;
-    bidi_iterator.GetLogicalRun(bidi_run_start, &bidi_run_break, &bidi_level);
-    size_t bidi_run_end = static_cast<size_t>(bidi_run_break);
+    if (!is_ltr_ascii) {
+      int32_t bidi_run_break = 0;
+      bidi_iterator.GetLogicalRun(bidi_run_start, &bidi_run_break, &bidi_level);
+      bidi_run_end = static_cast<size_t>(bidi_run_break);
+    }
     DCHECK_LT(bidi_run_start, bidi_run_end);
 
     ApplyForcedDirection(&bidi_level);
