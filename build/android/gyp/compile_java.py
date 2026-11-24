@@ -883,8 +883,13 @@ def main(
     if extra_javac_args:
         javac_args.extend(extra_javac_args)
 
-    if options.processorpath:
-        javac_args.extend(['-processorpath', ':'.join(options.processorpath)])
+    # Even with -proc:none, javac scans for auto-start plugins via
+    # ServiceLoader, falling back to -classpath when -processorpath is unset.
+    # Pass an empty path when none is given to avoid opening every classpath
+    # jar an extra time.
+    javac_args.extend(
+        ['-processorpath', ':'.join(options.processorpath) or ':']
+    )
     if options.processor_args:
         for arg in options.processor_args:
             javac_args.extend(['-A%s' % arg])
