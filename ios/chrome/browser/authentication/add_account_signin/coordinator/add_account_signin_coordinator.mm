@@ -6,6 +6,8 @@
 
 #import <utility>
 
+#import "base/check.h"
+#import "base/not_fatal_until.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
@@ -199,57 +201,12 @@ using signin_metrics::PromoAction;
       [self addAccountDoneWithSigninResult:
                 base::unexpected(SigninCoordinatorResultCanceledByUser)];
       return;
-    case SigninAddAccountToDeviceResult::kError: {
-      DCHECK(error);
-      __weak AddAccountSigninCoordinator* weakSelf = self;
-      ProceduralBlock dismissAction = ^{
-        [weakSelf stopAlertCoordinator];
-        [weakSelf addAccountDoneWithSigninResult:
-                      base::unexpected(SigninCoordinatorResultCanceledByUser)];
-      };
-
-      self.alertCoordinator = ErrorCoordinator(
-          error, dismissAction, self.baseViewController, self.browser);
-      [self.alertCoordinator start];
+    case SigninAddAccountToDeviceResult::kError:
+      [self presentSignInWithErrorAlert:error];
       return;
-    }
-    case SigninAddAccountToDeviceResult::kSuccess: {
-      // If the signin was successful, but the identity isn't showing up on the
-      // device, then it must be an identity that's restricted by policy.
-      bool identityOnDeviceFound = false;
-      const GaiaId gaia(identity.gaiaId);
-      std::vector<AccountInfo> accountsOnDevice =
-          _identityManager->GetAccountsOnDevice();
-      for (const AccountInfo& accountInfo : accountsOnDevice) {
-        if (accountInfo.GetGaiaId() == gaia) {
-          identityOnDeviceFound = true;
-          break;
-        }
-      }
-      if (!identityOnDeviceFound) {
-        __weak __typeof(self) weakSelf = self;
-        // A dispatch is needed to ensure that the alert is displayed after
-        // dismissing the signin view.
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf presentSignInWithRestrictedAccountAlert];
-        });
-        return;
-      }
-      // TODO(crbug.com/400902218): Handle the case where the identity is
-      // assigned to a different profile. (For kAddAccount this shouldn't
-      // matter, and for kPrimaryAccountReauth it should be impossible, but for
-      // kResignin it needs to be handled, probably by switching to the other
-      // profile and continuing the flow there.)
-      switch (self.signinIntent) {
-        case AddAccountSigninIntent::kResignin:
-          [self presentPostSigninManagerCoordinatorWithIdentity:identity];
-          break;
-        case AddAccountSigninIntent::kAddAccount:
-        case AddAccountSigninIntent::kPrimaryAccountReauth:
-          [self addAccountDoneWithSigninResult:identity];
-          break;
-      }
-    }
+    case SigninAddAccountToDeviceResult::kSuccess:
+      [self handleAddAccountSuccessWithIdentity:identity];
+      return;
   }
 }
 
@@ -294,6 +251,62 @@ using signin_metrics::PromoAction;
 - (void)stopPostSigninManagerCoordinatorAnimated:(BOOL)animated {
   [self.postSigninManagerCoordinator stopAnimated:animated];
   self.postSigninManagerCoordinator = nil;
+}
+
+// Handles a successful add-account completion from `AddAccountSigninManager`
+// for `identity`.
+- (void)handleAddAccountSuccessWithIdentity:(id<SystemIdentity>)identity {
+  // If the signin was successful, but the identity isn't showing up on the
+  // device, then it must be an identity that's restricted by policy.
+  bool identityOnDeviceFound = false;
+  const GaiaId gaia(identity.gaiaId);
+  std::vector<AccountInfo> accountsOnDevice =
+      _identityManager->GetAccountsOnDevice();
+  for (const AccountInfo& accountInfo : accountsOnDevice) {
+    if (accountInfo.GetGaiaId() == gaia) {
+      identityOnDeviceFound = true;
+      break;
+    }
+  }
+  if (!identityOnDeviceFound) {
+    __weak __typeof(self) weakSelf = self;
+    // A dispatch is needed to ensure that the alert is displayed after
+    // dismissing the signin view.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf presentSignInWithRestrictedAccountAlert];
+    });
+    return;
+  }
+  // TODO(crbug.com/400902218): Handle the case where the identity is
+  // assigned to a different profile. (For kAddAccount this shouldn't
+  // matter, and for kPrimaryAccountReauth it should be impossible, but for
+  // kResignin it needs to be handled, probably by switching to the other
+  // profile and continuing the flow there.)
+  switch (self.signinIntent) {
+    case AddAccountSigninIntent::kResignin:
+      [self presentPostSigninManagerCoordinatorWithIdentity:identity];
+      break;
+    case AddAccountSigninIntent::kAddAccount:
+    case AddAccountSigninIntent::kPrimaryAccountReauth:
+      [self addAccountDoneWithSigninResult:identity];
+      break;
+  }
+}
+
+// Presents an alert for `error` and finishes the sign-in workflow as canceled
+// on dismissal.
+- (void)presentSignInWithErrorAlert:(NSError*)error {
+  CHECK(error, base::NotFatalUntil::M165);
+  __weak AddAccountSigninCoordinator* weakSelf = self;
+  ProceduralBlock dismissAction = ^{
+    [weakSelf stopAlertCoordinator];
+    [weakSelf addAccountDoneWithSigninResult:
+                  base::unexpected(SigninCoordinatorResultCanceledByUser)];
+  };
+
+  self.alertCoordinator = ErrorCoordinator(
+      error, dismissAction, self.baseViewController, self.browser);
+  [self.alertCoordinator start];
 }
 
 // Presents an alert when sign in with a restricted account and then continue
