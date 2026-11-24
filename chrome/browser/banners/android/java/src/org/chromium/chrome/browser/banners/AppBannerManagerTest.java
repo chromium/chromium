@@ -62,8 +62,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
@@ -137,7 +136,7 @@ public class AppBannerManagerTest {
     private static final String INSTALL_PATH_HISTOGRAM_NAME = "WebApk.Install.PathToInstall";
 
     private static final String EXPECTED_DIALOG_TITLE = "Install app";
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
 
     private class MockAppDetailsDelegate extends AppDetailsDelegate {
         private Observer mObserver;
@@ -952,23 +951,9 @@ public class AppBannerManagerTest {
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
                         "call_stashed_prompt_on_click");
 
-        mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-
-        // Create an extra tab so that there is a background tab.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mTabbedActivityTestRule.getActivity(),
-                /* incognito= */ false,
-                /* waitForNtpLoad= */ true);
-
-        Tab backgroundTab =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                mTabbedActivityTestRule
-                                        .getActivity()
-                                        .getCurrentTabModel()
-                                        .getTabAt(0));
-        Assert.assertTrue(backgroundTab != null);
+        // Create an extra tab so that the starting about:blank tab is in the background.
+        Tab backgroundTab = mPage.getTab();
+        mPage = mPage.openNewTabFast();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

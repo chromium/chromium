@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -41,13 +40,13 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
@@ -478,17 +477,15 @@ public class PermissionClapperQuietTest {
         triggerQuietClapper();
         waitForQuietIcon();
 
-        // Enter Tab Switcher via UI.
-
-        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        Tab tab0 = mPage.getTab();
+        // Enter the tab switcher via UI and open a new tab from it.
+        RegularNewTabPageStation ntp = mPage.openRegularTabSwitcher().openNewTabFast();
 
         onTabSwitchCallback.waitForCallback(0);
 
         histogramWatcher.assertExpected();
 
-        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
+        mPage = ntp.selectTabFast(tab0, WebPageStation::newBuilder);
 
         // The icon should reappear when switching back.
         waitForQuietIcon();

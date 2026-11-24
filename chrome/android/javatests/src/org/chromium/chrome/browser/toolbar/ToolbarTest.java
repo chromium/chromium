@@ -306,8 +306,7 @@ public class ToolbarTest {
         boolean wantPrefocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(mActivity);
 
         // Open a new tab.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
+        mPage.openNewTabFast();
         // Verify that the omnibox is focused when the NTP is loaded.
         CriteriaHelper.pollUiThread(
                 () -> {

@@ -50,7 +50,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
@@ -96,7 +97,7 @@ public class TabSuspensionTest {
     @Mock private SuspensionTracker mSuspensionTracker;
 
     private ChromeTabbedActivity mActivity;
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
     private PageViewObserver mPageViewObserver;
     private PageViewObserver mPageViewObserver2;
     private TokenTracker mTokenTracker;
@@ -179,14 +180,13 @@ public class TabSuspensionTest {
     @Test
     @MediumTest
     public void testNewTabSuspended() {
-        mActivityTestRule.loadUrl(mStartingUrl);
+        mPage = mPage.loadWebPageProgrammatically(mStartingUrl);
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(DIFFERENT_FQDN);
         // We can't use loadUrlInNewTab because the site being suspended will prevent loading from
         // completing, and loadUrlInNewTab expects loading to succeed.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getActivityTab());
+        mPage = mPage.openNewTabFast();
+        Tab tab2 = mPage.getTab();
 
         startLoadingUrl(tab2, mDifferentUrl);
         waitForSuspendedTabToShow(tab2, DIFFERENT_FQDN);
@@ -419,17 +419,16 @@ public class TabSuspensionTest {
     @Restriction(DeviceFormFactor.PHONE)
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/339003346
     public void testSuspendNullCurrentTab() {
-        mActivityTestRule.loadUrl(mStartingUrl);
-        ChromeTriggers.closeAllTabsProgrammatically(mPage);
+        mPage = mPage.loadWebPageProgrammatically(mStartingUrl);
+        RegularTabSwitcherStation tabSwitcher = ChromeTriggers.closeAllTabsProgrammatically(mPage);
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         suspendDomain(STARTING_FQDN);
 
         // We can't use loadUrlInNewTab because the site being suspended will prevent loading from
         // completing, and loadUrlInNewTab expects loading to succeed.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getActivityTab());
+        mPage = tabSwitcher.openNewTabFast();
+        Tab tab2 = mPage.getTab();
 
         startLoadingUrl(tab2, mStartingUrl);
         waitForSuspendedTabToShow(tab2, STARTING_FQDN);
