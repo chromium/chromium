@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -51,7 +50,7 @@ public class LevelDBPersistedDataStorageTest {
                     for (int i = 0; i < mPersistedDataStorage.length; i++) {
                         mPersistedDataStorage[i] =
                                 new LevelDBPersistedDataStorage(
-                                        ProfileManager.getLastUsedRegularProfile(), NAMESPACES[i]);
+                                        mActivityTestRule.getProfile(false), NAMESPACES[i]);
                     }
                 });
     }
