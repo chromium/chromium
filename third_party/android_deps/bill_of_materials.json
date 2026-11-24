@@ -1947,7 +1947,7 @@
     {
         "name": "animal-sniffer-annotations",
         "group": "org.codehaus.mojo",
-        "version": "1.29.1"
+        "version": "1.29.2"
     },
     {
         "name": "commonmark",
