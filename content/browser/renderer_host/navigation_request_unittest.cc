@@ -42,6 +42,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/base/features.h"
+#include "net/base/load_flags.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -441,6 +442,50 @@ TEST_F(NavigationRequestTest, SimpleDataCheckNoRedirect) {
   navigation->ReadyToCommit();
   EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
+}
+
+namespace {
+
+class NoStatePrefetchBrowserClient : public TestContentBrowserClient {
+ public:
+  bool IsNoStatePrefetch(WebContents* web_contents) override { return true; }
+};
+
+}  // namespace
+
+// Tests that navigations are only marked as prefetches in NoStatePrefetch
+// WebContents.
+TEST_F(NavigationRequestTest, PrefetchLoadFlag) {
+  const GURL kUrl("http://chromium.org");
+
+  for (bool no_state_prefetch : {false, true}) {
+    SCOPED_TRACE(no_state_prefetch);
+    NoStatePrefetchBrowserClient browser_client;
+    std::optional<ScopedContentBrowserClientSetting> setting;
+    if (no_state_prefetch) {
+      setting.emplace(&browser_client);
+    }
+
+    auto renderer_initiated =
+        NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+    renderer_initiated->Start();
+    EXPECT_EQ(
+        no_state_prefetch,
+        !!(NavigationRequest::From(renderer_initiated->GetNavigationHandle())
+               ->begin_params()
+               .load_flags &
+           net::LOAD_PREFETCH));
+
+    auto browser_initiated =
+        NavigationSimulatorImpl::CreateBrowserInitiated(kUrl, contents());
+    browser_initiated->Start();
+    EXPECT_EQ(
+        no_state_prefetch,
+        !!(NavigationRequest::From(browser_initiated->GetNavigationHandle())
+               ->begin_params()
+               .load_flags &
+           net::LOAD_PREFETCH));
+  }
 }
 
 TEST_F(NavigationRequestTest, SimpleDataChecksFailure) {
