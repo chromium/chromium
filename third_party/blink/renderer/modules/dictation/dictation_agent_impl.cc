@@ -108,6 +108,13 @@ void DictationAgentImpl::PopulateEditContext(
     PopulateEditContextCallback callback) {
   HTMLElement* target = GetTarget(target_dom_node_id);
   EditContext* edit_context = target ? GetTargetEditContext(*target) : nullptr;
+  if (edit_context) {
+    edit_context->CleanContextIfNeeded();
+    // `CleanContextIfNeeded()` synchronously dispatches `contextrequest`,
+    // whose listener may blur `target`, detach the document, or swap
+    // `target.editContext`.
+    edit_context = GetTargetEditContext(*target);
+  }
   if (did_populate_edit_context_ || !edit_context ||
       !IsInPlaceholderState(*edit_context)) {
     std::move(callback).Run();

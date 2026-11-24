@@ -203,4 +203,46 @@ TEST_F(DictationAgentImplTest, RejectsNodeFromOtherDocument) {
   EXPECT_EQ(GetLog(), "");
 }
 
+TEST_F(DictationAgentImplTest,
+       PopulateEditContextDispatchesContextRequestWhenDirty) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body data-log=''>
+          <div id='editor'></div>
+          <script>
+            const log = (entry) => document.body.dataset.log += entry + ';';
+            const editor = document.getElementById('editor');
+            const ec = new EditContext({text: '_', selectionStart: 1, selectionEnd: 1});
+            editor.editContext = ec;
+            // Record `keydown` and `textupdate` as well to verify that the
+            // legacy synthetic fallback is not dispatched once `contextrequest`
+            // populates the EditContext out of placeholder state.
+            editor.addEventListener('keydown', (e) => {
+              log('keydown:' + e.keyCode);
+            });
+            ec.addEventListener('textupdate', (e) => {
+              log('textupdate:' + e.text);
+            });
+            ec.addEventListener('contextrequest', (e) => {
+              log(e.type);
+              ec.updateText(0, ec.text.length, 'Lazy dictation text');
+              ec.updateSelection(5, 14);
+            });
+            editor.focus();
+            ec.invalidate();
+          </script>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://example.test"));
+
+  PopulateEditContext(GetNodeId("editor"));
+
+  EXPECT_EQ(GetLog(), "contextrequest;");
+  EditContext& edit_context = GetEditorEditContext();
+  EXPECT_EQ(edit_context.text(), "Lazy dictation text");
+  EXPECT_EQ(edit_context.selectionStart(), 5u);
+  EXPECT_EQ(edit_context.selectionEnd(), 14u);
+}
+
 }  // namespace blink
