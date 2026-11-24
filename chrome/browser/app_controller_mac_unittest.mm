@@ -6,8 +6,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -16,21 +20,34 @@
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/mock_download_core_service.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/mock_tab_restore_service.h"
+#include "components/sessions/core/session_id.h"
+#include "components/sessions/core/tab_restore_service_observer.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_download_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -41,7 +58,28 @@ id __weak* TargetForAction() {
   return &targetForAction;
 }
 
+int g_in_progress_download_prompt_count = 0;
+TestingProfile* g_profile_to_force_incognito_during_prompt = nullptr;
+
 }  // namespace
+
+@interface AppControllerDownloadPromptTestHelper : NSObject
+- (BOOL)userWillWaitForInProgressDownloads:(int)downloadCount;
+@end
+
+@implementation AppControllerDownloadPromptTestHelper
+
+- (BOOL)userWillWaitForInProgressDownloads:(int)downloadCount {
+  g_in_progress_download_prompt_count = downloadCount;
+  if (g_profile_to_force_incognito_during_prompt) {
+    IncognitoModePrefs::SetAvailability(
+        g_profile_to_force_incognito_during_prompt->GetPrefs(),
+        policy::IncognitoModeAvailability::kForced);
+  }
+  return YES;
+}
+
+@end
 
 @interface FakeBrowserWindow : NSWindow
 @end
@@ -623,4 +661,89 @@ TEST_F(AppControllerSafeProfileTest, LockedProfileReturnsNullptr) {
   app_controller_mac::RunInLastProfileSafely(
       future.GetCallback(), app_controller_mac::kIgnoreOnFailure);
   EXPECT_EQ(future.Take(), nullptr);
+}
+
+TEST_F(AppControllerTest,
+       QuitWithInProgressDownloadsSkipsProfileBecomingUnsuitable) {
+  auto* mock_dcs = static_cast<testing::NiceMock<MockDownloadCoreService>*>(
+      DownloadCoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile_.get(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockDownloadCoreService>>();
+              })));
+  ASSERT_NE(nullptr, mock_dcs);
+  ON_CALL(*mock_dcs, HasCreatedDownloadManager())
+      .WillByDefault(testing::Return(true));
+
+  auto download_manager =
+      std::make_unique<testing::NiceMock<content::MockDownloadManager>>();
+  ON_CALL(*download_manager, BlockingShutdownCount())
+      .WillByDefault(testing::Return(1));
+  profile_->SetDownloadManagerForTesting(std::move(download_manager));
+
+  g_in_progress_download_prompt_count = 0;
+  g_profile_to_force_incognito_during_prompt = profile_.get();
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [AppController class], [AppControllerDownloadPromptTestHelper class],
+      @selector(userWillWaitForInProgressDownloads:));
+
+  // If `profile_` becomes unsuitable for browser window creation during the
+  // nested modal alert run loop, `shouldQuitWithInProgressDownloads` must skip
+  // creating a browser window rather than hitting the CHECK in
+  // `CreateBrowserWindow()`.
+  [AppController.sharedController tryToTerminateApplication];
+
+  g_profile_to_force_incognito_during_prompt = nullptr;
+  EXPECT_EQ(1, g_in_progress_download_prompt_count);
+  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
+}
+
+TEST_F(AppControllerTest, TabRestorerSkipsUnsuitableProfile) {
+  auto* mock_trs = static_cast<testing::NiceMock<MockTabRestoreService>*>(
+      TabRestoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile_.get(),
+          base::BindRepeating([](content::BrowserContext*)
+                                  -> std::unique_ptr<KeyedService> {
+            return std::make_unique<testing::NiceMock<MockTabRestoreService>>();
+          })));
+  ASSERT_NE(nullptr, mock_trs);
+
+  // Synchronous path (`IsLoaded()` is true): unsuitable profile is skipped,
+  // while re-enabling regular windows restores normally.
+  ON_CALL(*mock_trs, IsLoaded()).WillByDefault(testing::Return(true));
+  IncognitoModePrefs::SetAvailability(
+      profile_->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+  EXPECT_CALL(*mock_trs, RestoreMostRecentEntry(testing::_)).Times(0);
+  app_controller_mac::TabRestorer::RestoreMostRecent(profile_.get());
+  testing::Mock::VerifyAndClearExpectations(mock_trs);
+
+  ON_CALL(*mock_trs, IsLoaded()).WillByDefault(testing::Return(true));
+  IncognitoModePrefs::SetAvailability(
+      profile_->GetPrefs(), policy::IncognitoModeAvailability::kEnabled);
+  EXPECT_CALL(*mock_trs, RestoreMostRecentEntry(nullptr)).Times(1);
+  app_controller_mac::TabRestorer::RestoreMostRecent(profile_.get());
+  testing::Mock::VerifyAndClearExpectations(mock_trs);
+
+  // Asynchronous path (`IsLoaded()` is false initially): if the profile becomes
+  // unsuitable before `TabRestoreServiceLoaded()` fires, restoration is
+  // skipped.
+  ON_CALL(*mock_trs, IsLoaded()).WillByDefault(testing::Return(false));
+  sessions::TabRestoreServiceObserver* captured_observer = nullptr;
+  EXPECT_CALL(*mock_trs, AddObserver(testing::_))
+      .WillOnce(testing::SaveArg<0>(&captured_observer));
+  EXPECT_CALL(*mock_trs, LoadTabsFromLastSession()).Times(1);
+  const SessionID session_id = SessionID::NewUnique();
+  app_controller_mac::TabRestorer::RestoreByID(profile_.get(), session_id);
+  ASSERT_NE(nullptr, captured_observer);
+  testing::Mock::VerifyAndClearExpectations(mock_trs);
+
+  IncognitoModePrefs::SetAvailability(
+      profile_->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+  EXPECT_CALL(*mock_trs, RemoveObserver(captured_observer)).Times(1);
+  EXPECT_CALL(*mock_trs, RestoreEntryById(testing::_, testing::_, testing::_))
+      .Times(0);
+  captured_observer->TabRestoreServiceLoaded(mock_trs);
 }

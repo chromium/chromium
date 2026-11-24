@@ -1492,7 +1492,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   // Display the active downloads, creating new browser windows if necessary.
   for (auto& profile : weakProfiles) {
-    if (!profile.get()) {
+    if (!profile.get() || GetBrowserWindowCreationStatusForProfile(*profile) !=
+                              BrowserWindowInterface::CreationStatus::kOk) {
       continue;
     }
 
@@ -2834,6 +2835,10 @@ void TabRestorer::RestoreByID(Profile* profile, SessionID session_id) {
 // static
 void TabRestorer::DoRestoreTab(Profile* profile, SessionID session_id) {
   CHECK(profile, base::NotFatalUntil::M163);
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
+    return;
+  }
   auto* service = TabRestoreServiceFactory::GetForProfile(profile);
   if (!service)
     return;

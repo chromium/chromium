@@ -90,6 +90,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/test/interaction",
       "//components/device_signals/core/browser:pref_names",
       "//components/enterprise:test_support",
+      "//components/policy/core/common:common_constants",
       "//components/policy/core/common:test_support",
       "//components/policy/test_support",
       "//components/prefs",

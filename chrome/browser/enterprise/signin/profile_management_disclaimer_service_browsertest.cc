@@ -6,6 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -16,14 +17,18 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
+#include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
@@ -31,6 +36,7 @@
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -1078,4 +1084,34 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
 
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get<Profile*>(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
+                       OpenPrivacyPolicyArticlePopUpSkipsUnsuitableProfile) {
+  base::HistogramTester histogram_tester;
+  auto* disclaimer_service = GetDisclaimerService();
+  auto* browser_collection =
+      ProfileBrowserCollection::GetForProfile(GetProfile());
+  ASSERT_EQ(1u, browser_collection->GetSize());
+
+  IncognitoModePrefs::SetAvailability(
+      GetProfile()->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+
+  disclaimer_service->OpenPrivacyPolicyArticlePopUp(/*is_modal_dialog=*/true);
+  EXPECT_EQ(1u, browser_collection->GetSize());
+  histogram_tester.ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerModalLearnMoreClicked, true, 1);
+
+  // Re-enabling regular browser windows allows the privacy policy popup to
+  // open.
+  IncognitoModePrefs::SetAvailability(
+      GetProfile()->GetPrefs(), policy::IncognitoModeAvailability::kEnabled);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  disclaimer_service->OpenPrivacyPolicyArticlePopUp(/*is_modal_dialog=*/true);
+  BrowserWindowInterface* popup_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+  EXPECT_EQ(BrowserWindowInterface::Type::TYPE_POPUP, popup_browser->GetType());
+  EXPECT_EQ(2u, browser_collection->GetSize());
+  histogram_tester.ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerModalLearnMoreClicked, true, 2);
 }

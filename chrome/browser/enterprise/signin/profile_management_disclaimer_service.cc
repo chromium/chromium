@@ -838,6 +838,11 @@ void ProfileManagementDisclaimerService::OpenPrivacyPolicyArticlePopUp(
     }
   }
 
+  if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
+    return;
+  }
+
   // This will open a new browser window in the same profile. We need to make
   // sure the dialog is not shown in that window to allow the user to read the
   // article.
