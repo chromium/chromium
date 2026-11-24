@@ -2474,6 +2474,19 @@ Als je het beleid niet toepast, wordt de functie voor contentcodering met <ph na
 <translation id="2521581787935130926">De snelkoppeling voor apps tonen op de bookmarkbalk</translation>
 <translation id="2522304491589804974">Toelatingslijst voor installatie van extensies configureren</translation>
 <translation id="2523511232831599126">Snelkoppelingen voor toegankelijkheid op het inlogscherm aanzetten</translation>
+<translation id="2524400223625951315">Hiermee bepaal je het gedrag voor afgedwongen geïnstalleerde extensies in de geïsoleerde modus.
+
+Dit is van toepassing op extensies die zijn ingesteld via <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of waarbij <ph name="INSTALLATION_MODE_FIELD" /> is ingesteld op <ph name="FORCE_INSTALLED_VALUE" /> in <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Extensies die zijn ingesteld met <ph name="INSTALLATION_MODE_FIELD" /> ingesteld op <ph name="NORMAL_INSTALLED_VALUE" />, worden beheerd door <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" />.
+
+Als je het beleid instelt op 0 (altijd aan) of niet instelt, staan afgedwongen geïnstalleerde extensies altijd aan in de geïsoleerde modus en kunnen ze niet worden uitgezet door de gebruiker.
+
+Als je dit beleid instelt op 1 (standaard aangezet), worden afgedwongen geïnstalleerde extensies standaard aangezet in de geïsoleerde modus en kunnen ze door de gebruiker worden uitgezet. De keuze van de gebruiker heeft voorrang zolang het beleid is ingesteld op 1. Buiten de geïsoleerde modus kan de gebruiker afgedwongen geïnstalleerde extensies nog steeds niet uitzetten.
+
+Extensies die <ph name="INCOGNITO_MANIFEST_KEY" /> instellen op <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> in hun manifest, kunnen niet worden uitgevoerd in de geïsoleerde modus, ongeacht dit beleid.
+
+Dit beleid wordt alleen van kracht als <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> aanstaat.
+
+Dit beleid vereist een <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-licentie om van kracht te worden.</translation>
 <translation id="252742292004421898">Direct Sockets API toestaan op deze sites</translation>
 <translation id="2528762900096510743">Service voor automatisch uitloggen aanzetten</translation>
 <translation id="2529880111512635313">De lijst met automatisch geïnstalleerde apps en extensies configureren</translation>
@@ -3936,6 +3949,7 @@ Dit is verwijderd in Chrome 145. We raden je aan in plaats daarvan de methode re
 
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
 <translation id="3435796032110614169">Verwijderen van afdrukgeschiedenis toestaan</translation>
+<translation id="3435849940943480491">Afgedwongen geïnstalleerde extensies staan altijd aan in de geïsoleerde modus en kunnen niet worden uitgezet</translation>
 <translation id="3436217793443508863">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op de batterij wordt gewerkt (in milliseconden)</translation>
 <translation id="3437391374720747482">Voorkeur geven aan sleuteluitwisselingsmethoden die voldoen aan de vereisten van CNSA 2.0</translation>
 <translation id="3437924696598384725">De gebruiker toestaan VPN-verbindingen te beheren</translation>
@@ -6271,6 +6285,7 @@ We raden je af videodecodering met hardwareversnelling uit te zetten. Dit leidt 
 <translation id="4927797103413916381">Als je <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> niet hebt uitgezet, voorkomt het aanzetten van <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> of dit niet instellen dat sites met misleidende functionaliteit nieuwe vensters of tabbladen openen.
 
        Als je <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> of <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> uitzet, kunnen sites met misleidende functionaliteit nieuwe vensters of tabbladen openen.</translation>
+<translation id="4928435626872799127">Het gedrag van afgedwongen geïnstalleerde extensies in de geïsoleerde modus beheren</translation>
 <translation id="4929721861648439998">Zet de toegankelijkheidsfunctie voor monogeluid op het inlogscherm aan.
 
           Met deze functie kun je de apparaatmodus snel veranderen van standaard stereogeluid naar monogeluid.
@@ -9718,6 +9733,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="7054840304131108563">Toegankelijkheidsfuncties voor weergaveprogramma uitzetten</translation>
 <translation id="7055022222176591388">Verouderde <ph name="FLASH_PLUGIN_NAME" /> niet toestaan</translation>
 <translation id="7056040036973126753">Gegevens over domeinbetrouwbaarheid kunnen naar Google worden gestuurd, afhankelijk van het Chrome-beleid voor gebruikersstatistieken</translation>
+<translation id="7057522375529097624">Afgedwongen geïnstalleerde extensies staan standaard aan in de geïsoleerde modus en kunnen worden uitgezet</translation>
 <translation id="7062803946218028349">Toestaan dat Telefoonhub wordt aangezet</translation>
 <translation id="7063646777978847358">Met dit beleid wordt bepaald of achtergrondverzoeken van service workers worden beperkt. Dit beleid kan relevant zijn als een functie die bestanden op de achtergrond downloadt, wordt beïnvloed.
 

@@ -6551,6 +6551,13 @@ Politika, boş bir dizeye ayarlanır veya ayarlanmadan bırakılırsa hiçbir be
 
 Not: Bu politikanın desteği sonlandırıldı. Bu politika yerine <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> (yüksek performanslı cihazlar için) veya <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" /> politikalarını kullanın. Bu politika yalnızca, herhangi bir işlem izolasyonunun özel olarak yapılandırılması önerilmeyen ve kesinlikle 1 GB'tan fazla RAM'i bulunan cihazlarda çalışan <ph name="ANDROID_NAME" /> üzerindeki Chrome için geçerlidir.</translation>
 <translation id="4991786313466977061">Kurumsal rozetlerin görünürlüğünü kontrol et</translation>
+<translation id="4991886408515766724">Politikayı ayarlamak, kullanıcılardan bir USB cihazına erişme izni vermelerini isteyebilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Etkin değilse kullanıcının ayarları geçerlidir.
+
+      URL kalıpları, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> ile çakışmamalıdır. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="4995123966071996433">Linux sanal makinelerine bağlantı noktası yönlendirmeye izin verme</translation>
 <translation id="4996068111491152684">Ağ kimlik doğrulaması için <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgilerini kullanma.</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> Ürün Analizine izin verin.</translation>

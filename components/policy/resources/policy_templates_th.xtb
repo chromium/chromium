@@ -6410,6 +6410,13 @@ Use Case ทั่วไปของนโยบายนี้คือกา�
 
 หมายเหตุ: นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> (สำหรับอุปกรณ์ประสิทธิภาพสูง) หรือ <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" /> แทน นโยบายนี้มีผลเฉพาะกับ Chrome ใน <ph name="ANDROID_NAME" /> ที่ทำงานในอุปกรณ์ที่มี RAM มากกว่า 1 GB เท่านั้น ซึ่งไม่แนะนำให้กำหนดค่าการแยกกระบวนการใดๆ โดยเฉพาะ</translation>
 <translation id="4991786313466977061">ควบคุมระดับการมองเห็นการติดป้ายองค์กร</translation>
+<translation id="4991886408515766724">การตั้งค่านโยบายจะให้คุณสร้างรายการรูปแบบ URL ซึ่งระบุเว็บไซต์ที่ขอให้ผู้ใช้ให้สิทธิ์เข้าถึงอุปกรณ์ USB ได้
+
+      การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้) แต่หากไม่ได้ตั้งค่าไว้ การตั้งค่าส่วนตัวของผู้ใช้จะมีผล
+
+      รูปแบบ URL ต้องไม่ขัดแย้งกับ <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> ไม่มีนโยบายใดที่มีความสำคัญสูงกว่าหาก URL ตรงกับทั้ง 2 นโยบาย
+
+      ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้</translation>
 <translation id="4995123966071996433">ไม่อนุญาตให้ส่งต่อพอร์ตไปยังเครื่องเสมือนใน Linux</translation>
 <translation id="4996068111491152684">ระบบจะไม่ใช้ข้อมูลเข้าสู่ระบบ <ph name="PRODUCT_OS_NAME" /> สำหรับการตรวจสอบสิทธิ์เครือข่าย</translation>
 <translation id="4996086761250834365">อนุญาตการวิเคราะห์ผลิตภัณฑ์ของ <ph name="PLUGIN_VM_NAME" /></translation>
