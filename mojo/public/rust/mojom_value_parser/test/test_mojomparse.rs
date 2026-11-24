@@ -203,7 +203,8 @@ impl TestType {
         // we satisfy ourselves by checking round-trip conversions.
         expect_true!(equivalent_value(
             &get_mojom_val(),
-            // The function we really want to test here is T::try_from_mojom_value
+            // The function we really want to test here is
+            // T::try_from_mojom_value
             &into_mojom_value(try_from_mojom_value::<T>(get_mojom_val()).unwrap())
         ));
     }
@@ -1485,6 +1486,7 @@ fn test_arrays() {
 
     expect_true!(try_from_mojom_value::<Vec<i16>>(empty_mojom()).is_err());
     expect_true!(try_from_mojom_value::<[u64; 3]>(empty_mojom()).is_err());
+    expect_true!(try_from_mojom_value::<[u64; 3]>(array_int16_mojom(vec![1, 2, 3])).is_err());
 
     ARRAYS_TY.validate_mojomparse(
         Arrays {

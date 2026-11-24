@@ -273,10 +273,9 @@ where
         let arr_of_t: [T; N] = v
             .into_iter()
             .map(|val| <T as MojomParse<W, Context>>::try_from_mojom_value(val, context))
-            .process_results(|iter| {
-                // Unwrap will succeed because we just checked the length above.
-                iter.collect_array().unwrap()
-            })?;
+            .process_results(|iter| iter.collect_array())?
+            // Unwrap will succeed because we just checked the length above.
+            .unwrap();
         Ok(arr_of_t)
     }
 }
