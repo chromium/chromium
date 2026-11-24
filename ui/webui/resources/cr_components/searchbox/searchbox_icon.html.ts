@@ -33,6 +33,9 @@ export function getHtml(this: SearchboxIconElement) {
   <img id="iconImg" alt="" ?hidden="${!this.showIconImg_}"
       src="${resolveSchemeRelativeUrl(this.iconSrc_)}"
       @load="${this.onIconLoad_}">
+  ${this.getBadgeClass_() ? html`
+    <div id="badge" class="${this.getBadgeClass_()}"></div>
+  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

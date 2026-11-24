@@ -122,6 +122,16 @@ enum ActionIconType {
 };
 // LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:ActionIconType)
 
+// The badge drawn on top of the type icon. Maps to
+// SuggestTemplateInfo.TypeIconBadge.BadgeType in
+// //third_party/omnibox_proto/suggest_template_info.proto.
+// LINT.IfChange(BadgeType)
+enum BadgeType {
+  kBadgeTypeUnspecified = 0,
+  kDot = 1,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:BadgeType)
+
 // An image to display with the suggestion. Maps to SuggestTemplateInfo.Image in
 // //third_party/omnibox_proto/suggest_template_info.proto.
 struct Image {
@@ -162,4 +172,6 @@ struct SuggestTemplateInfo {
   fusebox_action.mojom.FuseboxAction? fusebox_action;
   // The icon to display on the right hand side of the suggestion, if any.
   ActionIconType? action_icon;
+  // The badge to draw on top of the type icon, if any.
+  BadgeType? type_icon_badge;
 };
