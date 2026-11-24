@@ -58,10 +58,4 @@ tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
-# b/572833952
-# TODO(b/572833952): Re-enable tast.camera.CCAUISmoke.fake_hal and
-# tast.camera.CCAUISmoke.vivid.
-tast.camera.CCAUISmoke.fake_hal
-tast.camera.CCAUISmoke.vivid
-
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.

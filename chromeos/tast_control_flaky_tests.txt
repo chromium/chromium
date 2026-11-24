@@ -14,7 +14,9 @@ tast.secagentd.FileEvents.user_fs
 tast.secagentd.FileEvents.auth_factors
 tast.secagentd.FileEvents.user_credential
 
-# b/555605549
+# b/555605549, b/572833952
+tast.camera.CCAUISmoke.vivid
+tast.camera.CCAUISmoke.fake_hal
 tast.camera.CCAUISmoke.fake_vcd
 
 # b/576091588
