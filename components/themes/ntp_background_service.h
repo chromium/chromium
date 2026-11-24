@@ -208,7 +208,6 @@ class NtpBackgroundService : public KeyedService {
   void OnImageURLHeadersFetchComplete(
       URLLoaderList::iterator it,
       base::OnceCallback<void(int)> image_url_headers_received_callback,
-      base::TimeTicks request_start,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Callback that processes the response of a FetchImageInfo request made by a

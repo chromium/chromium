@@ -865,8 +865,6 @@ TEST_F(NtpBackgroundServiceTest, OverrideBaseUrl) {
 TEST_F(NtpBackgroundServiceTest, VerifyURLMetricsWithNetworkSuccess) {
   SetUpResponseWithNetworkSuccess(GURL(kTestImageUrl));
   histogram_tester_.ExpectTotalCount(
-      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 0);
-  histogram_tester_.ExpectTotalCount(
       "NewTabPage.BackgroundService.Images.Headers.StatusCode", 0);
 
   base::OnceCallback<void(int)> image_url_headers_received_callback =
@@ -878,10 +876,6 @@ TEST_F(NtpBackgroundServiceTest, VerifyURLMetricsWithNetworkSuccess) {
   base::RunLoop().RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(
-      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 1);
-  histogram_tester_.ExpectTotalCount(
-      "NewTabPage.BackgroundService.Images.Headers.RequestLatency.Ok", 1);
-  histogram_tester_.ExpectTotalCount(
       "NewTabPage.BackgroundService.Images.Headers.StatusCode", 1);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.BackgroundService.Images.Headers.StatusCode",
@@ -890,8 +884,6 @@ TEST_F(NtpBackgroundServiceTest, VerifyURLMetricsWithNetworkSuccess) {
 
 TEST_F(NtpBackgroundServiceTest, VerifyURLMetricsWithNetworkError) {
   SetUpResponseWithNetworkError(GURL(kTestImageUrl));
-  histogram_tester_.ExpectTotalCount(
-      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 0);
   histogram_tester_.ExpectTotalCount(
       "NewTabPage.BackgroundService.Images.Headers.StatusCode", 0);
 
@@ -903,10 +895,6 @@ TEST_F(NtpBackgroundServiceTest, VerifyURLMetricsWithNetworkError) {
                             std::move(image_url_headers_received_callback));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester_.ExpectTotalCount(
-      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 1);
-  histogram_tester_.ExpectTotalCount(
-      "NewTabPage.BackgroundService.Images.Headers.RequestLatency.NotFound", 1);
   histogram_tester_.ExpectTotalCount(
       "NewTabPage.BackgroundService.Images.Headers.StatusCode", 1);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(

@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
-#include "base/time/time.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/search/ntp_features.h"
 #include "components/themes/ntp_background.pb.h"
@@ -358,14 +357,12 @@ void NtpBackgroundService::VerifyImageURL(
       url_loader_factory_.get(),
       base::BindOnce(&NtpBackgroundService::OnImageURLHeadersFetchComplete,
                      base::Unretained(this), std::move(it),
-                     std::move(image_url_headers_received_callback),
-                     base::TimeTicks::Now()));
+                     std::move(image_url_headers_received_callback)));
 }
 
 void NtpBackgroundService::OnImageURLHeadersFetchComplete(
     URLLoaderList::iterator it,
     base::OnceCallback<void(int)> image_url_headers_received_callback,
-    base::TimeTicks request_start,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   if (pending_image_url_header_loaders_.empty()) {
     return;
@@ -376,23 +373,6 @@ void NtpBackgroundService::OnImageURLHeadersFetchComplete(
 
   UMA_HISTOGRAM_SPARSE("NewTabPage.BackgroundService.Images.Headers.StatusCode",
                        headers_response_code);
-  auto request_time = base::TimeTicks::Now() - request_start;
-  UMA_HISTOGRAM_TIMES(
-      "NewTabPage.BackgroundService.Images.Headers.RequestLatency",
-      request_time);
-  if (headers_response_code == net::HTTP_OK) {
-    UMA_HISTOGRAM_TIMES(
-        "NewTabPage.BackgroundService.Images.Headers.RequestLatency.Ok",
-        request_time);
-  } else if (headers_response_code == net::HTTP_NOT_FOUND) {
-    UMA_HISTOGRAM_TIMES(
-        "NewTabPage.BackgroundService.Images.Headers.RequestLatency.NotFound",
-        request_time);
-  } else {
-    UMA_HISTOGRAM_TIMES(
-        "NewTabPage.BackgroundService.Images.Headers.RequestLatency.Other",
-        request_time);
-  }
 
   std::move(image_url_headers_received_callback).Run(headers_response_code);
 }

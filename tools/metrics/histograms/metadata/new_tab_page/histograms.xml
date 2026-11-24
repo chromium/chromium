@@ -344,19 +344,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.BackgroundService.Images.Headers.RequestLatency"
-    units="ms" expires_after="2025-10-26">
-  <owner>pauladedeji@google.com</owner>
-  <owner>danpeng@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    The time it takes to download an image's URL headers.
-
-    Logged every time Chrome encounters an error when verifying background
-    images.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.BackgroundService.Images.Headers.StatusCode"
     units="HttpResponseCode" expires_after="2025-12-14">
   <owner>pauladedeji@google.com</owner>
