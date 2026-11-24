@@ -1,6 +1,6 @@
-monorail: {
-  component: "Platform>Apps>ARC"
+buganizer: {
+  component_id: 882467  # ChromeOS > Platform > baseOS > Virtualization > ARC++ & ARCVM
 }
 buganizer_public: {
-  component_id: 1457293
+  component_id: 1011095  # ChromeOS Public Tracker > Core Systems > ARC++
 }
