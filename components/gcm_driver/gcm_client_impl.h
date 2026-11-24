@@ -220,9 +220,37 @@ class GCMClientImpl : public GCMClient,
       const std::string& registration_id,
       Result result);
 
-  // Completes the unregistration request.
-  void OnUnregisterCompleted(scoped_refptr<RegistrationInfo> registration_info,
-                             UnregistrationRequest::Status status);
+  // Removes a single matching registration or token from the cache and
+  // persistent store, returning true if found.
+  bool RemoveCachedRegistration(
+      const scoped_refptr<RegistrationInfo>& registration_info);
+
+  // Removes all cached Instance ID tokens for `app_id` from the cache and
+  // persistent store, returning true if at least one token was removed.
+  bool RemoveAllCachedInstanceIDTokens(const std::string& app_id);
+
+  // Starts an unregistration request for `registration_info` and tracks it as
+  // pending, invoking `callback` upon completion.
+  void StartUnregistrationRequest(
+      scoped_refptr<RegistrationInfo> registration_info,
+      const std::string& category,
+      const std::string& subtype,
+      std::unique_ptr<UnregistrationRequest::CustomRequestHandler>
+          request_handler,
+      const std::string& source_to_record,
+      base::OnceCallback<void(Result result)> callback);
+
+  // Completes a pending `UnregistrationRequest`, invoking `callback` with the
+  // mapped result.
+  void OnUnregistrationRequestCompleted(
+      scoped_refptr<RegistrationInfo> registration_info,
+      base::OnceCallback<void(Result result)> callback,
+      UnregistrationRequest::Status status);
+
+  // Notifies observers that an `Unregister()` call has finished.
+  void NotifyUnregisterFinished(
+      scoped_refptr<RegistrationInfo> registration_info,
+      Result result);
 
   // Handles incoming data message and dispatches it to observers of this class.
   void HandleIncomingMessage(const gcm::MCSMessage& message);
