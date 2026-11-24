@@ -157,7 +157,8 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
   // still be referenced by another source that pushes frames into it (e.g., the
   // host of a transferred stream), but nothing will pop frames pushed after the
   // consumer closed. Producers must check IsClosedLocked() before pushing or
-  // monitoring a frame, and drop the frame if the queue is closed.
+  // monitoring a frame, and drop the frame if the queue is closed. A source
+  // that starts on a closed queue closes itself.
   void CloseLocked() EXCLUSIVE_LOCKS_REQUIRED(GetLock()) { is_closed_ = true; }
 
   bool IsClosedLocked() const EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {

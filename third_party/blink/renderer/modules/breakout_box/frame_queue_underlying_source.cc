@@ -138,9 +138,20 @@ template <typename NativeFrameType>
 ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Start(
     ScriptState* script_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  bool queue_closed = false;
+  if (auto frame_queue = Queue()) {
+    base::AutoLock locker(frame_queue->GetLock());
+    queue_closed = frame_queue->IsClosedLocked();
+  }
   if (is_closed_) {
     // This was intended to be closed before Start() was called.
     CloseController();
+  } else if (queue_closed) {
+    // The source consuming the queue closed before this one started, e.g. the
+    // host was closed while its stream was being transferred. Nothing will
+    // deliver frames or close this source later, so close it now instead of
+    // leaving the stream open forever.
+    Close();
   } else {
     if (!StartFrameDelivery()) {
       // There is only one way in which this can fail for now. Perhaps
@@ -404,6 +415,16 @@ void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
     base::TimeTicks time_origin,
     bool is_cross_origin_isolated) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  if (is_closed_) {
+    // This source closed before it knew about the transferred source, so its
+    // Close() could not close that source, and nothing else will.
+    PostCrossThreadTask(
+        *transferred_runner, FROM_HERE,
+        CrossThreadBindOnce(
+            &FrameQueueUnderlyingSource<NativeFrameType>::Close,
+            MakeUnwrappingCrossThreadHandle(std::move(transferred_source))));
+    return;
+  }
   UpdateRealmInfo(time_origin, is_cross_origin_isolated);
   {
     base::AutoLock locker(lock_);

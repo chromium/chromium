@@ -136,7 +136,8 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
 
   // Sets |transferred_source| as the new target for frames arriving via
   // QueueFrame(). |transferred_source| will pull frames from the same circular
-  // queue. Must be called on |realm_task_runner_|.
+  // queue. If this source is already closed, closes |transferred_source|
+  // instead. Must be called on |realm_task_runner_|.
   void TransferSource(
       scoped_refptr<base::SequencedTaskRunner> transferred_runner,
       CrossThreadHandle<FrameQueueUnderlyingSource<NativeFrameType>>

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
+#include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
@@ -107,6 +108,8 @@ class TestVideoFrameQueueUnderlyingSource
     : public VideoFrameQueueUnderlyingSource {
  public:
   using VideoFrameQueueUnderlyingSource::ClearTransferredSource;
+  using VideoFrameQueueUnderlyingSource::GetRealmRunner;
+  using VideoFrameQueueUnderlyingSource::Queue;
   using VideoFrameQueueUnderlyingSource::TransferSource;
   using VideoFrameQueueUnderlyingSource::VideoFrameQueueUnderlyingSource;
 
@@ -851,9 +854,9 @@ TEST_F(MediaStreamTrackProcessorTest,
   EXPECT_EQ(video_track->CountSinks(), 0u);
 }
 
-// Checks that a transferred source that starts after its host is gone closes
-// itself. Nothing else would close it, and reads on the transferred stream
-// would never complete.
+// Checks that a transferred source closes itself if it starts after its host
+// closed the shared queue and was collected. Nothing else would close it, and
+// reads on the transferred stream would never complete.
 TEST_F(MediaStreamTrackProcessorTest, TransferredSourceClosesIfHostIsGone) {
   V8TestingScope host_scope;
   ScriptState* host_script_state = host_scope.GetScriptState();
@@ -891,7 +894,7 @@ TEST_F(MediaStreamTrackProcessorTest, TransferredSourceClosesIfHostIsGone) {
   ASSERT_FALSE(weak_track_processor);
 
   // Create the transferred source in the destination realm. Creating a stream
-  // for it starts it, which asks the host to start frame delivery.
+  // for it starts it, and since the host closed the queue, it closes itself.
   V8TestingScope dest_scope;
   ScriptState* dest_script_state = dest_scope.GetScriptState();
   UnderlyingSourceBase* transferred_source =
@@ -903,6 +906,134 @@ TEST_F(MediaStreamTrackProcessorTest, TransferredSourceClosesIfHostIsGone) {
 
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return transferred_stream->IsClosed(); }));
+}
+
+// Checks that a transferred source closes itself if its host is collected
+// before the transferred source's request to start frame delivery runs. This
+// is a fallback for a host that closes and is collected after the transferred
+// source started on the still-open queue. To start the transferred source on
+// an open queue, the test collects a host that never closed.
+TEST_F(MediaStreamTrackProcessorTest,
+       TransferredSourceClosesIfHostIsCollectedBeforeDeliveryStarts) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  WeakPersistent<TestVideoFrameQueueUnderlyingSource> weak_host;
+  Persistent<ReadableStream> transferred_stream;
+  {
+    auto* host = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+        script_state, /*queue_size=*/1u, std::nullopt);
+    weak_host = host;
+    auto* transferred_source =
+        MakeGarbageCollected<TransferredFrameQueueUnderlyingSource<
+            scoped_refptr<media::VideoFrame>>>(
+            script_state, host->Queue(), host->GetRealmRunner(),
+            MakeCrossThreadWeakHandle<VideoFrameQueueUnderlyingSource>(host));
+    // Starting the transferred source on the open queue posts a request for
+    // the host to start frame delivery.
+    transferred_stream = ReadableStream::CreateWithCountQueueingStrategy(
+        script_state, transferred_source, /*high_water_mark=*/0);
+  }
+
+  WebHeap::CollectAllGarbageForTesting();
+  ASSERT_FALSE(weak_host);
+
+  // The request finds the host gone, so it closes the transferred source.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return transferred_stream->IsClosed(); }));
+}
+
+// Checks that a transferred source closes itself when it starts if its host
+// closed before the transferred source was created. Nothing else would close
+// it.
+TEST_F(MediaStreamTrackProcessorTest,
+       TransferredSourceClosesIfHostClosedBeforeOptimization) {
+  V8TestingScope host_scope;
+  ScriptState* host_script_state = host_scope.GetScriptState();
+  PushableMediaStreamVideoSource* pushable_video_source =
+      CreatePushableVideoSource();
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(
+          host_script_state,
+          CreateVideoMediaStreamTrack(host_scope.GetExecutionContext(),
+                                      pushable_video_source),
+          host_scope.GetExceptionState());
+  MediaStreamVideoTrack* video_track =
+      MediaStreamVideoTrack::From(track_processor->InputTrack()->Component());
+  ReadableStream* readable = track_processor->readable(host_script_state);
+  auto optimizer = readable->TakeTransferringOptimizer();
+
+  // The host is closed while its stream is being transferred, before the
+  // destination realm creates the transferred source.
+  ScriptPromiseTester cancel_tester(
+      host_script_state,
+      readable->cancel(host_script_state, host_scope.GetExceptionState()));
+  cancel_tester.WaitUntilSettled();
+
+  V8TestingScope dest_scope;
+  ScriptState* dest_script_state = dest_scope.GetScriptState();
+  UnderlyingSourceBase* transferred_source =
+      optimizer->PerformInProcessOptimization(dest_script_state);
+  ASSERT_TRUE(transferred_source);
+  Persistent<ReadableStream> transferred_stream =
+      ReadableStream::CreateWithCountQueueingStrategy(
+          dest_script_state, transferred_source, /*high_water_mark=*/0);
+
+  // Nothing else would ever close the transferred stream.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return transferred_stream->IsClosed(); }));
+  // The closed host was not reconnected to the track.
+  RunIOUntilIdle();
+  EXPECT_EQ(video_track->CountSinks(), 0u);
+}
+
+// Checks that the host's TransferSource() closes the transferred source if the
+// host closed after the transferred source was created, but before
+// TransferSource() ran. Nothing else would close it.
+TEST_F(MediaStreamTrackProcessorTest,
+       TransferredSourceClosesIfHostClosedBeforeTransferSource) {
+  V8TestingScope host_scope;
+  ScriptState* host_script_state = host_scope.GetScriptState();
+  PushableMediaStreamVideoSource* pushable_video_source =
+      CreatePushableVideoSource();
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(
+          host_script_state,
+          CreateVideoMediaStreamTrack(host_scope.GetExecutionContext(),
+                                      pushable_video_source),
+          host_scope.GetExceptionState());
+  MediaStreamVideoTrack* video_track =
+      MediaStreamVideoTrack::From(track_processor->InputTrack()->Component());
+  ReadableStream* readable = track_processor->readable(host_script_state);
+  auto optimizer = readable->TakeTransferringOptimizer();
+
+  V8TestingScope dest_scope;
+  ScriptState* dest_script_state = dest_scope.GetScriptState();
+  UnderlyingSourceBase* transferred_source =
+      optimizer->PerformInProcessOptimization(dest_script_state);
+  ASSERT_TRUE(transferred_source);
+
+  // The host is closed after the transferred source is created, but before it
+  // runs TransferSource(), so its Close() has no transferred source to close.
+  ScriptPromiseTester cancel_tester(
+      host_script_state,
+      readable->cancel(host_script_state, host_scope.GetExceptionState()));
+  cancel_tester.WaitUntilSettled();
+
+  // TransferSource(), which PerformInProcessOptimization() posted, then runs on
+  // the closed host and closes the transferred source before it starts.
+  auto* transferred_frame_queue_source =
+      static_cast<VideoFrameQueueUnderlyingSource*>(transferred_source);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return transferred_frame_queue_source->IsClosed(); }));
+
+  Persistent<ReadableStream> transferred_stream =
+      ReadableStream::CreateWithCountQueueingStrategy(
+          dest_script_state, transferred_source, /*high_water_mark=*/0);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return transferred_stream->IsClosed(); }));
+  // The closed host was not reconnected to the track.
+  RunIOUntilIdle();
+  EXPECT_EQ(video_track->CountSinks(), 0u);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, AudioStats) {
