@@ -22,6 +22,8 @@ source_set("sharing_message") {
     "ack_message_handler.h",
     "features.cc",
     "features.h",
+    "pending_outgoing_message.cc",
+    "pending_outgoing_message.h",
     "ping_message_handler.cc",
     "ping_message_handler.h",
     "pref_names.h",
