@@ -2753,7 +2753,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool VisibleToHitTestRequest(const HitTestRequest& request) const {
     NOT_DESTROYED();
     return Style().Visibility() == EVisibility::kVisible &&
-           (request.IgnorePointerEventsNone() ||
+           (request.IgnorePointerEvents() ||
             Style().UsedPointerEvents() != EPointerEvents::kNone);
   }
 

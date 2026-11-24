@@ -154,7 +154,7 @@ inline bool IsVisibleToPaint(const FragmentItem& item,
 
 inline bool IsVisibleToHitTest(const ComputedStyle& style,
                                const HitTestRequest& request) {
-  return request.IgnorePointerEventsNone() ||
+  return request.IgnorePointerEvents() ||
          style.UsedPointerEvents() != EPointerEvents::kNone;
 }
 

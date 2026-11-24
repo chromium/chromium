@@ -42,7 +42,7 @@ HitTestResult HitTestForOcclusionRatio(
   LocalFrame* frame = video_element.GetDocument().GetFrame();
   DCHECK(!frame->View()->NeedsLayout());
   HitTestRequest::HitTestRequestType hit_type =
-      HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+      HitTestRequest::kIgnorePointerEvents | HitTestRequest::kReadOnly |
       HitTestRequest::kIgnoreClipping |
       HitTestRequest::kIgnoreZeroOpacityObjects |
       HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |

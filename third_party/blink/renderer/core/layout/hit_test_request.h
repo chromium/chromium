@@ -66,7 +66,8 @@ class HitTestRequest {
     kTouchEvent = 1 << 7,
     kAllowChildFrameContent = 1 << 8,
     kChildFrameHitTest = 1 << 9,
-    kIgnorePointerEventsNone = 1 << 10,
+    // Ignore the CSS 'pointer-events' property (treat as 'auto').
+    kIgnorePointerEvents = 1 << 10,
     // Collect a list of nodes instead of just one.
     // (This is for elementsFromPoint and rect-based tests).
     kListBased = 1 << 11,
@@ -116,8 +117,8 @@ class HitTestRequest {
   bool IsHitTestVisualOverflow() const {
     return request_type_ & kHitTestVisualOverflow;
   }
-  bool IgnorePointerEventsNone() const {
-    return request_type_ & kIgnorePointerEventsNone;
+  bool IgnorePointerEvents() const {
+    return request_type_ & kIgnorePointerEvents;
   }
   bool ListBased() const { return request_type_ & kListBased; }
   bool PenetratingList() const { return request_type_ & kPenetratingList; }

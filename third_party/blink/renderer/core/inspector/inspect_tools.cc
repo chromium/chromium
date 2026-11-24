@@ -64,12 +64,13 @@ InspectorHighlightContrastInfo FetchContrast(Node* node) {
 
 Node* HoveredNodeForPoint(LocalFrame* frame,
                           const gfx::Point& point_in_root_frame,
-                          bool ignore_pointer_events_none) {
+                          bool ignore_pointer_events) {
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kMove | HitTestRequest::kReadOnly |
       HitTestRequest::kAllowChildFrameContent;
-  if (ignore_pointer_events_none)
-    hit_type |= HitTestRequest::kIgnorePointerEventsNone;
+  if (ignore_pointer_events) {
+    hit_type |= HitTestRequest::kIgnorePointerEvents;
+  }
   HitTestRequest request(hit_type);
   HitTestLocation location(
       frame->View()->ConvertFromRootFrame(point_in_root_frame));
@@ -83,27 +84,27 @@ Node* HoveredNodeForPoint(LocalFrame* frame,
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebGestureEvent& event,
-                          bool ignore_pointer_events_none) {
+                          bool ignore_pointer_events) {
   return HoveredNodeForPoint(frame,
                              gfx::ToRoundedPoint(event.PositionInRootFrame()),
-                             ignore_pointer_events_none);
+                             ignore_pointer_events);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebMouseEvent& event,
-                          bool ignore_pointer_events_none) {
+                          bool ignore_pointer_events) {
   return HoveredNodeForPoint(frame,
                              gfx::ToRoundedPoint(event.PositionInRootFrame()),
-                             ignore_pointer_events_none);
+                             ignore_pointer_events);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebPointerEvent& event,
-                          bool ignore_pointer_events_none) {
+                          bool ignore_pointer_events) {
   WebPointerEvent transformed_point = event.WebPointerEventInRootFrame();
   return HoveredNodeForPoint(
       frame, gfx::ToRoundedPoint(transformed_point.PositionInWidget()),
-      ignore_pointer_events_none);
+      ignore_pointer_events);
 }
 
 bool IsSelfLocked(Node* node) {

@@ -163,7 +163,7 @@ TEST_F(HitTestingTest, HitTestWithCallback) {
   const PhysicalRect& hit_rect =
       VisualRectInDocument(*target->GetLayoutObject());
   HitTestRequest::HitTestRequestType hit_type =
-      HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+      HitTestRequest::kIgnorePointerEvents | HitTestRequest::kReadOnly |
       HitTestRequest::kIgnoreClipping |
       HitTestRequest::kIgnoreZeroOpacityObjects |
       HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
@@ -275,7 +275,7 @@ TEST_F(HitTestingTest, OcclusionHitTestWithBorderShapeStrokeMode) {
   auto normalHitTest = [&](const Element* el) {
     HitTestLocation location(VisualRectInDocument(*el->GetLayoutObject()));
     uint32_t hit_type =
-        HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+        HitTestRequest::kIgnorePointerEvents | HitTestRequest::kReadOnly |
         HitTestRequest::kIgnoreClipping |
         HitTestRequest::kIgnoreZeroOpacityObjects |
         HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
@@ -343,7 +343,7 @@ TEST_F(HitTestingTest, OcclusionHitTestWithBorderShapeFillMode) {
   auto normalHitTest = [&](const Element* el) {
     HitTestLocation location(VisualRectInDocument(*el->GetLayoutObject()));
     uint32_t hit_type =
-        HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+        HitTestRequest::kIgnorePointerEvents | HitTestRequest::kReadOnly |
         HitTestRequest::kIgnoreClipping |
         HitTestRequest::kIgnoreZeroOpacityObjects |
         HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
@@ -649,7 +649,7 @@ TEST_F(HitTestingTest, SvgHitTestIgnorePointerEvents) {
   const PhysicalRect& rect_bounds =
       VisualRectInDocument(*rect->GetLayoutObject());
   HitTestRequest::HitTestRequestType hit_type =
-      HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+      HitTestRequest::kIgnorePointerEvents | HitTestRequest::kReadOnly |
       HitTestRequest::kListBased | HitTestRequest::kPenetratingList |
       HitTestRequest::kAvoidCache;
   HitTestLocation location(rect_bounds.Center());

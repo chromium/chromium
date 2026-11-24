@@ -1925,7 +1925,7 @@ protocol::Response InspectorDOMAgent::getNodeForLocation(
       HitTestRequest::kMove | HitTestRequest::kReadOnly |
       HitTestRequest::kAllowChildFrameContent;
   if (optional_ignore_pointer_events_none.value_or(false)) {
-    hit_type |= HitTestRequest::kIgnorePointerEventsNone;
+    hit_type |= HitTestRequest::kIgnorePointerEvents;
   }
   HitTestRequest request(hit_type);
   HitTestLocation location(document->View()->DocumentToFrame(document_point));

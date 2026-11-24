@@ -252,7 +252,7 @@ TEST_F(LayoutInlineTest, MultilineRelativePositionedHitTest) {
   LayoutObject* layout_span = GetLayoutObjectByElementId("span");
   HitTestRequest hit_request(HitTestRequest::kReadOnly |
                              HitTestRequest::kActive |
-                             HitTestRequest::kIgnorePointerEventsNone);
+                             HitTestRequest::kIgnorePointerEvents);
   const PhysicalOffset container_offset(8, 8);
 
   // Hit test first line
