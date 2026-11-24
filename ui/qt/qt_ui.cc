@@ -10,6 +10,7 @@
 #include <dlfcn.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -103,19 +104,28 @@ bool PreferQt6() {
 }
 
 int Qt5WeightToCssWeight(int weight) {
-  struct {
+  struct Mapping {
     int qt_weight;
     int css_weight;
-  } constexpr kMapping[] = {
-      // https://doc.qt.io/qt-5/qfont.html#Weight-enum
-      {0, 100},  {12, 200}, {25, 300}, {50, 400}, {57, 500},
-      {63, 600}, {75, 700}, {81, 800}, {87, 900}, {99, 1000},
   };
+  constexpr auto kMapping = std::to_array<Mapping>({
+      // https://doc.qt.io/qt-5/qfont.html#Weight-enum
+      {0, 100},
+      {12, 200},
+      {25, 300},
+      {50, 400},
+      {57, 500},
+      {63, 600},
+      {75, 700},
+      {81, 800},
+      {87, 900},
+      {99, 1000},
+  });
 
   weight = std::clamp(weight, 0, 99);
-  for (size_t i = 0; i < std::size(kMapping) - 1; i++) {
-    const auto& lo = UNSAFE_TODO(kMapping[i]);
-    const auto& hi = UNSAFE_TODO(kMapping[i + 1]);
+  for (size_t i = 0; i < kMapping.size() - 1; i++) {
+    const auto& lo = kMapping[i];
+    const auto& hi = kMapping[i + 1];
     if (weight <= hi.qt_weight) {
       return (weight - lo.qt_weight) * (hi.css_weight - lo.css_weight) /
                  (hi.qt_weight - lo.qt_weight) +
