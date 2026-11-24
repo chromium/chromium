@@ -9,6 +9,7 @@
 #include "base/base64url.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/url_util.h"
 
@@ -26,8 +27,8 @@ GURL GetListSecurityDomainMembersURL(
     std::optional<std::string_view> next_page_token,
     bool force_strong_read) {
   // View three is `SECURITY_DOMAIN_MEMBER_METADATA`.
-  GURL request_url =
-      GURL(server_url.spec() + kSecurityDomainMemberNamePrefix + "?view=3");
+  GURL request_url = GURL(base::StrCat(
+      {server_url.spec(), kSecurityDomainMemberNamePrefix, "?view=3"}));
 
   if (force_strong_read) {
     // Requests a strong (consistent) read from the backend database to ensure
@@ -58,21 +59,21 @@ GURL GetGetSecurityDomainMemberURL(const GURL& server_url,
                                    base::span<const uint8_t> public_key) {
   std::string encoded_public_key = base::Base64UrlEncode(
       public_key, base::Base64UrlEncodePolicy::OMIT_PADDING);
-  return GURL(server_url.spec() + kSecurityDomainMemberNamePrefix +
-              encoded_public_key + "?view=2" +
-              "&request_header.force_master_read=true");
+  return GURL(base::StrCat({server_url.spec(), kSecurityDomainMemberNamePrefix,
+                            encoded_public_key,
+                            "?view=2&request_header.force_master_read=true"}));
 }
 
 GURL GetGetSecurityDomainURL(const GURL& server_url,
                              SecurityDomainId security_domain) {
-  return GURL(server_url.spec() + GetSecurityDomainPath(security_domain) +
-              "?view=2");
+  return GURL(base::StrCat(
+      {server_url.spec(), GetSecurityDomainPath(security_domain), "?view=2"}));
 }
 
 GURL GetJoinSecurityDomainURL(const GURL& server_url,
                               SecurityDomainId security_domain) {
-  return GURL(server_url.spec() + GetSecurityDomainPath(security_domain) +
-              ":join");
+  return GURL(base::StrCat(
+      {server_url.spec(), GetSecurityDomainPath(security_domain), ":join"}));
 }
 
 GURL GetDownloadGaiaPasswordPublicKeyURL(const GURL& server_url) {
@@ -80,13 +81,15 @@ GURL GetDownloadGaiaPasswordPublicKeyURL(const GURL& server_url) {
   CHECK(service_url_spec.back() == '/');
   service_url_spec.pop_back();
   CHECK(!service_url_spec.empty());
-  return GURL(service_url_spec + ":getCurrentGaiaPasswordEncryptionKeyData");
+  return GURL(base::StrCat(
+      {service_url_spec, ":getCurrentGaiaPasswordEncryptionKeyData"}));
 }
 
 GURL GetRotateSharedKeyURL(const GURL& server_url,
                            SecurityDomainId security_domain) {
-  return GURL(server_url.spec() + GetSecurityDomainPath(security_domain) +
-              ":rotateSharedKey");
+  return GURL(
+      base::StrCat({server_url.spec(), GetSecurityDomainPath(security_domain),
+                    ":rotateSharedKey"}));
 }
 
 GURL GetFullListSecurityDomainMembersURLForTesting(
@@ -141,10 +144,10 @@ GURL GetFullRotateSharedKeyURLForTesting(const GURL& server_url,
 std::string GetSecurityDomainPath(SecurityDomainId domain) {
   switch (domain) {
     case SecurityDomainId::kChromeSync:
-      return std::string(kSecurityDomainPathPrefix) + kSyncSecurityDomainName;
+      return base::StrCat({kSecurityDomainPathPrefix, kSyncSecurityDomainName});
     case SecurityDomainId::kPasskeys:
-      return std::string(kSecurityDomainPathPrefix) +
-             kPasskeysSecurityDomainName;
+      return base::StrCat(
+          {kSecurityDomainPathPrefix, kPasskeysSecurityDomainName});
   }
 }
 

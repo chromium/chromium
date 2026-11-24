@@ -22,6 +22,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/download_keys_response_handler.h"
@@ -152,9 +153,10 @@ const trusted_vault_pb::SharedMemberKey* FindKeyWithHighestEpoch(
 }
 
 std::string GetSecurityDomainMemberName(const SecureBoxPublicKey& public_key) {
-  return kSecurityDomainMemberNamePrefix +
-         base::Base64UrlEncode(public_key.ExportToBytes(),
-                               base::Base64UrlEncodePolicy::OMIT_PADDING);
+  return base::StrCat(
+      {kSecurityDomainMemberNamePrefix,
+       base::Base64UrlEncode(public_key.ExportToBytes(),
+                             base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
@@ -535,8 +537,9 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
 
   void FinishWithResultAndMaybeDestroySelf() {
     base::UmaHistogramEnumeration(
-        "TrustedVault.DownloadAuthenticationFactorsRegistrationState." +
-            GetSecurityDomainNameForUma(security_domain_),
+        base::StrCat(
+            {"TrustedVault.DownloadAuthenticationFactorsRegistrationState.",
+             GetSecurityDomainNameForUma(security_domain_)}),
         result_.state);
     RecordTrustedVaultListSecurityDomainMembersPinStatus(security_domain_,
                                                          pin_status_);
