@@ -48,8 +48,9 @@ public interface BookmarkDelegate {
     SelectableListLayout<BookmarkId> getSelectableListLayout();
 
     /**
-     * Notifies the current mode set event to the given observer. For example, if the current mode
-     * is MODE_ALL_BOOKMARKS, it calls onAllBookmarksModeSet.
+     * Notifies {@code observer} of the current UI state via {@link
+     * BookmarkUiObserver#onUiModeChanged}, and when in {@link BookmarkUiMode#FOLDER}, {@link
+     * BookmarkUiObserver#onFolderStateSet}.
      */
     void notifyStateChange(BookmarkUiObserver observer);
 

@@ -32,7 +32,7 @@ public interface BookmarkQueryHandler {
      * Builds entries for a given parent folder.
      *
      * @param parentId The id of the parent.
-     * @param powerFilter The filter to be applied to the {@link parentId} subtree. When a filter is
+     * @param powerFilter The filter to be applied to the {@code parentId} subtree. When a filter is
      *     present, all matching descendants must be returned,
      * @return The list of bookmarks to shown.
      */
@@ -42,7 +42,9 @@ public interface BookmarkQueryHandler {
     /**
      * Builds entries for a search query.
      *
-     * @param query The search string, empty means match everything.
+     * @param query The search string. Empty-query handling is implementation-specific ({@link
+     *     ImprovedBookmarkQueryHandler} returns an empty list, while {@link
+     *     BasicBookmarkQueryHandler} forwards to {@link BookmarkModel#searchBookmarks}).
      * @param powerFilter Unless empty, return only bookmarks with matching power. Can be null.
      * @return The list of bookmarks to shown.
      */

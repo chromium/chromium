@@ -296,13 +296,13 @@ class BookmarkBridge {
     }
 
     /**
-     * Populates folderList with BookmarkIds of folders users can move bookmarks to and all folders
-     * have corresponding depth value in depthList. Folders having depths of 0 will be shown as
-     * top-layered folders. These include "Desktop Folder" itself as well as all children of
-     * "mobile" and "other". Children of 0-depth folders have depth of 1, and so on.
+     * Populates {@code folderList} with {@link BookmarkId}s of folders users can move bookmarks to,
+     * with corresponding depth values in {@code depthList}. The Mobile, Desktop (Bookmarks bar),
+     * and Other folders are included at depth 0 in fixed order; their direct child folders have
+     * depth 1, and so on.
      *
-     * <p>The result list will be sorted alphabetically by title. "mobile", "other", root node,
-     * managed folder, partner folder are NOT included as results.
+     * <p>Child folders within each parent are sorted alphabetically by title. The root node,
+     * managed folders, and partner folders are excluded.
      */
     @VisibleForTesting
     public void getAllFoldersWithDepths(List<BookmarkId> folderList, List<Integer> depthList) {
@@ -543,10 +543,10 @@ class BookmarkBridge {
     }
 
     /**
-     * Synchronously gets a list of bookmarks of the given type
+     * Synchronously gets a list of bookmarks of the given type.
      *
-     * @param powerBookmarkType The type of power bookmark type to search for (or null for all).
-     * @return List of bookmark IDs that are related to the given query.
+     * @param powerBookmarkType The {@link PowerBookmarkType} to match.
+     * @return List of bookmark IDs matching {@code powerBookmarkType}.
      */
     public List<BookmarkId> getBookmarksOfType(PowerBookmarkType powerBookmarkType) {
         ThreadUtils.assertOnUiThread();

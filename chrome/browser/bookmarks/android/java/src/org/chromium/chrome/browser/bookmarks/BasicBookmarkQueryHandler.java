@@ -105,12 +105,12 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
 
     /**
      * Returns whether the given {@link BookmarkListEntry} is a valid folder to add bookmarks to.
-     * All entries passed to this function need to be folders, this is enfored by an assert.
+     * All entries passed to this function need to be folders, this is enforced by an assert.
      */
     private boolean isValidFolder(BookmarkListEntry entry) {
         assert isFolderEntry(entry);
 
-        // entry.getBookmarkItem() should be null (see isFolderEntry call above).
+        // entry.getBookmarkItem() is non-null (enforced by isFolderEntry above).
         BookmarkId folderId = assertNonNull(entry.getBookmarkItem()).getId();
         return BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, folderId);
     }

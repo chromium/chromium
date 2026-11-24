@@ -19,8 +19,6 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.annotation.Nonnull;
-
 /** Represents different type of views in the bookmark UI. */
 @NullMarked
 public final class BookmarkListEntry {
@@ -72,7 +70,8 @@ public final class BookmarkListEntry {
     }
 
     /**
-     * Returns the view type used in the bookmark list UI. Can be null for non bookmark view types.
+     * Returns the {@link BookmarkItem} represented by this entry, or null for non-bookmark view
+     * types.
      */
     public @Nullable BookmarkItem getBookmarkItem() {
         return mBookmarkItem;
@@ -101,7 +100,7 @@ public final class BookmarkListEntry {
      * @param displayPref The display pref for the bookmark.
      */
     static BookmarkListEntry createBookmarkEntry(
-            @Nonnull BookmarkItem bookmarkItem,
+            BookmarkItem bookmarkItem,
             @Nullable PowerBookmarkMeta meta,
             @BookmarkRowDisplayPref int displayPref) {
         @ViewType
