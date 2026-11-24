@@ -62,7 +62,7 @@ suite('OrganizerPanelAppTest', () => {
       tabGroupMoreOptions: 'More options',
       tabGroupMoreOptionsWithTitle: 'More options for $1',
       tabGroups: 'Tab groups',
-      tabsOnOtherDevices: 'Tabs on other devices',
+      tabsOnOtherDevices: 'Tabs by device',
     });
     mockOrganizerPanelHandler =
         TestMock.fromClass(OrganizerPanelPageHandlerRemote);
@@ -206,8 +206,7 @@ suite('OrganizerPanelAppTest', () => {
 
     assertEquals(4, testApp.$.list.sectionDelegates.length);
     assertEquals(
-        'Tabs on other devices',
-        testApp.$.list.sectionDelegates[3]!.getHeader());
+        'Tabs by device', testApp.$.list.sectionDelegates[3]!.getHeader());
     const sections =
         testApp.$.list.shadowRoot.querySelectorAll('organizer-list-section');
     assertEquals(4, sections.length);

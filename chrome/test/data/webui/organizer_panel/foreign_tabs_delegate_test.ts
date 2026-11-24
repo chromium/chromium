@@ -45,7 +45,7 @@ suite('ForeignTabsDelegateTest', () => {
 
   setup(() => {
     loadTimeData.resetForTesting({
-      tabsOnOtherDevices: 'Tabs on other devices',
+      tabsOnOtherDevices: 'Tabs by device',
       signInOnPhone: 'Sign in on your phone',
     });
     mockHandler = TestMock.fromClass(ForeignTabsPageHandlerRemote);
@@ -59,7 +59,7 @@ suite('ForeignTabsDelegateTest', () => {
 
   test('returns id and localized header', () => {
     assertEquals(SectionId.kCrossDeviceTabs, delegate.getId());
-    assertEquals('Tabs on other devices', delegate.getHeader());
+    assertEquals('Tabs by device', delegate.getHeader());
     assertEquals(
         OrganizerPanelAction.kOpenCrossDeviceTab,
         delegate.getItemClickAction());
