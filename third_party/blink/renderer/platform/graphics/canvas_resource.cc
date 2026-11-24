@@ -64,8 +64,7 @@ BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
 
 CanvasResource::CanvasResource(
     scoped_refptr<gpu::ClientSharedImage> shared_image)
-    : gpu::ClientImage(std::move(shared_image)),
-      owning_thread_ref_(base::PlatformThread::CurrentRef()) {
+    : gpu::ClientImage(std::move(shared_image)) {
   subclass_manages_destruction_sync_token_ = true;
 }
 
@@ -103,7 +102,6 @@ void CanvasResource::Initialize() {
 CanvasResource::~CanvasResource() = default;
 
 void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  DCHECK(!is_cross_thread());
   if (sync_token.HasData()) {
     acquire_sync_token_ = sync_token;
     GetSharedImage()->UpdateDestructionSyncToken(acquire_sync_token_);
@@ -111,7 +109,6 @@ void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
 }
 
 void CanvasResource::NotifyResourceLost() {
-  DCHECK(!is_cross_thread());
   resource_is_lost_ = true;
 }
 

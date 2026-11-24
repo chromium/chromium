@@ -91,22 +91,13 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
   // should not be recycled for writing again but can be safely read from.
   void NotifyResourceLost();
 
-  bool IsLost() const {
-    DCHECK(!is_cross_thread());
-    return resource_is_lost_;
-  }
-
-  bool is_cross_thread() const {
-    return base::PlatformThread::CurrentRef() != owning_thread_ref_;
-  }
+  bool IsLost() const { return resource_is_lost_; }
 
   const gpu::SyncToken& sync_token() const { return GetSyncToken(); }
 
   ~CanvasResource() override;
 
  private:
-  const base::PlatformThreadRef owning_thread_ref_;
-
   // These members are either only accessed on the owning thread, or are only
   // updated on the owning thread and then are read on a different thread.
   // We ensure to correctly update their state in Transfer, which is called

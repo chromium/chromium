@@ -875,8 +875,6 @@ void BaseRenderingContext2D::EnsureWriteAccess() {
   // drawing since it is executed on CPU memory managed by Skia.
   DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
       << "Write access requires exclusive access to the resource";
-  DCHECK(!resource_->is_cross_thread())
-      << "Write access is only allowed on the owning thread";
 
   if (current_resource_has_write_access_ || IsGpuContextLost()) {
     return;
@@ -885,8 +883,6 @@ void BaseRenderingContext2D::EnsureWriteAccess() {
 }
 
 void BaseRenderingContext2D::EndWriteAccess() {
-  DCHECK(!resource_->is_cross_thread());
-
   if (!current_resource_has_write_access_ || IsGpuContextLost()) {
     return;
   }
@@ -1054,7 +1050,6 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
              scoped_refptr<CanvasResource> resource,
              const gpu::SyncToken& sync_token, bool lost_resource) {
             CHECK(resource);
-            DCHECK(!resource->is_cross_thread());
 
             resource->WaitSyncToken(sync_token);
             if (lost_resource) {
@@ -1196,7 +1191,6 @@ BaseRenderingContext2D::CreateExportedResource(
          scoped_refptr<CanvasResource> resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
         CHECK(resource);
-        DCHECK(!resource->is_cross_thread());
         if (is_lost) {
           resource->NotifyResourceLost();
         }

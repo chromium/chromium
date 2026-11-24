@@ -511,7 +511,6 @@ CanvasNon2DResourceProvider::CreateExportedResource(
          scoped_refptr<CanvasResource> resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
         CHECK(resource);
-        DCHECK(!resource->is_cross_thread());
         if (is_lost) {
           resource->NotifyResourceLost();
         }
@@ -617,7 +616,6 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
            scoped_refptr<CanvasResource> resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
           CHECK(resource);
-          DCHECK(!resource->is_cross_thread());
           CHECK(!lost_resource);
 
           resource->WaitSyncToken(sync_token);
