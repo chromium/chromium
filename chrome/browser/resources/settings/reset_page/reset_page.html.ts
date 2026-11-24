@@ -9,9 +9,14 @@ import type {SettingsResetPageElement} from './reset_page.js';
 export function getHtml(this: SettingsResetPageElement) {
   return html`<!--_html_template_start_-->
 ${this.settingsRefresh2026Enabled_ ? html`
-  <cr-button id="resetProfile" @click="${this.onShowResetProfileDialogClick_}">
-    $i18n{resetAllSettings}
-  </cr-button>
+  <div id="reset-button-container">
+    <cr-button id="resetProfile"
+        @click="${this.onShowResetProfileDialogClick_}">
+      <cr-icon icon="settings20:settings-backup-restore" slot="prefix-icon">
+      </cr-icon>
+      $i18n{resetAllSettings}
+    </cr-button>
+  </div>
 ` : html`
   <settings-section page-title="$i18n{resetPageTitle}"
       class="cr-centered-card-container">

@@ -8,8 +8,10 @@
  * settings.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../icons.html.js';
 import '../settings_page/settings_section.js';
 import './reset_profile_dialog.js';
 
@@ -24,8 +26,8 @@ import type {Route} from '../router.js';
 import {RouteObserverMixinLit, Router} from '../router.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
-import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
+import {getCss} from './reset_page.css.js';
 import {getHtml} from './reset_page.html.js';
 import type {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
 
@@ -45,9 +47,7 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase
   }
 
   static override get styles() {
-    return [
-      getSettingsSharedCss(),
-    ];
+    return getCss();
   }
 
   override render() {

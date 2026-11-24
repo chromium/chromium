@@ -10,8 +10,9 @@ import {PrefValues} from './on_startup_page.js';
 export function getHtml(this: SettingsOnStartupPageElement) {
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{onStartup}"
-    class="cr-centered-card-container">
-  <div class="cr-row first">
+    class="${
+        this.settingsRefresh2026Enabled_ ? '' : 'cr-centered-card-container'}">
+  <div class="${this.settingsRefresh2026Enabled_ ? '' : 'cr-row first'}">
     <settings-radio-group id="onStartupRadioGroup" class="flex"
         pref-key="session.restore_on_startup"
         group-aria-label="$i18n{onStartup}">

@@ -9,7 +9,8 @@ import type {SettingsDownloadsPageElement} from './downloads_page.js';
 export function getHtml(this: SettingsDownloadsPageElement) {
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{downloadsPageTitle}"
-    class="cr-centered-card-container">
+    class="${
+        this.settingsRefresh2026Enabled_ ? '' : 'cr-centered-card-container'}">
   <div class="cr-row first">
     <div class="flex cr-padded-text">
       <div id="locationLabel" aria-hidden="true">

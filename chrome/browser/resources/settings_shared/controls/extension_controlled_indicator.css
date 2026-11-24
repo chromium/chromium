@@ -10,8 +10,11 @@
 :host {
   align-items: center;
   display: flex;
-  margin-inline-start: 36px;
   min-height: var(--cr-section-min-height);
+}
+
+:host-context(html:not([settings-refresh-2026])) {
+  margin-inline-start: 36px;
 }
 
 img {
@@ -23,10 +26,17 @@ img {
   margin-inline-start: 8px;
 }
 
-/* Using ">" operator to ensure that this CSS rule will not accidentally
- * be applied to a search highlight span (which is inserted dynamically if
- * when search "hit" occurs within this element. */
-:host > span {
+#label {
   flex: 1;
   margin-inline-end: 8px;
+}
+
+:host-context([settings-refresh-2026]) {
+  #label {
+    margin-inline-end: 16px;
+  }
+
+  cr-button:has(cr-icon) {
+    --iron-icon-fill-color: currentcolor;
+  }
 }

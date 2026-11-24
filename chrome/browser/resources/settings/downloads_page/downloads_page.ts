@@ -62,6 +62,7 @@ export class SettingsDownloadsPageElement extends
        * they're done.
        */
       downloadBubblePartialViewControlledByPref_: {type: Boolean},
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -77,6 +78,8 @@ export class SettingsDownloadsPageElement extends
 
   protected accessor downloadBubblePartialViewControlledByPref_: boolean =
       loadTimeData.getBoolean('downloadBubblePartialViewControlledByPref');
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private browserProxy_: DownloadsBrowserProxy =
       DownloadsBrowserProxyImpl.getInstance();

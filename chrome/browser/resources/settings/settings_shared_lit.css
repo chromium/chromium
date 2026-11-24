@@ -101,6 +101,10 @@
     overflow: hidden;
     row-gap: 1px;
   }
+
+  cr-button:has(cr-icon) {
+    --iron-icon-fill-color: currentcolor;
+  }
 }
 
 /* Common styles for Material Design settings. */

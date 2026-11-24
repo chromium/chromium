@@ -91,6 +91,7 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
       // <if expr="is_win">
       isolationStateEnabledPref_: {type: Object},
       // </if>
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -118,6 +119,9 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   private accessor isolationStateEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   // </if>
+
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   override connectedCallback() {
     super.connectedCallback();

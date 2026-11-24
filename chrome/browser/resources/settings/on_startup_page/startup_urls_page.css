@@ -24,3 +24,9 @@
 #container settings-startup-url-entry {
   cursor: default;
 }
+
+:host-context([settings-refresh-2026]) {
+  background-color: var(--color-settings-section-background);
+  border-radius: 4px;
+  min-height: 0;
+}
