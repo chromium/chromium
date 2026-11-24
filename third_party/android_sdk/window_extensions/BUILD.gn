@@ -20,5 +20,10 @@ android_library("androidx_window_extensions_java") {
 # on naming patterns).
 group("androidx_window_extensions") {
   visibility = [ "//third_party/android_sdk:*" ]
-  deps = [ ":androidx_window_extensions_java" ]
+
+  # Depend on __host rather than the top-level target because
+  # //third_party/android_sdk:android_window_extensions_java only consumes
+  # .javac.jar; depending on the top-level target unnecessarily builds __dex
+  # subtargets for this library and its deps.
+  deps = [ ":androidx_window_extensions_java__host" ]
 }
