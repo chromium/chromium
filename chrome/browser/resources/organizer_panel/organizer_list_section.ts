@@ -100,7 +100,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
         notify: true,
       },
       noAnimation_: {type: Boolean},
-      prefersReducedMotion_: {type: Boolean},
       showAll_: {type: Boolean},
       searchQuery: {type: String},
       filteredItems_: {type: Array},
@@ -117,7 +116,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   accessor expanded: boolean = true;
   protected accessor noAnimation_: boolean = false;
-  protected accessor prefersReducedMotion_: boolean = false;
   protected accessor showAll_: boolean = false;
   accessor searchQuery: string = '';
   private accessor filteredItems_:
@@ -131,7 +129,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private activeDelegate_: OrganizerListSectionDelegate<unknown>|null = null;
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private sectionStateChangedListenerId_: number|null = null;
-  private reducedMotionQuery_: MediaQueryList|null = null;
   private loadPromise_: Promise<unknown> = Promise.resolve();
   // Generation identifier used to associate async reload results with the
   // current show/hide cycle.
@@ -164,18 +161,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
             ],
       };
 
-  private onReducedMotionChange_: () => void = () => {
-    assert(this.reducedMotionQuery_ !== null);
-    this.prefersReducedMotion_ = this.reducedMotionQuery_.matches;
-  };
-
   override connectedCallback() {
     super.connectedCallback();
-    this.reducedMotionQuery_ =
-        window.matchMedia('(prefers-reduced-motion: reduce)');
-    this.prefersReducedMotion_ = this.reducedMotionQuery_.matches;
-    this.reducedMotionQuery_.addEventListener(
-        'change', this.onReducedMotionChange_);
     this.sectionStateChangedListenerId_ =
         this.browserProxy_.callbackRouter.onSectionsStateChanged.addListener(
             (sectionsState: Partial<Record<SectionId, SectionState>>) => {
@@ -187,10 +174,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
   override disconnectedCallback() {
     super.disconnectedCallback();
     ++this.loadGeneration_;
-    assert(this.reducedMotionQuery_ !== null);
-    this.reducedMotionQuery_.removeEventListener(
-        'change', this.onReducedMotionChange_);
-    this.reducedMotionQuery_ = null;
     assert(this.sectionStateChangedListenerId_ !== null);
     this.browserProxy_.callbackRouter.removeListener(
         this.sectionStateChangedListenerId_);

@@ -12,3 +12,9 @@
 :host {
   display: block;
 }
+
+#items {
+  --cr-collapse-expand-duration: 280ms;
+  --cr-collapse-collapse-duration: 200ms;
+  --cr-collapse-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}

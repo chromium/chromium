@@ -8,7 +8,7 @@ import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('cr-collapse', function() {
   let collapse: CrCollapseElement;
@@ -125,5 +125,114 @@ suite('cr-collapse', function() {
     collapse.toggle();
     await whenOpenedChanged;
     assertTrue(element.parentOpened);
+  });
+
+  test('customizes transition timing and durations', async () => {
+    collapse.style.setProperty('--cr-collapse-expand-duration', '10ms');
+    collapse.style.setProperty('--cr-collapse-collapse-duration', '5ms');
+    collapse.style.setProperty(
+        '--cr-collapse-transition-timing-function', 'linear');
+
+    const collapsedStyle = getComputedStyle(collapse);
+    assertEquals('0.005s', collapsedStyle.transitionDuration);
+    assertEquals('linear', collapsedStyle.transitionTimingFunction);
+
+    let whenTransitionEnd = eventToPromise('transitionend', collapse);
+    collapse.opened = true;
+    await microtasksFinished();
+    const expandedStyle = getComputedStyle(collapse);
+    assertEquals('0.01s', expandedStyle.transitionDuration);
+    assertEquals('linear', expandedStyle.transitionTimingFunction);
+    await whenTransitionEnd;
+    assertExpandedState();
+
+    whenTransitionEnd = eventToPromise('transitionend', collapse);
+    collapse.opened = false;
+    await microtasksFinished();
+    assertEquals('0.005s', getComputedStyle(collapse).transitionDuration);
+    await whenTransitionEnd;
+    assertCollapsedState();
+  });
+
+  test('falls back to legacy duration variable', async () => {
+    assertEquals('0.3s', getComputedStyle(collapse).transitionDuration);
+
+    collapse.style.setProperty('--iron-collapse-transition-duration', '50ms');
+    assertEquals('0.05s', getComputedStyle(collapse).transitionDuration);
+
+    collapse.opened = true;
+    await microtasksFinished();
+    assertEquals('0.05s', getComputedStyle(collapse).transitionDuration);
+  });
+
+  test('handles zero duration transitions synchronously', async () => {
+    collapse.style.setProperty('--cr-collapse-expand-duration', '0ms');
+    collapse.style.setProperty('--cr-collapse-collapse-duration', '50ms');
+
+    collapse.opened = true;
+    await microtasksFinished();
+    assertExpandedState();
+    assertTrue(collapse.classList.contains('collapse-opened'));
+
+    collapse.style.setProperty('--cr-collapse-collapse-duration', '0ms');
+    collapse.opened = false;
+    await microtasksFinished();
+    assertCollapsedState();
+    assertTrue(collapse.classList.contains('collapse-closed'));
+  });
+
+  test('ignores child and non-max-height transitionend', async () => {
+    collapse.opened = true;
+    await microtasksFinished();
+    assertFalse(collapse.classList.contains('collapse-opened'));
+
+    child.dispatchEvent(new TransitionEvent(
+        'transitionend',
+        {bubbles: true, composed: true, propertyName: 'max-height'}));
+    assertFalse(collapse.classList.contains('collapse-opened'));
+
+    collapse.dispatchEvent(
+        new TransitionEvent('transitionend', {propertyName: 'opacity'}));
+    assertFalse(collapse.classList.contains('collapse-opened'));
+
+    await eventToPromise('transitionend', collapse);
+    assertExpandedState();
+    assertTrue(collapse.classList.contains('collapse-opened'));
+  });
+
+  test('animates with multi-property transition', async () => {
+    collapse.style.transition = 'max-height 10ms linear, opacity 10ms linear';
+
+    let whenTransitionEnd = eventToPromise('transitionend', collapse);
+    collapse.opened = true;
+    assertEquals('max-height', (await whenTransitionEnd).propertyName);
+    assertExpandedState();
+    assertTrue(collapse.classList.contains('collapse-opened'));
+
+    whenTransitionEnd = eventToPromise('transitionend', collapse);
+    collapse.opened = false;
+    assertEquals('max-height', (await whenTransitionEnd).propertyName);
+    assertCollapsedState();
+    assertTrue(collapse.classList.contains('collapse-closed'));
+  });
+
+  test('handles non-max-height and overridden transitions', async () => {
+    collapse.style.transition = 'opacity 10ms linear';
+    collapse.opened = true;
+    await microtasksFinished();
+    assertExpandedState();
+    assertTrue(collapse.classList.contains('collapse-opened'));
+
+    collapse.style.transition = 'opacity 10ms linear, max-height 0ms';
+    collapse.opened = false;
+    await microtasksFinished();
+    assertCollapsedState();
+    assertTrue(collapse.classList.contains('collapse-closed'));
+
+    collapse.style.transition = 'all 10ms linear, max-height 0ms';
+    collapse.opened = true;
+    await microtasksFinished();
+    assertExpandedState();
+    assertTrue(collapse.classList.contains('collapse-opened'));
   });
 });

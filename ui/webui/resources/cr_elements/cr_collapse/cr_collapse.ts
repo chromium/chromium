@@ -25,6 +25,7 @@ export class CrCollapseElement extends CrLitElement {
     return {
       opened: {
         type: Boolean,
+        reflect: true,
         notify: true,
       },
 
@@ -56,7 +57,7 @@ export class CrCollapseElement extends CrLitElement {
     }
     this.setAttribute('aria-hidden', 'true');
     this.addEventListener(
-        'transitionend', (e: Event) => this.onTransitionEnd_(e));
+        'transitionend', (e: TransitionEvent) => this.onTransitionEnd_(e));
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -76,6 +77,27 @@ export class CrCollapseElement extends CrLitElement {
     }
   }
 
+  private hasHeightTransition_(): boolean {
+    const {transitionProperty, transitionDuration, transitionDelay} =
+        getComputedStyle(this);
+    const properties = transitionProperty.split(',').map(p => p.trim());
+    const durations =
+        transitionDuration.split(',').map(d => parseFloat(d) || 0);
+    const delays = transitionDelay.split(',').map(d => parseFloat(d) || 0);
+
+    // Walk from the end because later entries in transition-property override
+    // earlier ones for the same property.
+    for (let i = properties.length - 1; i >= 0; --i) {
+      const prop = properties[i];
+      if (prop === 'max-height' || prop === 'all') {
+        const duration = durations[i % durations.length] ?? 0;
+        const delay = delays[i % delays.length] ?? 0;
+        return duration + delay > 0;
+      }
+    }
+    return false;
+  }
+
   private updateHeight_(opening: boolean, lastOpened?: boolean) {
     const finalMaxHeight = opening ? '' : '0px';
     const animationStartSize = `${this.getBoundingClientRect().height}px`;
@@ -83,7 +105,7 @@ export class CrCollapseElement extends CrLitElement {
 
     const willAnimate = lastOpened !== undefined && !this.noAnimation &&
         this.style.maxHeight !== finalMaxHeight &&
-        animationStartSize !== animationEndSize;
+        animationStartSize !== animationEndSize && this.hasHeightTransition_();
 
     if (willAnimate && !opening) {
       // Force layout to ensure transition will go. Set maxHeight to a px
@@ -102,8 +124,8 @@ export class CrCollapseElement extends CrLitElement {
     }
   }
 
-  private onTransitionEnd_(e: Event) {
-    if (e.composedPath()[0] === this) {
+  private onTransitionEnd_(e: TransitionEvent) {
+    if (e.composedPath()[0] === this && e.propertyName === 'max-height') {
       this.updateStyles_();
     }
   }
