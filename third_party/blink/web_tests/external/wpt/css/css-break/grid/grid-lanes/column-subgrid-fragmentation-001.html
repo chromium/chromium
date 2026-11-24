@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>A fragmented subgrid inherits the column grid-lanes tracks</title>
+<meta name="author" title="Kurt Catti-Schmidt" href="mailto:kschmi@microsoft.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#pagination">
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#subgrids">
+<link rel="match" href="column-subgrid-fragmentation-001-ref.html">
+<style>
+  .multicol {
+    columns: 2;
+    column-gap: 0;
+    column-fill: auto;
+    width: 120px;
+    height: 50px;
+  }
+  .lanes {
+    display: grid-lanes;
+    grid-template-columns: 20px 40px;
+  }
+  .subgrid {
+    display: grid;
+    grid-column: span 2;
+    grid-template-columns: subgrid;
+    grid-template-rows: 50px 50px;
+    background: red;
+  }
+  .narrow { grid-column: 1; background: green; }
+  .wide { grid-column: 2; background: teal; }
+</style>
+<div class="multicol">
+  <div class="lanes">
+    <div class="subgrid">
+      <div class="narrow"></div><div class="wide"></div>
+      <div class="narrow"></div><div class="wide"></div>
+    </div>
+  </div>
+</div>

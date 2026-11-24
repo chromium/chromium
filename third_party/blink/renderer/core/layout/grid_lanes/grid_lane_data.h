@@ -25,7 +25,7 @@ struct GridLanesItemPlacementData
         margin_block_start(margin_block_start),
         margin_block_end(margin_block_end) {}
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(subgrid_layout_subtree); }
 
   GridItemPlacementData placement_data;
   LayoutUnit margin_block_start;
@@ -34,6 +34,9 @@ struct GridLanesItemPlacementData
   // Total border-box block size before fragmentation. Compare this with the
   // child's consumed block size to detect expansion without mutating placement.
   LayoutUnit total_block_size;
+
+  // Finalized inherited geometry, including any updates from item placement.
+  Member<const GridLayoutSubtree> subgrid_layout_subtree;
 
   // Border-box extent in the stacking axis before fragmentation. In column
   // grid-lanes this will match total_block_size, but in row grid-lanes it may
