@@ -11,8 +11,7 @@ export function getHtml(this: HistoryToolbarElement) {
   return html`<!--_html_template_start_-->
 <cr-toolbar id="mainToolbar" disable-right-content-grow
     ?has-overlay="${this.itemsSelected_}" page-name="$i18n{title}"
-    clear-label="$i18n{clearSearch}"
-    search-prompt="$i18n{searchPrompt}"
+    clear-label="$i18n{clearSearch}" search-prompt="$i18n{searchPrompt}"
     ?spinner-active="${this.spinnerActive}" autofocus
     ?show-menu="${this.hasDrawer}" menu-label="$i18n{historyMenuButton}"
     narrow-threshold="1023" @search-changed="${this.onSearchChanged_}">

@@ -12,7 +12,8 @@ export function getHtml(this: SettingsSearchDropdownElement) {
   ${this.results_.map(item => html`
     <div class="result">
       <cr-icon class="result-icon" icon="${this.getResultIcon_(item)}"
-          aria-hidden="true"></cr-icon>
+          aria-hidden="true">
+      </cr-icon>
       <div class="result-text">
         <div class="result-title">${item.title}</div>
         ${item.breadcrumbs.length ? html`

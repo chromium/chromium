@@ -56,8 +56,7 @@ export function getHtml(this: HistoryAppElement) {
         <div id="historyControls">
           ${this.showFilterChips_() ? html`
             <history-filter-chips id="historyFilterChips"
-                .devices="${this.devices_}"
-                .domain="${this.domain_}"
+                .devices="${this.devices_}" .domain="${this.domain_}"
                 .timePeriodOptions="${this.timePeriodOptions_}"
                 .showActorFilter="${this.showActorFilter_()}"
                 .showDeviceFilter="${this.showDeviceFilter_()}"
@@ -65,8 +64,7 @@ export function getHtml(this: HistoryAppElement) {
                 .showTimePeriodFilter="${this.showTimePeriodFilter_()}"
                 .userVisits="${this.includeUserVisits_}"
                 .actorVisits="${this.includeActorVisits_}"
-                .clientIds="${this.clientIds_}"
-                .selectedTimePeriodOptionId="${
+                .clientIds="${this.clientIds_}" .selectedTimePeriodOptionId="${
                     this.selectedTimePeriodOptionId_}"
                 @filter-changed="${this.onFilterChanged_}">
             </history-filter-chips>

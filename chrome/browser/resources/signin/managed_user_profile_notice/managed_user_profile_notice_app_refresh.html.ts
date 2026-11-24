@@ -30,7 +30,8 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
     </managed-user-profile-notice-disclosure-refresh>
   ` : ''}
   ${this.isAnyState_(
-      [State.PROCESSING, State.SUCCESS, State.TIMEOUT, State.ERROR]) ? html`
+      [State.PROCESSING, State.SUCCESS, State.TIMEOUT, State.ERROR]) ?
+      html`
     <managed-user-profile-notice-state-refresh id="state"
         .state="${this.currentState_}">
     </managed-user-profile-notice-state-refresh>
@@ -58,15 +59,13 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
 </div>
 <div class="action-container">
   <cr-button id="proceedButton" aria-label="${this.proceedLabel_}"
-      class="action-button"
-      @click="${this.onProceedButtonClick_}"
+      class="action-button" @click="${this.onProceedButtonClick_}"
       ?disabled="${this.shouldDisableProceedButton_()}"
       ?hidden="${this.isState_(State.PROCESSING)}">
     ${this.proceedLabel_}
   </cr-button>
   <cr-button id="cancelButton" aria-label="${this.getCancelLabel_()}"
-      class="tonal-button"
-      @click="${this.onCancelButtonClick_}"
+      class="tonal-button" @click="${this.onCancelButtonClick_}"
       ?hidden="${!this.allowCancel_()}">
     ${this.getCancelLabel_()}
   </cr-button>

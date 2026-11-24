@@ -373,8 +373,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
           <extensions-toggle-row id="allow-incognito"
               ?checked="${this.data.incognitoAccess.isActive}"
               ?disabled="${this.data.isolatedModeAccessControlledByPolicy}"
-              class="hr"
-              @change="${this.onAllowIncognitoChange_}">
+              class="hr" @change="${this.onAllowIncognitoChange_}">
             <div>
               <div>${this.getItemAllowIncognitoString_()}</div>
               <div class="section-content">

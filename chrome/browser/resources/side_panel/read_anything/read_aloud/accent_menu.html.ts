@@ -20,8 +20,7 @@ export function getHtml(this: AccentMenuElement) {
         @value-changed="${this.onLanguageSearchValueChanged_}"
         .value="${this.languageSearchValue_}">
       <cr-icon slot="inline-prefix" alt="" icon="cr:search"></cr-icon>
-      ${
-      this.languageSearchValue_ ? html`
+      ${this.languageSearchValue_ ? html`
         <cr-icon-button id="clearLanguageSearch" iron-icon="cr:cancel-filled"
             slot="inline-suffix" @click="${this.onClearSearchClick_}"
             title="$i18n{readingModeLanguageMenuSearchClear}">
@@ -35,9 +34,7 @@ export function getHtml(this: AccentMenuElement) {
         aria-live="polite">
       $i18n{languageMenuNoResults}
     </span>
-    ${
-      this.availableLanguages_.map(
-          (item, index) => html`
+    ${this.availableLanguages_.map((item, index) => html`
       <button class="dropdown-item" data-index="${index}" role="radio"
           tabindex="${this.getTabIndex_(index)}"
           aria-checked="${this.getItemAriaChecked_(item)}"

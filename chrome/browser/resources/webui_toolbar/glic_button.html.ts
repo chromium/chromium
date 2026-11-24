@@ -10,8 +10,8 @@ export function getHtml(this: GlicButtonElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button"
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
-    .flatEdge="${this.state.isSplit ? 'end' : null}"
-    .buttonTabIndex="${0}" ?has-label="${this.shouldShowLabel_()}"
+    .flatEdge="${this.state.isSplit ? 'end' : null}" .buttonTabIndex="${0}"
+    ?has-label="${this.shouldShowLabel_()}"
     ?match-toolbar-style="${this.state.shouldMatchToolbarStyle}"
     ?custom-theme-fallback="${this.state.useCustomThemeFallback}"
     ?is-menu-open="${this.state.open || this.state.isContextMenuVisible}"
