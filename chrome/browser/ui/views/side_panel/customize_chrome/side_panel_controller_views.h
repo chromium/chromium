@@ -28,6 +28,8 @@ class SidePanelControllerViews : public SidePanelControllerBase {
   // SidePanelControllerBase:
   void OpenSidePanel(SidePanelOpenTrigger trigger,
                      std::optional<CustomizeChromeSection> section) override;
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override;
 
  private:
   // SidePanelControllerBase:

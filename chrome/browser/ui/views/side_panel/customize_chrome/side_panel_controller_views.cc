@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
@@ -58,6 +59,23 @@ void SidePanelControllerViews::OpenSidePanel(
     section.reset();
   } else {
     section_ = section;
+  }
+}
+
+void SidePanelControllerViews::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
+  SidePanelControllerBase::OnEntryWillHide(entry, reason);
+  // Exclude `kBackgrounded` so switching tabs does not look like dismissing
+  // Customize Chrome while still reporting explicit closes and replacements.
+  if (reason == SidePanelEntryHideReason::kSidePanelClosed ||
+      reason == SidePanelEntryHideReason::kReplaced) {
+    if (auto* browser = tab_->GetBrowserWindowInterface()) {
+      if (auto* browser_elements = BrowserElements::From(browser)) {
+        browser_elements->NotifyEvent(kBrowserViewElementId,
+                                      kCustomizeChromeClosedEventId);
+      }
+    }
   }
 }
 

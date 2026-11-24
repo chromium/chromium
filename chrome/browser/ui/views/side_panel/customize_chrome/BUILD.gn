@@ -28,6 +28,7 @@ source_set("customize_chrome") {
     "//chrome/browser/extensions",
     "//chrome/browser/search",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views:layout_provider",

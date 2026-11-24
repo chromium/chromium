@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -16,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/element_tracker.h"
 
 class CustomizeChromeSidePanelBrowserTest : public PlatformBrowserTest {
  protected:
@@ -172,4 +177,68 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                                            GURL(chrome::kChromeUISettingsURL)));
   EXPECT_EQ(entry, registry->GetEntryForKey(SidePanelEntry::Key(
                        SidePanelEntry::Id::kCustomizeChrome)));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
+                       CloseAndReplaceEmitCujEvent) {
+  SidePanelUI* side_panel_ui = SidePanelUI::From(GetBrowserWindowInterface());
+  side_panel_ui->DisableAnimationsForTesting();
+  side_panel_ui->SetNoDelaysForTesting(true);
+  auto* controller = GetSidePanelController();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           chrome::ChromeUINewTabURLAsGURL()));
+
+  int closed_count = 0;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kCustomizeChromeClosedEventId, kBrowserViewElementId,
+          BrowserElements::From(GetBrowserWindowInterface())->GetContext(),
+          base::BindLambdaForTesting(
+              [&](ui::TrackedElement*) { ++closed_count; }));
+
+  // 1. Explicit `CloseSidePanel()` triggers `kSidePanelClosed` -> emits once.
+  controller->OpenSidePanel(SidePanelOpenTrigger::kAppMenu,
+                            CustomizeChromeSection::kAppearance);
+  ASSERT_TRUE(controller->IsCustomizeChromeEntryShowing());
+  controller->CloseSidePanel();
+  EXPECT_EQ(1, closed_count);
+
+  // 2. Replacing Customize Chrome with another side panel entry triggers
+  // `kReplaced` -> emits once (1 -> 2).
+  controller->OpenSidePanel(SidePanelOpenTrigger::kAppMenu,
+                            CustomizeChromeSection::kAppearance);
+  ASSERT_TRUE(controller->IsCustomizeChromeEntryShowing());
+  side_panel_ui->Show(SidePanelEntryId::kBookmarks);
+  EXPECT_FALSE(controller->IsCustomizeChromeEntryShowing());
+  EXPECT_EQ(2, closed_count);
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
+                       TabSwitchBackgroundedDoesNotEmitCujEvent) {
+  SidePanelUI* side_panel_ui = SidePanelUI::From(GetBrowserWindowInterface());
+  side_panel_ui->DisableAnimationsForTesting();
+  side_panel_ui->SetNoDelaysForTesting(true);
+  AppendTab(chrome::ChromeUINewTabURLAsGURL());
+  AppendTab(chrome::ChromeUINewTabURLAsGURL());
+  ActivateTabAt(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           chrome::ChromeUINewTabURLAsGURL()));
+
+  int closed_count = 0;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kCustomizeChromeClosedEventId, kBrowserViewElementId,
+          BrowserElements::From(GetBrowserWindowInterface())->GetContext(),
+          base::BindLambdaForTesting(
+              [&](ui::TrackedElement*) { ++closed_count; }));
+
+  auto* controller = GetSidePanelController();
+  controller->OpenSidePanel(SidePanelOpenTrigger::kAppMenu,
+                            CustomizeChromeSection::kAppearance);
+  ASSERT_TRUE(controller->IsCustomizeChromeEntryShowing());
+
+  // Switching to tab 2 hides Customize Chrome with `kBackgrounded`.
+  ActivateTabAt(2);
+  EXPECT_EQ(0, closed_count);
 }
