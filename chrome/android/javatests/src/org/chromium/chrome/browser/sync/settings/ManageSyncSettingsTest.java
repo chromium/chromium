@@ -126,8 +126,6 @@ import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -213,10 +211,7 @@ public class ManageSyncSettingsTest {
 
     private SettingsActivityInterface mSettingsActivityInterface;
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
-
-    private final AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final SettingsTestRule<ManageSyncSettings> mSettingsTestRule =
             new SettingsTestRule<>(ManageSyncSettings.class);
@@ -231,7 +226,6 @@ public class ManageSyncSettingsTest {
     @Rule
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSyncTestRule)
-                    .around(mCtaTestRule)
                     .around(mSettingsTestRule)
                     .around(mSettingsSearchTestRule);
 
@@ -261,7 +255,6 @@ public class ManageSyncSettingsTest {
 
     @Before
     public void setUp() {
-        mCtaTestRule.startOnBlankPage();
         UnifiedConsentServiceBridgeJni.setInstanceForTesting(mUnifiedConsentServiceBridgeMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1975,7 +1968,7 @@ public class ManageSyncSettingsTest {
     /** Opens account settings in a tab, recreates the activity and clicks the sign-out button. */
     private void clickSignOutAfterSettingsInTabThemeChange() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mCtaTestRule.loadUrl("chrome-native://settings/account");
+        mSyncTestRule.loadUrl("chrome-native://settings/account");
         waitForView(withText(R.string.account_section_header));
 
         recreateActivityForThemeChange();
@@ -1988,14 +1981,12 @@ public class ManageSyncSettingsTest {
 
     /** Recreates the activity the way a theme change does, which detaches the tab first. */
     private void recreateActivityForThemeChange() {
-        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
-        mCtaTestRule
-                .getActivityTestRule()
-                .setActivity(
-                        ApplicationTestUtils.waitForActivityWithClass(
-                                ChromeTabbedActivity.class,
-                                Stage.RESUMED,
-                                activity::onNightModeStateChanged));
+        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        mSyncTestRule.setActivity(
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        activity::onNightModeStateChanged));
     }
 
     @Test

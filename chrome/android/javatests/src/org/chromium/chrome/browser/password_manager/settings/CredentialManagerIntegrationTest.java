@@ -31,7 +31,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -55,8 +54,6 @@ import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -68,24 +65,15 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class CredentialManagerIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
-
-    public final AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
-
-    public final SettingsTestRule<MainSettings> mSettingsActivityTestRule =
-            new SettingsTestRule<>(MainSettings.class);
-
-    public final SettingsTestRule<SafetyCheckSettingsFragment> mSafetyCheckActivityTestRule =
-            new SettingsTestRule<>(SafetyCheckSettingsFragment.class);
+    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule
-    public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSyncTestRule)
-                    .around(mCtaTestRule)
-                    .around(mSettingsActivityTestRule)
-                    .around(mSafetyCheckActivityTestRule);
+    public SettingsTestRule<MainSettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(MainSettings.class);
+
+    @Rule
+    public SettingsTestRule<SafetyCheckSettingsFragment> mSafetyCheckActivityTestRule =
+            new SettingsTestRule<>(SafetyCheckSettingsFragment.class);
 
     private final FakeCredentialManagerLauncherFactoryImpl mFakeLauncherFactory =
             new FakeCredentialManagerLauncherFactoryImpl();
@@ -98,7 +86,6 @@ public class CredentialManagerIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        mCtaTestRule.startOnBlankPage();
         DeviceInfo.setGmsVersionCodeForTest("250000000");
         CredentialManagerLauncherFactory.setFactoryForTesting(mFakeLauncherFactory);
         PasswordCheckupClientHelperFactory.setFactoryForTesting(
