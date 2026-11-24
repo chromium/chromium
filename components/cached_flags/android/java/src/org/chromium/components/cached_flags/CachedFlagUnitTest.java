@@ -4,6 +4,7 @@
 
 package org.chromium.components.cached_flags;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -19,11 +20,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
+import org.chromium.build.BuildConfig;
+import org.chromium.components.variations.VariationsSwitches;
 
 import java.util.Arrays;
 import java.util.List;
@@ -177,5 +182,67 @@ public class CachedFlagUnitTest {
         // most recent call to CachedFlagUtils.cacheNativeFlagsImmediately()
         assertFalse(featureA.isEnabled());
         assertFalse(featureB.isEnabled());
+    }
+
+    @Test
+    public void testDefaultValueInTests_usedByDefault() {
+        CachedFlag featureA =
+                new CachedFlag(
+                        mFeatureMap,
+                        FEATURE_A,
+                        /* defaultValue= */ false,
+                        /* defaultValueInTests= */ true);
+        CachedFlag featureB =
+                new CachedFlag(
+                        mFeatureMap,
+                        FEATURE_B,
+                        /* defaultValue= */ true,
+                        /* defaultValueInTests= */ false);
+
+        assertEquals(!BuildConfig.IS_CHROME_BRANDED, featureA.getDefaultValue());
+        assertEquals(!BuildConfig.IS_CHROME_BRANDED, featureA.isEnabled());
+        assertEquals(BuildConfig.IS_CHROME_BRANDED, featureB.getDefaultValue());
+        assertEquals(BuildConfig.IS_CHROME_BRANDED, featureB.isEnabled());
+    }
+
+    @Test
+    @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
+    public void testDefaultValueInTests_ignoredWhenDisableFieldTrialConfig() {
+        CachedFlag featureA =
+                new CachedFlag(
+                        mFeatureMap,
+                        FEATURE_A,
+                        /* defaultValue= */ false,
+                        /* defaultValueInTests= */ true);
+        CachedFlag featureB =
+                new CachedFlag(
+                        mFeatureMap,
+                        FEATURE_B,
+                        /* defaultValue= */ true,
+                        /* defaultValueInTests= */ false);
+
+        assertFalse(featureA.getDefaultValue());
+        assertFalse(featureA.isEnabled());
+        assertTrue(featureB.getDefaultValue());
+        assertTrue(featureB.isEnabled());
+    }
+
+    @Test
+    public void testDefaultValueInTests_switchAppliedAfterConstruction() {
+        CachedFlag featureA =
+                new CachedFlag(
+                        mFeatureMap,
+                        FEATURE_A,
+                        /* defaultValue= */ false,
+                        /* defaultValueInTests= */ true);
+        CommandLine.getInstance()
+                .appendSwitch(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG);
+        try {
+            assertFalse(featureA.getDefaultValue());
+            assertFalse(featureA.isEnabled());
+        } finally {
+            CommandLine.getInstance()
+                    .removeSwitch(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG);
+        }
     }
 }

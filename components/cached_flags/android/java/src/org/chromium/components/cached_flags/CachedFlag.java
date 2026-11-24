@@ -6,6 +6,7 @@ package org.chromium.components.cached_flags;
 
 import android.content.SharedPreferences;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Flag;
@@ -15,6 +16,7 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.variations.VariationsSwitches;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,12 +53,12 @@ import java.util.function.Supplier;
 @NullMarked
 public class CachedFlag extends Flag {
     private final boolean mDefaultValue;
+    private final boolean mDefaultValueInTests;
     private @Nullable String mPreferenceKey;
     private @Nullable Supplier<Boolean> mValueSupplier;
 
     public CachedFlag(FeatureMap featureMap, String featureName, boolean defaultValue) {
-        super(featureMap, featureName);
-        mDefaultValue = defaultValue;
+        this(featureMap, featureName, defaultValue, defaultValue);
     }
 
     /**
@@ -69,16 +71,8 @@ public class CachedFlag extends Flag {
             boolean defaultValue,
             boolean defaultValueInTests) {
         super(featureMap, featureName);
-
-        // In test builds and non-official development builds, fieldtrial_testing_config.json
-        // is applied, so we want to use |defaultValueInTests|. In is_chrome_branded = true
-        // builds, fieldtrial_testing_config.json is not applied, so we do not want to use the
-        // |defaultValueInTests|, which should be kept in sync with the .json.
-        mDefaultValue =
-                ((BuildConfig.IS_FOR_TEST || !VersionInfo.isOfficialBuild())
-                                && !BuildConfig.IS_CHROME_BRANDED)
-                        ? defaultValueInTests
-                        : defaultValue;
+        mDefaultValue = defaultValue;
+        mDefaultValueInTests = defaultValueInTests;
     }
 
     /**
@@ -113,16 +107,17 @@ public class CachedFlag extends Flag {
             mValueSupplier =
                     () -> {
                         String preferenceName = getSharedPreferenceKey();
+                        boolean defaultValue = getDefaultValue();
                         Boolean flag =
                                 CachedFlagsSafeMode.getInstance()
-                                        .isEnabled(mFeatureName, preferenceName, mDefaultValue);
+                                        .isEnabled(mFeatureName, preferenceName, defaultValue);
                         if (flag == null) {
                             SharedPreferencesManager prefs =
                                     CachedFlagsSharedPreferences.getInstance();
                             if (prefs.contains(preferenceName)) {
                                 flag = prefs.readBoolean(preferenceName, false);
                             } else {
-                                flag = mDefaultValue;
+                                flag = defaultValue;
                             }
                         }
 
@@ -136,6 +131,19 @@ public class CachedFlag extends Flag {
      * @return the default value to be returned if no value is cached.
      */
     public boolean getDefaultValue() {
+        // In test builds and non-official development builds, fieldtrial_testing_config.json
+        // is applied unless --disable-field-trial-config is set, so we want to use
+        // |mDefaultValueInTests|. In is_chrome_branded = true builds,
+        // fieldtrial_testing_config.json is not applied, so we do not want to use
+        // |mDefaultValueInTests|, which should be kept in sync with the .json.
+        if ((BuildConfig.IS_FOR_TEST || !VersionInfo.isOfficialBuild())
+                && !BuildConfig.IS_CHROME_BRANDED
+                && (!CommandLine.isInitialized()
+                        || !CommandLine.getInstance()
+                                .hasSwitch(
+                                        VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG))) {
+            return mDefaultValueInTests;
+        }
         return mDefaultValue;
     }
 
