@@ -37,6 +37,8 @@ constexpr media::ChannelLayout kAnotherChannelLayout =
     media::CHANNEL_LAYOUT_2_1;
 const char* const kDefaultDeviceId =
     media::AudioDeviceDescription::kDefaultDeviceId;
+const char* const kCommunicationsDeviceId =
+    media::AudioDeviceDescription::kCommunicationsDeviceId;
 constexpr char kAnotherDeviceId[] = "another-device-id";
 constexpr char kMatchedDeviceId[] = "matched-device-id";
 constexpr char kNonexistentDeviceId[] = "nonexistent-device-id";
@@ -143,6 +145,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
       const FrameToken& main_frame_token,
       const media::AudioSinkParameters& params) {
     if ((params.device_id == kDefaultDeviceId) ||
+        (params.device_id == kCommunicationsDeviceId) ||
         (params.device_id == kAnotherDeviceId)) {
       return mock_sink_ ? std::move(mock_sink_)
                         : CreateNormalSink(params.device_id);
@@ -569,6 +572,45 @@ TEST_F(AudioRendererMixerManagerTest, OneMixerDifferentDefaultDeviceIDs) {
   EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer2);
   EXPECT_EQ(0u, mixer_count());
+}
+
+// Verify default-device aliases remain equivalent when an explicit device ID
+// sorts lexicographically between them. This protects MixerKeyCompare's strict
+// weak ordering.
+TEST_F(AudioRendererMixerManagerTest,
+       DefaultDeviceAliasesRemainEquivalentAroundCommunicationsDevice) {
+  media::AudioParameters params(
+      AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::FromLayout<kChannelLayout>(), kSampleRate,
+      kBufferSize);
+
+  // Verify lookup for both orders: "", "communications", "default" and
+  // "default", "communications", "".
+  for (const std::string first_default_id : {"", kDefaultDeviceId}) {
+    SCOPED_TRACE(first_default_id.empty() ? "empty alias first"
+                                          : "named alias first");
+    AudioRendererMixer* first_default_mixer = GetMixer(
+        kLocalFrameToken, kFrameToken, params, AudioLatency::Type::kPlayback,
+        first_default_id, SinkUseState::kNewSink);
+    AudioRendererMixer* communications_mixer = GetMixer(
+        kLocalFrameToken, kFrameToken, params, AudioLatency::Type::kPlayback,
+        kCommunicationsDeviceId, SinkUseState::kNewSink);
+    AudioRendererMixer* second_default_mixer = GetMixer(
+        kLocalFrameToken, kFrameToken, params, AudioLatency::Type::kPlayback,
+        first_default_id.empty() ? kDefaultDeviceId : "",
+        SinkUseState::kExistingSink);
+
+    EXPECT_EQ(first_default_mixer, second_default_mixer);
+    EXPECT_NE(first_default_mixer, communications_mixer);
+    EXPECT_EQ(2u, mixer_count());
+
+    ReturnMixer(first_default_mixer);
+    EXPECT_EQ(2u, mixer_count());
+    ReturnMixer(second_default_mixer);
+    EXPECT_EQ(1u, mixer_count());
+    ReturnMixer(communications_mixer);
+    EXPECT_EQ(0u, mixer_count());
+  }
 }
 
 // Verify that GetMixer() correctly returns a null mixer and an appropriate

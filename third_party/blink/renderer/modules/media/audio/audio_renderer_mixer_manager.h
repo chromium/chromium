@@ -141,8 +141,18 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
         return a.params.effects() < b.params.effects();
       }
 
-      if (media::AudioDeviceDescription::IsDefaultDevice(a.device_id) &&
-          media::AudioDeviceDescription::IsDefaultDevice(b.device_id)) {
+      const bool a_device_is_default =
+          media::AudioDeviceDescription::IsDefaultDevice(a.device_id);
+      const bool b_device_is_default =
+          media::AudioDeviceDescription::IsDefaultDevice(b.device_id);
+
+      if (a_device_is_default != b_device_is_default) {
+        // Order default device aliases before all explicit devices so they
+        // form a single contiguous equivalence class.
+        return a_device_is_default;
+      }
+
+      if (a_device_is_default) {
         // Both device IDs represent the same default device => do not compare
         // them. We can skip the `source_frame_token` check in this case since
         // the default device is always authorized.
