@@ -81,20 +81,6 @@ void FakeActorTabHelperObserver::OnControlStateChanged(
   last_new_control_state_value_ = new_control_state;
 }
 
-class FakeLegacyActorTabHelperObserver : public ActorTabHelperObserver {
- public:
-  // ActorTabHelperObserver:
-  void OnActuationStateChanged(ActorTabHelper* tab_helper,
-                               web::WebState* web_state,
-                               bool actuating) override {
-    on_actuation_state_changed_called_ = true;
-    last_actuating_value_ = actuating;
-  }
-
-  bool on_actuation_state_changed_called_ = false;
-  bool last_actuating_value_ = false;
-};
-
 // A `FakeWebState` subclass that records `SetKeepRenderProcessAlive` and
 // `IsBeingDestroyed` state for `ActorTabHelperTest`.
 class KeepAliveFakeWebState : public web::FakeWebState {
@@ -314,89 +300,6 @@ TEST_F(ActorTabHelperTest, ControlStateChanges_NotifiesSubscriptions) {
   ASSERT_TRUE(future2.IsReady());
   EXPECT_EQ(future2.Take(), std::make_tuple(ActorControlState::kActorControlled,
                                             ActorControlState::kInactive));
-}
-
-// Test deprecated `IsActuating`, `AddActuationStateChangedCallback`, and
-// `OnActuationStateChanged` compatibility with `SetControlState`.
-TEST_F(ActorTabHelperTest, DeprecatedActuatingCompatibility) {
-  EXPECT_FALSE(tab_helper_->IsActuating());
-
-  FakeLegacyActorTabHelperObserver observer;
-  base::ScopedObservation<ActorTabHelper, ActorTabHelperObserver>
-      scoped_observation(&observer);
-  scoped_observation.Observe(tab_helper_);
-
-  base::test::TestFuture<bool> future;
-  base::CallbackListSubscription subscription =
-      tab_helper_->AddActuationStateChangedCallback(
-          future.GetRepeatingCallback());
-
-  tab_helper_->SetControlState(ActorControlState::kActorControlled);
-  EXPECT_TRUE(tab_helper_->IsActuating());
-  EXPECT_EQ(tab_helper_->GetControlState(),
-            ActorControlState::kActorControlled);
-  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
-  EXPECT_TRUE(observer.last_actuating_value_);
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_TRUE(future.Take());
-
-  observer.on_actuation_state_changed_called_ = false;
-  tab_helper_->SetControlState(ActorControlState::kInactive);
-  EXPECT_FALSE(tab_helper_->IsActuating());
-  EXPECT_EQ(tab_helper_->GetControlState(), ActorControlState::kInactive);
-  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
-  EXPECT_FALSE(observer.last_actuating_value_);
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_FALSE(future.Take());
-
-  // Test deprecated `SetActuating` method.
-  observer.on_actuation_state_changed_called_ = false;
-  tab_helper_->SetActuating(true);
-  EXPECT_TRUE(tab_helper_->IsActuating());
-  EXPECT_EQ(tab_helper_->GetControlState(),
-            ActorControlState::kActorControlled);
-  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
-  EXPECT_TRUE(observer.last_actuating_value_);
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_TRUE(future.Take());
-
-  observer.on_actuation_state_changed_called_ = false;
-  tab_helper_->SetActuating(false);
-  EXPECT_FALSE(tab_helper_->IsActuating());
-  EXPECT_EQ(tab_helper_->GetControlState(), ActorControlState::kInactive);
-  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
-  EXPECT_FALSE(observer.last_actuating_value_);
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_FALSE(future.Take());
-
-  // Transitioning between `kInactive` and `kUserControlled` does not mark the
-  // tab as actuating or notify legacy actuation listeners.
-  observer.on_actuation_state_changed_called_ = false;
-  tab_helper_->SetControlState(ActorControlState::kUserControlled);
-  EXPECT_FALSE(tab_helper_->IsActuating());
-  EXPECT_FALSE(observer.on_actuation_state_changed_called_);
-  EXPECT_FALSE(future.IsReady());
-
-  tab_helper_->SetControlState(ActorControlState::kActorControlled);
-  EXPECT_TRUE(tab_helper_->IsActuating());
-  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
-  EXPECT_TRUE(observer.last_actuating_value_);
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_TRUE(future.Take());
-
-  observer.on_actuation_state_changed_called_ = false;
-  tab_helper_->SetControlState(ActorControlState::kUserControlled);
-  EXPECT_FALSE(tab_helper_->IsActuating());
-  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
-  EXPECT_FALSE(observer.last_actuating_value_);
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_FALSE(future.Take());
-
-  observer.on_actuation_state_changed_called_ = false;
-  tab_helper_->SetControlState(ActorControlState::kInactive);
-  EXPECT_FALSE(tab_helper_->IsActuating());
-  EXPECT_FALSE(observer.on_actuation_state_changed_called_);
-  EXPECT_FALSE(future.IsReady());
 }
 
 // Test streaming operator and string conversion for ActorControlState.

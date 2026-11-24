@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
@@ -120,7 +121,18 @@ class TestAutofillManager : public BrowserAutofillManager {
                                          base::Seconds(2));
   }
 
+  void OnFormsSeen(std::vector<FormData> updated_forms,
+                   std::vector<FormGlobalId> removed_form_ids,
+                   RendererEventPassKey pass_key) override {
+    ++forms_seen_count_;
+    BrowserAutofillManager::OnFormsSeen(std::move(updated_forms),
+                                        std::move(removed_form_ids), pass_key);
+  }
+
+  int forms_seen_count() const { return forms_seen_count_; }
+
  private:
+  int forms_seen_count_ = 0;
   TestAutofillManagerWaiter waiter_{*this, {AutofillManagerEvent::kFormsSeen}};
 };
 
@@ -646,28 +658,32 @@ TEST_F(ChromeAutofillClientIOSTest, IsTabInActorMode_ForceActorMode) {
   EXPECT_TRUE(client().IsTabInActorMode());
 }
 
-// Test that `IsTabInActorMode` gets the actuation state from `ActorTabHelper`.
+// Tests that `IsTabInActorMode` gets the control state from `ActorTabHelper`.
 TEST_F(ChromeAutofillClientIOSTest, IsTabInActorMode_ActorTabHelper) {
   ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state());
   ASSERT_TRUE(actor_tab_helper);
 
   EXPECT_FALSE(client().IsTabInActorMode());
 
-  actor_tab_helper->SetActuating(true);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
   EXPECT_TRUE(client().IsTabInActorMode());
 
-  actor_tab_helper->SetActuating(false);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kUserControlled);
+  EXPECT_TRUE(client().IsTabInActorMode());
+
+  actor_tab_helper->SetControlState(actor::ActorControlState::kInactive);
   EXPECT_FALSE(client().IsTabInActorMode());
 }
 
-// Test that `IsTabInActorMode` returns false when `ActorTabHelper` is not
+// Tests that `IsTabInActorMode` returns false when `ActorTabHelper` is not
 // attached.
 TEST_F(ChromeAutofillClientIOSTest, IsTabInActorMode_NoActorTabHelper) {
   web_state()->RemoveUserData(ActorTabHelper::UserDataKey());
   EXPECT_FALSE(client().IsTabInActorMode());
 }
 
-// Test that `OnActorTaskStateChange` reparses known forms when actuating.
+// Tests that `OnActorTaskStateChange` reparses known forms when entering actor
+// mode.
 TEST_F(ChromeAutofillClientIOSTest, OnActorTaskStateChange_ReparsesForms) {
   ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state());
   ASSERT_TRUE(actor_tab_helper);
@@ -675,9 +691,56 @@ TEST_F(ChromeAutofillClientIOSTest, OnActorTaskStateChange_ReparsesForms) {
   NSString* html = @"<form><input name='name'><input name='address'></form>";
   ASSERT_TRUE(LoadHtmlAndWaitForFormsSeen(html, 1));
 
-  actor_tab_helper->SetActuating(true);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
   ASSERT_TRUE(main_frame_manager()->waiter().Wait(1));
   EXPECT_TRUE(client().IsTabInActorMode());
+}
+
+// Tests that `OnActorTaskStateChange` reparses known forms when entering
+// `kUserControlled` from `kInactive`.
+TEST_F(ChromeAutofillClientIOSTest,
+       OnActorTaskStateChange_ReparsesFormsOnUserControlled) {
+  ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state());
+  ASSERT_TRUE(actor_tab_helper);
+
+  NSString* html = @"<form><input name='name'><input name='address'></form>";
+  ASSERT_TRUE(LoadHtmlAndWaitForFormsSeen(html, 1));
+
+  actor_tab_helper->SetControlState(actor::ActorControlState::kUserControlled);
+  ASSERT_TRUE(main_frame_manager()->waiter().Wait(1));
+  EXPECT_TRUE(client().IsTabInActorMode());
+}
+
+// Tests that `OnActorTaskStateChange` does not reparse forms within actor mode
+// or when exiting it, and reparses when re-entering.
+TEST_F(ChromeAutofillClientIOSTest,
+       OnActorTaskStateChange_DoesNotReparseWithinActorMode) {
+  ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state());
+  ASSERT_TRUE(actor_tab_helper);
+
+  NSString* html = @"<form><input name='name'><input name='address'></form>";
+  ASSERT_TRUE(LoadHtmlAndWaitForFormsSeen(html, 1));
+
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  ASSERT_TRUE(main_frame_manager()->waiter().Wait(1));
+  const int forms_seen_before = main_frame_manager()->forms_seen_count();
+
+  actor_tab_helper->SetControlState(actor::ActorControlState::kUserControlled);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kInactive);
+
+  // Flush the extraction pipeline with one sentinel scan; any scan triggered by
+  // the transitions above would increment `forms_seen_count()` beyond 1.
+  base::test::TestFuture<bool> sentinel_done;
+  main_frame_manager()->TriggerFormExtractionInAllFrames(
+      /*force=*/true, sentinel_done.GetCallback());
+  ASSERT_TRUE(sentinel_done.Wait());
+  ASSERT_TRUE(main_frame_manager()->waiter().Wait(1));
+  EXPECT_EQ(main_frame_manager()->forms_seen_count(), forms_seen_before + 1);
+
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  ASSERT_TRUE(main_frame_manager()->waiter().Wait(1));
+  EXPECT_EQ(main_frame_manager()->forms_seen_count(), forms_seen_before + 2);
 }
 
 // Test that `GetPersonalContextEntityMetadataManager` returns the manager for

@@ -6,7 +6,10 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TAB_HELPER_OBSERVER_H_
 
 #import "base/observer_list_types.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+
+namespace actor {
+enum class ActorControlState;
+}  // namespace actor
 
 namespace web {
 class WebState;
@@ -24,14 +27,7 @@ class ActorTabHelperObserver : public base::CheckedObserver {
       ActorTabHelper* tab_helper,
       web::WebState* web_state,
       actor::ActorControlState previous_control_state,
-      actor::ActorControlState new_control_state);
-
-  // Notifies the observer when the actuation state of `tab_helper` changes for
-  // `web_state`. `actuating` indicates the new actuation state.
-  // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
-  virtual void OnActuationStateChanged(ActorTabHelper* tab_helper,
-                                       web::WebState* web_state,
-                                       bool actuating) {}
+      actor::ActorControlState new_control_state) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TAB_HELPER_OBSERVER_H_

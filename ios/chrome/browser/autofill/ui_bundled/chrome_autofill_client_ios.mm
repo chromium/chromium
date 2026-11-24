@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
@@ -125,6 +126,21 @@ using personal_context::PersonalContextEligibilityService;
 using personal_context::PersonalContextEligibilityState;
 
 namespace autofill {
+
+namespace {
+
+// Returns true when `control_state` indicates an active actor task on the tab.
+bool IsInActorMode(actor::ActorControlState control_state) {
+  switch (control_state) {
+    case actor::ActorControlState::kInactive:
+      return false;
+    case actor::ActorControlState::kActorControlled:
+    case actor::ActorControlState::kUserControlled:
+      return true;
+  }
+}
+
+}  // namespace
 
 // Delay before allowing dismissal of the Save/Update dialog for Autofill AI
 // forms. This allows enough time to show the confirmation checkmark that the
@@ -208,11 +224,10 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
   if (web_state) {
     if (ActorTabHelper* actor_tab_helper =
             ActorTabHelper::FromWebState(web_state)) {
-      actor_actuation_state_subscription_ =
-          actor_tab_helper->AddActuationStateChangedCallback(
-              base::BindRepeating(
-                  &ChromeAutofillClientIOS::OnActorTaskStateChange,
-                  weak_ptr_factory_.GetWeakPtr()));
+      actor_control_state_subscription_ =
+          actor_tab_helper->AddControlStateChangedCallback(base::BindRepeating(
+              &ChromeAutofillClientIOS::OnActorTaskStateChange,
+              weak_ptr_factory_.GetWeakPtr()));
     }
   }
 }
@@ -799,7 +814,7 @@ bool ChromeAutofillClientIOS::IsTabInActorMode() const {
     return true;
   }
   ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state());
-  return actor_tab_helper && actor_tab_helper->IsActuating();
+  return actor_tab_helper && IsInActorMode(actor_tab_helper->GetControlState());
 }
 
 bool ChromeAutofillClientIOS::ShouldFormatForLargeKeyboardAccessory() const {
@@ -1047,8 +1062,10 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
   }
 }
 
-void ChromeAutofillClientIOS::OnActorTaskStateChange(bool is_actuating) {
-  if (is_actuating) {
+void ChromeAutofillClientIOS::OnActorTaskStateChange(
+    actor::ActorControlState previous_state,
+    actor::ActorControlState new_state) {
+  if (!IsInActorMode(previous_state) && IsInActorMode(new_state)) {
     if (AutofillManager* manager = GetAutofillManagerForPrimaryMainFrame()) {
       manager->TriggerFormExtractionInAllFrames(/*force=*/true,
                                                 base::DoNothing());

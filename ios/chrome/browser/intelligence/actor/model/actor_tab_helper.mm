@@ -127,27 +127,14 @@ void ActorTabHelper::SetControlState(
 
   control_state_callbacks_.Notify(previous_control_state, control_state);
 
-  if (previous_active != new_active) {
-    actuation_state_callbacks_.Notify(new_active);
-  }
-
   for (ActorTabHelperObserver& observer : observers_) {
     observer.OnControlStateChanged(this, web_state_, previous_control_state,
                                    control_state);
   }
 }
 
-void ActorTabHelper::SetActuating(bool actuating) {
-  SetControlState(actuating ? actor::ActorControlState::kActorControlled
-                            : actor::ActorControlState::kInactive);
-}
-
 actor::ActorControlState ActorTabHelper::GetControlState() const {
   return control_state_;
-}
-
-bool ActorTabHelper::IsActuating() const {
-  return control_state_ == actor::ActorControlState::kActorControlled;
 }
 
 bool ActorTabHelper::MaybeHandleNewTabRequest(const GURL& url) {
@@ -176,11 +163,6 @@ bool ActorTabHelper::MaybeHandleNewTabRequest(const GURL& url) {
 base::CallbackListSubscription ActorTabHelper::AddControlStateChangedCallback(
     ControlStateCallback callback) {
   return control_state_callbacks_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription ActorTabHelper::AddActuationStateChangedCallback(
-    ActuationStateCallback callback) {
-  return actuation_state_callbacks_.Add(std::move(callback));
 }
 
 void ActorTabHelper::AddObserver(ActorTabHelperObserver* observer) {

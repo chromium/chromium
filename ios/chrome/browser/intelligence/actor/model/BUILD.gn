@@ -83,7 +83,6 @@ source_set("tab_helper") {
     "actor_tab_helper.h",
     "actor_tab_helper.mm",
     "actor_tab_helper_observer.h",
-    "actor_tab_helper_observer.mm",
   ]
   public_deps = [
     "//components/actor/core",

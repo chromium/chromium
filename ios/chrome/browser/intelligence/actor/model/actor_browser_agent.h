@@ -55,7 +55,7 @@ class ActorBrowserAgent : public BrowserUserData<ActorBrowserAgent>,
 
   // Dispatches commands to update the overlay UI based on `control_state`.
   // `web_state` is forwarded to the show command.
-  // TODO(crbug.com/548051839): `web_state` is unused by the overlay; remove it
+  // TODO(crbug.com/587461534): `web_state` is unused by the overlay; remove it
   // from `ActorOverlayCommands`, `ActorOverlayCoordinator`, and here.
   void UpdateOverlayForControlState(actor::ActorControlState control_state,
                                     web::WebState* web_state);

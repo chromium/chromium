@@ -47,6 +47,10 @@
 class IOSDeviceAuthAvailabilityChecker;
 class IOSDeviceAuthenticator;
 
+namespace actor {
+enum class ActorControlState;
+}  // namespace actor
+
 namespace affiliations {
 class AffiliationService;
 }
@@ -275,8 +279,9 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   // Shows the detailed save/update UI for Autofill AI entities.
   void ShowAutofillAiSaveUpdateUI();
 
-  // Invoked when the actuation state for the associated WebState changes.
-  void OnActorTaskStateChange(bool is_actuating);
+  // Invoked when the actor control state for the associated WebState changes.
+  void OnActorTaskStateChange(actor::ActorControlState previous_state,
+                              actor::ActorControlState new_state);
 
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
@@ -343,8 +348,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   // Only use this for testing purposes!
   bool consider_as_secure_for_testing_ = false;
 
-  // Subscription that tracks changes in tab actuation state.
-  base::CallbackListSubscription actor_actuation_state_subscription_;
+  // Subscription that tracks changes in the tab's actor control state.
+  base::CallbackListSubscription actor_control_state_subscription_;
 
   base::WeakPtrFactory<ChromeAutofillClientIOS> weak_ptr_factory_{this};
 };

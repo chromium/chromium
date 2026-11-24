@@ -37,12 +37,6 @@ class ActorTabHelper : public web::WebStateObserver,
                                        actor::ActorControlState)>;
   using ControlStateCallback = ControlStateCallbackList::CallbackType;
 
-  // When actuation state changes, this callback is invoked with whether the
-  // associated tab is actively being actuated.
-  // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
-  using ActuationStateCallbackList = base::RepeatingCallbackList<void(bool)>;
-  using ActuationStateCallback = ActuationStateCallbackList::CallbackType;
-
   ActorTabHelper(const ActorTabHelper&) = delete;
   ActorTabHelper& operator=(const ActorTabHelper&) = delete;
   ActorTabHelper(ActorTabHelper&&) = delete;
@@ -62,28 +56,20 @@ class ActorTabHelper : public web::WebStateObserver,
       base::RepeatingClosure callback);
 
   // Sets the `ActorControlState` for the associated `WebState`, notifying
-  // registered callbacks and observers if the control state changes. `kTtc`
-  // tasks in `task_source_info` keep the tab in `kInactive`. The render process
-  // is kept alive while the control state is not `kInactive` (both
+  // registered callbacks and observers if the control state changes. The render
+  // process is kept alive while the control state is not `kInactive` (both
   // `kActorControlled` and `kUserControlled`), while keyboard/input-view
   // suppression applies only during `kActorControlled`.
   // TODO(crbug.com/581400371): Move `TaskSourceInfo`-specific UI configuration
-  // out of `ActorTabHelper`.
+  // out of `ActorTabHelper`. Currently `kTtc` tasks in `task_source_info` keep
+  // the tab in `kInactive`.
   void SetControlState(
       actor::ActorControlState control_state,
       std::optional<actor::TaskSourceInfo> task_source_info = std::nullopt);
 
-  // Sets whether the tab is actively undergoing actuation by an `ActorTask`.
-  // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
-  void SetActuating(bool actuating);
-
   // Returns the current `ActorControlState` of the associated
   // `WebState`.
   actor::ActorControlState GetControlState() const;
-
-  // Returns true if the tab is currently being actuated.
-  // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
-  bool IsActuating() const;
 
   // Intercepts a request to open `url` in a new tab while the tab is
   // `kActorControlled`, navigating the associated `WebState` in-place for valid
@@ -96,13 +82,6 @@ class ActorTabHelper : public web::WebStateObserver,
   // registration and must be retained by callers.
   [[nodiscard]] base::CallbackListSubscription AddControlStateChangedCallback(
       ControlStateCallback callback);
-
-  // Registers a callback to be invoked when the actuation state changes.
-  // The returned subscription manages the lifetime of the registration and
-  // must be retained by callers.
-  // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
-  [[nodiscard]] base::CallbackListSubscription AddActuationStateChangedCallback(
-      ActuationStateCallback callback);
 
   // Adds an observer that will be called on `ActorControlState` changes.
   void AddObserver(ActorTabHelperObserver* observer);
@@ -137,10 +116,6 @@ class ActorTabHelper : public web::WebStateObserver,
 
   // The list of callbacks registered to receive `ActorControlState` changes.
   ControlStateCallbackList control_state_callbacks_;
-
-  // The list of callbacks registered to receive actuation state changes.
-  // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
-  ActuationStateCallbackList actuation_state_callbacks_;
 
   base::WeakPtrFactory<ActorTabHelper> weak_ptr_factory_{this};
 };
