@@ -1185,9 +1185,7 @@ public class AdaptiveUiDialogCoordinatorTest {
         PropertyModel dialogModel =
                 createCoordinator(model, AdaptiveUiScope.WINDOW).getDialogModel();
 
-        dialogModel
-                .get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER)
-                .handleOnBackPressed();
+        dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER).handleOnBackPressed();
 
         assertEquals(List.of(DismissReason.BACK_PRESS), mDialogDismissals);
     }
@@ -1201,9 +1199,7 @@ public class AdaptiveUiDialogCoordinatorTest {
         PropertyModel dialogModel =
                 createCoordinator(model, AdaptiveUiScope.WINDOW).getDialogModel();
 
-        dialogModel
-                .get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER)
-                .handleOnBackPressed();
+        dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER).handleOnBackPressed();
 
         assertEquals(1, handled[0]);
         assertTrue(mDialogDismissals.isEmpty());
@@ -1219,9 +1215,7 @@ public class AdaptiveUiDialogCoordinatorTest {
                 createCoordinator(model, AdaptiveUiScope.WINDOW).getDialogModel();
 
         model.set(AdaptiveUiProperties.BACK_PRESS_HANDLER, null);
-        dialogModel
-                .get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER)
-                .handleOnBackPressed();
+        dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER).handleOnBackPressed();
 
         assertEquals(0, handled[0]);
         assertEquals(List.of(DismissReason.BACK_PRESS), mDialogDismissals);
@@ -1241,9 +1235,7 @@ public class AdaptiveUiDialogCoordinatorTest {
                 createCoordinator(model, AdaptiveUiScope.WINDOW).getDialogModel();
 
         model.set(AdaptiveUiProperties.BACK_PRESS_HANDLER, newBackPressHandler(handledB));
-        dialogModel
-                .get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER)
-                .handleOnBackPressed();
+        dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER).handleOnBackPressed();
 
         assertEquals(0, handledA[0]);
         assertEquals(1, handledB[0]);
@@ -1262,29 +1254,47 @@ public class AdaptiveUiDialogCoordinatorTest {
         PropertyModel dialogModel = coordinator.getDialogModel();
 
         coordinator.onClick(dialogModel, ButtonType.POSITIVE);
-        dialogModel
-                .get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER)
-                .handleOnBackPressed();
+        dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER).handleOnBackPressed();
 
         assertEquals(0, handled[0]);
         assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDialogDismissals);
     }
 
     @Test
-    public void testBackPress_TransientScope_DoesNotSetAppModalProperty() {
-        PropertyModel model =
-                newModelBuilder()
-                        .with(
-                                AdaptiveUiProperties.BACK_PRESS_HANDLER,
-                                newBackPressHandler(new int[1]))
-                        .build();
+    public void testBackPress_TransientScope_UnsetHandlerRequestsDismiss() {
+        PropertyModel model = newModelBuilder().build();
         PropertyModel dialogModel =
                 createCoordinator(model, AdaptiveUiScope.TRANSIENT).getDialogModel();
 
-        assertFalse(
-                dialogModel
-                        .getAllSetProperties()
-                        .contains(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
+        OnBackPressedCallback dialogHandler =
+                dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER);
+        assertTrue(dialogHandler.isEnabled());
+        dialogHandler.handleOnBackPressed();
+
+        assertEquals(List.of(DismissReason.BACK_PRESS), mDialogDismissals);
+        verify(mModalDialogManager).dismissDialog(dialogModel, DialogDismissalCause.NAVIGATE_BACK);
+    }
+
+    @Test
+    public void testBackPress_TransientScope_EnabledHandlerConsumesBackPress() {
+        int[] handled = new int[1];
+        OnBackPressedCallback handler = newBackPressHandler(handled);
+        PropertyModel model =
+                newModelBuilder().with(AdaptiveUiProperties.BACK_PRESS_HANDLER, handler).build();
+        PropertyModel dialogModel =
+                createCoordinator(model, AdaptiveUiScope.TRANSIENT).getDialogModel();
+
+        dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER).handleOnBackPressed();
+
+        assertEquals(1, handled[0]);
+        assertTrue(mDialogDismissals.isEmpty());
+
+        // Disabling the feature's handler falls back to dismissing the dialog.
+        handler.setEnabled(false);
+        dialogModel.get(ModalDialogProperties.BACK_PRESS_HANDLER).handleOnBackPressed();
+
+        assertEquals(1, handled[0]);
+        assertEquals(List.of(DismissReason.BACK_PRESS), mDialogDismissals);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -1332,7 +1342,7 @@ public class AdaptiveUiDialogCoordinatorTest {
 
         coordinator
                 .getDialogModel()
-                .get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER)
+                .get(ModalDialogProperties.BACK_PRESS_HANDLER)
                 .handleOnBackPressed();
         assertEquals(List.of(DismissReason.BACK_PRESS), mDialogDismissals);
 

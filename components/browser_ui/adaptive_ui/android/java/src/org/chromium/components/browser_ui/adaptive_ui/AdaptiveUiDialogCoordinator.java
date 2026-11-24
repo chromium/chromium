@@ -74,8 +74,8 @@ final class AdaptiveUiDialogCoordinator
      * @param context The {@link Context} used to inflate the dialog body layout that wraps a custom
      *     view.
      * @param model The feature's model, built with {@link AdaptiveUiProperties#ALL_KEYS}.
-     * @param scope The {@link AdaptiveUiScope} of the entry. The model's back press handler is only
-     *     forwarded to the dialog for {@link AdaptiveUiScope#WINDOW}.
+     * @param scope The {@link AdaptiveUiScope} of the entry, which decides whether the dialog is
+     *     app-modal or tab-modal.
      * @param modalDialogManager The window's {@link ModalDialogManager} that shows the dialog.
      * @param onShown Runs once, right after the {@link ModalDialogManager} shows the dialog. Not
      *     run again if the dialog is suspended and later shown again.
@@ -96,7 +96,7 @@ final class AdaptiveUiDialogCoordinator
         mOnShown = onShown;
         mOnDismissed = onDismissed;
         mScope = scope;
-        mDialogModel = createDialogModel(context, model, scope);
+        mDialogModel = createDialogModel(context, model);
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         model, mDialogModel, AdaptiveUiDialogViewBinder::bind);
@@ -252,8 +252,7 @@ final class AdaptiveUiDialogCoordinator
                 && canDrawSecondaryButton(model);
     }
 
-    private PropertyModel createDialogModel(
-            Context context, PropertyModel model, @AdaptiveUiScope int scope) {
+    private PropertyModel createDialogModel(Context context, PropertyModel model) {
         assert !TextUtils.isEmpty(model.get(AdaptiveUiProperties.TITLE))
                         || !TextUtils.isEmpty(
                                 model.get(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION))
@@ -293,16 +292,16 @@ final class AdaptiveUiDialogCoordinator
             builder.with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true);
         }
 
-        if (scope == AdaptiveUiScope.WINDOW) {
-            builder.with(
-                    ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-                    new OnBackPressedCallback(/* enabled= */ true) {
-                        @Override
-                        public void handleOnBackPressed() {
-                            onBackPressed();
-                        }
-                    });
-        }
+        // Always enabled, so every back press on the dialog, app-modal or tab-modal, reaches
+        // onBackPressed(), which reads the model's back press handler at that time.
+        builder.with(
+                ModalDialogProperties.BACK_PRESS_HANDLER,
+                new OnBackPressedCallback(/* enabled= */ true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        onBackPressed();
+                    }
+                });
 
         configureBody(
                 context,

@@ -220,7 +220,8 @@ public class AdaptiveUiProperties {
 
     /**
      * Optional custom back-press handler. When unset or disabled, a back press closes the entry
-     * with {@link DismissReason#BACK_PRESS}.
+     * with {@link DismissReason#BACK_PRESS}. On modal dialogs (tab-modal and app-modal), the Escape
+     * key still dismisses the dialog without running this handler.
      */
     public static final WritableObjectPropertyKey<@Nullable OnBackPressedCallback>
             BACK_PRESS_HANDLER = new WritableObjectPropertyKey<>();
