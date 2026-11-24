@@ -80,10 +80,6 @@ class MEDIA_EXPORT DemuxerManager {
 
     virtual double CurrentTime() const = 0;
 
-    // Allows us to set a loaded url on the client, which might happen when we
-    // handle a redirect as part of a restart for switching to HLS.
-    virtual void UpdateLoadedUrl(const GURL& url) = 0;
-
     // Allows a seek triggered by a demuxer (mainly used for live content)
     virtual void DemuxerRequestsSeek(base::TimeDelta seek_time) = 0;
   };
@@ -231,6 +227,7 @@ class MEDIA_EXPORT DemuxerManager {
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   bool hls_fallback_ = false;
+  bool hls_fallback_tainted_ = false;
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)

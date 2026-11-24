@@ -56,7 +56,6 @@ class MockDemuxerManagerClient : public DemuxerManager::Client {
   MOCK_METHOD(bool, CouldPlayIfEnoughData, (), (override));
   MOCK_METHOD(void, MakeDemuxerThreadDumper, (Demuxer*), (override));
   MOCK_METHOD(double, CurrentTime, (), (const, override));
-  MOCK_METHOD(void, UpdateLoadedUrl, (const GURL&), (override));
   MOCK_METHOD(void, DemuxerRequestsSeek, (base::TimeDelta), (override));
 };
 

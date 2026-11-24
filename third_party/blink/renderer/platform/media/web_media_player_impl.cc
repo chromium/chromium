@@ -2017,10 +2017,6 @@ void WebMediaPlayerImpl::StopForDemuxerReset() {
                                  std::move(media_thread_mem_dumper_));
 }
 
-void WebMediaPlayerImpl::UpdateLoadedUrl(const GURL& url) {
-  demuxer_manager_->SetLoadedUrl(url);
-}
-
 void WebMediaPlayerImpl::DemuxerRequestsSeek(base::TimeDelta seek_time) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DoSeek(seek_time, true);

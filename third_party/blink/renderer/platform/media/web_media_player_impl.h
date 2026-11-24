@@ -454,7 +454,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool CouldPlayIfEnoughData() override;
   void StopForDemuxerReset() override;
   void RestartForDemuxerChange(bool is_hls) override;
-  void UpdateLoadedUrl(const GURL& url) override;
   void DemuxerRequestsSeek(base::TimeDelta seek_time) override;
   void AddTrack(const media::MediaTrack&) override;
   void RemoveTrack(const media::MediaTrack&) override;

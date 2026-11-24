@@ -482,6 +482,7 @@ source_set("unit_tests") {
 
   if (enable_hls_demuxer) {
     sources += [
+      "demuxer_manager_unittest.cc",
       "hls_data_source_provider_impl_unittest.cc",
       "hls_data_source_provider_unittest.cc",
       "hls_manifest_demuxer_engine_unittest.cc",

@@ -139,13 +139,12 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
     // If we've gotten a request to start HLS fallback and logging, we can
     // assert that data source has been set.
     CHECK(data_source_);
+    hls_fallback_tainted_ = data_source_->WouldTaintOrigin();
 
-    // TODO(crbug.com/410588476): Ensure that updating the URL like this will
-    // continue to respect CORS attributes for security reasons. Right now all
-    // HLS content is considered CORS, but that will change.
-    loaded_url_ = GetDataSourceUrlAfterRedirects().value();
-    client_->UpdateLoadedUrl(loaded_url_);
-
+    // Keep `loaded_url_` at the pre-redirect URL rather than promoting
+    // `GetDataSourceUrlAfterRedirects()`, so the HLS manifest fetch follows
+    // any redirects opaquely inside the network stack instead of exposing a
+    // cross-origin redirect target as a fresh subresource request.
     // The data source must be stopped after the client, after which the
     // old demuxer and data source can be freed.
     client_->StopForDemuxerReset();
@@ -402,6 +401,11 @@ void DemuxerManager::DurationChanged() {
 }
 
 bool DemuxerManager::WouldTaintOrigin() const {
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  if (hls_fallback_tainted_) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
   return data_source_info_ && data_source_info_->WouldTaintOrigin();
 }
 
@@ -524,7 +528,8 @@ void DemuxerManager::OnMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks) {
 std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
 DemuxerManager::CreateHlsDemuxer() {
   bool would_taint_origin =
-      data_source_info_ && data_source_info_->WouldTaintOrigin();
+      hls_fallback_tainted_ ||
+      (data_source_info_ && data_source_info_->WouldTaintOrigin());
   std::unique_ptr<TrackManager> m = std::make_unique<ForwardingTrackManager>(
       BindPostTaskToCurrentDefault(base::BindRepeating(
           &DemuxerManager::AddTrack, weak_factory_.GetWeakPtr())),
