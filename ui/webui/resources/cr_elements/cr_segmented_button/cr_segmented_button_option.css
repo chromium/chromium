@@ -4,12 +4,12 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=../cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
 #button {
-  border-radius: var(--segmented-button-height);
+  border-radius: var(--cr-segmented-button-height);
   box-sizing: border-box;
   color: var(--color-segmented-button-foreground-unchecked,
       var(--cr-fallback-color-on-surface-subtle));
@@ -35,7 +35,7 @@
 }
 
 #button #overlay {
-  border-radius: var(--segmented-button-height);
+  border-radius: var(--cr-segmented-button-height);
   box-sizing: border-box;
   height: 100%;
   left: 0;

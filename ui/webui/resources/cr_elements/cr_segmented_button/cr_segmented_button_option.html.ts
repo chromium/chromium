@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SegmentedButtonOptionElement} from './segmented_button_option.js';
+import type {CrSegmentedButtonOptionElement} from './cr_segmented_button_option.js';
 
-export function getHtml(this: SegmentedButtonOptionElement) {
+export function getHtml(this: CrSegmentedButtonOptionElement) {
   return html`
 <div role="radio" aria-checked="${this.getAriaChecked()}"
     aria-disabled="${this.getAriaDisabled()}" id="button"

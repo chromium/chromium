@@ -35,16 +35,8 @@ build_webui("build") {
   ts_files = [
     "customize_color_scheme_mode.html.ts",
     "customize_color_scheme_mode.ts",
-    "segmented_button.html.ts",
-    "segmented_button.ts",
-    "segmented_button_option.html.ts",
-    "segmented_button_option.ts",
   ]
-  css_files = [
-    "customize_color_scheme_mode.css",
-    "segmented_button.css",
-    "segmented_button_option.css",
-  ]
+  css_files = [ "customize_color_scheme_mode.css" ]
 
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [ "$target_gen_dir/customize_color_scheme_mode.mojom-webui.ts" ]

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import '../cr_radio_group/cr_radio_group.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './segmented_button.css.js';
-import {getHtml} from './segmented_button.html.js';
+import {getCss} from './cr_segmented_button.css.js';
+import {getHtml} from './cr_segmented_button.html.js';
 
-export class SegmentedButtonElement extends CrLitElement {
+export class CrSegmentedButtonElement extends CrLitElement {
   static get is() {
-    return 'segmented-button';
+    return 'cr-segmented-button';
   }
 
   static override get styles() {
@@ -34,7 +34,7 @@ export class SegmentedButtonElement extends CrLitElement {
   }
 
   accessor selected: string|undefined;
-  accessor selectableElements: string = 'segmented-button-option';
+  accessor selectableElements: string = 'cr-segmented-button-option';
   accessor groupAriaLabel: string = '';
 
   protected onSelectedChanged_(e: CustomEvent<{value: string}>) {
@@ -44,8 +44,8 @@ export class SegmentedButtonElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'segmented-button': SegmentedButtonElement;
+    'cr-segmented-button': CrSegmentedButtonElement;
   }
 }
 
-customElements.define(SegmentedButtonElement.is, SegmentedButtonElement);
+customElements.define(CrSegmentedButtonElement.is, CrSegmentedButtonElement);

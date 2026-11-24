@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './segmented_button.js';
-import './segmented_button_option.js';
+import '//resources/cr_elements/cr_segmented_button/cr_segmented_button.js';
+import '//resources/cr_elements/cr_segmented_button/cr_segmented_button_option.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';

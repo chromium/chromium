@@ -4,13 +4,13 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SegmentedButtonElement} from './segmented_button.js';
+import type {CrSegmentedButtonElement} from './cr_segmented_button.js';
 
-export function getHtml(this: SegmentedButtonElement) {
+export function getHtml(this: CrSegmentedButtonElement) {
   return html`
 <cr-radio-group .selected="${this.selected}"
     @selected-changed="${this.onSelectedChanged_}"
-    selectable-elements="segmented-button-option"
+    selectable-elements="cr-segmented-button-option"
     aria-label="${this.groupAriaLabel}">
   <slot></slot>
 </cr-radio-group>`;
