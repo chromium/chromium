@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -55,6 +56,7 @@ FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
                         field.autofill_source_profile_guid(),
                         field.autofilled_type(),
                         field.filling_product(),
+                        field.filled_entity_record_type(),
                         /*ignore_is_autofilled=*/false) {}
 
 FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
@@ -64,6 +66,7 @@ FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
     std::optional<std::string> field_autofill_source_profile_guid,
     std::optional<FieldType> field_autofilled_type,
     FillingProduct field_filling_product,
+    std::optional<EntityInstance::RecordType> field_filled_entity_record_type,
     bool ignore_is_autofilled)
     : value(std::move(field_value)),
       is_autofilled_according_to_renderer(
@@ -73,6 +76,7 @@ FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
           std::move(field_autofill_source_profile_guid)),
       autofilled_type(std::move(field_autofilled_type)),
       filling_product(field_filling_product),
+      filled_entity_record_type(field_filled_entity_record_type),
       ignore_is_autofilled(ignore_is_autofilled) {}
 
 FormAutofillHistory::FieldFillingEntry::~FieldFillingEntry() = default;

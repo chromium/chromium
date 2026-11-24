@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
@@ -553,23 +554,68 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
            {.server_type = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
            {.server_type = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}});
 
-  base::flat_set<FieldGlobalId> safe_filled_fields{
-      form.fields()[0].global_id(), form.fields()[1].global_id(),
-      form.fields()[2].global_id()};
-  EXPECT_CALL(autofill_driver(), ApplyFormAction)
-      .Times(2)
-      .WillRepeatedly(Return(safe_filled_fields));
+  const FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  auto field_record_types = [&] {
+    return base::ToVector(form_structure->fields(),
+                          &AutofillField::filled_entity_record_type);
+  };
+  ASSERT_THAT(field_record_types(), Each(std::nullopt));
 
-  EntityInstance passport = test::GetPassportEntityInstance();
-  autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form.global_id(),
-      form.fields().front().global_id(), FillingProduct::kAutofillAi, &passport,
-      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-      /*blocked_fields=*/{});
-  test_api(autofill_manager()).RunPendingPostFillTasks();
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
-                                  form.global_id(),
-                                  form.fields().front().global_id());
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  form = AutofillForm(form, form.fields().front(), &passport);
+
+  EXPECT_THAT(field_record_types(),
+              ElementsAre(EntityInstance::RecordType::kServerWallet,
+                          EntityInstance::RecordType::kServerWallet,
+                          EntityInstance::RecordType::kServerWallet,
+                          std::nullopt, std::nullopt));
+
+  form = UndoAutofill(form, form.fields().front());
+  EXPECT_THAT(field_record_types(), Each(std::nullopt));
+}
+
+TEST_F(FormFillerTest,
+       FilledEntityRecordTypeUpdatedOnOverwriteAndRestoredOnUndo) {
+  FormData form = FormSeen(
+      {.fields = {{.server_type = PASSPORT_NUMBER},
+                  {.server_type = NO_SERVER_DATA, .heuristic_type = NAME_FULL},
+                  {.server_type = PASSPORT_ISSUING_COUNTRY,
+                   .heuristic_type = ADDRESS_HOME_COUNTRY}}});
+
+  const FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  EntityInstance local_passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  form = AutofillForm(form, form.fields().front(), &local_passport);
+  ASSERT_EQ(form_structure->field(0)->filled_entity_record_type(),
+            EntityInstance::RecordType::kLocal);
+
+  // Overwriting the trigger field with an entity of a different record type
+  // updates `filled_entity_record_type()`, and Undo restores the prior one.
+  EntityInstance personal_context_passport = test::GetPassportEntityInstance(
+      {.number = u"999999",
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  form = AutofillForm(form, form.fields().front(), &personal_context_passport);
+  EXPECT_EQ(form_structure->field(0)->filled_entity_record_type(),
+            EntityInstance::RecordType::kPersonalContext);
+
+  form = UndoAutofill(form, form.fields().front());
+  EXPECT_EQ(form_structure->field(0)->filled_entity_record_type(),
+            EntityInstance::RecordType::kLocal);
+
+  // Overwriting the field with a non-Autofill-AI single-field fill clears
+  // `filled_entity_record_type()`, and Undo restores it.
+  form = FillField(form, form.fields().front(), FillingProduct::kAddress,
+                   u"Some Address");
+  EXPECT_EQ(form_structure->field(0)->filled_entity_record_type(),
+            std::nullopt);
+
+  form = UndoAutofill(form, form.fields().front());
+  EXPECT_EQ(form_structure->field(0)->filled_entity_record_type(),
+            EntityInstance::RecordType::kLocal);
 }
 
 TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {

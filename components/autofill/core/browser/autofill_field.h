@@ -24,6 +24,7 @@
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -472,6 +473,14 @@ class AutofillField : public FormFieldData {
   }
   FillingProduct filling_product() const { return filling_product_; }
 
+  void set_filled_entity_record_type(
+      std::optional<EntityInstance::RecordType> filled_entity_record_type) {
+    filled_entity_record_type_ = filled_entity_record_type;
+  }
+  std::optional<EntityInstance::RecordType> filled_entity_record_type() const {
+    return filled_entity_record_type_;
+  }
+
   bool WasAutofilledWithFallback() const;
 
   void set_did_trigger_suggestions(bool did_trigger_suggestions) {
@@ -664,6 +673,10 @@ class AutofillField : public FormFieldData {
   // tied to the field type, as some filling mechanisms are independent of the
   // field type (e.g. Autocomplete).
   FillingProduct filling_product_ = FillingProduct::kNone;
+
+  // The record type of the Autofill AI entity last used to fill the field, if
+  // the last autofill operation was performed by Autofill AI.
+  std::optional<EntityInstance::RecordType> filled_entity_record_type_;
 
   // Denotes whether a user triggered suggestions from this field.
   bool did_trigger_suggestions_ = false;

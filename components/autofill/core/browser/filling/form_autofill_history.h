@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -52,6 +53,8 @@ class FormAutofillHistory {
         std::optional<std::string> field_autofill_source_profile_guid,
         std::optional<FieldType> field_autofilled_type,
         FillingProduct filling_product,
+        std::optional<EntityInstance::RecordType>
+            field_filled_entity_record_type,
         bool ignore_is_autofilled);
 
     ~FieldFillingEntry();
@@ -89,6 +92,11 @@ class FormAutofillHistory {
     // stores accurate information about the last modifier of the field,
     // especially since a single field can now be filled via different products.
     FillingProduct filling_product = FillingProduct::kNone;
+
+    // Record type of the Autofill AI entity last used to fill the field, if
+    // any. This is stored so that after undoing an autofill operation,
+    // AutofillField does not retain outdated Autofill AI metadata.
+    std::optional<EntityInstance::RecordType> filled_entity_record_type;
 
     // Undo normally acts only on autofilled fields. When true (because the
     // filling operation intentionally emptied the field, e.g. during payments

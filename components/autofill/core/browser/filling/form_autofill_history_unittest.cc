@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -90,6 +91,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_NormalFill) {
           /*field_is_autofilled_according_to_renderer=*/
           false, std::vector<FieldModifier>{FieldModifier::kUser}, kGuid,
           /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+          /*field_filled_entity_record_type=*/std::nullopt,
           /*ignore_is_autofilled=*/false));
 
   form_autofill_history_.Reset();
@@ -120,6 +122,7 @@ TEST_F(FormAutofillHistoryTest,
                 u"", /*field_is_autofilled_according_to_renderer=*/false,
                 /*field_modifiers=*/{}, kGuid,
                 /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+                /*field_filled_entity_record_type=*/std::nullopt,
                 /*ignore_is_autofilled=*/false));
 
   ASSERT_TRUE(form_autofill_history_.HasHistory(swapped_to_empty_field_id));
@@ -130,6 +133,7 @@ TEST_F(FormAutofillHistoryTest,
                 u"2999", /*field_is_autofilled_according_to_renderer=*/true,
                 std::vector<FieldModifier>{FieldModifier::kAutofill}, kGuid,
                 /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+                /*field_filled_entity_record_type=*/std::nullopt,
                 /*ignore_is_autofilled=*/true));
 
   // If a subsequent refill fills a non-empty value into the previously emptied
@@ -143,6 +147,7 @@ TEST_F(FormAutofillHistoryTest,
                 u"2999", /*field_is_autofilled_according_to_renderer=*/true,
                 std::vector<FieldModifier>{FieldModifier::kAutofill}, kGuid,
                 /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+                /*field_filled_entity_record_type=*/std::nullopt,
                 /*ignore_is_autofilled=*/false));
 }
 
@@ -180,6 +185,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_Refill) {
           /*field_is_autofilled_according_to_renderer=*/false,
           std::vector<FieldModifier>{FieldModifier::kAutofill}, kGuid,
           /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+          /*field_filled_entity_record_type=*/std::nullopt,
           /*ignore_is_autofilled=*/false));
 
   ASSERT_TRUE(form_autofill_history_.HasHistory(last_name_id));
@@ -191,6 +197,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_Refill) {
           /*field_is_autofilled_according_to_renderer=*/
           true, std::vector<FieldModifier>{FieldModifier::kAutofill}, kGuid,
           /*field_autofilled_type=*/std::nullopt, FillingProduct::kNone,
+          /*field_filled_entity_record_type=*/std::nullopt,
           /*ignore_is_autofilled=*/false));
 }
 
@@ -303,7 +310,9 @@ TEST_F(FormAutofillHistoryTest, FieldFillingEntry_FromAutofillField) {
   AutofillField autofill_field(field_data);
   autofill_field.set_autofill_source_profile_guid(kGuid);
   autofill_field.set_autofilled_type(NAME_FIRST);
-  autofill_field.set_filling_product(FillingProduct::kAddress);
+  autofill_field.set_filling_product(FillingProduct::kAutofillAi);
+  autofill_field.set_filled_entity_record_type(
+      EntityInstance::RecordType::kServerWallet);
   test_api(autofill_field)
       .set_field_modifiers({FieldModifier::kUser, FieldModifier::kAutofill});
 
@@ -312,7 +321,8 @@ TEST_F(FormAutofillHistoryTest, FieldFillingEntry_FromAutofillField) {
             FormAutofillHistory::FieldFillingEntry(
                 u"Jane", /*field_is_autofilled_according_to_renderer=*/true,
                 {FieldModifier::kUser, FieldModifier::kAutofill}, kGuid,
-                NAME_FIRST, FillingProduct::kAddress,
+                NAME_FIRST, FillingProduct::kAutofillAi,
+                EntityInstance::RecordType::kServerWallet,
                 /*ignore_is_autofilled=*/false));
 }
 

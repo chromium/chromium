@@ -1834,7 +1834,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType"
+<histogram
+    name="Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType{RecordType}"
     enum="AutofilledFieldUserEditingStatusByFieldType"
     expires_after="2027-12-12">
   <owner>jihadghanna@google.com</owner>
@@ -1843,7 +1844,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     On submission time, this metric emits for every field that was autofilled
     with Autofill AI, if the filling was accepted or subsequently corrected, and
     also split the buckets by the Autofill AI type of the field.
+
+    {RecordType}
   </summary>
+  <token key="RecordType" variants="Autofill.Ai.EntityRecordType">
+    <variant name="" summary="Emitted for all entity record types."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.Ai.EntityAddedFromSettings{EntityType}{RecordType}"

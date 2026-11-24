@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -46,6 +47,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -644,9 +646,18 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
         "Autofill.Ai.EditedAutofilledFieldAtSubmission", editing_metric);
     if (std::optional<FieldType> field_type = field.autofilled_type()) {
       // Record the type specific UMA statistics.
+      const int bucket =
+          GetFieldTypeUserEditStatusMetric(*field_type, editing_metric);
       base::UmaHistogramSparse(
-          "Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType",
-          GetFieldTypeUserEditStatusMetric(*field_type, editing_metric));
+          "Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType", bucket);
+      if (std::optional<EntityInstance::RecordType> record_type =
+              field.filled_entity_record_type()) {
+        base::UmaHistogramSparse(
+            base::StrCat(
+                {"Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType.",
+                 EntityRecordTypeToMetricsString(*record_type)}),
+            bucket);
+      }
     }
   }
 

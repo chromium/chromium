@@ -853,6 +853,8 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
           previous_state.autofill_source_profile_guid);
       autofill_field.set_autofilled_type(previous_state.autofilled_type);
       autofill_field.set_filling_product(previous_state.filling_product);
+      autofill_field.set_filled_entity_record_type(
+          previous_state.filled_entity_record_type);
     }
   }
 
@@ -904,6 +906,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
     field->AddFieldModifier(FieldModifier::kAutofill);
     field->set_autofilled_type(field_type_used);
     field->set_filling_product(filling_product);
+    field->set_filled_entity_record_type(std::nullopt);
     field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
         .had_value_before_filling = ToOptionalBoolean(!field->value().empty()),
@@ -1635,6 +1638,11 @@ void FormFiller::UpdateCacheOnFill(
         std::get<const CreditCard*>(filling_payload)->is_bnpl_card()) {
       field->set_was_filled_with_bnpl(true);
     }
+    field->set_filled_entity_record_type(
+        filling_product == FillingProduct::kAutofillAi
+            ? std::optional(std::get<const EntityInstance*>(filling_payload)
+                                ->record_type())
+            : std::nullopt);
   }
 }
 

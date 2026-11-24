@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -384,6 +385,102 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
   histogram_tester.ExpectTotalCount(
       "Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission2.Address",
       0);
+}
+
+// Tests the logging of Autofill AI type-specific field-wise correctness, both
+// aggregated and split by entity record type.
+TEST_F(AutofillMetricsTest,
+       EditedAutofilledFieldAtSubmission_AutofillAi_ByRecordType) {
+  test::FormDescription form_description = {
+      .description_for_logging = "AutofillAiEditedFields",
+      .fields = {{.server_type = PASSPORT_NUMBER,
+                  .value = u"123456789",
+                  .is_autofilled_according_to_renderer = true},
+                 {.server_type = PASSPORT_ISSUING_COUNTRY,
+                  .value = u"Germany",
+                  .is_autofilled_according_to_renderer = true},
+                 {.server_type = DRIVERS_LICENSE_NUMBER,
+                  .value = u"DL12345",
+                  .is_autofilled_according_to_renderer = true},
+                 {.server_type = VEHICLE_VIN,
+                  .value = u"1HGCM82633A004352",
+                  .is_autofilled_according_to_renderer = true},
+                 {.server_type = FLIGHT_RESERVATION_CONFIRMATION_CODE,
+                  .value = u"ABC123",
+                  .is_autofilled_according_to_renderer = true}},
+      .renderer_id = test::MakeFormRendererId(),
+      .main_frame_origin = url::Origin::Create(autofill_driver().url())};
+
+  FormData form = GetAndAddSeenForm(form_description);
+  FormStructure& form_structure =
+      *test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  const std::array<FieldType, 5> autofilled_types = {
+      PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY, DRIVERS_LICENSE_NUMBER,
+      VEHICLE_VIN, FLIGHT_RESERVATION_CONFIRMATION_CODE};
+  for (size_t i = 0; i < autofilled_types.size(); ++i) {
+    form_structure.field(i)->AddFieldModifier(FieldModifier::kAutofill);
+    form_structure.field(i)->set_filling_product(FillingProduct::kAutofillAi);
+    form_structure.field(i)->set_autofilled_type(autofilled_types[i]);
+  }
+  form_structure.field(0)->set_filled_entity_record_type(
+      EntityInstance::RecordType::kLocal);
+  form_structure.field(1)->set_filled_entity_record_type(
+      EntityInstance::RecordType::kLocal);
+  form_structure.field(2)->set_filled_entity_record_type(
+      EntityInstance::RecordType::kServerWallet);
+  form_structure.field(3)->set_filled_entity_record_type(
+      EntityInstance::RecordType::kPersonalContext);
+  // Leave field 4 without a record type to verify only the aggregate metric is
+  // emitted for it.
+
+  // Simulate user editing the local passport number and server wallet driver's
+  // license number.
+  SimulateUserChangedField(form, form.fields()[0]);
+  SimulateUserChangedField(form, form.fields()[2]);
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+
+  using enum AutofillMetrics::AutofilledFieldUserEditingStatusMetric;
+  const int passport_number_edited = GetFieldTypeUserEditStatusMetric(
+      PASSPORT_NUMBER, AUTOFILLED_FIELD_WAS_EDITED);
+  const int passport_country_accepted = GetFieldTypeUserEditStatusMetric(
+      PASSPORT_ISSUING_COUNTRY, AUTOFILLED_FIELD_WAS_NOT_EDITED);
+  const int drivers_license_edited = GetFieldTypeUserEditStatusMetric(
+      DRIVERS_LICENSE_NUMBER, AUTOFILLED_FIELD_WAS_EDITED);
+  const int vehicle_vin_accepted = GetFieldTypeUserEditStatusMetric(
+      VEHICLE_VIN, AUTOFILLED_FIELD_WAS_NOT_EDITED);
+  const int flight_code_accepted = GetFieldTypeUserEditStatusMetric(
+      FLIGHT_RESERVATION_CONFIRMATION_CODE, AUTOFILLED_FIELD_WAS_NOT_EDITED);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.EditedAutofilledFieldAtSubmission"),
+              BucketsAre(Bucket(AUTOFILLED_FIELD_WAS_EDITED, 2),
+                         Bucket(AUTOFILLED_FIELD_WAS_NOT_EDITED, 3)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType"),
+              BucketsAre(Bucket(passport_number_edited, 1),
+                         Bucket(passport_country_accepted, 1),
+                         Bucket(drivers_license_edited, 1),
+                         Bucket(vehicle_vin_accepted, 1),
+                         Bucket(flight_code_accepted, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType.Local"),
+      BucketsAre(Bucket(passport_number_edited, 1),
+                 Bucket(passport_country_accepted, 1)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType."
+                  "ServerWallet"),
+              BucketsAre(Bucket(drivers_license_edited, 1)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType."
+                  "PersonalContext"),
+              BucketsAre(Bucket(vehicle_vin_accepted, 1)));
 }
 
 TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
