@@ -78,6 +78,9 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   const blink::WebNNContextToken& handle() const { return webnn_handle_; }
 
+  // Returns true if the context can no longer be used.
+  bool is_lost() const { return !context_remote_.is_bound(); }
+
   // IDL interface:
   ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
 
@@ -146,6 +149,11 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
+
+  // Throws an `InvalidStateError` and returns false if the script state is
+  // invalid or the context is lost.
+  bool ValidateContextState(ScriptState* script_state,
+                            ExceptionState& exception_state) const;
 
   // Close the `context_remote_` and `compiler_context_remote_` pipes
   // because the entire context has been lost.

@@ -24,7 +24,6 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
-#include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
@@ -404,13 +403,12 @@ ScriptPromise<MLContextLostInfo> MLContext::lost(ScriptState* script_state) {
 void MLContext::destroy(ScriptState* script_state,
                         ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "destroy() called on an invalid context.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state.");
     return;
   }
 
-  if (context_remote_.is_bound()) {
+  if (!is_lost()) {
     OnLost(0, "destroy() called on MLContext.");
 
     for (const auto& graph : graphs_) {
@@ -430,9 +428,7 @@ void MLContext::destroy(ScriptState* script_state,
 MLGraphBuilder* MLContext::CreateWebNNGraphBuilder(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
+  if (!ValidateContextState(script_state, exception_state)) {
     return nullptr;
   }
 
@@ -466,6 +462,23 @@ MLGraphBuilder* MLContext::CreateWebNNGraphBuilder(
   graph_builders_.insert(graph_builder);
 
   return graph_builder;
+}
+
+bool MLContext::ValidateContextState(ScriptState* script_state,
+                                     ExceptionState& exception_state) const {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state.");
+    return false;
+  }
+
+  if (is_lost()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is lost.");
+    return false;
+  }
+
+  return true;
 }
 
 void MLContext::OnCompilerContextDisconnected() {
@@ -1314,7 +1327,7 @@ void MLContext::DestroyGraph(const blink::WebNNGraphToken& graph_token) {
     in_renderer_context_handle_->DestroyGraph(graph_token);
     return;
   }
-  if (context_remote_.is_bound()) {
+  if (!is_lost()) {
     context_remote_->DestroyGraph(graph_token);
   }
 }
@@ -1324,22 +1337,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     const MLTensorDescriptor* descriptor,
     ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::createTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return EmptyPromise();
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Not implemented");
-    return EmptyPromise();
-  }
-
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
+  if (!ValidateContextState(script_state, exception_state)) {
     return EmptyPromise();
   }
 
@@ -1405,22 +1403,7 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
     GPUDevice* device,
     ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::createExportableTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return EmptyPromise();
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Not implemented");
-    return EmptyPromise();
-  }
-
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
+  if (!ValidateContextState(script_state, exception_state)) {
     return EmptyPromise();
   }
 
@@ -1583,9 +1566,7 @@ void MLContext::writeTensor(ScriptState* script_state,
                             const V8AllowSharedBufferSource* src_data,
                             ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::writeTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
+  if (!ValidateContextState(script_state, exception_state)) {
     return;
   }
 
@@ -1620,9 +1601,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
     MLTensor* src_tensor,
     ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::readTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
+  if (!ValidateContextState(script_state, exception_state)) {
     return EmptyPromise();
   }
 
@@ -1648,9 +1627,7 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     V8AllowSharedBufferSource* dst_data,
     ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::readTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
+  if (!ValidateContextState(script_state, exception_state)) {
     return EmptyPromise();
   }
 
@@ -1679,15 +1656,7 @@ void MLContext::dispatch(ScriptState* script_state,
                          const MLNamedTensors& outputs,
                          ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::dispatch");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return;
-  }
-
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
+  if (!ValidateContextState(script_state, exception_state)) {
     return;
   }
 
@@ -1805,14 +1774,7 @@ GPUBuffer* MLContext::exportToGPU(ScriptState* script_state,
                                   MLTensor* tensor,
                                   ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::exportToGPU");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return nullptr;
-  }
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
+  if (!ValidateContextState(script_state, exception_state)) {
     return nullptr;
   }
   if (tensor->context() != this) {

@@ -459,6 +459,9 @@ void RecordOperatorsUsed(const blink_mojom::GraphInfo& graph_info) {
 
 constexpr char kGraphAlreadyBuiltError[] =
     "This MLGraphBuilder has already built a graph.";
+constexpr char kContextLostError[] = "Context is lost.";
+constexpr char kInvalidGraphBuilderError[] =
+    "This MLGraphBuilder is no longer usable.";
 
 webnn::InputOperandLayout BlinkInputOperandLayoutToComponent(
     blink::V8MLInputOperandLayout::Enum type) {
@@ -1610,12 +1613,6 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
 MLGraphBuilder* MLGraphBuilder::Create(ScriptState* script_state,
                                        MLContext* context,
                                        ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return nullptr;
-  }
-
   return context->CreateWebNNGraphBuilder(script_state, exception_state);
 }
 
@@ -3507,7 +3504,8 @@ void MLGraphBuilder::OnConnectionError() {
 
   if (pending_resolver_) {
     pending_resolver_->RejectWithDOMException(
-        DOMExceptionCode::kInvalidStateError, "Context is lost.");
+        DOMExceptionCode::kInvalidStateError,
+        ml_context_->is_lost() ? kContextLostError : kInvalidGraphBuilderError);
     pending_resolver_.Clear();
   }
 }
@@ -3516,8 +3514,11 @@ base::expected<void, String> MLGraphBuilder::ValidateGraphBuilderState() const {
   if (has_built_) {
     return base::unexpected(kGraphAlreadyBuiltError);
   }
+  if (ml_context_->is_lost()) {
+    return base::unexpected(kContextLostError);
+  }
   if (!remote_.is_bound()) {
-    return base::unexpected("Context is lost.");
+    return base::unexpected(kInvalidGraphBuilderError);
   }
   return base::ok();
 }
