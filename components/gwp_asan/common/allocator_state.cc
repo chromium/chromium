@@ -5,8 +5,8 @@
 #include "components/gwp_asan/common/allocator_state.h"
 
 #include <algorithm>
+#include <bit>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -104,12 +104,13 @@ uintptr_t AllocatorState::GetNearestValidPage(uintptr_t addr) const {
 
   uintptr_t offset = addr - first_page_addr;
   // If addr is already on a valid page, just return addr.
-  if ((offset >> base::bits::Log2Floor(page_size)) % 2 == 0)
+  if ((offset >> (std::bit_width(page_size) - 1)) % 2 == 0) {
     return addr;
+  }
 
   // ptr points to a guard page, so get nearest valid page.
   const size_t kHalfPageSize = page_size / 2;
-  if ((offset >> base::bits::Log2Floor(kHalfPageSize)) % 2 == 0) {
+  if ((offset >> (std::bit_width(kHalfPageSize) - 1)) % 2 == 0) {
     return addr - kHalfPageSize;  // Round down.
   }
   return addr + kHalfPageSize;  // Round up.
@@ -143,14 +144,14 @@ AllocatorState::ErrorType AllocatorState::GetErrorType(uintptr_t addr,
   // thread manages to allocate the page in another thread before it's stopped.
   // This can happen with low sampling frequencies and high parallel allocator
   // usage.
-  if ((offset >> base::bits::Log2Floor(page_size)) % 2 == 0) {
+  if ((offset >> (std::bit_width(page_size) - 1)) % 2 == 0) {
     LOG(WARNING) << "Hit impossible error condition, likely caused by a racy "
                     "use-after-free";
     return ErrorType::kUnknown;
   }
 
   const size_t kHalfPageSize = page_size / 2;
-  return (offset >> base::bits::Log2Floor(kHalfPageSize)) % 2 == 0
+  return (offset >> (std::bit_width(kHalfPageSize) - 1)) % 2 == 0
              ? ErrorType::kBufferOverflow
              : ErrorType::kBufferUnderflow;
 }
@@ -163,8 +164,8 @@ uintptr_t AllocatorState::SlotToAddr(AllocatorState::SlotIdx slot) const {
 AllocatorState::SlotIdx AllocatorState::AddrToSlot(uintptr_t addr) const {
   DCHECK_EQ(addr % page_size, 0ULL);
   uintptr_t offset = addr - first_page_addr;
-  DCHECK_EQ((offset >> base::bits::Log2Floor(page_size)) % 2, 0ULL);
-  size_t slot = (offset >> base::bits::Log2Floor(page_size)) / 2;
+  DCHECK_EQ((offset >> (std::bit_width(page_size) - 1)) % 2, 0ULL);
+  size_t slot = (offset >> (std::bit_width(page_size) - 1)) / 2;
   DCHECK_LE(slot, kMaxReservedSlots);
   return static_cast<SlotIdx>(slot);
 }
