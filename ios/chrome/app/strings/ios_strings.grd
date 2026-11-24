@@ -7508,6 +7508,18 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFETY_CHECK_TITLE_UPDATE_CHROME" desc="Tag label title displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
         Update your Browser
       </message>
+      <message name="IDS_IOS_SAFETY_PROMO_KEEP_PASSWORDS_SAFE" desc="Text on the iOS Safety promo sheet explaining that Chrome keeps the user's passwords safe. [iOS only]">
+        Keep your passwords safe
+      </message>
+      <message name="IDS_IOS_SAFETY_PROMO_PROTECT_UNSAFE_SITES" desc="Text on the iOS Safety promo sheet explaining that Chrome protects the user from unsafe sites. [iOS only]">
+        Protect yourself from unsafe sites
+      </message>
+      <message name="IDS_IOS_SAFETY_PROMO_START_BROWSING_BUTTON" desc="Primary button label on the iOS Safety promo sheet that dismisses the promo to start browsing. [iOS only]">
+        Start browsing
+      </message>
+      <message name="IDS_IOS_SAFETY_PROMO_SYNC_SAFE_BROWSING" desc="Text on the iOS Safety promo sheet explaining that Safe Browsing preferences sync across devices. [iOS only]">
+        Sync safe browsing preferences across devices
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_OFF_INFOBAR_TITLE" desc="The title to display in an infobar when Enhanced protection is disabled by sync.">
         Enhanced protection is off
       </message>

@@ -1066,6 +1066,9 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_RECEIVE_ALERTS" desc="Description of the Safety Check feature, highlighting that it provides alerts on privacy or security issues detected by Chromium.">
         Receive alerts on any privacy or security issues that Chromium automatically detects for you.
       </message>
+      <message name="IDS_IOS_SAFETY_PROMO_TITLE" desc="Title for the iOS cross-platform Safety promo sheet. [iOS only]">
+        Stay safe with Chromium
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
         Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.
       </message>
