@@ -402,6 +402,9 @@ ci.thin_tester(
                     shards = 30,
                 ),
             ),
+            "android_chrome_wpt_tests": targets.mixin(
+                ci_only = True,
+            ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     # TODO(crbug.com/587393092): Re-enable once VerticalTabListCoordinator
@@ -416,6 +419,7 @@ ci.thin_tester(
                 args = [
                     "--annotation=Restriction=Desktop,Restriction=DesktopFreeform,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=DesktopFreeform,ImportantFormFactors=TabletOrDesktop",
                 ],
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 4,
                 ),

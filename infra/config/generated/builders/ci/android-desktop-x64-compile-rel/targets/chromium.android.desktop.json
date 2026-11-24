@@ -647,6 +647,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "description": "Run with android_37_desktop_x64",
         "isolate_profile_data": true,
         "merge": {
@@ -968,6 +969,7 @@
           "print-reftest",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb"
         ],
+        "ci_only": true,
         "description": "Run with android_37_desktop_x64",
         "isolate_profile_data": true,
         "merge": {
