@@ -5577,5 +5577,6 @@ EVENT_TYPE(ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED)
 //      "destination_url": <string>,
 //      "proxy_url": <string>,
 //      "error_code": <integer>,
+//      "redirect_url": <optional string>,
 //   }
 EVENT_TYPE(ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED)
