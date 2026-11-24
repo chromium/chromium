@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.navigation_pane.NavigationPaneProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
