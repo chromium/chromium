@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,6 +34,12 @@ TEST(PageContextTest, CopyAndAssignCopiesAllFields) {
   original.screenshot.allocN32Pixels(4, 3);
   original.screenshot.eraseColor(SK_ColorBLUE);
 
+  PageContext::EncodedScreenshot encoded;
+  encoded.data = std::vector<uint8_t>{0xFF, 0xD8, 0xFF};
+  encoded.mime_type = "image/jpeg";
+  encoded.size = gfx::Size(4, 3);
+  original.encoded_screenshot = std::move(encoded);
+
   original.metadata = blink::mojom::PageMetadata::New();
   auto frame = blink::mojom::FrameMetadata::New();
   frame->url = GURL("https://example.com/");
@@ -49,6 +56,7 @@ TEST(PageContextTest, CopyAndAssignCopiesAllFields) {
   EXPECT_EQ(copy.screenshot.width(), 4);
   EXPECT_EQ(copy.screenshot.height(), 3);
   EXPECT_EQ(copy.screenshot.getColor(0, 0), SK_ColorBLUE);
+  EXPECT_EQ(copy.encoded_screenshot, original.encoded_screenshot);
   ASSERT_TRUE(copy.metadata);
   ASSERT_EQ(copy.metadata->frame_metadata.size(), 1u);
   EXPECT_EQ(copy.metadata->frame_metadata[0]->url,
@@ -61,6 +69,7 @@ TEST(PageContextTest, CopyAndAssignCopiesAllFields) {
   EXPECT_EQ(assigned.screenshot.width(), 4);
   EXPECT_EQ(assigned.screenshot.height(), 3);
   EXPECT_EQ(assigned.screenshot.getColor(0, 0), SK_ColorBLUE);
+  EXPECT_EQ(assigned.encoded_screenshot, original.encoded_screenshot);
   ASSERT_TRUE(assigned.metadata);
   ASSERT_EQ(assigned.metadata->frame_metadata.size(), 1u);
   EXPECT_EQ(assigned.metadata->frame_metadata[0]->url,

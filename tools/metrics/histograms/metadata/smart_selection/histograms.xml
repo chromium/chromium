@@ -88,6 +88,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SmartSelection.Submission.PromptEndpoint"
+    enum="SmartSelectionPromptEndpoint" expires_after="2027-04-14">
+  <owner>dtapuska@chromium.org</owner>
+  <owner>schwering@google.com</owner>
+  <summary>
+    Recorded each time a prompt is submitted from the Smart Selection overlay
+    prompt input box on desktop (before endpoint invocation; excludes suggestion
+    chips and panel-initiated sessions), indicating which prompt endpoint
+    destination was selected.
+  </summary>
+</histogram>
+
 <histogram name="SmartSelection.Suggestions.AcceptedSuggestionType"
     enum="SmartSelectionToolId" expires_after="2027-04-14">
   <owner>schwering@google.com</owner>

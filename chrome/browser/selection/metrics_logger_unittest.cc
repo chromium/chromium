@@ -103,10 +103,13 @@ TEST(MetricsLoggerTest, SubmissionOutcomes) {
     base::HistogramTester histogram_tester;
     MetricsLogger logger(EntryPoint::kContextMenuText, "text/html",
                          /*has_preselected_region=*/true);
-    logger.RecordPromptSubmitted();
+    logger.RecordPromptSubmitted(mojom::PromptEndpointId::kGoogleSearch);
     logger.RecordSessionEnd(/*cancelled_by_user=*/false);
     histogram_tester.ExpectUniqueSample("SmartSelection.Submission.Outcome",
                                         SubmissionOutcome::kPromptSubmitted, 1);
+    histogram_tester.ExpectUniqueSample(
+        "SmartSelection.Submission.PromptEndpoint",
+        mojom::PromptEndpointId::kGoogleSearch, 1);
   }
 
   {
@@ -136,10 +139,13 @@ TEST(MetricsLoggerTest, SubmissionOutcomes) {
     MetricsLogger logger(EntryPoint::kContextMenuText, "text/html",
                          /*has_preselected_region=*/true);
     logger.RecordSuggestionAccepted(suggestion);
-    logger.RecordPromptSubmitted();
+    logger.RecordPromptSubmitted(mojom::PromptEndpointId::kGemini);
     logger.RecordSessionEnd(/*cancelled_by_user=*/false);
     histogram_tester.ExpectUniqueSample("SmartSelection.Submission.Outcome",
                                         SubmissionOutcome::kMultiple, 1);
+    histogram_tester.ExpectUniqueSample(
+        "SmartSelection.Submission.PromptEndpoint",
+        mojom::PromptEndpointId::kGemini, 1);
   }
 
   {

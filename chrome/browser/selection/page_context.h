@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/selection/area_of_interest.h"
@@ -14,6 +15,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
 namespace selection {
@@ -21,6 +23,22 @@ namespace selection {
 // Page-level snapshot captured for Smart Selection, shared across one or more
 // `AreaOfInterest` selections on the same page.
 struct PageContext {
+  struct EncodedScreenshot {
+    EncodedScreenshot();
+    EncodedScreenshot(const EncodedScreenshot&);
+    EncodedScreenshot& operator=(const EncodedScreenshot&);
+    EncodedScreenshot(EncodedScreenshot&&);
+    EncodedScreenshot& operator=(EncodedScreenshot&&);
+    ~EncodedScreenshot();
+
+    friend bool operator==(const EncodedScreenshot&,
+                           const EncodedScreenshot&) = default;
+
+    std::vector<uint8_t> data;
+    std::string mime_type;
+    gfx::Size size;
+  };
+
   struct PdfDocumentData {
     PdfDocumentData();
     PdfDocumentData(const PdfDocumentData&);
@@ -48,6 +66,9 @@ struct PageContext {
   optimization_guide::proto::AnnotatedPageContent apc;
   blink::mojom::PageMetadataPtr metadata;
   SkBitmap screenshot;
+  // Optional pre-encoded version of `screenshot` (e.g. redacted JPEG produced
+  // during page context capture) to avoid re-encoding on prompt submission.
+  std::optional<EncodedScreenshot> encoded_screenshot;
   // Optional PDF document snapshot if the active page is or contains a PDF.
   std::optional<PdfDocumentData> pdf_data;
 };

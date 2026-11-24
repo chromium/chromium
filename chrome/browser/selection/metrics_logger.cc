@@ -131,8 +131,10 @@ void MetricsLogger::RecordSuggestionAccepted(const Suggestion& suggestion) {
           optimization_guide::proto::SmartSelectionToolId_ARRAYSIZE));
 }
 
-void MetricsLogger::RecordPromptSubmitted() {
+void MetricsLogger::RecordPromptSubmitted(mojom::PromptEndpointId endpoint_id) {
   prompt_submitted_ = true;
+  base::UmaHistogramEnumeration("SmartSelection.Submission.PromptEndpoint",
+                                endpoint_id);
 }
 
 void MetricsLogger::RecordSessionEnd(bool cancelled_by_user) {

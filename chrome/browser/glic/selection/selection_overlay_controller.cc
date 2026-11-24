@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/selection/gemini_prompt_endpoint.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
@@ -67,6 +68,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -342,6 +344,8 @@ SelectionOverlayController::SelectionOverlayController(
     PrefService* pref_service)
     : OverlayBaseController(tab, pref_service),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
+  prompt_endpoints_.push_back(std::make_unique<GeminiPromptEndpoint>(
+      InvokeWithAutoSubmitPasskeyProvider::GetPassKey()));
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
       base::BindRepeating(&SelectionOverlayController::WillDiscardContents,
                           weak_factory_.GetWeakPtr())));
@@ -392,12 +396,15 @@ void SelectionOverlayController::WillDiscardContents(
     tabs::TabInterface* tab,
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
+  CancelPendingEndpointRequests();
   CloseUI();
+  Observe(new_contents);
 }
 
 void SelectionOverlayController::WillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
+  CancelPendingEndpointRequests();
   CloseUI();
 }
 
@@ -863,9 +870,10 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
                                      tab_->GetContents()->GetContentsMimeType(),
                                      !session_->selected_regions.empty());
   }
-  if (GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-      service && !service->GetInstanceForTab(tab_)) {
-    service->TryPreload(GlicWarmingTrigger::kSelectionOverlay);
+  for (const auto& endpoint : prompt_endpoints_) {
+    if (endpoint->IsAvailable(*tab_)) {
+      endpoint->Prepare(*tab_);
+    }
   }
   if (::selection::SuggestionService* const suggestion_service =
           ::selection::SuggestionService::From(tab_)) {
@@ -1271,6 +1279,28 @@ void SelectionOverlayController::NotifyPageNavigated() {
   CloseUI();
 }
 
+void SelectionOverlayController::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  CancelPendingEndpointRequests();
+  OverlayBaseController::PrimaryMainFrameRenderProcessGone(status);
+}
+
+void SelectionOverlayController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Cancel pending async endpoint submissions even when the overlay is `kOff`
+  // (`InvokeWithPrompt()` calls `Close()` before `endpoint->Submit()`, and
+  // `OverlayBaseController::DidFinishNavigation()` returns early when `kOff`).
+  // Only cancel on cross-document navigations (which also covers reloads);
+  // same-document URL changes (`pushState` / fragment updates) keep the
+  // document alive and should not tear down an in-flight submission.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted() &&
+      !navigation_handle->IsSameDocument()) {
+    CancelPendingEndpointRequests();
+  }
+  OverlayBaseController::DidFinishNavigation(navigation_handle);
+}
+
 void SelectionOverlayController::NotifyTabForegrounded() {}
 
 void SelectionOverlayController::NotifyTabWillEnterBackground() {
@@ -1391,15 +1421,18 @@ void SelectionOverlayController::SetLiveBlur(bool enabled) {
 }
 
 void SelectionOverlayController::InvokeFromSuggestion(
-    const std::string& prompt) {
-  InvokeWithPrompt(prompt);
+    std::string prompt,
+    ::selection::mojom::PromptEndpointId endpoint_id) {
+  InvokeWithPrompt(std::move(prompt), endpoint_id);
 }
 
 void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
     return;
   }
-  if (!GlicKeyedService::Get(tab_->GetProfile())) {
+  ::selection::PromptEndpoint* endpoint = FindAvailablePromptEndpoint(
+      ::selection::mojom::PromptEndpointId::kGemini);
+  if (!endpoint) {
     return;
   }
   if (!IsPageContextReady()) {
@@ -1409,13 +1442,38 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
     return;
   }
   if (session_->metrics_logger) {
-    session_->metrics_logger->RecordPromptSubmitted();
+    session_->metrics_logger->RecordPromptSubmitted(endpoint->GetId());
   }
-  InvokeWithPrompt(prompt);
+  InvokeWithPrompt(prompt, endpoint->GetId());
+}
+
+void SelectionOverlayController::SetPromptEndpointsForTesting(
+    std::vector<std::unique_ptr<::selection::PromptEndpoint>> endpoints) {
+  prompt_endpoints_ = std::move(endpoints);
+}
+
+bool SelectionOverlayController::ShouldCloseOnSubmit(
+    ::selection::mojom::PromptEndpointId endpoint_id) const {
+  // Only a Glic-owned session keeps the overlay open when submitting back to
+  // Gemini; direct sessions and submissions to another endpoint (which replace
+  // the Glic side panel) always close the overlay.
+  return session_->owner != Session::Owner::kPanel ||
+         endpoint_id != ::selection::mojom::PromptEndpointId::kGemini;
+}
+
+::selection::PromptEndpoint*
+SelectionOverlayController::FindAvailablePromptEndpoint(
+    ::selection::mojom::PromptEndpointId endpoint_id) {
+  for (const auto& endpoint : prompt_endpoints_) {
+    if (endpoint->GetId() == endpoint_id && endpoint->IsAvailable(*tab_)) {
+      return endpoint.get();
+    }
+  }
+  return nullptr;
 }
 
 ::selection::PageContext SelectionOverlayController::BuildPageContext(
-    bool include_pdf_data) const {
+    bool include_submission_data) const {
   ::selection::PageContext page_context;
   page_context.screenshot = session_->redacted_screenshot;
   if (!session_->tab_context) {
@@ -1432,7 +1490,22 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
     }
     page_context.metadata = annotated_page_data->metadata.Clone();
   }
-  if (include_pdf_data && session_->tab_context->pdf_document_data) {
+  if (!include_submission_data) {
+    return page_context;
+  }
+  if (const auto& viewport_screenshot =
+          session_->tab_context->viewport_screenshot;
+      viewport_screenshot && !viewport_screenshot->data.empty() &&
+      viewport_screenshot->width_pixels > 0 &&
+      viewport_screenshot->height_pixels > 0) {
+    ::selection::PageContext::EncodedScreenshot encoded;
+    encoded.data = viewport_screenshot->data;
+    encoded.mime_type = viewport_screenshot->mime_type;
+    encoded.size = gfx::Size(viewport_screenshot->width_pixels,
+                             viewport_screenshot->height_pixels);
+    page_context.encoded_screenshot = std::move(encoded);
+  }
+  if (session_->tab_context->pdf_document_data) {
     ::selection::PageContext::PdfDocumentData pdf;
     pdf.origin = session_->tab_context->pdf_document_data->origin;
     pdf.bytes = session_->tab_context->pdf_document_data->pdf_data;
@@ -1472,6 +1545,12 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   return aoi;
 }
 
+void SelectionOverlayController::CancelPendingEndpointRequests() {
+  for (const auto& endpoint : prompt_endpoints_) {
+    endpoint->CancelPendingRequests();
+  }
+}
+
 bool SelectionOverlayController::HasOnlyTextSelection() const {
   return !session_->selected_regions.empty() &&
          std::ranges::all_of(session_->selected_regions, [](const auto& entry) {
@@ -1504,35 +1583,64 @@ void SelectionOverlayController::SendPageContextReceivedIfReady() {
   }
 }
 
-void SelectionOverlayController::InvokeWithPrompt(const std::string& prompt) {
-  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-  if (!service) {
+void SelectionOverlayController::InvokeWithPrompt(
+    std::string prompt,
+    ::selection::mojom::PromptEndpointId endpoint_id) {
+  ::selection::PromptEndpoint* endpoint =
+      FindAvailablePromptEndpoint(endpoint_id);
+  if (!endpoint) {
     return;
   }
-  CapturedRegions regions;
-  if (ShouldSendRegionsWithPrompt() && IsPageContextReady()) {
-    regions = GetCapturedRegions();
+  const SelectedRegionData* active_region = nullptr;
+  if (session_->active_region_id.has_value()) {
+    active_region = base::FindOrNull(session_->selected_regions,
+                                     *session_->active_region_id);
   }
-  GlicInvokeOptions options(glic::Target(*tab_),
-                            mojom::InvocationSource::kTextSelectionWidget);
-  if (!regions.empty()) {
-    options.additional_context = AdditionalTabContext(
-        CreateRegionSelectionContext(*tab_, session_->tab_context.Clone(),
-                                     std::move(regions)),
-        content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
+  if (!active_region && !session_->selected_regions.empty()) {
+    active_region = &session_->selected_regions.begin()->second;
   }
+  if (endpoint_id == ::selection::mojom::PromptEndpointId::kGemini &&
+      active_region && active_region->is_text_selection) {
+    for (const auto& [id, data] : session_->selected_regions) {
+      if (!data.is_text_selection) {
+        active_region = &data;
+        break;
+      }
+    }
+  }
+  // Overlay-specific policy: Glic receives regions directly when the panel
+  // owns the session, or omits them when
+  // `kGlicSelectionOverlaySendRegionWithPrompt` is disabled or only text is
+  // selected (`GlicSelectionObserver` handles text). Other endpoints (e.g.
+  // Google Search) always receive the active region bounds so pre-selected
+  // text bounding boxes can be cropped visually.
+  const bool include_region_bounds =
+      IsPageContextReady() &&
+      (endpoint_id != ::selection::mojom::PromptEndpointId::kGemini ||
+       ShouldSendRegionsWithPrompt());
+  // Skip deserializing/copying page context data (APC, metadata, screenshot,
+  // PDF bytes) when submitting to Gemini without region bounds, since
+  // `GeminiPromptEndpoint::Submit()` discards `PageContext` when there are no
+  // captured regions to attach.
+  ::selection::PageContext page_context;
+  if (endpoint_id != ::selection::mojom::PromptEndpointId::kGemini ||
+      include_region_bounds) {
+    page_context = BuildPageContext(/*include_submission_data=*/true);
+  }
+  ::selection::PageContextWithSelection context(
+      std::move(page_context),
+      BuildAreaOfInterest(active_region, include_region_bounds));
+  const bool should_close = ShouldCloseOnSubmit(endpoint->GetId());
   base::WeakPtr<SelectionOverlayController> weak_this =
       weak_factory_.GetWeakPtr();
-  if (!prompt.empty()) {
-    options.prompts.push_back(prompt);
-    service->InvokeWithAutoSubmit(
-        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
-  } else {
-    service->Invoke(std::move(options));
-  }
-  if (weak_this && state() != State::kOff &&
-      session_->owner == Session::Owner::kDirect) {
+  if (should_close && state() != State::kOff) {
+    // Close the overlay before invoking the endpoint so opening a non-Glic
+    // destination side panel (e.g. Google Search) does not trigger
+    // `OverlayBaseController::OnSidePanelDidOpen()` as an unexpected close.
     Close();
+  }
+  if (weak_this) {
+    endpoint->Submit(*tab_, std::move(prompt), std::move(context));
   }
 }
 
@@ -1663,7 +1771,7 @@ void SelectionOverlayController::RequestNewSuggestions(
   base::UnguessableToken region_id = region_data.region->id;
 
   ::selection::PageContext page_context =
-      BuildPageContext(/*include_pdf_data=*/false);
+      BuildPageContext(/*include_submission_data=*/false);
   ::selection::AreaOfInterest aoi =
       BuildAreaOfInterest(&region_data, /*include_region_bounds=*/true);
 

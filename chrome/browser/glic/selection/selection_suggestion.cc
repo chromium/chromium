@@ -33,8 +33,10 @@ void SelectionSuggestion::OnSuggestionPresented() {}
 void SelectionSuggestion::OnSuggestionExecuted() {
   if (auto* controller =
           SelectionOverlayController::FromTabWebContents(tab_->GetContents())) {
-    // Invoking Glic may synchronously close the overlay and destroy `this`.
-    controller->InvokeFromSuggestion(std::string(prompt_));
+    // Invoking the endpoint may synchronously close the overlay and destroy
+    // `this`.
+    controller->InvokeFromSuggestion(
+        prompt_, ::selection::mojom::PromptEndpointId::kGemini);
   }
 }
 

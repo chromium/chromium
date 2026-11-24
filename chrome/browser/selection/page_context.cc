@@ -10,6 +10,17 @@
 
 namespace selection {
 
+PageContext::EncodedScreenshot::EncodedScreenshot() = default;
+PageContext::EncodedScreenshot::EncodedScreenshot(const EncodedScreenshot&) =
+    default;
+PageContext::EncodedScreenshot& PageContext::EncodedScreenshot::operator=(
+    const EncodedScreenshot&) = default;
+PageContext::EncodedScreenshot::EncodedScreenshot(EncodedScreenshot&&) =
+    default;
+PageContext::EncodedScreenshot& PageContext::EncodedScreenshot::operator=(
+    EncodedScreenshot&&) = default;
+PageContext::EncodedScreenshot::~EncodedScreenshot() = default;
+
 PageContext::PdfDocumentData::PdfDocumentData() = default;
 PageContext::PdfDocumentData::PdfDocumentData(const PdfDocumentData&) = default;
 PageContext::PdfDocumentData& PageContext::PdfDocumentData::operator=(
@@ -25,6 +36,7 @@ PageContext::PageContext(const PageContext& other)
     : apc(other.apc),
       metadata(other.metadata.Clone()),
       screenshot(other.screenshot),
+      encoded_screenshot(other.encoded_screenshot),
       pdf_data(other.pdf_data) {}
 
 PageContext& PageContext::operator=(const PageContext& other) {
@@ -32,6 +44,7 @@ PageContext& PageContext::operator=(const PageContext& other) {
     apc = other.apc;
     metadata = other.metadata.Clone();
     screenshot = other.screenshot;
+    encoded_screenshot = other.encoded_screenshot;
     pdf_data = other.pdf_data;
   }
   return *this;

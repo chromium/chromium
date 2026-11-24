@@ -16,6 +16,8 @@ source_set("selection") {
     "metrics_logger.h",
     "page_context.cc",
     "page_context.h",
+    "prompt_endpoint.cc",
+    "prompt_endpoint.h",
     "suggestion.cc",
     "suggestion.h",
     "suggestion_service.cc",

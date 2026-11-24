@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
+#include <variant>
+
 #include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -41,6 +44,7 @@
 #include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/page_context.h"
+#include "chrome/browser/selection/prompt_endpoint.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -103,6 +107,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -1274,6 +1279,210 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "SmartSelection.Submission.Outcome",
       ::selection::SubmissionOutcome::kPromptSubmitted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Submission.PromptEndpoint",
+      ::selection::mojom::PromptEndpointId::kGemini, 1);
+}
+
+namespace {
+
+class RecordingPromptEndpoint : public ::selection::PromptEndpoint {
+ public:
+  ::selection::mojom::PromptEndpointId GetId() const override {
+    return ::selection::mojom::PromptEndpointId::kGemini;
+  }
+  bool IsAvailable(tabs::TabInterface& tab) const override { return true; }
+  std::u16string GetDisplayName() const override { return u"Gemini"; }
+  std::u16string GetPlaceholder() const override { return u"Ask Gemini"; }
+  void CancelPendingRequests() override { ++cancel_count; }
+  void Submit(tabs::TabInterface& tab,
+              std::string prompt,
+              ::selection::PageContextWithSelection context) override {
+    ++submit_count;
+    last_encoded_screenshot =
+        std::move(context.page_context.encoded_screenshot);
+    last_screenshot_size = gfx::Size(context.page_context.screenshot.width(),
+                                     context.page_context.screenshot.height());
+    last_aoi = std::move(context.area_of_interest);
+  }
+
+  int submit_count = 0;
+  int cancel_count = 0;
+  std::optional<::selection::PageContext::EncodedScreenshot>
+      last_encoded_screenshot;
+  gfx::Size last_screenshot_size;
+  std::optional<::selection::AreaOfInterest> last_aoi;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       NavigationAfterSubmitCancelsPendingEndpointRequests) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  auto endpoint = std::make_unique<RecordingPromptEndpoint>();
+  RecordingPromptEndpoint* raw_endpoint = endpoint.get();
+  std::vector<std::unique_ptr<::selection::PromptEndpoint>> endpoints;
+  endpoints.push_back(std::move(endpoint));
+  controller->SetPromptEndpointsForTesting(std::move(endpoints));
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->HasPageContextForTesting(); }));
+
+  const int cancel_count_before_submit = raw_endpoint->cancel_count;
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->SubmitPrompt("Explain this");
+
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  EXPECT_EQ(raw_endpoint->submit_count, 1);
+  EXPECT_EQ(raw_endpoint->cancel_count, cancel_count_before_submit);
+  // Text-only Gemini submit skips copying page-context submission data.
+  EXPECT_FALSE(raw_endpoint->last_encoded_screenshot.has_value());
+  EXPECT_TRUE(raw_endpoint->last_screenshot_size.IsEmpty());
+
+  // Same-document URL changes (`pushState`) and reopening the overlay should
+  // not cancel an already-submitted endpoint request.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "history.pushState({}, '', '#same-doc');"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return web_contents->GetLastCommittedURL().ref() == "same-doc";
+  }));
+  EXPECT_EQ(raw_endpoint->cancel_count, cancel_count_before_submit);
+
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
+  EXPECT_EQ(raw_endpoint->cancel_count, cancel_count_before_submit);
+  controller->Close();
+  EXPECT_EQ(raw_endpoint->cancel_count, cancel_count_before_submit);
+
+  // Navigating to a new document while `state() == kOff` must still cancel
+  // pending async endpoint requests (e.g. off-thread screenshot encoding /
+  // search URL).
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GetTestUrl("page.html")));
+  EXPECT_GT(raw_endpoint->cancel_count, cancel_count_before_submit);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       SubmitPromptRejectsInvalidAndOutOfBoundsRegions) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  auto endpoint = std::make_unique<RecordingPromptEndpoint>();
+  RecordingPromptEndpoint* raw_endpoint = endpoint.get();
+  std::vector<std::unique_ptr<::selection::PromptEndpoint>> endpoints;
+  endpoints.push_back(std::move(endpoint));
+  controller->SetPromptEndpointsForTesting(std::move(endpoints));
+
+  auto submit_region = [&](selection::RegionShapePtr shape) {
+    raw_endpoint->last_aoi.reset();
+    raw_endpoint->last_encoded_screenshot.reset();
+    raw_endpoint->last_screenshot_size = gfx::Size();
+    controller->Show(/*options=*/nullptr,
+                     ::selection::EntryPoint::kKeyboardShortcut);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return controller->HasPageContextForTesting(); }));
+
+    auto region = selection::SelectedRegion::New();
+    region->id = base::UnguessableToken::Create();
+    region->shape = std::move(shape);
+    auto* handler =
+        static_cast<selection::SelectionOverlayPageHandler*>(controller);
+    handler->AdjustRegion(std::move(region), /*is_using_keyboard=*/false);
+    handler->SubmitPrompt("Explain this");
+  };
+
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  const float inf = std::numeric_limits<float>::infinity();
+
+  // NaN polyline point must be rejected cleanly without UB.
+  submit_region(selection::RegionShape::NewPolyline(
+      {gfx::PointF(nan, 0.5f), gfx::PointF(0.5f, 0.5f)}));
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(
+      std::holds_alternative<gfx::Rect>(raw_endpoint->last_aoi->bounds));
+  EXPECT_TRUE(std::get<gfx::Rect>(raw_endpoint->last_aoi->bounds).IsEmpty());
+
+  // Overflow / out-of-bounds polyline point must be rejected.
+  submit_region(selection::RegionShape::NewPolyline(
+      {gfx::PointF(0.2f, 0.2f), gfx::PointF(1e30f, 0.5f)}));
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(
+      std::holds_alternative<gfx::Rect>(raw_endpoint->last_aoi->bounds));
+  EXPECT_TRUE(std::get<gfx::Rect>(raw_endpoint->last_aoi->bounds).IsEmpty());
+
+  submit_region(selection::RegionShape::NewPolyline(
+      {gfx::PointF(0.2f, 0.2f), gfx::PointF(1.5f, 0.5f)}));
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(
+      std::holds_alternative<gfx::Rect>(raw_endpoint->last_aoi->bounds));
+  EXPECT_TRUE(std::get<gfx::Rect>(raw_endpoint->last_aoi->bounds).IsEmpty());
+
+  // Non-finite and out-of-bounds rects must be rejected.
+  submit_region(
+      selection::RegionShape::NewRect(gfx::RectF(nan, 0.5f, 0.2f, 0.2f)));
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(
+      std::holds_alternative<gfx::Rect>(raw_endpoint->last_aoi->bounds));
+  EXPECT_TRUE(std::get<gfx::Rect>(raw_endpoint->last_aoi->bounds).IsEmpty());
+
+  submit_region(
+      selection::RegionShape::NewRect(gfx::RectF(inf, 0.5f, 0.2f, 0.2f)));
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(
+      std::holds_alternative<gfx::Rect>(raw_endpoint->last_aoi->bounds));
+  EXPECT_TRUE(std::get<gfx::Rect>(raw_endpoint->last_aoi->bounds).IsEmpty());
+
+  submit_region(
+      selection::RegionShape::NewRect(gfx::RectF(1.2f, 0.5f, 0.4f, 0.2f)));
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(
+      std::holds_alternative<gfx::Rect>(raw_endpoint->last_aoi->bounds));
+  EXPECT_TRUE(std::get<gfx::Rect>(raw_endpoint->last_aoi->bounds).IsEmpty());
+
+  // Valid in-bounds rect is accepted and converted to non-empty pixel bounds.
+  submit_region(
+      selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f)));
+  ASSERT_TRUE(raw_endpoint->last_encoded_screenshot.has_value());
+  EXPECT_FALSE(raw_endpoint->last_encoded_screenshot->data.empty());
+  EXPECT_FALSE(raw_endpoint->last_encoded_screenshot->size.IsEmpty());
+  EXPECT_FALSE(raw_endpoint->last_encoded_screenshot->mime_type.empty());
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(
+      std::holds_alternative<gfx::Rect>(raw_endpoint->last_aoi->bounds));
+  EXPECT_FALSE(std::get<gfx::Rect>(raw_endpoint->last_aoi->bounds).IsEmpty());
+
+  // Valid in-bounds polyline (including the `(1.0f, 1.0f)` edge clamped to
+  // `width - 1, height - 1`) is accepted and converted to pixel points.
+  submit_region(selection::RegionShape::NewPolyline(
+      {gfx::PointF(0.2f, 0.2f), gfx::PointF(1.0f, 1.0f)}));
+  ASSERT_TRUE(raw_endpoint->last_encoded_screenshot.has_value());
+  EXPECT_FALSE(raw_endpoint->last_encoded_screenshot->data.empty());
+  EXPECT_FALSE(raw_endpoint->last_encoded_screenshot->size.IsEmpty());
+  EXPECT_FALSE(raw_endpoint->last_encoded_screenshot->mime_type.empty());
+  ASSERT_TRUE(raw_endpoint->last_aoi.has_value());
+  ASSERT_TRUE(std::holds_alternative<std::vector<gfx::Point>>(
+      raw_endpoint->last_aoi->bounds));
+  const auto& points =
+      std::get<std::vector<gfx::Point>>(raw_endpoint->last_aoi->bounds);
+  ASSERT_EQ(points.size(), 2u);
+  EXPECT_EQ(points[1].x(), raw_endpoint->last_screenshot_size.width() - 1);
+  EXPECT_EQ(points[1].y(), raw_endpoint->last_screenshot_size.height() - 1);
 }
 
 // The overlay doesn't allow a prompt before the page context is in. One that

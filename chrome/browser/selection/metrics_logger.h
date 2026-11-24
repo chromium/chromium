@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "chrome/browser/selection/mojom/action.mojom-shared.h"
 
 namespace selection {
 
@@ -101,7 +102,7 @@ class MetricsLogger {
   void RecordSuggestionsShown(
       base::span<const std::unique_ptr<Suggestion>> suggestions);
   void RecordSuggestionAccepted(const Suggestion& suggestion);
-  void RecordPromptSubmitted();
+  void RecordPromptSubmitted(mojom::PromptEndpointId endpoint_id);
   void RecordSessionEnd(bool cancelled_by_user);
 
  private:

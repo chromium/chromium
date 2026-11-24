@@ -149,8 +149,10 @@ void ExplainSuggestion::OpenTabForSearch(const std::string& query) {
 void ExplainSuggestion::AskGemini() {
   if (auto* controller =
           SelectionOverlayController::FromTabWebContents(tab_->GetContents())) {
-    // Invoking Glic may synchronously close the overlay and destroy `this`.
-    controller->InvokeFromSuggestion(/*prompt=*/"");
+    // Invoking the endpoint may synchronously close the overlay and destroy
+    // `this`.
+    controller->InvokeFromSuggestion(
+        /*prompt=*/"", ::selection::mojom::PromptEndpointId::kGemini);
   }
 }
 

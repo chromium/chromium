@@ -37,6 +37,15 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:EntryPoint) -->
 
+<!-- LINT.IfChange(SmartSelectionPromptEndpoint) -->
+
+<enum name="SmartSelectionPromptEndpoint">
+  <int value="0" label="Gemini"/>
+  <int value="1" label="GoogleSearch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/selection/mojom/action.mojom:PromptEndpointId) -->
+
 <!-- LINT.IfChange(SmartSelectionSelectionOutcome) -->
 
 <enum name="SmartSelectionSelectionOutcome">

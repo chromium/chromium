@@ -18,3 +18,16 @@ union Action {
   InlineFulfillment inline_fulfillment;
   Handoff handoff;
 };
+
+// Identifies a prompt endpoint destination for Smart Selection.
+//
+// These values are persisted to logs and profile prefs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(PromptEndpointId)
+enum PromptEndpointId {
+  // The Gemini in Chrome (Glic) side panel.
+  kGemini = 0,
+  // The Google Search (`ContextualTasks`) side panel.
+  kGoogleSearch = 1,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/smart_selection/enums.xml:SmartSelectionPromptEndpoint)
