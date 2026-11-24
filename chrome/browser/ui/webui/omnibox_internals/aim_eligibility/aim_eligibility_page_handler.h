@@ -60,6 +60,7 @@ class AimEligibilityPageHandler : public aim_eligibility::mojom::PageHandler {
   const raw_ptr<Profile> profile_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<AimEligibilityService> aim_eligibility_service_;
+  // Null for profiles without an `IdentityManager` (e.g. Incognito).
   std::unique_ptr<drive_picker::DriveDisclaimerController>
       drive_disclaimer_controller_;
   bool disclaimer_check_started_ = false;

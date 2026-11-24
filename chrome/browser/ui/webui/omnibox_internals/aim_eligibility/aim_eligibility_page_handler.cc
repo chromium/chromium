@@ -40,12 +40,19 @@ AimEligibilityPageHandler::AimEligibilityPageHandler(
           base::BindRepeating(&AimEligibilityPageHandler::OnEligibilityChanged,
                               weak_ptr_factory_.GetWeakPtr()));
 
-  drive_disclaimer_controller_ =
-      std::make_unique<drive_picker::DriveDisclaimerController>(
-          contextual_search::FpopService::Create(
-              IdentityManagerFactory::GetForProfile(profile_),
-              profile_->GetDefaultStoragePartition()
-                  ->GetURLLoaderFactoryForBrowserProcess()));
+  // There is no `IdentityManager` for off-the-record profiles (e.g. Incognito),
+  // and `FpopService` requires one. In that case the Drive disclaimer status
+  // cannot be checked and is reported as restricted, matching
+  // `ContextualSearchboxHandler`.
+  if (auto* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_)) {
+    drive_disclaimer_controller_ =
+        std::make_unique<drive_picker::DriveDisclaimerController>(
+            contextual_search::FpopService::Create(
+                identity_manager,
+                profile_->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()));
+  }
 }
 
 AimEligibilityPageHandler::~AimEligibilityPageHandler() = default;
@@ -135,6 +142,13 @@ AimEligibilityPageHandler::QueryEligibilityState() {
                          weak_ptr_factory_.GetWeakPtr(),
                          drive_picker::DriveDisclaimerController::
                              DisclaimerStatus::kAccepted));
+    } else if (!drive_disclaimer_controller_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AimEligibilityPageHandler::OnDisclaimerStatusChecked,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         drive_picker::DriveDisclaimerController::
+                             DisclaimerStatus::kRestricted));
     } else {
       drive_disclaimer_controller_->CheckDisclaimerStatusAsync(
           base::BindOnce(&AimEligibilityPageHandler::OnDisclaimerStatusChecked,
