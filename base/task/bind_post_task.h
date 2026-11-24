@@ -11,7 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
+#include "base/location.h"  // IWYU pragma: export
 #include "base/task/bind_post_task_internal.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"

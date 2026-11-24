@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/location.h"  // IWYU pragma: export
 #include "base/memory/raw_ptr.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"

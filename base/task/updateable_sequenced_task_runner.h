@@ -6,8 +6,9 @@
 #define BASE_TASK_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
 
 #include "base/base_export.h"
+#include "base/location.h"  // IWYU pragma: export
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
+#include "base/task/task_traits.h"  // IWYU pragma: export
 
 namespace base {
 

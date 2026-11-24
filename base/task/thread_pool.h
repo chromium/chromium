@@ -13,12 +13,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/is_callback.h"
-#include "base/location.h"
+#include "base/location.h"  // IWYU pragma: export
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task_and_reply_with_result_internal.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_traits.h"
+#include "base/task/task_traits.h"  // IWYU pragma: export
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

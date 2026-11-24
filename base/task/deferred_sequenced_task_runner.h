@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/location.h"  // IWYU pragma: export
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"

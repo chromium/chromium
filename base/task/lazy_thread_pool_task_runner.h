@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task/task_traits.h"
+#include "base/task/task_traits.h"  // IWYU pragma: export
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 

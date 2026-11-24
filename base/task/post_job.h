@@ -10,17 +10,15 @@
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
+#include "base/location.h"  // IWYU pragma: export
 #include "base/memory/stack_allocated.h"
+#include "base/task/task_traits.h"  // IWYU pragma: export
 
 namespace base {
 namespace internal {
 class JobTaskSource;
 class PooledTaskRunnerDelegate;
 }  // namespace internal
-
-class TaskTraits;
-enum class TaskPriority : uint8_t;
 
 // Delegate that's passed to Job's worker task, providing an entry point to
 // communicate with the scheduler. To prevent deadlocks, JobDelegate methods
