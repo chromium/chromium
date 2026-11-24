@@ -289,6 +289,11 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   SelectionModel LastSelectionModelInsideRun(
       const internal::TextRunHarfBuzz* run);
 
+  // Maps FontParams to the runs that share them. Keep this a
+  // std::unordered_map: ItemizeAndShapeTextImpl() shapes the groups in
+  // iteration order and only the last group's result is reported to the
+  // RenderTextHarfBuzz.ShapeRunsFallback histogram, so the order must be
+  // deterministic. absl::flat_hash_map randomizes its iteration order.
   using CommonizedRunsMap =
       std::unordered_map<internal::TextRunHarfBuzz::FontParams,
                          std::vector<internal::TextRunHarfBuzz*>,
@@ -315,15 +320,11 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   // resulting shaping has fewer missing glyphs than the existing shape, then
   // write |font_params| and the resulting ShapeOutput to that run. Remove all
   // runs with no missing glyphs from |in_out_runs| (the caller, ShapeRuns, will
-  // terminate when no runs with missing glyphs remain). Runs that were shaped
-  // during this function call will be returned in |sucessfully_shaped_runs| if
-  // a vector is passed in for that parameter.
+  // terminate when no runs with missing glyphs remain).
   void ShapeRunsWithFont(
       std::u16string_view text,
       const internal::TextRunHarfBuzz::FontParams& font_params,
-      std::vector<internal::TextRunHarfBuzz*>* in_out_runs,
-      std::vector<internal::TextRunHarfBuzz*>* sucessfully_shaped_runs =
-          nullptr);
+      std::vector<internal::TextRunHarfBuzz*>* in_out_runs);
 
   // Creates and applies a BreakList based on the resolved fonts of each run in
   // |run_list|. This has the side-effect of isolating missing glyphs into their

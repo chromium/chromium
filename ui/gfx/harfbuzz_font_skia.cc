@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <limits>
-#include <map>
 #include <utility>
 
 #include "base/check_op.h"
@@ -19,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -33,7 +33,7 @@ namespace {
 class TypefaceData;
 
 // Maps from code points to glyph indices in a font.
-using GlyphCache = std::map<uint32_t, uint16_t>;
+using GlyphCache = absl::flat_hash_map<uint32_t, uint16_t>;
 
 // Wraps a custom user data attached to a hb_font object. Font data provider for
 // HarfBuzz using Skia. Copied from Blink.
