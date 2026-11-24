@@ -1,6 +1,5 @@
-<style include="settings-shared site-settings-shared"></style>
 <settings-subpage page-title="$i18n{siteSettingsPdfDocuments}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
   <div class="radio-group">
     <div class="secondary">$i18n{siteSettingsPdfsDescription}</div>
     <h2>$i18n{siteSettingsDefaultBehavior}</h2>
@@ -14,14 +13,14 @@
           pref-key="plugins.always_open_pdf_externally"
           label="$i18n{siteSettingsPdfsAllowed}"
           name="true"
-          disabled="[[isGuest_]]"
+          ?disabled="${this.isGuest_}"
           icon="cr:download">
       </settings-collapse-radio-button>
       <settings-collapse-radio-button no-collapse
           pref-key="plugins.always_open_pdf_externally"
           label="$i18n{siteSettingsPdfsBlocked}"
           name="false"
-          disabled="[[isGuest_]]"
+          ?disabled="${this.isGuest_}"
           icon="privacy:open-in-browser">
       </settings-collapse-radio-button>
     </settings-radio-group>

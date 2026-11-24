@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 import type {PdfDocumentsPageElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('PdfDocumentsPage', function() {
   let page: PdfDocumentsPageElement;
@@ -17,13 +17,12 @@ suite('PdfDocumentsPage', function() {
     page = document.createElement('settings-pdf-documents-page');
     page.setAttribute('route-path', routes.SITE_SETTINGS_PDF_DOCUMENTS.path);
     document.body.appendChild(page);
-    return flushTasks();
   });
 
   // Test that the tab title is updated when the subpage becomes active.
   test('UpdatesTitle', async function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_PDF_DOCUMENTS);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getStringF(
             'settingsAltPageTitle',
