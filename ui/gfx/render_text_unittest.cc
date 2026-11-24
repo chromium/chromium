@@ -7226,6 +7226,69 @@ TEST_F(RenderTextTest, HarfBuzz_EmojiDefaultVS15PrefersTextPresentation) {
   }
 }
 
+// Verifies that when a shaping batch contains both a normal emoji run and a
+// VS-15 (U+FE0E) run, ShapeRunsWithFont defers only the VS-15 run from the
+// color-emoji typeface regardless of run order.
+TEST_F(RenderTextTest, HarfBuzz_MixedEmojiAndVS15RunsInSameBatch) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // U+1F310 (emoji-default) and U+1F310+VS-15 both have USCRIPT_COMMON and
+  // match the emoji pre-pass, so they are passed to ShapeRunsWithFont in the
+  // same batch separated by a space run.
+  for (const bool vs15_first : {false, true}) {
+    SCOPED_TRACE(vs15_first);
+    render_text->SetText(vs15_first ? u"\xD83C\xDF10\uFE0E \xD83C\xDF10"
+                                    : u"\xD83C\xDF10 \xD83C\xDF10\uFE0E");
+    render_text->SetDisplayRect({1000, 50});
+    const internal::TextRunList* run_list = GetHarfBuzzRunList();
+    ASSERT_EQ(3U, run_list->size());
+
+    const auto& vs15_run = run_list->runs()[vs15_first ? 0 : 2];
+    const auto& emoji_run = run_list->runs()[vs15_first ? 2 : 0];
+
+    EXPECT_FALSE(TypefaceMayRenderColorEmojiForTest(
+        vs15_run->font_params.skia_face.get()))
+        << "VS-15 run was shaped with a color-emoji typeface";
+#if BUILDFLAG(IS_WIN)
+    EXPECT_EQ(0U, vs15_run->CountMissingGlyphs())
+        << "VS-15 run rendered as tofu";
+#endif
+
+    EXPECT_GT(emoji_run->shape.glyph_count, 0U);
+#if !BUILDFLAG(IS_FUCHSIA)
+    EXPECT_EQ(0U, emoji_run->CountMissingGlyphs());
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+    EXPECT_TRUE(TypefaceMayRenderColorEmojiForTest(
+        emoji_run->font_params.skia_face.get()))
+        << "Emoji run was not routed through the platform color emoji font";
+#endif
+  }
+
+  // Multiple VS-15 runs interleaved with a normal emoji run in the same batch:
+  // both VS-15 runs must be deferred while the middle emoji run is kept.
+  render_text->SetText(u"\xD83C\xDF10\uFE0E \xD83C\xDF10 \xD83C\xDF10\uFE0E");
+  render_text->SetDisplayRect({1000, 50});
+  const internal::TextRunList* run_list = GetHarfBuzzRunList();
+  ASSERT_EQ(5U, run_list->size());
+  for (size_t index : {0U, 4U}) {
+    const auto& vs15_run = run_list->runs()[index];
+    EXPECT_FALSE(TypefaceMayRenderColorEmojiForTest(
+        vs15_run->font_params.skia_face.get()))
+        << "VS-15 run was shaped with a color-emoji typeface";
+  }
+  const auto& middle_emoji_run = run_list->runs()[2];
+  EXPECT_GT(middle_emoji_run->shape.glyph_count, 0U);
+#if !BUILDFLAG(IS_FUCHSIA)
+  EXPECT_EQ(0U, middle_emoji_run->CountMissingGlyphs());
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+  EXPECT_TRUE(TypefaceMayRenderColorEmojiForTest(
+      middle_emoji_run->font_params.skia_face.get()))
+      << "Emoji run was not routed through the platform color emoji font";
+#endif
+}
+
 TEST_F(RenderTextTest, HarfBuzz_OrphanedVariationSelector) {
   RenderTextHarfBuzz* render_text = GetRenderText();
 

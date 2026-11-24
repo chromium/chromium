@@ -5,6 +5,7 @@
 #include "ui/gfx/render_text_harfbuzz.h"
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <string_view>
 
@@ -2567,19 +2568,29 @@ void RenderTextHarfBuzz::ShapeRunsWithFont(
   // other (non-color) fonts for them. This is the dual of the VS-16
   // pre-pass in ShapeRuns and is applied centrally here so every caller
   // (primary fonts, GetFallbackFont result, linked fallbacks) is covered.
+  //
+  // Inspecting the typeface is much more expensive than looking for U+FE0E,
+  // which is rare, so only do it when a run has one.
+  const auto requests_text_presentation =
+      [text](const internal::TextRunHarfBuzz* run) {
+        return RunRequestsTextPresentation(
+            text.substr(run->range.start(), run->range.length()));
+      };
   std::vector<internal::TextRunHarfBuzz*> deferred_text_presentation_runs;
-  if (TypefaceMayRenderColorEmoji(font_params.skia_face.get())) {
-    std::vector<internal::TextRunHarfBuzz*> remaining_runs;
-    remaining_runs.reserve(in_out_runs->size());
-    for (internal::TextRunHarfBuzz* run : *in_out_runs) {
-      if (RunRequestsTextPresentation(
-              text.substr(run->range.start(), run->range.length()))) {
-        deferred_text_presentation_runs.push_back(run);
+  if (auto first_vs15 =
+          std::ranges::find_if(*in_out_runs, requests_text_presentation);
+      first_vs15 != in_out_runs->end() &&
+      TypefaceMayRenderColorEmoji(font_params.skia_face.get())) {
+    deferred_text_presentation_runs.push_back(*first_vs15);
+    auto write = first_vs15;
+    for (auto it = std::next(first_vs15); it != in_out_runs->end(); ++it) {
+      if (requests_text_presentation(*it)) {
+        deferred_text_presentation_runs.push_back(*it);
       } else {
-        remaining_runs.push_back(run);
+        *write++ = *it;
       }
     }
-    in_out_runs->swap(remaining_runs);
+    in_out_runs->erase(write, in_out_runs->end());
   }
 
   std::vector<internal::TextRunHarfBuzz*> runs_with_missing_glyphs;
