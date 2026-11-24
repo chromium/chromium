@@ -17,7 +17,6 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
@@ -39,11 +38,6 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule {
     /** Use {@link ChromeTransitTestRules#freshChromeTabbedActivityRule()}. */
     FreshCtaTransitTestRule() {
         super();
-    }
-
-    /** Use {@link ChromeTransitTestRules#wrapTestRule(ChromeTabbedActivityTestRule)}. */
-    FreshCtaTransitTestRule(ChromeTabbedActivityTestRule testRule) {
-        super(testRule);
     }
 
     @Override
@@ -185,15 +179,5 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule {
     @Override
     public RegularNewTabPageStation startOnNtp() {
         return ChromeTabbedActivityEntryPoints.startOnNtp(mActivityTestRule);
-    }
-
-    /**
-     * Hop onto Public Transit when the test has already started the ChromeTabbedActivity in a blank
-     * page.
-     *
-     * @return the active entry {@link WebPageStation}
-     */
-    public WebPageStation alreadyStartedOnBlankPage() {
-        return ChromeTabbedActivityEntryPoints.alreadyStartedOnBlankPage();
     }
 }

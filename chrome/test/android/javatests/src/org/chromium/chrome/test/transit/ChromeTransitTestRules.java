@@ -48,15 +48,6 @@ public class ChromeTransitTestRules {
     }
 
     /**
-     * Starts each test case in a fresh ChromeTabbedActivity.
-     *
-     * <p>Use when the test requires a specific subclass of ChromeTabbedActivityTestRule.
-     */
-    public static FreshCtaTransitTestRule wrapTestRule(ChromeTabbedActivityTestRule rule) {
-        return new FreshCtaTransitTestRule(rule);
-    }
-
-    /**
      * Starts each test case reusing ChromeTabbedActivity within the batch, in a Station not
      * supported by other methods.
      */

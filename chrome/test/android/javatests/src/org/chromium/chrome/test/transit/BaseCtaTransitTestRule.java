@@ -52,10 +52,6 @@ public abstract class BaseCtaTransitTestRule implements TestRule {
         mActivityTestRule = new ChromeTabbedActivityTestRule();
     }
 
-    BaseCtaTransitTestRule(ChromeTabbedActivityTestRule activityTestRule) {
-        mActivityTestRule = activityTestRule;
-    }
-
     /** Start the test in a blank page. */
     public abstract WebPageStation startOnBlankPage();
 

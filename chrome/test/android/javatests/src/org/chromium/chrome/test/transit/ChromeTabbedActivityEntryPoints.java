@@ -130,17 +130,6 @@ public class ChromeTabbedActivityEntryPoints {
         return sentinel.runTo(() -> ctaTestRule.startMainActivityFromIntent(intent, url));
     }
 
-    /**
-     * Hop onto Public Transit when the test has already started the ChromeTabbedActivity in a blank
-     * page.
-     */
-    public static WebPageStation alreadyStartedOnBlankPage() {
-        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
-        sentinel.setAsEntryPoint();
-
-        return sentinel.noopTo().arriveAt(WebPageStation.newBuilder().withEntryPoint().build());
-    }
-
     private static void disableFirstRunFlow() {
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
     }
