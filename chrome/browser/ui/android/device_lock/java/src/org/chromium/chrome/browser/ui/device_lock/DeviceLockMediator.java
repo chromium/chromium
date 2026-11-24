@@ -14,18 +14,17 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.SOURCE;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
-import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -153,8 +152,8 @@ public class DeviceLockMediator {
     }
 
     private void setDeviceLockReady() {
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true);
         mDelegate.onDeviceLockReady();
     }
 

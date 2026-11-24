@@ -4,18 +4,16 @@
 
 package org.chromium.chrome.browser.ui.device_lock;
 
-import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
-
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -51,7 +49,7 @@ public class MissingDeviceLockCoordinator {
      * Constructs a coordinator for the Missing Device Lock page.
      *
      * @param onContinueWithoutDeviceLock Called when the user has decided to continue without
-     *                                    recreating a device lock.
+     *     recreating a device lock.
      * @param context The context hosting this page.
      */
     public MissingDeviceLockCoordinator(
@@ -96,8 +94,8 @@ public class MissingDeviceLockCoordinator {
     void continueWithoutDeviceLock(
             Boolean wipeAllData, Callback<Boolean> onContinueWithoutDeviceLock) {
         onContinueWithoutDeviceLock.onResult(wipeAllData);
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit().remove(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED).apply();
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED);
     }
 
     /** Releases the resources used by the coordinator. */
@@ -127,7 +125,7 @@ public class MissingDeviceLockCoordinator {
      * Method to hide the Missing Device Lock dialog.
      *
      * @param dismissalCause The {@link DialogDismissalCause} stating the reason why the Missing
-     *                       Device Lockdialog is being dismissed.
+     *     Device Lockdialog is being dismissed.
      */
     private void dismissMissingDeviceLockDialog(@DialogDismissalCause int dismissalCause) {
         mModalDialogManager.dismissDialog(mModalDialogPropertyModel, dismissalCause);

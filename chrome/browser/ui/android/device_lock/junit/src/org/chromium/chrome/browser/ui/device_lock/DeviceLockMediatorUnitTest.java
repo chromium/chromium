@@ -23,7 +23,6 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
-import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -31,7 +30,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.view.View;
 
 import org.junit.Before;
@@ -52,6 +50,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
@@ -141,8 +141,8 @@ public class DeviceLockMediatorUnitTest {
         ShadowContextImpl shadowContext = Shadow.extract(mActivity.getBaseContext());
         shadowContext.setSystemService(Context.KEYGUARD_SERVICE, mKeyguardManager);
 
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit().remove(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED).apply();
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED);
     }
 
     @Test
@@ -685,14 +685,16 @@ public class DeviceLockMediatorUnitTest {
             assertTrue(
                     "Chrome should have recorded as passing the device lock page if the "
                             + "device lock is ready.",
-                    ContextUtils.getAppSharedPreferences()
-                            .getBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
+                    ChromeSharedPreferences.getInstance()
+                            .readBoolean(
+                                    ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
         } else {
             assertFalse(
                     "Chrome should not have recorded as passing the device lock page if the "
                             + "device lock is not ready.",
-                    ContextUtils.getAppSharedPreferences()
-                            .getBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
+                    ChromeSharedPreferences.getInstance()
+                            .readBoolean(
+                                    ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
         }
         // The UI should only be disabled if the user chose to continue and passed all the
         // necessary steps - the UI should be enabled if the user chooses to dismiss or fails the

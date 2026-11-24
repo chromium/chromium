@@ -23,10 +23,10 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -72,7 +73,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 /** Backup agent for Chrome, using Android key/value backup. */
-@SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
 @NullMarked
 public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
     private static final String ANDROID_DEFAULT_PREFIX = "AndroidDefault.";
@@ -143,11 +143,16 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidRestoreResult)
 
-    @VisibleForTesting static final String RESTORE_STATUS = "android_restore_status";
-    private static final String RESTORE_STATUS_RECORDED = "android_restore_status_recorded";
+    @VisibleForTesting
+    static final String RESTORE_STATUS = ChromePreferenceKeys.BACKUP_RESTORE_STATUS;
+
+    private static final String RESTORE_STATUS_RECORDED =
+            ChromePreferenceKeys.BACKUP_RESTORE_STATUS_RECORDED;
 
     // Keep track of backup failures, so that we give up in the end on persistent problems.
-    @VisibleForTesting static final String BACKUP_FAILURE_COUNT = "android_backup_failure_count";
+    @VisibleForTesting
+    static final String BACKUP_FAILURE_COUNT = ChromePreferenceKeys.BACKUP_FAILURE_COUNT;
+
     @VisibleForTesting static final int MAX_BACKUP_FAILURES = 5;
 
     // Bool entries from SharedPreferences that should be backed up / restored.
@@ -297,18 +302,18 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
                             return true;
                         });
-        SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
+        SharedPreferencesManager sharedPrefs = ChromeSharedPreferences.getInstance();
 
         if (!nativePrefsRead) {
             // Something went wrong reading the native preferences, skip the backup, but try again
             // later.
-            int backupFailureCount = sharedPrefs.getInt(BACKUP_FAILURE_COUNT, 0) + 1;
+            int backupFailureCount = sharedPrefs.readInt(BACKUP_FAILURE_COUNT, 0) + 1;
             if (backupFailureCount >= MAX_BACKUP_FAILURES) {
                 // Too many re-tries, give up and force an unconditional backup next time one is
                 // requested.
                 return;
             }
-            sharedPrefs.edit().putInt(BACKUP_FAILURE_COUNT, backupFailureCount).apply();
+            sharedPrefs.writeInt(BACKUP_FAILURE_COUNT, backupFailureCount);
             if (oldState != null) {
                 try {
                     // Copy the old state to the new state, so that next time Chrome only does a
@@ -326,13 +331,13 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         }
 
         // The backup is going to work, clear the failure count.
-        sharedPrefs.edit().remove(BACKUP_FAILURE_COUNT).apply();
+        sharedPrefs.removeKey(BACKUP_FAILURE_COUNT);
 
         // Add the Android boolean prefs.
         for (String prefName : BACKUP_ANDROID_BOOL_PREFS) {
             if (sharedPrefs.contains(prefName)) {
                 backupNames.add(ANDROID_DEFAULT_PREFIX + prefName);
-                backupValues.add(booleanToBytes(sharedPrefs.getBoolean(prefName, false)));
+                backupValues.add(booleanToBytes(sharedPrefs.readBoolean(prefName, false)));
             }
         }
 
@@ -386,7 +391,6 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
         // Check that the user hasn't already seen FRE (not sure if this can ever happen, but if it
         // does then restoring the backup will overwrite the user's choices).
-        SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
         if (FirstRunStatus.getFirstRunFlowComplete()
                 || FirstRunStatus.getLightweightFirstRunFlowComplete()) {
             setRestoreStatus(RestoreStatus.RESTORE_AFTER_FIRST_RUN);
@@ -533,7 +537,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
                 });
 
         // Now that everything looks good so restore the Android preferences.
-        SharedPreferences.Editor editor = sharedPrefs.edit();
+        SharedPreferences.Editor editor = ChromeSharedPreferences.getInstance().getEditor();
 
         // Only restore preferences that we know about.
         int prefixLength = ANDROID_DEFAULT_PREFIX.length();
@@ -738,8 +742,8 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
      */
     @VisibleForTesting
     static @RestoreStatus int getRestoreStatus() {
-        return ContextUtils.getAppSharedPreferences()
-                .getInt(RESTORE_STATUS, RestoreStatus.NO_RESTORE);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(RESTORE_STATUS, RestoreStatus.NO_RESTORE);
     }
 
     /**
@@ -753,7 +757,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         assert status != RestoreStatus.DEPRECATED_RESTORE_STATUS_RECORDED
                 && status != RestoreStatus.DEPRECATED_SIGNIN_TIMED_OUT;
 
-        ContextUtils.getAppSharedPreferences().edit().putInt(RESTORE_STATUS, status).apply();
+        ChromeSharedPreferences.getInstance().writeInt(RESTORE_STATUS, status);
         if (isRestoreStatusRecorded()) {
             setRestoreStatusRecorded(false);
         }
@@ -766,7 +770,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
      */
     @VisibleForTesting
     static boolean isRestoreStatusRecorded() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(RESTORE_STATUS_RECORDED, false);
+        return ChromeSharedPreferences.getInstance().readBoolean(RESTORE_STATUS_RECORDED, false);
     }
 
     /**
@@ -776,10 +780,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
      */
     @VisibleForTesting
     static void setRestoreStatusRecorded(boolean isRecorded) {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(RESTORE_STATUS_RECORDED, isRecorded)
-                .apply();
+        ChromeSharedPreferences.getInstance().writeBoolean(RESTORE_STATUS_RECORDED, isRecorded);
     }
 
     /** Record the restore histogram. To be called from Chrome itself once it is running. */

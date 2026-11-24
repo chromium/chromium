@@ -7,15 +7,13 @@ package org.chromium.chrome.browser.setup_list;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.firstrun.FirstRunStatus.isFirstRunTriggered;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.shared_preferences.SharedPreferenceObserver;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -47,9 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 @NullMarked
 public class SetupListManager
-        implements SharedPreferences.OnSharedPreferenceChangeListener,
-                IdentityManager.Observer,
-                SyncService.SyncStateChangedListener {
+        implements IdentityManager.Observer, SyncService.SyncStateChangedListener {
     /** Interface for observing changes to the Setup List state. */
     public interface Observer {
         /** Called when the Setup List's state (eligibility, ranking, or layout) has changed. */
@@ -115,6 +111,7 @@ public class SetupListManager
     private final Set<Integer> mModulesAwaitingCompletionAnimation = new HashSet<>();
     private boolean mHasRegisteredIdentityObserver;
     private boolean mHasRegisteredSyncObserver;
+    private @Nullable SharedPreferenceObserver mPreferenceObserver;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     /** The current UI layout phase of the Setup List. */
@@ -147,14 +144,15 @@ public class SetupListManager
     }
 
     @VisibleForTesting
-    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     SetupListManager() {
         initializePrefMapping();
         reconcileState();
         mIsActiveAtStart = mActiveLayout != SetupListActiveLayout.INACTIVE;
 
         if (mIsActiveAtStart) {
-            ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+            mPreferenceObserver =
+                    ChromeSharedPreferences.getInstance()
+                            .observe(mKeyToModuleMap.keySet(), this::onPreferenceKeyChanged);
         }
     }
 
@@ -202,6 +200,10 @@ public class SetupListManager
         mActiveLayout = SetupListActiveLayout.INACTIVE;
         mRankedModules.clear();
         mModuleRankMap.clear();
+        if (mPreferenceObserver != null) {
+            mPreferenceObserver.destroy();
+            mPreferenceObserver = null;
+        }
         unregisterObservers();
     }
 
@@ -394,10 +396,7 @@ public class SetupListManager
      * Reacts to preference changes to incrementally update the in-memory ranked module list. This
      * ensures that completed items are moved to the end of the list immediately.
      */
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, @Nullable String key) {
-        if (key == null) return;
-
+    private void onPreferenceKeyChanged(String key) {
         Integer moduleType = mKeyToModuleMap.get(key);
         if (moduleType != null) {
             setModuleCompleted(moduleType, /* silent= */ false);

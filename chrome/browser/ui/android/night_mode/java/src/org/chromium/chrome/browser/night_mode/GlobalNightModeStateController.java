@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.night_mode;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
-import android.content.SharedPreferences;
-import android.text.TextUtils;
-
 import androidx.appcompat.app.AppCompatDelegate;
 
 import org.jni_zero.JNINamespace;
@@ -16,11 +13,12 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.shared_preferences.SharedPreferenceObserver;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Maintains and provides the night mode state for the entire application. */
 @JNINamespace("night_mode")
@@ -40,7 +38,7 @@ class GlobalNightModeStateController
     /** The last observed theme setting. If null, it has not been read yet. */
     private @ThemeType @Nullable Integer mThemeSetting;
 
-    private final SharedPreferences.OnSharedPreferenceChangeListener mPreferenceListener;
+    private @Nullable SharedPreferenceObserver mPreferenceObserver;
 
     /** Whether this class has started listening to relevant states for night mode. */
     private boolean mIsStarted;
@@ -50,11 +48,6 @@ class GlobalNightModeStateController
      * GlobalNightModeStateProviderHolder#getInstance()} instead.
      */
     GlobalNightModeStateController() {
-        mPreferenceListener =
-                (prefs, key) -> {
-                    if (TextUtils.equals(key, UI_THEME_SETTING)) updateNightMode();
-                };
-
         updateNightMode();
 
         // It is unlikely that this is called after an activity is stopped or destroyed, but
@@ -100,30 +93,27 @@ class GlobalNightModeStateController
     }
 
     /** Starts listening to states relevant to night mode. */
-    // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
-    // instead.
-    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     private void start() {
         if (mIsStarted) return;
         mIsStarted = true;
 
         SystemNightModeMonitor.getInstance().addObserver(this);
-        ContextUtils.getAppSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(mPreferenceListener);
+        mPreferenceObserver =
+                ChromeSharedPreferences.getInstance()
+                        .observe(UI_THEME_SETTING, this::updateNightMode);
         updateNightMode();
     }
 
     /** Stops listening to states relevant to night mode. */
-    // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
-    // instead.
-    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     private void stop() {
         if (!mIsStarted) return;
         mIsStarted = false;
 
         SystemNightModeMonitor.getInstance().removeObserver(this);
-        ContextUtils.getAppSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
+        if (mPreferenceObserver != null) {
+            mPreferenceObserver.destroy();
+            mPreferenceObserver = null;
+        }
     }
 
     void destroy() {

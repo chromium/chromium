@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -14,13 +12,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferenceObserver;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
  * Tracks whether the user's bottom bar Settings choice still matches the state the owning
@@ -39,7 +37,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
  */
 @NullMarked
 public class BottomBarEnabledChangeObserver
-        implements OnSharedPreferenceChangeListener, StartStopWithNativeObserver, DestroyObserver {
+        implements StartStopWithNativeObserver, DestroyObserver {
     /**
      * Delay before recreating a stopped activity for a bottom bar toggle, so the relaunch does not
      * land while the Settings switch is still animating. SwitchCompat's thumb animation is 250 ms
@@ -53,6 +51,7 @@ public class BottomBarEnabledChangeObserver
     private final Runnable mRecreateCallback;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Runnable mDelayedRecreateRunnable = this::recreateIfEnabledStateChanged;
+    private final SharedPreferenceObserver mPreferenceObserver;
 
     /**
      * Creates the observer and starts listening for preference and lifecycle changes. If the
@@ -66,7 +65,6 @@ public class BottomBarEnabledChangeObserver
      *     created.
      * @param recreateCallback Invoked when the activity should be recreated.
      */
-    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public BottomBarEnabledChangeObserver(
             Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -77,7 +75,11 @@ public class BottomBarEnabledChangeObserver
         mInitialEnabledState = initialEnabledState;
         mRecreateCallback = recreateCallback;
         mLifecycleDispatcher.register(this);
-        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        mPreferenceObserver =
+                ChromeSharedPreferences.getInstance()
+                        .observe(
+                                ChromePreferenceKeys.BOTTOM_BAR_ENABLED,
+                                this::onBottomBarEnabledChanged);
         recreateIfEnabledStateChanged();
     }
 
@@ -91,9 +93,7 @@ public class BottomBarEnabledChangeObserver
         return BottomBarConfigUtils.isBottomBarUserEnabled() != mInitialEnabledState;
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, @Nullable String key) {
-        if (!ChromePreferenceKeys.BOTTOM_BAR_ENABLED.equals(key)) return;
+    private void onBottomBarEnabledChanged() {
         mHandler.removeCallbacks(mDelayedRecreateRunnable);
         if (!hasEnabledStateChanged()) return;
 
@@ -121,11 +121,10 @@ public class BottomBarEnabledChangeObserver
     }
 
     @Override
-    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public void onDestroy() {
         mHandler.removeCallbacks(mDelayedRecreateRunnable);
         mLifecycleDispatcher.unregister(this);
-        ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        mPreferenceObserver.destroy();
     }
 
     private void recreateIfEnabledStateChanged() {

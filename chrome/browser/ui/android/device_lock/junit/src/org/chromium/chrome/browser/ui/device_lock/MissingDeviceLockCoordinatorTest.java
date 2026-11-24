@@ -7,10 +7,7 @@ package org.chromium.chrome.browser.ui.device_lock;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
-
 import android.app.Activity;
-import android.content.SharedPreferences;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,9 +16,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -66,8 +64,8 @@ public class MissingDeviceLockCoordinatorTest {
 
     @Test
     public void testMissingDeviceLockCoordinator_continueWithoutDeviceLock() {
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true);
 
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 new MissingDeviceLockCoordinator(
@@ -85,7 +83,8 @@ public class MissingDeviceLockCoordinatorTest {
         assertFalse(
                 "DEVICE_LOCK_PAGE_HAS_BEEN_PASSED should have been removed from the "
                         + "SharedPreferencesManager keys.",
-                prefs.contains(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED));
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED));
     }
 
     @Test

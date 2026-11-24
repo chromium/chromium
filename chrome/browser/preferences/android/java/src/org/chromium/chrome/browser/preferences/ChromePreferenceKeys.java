@@ -125,6 +125,9 @@ public final class ChromePreferenceKeys {
             "Chrome.BackgroundTabPool.LastProfileToken";
 
     public static final String BACKUP_FIRST_BACKUP_DONE = "first_backup_done";
+    public static final String BACKUP_FAILURE_COUNT = "android_backup_failure_count";
+    public static final String BACKUP_RESTORE_STATUS = "android_restore_status";
+    public static final String BACKUP_RESTORE_STATUS_RECORDED = "android_restore_status_recorded";
 
     public static final String BOOKMARKS_LAST_MODIFIED_FOLDER_ID = "last_bookmark_folder_id";
     public static final String BOOKMARKS_LAST_USED_URL = "enhanced_bookmark_last_used_url";
@@ -378,6 +381,11 @@ public final class ChromePreferenceKeys {
      */
     public static final String DEVICE_LOCK_SHOW_ALERT_IF_REMOVED =
             "Chrome.DeviceLock.ShowAlertIfRemoved";
+
+    // LINT.IfChange(DeviceLockPageHasBeenPassed)
+    public static final String DEVICE_LOCK_PAGE_HAS_BEEN_PASSED =
+            "Chrome.DeviceLockPage.HasBeenPassed";
+    // LINT.ThenChange(//components/browser_ui/device_lock/android/java/src/org/chromium/components/browser_ui/device_lock/DeviceLockBridge.java:DeviceLockPageHasBeenPassed)
 
     public static final String DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT = "ResumptionAttemptLeft";
     public static final String DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS = "ForegroundServiceObservers";
@@ -1249,6 +1257,7 @@ public final class ChromePreferenceKeys {
                 DEPRECATED_HOMEPAGE_LOCATION_POLICY,
                 DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
+                DEVICE_LOCK_PAGE_HAS_BEEN_PASSED,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 DSE_NEW_TAB_URL,
                 HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.pattern(),
@@ -1410,8 +1419,11 @@ public final class ChromePreferenceKeys {
                 APP_LOCALE,
                 AUTOFILL_ASSISTANT_ENABLED,
                 AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED,
+                BACKUP_FAILURE_COUNT,
                 BACKUP_FIRST_BACKUP_DONE,
                 BACKUP_FLOW_SIGNIN_ACCOUNT_NAME,
+                BACKUP_RESTORE_STATUS,
+                BACKUP_RESTORE_STATUS_RECORDED,
                 BOOKMARKS_LAST_MODIFIED_FOLDER_ID,
                 BOOKMARKS_LAST_USED_URL,
                 BOOKMARKS_LAST_USED_PARENT,

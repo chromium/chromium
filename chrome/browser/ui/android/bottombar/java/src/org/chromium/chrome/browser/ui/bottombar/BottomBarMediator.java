@@ -5,17 +5,16 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.SystemClock;
 
 import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.shared_preferences.SharedPreferenceObserver;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -43,7 +43,6 @@ public class BottomBarMediator
         implements ThemeColorProvider.TintObserver,
                 BottomBarButtonManager.Listener,
                 LayoutStateObserver,
-                SharedPreferences.OnSharedPreferenceChangeListener,
                 Destroyable {
     /** Delegate for compositor-level visibility changes. */
     public interface VisibilityDelegate {
@@ -97,6 +96,7 @@ public class BottomBarMediator
     private @TriState int mIsVisible;
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable @ActionId Integer mResolvedCandidateExtraAction;
+    private @Nullable SharedPreferenceObserver mGlicButtonObserver;
 
     // Mutable State (Primitive / Non-null)
     private boolean mEducationClaimedPromoSlot;
@@ -108,7 +108,6 @@ public class BottomBarMediator
     private long mBottomBarShownTimeMs = -1;
     private long mGlicAppearedTimeMs = -1;
     private boolean mStartupPromoFlowFinished;
-    private boolean mObservingSharedPrefs;
     private @Host int mHost = Host.TABBED;
 
     /**
@@ -388,10 +387,9 @@ public class BottomBarMediator
                 mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
                 mGlicKeyedService = null;
             }
-            if (mObservingSharedPrefs) {
-                ContextUtils.getAppSharedPreferences()
-                        .unregisterOnSharedPreferenceChangeListener(this);
-                mObservingSharedPrefs = false;
+            if (mGlicButtonObserver != null) {
+                mGlicButtonObserver.destroy();
+                mGlicButtonObserver = null;
             }
             mOriginalProfile = originalProfile;
         }
@@ -420,14 +418,16 @@ public class BottomBarMediator
         }
 
         if (isGlicCandidate) {
-            if (!mObservingSharedPrefs) {
-                ContextUtils.getAppSharedPreferences()
-                        .registerOnSharedPreferenceChangeListener(this);
-                mObservingSharedPrefs = true;
+            if (mGlicButtonObserver == null) {
+                mGlicButtonObserver =
+                        ChromeSharedPreferences.getInstance()
+                                .observe(
+                                        ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED,
+                                        this::onGlicButtonEnabledChanged);
             }
-        } else if (mObservingSharedPrefs) {
-            ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-            mObservingSharedPrefs = false;
+        } else if (mGlicButtonObserver != null) {
+            mGlicButtonObserver.destroy();
+            mGlicButtonObserver = null;
         }
     }
 
@@ -448,11 +448,8 @@ public class BottomBarMediator
         updateGlicVisibility(mOriginalProfile);
     }
 
-    @Override
-    public void onSharedPreferenceChanged(
-            SharedPreferences sharedPreferences, @Nullable String key) {
-        if (ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED.equals(key)
-                && mOriginalProfile != null) {
+    private void onGlicButtonEnabledChanged() {
+        if (mOriginalProfile != null) {
             updateGlicVisibility(mOriginalProfile);
         }
     }
@@ -535,9 +532,9 @@ public class BottomBarMediator
         mModel.set(BottomBarProperties.ON_LONG_CLICK_LISTENER, null);
         mThemeColorProvider.removeTintObserver(this);
         mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
-        if (mObservingSharedPrefs) {
-            ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-            mObservingSharedPrefs = false;
+        if (mGlicButtonObserver != null) {
+            mGlicButtonObserver.destroy();
+            mGlicButtonObserver = null;
         }
         mProfileSupplier.removeObserver(mProfileObserver);
         if (mGlicKeyedService != null) {

@@ -25,8 +25,11 @@ public class DeviceLockBridge {
      * present. This is used to determine whether to show the device lock page when the user is
      * interacting with sensitive personal data on the device.
      */
+    // LINT.IfChange(DeviceLockPageHasBeenPassed)
     public static final String DEVICE_LOCK_PAGE_HAS_BEEN_PASSED =
             "Chrome.DeviceLockPage.HasBeenPassed";
+
+    // LINT.ThenChange(//chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java:DeviceLockPageHasBeenPassed)
 
     // Do not instantiate this class; all methods are static.
     private DeviceLockBridge() {}

@@ -14,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferenceObserver;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -25,8 +26,6 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
-import java.util.Objects;
-
 /**
  * Class for watching for changes to the Android preferences that are backed up using Android
  * key/value backup.
@@ -36,10 +35,8 @@ import java.util.Objects;
 class ChromeBackupWatcher {
     private final BackupManager mBackupManager;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
+    private final SharedPreferenceObserver mPreferenceObserver;
 
-    // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
-    // instead.
-    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     @CalledByNative
     private ChromeBackupWatcher(@JniType("Profile*") Profile profile) {
         Context context = ContextUtils.getApplicationContext();
@@ -53,17 +50,10 @@ class ChromeBackupWatcher {
             mBackupManager.dataChanged();
             sharedPrefs.writeBoolean(ChromePreferenceKeys.BACKUP_FIRST_BACKUP_DONE, true);
         }
-        ContextUtils.getAppSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(
-                        (prefs, key) -> {
-                            // Update the backup if any of the backed up Android preferences change.
-                            for (String pref : ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS) {
-                                if (Objects.equals(key, pref)) {
-                                    onBackupPrefsChanged();
-                                    return;
-                                }
-                            }
-                        });
+        mPreferenceObserver =
+                sharedPrefs.observe(
+                        ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS,
+                        unused -> onBackupPrefsChanged());
 
         mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
         for (PrefBackupSerializer serializer : ChromeBackupAgentImpl.NATIVE_PREFS_SERIALIZERS) {
@@ -89,6 +79,7 @@ class ChromeBackupWatcher {
     private void destroy() {
         assert mPrefChangeRegistrar != null;
         mPrefChangeRegistrar.destroy();
+        mPreferenceObserver.destroy();
     }
 
     private void onBackupPrefsChanged() {
