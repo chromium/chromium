@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_FAKE_DEBUG_DAEMON_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_FAKE_DEBUG_DAEMON_CLIENT_H_
 
+#include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -14,6 +15,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/queue.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/common/dbus_callback.h"
@@ -116,6 +118,10 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   // pending callbacks if is_available is true.
   void SetServiceIsAvailable(bool is_available);
 
+  // Runs pending availability callbacks reporting that the service is
+  // unavailable. Expects service not to be available when called.
+  void ReportServiceIsNotAvailable();
+
   // Sets routes that will be returned by GetRoutes() for testing.
   void SetRoutesForTesting(std::vector<std::string> routes);
 
@@ -126,12 +132,28 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
     return scheduler_configuration_name_;
   }
 
+  // If set to true, SetSchedulerConfigurationV2() holds its reply callback
+  // until RunNextPendingSetSchedulerConfigurationCallback() is called, instead
+  // of posting a reply immediately. Must not be called while any reply is
+  // pending.
+  void SetDeferSchedulerConfigurationReply(bool defer);
+
+  bool has_pending_scheduler_configuration_callback() const {
+    return !pending_scheduler_configuration_callbacks_.empty();
+  }
+
+  // Runs the oldest pending SetSchedulerConfigurationV2() reply callback.
+  void RunNextPendingSetSchedulerConfigurationCallback(
+      bool result,
+      size_t num_cores_disabled);
+
   const std::set<std::string>& u2f_flags() const { return u2f_flags_; }
 
  private:
   int features_mask_;
 
   bool service_is_available_;
+  bool service_reported_not_available_ = false;
   std::vector<chromeos::WaitForServiceToBeAvailableCallback>
       pending_wait_for_service_to_be_available_callbacks_;
   // Stores printer's name as a key and PPD content as a value.
@@ -139,6 +161,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   std::map<std::string, std::string, std::less<>> logs_;
   std::vector<std::string> routes_;
   std::string scheduler_configuration_name_;
+  bool defer_scheduler_configuration_reply_ = false;
+  base::queue<SetSchedulerConfigurationV2Callback>
+      pending_scheduler_configuration_callbacks_;
   std::set<std::string> u2f_flags_;
   base::ObserverList<Observer> observers_;
 };

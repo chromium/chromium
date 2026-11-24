@@ -10,8 +10,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -49,6 +53,11 @@ SchedulerConfigurationManager::SchedulerConfigurationManager(
       prefs::kSchedulerConfiguration,
       base::BindRepeating(&SchedulerConfigurationManager::OnPrefChange,
                           base::Unretained(this)));
+  // WaitForServiceToBeAvailable() has no built-in timeout, so log a warning if
+  // debugd does not register on D-Bus promptly.
+  debugd_wait_timer_.Start(
+      FROM_HERE, kDebugdWaitWarningTimeout, this,
+      &SchedulerConfigurationManager::OnDebugdAvailableTimeout);
   debug_daemon_client_->WaitForServiceToBeAvailable(
       base::BindOnce(&SchedulerConfigurationManager::OnDebugDaemonReady,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -62,6 +71,7 @@ SchedulerConfigurationManager::GetLastReply() const {
 }
 
 void SchedulerConfigurationManager::OnDebugDaemonReady(bool service_is_ready) {
+  debugd_wait_timer_.Stop();
   if (!service_is_ready) {
     LOG(ERROR) << "Debug daemon unavailable";
     return;
@@ -106,6 +116,10 @@ void SchedulerConfigurationManager::OnPrefChange() {
   // NB: Also send an update when the config gets reset to let the system pick
   // whatever default. Note that the value we read in this case will be the
   // default specified on pref registration, e.g. empty string.
+  ++pending_configuration_requests_;
+  debugd_wait_timer_.Start(
+      FROM_HERE, kDebugdWaitWarningTimeout, this,
+      &SchedulerConfigurationManager::OnConfigurationReplyTimeout);
   debug_daemon_client_->SetSchedulerConfigurationV2(
       config_name,
       /*lock_policy=*/false,
@@ -116,6 +130,11 @@ void SchedulerConfigurationManager::OnPrefChange() {
 void SchedulerConfigurationManager::OnConfigurationSet(
     bool result,
     size_t num_cores_disabled) {
+  CHECK_GT(pending_configuration_requests_, 0u);
+  --pending_configuration_requests_;
+  if (pending_configuration_requests_ == 0) {
+    debugd_wait_timer_.Stop();
+  }
   last_reply_ = std::make_pair(result, num_cores_disabled);
 
   if (result) {
@@ -125,6 +144,20 @@ void SchedulerConfigurationManager::OnConfigurationSet(
   }
   for (Observer& obs : observer_list_)
     obs.OnConfigurationSet(result, num_cores_disabled);
+}
+
+void SchedulerConfigurationManager::OnDebugdAvailableTimeout() {
+  CHECK(!debug_daemon_ready_);
+  LOG(WARNING) << "Still waiting for debugd D-Bus service to become "
+                  "available for scheduler configuration after "
+               << kDebugdWaitWarningTimeout;
+}
+
+void SchedulerConfigurationManager::OnConfigurationReplyTimeout() {
+  CHECK_GT(pending_configuration_requests_, 0u);
+  LOG(WARNING) << "Still waiting for scheduler configuration reply from "
+                  "debugd after "
+               << kDebugdWaitWarningTimeout;
 }
 
 }  // namespace ash

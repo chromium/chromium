@@ -5,11 +5,15 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCHEDULER_CONFIG_SCHEDULER_CONFIGURATION_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_SCHEDULER_CONFIG_SCHEDULER_CONFIGURATION_MANAGER_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -30,6 +34,11 @@ class DebugDaemonClient;
 //
 class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
  public:
+  // Time to wait for debugd to become available, or to reply to a
+  // SetSchedulerConfigurationV2 request, before logging a warning.
+  static constexpr base::TimeDelta kDebugdWaitWarningTimeout =
+      base::Seconds(10);
+
   SchedulerConfigurationManager(DebugDaemonClient* debug_daemon_client,
                                 PrefService* local_state);
 
@@ -46,11 +55,15 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
   void OnDebugDaemonReady(bool service_is_ready);
   void OnPrefChange();
   void OnConfigurationSet(bool result, size_t num_cores_disabled);
+  void OnDebugdAvailableTimeout();
+  void OnConfigurationReplyTimeout();
 
   raw_ptr<DebugDaemonClient> debug_daemon_client_ = nullptr;
   PrefChangeRegistrar observer_;
   bool debug_daemon_ready_ = false;
+  size_t pending_configuration_requests_ = 0;
   std::optional<std::pair<bool, size_t>> last_reply_;
+  base::OneShotTimer debugd_wait_timer_;
 
   base::WeakPtrFactory<SchedulerConfigurationManager> weak_ptr_factory_{this};
 };

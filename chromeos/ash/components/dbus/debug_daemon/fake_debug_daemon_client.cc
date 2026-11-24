@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -243,9 +244,9 @@ void FakeDebugDaemonClient::RemoveRootfsVerification(
 
 void FakeDebugDaemonClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
-  if (service_is_available_) {
+  if (service_is_available_ || service_reported_not_available_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
+        FROM_HERE, base::BindOnce(std::move(callback), service_is_available_));
   } else {
     pending_wait_for_service_to_be_available_callbacks_.push_back(
         std::move(callback));
@@ -265,13 +266,27 @@ void FakeDebugDaemonClient::SetDebuggingFeaturesStatus(int features_mask) {
 
 void FakeDebugDaemonClient::SetServiceIsAvailable(bool is_available) {
   service_is_available_ = is_available;
-  if (!is_available)
+  service_reported_not_available_ = false;
+  if (!is_available) {
     return;
+  }
 
   std::vector<chromeos::WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run(true);
+  }
+}
+
+void FakeDebugDaemonClient::ReportServiceIsNotAvailable() {
+  CHECK(!service_is_available_);
+  service_reported_not_available_ = true;
+
+  std::vector<chromeos::WaitForServiceToBeAvailableCallback> callbacks;
+  callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(false);
+  }
 }
 
 void FakeDebugDaemonClient::SetRlzPingSent(SetRlzPingSentCallback callback) {
@@ -284,9 +299,27 @@ void FakeDebugDaemonClient::SetSchedulerConfigurationV2(
     bool lock_policy,
     SetSchedulerConfigurationV2Callback callback) {
   scheduler_configuration_name_ = config_name;
+  if (defer_scheduler_configuration_reply_) {
+    pending_scheduler_configuration_callbacks_.push(std::move(callback));
+    return;
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), true, /*num_cores_disabled=*/0));
+}
+
+void FakeDebugDaemonClient::SetDeferSchedulerConfigurationReply(bool defer) {
+  CHECK(pending_scheduler_configuration_callbacks_.empty());
+  defer_scheduler_configuration_reply_ = defer;
+}
+
+void FakeDebugDaemonClient::RunNextPendingSetSchedulerConfigurationCallback(
+    bool result,
+    size_t num_cores_disabled) {
+  CHECK(!pending_scheduler_configuration_callbacks_.empty());
+  auto callback = std::move(pending_scheduler_configuration_callbacks_.front());
+  pending_scheduler_configuration_callbacks_.pop();
+  std::move(callback).Run(result, num_cores_disabled);
 }
 
 void FakeDebugDaemonClient::SetU2fFlags(
