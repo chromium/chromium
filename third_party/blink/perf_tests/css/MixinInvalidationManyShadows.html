@@ -1,9 +1,7 @@
 <!doctype html>
 <style id="mixin">
   @mixin --perf-mixin() {
-    @result {
-      color: red;
-    }
+    color: red;
   }
 </style>
 <script src="../resources/runner.js"></script>
@@ -19,9 +17,7 @@
       mutate: useGreen => {
         mixinStyle.textContent = `
           @mixin --perf-mixin() {
-            @result {
-              color: ${useGreen ? 'green' : 'red'};
-            }
+            color: ${useGreen ? 'green' : 'red'};
           }
         `;
       },
