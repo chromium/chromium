@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -80,6 +81,8 @@ using drive_picker_host::mojom::DriveFile;
 using drive_picker_host::mojom::DriveFilePtr;
 using drive_picker_host::mojom::DrivePickerError;
 using drive_picker_host::mojom::DrivePickerResultHandler;
+
+constexpr char kOutcomeHistogram[] = "Glic.DrivePicker.Outcome";
 
 DriveFilePtr MakeValidDriveFile(
     const std::string& id,
@@ -207,11 +210,7 @@ class GlicDrivePickerManagerTest : public testing::Test {
         profile_, &testing_profile_manager_->profile_manager()
                        ->GetProfileAttributesStorage());
 
-    manager_ = std::make_unique<GlicDrivePickerManager>(
-        profile_, identity_manager(), enabling_.get());
-    manager_->SetControllerFactoryForTesting(
-        base::BindRepeating(&GlicDrivePickerManagerTest::CreateFakeController,
-                            base::Unretained(this)));
+    CreateManager(enabling_.get());
   }
 
   void TearDown() override {
@@ -240,6 +239,15 @@ class GlicDrivePickerManagerTest : public testing::Test {
 
   const GaiaId& primary_gaia() const { return primary_account_.GetGaiaId(); }
 
+  // (Re)creates `manager_`, observing `enabling` if it is not null.
+  void CreateManager(GlicEnabling* enabling) {
+    manager_ = std::make_unique<GlicDrivePickerManager>(
+        profile_, identity_manager(), enabling);
+    manager_->SetControllerFactoryForTesting(
+        base::BindRepeating(&GlicDrivePickerManagerTest::CreateFakeController,
+                            base::Unretained(this)));
+  }
+
   std::unique_ptr<DrivePickerHostController> CreateFakeController(
       Profile* profile,
       BrowserWindowInterface* browser,
@@ -267,7 +275,13 @@ class GlicDrivePickerManagerTest : public testing::Test {
               DrivePickerHostRequest::Style::kGlic);
   }
 
+  // Expects that exactly one outcome was recorded, and that it is `outcome`.
+  void ExpectOutcome(GlicDrivePickerOutcome outcome) {
+    histogram_tester_.ExpectUniqueSample(kOutcomeHistogram, outcome, 1);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList minor_feature_list_;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -294,6 +308,7 @@ TEST_F(GlicDrivePickerManagerTest, UnsupportedWhenGlicDrivePickerDisabled) {
                             /*webui_contents=*/nullptr, future.GetCallback());
   EXPECT_EQ(future.Get(), base::unexpected(GlicDrivePickerError::kUnsupported));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kUnsupported);
 }
 
 TEST_F(GlicDrivePickerManagerTest, UnsupportedWhenV2ScopeDisabled) {
@@ -306,6 +321,7 @@ TEST_F(GlicDrivePickerManagerTest, UnsupportedWhenV2ScopeDisabled) {
                             /*webui_contents=*/nullptr, future.GetCallback());
   EXPECT_EQ(future.Get(), base::unexpected(GlicDrivePickerError::kUnsupported));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kUnsupported);
 }
 
 // Enables GEiC before `SetUp()` creates the single profile so ChromeOS's
@@ -337,6 +353,7 @@ TEST_F(GlicDrivePickerManagerGeicTest, UnsupportedForGeminiEnterprise) {
                             /*webui_contents=*/nullptr, future.GetCallback());
   EXPECT_EQ(future.Get(), base::unexpected(GlicDrivePickerError::kUnsupported));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kUnsupported);
 }
 
 TEST_F(GlicDrivePickerManagerTest, DisabledByPolicyWhenFileUploadDisallowed) {
@@ -350,6 +367,7 @@ TEST_F(GlicDrivePickerManagerTest, DisabledByPolicyWhenFileUploadDisallowed) {
                             /*webui_contents=*/nullptr, future.GetCallback());
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kDisabledByPolicy));
+  ExpectOutcome(GlicDrivePickerOutcome::kDisabledByPolicy);
 }
 
 TEST_F(GlicDrivePickerManagerTest, DisabledByPolicyBeforeFreConsent) {
@@ -361,6 +379,7 @@ TEST_F(GlicDrivePickerManagerTest, DisabledByPolicyBeforeFreConsent) {
                             /*webui_contents=*/nullptr, future.GetCallback());
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kDisabledByPolicy));
+  ExpectOutcome(GlicDrivePickerOutcome::kDisabledByPolicy);
 }
 
 TEST_F(GlicDrivePickerManagerTest, NoAnchorWindowWhenPanelNotShowing) {
@@ -370,6 +389,7 @@ TEST_F(GlicDrivePickerManagerTest, NoAnchorWindowWhenPanelNotShowing) {
                             /*webui_contents=*/nullptr, future.GetCallback());
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kNoAnchorWindow));
+  ExpectOutcome(GlicDrivePickerOutcome::kNoAnchorWindow);
 }
 
 TEST_F(GlicDrivePickerManagerTest, AccountMismatchRejectedBeforeLaunch) {
@@ -380,6 +400,20 @@ TEST_F(GlicDrivePickerManagerTest, AccountMismatchRejectedBeforeLaunch) {
                             /*webui_contents=*/nullptr, future.GetCallback());
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kAccountMismatch));
+  ExpectOutcome(GlicDrivePickerOutcome::kAccountMismatch);
+}
+
+TEST_F(GlicDrivePickerManagerTest, WebSessionSignedOutRejectedBeforeLaunch) {
+  identity_test_env()->SetCookieAccounts({});
+
+  base::test::TestFuture<ShowResult> future;
+  manager_->ShowDrivePicker(base::UnguessableToken::Create(), primary_gaia(),
+                            /*is_panel_showing=*/true,
+                            /*webui_contents=*/nullptr, future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            base::unexpected(GlicDrivePickerError::kWebSessionSignedOut));
+  EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kWebSessionSignedOut);
 }
 
 TEST_F(GlicDrivePickerManagerTest, SelectionSuccessReturnsSanitizedFiles) {
@@ -406,6 +440,7 @@ TEST_F(GlicDrivePickerManagerTest, SelectionSuccessReturnsSanitizedFiles) {
   EXPECT_EQ((*result)[1].size_bytes, 0u);
   EXPECT_EQ((*result)[1].resource_key, std::nullopt);
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kFilesPicked);
 }
 
 TEST_F(GlicDrivePickerManagerTest, SelectionDropsInvalidFilesAndReturnsValid) {
@@ -421,6 +456,7 @@ TEST_F(GlicDrivePickerManagerTest, SelectionDropsInvalidFilesAndReturnsValid) {
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 1u);
   EXPECT_EQ((*result)[0].id, "good_id");
+  ExpectOutcome(GlicDrivePickerOutcome::kFilesPicked);
 }
 
 TEST_F(GlicDrivePickerManagerTest, SelectionAllInvalidFailsWithLoadFailed) {
@@ -433,6 +469,7 @@ TEST_F(GlicDrivePickerManagerTest, SelectionAllInvalidFailsWithLoadFailed) {
 
   EXPECT_EQ(future.Get(), base::unexpected(GlicDrivePickerError::kLoadFailed));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kSelectionRejectedByBrowser);
 }
 
 TEST_F(GlicDrivePickerManagerTest,
@@ -451,6 +488,29 @@ TEST_F(GlicDrivePickerManagerTest,
             "Too many Drive files selected.");
   EXPECT_EQ(future.Get(), base::unexpected(GlicDrivePickerError::kLoadFailed));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kSelectionRejectedByBrowser);
+}
+
+// `OnSelection()` checks policy and consent again before returning files, in
+// case a change was not observed while the picker was open. A manager without
+// a `GlicEnabling` does not observe consent changes, which exercises that
+// check.
+TEST_F(GlicDrivePickerManagerTest, SelectionRejectedWhenConsentRevoked) {
+  CreateManager(/*enabling=*/nullptr);
+  base::test::TestFuture<ShowResult> future;
+  OpenPicker(base::UnguessableToken::Create(), future);
+
+  SetFRECompletion(profile_, prefs::FreStatus::kNotStarted);
+  ASSERT_TRUE(manager_->IsPickerActiveForTesting());
+
+  std::vector<DriveFilePtr> files;
+  files.push_back(MakeValidDriveFile("file_1"));
+  active_controller_->result_handler()->OnSelection(std::move(files));
+
+  EXPECT_EQ(future.Get(),
+            base::unexpected(GlicDrivePickerError::kDisabledByPolicy));
+  EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kDisabledByPolicy);
 }
 
 TEST_F(GlicDrivePickerManagerTest, OnCancelResolvesEmptySelection) {
@@ -463,6 +523,7 @@ TEST_F(GlicDrivePickerManagerTest, OnCancelResolvesEmptySelection) {
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->empty());
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kCancelledByUser);
 }
 
 TEST_F(GlicDrivePickerManagerTest, OnPickerClosedResolvesEmptySelection) {
@@ -475,6 +536,7 @@ TEST_F(GlicDrivePickerManagerTest, OnPickerClosedResolvesEmptySelection) {
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->empty());
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kDialogClosed);
 }
 
 TEST_F(GlicDrivePickerManagerTest, OnPickerDisconnectedFailsWithLoadFailed) {
@@ -485,33 +547,54 @@ TEST_F(GlicDrivePickerManagerTest, OnPickerDisconnectedFailsWithLoadFailed) {
 
   EXPECT_EQ(future.Get(), base::unexpected(GlicDrivePickerError::kLoadFailed));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kPickerDisconnected);
 }
 
 TEST_F(GlicDrivePickerManagerTest, OnErrorMapsDrivePickerErrors) {
-  const std::pair<DrivePickerError, GlicDrivePickerError> kCases[] = {
-      {DrivePickerError::kAlreadyActive, GlicDrivePickerError::kAlreadyActive},
-      {DrivePickerError::kWindowNotFound,
-       GlicDrivePickerError::kNoAnchorWindow},
-      {DrivePickerError::kTokenFetchFailure, GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kApiLoadFailure, GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kInvalidResponse, GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kInvalidFileId, GlicDrivePickerError::kLoadFailed},
+  struct Case {
+    DrivePickerError input_error;
+    GlicDrivePickerError expected_error;
+    GlicDrivePickerOutcome expected_outcome;
+  };
+  const Case kCases[] = {
+      {DrivePickerError::kAlreadyActive, GlicDrivePickerError::kAlreadyActive,
+       GlicDrivePickerOutcome::kAlreadyActive},
+      {DrivePickerError::kWindowNotFound, GlicDrivePickerError::kNoAnchorWindow,
+       GlicDrivePickerOutcome::kNoAnchorWindow},
+      {DrivePickerError::kTokenFetchFailure, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kTokenFetchFailed},
+      {DrivePickerError::kApiLoadFailure, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kApiLoadFailed},
+      {DrivePickerError::kInvalidResponse, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kInvalidResponse},
+      {DrivePickerError::kInvalidFileId, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kInvalidFileId},
       {DrivePickerError::kInvalidFileMetadata,
-       GlicDrivePickerError::kLoadFailed},
+       GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kInvalidFileMetadata},
       {DrivePickerError::kUnsupportedFileType,
-       GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kInvalidFileSize, GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kMojoDisconnected, GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kWebUINotFound, GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kViewNotFound, GlicDrivePickerError::kLoadFailed},
-      {DrivePickerError::kUnknown, GlicDrivePickerError::kUnknown},
+       GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kUnsupportedFileType},
+      {DrivePickerError::kInvalidFileSize, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kInvalidFileSize},
+      {DrivePickerError::kMojoDisconnected, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kPickerDisconnected},
+      {DrivePickerError::kWebUINotFound, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kDialogCreationFailed},
+      {DrivePickerError::kViewNotFound, GlicDrivePickerError::kLoadFailed,
+       GlicDrivePickerOutcome::kDialogCreationFailed},
+      {DrivePickerError::kUnknown, GlicDrivePickerError::kUnknown,
+       GlicDrivePickerOutcome::kUnknownError},
   };
 
-  for (const auto& [input_error, expected_error] : kCases) {
+  for (const Case& test_case : kCases) {
+    base::HistogramTester histogram_tester;
     base::test::TestFuture<ShowResult> future;
     OpenPicker(base::UnguessableToken::Create(), future);
-    active_controller_->result_handler()->OnError(input_error);
-    EXPECT_EQ(future.Get(), base::unexpected(expected_error));
+    active_controller_->result_handler()->OnError(test_case.input_error);
+    EXPECT_EQ(future.Get(), base::unexpected(test_case.expected_error));
+    histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                        test_case.expected_outcome, 1);
   }
 }
 
@@ -533,6 +616,11 @@ TEST_F(GlicDrivePickerManagerTest, AlreadyActiveRejectedAcrossDifferentOwners) {
 
   active_controller_->result_handler()->OnCancel();
   ASSERT_TRUE(future_a.Get().has_value());
+  histogram_tester_.ExpectBucketCount(
+      kOutcomeHistogram, GlicDrivePickerOutcome::kAlreadyActive, 1);
+  histogram_tester_.ExpectBucketCount(
+      kOutcomeHistogram, GlicDrivePickerOutcome::kCancelledByUser, 1);
+  histogram_tester_.ExpectTotalCount(kOutcomeHistogram, 2);
 }
 
 TEST_F(GlicDrivePickerManagerTest, CancelForOwnerOnlyCancelsMatchingOwner) {
@@ -553,6 +641,7 @@ TEST_F(GlicDrivePickerManagerTest, CancelForOwnerOnlyCancelsMatchingOwner) {
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->empty());
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kCancelledByOwner);
 }
 
 TEST_F(GlicDrivePickerManagerTest, LiveFileUploadPolicyDisableAbortsPicker) {
@@ -566,6 +655,7 @@ TEST_F(GlicDrivePickerManagerTest, LiveFileUploadPolicyDisableAbortsPicker) {
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kDisabledByPolicy));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kDisabledByPolicy);
 }
 
 TEST_F(GlicDrivePickerManagerTest, LiveConsentRevocationAbortsPicker) {
@@ -577,6 +667,7 @@ TEST_F(GlicDrivePickerManagerTest, LiveConsentRevocationAbortsPicker) {
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kDisabledByPolicy));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kDisabledByPolicy);
 }
 
 TEST_F(GlicDrivePickerManagerTest, LiveWebSignOutAbortsPicker) {
@@ -588,6 +679,7 @@ TEST_F(GlicDrivePickerManagerTest, LiveWebSignOutAbortsPicker) {
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kWebSessionSignedOut));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kWebSessionSignedOut);
 }
 
 TEST_F(GlicDrivePickerManagerTest, LiveRefreshTokenRemovedAbortsPicker) {
@@ -599,6 +691,7 @@ TEST_F(GlicDrivePickerManagerTest, LiveRefreshTokenRemovedAbortsPicker) {
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kChromeSignInRequired));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kChromeSignInRequired);
 }
 
 TEST_F(GlicDrivePickerManagerTest,
@@ -615,6 +708,7 @@ TEST_F(GlicDrivePickerManagerTest,
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kChromeSignInRequired));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kChromeSignInRequired);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -629,6 +723,7 @@ TEST_F(GlicDrivePickerManagerTest,
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kChromeSignInRequired));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kChromeSignInRequired);
 }
 
 TEST_F(GlicDrivePickerManagerTest,
@@ -641,6 +736,7 @@ TEST_F(GlicDrivePickerManagerTest,
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kChromeSignInRequired));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kChromeSignInRequired);
 }
 
 TEST_F(GlicDrivePickerManagerTest,
@@ -657,6 +753,7 @@ TEST_F(GlicDrivePickerManagerTest,
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kAccountMismatch));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kAccountMismatch);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -672,6 +769,7 @@ TEST_F(GlicDrivePickerManagerTest,
   EXPECT_EQ(future.Get(),
             base::unexpected(GlicDrivePickerError::kDisabledByPolicy));
   EXPECT_FALSE(manager_->IsPickerActiveForTesting());
+  ExpectOutcome(GlicDrivePickerOutcome::kDisabledByPolicy);
 }
 
 TEST_F(GlicDrivePickerManagerTest, DestructionCancelsActivePicker) {
@@ -683,6 +781,7 @@ TEST_F(GlicDrivePickerManagerTest, DestructionCancelsActivePicker) {
   const ShowResult& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->empty());
+  ExpectOutcome(GlicDrivePickerOutcome::kCancelledByOwner);
 }
 
 class FakeBrowserCollectionGlobalFeatures : public GlobalFeatures {

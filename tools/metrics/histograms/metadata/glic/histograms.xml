@@ -781,6 +781,32 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
+<histogram name="Glic.DrivePicker.Outcome" enum="GlicDrivePickerOutcome"
+    expires_after="2027-05-23">
+<!-- Allowed unsplittable: The Drive picker is only supported for the consumer Gemini provider. -->
+
+  <owner>birnie@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records how a request from the Glic web client to show Chrome's modal Google
+    Drive picker ended. Recorded once per request, when the request resolves:
+    immediately if it is rejected before the picker opens (for example by
+    policy, sign-in state, or because another picker is open), or otherwise when
+    the user picks files or cancels, the picker dialog or the Glic panel closes,
+    the picker fails, or the picker is aborted because policy, consent, or the
+    signed-in account changed while it was open.
+
+    Not recorded when the browser rejects the call before it reaches the picker:
+    on Android, where the picker is unavailable, or when the Drive picker is
+    unsupported for the profile. The &quot;Unsupported&quot; bucket is therefore
+    not expected in practice.
+
+    Pressing Escape closes the dialog widget directly without triggering an
+    in-picker cancel callback, so it is recorded as &quot;Picker dialog closed
+    without a result&quot; rather than &quot;Cancelled by user&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Glic.EntryPoint.Status" enum="GlicEntryPointStatus"
     expires_after="2027-04-04">
   <owner>sanaakbani@google.com</owner>

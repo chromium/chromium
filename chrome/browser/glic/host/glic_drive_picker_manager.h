@@ -43,6 +43,68 @@ namespace glic {
 
 class GlicEnabling;
 
+// How a `GlicDrivePickerManager::ShowDrivePicker()` request ended.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicDrivePickerOutcome)
+enum class GlicDrivePickerOutcome {
+  // The user picked files and at least one was returned to the web client.
+  kFilesPicked = 0,
+  // The user cancelled from inside the picker without selecting files.
+  // Pressing Escape closes the dialog widget directly and records
+  // `kDialogClosed` instead.
+  kCancelledByUser = 1,
+  // The requesting Glic panel closed or the manager was destroyed.
+  kCancelledByOwner = 2,
+  // The picker reported an error that it could not classify.
+  kUnknownError = 3,
+  // The primary account is not signed in on the web (cookie jar).
+  kWebSessionSignedOut = 4,
+  // Chrome has no primary account, or its refresh token is missing or invalid.
+  kChromeSignInRequired = 5,
+  // The web client's account is not Chrome's primary account.
+  kAccountMismatch = 6,
+  // Another Drive picker is already open for this profile.
+  kAlreadyActive = 7,
+  // The Glic panel is hidden, or there is no window to anchor the picker to.
+  kNoAnchorWindow = 8,
+  // File upload is disabled by policy, or Glic is not enabled and consented.
+  kDisabledByPolicy = 9,
+  // The Drive picker is not supported for this profile. Not expected in
+  // practice: `GlicWebClientHandler` rejects such calls before they reach the
+  // manager.
+  kUnsupported = 10,
+  // The OAuth token for the picker could not be fetched.
+  kTokenFetchFailed = 11,
+  // The Google Picker API failed to load.
+  kApiLoadFailed = 12,
+  // The picker went away before returning a result.
+  kPickerDisconnected = 13,
+  // The picker page rejected the selection: the response was malformed.
+  kInvalidResponse = 14,
+  // The picker page rejected the selection: a file had an invalid ID.
+  kInvalidFileId = 15,
+  // The picker page rejected the selection: file metadata was missing or
+  // invalid.
+  kInvalidFileMetadata = 16,
+  // The picker page rejected the selection: a file type is not supported.
+  kUnsupportedFileType = 17,
+  // The picker page rejected the selection: a file had an invalid size.
+  kInvalidFileSize = 18,
+  // The browser rejected the selection: it had too many files, or none of
+  // them passed the browser-side sanitizer.
+  kSelectionRejectedByBrowser = 19,
+  // The picker dialog could not be created.
+  kDialogCreationFailed = 20,
+  // The picker dialog closed without the picker reporting a result (for
+  // example, because the user pressed Escape or the window it was anchored to
+  // closed).
+  kDialogClosed = 21,
+  kMaxValue = kDialogClosed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDrivePickerOutcome)
+
 // Manages Chrome's modal Google Drive picker (`chrome://drive-picker-host`)
 // lifecycle for a Glic profile. Owned by `GlicKeyedService` so at most one
 // Drive picker dialog is active per profile across all Glic instances (e.g.
@@ -127,8 +189,16 @@ class GlicDrivePickerManager
   void OnPickerClosed();
   void OnAccountInvalidated(DrivePickerAccountError reason);
   void OnPolicyOrEnablingChanged();
+  // Resolves the active request with `result` and records `outcome` in
+  // metrics. `outcome` is passed separately because it is finer-grained than
+  // `result`: it differentiates user cancels from owner cancels, and splits the
+  // causes that the web client only sees as `kLoadFailed`.
   void FinishRequest(base::expected<std::vector<GlicDriveFileSelection>,
-                                    GlicDrivePickerError> result);
+                                    GlicDrivePickerError> result,
+                     GlicDrivePickerOutcome outcome);
+  // Fails the active request with `error`, for errors that need no
+  // finer-grained outcome.
+  void FinishRequestWithError(GlicDrivePickerError error);
   void Cleanup();
 
   raw_ptr<Profile> profile_;

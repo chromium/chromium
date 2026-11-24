@@ -8,6 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -62,6 +64,71 @@ GlicDrivePickerError DrivePickerErrorToReason(
     case DrivePickerError::kUnknown:
       return GlicDrivePickerError::kUnknown;
   }
+}
+
+GlicDrivePickerOutcome OutcomeForError(GlicDrivePickerError error) {
+  switch (error) {
+    case GlicDrivePickerError::kUnknown:
+      return GlicDrivePickerOutcome::kUnknownError;
+    case GlicDrivePickerError::kWebSessionSignedOut:
+      return GlicDrivePickerOutcome::kWebSessionSignedOut;
+    case GlicDrivePickerError::kChromeSignInRequired:
+      return GlicDrivePickerOutcome::kChromeSignInRequired;
+    case GlicDrivePickerError::kAccountMismatch:
+      return GlicDrivePickerOutcome::kAccountMismatch;
+    case GlicDrivePickerError::kAlreadyActive:
+      return GlicDrivePickerOutcome::kAlreadyActive;
+    case GlicDrivePickerError::kNoAnchorWindow:
+      return GlicDrivePickerOutcome::kNoAnchorWindow;
+    case GlicDrivePickerError::kLoadFailed:
+      // Load failures have several causes. Callers pass the specific outcome
+      // to `FinishRequest()` instead of going through here.
+      NOTREACHED();
+    case GlicDrivePickerError::kDisabledByPolicy:
+      return GlicDrivePickerOutcome::kDisabledByPolicy;
+    case GlicDrivePickerError::kUnsupported:
+      return GlicDrivePickerOutcome::kUnsupported;
+  }
+}
+
+// Like `OutcomeForError(DrivePickerErrorToReason(error))`, but keeps the
+// distinct causes that the web client only sees as `kLoadFailed`.
+GlicDrivePickerOutcome OutcomeForHostError(
+    drive_picker_host::mojom::DrivePickerError error) {
+  using drive_picker_host::mojom::DrivePickerError;
+  switch (error) {
+    case DrivePickerError::kTokenFetchFailure:
+      return GlicDrivePickerOutcome::kTokenFetchFailed;
+    case DrivePickerError::kApiLoadFailure:
+      return GlicDrivePickerOutcome::kApiLoadFailed;
+    case DrivePickerError::kMojoDisconnected:
+      return GlicDrivePickerOutcome::kPickerDisconnected;
+    case DrivePickerError::kInvalidResponse:
+      return GlicDrivePickerOutcome::kInvalidResponse;
+    case DrivePickerError::kInvalidFileId:
+      return GlicDrivePickerOutcome::kInvalidFileId;
+    case DrivePickerError::kInvalidFileMetadata:
+      return GlicDrivePickerOutcome::kInvalidFileMetadata;
+    case DrivePickerError::kUnsupportedFileType:
+      return GlicDrivePickerOutcome::kUnsupportedFileType;
+    case DrivePickerError::kInvalidFileSize:
+      return GlicDrivePickerOutcome::kInvalidFileSize;
+    case DrivePickerError::kWebUINotFound:
+    case DrivePickerError::kViewNotFound:
+      return GlicDrivePickerOutcome::kDialogCreationFailed;
+    case DrivePickerError::kAlreadyActive:
+      return GlicDrivePickerOutcome::kAlreadyActive;
+    case DrivePickerError::kWindowNotFound:
+      return GlicDrivePickerOutcome::kNoAnchorWindow;
+    case DrivePickerError::kUnknown:
+      return GlicDrivePickerOutcome::kUnknownError;
+  }
+}
+
+void RecordOutcome(GlicDrivePickerOutcome outcome) {
+  // Justification: The Drive picker is only supported for the consumer Gemini
+  // provider, so there is nothing to split by provider.
+  base::UmaHistogramEnumeration("Glic.DrivePicker.Outcome", outcome);
 }
 
 bool IsDisallowedByExplicitPolicyOrConsent(
@@ -141,7 +208,8 @@ GlicDrivePickerManager::GlicDrivePickerManager(
 }
 
 GlicDrivePickerManager::~GlicDrivePickerManager() {
-  FinishRequest(std::vector<GlicDriveFileSelection>());
+  FinishRequest(std::vector<GlicDriveFileSelection>(),
+                GlicDrivePickerOutcome::kCancelledByOwner);
 }
 
 void GlicDrivePickerManager::ShowDrivePicker(
@@ -152,6 +220,7 @@ void GlicDrivePickerManager::ShowDrivePicker(
     ShowCallback callback) {
   if (std::optional<GlicDrivePickerError> error =
           ValidateRequest(expected_gaia, is_panel_showing)) {
+    RecordOutcome(OutcomeForError(*error));
     std::move(callback).Run(base::unexpected(*error));
     return;
   }
@@ -161,7 +230,8 @@ void GlicDrivePickerManager::ShowDrivePicker(
 void GlicDrivePickerManager::CancelForOwner(
     const base::UnguessableToken& owner_token) {
   if (controller_ && active_owner_token_ == owner_token) {
-    FinishRequest(std::vector<GlicDriveFileSelection>());
+    FinishRequest(std::vector<GlicDriveFileSelection>(),
+                  GlicDrivePickerOutcome::kCancelledByOwner);
   }
 }
 
@@ -295,13 +365,14 @@ void GlicDrivePickerManager::OnSelection(
     std::vector<drive_picker_host::mojom::DriveFilePtr> files) {
   if (std::optional<GlicDrivePickerError> error =
           CheckActivePolicyAndEnabling()) {
-    FinishRequest(base::unexpected(*error));
+    FinishRequestWithError(*error);
     return;
   }
 
   if (files.size() > kMaxSelections) {
     result_handler_receiver_.ReportBadMessage("Too many Drive files selected.");
-    FinishRequest(base::unexpected(GlicDrivePickerError::kLoadFailed));
+    FinishRequest(base::unexpected(GlicDrivePickerError::kLoadFailed),
+                  GlicDrivePickerOutcome::kSelectionRejectedByBrowser);
     return;
   }
 
@@ -323,33 +394,38 @@ void GlicDrivePickerManager::OnSelection(
   }
 
   if (result.empty()) {
-    FinishRequest(base::unexpected(GlicDrivePickerError::kLoadFailed));
+    FinishRequest(base::unexpected(GlicDrivePickerError::kLoadFailed),
+                  GlicDrivePickerOutcome::kSelectionRejectedByBrowser);
     return;
   }
 
-  FinishRequest(std::move(result));
+  FinishRequest(std::move(result), GlicDrivePickerOutcome::kFilesPicked);
 }
 
 void GlicDrivePickerManager::OnCancel() {
-  FinishRequest(std::vector<GlicDriveFileSelection>());
+  FinishRequest(std::vector<GlicDriveFileSelection>(),
+                GlicDrivePickerOutcome::kCancelledByUser);
 }
 
 void GlicDrivePickerManager::OnError(
     drive_picker_host::mojom::DrivePickerError error) {
-  FinishRequest(base::unexpected(DrivePickerErrorToReason(error)));
+  FinishRequest(base::unexpected(DrivePickerErrorToReason(error)),
+                OutcomeForHostError(error));
 }
 
 void GlicDrivePickerManager::OnPickerDisconnected() {
-  FinishRequest(base::unexpected(GlicDrivePickerError::kLoadFailed));
+  FinishRequest(base::unexpected(GlicDrivePickerError::kLoadFailed),
+                GlicDrivePickerOutcome::kPickerDisconnected);
 }
 
 void GlicDrivePickerManager::OnPickerClosed() {
-  FinishRequest(std::vector<GlicDriveFileSelection>());
+  FinishRequest(std::vector<GlicDriveFileSelection>(),
+                GlicDrivePickerOutcome::kDialogClosed);
 }
 
 void GlicDrivePickerManager::OnAccountInvalidated(
     DrivePickerAccountError reason) {
-  FinishRequest(base::unexpected(AccountErrorToPickerError(reason)));
+  FinishRequestWithError(AccountErrorToPickerError(reason));
 }
 
 void GlicDrivePickerManager::OnPolicyOrEnablingChanged() {
@@ -358,18 +434,25 @@ void GlicDrivePickerManager::OnPolicyOrEnablingChanged() {
   }
   if (std::optional<GlicDrivePickerError> error =
           CheckActivePolicyAndEnabling()) {
-    FinishRequest(base::unexpected(*error));
+    FinishRequestWithError(*error);
   }
 }
 
 void GlicDrivePickerManager::FinishRequest(
     base::expected<std::vector<GlicDriveFileSelection>, GlicDrivePickerError>
-        result) {
+        result,
+    GlicDrivePickerOutcome outcome) {
   ShowCallback callback = std::move(callback_);
   Cleanup();
   if (callback) {
+    RecordOutcome(outcome);
     std::move(callback).Run(std::move(result));
   }
+}
+
+void GlicDrivePickerManager::FinishRequestWithError(
+    GlicDrivePickerError error) {
+  FinishRequest(base::unexpected(error), OutcomeForError(error));
 }
 
 void GlicDrivePickerManager::Cleanup() {

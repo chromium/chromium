@@ -300,6 +300,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicDragAndDropValidationResult) -->
 
+<!-- LINT.IfChange(GlicDrivePickerOutcome) -->
+
+<enum name="GlicDrivePickerOutcome">
+  <int value="0" label="Files picked"/>
+  <int value="1" label="Cancelled by user"/>
+  <int value="2" label="Cancelled by Glic (panel closed or host torn down)"/>
+  <int value="3" label="Unknown error"/>
+  <int value="4" label="Web session signed out"/>
+  <int value="5" label="Chrome sign-in required"/>
+  <int value="6" label="Account mismatch"/>
+  <int value="7" label="Another picker already active"/>
+  <int value="8" label="No anchor window"/>
+  <int value="9" label="Disabled by policy or missing consent"/>
+  <int value="10" label="Unsupported (not expected in practice)"/>
+  <int value="11" label="OAuth token fetch failed"/>
+  <int value="12" label="Google Picker API failed to load"/>
+  <int value="13" label="Picker disconnected"/>
+  <int value="14" label="Picker page: malformed response"/>
+  <int value="15" label="Picker page: invalid file ID"/>
+  <int value="16" label="Picker page: invalid file metadata"/>
+  <int value="17" label="Picker page: unsupported file type"/>
+  <int value="18" label="Picker page: invalid file size"/>
+  <int value="19" label="Browser rejected the selection"/>
+  <int value="20" label="Picker dialog could not be created"/>
+  <int value="21" label="Picker dialog closed without a result"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_drive_picker_manager.h:GlicDrivePickerOutcome) -->
+
 <!-- LINT.IfChange(GlicEntryPointStatus) -->
 
 <enum name="GlicEntryPointStatus">
