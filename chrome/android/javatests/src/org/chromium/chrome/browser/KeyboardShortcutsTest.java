@@ -329,7 +329,9 @@ public class KeyboardShortcutsTest {
     @Test
     @SmallTest
     public void testFocusSwitch() {
-        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_F6, 0));
+        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_F6, 0));
+        assertFalse(keyDown(KeyEvent.KEYCODE_F6, 0, /* isCurrentTabVisible= */ false));
+        assertTrue(keyDown(KeyEvent.KEYCODE_F6, 0, /* isCurrentTabVisible= */ true));
         verify(mMenuOrKeyboardActionController, times(1))
                 .onMenuOrKeyboardAction(
                         /* id= */ eq(R.id.switch_keyboard_focus_row), /* fromMenu= */ eq(false));
@@ -338,7 +340,17 @@ public class KeyboardShortcutsTest {
     @Test
     @SmallTest
     public void testFocusSwitch_Reverse() {
-        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_F6, KeyEvent.META_SHIFT_ON));
+        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_F6, KeyEvent.META_SHIFT_ON));
+        assertFalse(
+                keyDown(
+                        KeyEvent.KEYCODE_F6,
+                        KeyEvent.META_SHIFT_ON,
+                        /* isCurrentTabVisible= */ false));
+        assertTrue(
+                keyDown(
+                        KeyEvent.KEYCODE_F6,
+                        KeyEvent.META_SHIFT_ON,
+                        /* isCurrentTabVisible= */ true));
         verify(mMenuOrKeyboardActionController, times(1))
                 .onMenuOrKeyboardAction(
                         /* id= */ eq(R.id.switch_keyboard_focus_row_reverse),

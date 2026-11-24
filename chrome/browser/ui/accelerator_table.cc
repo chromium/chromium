@@ -357,14 +357,6 @@ constexpr int kReservedCommandIds[] = {
     IDC_CYCLE_TO_NEXT_TAB,
     IDC_CYCLE_TO_PREV_TAB,
     IDC_EXIT,
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, pane navigation (F6 / Shift+F6) is also reserved so web
-    // pages cannot trap keyboard focus.
-    // TODO(crbug.com/542618092): Check if pane navigation should be reserved
-    // on Desktop as well.
-    IDC_FOCUS_NEXT_PANE,
-    IDC_FOCUS_PREVIOUS_PANE,
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 std::vector<AcceleratorMapping>* GetAcceleratorsPointer() {

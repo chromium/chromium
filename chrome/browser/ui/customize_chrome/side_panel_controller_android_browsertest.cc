@@ -274,17 +274,16 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelAndroidBrowserTest,
   content::WebContentsDelegate* delegate = side_panel_contents->GetDelegate();
   ASSERT_NE(nullptr, delegate);
 
-  // Browser-priority shortcuts (e.g. F6) are handled in PreHandleKeyboardEvent
-  // before reaching the renderer.
+  // Page-deferring shortcuts (e.g. F6 and Ctrl+T) pass through
+  // PreHandleKeyboardEvent so web content gets first priority, and execute in
+  // HandleKeyboardEvent once not consumed by the renderer.
   input::NativeWebKeyboardEvent f6_event =
       CreateKeyDownEvent(AKEYCODE_F6, /*android_meta_state=*/0,
                          blink::WebInputEvent::kNoModifiers);
-  EXPECT_EQ(content::KeyboardEventProcessingResult::HANDLED,
+  EXPECT_NE(content::KeyboardEventProcessingResult::HANDLED,
             delegate->PreHandleKeyboardEvent(side_panel_contents, f6_event));
+  EXPECT_TRUE(delegate->HandleKeyboardEvent(side_panel_contents, f6_event));
 
-  // Page-deferring shortcuts (e.g. Ctrl+T) pass through PreHandleKeyboardEvent
-  // and open a new tab in HandleKeyboardEvent once not consumed by the
-  // renderer.
   const int initial_tab_count = tab_list_->GetTabCount();
   input::NativeWebKeyboardEvent ctrl_t_event = CreateKeyDownEvent(
       AKEYCODE_T, AMETA_CTRL_ON, blink::WebInputEvent::kControlKey);
@@ -293,4 +292,17 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelAndroidBrowserTest,
       delegate->PreHandleKeyboardEvent(side_panel_contents, ctrl_t_event));
   EXPECT_TRUE(delegate->HandleKeyboardEvent(side_panel_contents, ctrl_t_event));
   EXPECT_EQ(initial_tab_count + 1, tab_list_->GetTabCount());
+
+  // Browser-priority shortcuts (e.g. Ctrl+Tab) are handled in
+  // PreHandleKeyboardEvent before reaching the renderer.
+  ASSERT_NE(nullptr, tab_list_->GetActiveTab());
+  const tabs::TabHandle active_tab_before_switch =
+      tab_list_->GetActiveTab()->GetHandle();
+  input::NativeWebKeyboardEvent ctrl_tab_event = CreateKeyDownEvent(
+      AKEYCODE_TAB, AMETA_CTRL_ON, blink::WebInputEvent::kControlKey);
+  EXPECT_EQ(
+      content::KeyboardEventProcessingResult::HANDLED,
+      delegate->PreHandleKeyboardEvent(side_panel_contents, ctrl_tab_event));
+  ASSERT_NE(nullptr, tab_list_->GetActiveTab());
+  EXPECT_NE(active_tab_before_switch, tab_list_->GetActiveTab()->GetHandle());
 }

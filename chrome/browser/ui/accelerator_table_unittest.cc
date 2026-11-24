@@ -229,14 +229,8 @@ TEST(AcceleratorTableTest, IsReservedCommand) {
   EXPECT_FALSE(IsReservedCommand(IDC_CARET_BROWSING_TOGGLE));
   EXPECT_FALSE(IsReservedCommand(IDC_DEV_TOOLS));
   EXPECT_FALSE(IsReservedCommand(IDC_DEV_TOOLS_TOGGLE));
-
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(IsReservedCommand(IDC_FOCUS_NEXT_PANE));
-  EXPECT_TRUE(IsReservedCommand(IDC_FOCUS_PREVIOUS_PANE));
-#else
   EXPECT_FALSE(IsReservedCommand(IDC_FOCUS_NEXT_PANE));
   EXPECT_FALSE(IsReservedCommand(IDC_FOCUS_PREVIOUS_PANE));
-#endif
 }
 
 }  // namespace chrome

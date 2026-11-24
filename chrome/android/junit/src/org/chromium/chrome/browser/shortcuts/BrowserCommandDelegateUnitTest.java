@@ -180,4 +180,24 @@ public class BrowserCommandDelegateUnitTest {
         when(mController.onMenuOrKeyboardAction(eq(R.id.esc_key), eq(false))).thenReturn(false);
         assertFalse(mTabbedDelegate.executeCommand(ChromeCommandIds.CLOSE_FIND_OR_STOP));
     }
+
+    @Test
+    public void testFocusPaneCommands() {
+        assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.FOCUS_NEXT_PANE));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.switch_keyboard_focus_row), eq(false));
+        assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.FOCUS_PREVIOUS_PANE));
+        verify(mController)
+                .onMenuOrKeyboardAction(eq(R.id.switch_keyboard_focus_row_reverse), eq(false));
+
+        int[] paneCommands = {
+            ChromeCommandIds.FOCUS_NEXT_PANE, ChromeCommandIds.FOCUS_PREVIOUS_PANE
+        };
+        for (int command : paneCommands) {
+            assertFalse(mCustomTabDelegate.isCommandEnabled(command));
+        }
+        mIsCurrentTabVisible = false;
+        for (int command : paneCommands) {
+            assertFalse(mTabbedDelegate.isCommandEnabled(command));
+        }
+    }
 }

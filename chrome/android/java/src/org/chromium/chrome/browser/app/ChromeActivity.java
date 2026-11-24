@@ -2220,7 +2220,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // and send hardware key events directly to the InputConnection. In that case, those
         // events will eventually enter Chrome's PreHandleKeyboardEvent pipeline. We must
         // explicitly call this method here in order to allow the browser to handle the
-        // shortcut before the page in some cases (e.g. F6).
+        // shortcut before the page in some cases (e.g. Ctrl+Tab).
         Boolean dispatchResult =
                 KeyboardShortcuts.dispatchKeyEvent(
                         event,

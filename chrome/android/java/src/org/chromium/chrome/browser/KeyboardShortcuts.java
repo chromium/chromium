@@ -907,17 +907,6 @@ public class KeyboardShortcuts {
                 }
 
                 break;
-            case KeyEvent.KEYCODE_F6:
-                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                    int actionId =
-                            event.isShiftPressed()
-                                    ? R.id.switch_keyboard_focus_row_reverse
-                                    : R.id.switch_keyboard_focus_row;
-                    if (menuOrKeyboardActionController.onMenuOrKeyboardAction(actionId, false)) {
-                        return true;
-                    }
-                }
-                return true;
             case KeyEvent.KEYCODE_TAB:
             case KeyEvent.KEYCODE_PAGE_DOWN:
             case KeyEvent.KEYCODE_PAGE_UP:
@@ -1379,6 +1368,13 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.focus_bookmarks, /* fromMenu= */ false);
+                case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS:
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.switch_keyboard_focus_row, /* fromMenu= */ false);
+                case KeyboardShortcutsSemanticMeaning
+                        .KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS_REVERSE:
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.switch_keyboard_focus_row_reverse, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.toggle_tab_strip_multiselect, /* fromMenu= */ false);
