@@ -119,6 +119,7 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
 
   void UpdateExpandButtonIcon();
   void UpdateExpandButtonTooltip();
+  void SetExpanded(bool expanded, bool animate);
 
   void UpdateMainIconAndLabel(const PageActionModelInterface& model);
   void UpdateChipContainer(const PageActionModelInterface& model);

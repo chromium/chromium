@@ -356,6 +356,11 @@ void AnchoredMessageBubbleView::AnimateIn() {
     if (fade_animator_) {
       fade_animator_->CancelFadeOut();
     }
+    if (expanded_) {
+      // Reset expanded UI without notifying `AnchoredMessageCollapsed()`, since
+      // hiding the anchored message already resets the timeout pause count.
+      SetExpanded(false, /*animate=*/false);
+    }
     if (!widget->IsVisible()) {
       widget->SetOpacity(1.0f);
       widget->ShowInactive();
@@ -496,14 +501,30 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
 }
 
 void AnchoredMessageBubbleView::OnExpandButtonPressed() {
+  if (is_closing_) {
+    return;
+  }
   if (fade_animator_ && fade_animator_->IsFadingIn()) {
     fade_animator_->CancelSlide(/*snap_to_target=*/false);
   }
-  expanded_ = !expanded_;
+  SetExpanded(!expanded_, /*animate=*/true);
+  SizeToContents();
+  if (expanded_) {
+    delegate_->AnchoredMessageExpanded();
+  } else {
+    delegate_->AnchoredMessageCollapsed();
+  }
+}
+
+void AnchoredMessageBubbleView::SetExpanded(bool expanded, bool animate) {
+  expanded_ = expanded;
   bottom_container_->SetVisible(expanded_);
+  if (!animate) {
+    animating_layout_->ResetLayout();
+  }
   if (items_container_) {
     const float opacity = expanded_ ? 1.0f : 0.0f;
-    if (gfx::Animation::ShouldRenderRichAnimation()) {
+    if (animate && gfx::Animation::ShouldRenderRichAnimation()) {
       views::AnimationBuilder()
           .SetPreemptionStrategy(
               ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -520,16 +541,10 @@ void AnchoredMessageBubbleView::OnExpandButtonPressed() {
       expandable_content_->expand_button_style == ExpandButtonStyle::kChevron) {
     UpdateExpandButtonIcon();
   }
-  SizeToContents();
-  if (expanded_) {
-    delegate_->AnchoredMessageExpanded();
-  } else {
-    delegate_->AnchoredMessageCollapsed();
-  }
 }
 
 void AnchoredMessageBubbleView::MenuButtonPressed() {
-  if (!menu_model_) {
+  if (is_closing_ || !menu_model_) {
     return;
   }
 

@@ -843,4 +843,62 @@ TEST_F(AnchoredMessageBubbleViewTest, AnimationsSnapWithoutRichAnimations) {
   EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), shown_bounds);
 }
 
+TEST_F(AnchoredMessageBubbleViewTest,
+       AnimateInAfterAnimateOutResetsExpandedState) {
+  ShowExpandableContent();
+  expandable_content_->expand_button_style = ExpandButtonStyle::kChevron;
+  bubble_view_->UpdateContent(model_);
+  views::test::RunScheduledLayout(bubble_widget_.get());
+
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  auto* layout = static_cast<views::AnimatingLayoutManager*>(
+      bubble_view_->GetLayoutManager());
+  gfx::AnimationContainerTestApi layout_animation_api(
+      layout->GetAnimationContainerForTesting());
+
+  const int collapsed_height =
+      bubble_widget_->GetWindowBoundsInScreen().height();
+
+  EXPECT_CALL(delegate_, AnchoredMessageExpanded()).Times(1);
+  ClickExpandButton();
+  layout_animation_api.IncrementTime(layout->animation_duration());
+  GetExpandedItemsLayer()->GetAnimator()->StopAnimating();
+  views::test::RunScheduledLayout(bubble_widget_.get());
+
+  views::View* content =
+      GetView(AnchoredMessageBubbleView::kAnchoredMessageExpandedContentId);
+  ASSERT_TRUE(content->GetVisible());
+  ASSERT_EQ(1.0f, GetExpandedItemsLayer()->opacity());
+  ASSERT_GT(bubble_widget_->GetWindowBoundsInScreen().height(),
+            collapsed_height);
+
+  EXPECT_CALL(delegate_, AnchoredMessageCollapsed()).Times(0);
+  bubble_view_->AnimateOut();
+  views::test::RunScheduledLayout(bubble_widget_.get());
+  EXPECT_TRUE(content->GetVisible());
+  EXPECT_EQ(1.0f, GetExpandedItemsLayer()->opacity());
+
+  ClickExpandButton();
+  EXPECT_TRUE(content->GetVisible());
+
+  bubble_view_->UpdateContent(model_);
+  bubble_view_->AnimateIn();
+  views::test::RunScheduledLayout(bubble_widget_.get());
+  EXPECT_FALSE(layout->is_animating());
+  EXPECT_FALSE(content->GetVisible());
+  EXPECT_EQ(0.0f, GetExpandedItemsLayer()->opacity());
+  EXPECT_EQ(collapsed_height,
+            bubble_widget_->GetWindowBoundsInScreen().height());
+
+  EXPECT_CALL(delegate_, AnchoredMessageExpanded()).Times(1);
+  ClickExpandButton();
+  EXPECT_TRUE(content->GetVisible());
+
+  EXPECT_CALL(delegate_, AnchoredMessageCollapsed()).Times(1);
+  ClickExpandButton();
+}
+
 }  // namespace page_actions
