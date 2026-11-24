@@ -86,8 +86,12 @@ suite('ContextualActionMenu', () => {
       composeboxContextMenuEnableTabDeselection: false,
       composeboxSingleTabMenuItemEnabled: false,
       useSearchboxConfigIconIds: true,
+      // The Smart Tab Sharing strings are only available in en-US for now.
       stsMegaplusAutomaticallyAddTabsHeader: 'Automatically add tabs',
       stsMegaplusManuallyAddTabsHeader: 'Manually add tabs',
+      stsMegaplusCheckedA11yLabel: '$1, checked',
+      stsMegaplusTurnOffSharingHint: 'Select to turn off sharing',
+      stsMegaplusTurnOnSharingHint: 'Select to turn on sharing',
     });
 
     const pluralStringProxy = new TestPluralStringProxy();
@@ -1565,7 +1569,6 @@ suite('ContextualActionMenu', () => {
     const item = $$(actionMenu, '#smartTabSharingItem');
     assertTrue(!!item);
     assertTrue(!!item.querySelector('.share-tabs-check'));
-    assertEquals('true', item.getAttribute('aria-checked'));
 
     let eventDetail: {active: boolean}|null = null;
     actionMenu.addEventListener(
@@ -1613,6 +1616,47 @@ suite('ContextualActionMenu', () => {
 
     assertFalse(actionMenu.$.menu.open);
   });
+
+  test(
+      'Smart tab sharing rows spell out state and hint in their label',
+      async () => {
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        actionMenu.smartTabSharingVisible = true;
+        actionMenu.contextManagementInComposeboxEnabled = true;
+        actionMenu.tabSuggestions = [createTabSuggestion()];
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+        document.body.appendChild(actionMenu);
+        const label =
+            loadTimeData.getString('stsMegaplusShareRelevantOpenTabs');
+
+        actionMenu.smartTabSharingActive = true;
+        actionMenu.showAt(actionMenu);
+        await actionMenu.updateComplete;
+        const checkedItem = $$(actionMenu, '#smartTabSharingItem');
+        assertTrue(!!checkedItem);
+        assertEquals('menuitem', checkedItem.getAttribute('role'));
+        assertFalse(checkedItem.hasAttribute('aria-checked'));
+        assertEquals(
+            `${label}, checked`, checkedItem.getAttribute('aria-label'));
+        assertEquals(
+            'Select to turn off sharing',
+            checkedItem.getAttribute('aria-description'));
+
+        actionMenu.smartTabSharingActive = false;
+        await actionMenu.updateComplete;
+        const uncheckedItem = $$(actionMenu, '#smartTabSharingItemFlyout');
+        assertTrue(!!uncheckedItem);
+        assertEquals('menuitem', uncheckedItem.getAttribute('role'));
+        assertFalse(uncheckedItem.hasAttribute('aria-checked'));
+        assertFalse(uncheckedItem.hasAttribute('aria-label'));
+        assertEquals(
+            'Select to turn on sharing',
+            uncheckedItem.getAttribute('aria-description'));
+      });
 
   test('AutoRepositionEnabledByDefaultOnSharedWrapper', () => {
     const innerMenu = actionMenu.$.menu;
@@ -3093,7 +3137,6 @@ suite('ContextualActionMenu', () => {
       assertTrue(!!flyoutToggleItem);
       assertTrue(isVisible(flyoutToggleItem));
 
-      assertEquals('false', flyoutToggleItem.getAttribute('aria-checked'));
       assertFalse(!!flyoutToggleItem.querySelector('.share-tabs-check'));
       const icon = flyoutToggleItem.querySelector('cr-icon');
       assertTrue(!!icon);
@@ -3162,7 +3205,6 @@ suite('ContextualActionMenu', () => {
       assertTrue(!!mainMenuToggle);
       assertTrue(isVisible(mainMenuToggle));
 
-      assertEquals('true', mainMenuToggle.getAttribute('aria-checked'));
       assertTrue(!!mainMenuToggle.querySelector('.share-tabs-check'));
       const icon = mainMenuToggle.querySelector('cr-icon:not(.share-tabs-check)');
       assertTrue(!!icon);

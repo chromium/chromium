@@ -47,7 +47,12 @@ export function getHtml(this: ContextualActionMenuElement) {
             ${this.smartTabSharingVisible && this.smartTabSharingActive ?
                 html`
               <button class="dropdown-item" id="smartTabSharingItem"
-                  role="menuitemcheckbox" aria-checked="true"
+                  role="menuitem"
+                  aria-label="${this.i18n(
+                      'stsMegaplusCheckedA11yLabel',
+                      this.i18n('stsMegaplusShareRelevantOpenTabs'))}"
+                  aria-description="${
+                      this.i18n('stsMegaplusTurnOffSharingHint')}"
                   ?disabled="${this.isShareTabsTriggerDisabled_()}"
                   @click="${this.onSmartTabSharingItemClick_}">
                 <cr-icon icon="composebox:screensaverAuto"></cr-icon>
@@ -238,7 +243,8 @@ export function getHtml(this: ContextualActionMenuElement) {
             </h4>
           ` : ''}
           <button class="dropdown-item" id="smartTabSharingItemFlyout"
-              role="menuitemcheckbox" aria-checked="false"
+              role="menuitem"
+              aria-description="${this.i18n('stsMegaplusTurnOnSharingHint')}"
               ?hidden="${!this.shareTabsFlyoutOpen}"
               ?disabled="${this.isShareTabsTriggerDisabled_()}"
               @click="${this.onSmartTabSharingItemClick_}">
