@@ -325,20 +325,33 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   DCHECK(worker_node);
   // TODO(crbug.com/40165276): Support service and shared workers.
   DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
-  // A dedicated worker is guaranteed to have the same origin as its parent,
-  // which means that a dedicated worker cannot be a cross-origin aggregation
-  // point.
+  // Dedicated workers generally have the same origin as their parent, except
+  // when a worker node has an opaque origin derived from its creator (e.g.
+  // data: URL workers, nested workers created by a CSP-sandboxed parent worker,
+  // or CSP-sandboxed workers enumerated after script load).
 #if DCHECK_IS_ON()
   auto client_frames = worker_node->GetClientFrames();
   DCHECK(std::ranges::all_of(
       client_frames, [worker_node](const FrameNode* client) {
-        return client->GetOrigin().has_value() &&
-               client->GetOrigin()->IsSameOriginWith(worker_node->GetOrigin());
+        if (!client->GetOrigin().has_value()) {
+          return false;
+        }
+        if (client->GetOrigin()->IsSameOriginWith(worker_node->GetOrigin())) {
+          return true;
+        }
+        return worker_node->GetOrigin().opaque() &&
+               client->GetOrigin()->GetTupleOrPrecursorTupleIfOpaque() ==
+                   worker_node->GetOrigin().GetTupleOrPrecursorTupleIfOpaque();
       }));
   auto client_workers = worker_node->GetClientWorkers();
   DCHECK(std::ranges::all_of(
       client_workers, [worker_node](const WorkerNode* client) {
-        return client->GetOrigin().IsSameOriginWith(worker_node->GetOrigin());
+        if (client->GetOrigin().IsSameOriginWith(worker_node->GetOrigin())) {
+          return true;
+        }
+        return worker_node->GetOrigin().opaque() &&
+               client->GetOrigin().GetTupleOrPrecursorTupleIfOpaque() ==
+                   worker_node->GetOrigin().GetTupleOrPrecursorTupleIfOpaque();
       }));
 #endif
   NodeAggregationType aggregation_type = GetNodeAggregationType(
@@ -370,13 +383,21 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       break;
     }
 
+    case NodeAggregationType::kCrossOriginAggregationPoint:
+      // An opaque-origin dedicated worker (e.g., data: URL or CSP-sandboxed
+      // worker) created by a same-origin context is cross-origin to the
+      // requesting node and must not expose its URL.
+      aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
+          AttributionScope::kCrossOriginAggregated, std::nullopt,
+          aggregation_result_.get());
+      WebMemoryAggregator::CopyBreakdownAttribution(
+          enclosing_.top().aggregation_point, aggregation_point);
+      break;
+
     case NodeAggregationType::kCrossOriginAggregated:
       // Update the enclosing aggregation point in-place.
       aggregation_point = enclosing_.top().aggregation_point;
       break;
-
-    case NodeAggregationType::kCrossOriginAggregationPoint:
-      NOTREACHED();
   }
 
   // Now update the memory used in the chosen aggregation point.

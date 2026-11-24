@@ -330,9 +330,19 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     std::string script_url,
     std::optional<base::ByteSize> bytes,
     FrameNodeImpl* parent) {
-  auto* worker_node = AddWorkerNodeImpl(
-      worker_type, parent->GetOrigin().value_or(url::Origin()), script_url,
-      bytes);
+  return AddWorkerNodeWithOrigin(worker_type,
+                                 parent->GetOrigin().value_or(url::Origin()),
+                                 std::move(script_url), bytes, parent);
+}
+
+WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeWithOrigin(
+    WorkerNode::WorkerType worker_type,
+    const url::Origin& origin,
+    std::string script_url,
+    std::optional<base::ByteSize> bytes,
+    FrameNodeImpl* parent) {
+  auto* worker_node =
+      AddWorkerNodeImpl(worker_type, origin, std::move(script_url), bytes);
   worker_node->AddClientFrame(parent);
   return worker_node;
 }
@@ -351,8 +361,18 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     std::string script_url,
     std::optional<base::ByteSize> bytes,
     WorkerNodeImpl* parent) {
+  return AddWorkerNodeWithOrigin(worker_type, parent->GetOrigin(),
+                                 std::move(script_url), bytes, parent);
+}
+
+WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeWithOrigin(
+    WorkerNode::WorkerType worker_type,
+    const url::Origin& origin,
+    std::string script_url,
+    std::optional<base::ByteSize> bytes,
+    WorkerNodeImpl* parent) {
   auto* worker_node =
-      AddWorkerNodeImpl(worker_type, parent->GetOrigin(), script_url, bytes);
+      AddWorkerNodeImpl(worker_type, origin, std::move(script_url), bytes);
   worker_node->AddClientWorker(parent);
   return worker_node;
 }

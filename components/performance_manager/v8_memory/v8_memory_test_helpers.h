@@ -320,6 +320,18 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                 std::optional<base::ByteSize> bytes,
                                 WorkerNodeImpl* parent);
 
+  WorkerNodeImpl* AddWorkerNodeWithOrigin(WorkerNode::WorkerType worker_type,
+                                          const url::Origin& origin,
+                                          std::string script_url,
+                                          std::optional<base::ByteSize> bytes,
+                                          FrameNodeImpl* parent);
+
+  WorkerNodeImpl* AddWorkerNodeWithOrigin(WorkerNode::WorkerType worker_type,
+                                          const url::Origin& origin,
+                                          std::string script_url,
+                                          std::optional<base::ByteSize> bytes,
+                                          WorkerNodeImpl* parent);
+
   void SetBlinkMemory(std::optional<base::ByteSize> bytes);
 
   ProcessNode* process_node() const { return process_.get(); }

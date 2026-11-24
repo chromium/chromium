@@ -766,6 +766,36 @@ TEST_F(WebMemoryAggregatorTest, CanvasMemory) {
   }
 }
 
+TEST_F(WebMemoryAggregatorTest, AggregateOpaqueOriginWorker) {
+  FrameNodeImpl* main_frame =
+      AddFrameNode("https://example.com/", base::ByteSize(10));
+  url::Origin opaque_worker_origin =
+      main_frame->GetOrigin()->DeriveNewOpaqueOrigin();
+  WorkerNodeImpl* opaque_worker = AddWorkerNodeWithOrigin(
+      WorkerNode::WorkerType::kDedicated, opaque_worker_origin,
+      "https://example.com/sandboxed_worker.js", base::ByteSize(25),
+      main_frame);
+  WorkerNodeImpl* nested_worker = AddWorkerNodeWithOrigin(
+      WorkerNode::WorkerType::kDedicated,
+      opaque_worker_origin.DeriveNewOpaqueOrigin(),
+      "data:text/javascript,nested", base::ByteSize(15), opaque_worker);
+
+  WebMemoryAggregator aggregator(main_frame);
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(base::ByteSize(10), AttributionScope::kWindow,
+                              "https://example.com/"),
+      ExpectedMemoryBreakdown(base::ByteSize(40),
+                              AttributionScope::kCrossOriginAggregated,
+                              std::nullopt),
+  });
+  auto result = aggregator.AggregateMeasureMemoryResult();
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
+
+  nested_worker->RemoveClientWorker(opaque_worker);
+  opaque_worker->RemoveClientFrame(main_frame);
+}
+
 }  // namespace v8_memory
 
 }  // namespace performance_manager
