@@ -255,6 +255,15 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kDiceLinkedAccounts);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the "Add account to device" options are disabled if the device
+// doesn't allow adding accounts (the DISALLOW_MODIFY_ACCOUNTS user restriction
+// is set). If such a device also has no accounts, sign-in isn't supported, so
+// the sign-in promos are hidden.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kDisableAddAccountWhenRestricted);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Controls whether the First Run animations are disabled or not. If the feature
 // is enabled, animations in the First Run are disabled, otherwise they're

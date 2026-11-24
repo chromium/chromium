@@ -3100,6 +3100,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-add-account-when-restricted",
+    "owners": [ "mziel@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 168
+  },
+  {
     "name": "disable-autofill-strike-system",
     "owners": [ "osaul@google.com", "payments-autofill-team@google.com" ],
     // This flag does not expire because it allows users to test or debug issues

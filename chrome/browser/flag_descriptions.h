@@ -6132,6 +6132,14 @@ inline constexpr char kDeviceTrustConnectorDesktopFormFactorsDescription[] =
     "requires the Device Trust Connector on Android flag. Has no effect on "
     "other form factors.";
 
+inline constexpr char kDisableAddAccountWhenRestrictedName[] =
+    "Disable add account when restricted";
+inline constexpr char kDisableAddAccountWhenRestrictedDescription[] =
+    "Disables the 'Add account to device' options when the device doesn't "
+    "allow adding accounts. On such a device with no accounts, hides the "
+    "sign-in promos and the Settings sign-in row, and shows a \"Can't sign "
+    "in\" message instead of the sign-in screen.";
+
 inline constexpr char kEdgeToEdgeTopInsetName[] = "Edge-to-Edge Top Inset";
 inline constexpr char kEdgeToEdgeTopInsetDescription[] =
     "Enables the prototype Edge-to-Edge top inset feature and refactor, which "

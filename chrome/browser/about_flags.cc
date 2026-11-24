@@ -14083,6 +14083,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"restore-tab-groups-on-fre", flag_descriptions::kRestoreTabGroupsOnFreName,
      flag_descriptions::kRestoreTabGroupsOnFreDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kRestoreTabGroupsOnFre)},
+
+    {"disable-add-account-when-restricted",
+     flag_descriptions::kDisableAddAccountWhenRestrictedName,
+     flag_descriptions::kDisableAddAccountWhenRestrictedDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kDisableAddAccountWhenRestricted)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"autofill-enable-server-controlled-mandatory-reauth",
      flag_descriptions::kAutofillEnableServerControlledMandatoryReauthName,

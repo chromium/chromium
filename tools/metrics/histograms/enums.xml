@@ -10329,6 +10329,7 @@ from previous Chrome versions.
   <int value="-1389948505" label="InitialNavigationEntry:disabled"/>
   <int value="-1389941688"
       label="SupervisedUserEmitLogRecordSeparately:disabled"/>
+  <int value="-1388986339" label="DisableAddAccountWhenRestricted:disabled"/>
   <int value="-1388956102" label="OmniboxTouchDownTriggerForPrefetch:disabled"/>
   <int value="-1388933740" label="CastStreamingHardwareHevc:enabled"/>
   <int value="-1388835077" label="PdfBrotliDecode:disabled"/>
@@ -17936,6 +17937,7 @@ from previous Chrome versions.
   <int value="859872800" label="FullscreenAlwaysShowTrafficLights:enabled"/>
   <int value="859913799" label="EnableDesksTrackpadSwipeImprovements:disabled"/>
   <int value="860336036" label="ChromeModernDesign:enabled"/>
+  <int value="861174778" label="DisableAddAccountWhenRestricted:enabled"/>
   <int value="861351290" label="FontManagerEarlyInit:enabled"/>
   <int value="861596248" label="BrowserLaunchMetadataReporting:enabled"/>
   <int value="861968979" label="EnableEncryptedAV1:enabled"/>
