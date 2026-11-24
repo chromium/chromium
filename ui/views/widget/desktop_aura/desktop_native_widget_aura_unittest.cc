@@ -1050,31 +1050,51 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRealignedOnGrowUpward) {
 // step; propagating that size back to the popup would make the two windows
 // chase each other and grow by a pixel per round trip.
 TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupKeepsSizeOnHostResize) {
-  for (const bool realign_on_widget_move : {false, true}) {
-    SCOPED_TRACE(realign_on_widget_move);
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureState(
-        ::features::kChildWindowRealignedOnWidgetMove, realign_on_widget_move);
+  base::test::ScopedFeatureList feature_list(
+      ::features::kChildWindowRealignedOnWidgetMove);
+  DesktopAuraTopLevelWindowTest popup_window;
 
-    DesktopAuraTopLevelWindowTest popup_window;
+  popup_window.set_use_async_mode(false);
 
-    popup_window.set_use_async_mode(false);
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
 
-    ASSERT_NO_FATAL_FAILURE(
-        popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
+  const gfx::Size popup_size(339, 75);
+  popup_window.owned_window()->SetBounds(gfx::Rect(popup_size));
 
-    const gfx::Size popup_size(339, 75);
-    popup_window.owned_window()->SetBounds(gfx::Rect(popup_size));
+  views::Widget* top_level_widget = popup_window.top_level_widget();
+  top_level_widget->SetBounds(
+      gfx::Rect(top_level_widget->GetWindowBoundsInScreen().origin(),
+                gfx::Size(popup_size.width() + 1, popup_size.height() + 1)));
 
-    views::Widget* top_level_widget = popup_window.top_level_widget();
-    top_level_widget->SetBounds(
-        gfx::Rect(top_level_widget->GetWindowBoundsInScreen().origin(),
-                  gfx::Size(popup_size.width() + 1, popup_size.height() + 1)));
+  EXPECT_EQ(gfx::Rect(popup_size), popup_window.owned_window()->bounds());
 
-    EXPECT_EQ(gfx::Rect(popup_size), popup_window.owned_window()->bounds());
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+}
 
-    ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
-  }
+TEST_F(DesktopNativeWidgetAuraTest,
+       TopLevelOwnedPopupKeepsSizeOnHostResizeWhenMoveRealignDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kChildWindowRealignedOnWidgetMove);
+  DesktopAuraTopLevelWindowTest popup_window;
+
+  popup_window.set_use_async_mode(false);
+
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
+
+  const gfx::Size popup_size(339, 75);
+  popup_window.owned_window()->SetBounds(gfx::Rect(popup_size));
+
+  views::Widget* top_level_widget = popup_window.top_level_widget();
+  top_level_widget->SetBounds(
+      gfx::Rect(top_level_widget->GetWindowBoundsInScreen().origin(),
+                gfx::Size(popup_size.width() + 1, popup_size.height() + 1)));
+
+  EXPECT_EQ(gfx::Rect(popup_size), popup_window.owned_window()->bounds());
+
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
 }
 
 // This test validates that moving an owned popup without changing its size
