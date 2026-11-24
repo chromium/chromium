@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.B
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SEARCH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_UPDATED_HISTOGRAM;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -47,7 +46,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
-import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
@@ -339,16 +337,14 @@ public class GoogleBottomBarViewCreatorTest {
     }
 
     @Test
-    public void testUpdateBottomBarButton_logsButtonUpdated() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_UPDATED_HISTOGRAM, GoogleBottomBarButtonEvent.SAVE_EMBEDDER);
+    public void testUpdateBottomBarButton_updatesButton() {
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getAllEmbedderButtonsConfig());
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
-        mGoogleBottomBarViewCreator.updateBottomBarButton(
-                BottomBarConfigCreator.createButtonConfigFromCustomParams(
-                        mActivity, getMockCustomButtonParams(SAVE)));
+        assertTrue(
+                mGoogleBottomBarViewCreator.updateBottomBarButton(
+                        BottomBarConfigCreator.createButtonConfigFromCustomParams(
+                                mActivity, getMockCustomButtonParams(SAVE))));
     }
 
     @Test

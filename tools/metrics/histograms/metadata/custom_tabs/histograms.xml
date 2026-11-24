@@ -259,18 +259,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.GoogleBottomBar.Button.Updated"
-    enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
-  <owner>tivi@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Recorded only on Android. Records GoogleBottomBar(GBB) buttons that are
-    updated. Logged when embedder send request to update a button that is
-    displayed in the GoogleBottomBar (when the GoogleBottomBar feature is
-    enabled and visible at the bottom of the CCT).
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.GoogleBottomBar.Created"
     enum="GoogleBottomBarCreatedEvent" expires_after="2025-07-27">
   <owner>tivi@google.com</owner>

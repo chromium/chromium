@@ -198,7 +198,7 @@ public class GoogleBottomBarViewCreator {
         if (button == null) {
             return false;
         }
-        return updateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
+        return updateButton(button, buttonConfig);
     }
 
     private @Nullable ButtonConfig findButtonConfig(@ButtonId int buttonId) {
@@ -250,18 +250,12 @@ public class GoogleBottomBarViewCreator {
         return (ViewGroup) rootView;
     }
 
-    private boolean updateButton(
-            ImageButton button, ButtonConfig buttonConfig, boolean isFirstTimeShown) {
+    private boolean updateButton(ImageButton button, ButtonConfig buttonConfig) {
         button.setId(buttonConfig.getId());
         button.setImageDrawable(buttonConfig.getIcon());
         button.setContentDescription(buttonConfig.getDescription());
         button.setOnClickListener(mActionsHandler.getClickListener(buttonConfig));
         button.setVisibility(View.VISIBLE);
-
-        if (!isFirstTimeShown) {
-            int buttonEvent = GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(buttonConfig);
-            GoogleBottomBarLogger.logButtonUpdated(buttonEvent);
-        }
         return true;
     }
 
@@ -279,7 +273,7 @@ public class GoogleBottomBarViewCreator {
         } else {
             parent.addView(button);
         }
-        updateButton(button, buttonConfig, /* isFirstTimeShown= */ true);
+        updateButton(button, buttonConfig);
     }
 
     private LinearLayout getEvenButtonsLayout() {
