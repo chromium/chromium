@@ -8,8 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 
 /**
  * Represents an immutable snapshot of the screen state for the main AtMemory bottom sheet UI (the
- * home screen where search queries and results are displayed). Setting the state via {@link
- * AtMemoryBottomSheetMediator#applyScreenState} is idempotent.
+ * home screen where search queries and results are displayed).
  *
  * <p>Examples of valid state transitions:
  *

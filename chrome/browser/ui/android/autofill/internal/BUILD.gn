@@ -15,9 +15,7 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetIllustrationCardView.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetNoticeView.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetProperties.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetSuggestionView.java",
@@ -92,8 +90,6 @@ generate_jni("jni_headers") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetCoordinatorTest.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemorySearchBarViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridgeTest.java",

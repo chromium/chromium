@@ -280,7 +280,8 @@ public class AtMemoryBottomSheetViewRenderTest {
                                     .with(
                                             AtMemoryBottomSheetProperties
                                                     .TextWithClickableLinkProperties.TEXT,
-                                            mActivity.getString(R.string.at_memory_ai_disclosure))
+                                            "Gemini is AI and can make mistakes. <link>More about"
+                                                    + " relevant data sent to Google</link>")
                                     .build();
                     modelList.add(
                             new ListItem(
