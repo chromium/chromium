@@ -90,6 +90,12 @@ bool ButtonController::OnKeyPressed(const ui::KeyEvent& event) {
 
   switch (button_->GetKeyClickActionForEvent(event)) {
     case Button::KeyClickAction::kOnKeyRelease:
+      // Only arm on an initial press so auto-repeats from a key held down
+      // before this button gained focus cannot trigger a click on release.
+      // Still consume the event so it does not fall through to accelerators.
+      if (event.is_repeat()) {
+        return true;
+      }
       button_->SetState(Button::STATE_PRESSED);
       if (button_controller_delegate_->GetInkDrop()->GetTargetInkDropState() !=
           InkDropState::ACTION_PENDING) {

@@ -904,6 +904,63 @@ TEST_F(ButtonTest, ActionOnSpace) {
   EXPECT_TRUE(button()->pressed());
 }
 
+// Verify that repeated Space key-press events without a prior non-repeat press
+// on the button do not transition a `kOnKeyRelease` button to `STATE_PRESSED`,
+// animate its ink drop, or trigger a click on release (crbug.com/574757811).
+TEST_F(ButtonTest, NoActionOnSpaceRepeatWithoutInitialPress) {
+  TestInkDrop* ink_drop =
+      CreateButtonWithInkDrop(/*has_ink_drop_action_on_click=*/true);
+  button()->set_custom_key_click_action(Button::KeyClickAction::kOnKeyRelease);
+  button()->RequestFocus();
+  ASSERT_TRUE(button()->HasFocus());
+
+  ui::KeyEvent space_repeat(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                            ui::EF_IS_REPEAT);
+  ASSERT_TRUE(button()->OnKeyPressed(space_repeat));
+  ASSERT_EQ(Button::STATE_NORMAL, button()->GetState());
+  ASSERT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
+  ASSERT_FALSE(button()->pressed());
+
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
+  EXPECT_FALSE(button()->OnKeyReleased(space_release));
+  EXPECT_EQ(Button::STATE_NORMAL, button()->GetState());
+  EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
+  EXPECT_FALSE(button()->pressed());
+}
+
+// Verify that an initial non-repeat Space key-press followed by repeated
+// key-press events keeps a `kOnKeyRelease` button in `STATE_PRESSED` and
+// triggers a click on release.
+TEST_F(ButtonTest, ActionOnSpaceWithRepeatAfterInitialPress) {
+  TestInkDrop* ink_drop =
+      CreateButtonWithInkDrop(/*has_ink_drop_action_on_click=*/true);
+  button()->set_custom_key_click_action(Button::KeyClickAction::kOnKeyRelease);
+  button()->RequestFocus();
+  ASSERT_TRUE(button()->HasFocus());
+
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  ASSERT_TRUE(button()->OnKeyPressed(space_press));
+  ASSERT_EQ(Button::STATE_PRESSED, button()->GetState());
+  ASSERT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
+  ASSERT_FALSE(button()->pressed());
+
+  ui::KeyEvent space_repeat(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                            ui::EF_IS_REPEAT);
+  ASSERT_TRUE(button()->OnKeyPressed(space_repeat));
+  ASSERT_EQ(Button::STATE_PRESSED, button()->GetState());
+  ASSERT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
+  ASSERT_FALSE(button()->pressed());
+
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
+  EXPECT_TRUE(button()->OnKeyReleased(space_release));
+  EXPECT_EQ(Button::STATE_NORMAL, button()->GetState());
+  EXPECT_EQ(InkDropState::ACTION_TRIGGERED, ink_drop->GetTargetInkDropState());
+  EXPECT_TRUE(button()->pressed());
+}
+
 // Verify that the Return key clicks the button on key-press on all platforms
 // except Mac. On Mac, the Return key performs the default action associated
 // with a dialog, even if a button has focus.
