@@ -440,7 +440,7 @@ TEST_F(AmbientManagedPhotoControllerTest, PhotoConfigTest) {
   EXPECT_EQ(2u, config.GetNumDecodedTopicsToBuffer());
   EXPECT_TRUE(config.should_split_topics);
   EXPECT_EQ(1u, config.refresh_topic_markers.size());
-  EXPECT_TRUE(config.refresh_topic_markers.contains(
+  EXPECT_TRUE(config.refresh_topic_markers.Has(
       AmbientPhotoConfig::Marker::kUiCycleEnded));
 }
 

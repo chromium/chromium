@@ -145,7 +145,7 @@ bool AmbientPhotoController::IsScreenUpdateActive() const {
 }
 
 void AmbientPhotoController::OnMarkerHit(AmbientPhotoConfig::Marker marker) {
-  if (!ambient_backend_model_.photo_config().refresh_topic_markers.contains(
+  if (!ambient_backend_model_.photo_config().refresh_topic_markers.Has(
           marker)) {
     DVLOG(3) << "UI event " << marker
              << " does not trigger a topic refresh. Ignoring...";

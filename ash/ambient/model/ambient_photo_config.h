@@ -9,7 +9,7 @@
 #include <ostream>
 
 #include "ash/ash_export.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
 
 namespace ash {
 
@@ -59,13 +59,15 @@ struct ASH_EXPORT AmbientPhotoConfig {
     // A one-time event when the UI first starts rendering (the start of the
     // very first cycle).
     kUiStartRendering,
+    kMinValue = kUiStartRendering,
     // Marks the end of one UI cycle, and by extension, the start of another
     // cycle.
-    kUiCycleEnded
+    kUiCycleEnded,
+    kMaxValue = kUiCycleEnded,
   };
   // Markers at which a new set of topics should be decoded and written to the
   // model, where the size of the new set is |topic_set_size|.
-  base::flat_set<Marker> refresh_topic_markers;
+  base::EnumSet<Marker> refresh_topic_markers;
 
   // TODO(esum): Evaluate whether the following are needed:
   // * Max topics to cache - Since the animation photo config splits topics,
