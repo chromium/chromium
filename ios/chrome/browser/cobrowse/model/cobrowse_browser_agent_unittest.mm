@@ -14,20 +14,26 @@
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/url_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
 namespace {
@@ -363,4 +369,146 @@ TEST_F(CobrowseBrowserAgentTest,
   const base::DictValue& active_map =
       personal_profile_->GetPrefs()->GetDict(prefs::kCobrowseSessionActiveMap);
   EXPECT_FALSE(active_map.contains("test_session_id"));
+}
+
+// Tests that opening a new active tab or switching tabs terminates the session
+// and closes the assistant when `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseBrowserAgentTest,
+       TerminatesSessionOnActiveTabChangeWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList feature_list(kEphemeralBottomSheet);
+  id mock_scene_handler = OCMStrictProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler
+                   forProtocol:@protocol(SceneCommands)];
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web_state_list->InsertWebState(
+      std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  agent->SetSessionActive(true);
+  agent->SetCobrowseContext(
+      [[CobrowseContext alloc] initWithURL:GURL("https://www.google.com/search?"
+                                                "udm=50&q=hello")]);
+
+  // Opening a new active tab terminates the session.
+  OCMExpect([mock_scene_handler closeAssistant]);
+  web_state_list->InsertWebState(
+      std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_EQ(agent->GetCobrowseContext(), nil);
+  [mock_scene_handler verify];
+
+  // Switching back to the first tab also terminates a new active session.
+  agent->SetSessionActive(true);
+  OCMExpect([mock_scene_handler closeAssistant]);
+  web_state_list->ActivateWebStateAt(0);
+
+  EXPECT_FALSE(agent->IsSessionActive());
+  [mock_scene_handler verify];
+}
+
+// Tests that switching tabs does not terminate the session when
+// `kEphemeralBottomSheet` is disabled.
+TEST_F(CobrowseBrowserAgentTest,
+       DoesNotTerminateSessionOnActiveTabChangeWhenEphemeralDisabled) {
+  id mock_scene_handler = OCMStrictProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler
+                   forProtocol:@protocol(SceneCommands)];
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web_state_list->InsertWebState(
+      std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionParams::Automatic().Activate());
+  agent->SetSessionActive(true);
+
+  [[mock_scene_handler reject] closeAssistant];
+  web_state_list->InsertWebState(
+      std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  EXPECT_TRUE(agent->IsSessionActive());
+  [mock_scene_handler verify];
+}
+
+// Tests that entering the Tab Grid terminates the session and closes the
+// assistant when `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseBrowserAgentTest,
+       TerminatesSessionOnEnterTabGridWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList feature_list(kEphemeralBottomSheet);
+  id mock_scene_handler = OCMStrictProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler
+                   forProtocol:@protocol(SceneCommands)];
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+  agent->SetCobrowseContext(
+      [[CobrowseContext alloc] initWithURL:GURL("https://www.google.com/search?"
+                                                "udm=50&q=hello")]);
+
+  OCMExpect([mock_scene_handler closeAssistant]);
+  scene_state_.tabGridState.tabGridVisible = YES;
+
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_EQ(agent->GetCobrowseContext(), nil);
+  [mock_scene_handler verify];
+}
+
+// Tests that entering the Tab Grid does not terminate the session when
+// `kEphemeralBottomSheet` is disabled.
+TEST_F(CobrowseBrowserAgentTest,
+       DoesNotTerminateSessionOnEnterTabGridWhenEphemeralDisabled) {
+  id mock_scene_handler = OCMStrictProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler
+                   forProtocol:@protocol(SceneCommands)];
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+
+  [[mock_scene_handler reject] closeAssistant];
+  scene_state_.tabGridState.tabGridVisible = YES;
+
+  EXPECT_TRUE(agent->IsSessionActive());
+  [mock_scene_handler verify];
+}
+
+// Tests that backgrounding and foregrounding the app preserves the session when
+// `kEphemeralBottomSheet` is enabled (provided the Start Surface timeout has
+// not elapsed).
+TEST_F(CobrowseBrowserAgentTest,
+       PreservesSessionOnAppBackgroundWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList feature_list(kEphemeralBottomSheet);
+  id mock_scene_handler = OCMStrictProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler
+                   forProtocol:@protocol(SceneCommands)];
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+
+  [[mock_scene_handler reject] closeAssistant];
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent->IsSessionActive());
+  [mock_scene_handler verify];
 }

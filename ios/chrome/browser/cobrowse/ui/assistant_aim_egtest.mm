@@ -392,7 +392,11 @@ void RemoveSharedTab(NSString* title) {
       [self isRunningTest:@selector(
                               testEphemeralAssistantClosesOnSheetLinkClick)] ||
       [self isRunningTest:@selector(
-                              testEphemeralAssistantClosesOnHelpMenuLink)]) {
+                              testEphemeralAssistantClosesOnHelpMenuLink)] ||
+      [self isRunningTest:@selector(testEphemeralAssistantClosesOnNewTab)] ||
+      [self isRunningTest:@selector(testEphemeralAssistantClosesOnTabSwitch)] ||
+      [self isRunningTest:@selector(
+                              testEphemeralAssistantClosesOnEnterTabGrid)]) {
     config.features_enabled.push_back(kEphemeralBottomSheet);
   }
 
@@ -1992,6 +1996,58 @@ void RemoveSharedTab(NSString* title) {
                      IDS_IOS_TOOLS_MENU_HELP_MOBILE)] performAction:grey_tap()];
 
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+}
+
+// Tests that opening a new tab closes the assistant when
+// `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantClosesOnNewTab {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:2];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+
+  // Navigating on the new tab should not re-open the terminated session.
+  [ChromeEarlGrey loadURL:_defaultURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that switching to another tab closes the assistant when
+// `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantClosesOnTabSwitch {
+  [ChromeEarlGrey loadURL:_defaultURL];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+}
+
+// Tests that entering the Tab Grid closes the assistant and does not restore it
+// when returning to the tab when `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantClosesOnEnterTabGrid {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
+      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

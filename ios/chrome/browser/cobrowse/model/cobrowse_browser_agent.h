@@ -83,9 +83,10 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   // Registrar for observing preference changes.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Observer for `SceneState` transitions. Listens for when the scene enters
-  // the foreground active state to terminate any active cobrowse session if the
-  // Start Surface inactivity threshold has elapsed.
+  // Observer for `SceneState` and `TabGridState` transitions. Terminates any
+  // active cobrowse session when returning to foreground after the Start
+  // Surface inactivity threshold has elapsed, or when entering the Tab Grid
+  // with `kEphemeralBottomSheet` enabled.
   __strong CobrowseSceneStateObserver* scene_state_observer_ = nil;
 };
 

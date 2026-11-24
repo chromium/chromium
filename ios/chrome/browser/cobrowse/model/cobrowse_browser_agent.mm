@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -61,9 +62,11 @@ base::DictValue BuildSessionPrefDict(CobrowseContext* context) {
 
 }  // namespace
 
-// Observes SceneState transitions to terminate cobrowse when returning to the
-// foreground after the Start Surface inactivity timeout.
-@interface CobrowseSceneStateObserver : NSObject <SceneStateObserver>
+// Observes `SceneState` and `TabGridState` transitions to terminate cobrowse
+// when returning to the foreground after the Start Surface inactivity timeout,
+// or when entering the Tab Grid in ephemeral mode.
+@interface CobrowseSceneStateObserver
+    : NSObject <SceneStateObserver, TabGridStateObserving>
 - (instancetype)initWithBrowserAgent:(CobrowseBrowserAgent*)browserAgent;
 @end
 
@@ -90,6 +93,14 @@ base::DictValue BuildSessionPrefDict(CobrowseContext* context) {
     if (ShouldShowStartSurfaceForSceneState(sceneState)) {
       _browserAgent->TerminateSession();
     }
+  }
+}
+
+#pragma mark - TabGridStateObserving
+
+- (void)willEnterTabGrid {
+  if (IsEphemeralBottomSheetEnabled() && _browserAgent->IsSessionActive()) {
+    _browserAgent->TerminateSession();
   }
 }
 
@@ -124,6 +135,7 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
     scene_state_observer_ =
         [[CobrowseSceneStateObserver alloc] initWithBrowserAgent:this];
     [scene_state addObserver:scene_state_observer_];
+    [scene_state.tabGridState addObserver:scene_state_observer_];
   }
 
   if (IsEphemeralBottomSheetEnabled() || !scene_state ||
@@ -181,6 +193,7 @@ CobrowseBrowserAgent::~CobrowseBrowserAgent() {
   SceneState* scene_state = browser_->GetSceneState();
   if (scene_state && scene_state_observer_) {
     [scene_state removeObserver:scene_state_observer_];
+    [scene_state.tabGridState removeObserver:scene_state_observer_];
     scene_state_observer_ = nil;
   }
 }
@@ -431,5 +444,7 @@ void CobrowseBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
 
 void CobrowseBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
                                                    web::WebState* new_active) {
-  // Nothing to do.
+  if (IsEphemeralBottomSheetEnabled() && is_session_active_) {
+    TerminateSession();
+  }
 }
