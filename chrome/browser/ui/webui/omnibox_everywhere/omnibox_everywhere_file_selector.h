@@ -72,6 +72,12 @@ class OmniboxEverywhereFileSelector : public OmniboxPopupFileSelector
   void OnWidgetDestroying(views::Widget* widget) override;
 #endif
 
+ protected:
+  // OmniboxPopupFileSelector:
+  void OnFileSelectionOpened() override;
+  void NotifyFileSelectionClosed(bool file_selected) override;
+  void OpenAiMode() override;
+
  private:
 #if BUILDFLAG(IS_MAC)
   void ShowFileUploadDialog(

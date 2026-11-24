@@ -56,10 +56,9 @@
 namespace {
 
 // Returns the location bar of the browser window that `web_contents` belongs
-// to, or null if there is none (such as for Omnibox Everywhere).
+// to, or null if there is none.
 LocationBar* GetLocationBar(content::WebContents* web_contents) {
-  if (!web_contents ||
-      OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents)) {
+  if (!web_contents) {
     return nullptr;
   }
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
@@ -106,23 +105,7 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   image_encoding_options_ = image_encoding_options;
   was_ai_mode_open_ = was_ai_mode_open;
   is_image_ = is_image;
-  if (file_chooser_opened_callback_) {
-    file_chooser_opened_callback_.Run();
-  }
-  if (LocationBar* location_bar = GetLocationBar(web_contents)) {
-    if (was_ai_mode_open) {
-      if (auto* delegate = location_bar->GetPresenterDelegate()) {
-        if (auto* presenter = delegate->GetOmniboxPopupAimPresenter()) {
-          deactivation_blocker_ = presenter->CreateDeactivationBlocker();
-        }
-      }
-    } else if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-      if (OmniboxPopupHost* popup_host = popup_view->popup_host()) {
-        popup_host->OnFileDialogOpened();
-        deactivation_blocker_ = popup_host->CreateDeactivationBlocker();
-      }
-    }
-  }
+  OnFileSelectionOpened();
 
   file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
@@ -419,6 +402,26 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
                                                mime_string, result);
 }
 
+void OmniboxPopupFileSelector::OnFileSelectionOpened() {
+  if (file_chooser_opened_callback_) {
+    file_chooser_opened_callback_.Run();
+  }
+  if (LocationBar* location_bar = GetLocationBar(web_contents_.get())) {
+    if (was_ai_mode_open_) {
+      if (auto* delegate = location_bar->GetPresenterDelegate()) {
+        if (auto* presenter = delegate->GetOmniboxPopupAimPresenter()) {
+          deactivation_blocker_ = presenter->CreateDeactivationBlocker();
+        }
+      }
+    } else if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
+      if (OmniboxPopupHost* popup_host = popup_view->popup_host()) {
+        popup_host->OnFileDialogOpened();
+        deactivation_blocker_ = popup_host->CreateDeactivationBlocker();
+      }
+    }
+  }
+}
+
 void OmniboxPopupFileSelector::NotifyFileSelectionClosed(bool file_selected) {
   if (file_chooser_closed_callback_) {
     file_chooser_closed_callback_.Run();
@@ -446,7 +449,9 @@ void OmniboxPopupFileSelector::NotifyFileSelectionClosed(bool file_selected) {
 void OmniboxPopupFileSelector::OpenAiMode() {
   if (open_ai_mode_callback_) {
     open_ai_mode_callback_.Run();
-  } else if (edit_model_) {
+    return;
+  }
+  if (edit_model_) {
     edit_model_->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
   }
 }
