@@ -158,7 +158,8 @@ const size_t kNumberOfLabelsToCheck = 4;
 // confusable with any words in Latin scripts.
 constexpr std::u16string_view kAllowedWholeScriptConfusableWords[] = {
     u"секс",  u"как",     u"коса",     u"курс",  u"парк",  u"такий",
-    u"укроп", u"сахарок", u"покраска", u"театр", u"астро", u"пхукет"};
+    u"укроп", u"сахарок", u"покраска", u"театр", u"астро", u"пхукет",
+    u"мотокар"};
 
 IDNSpoofChecker::HuffmanTrieParams& GetTrieParams() {
   static base::NoDestructor<IDNSpoofChecker::HuffmanTrieParams> params{
