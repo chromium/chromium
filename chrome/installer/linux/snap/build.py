@@ -458,6 +458,8 @@ def main() -> None:
         snap_name = config.info_vars["SNAPNAME"]
         package_file = (
             f"{snap_name}-{channel}_{config.version}_{args.arch}.snap"
+            if args.official
+            else f"{snap_name}-{channel}_{args.arch}.snap"
         )
         pack_snap(staging_dir, output_dir / package_file, int(args.build_time))
 

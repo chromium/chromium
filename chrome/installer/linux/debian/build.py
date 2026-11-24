@@ -198,6 +198,13 @@ def main() -> None:
                 pkg_name,
             )
 
+        package_file = (
+            f"{pkg_name}_{config.versionfull}_{args.arch}.deb"
+            if args.official
+            else f"{pkg_name}_{args.arch}.deb"
+        )
+        package_path = tmp_file_dir / package_file
+
         os.environ["SOURCE_DATE_EPOCH"] = args.build_time
         staging_dir.chmod(0o750)
         installer.run_command(
@@ -207,12 +214,9 @@ def main() -> None:
                 "-Znone",
                 "-b",
                 str(staging_dir),
-                str(tmp_file_dir),
+                str(package_path),
             ]
         )
-
-        package_file = f"{pkg_name}_{config.versionfull}_{args.arch}.deb"
-        package_path = tmp_file_dir / package_file
 
         if args.official:
             pkg_basename = package_path.name

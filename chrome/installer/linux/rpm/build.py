@@ -169,8 +169,13 @@ def main() -> None:
 
         if args.official:
             compression_opt = "_binary_payload w9.xzdio"
+            pkg_name = (
+                f"{config.rpm_package_filename}-{config.version}-"
+                f"{config.package_release}"
+            )
         else:
             compression_opt = "_binary_payload w0.gzdio"
+            pkg_name = config.rpm_package_filename
 
         # Pin RPM v4 format so rpm >= 6.0 continues emitting v4 headers and
         # standard SVR4 cpio payloads instead of v6 stripped cpio (07070X),
@@ -189,15 +194,13 @@ def main() -> None:
             "--define=clamp_mtime_to_source_date_epoch 1",
             "--define=use_source_date_epoch_as_buildtime 1",
             "--define=_buildhost reproducible",
-            str(spec_file),
         ]
+        if not args.official:
+            cmd.append("--define=_build_name_fmt %{ARCH}/%{NAME}.%{ARCH}.rpm")
+        cmd.append(str(spec_file))
 
         installer.run_command(cmd)
 
-        pkg_name = (
-            f"{config.rpm_package_filename}-{config.version}-"
-            f"{config.package_release}"
-        )
         rpm_file = f"{pkg_name}.{args.arch}.rpm"
         src_rpm = rpm_build_dir / f"RPMS/{args.arch}/{rpm_file}"
         dst_rpm = output_dir / rpm_file

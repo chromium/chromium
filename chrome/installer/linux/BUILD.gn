@@ -583,6 +583,9 @@ group("installer_deps") {
 }
 
 # Creates .deb and .rpm (RPM for non-ChromeOS only) installer packages.
+# Non-official builds omit $chrome_version_full from the output filename so
+# incremental builds overwrite packages in place instead of leaking old
+# version-stamped archives across //chrome/VERSION bumps.
 #
 # channel:
 #   Name of the channel.
@@ -603,7 +606,11 @@ template("linux_package") {
     script = "debian/build.py"
 
     inputs = packaging_files
-    outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb" ]
+    if (is_official_build) {
+      outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb" ]
+    } else {
+      outputs = [ "$root_out_dir/${package}-${channel}_${deb_arch}.deb" ]
+    }
 
     args = [
       "-a",
@@ -641,7 +648,11 @@ template("linux_package") {
       script = "rpm/build.py"
 
       inputs = packaging_files
-      outputs = [ "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm" ]
+      if (is_official_build) {
+        outputs = [ "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm" ]
+      } else {
+        outputs = [ "$root_out_dir/${package}-${channel}.${rpm_arch}.rpm" ]
+      }
 
       args = [
         "-a",
@@ -675,7 +686,12 @@ template("linux_package") {
         script = "flatpak/build.py"
 
         inputs = packaging_files
-        outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${flatpak_arch}.flatpak" ]
+        if (is_official_build) {
+          outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${flatpak_arch}.flatpak" ]
+        } else {
+          outputs =
+              [ "$root_out_dir/${package}-${channel}_${flatpak_arch}.flatpak" ]
+        }
 
         args = [
           "-a",
@@ -733,7 +749,11 @@ template("linux_package") {
                    "snap/chrome.launcher.in",
                    "snap/snap.yaml.in",
                  ]
-        outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}_${snap_arch}.snap" ]
+        if (is_official_build) {
+          outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}_${snap_arch}.snap" ]
+        } else {
+          outputs = [ "$root_out_dir/${package}-${channel}_${snap_arch}.snap" ]
+        }
 
         args = [
           "-a",

@@ -222,11 +222,25 @@ class BuildTest(unittest.TestCase):
                 with mock.patch.object(sys, "argv", argv):
                     build.main()
 
-                rpm_path = (
-                    out_dir
-                    / "chromium-browser-stable-160.0.8155.0-1.x86_64.rpm"
+                expected_name = (
+                    "chromium-browser-stable-160.0.8155.0-1.x86_64.rpm"
+                    if official
+                    else "chromium-browser-stable.x86_64.rpm"
                 )
+                rpm_path = out_dir / expected_name
                 self.assertTrue(rpm_path.is_file())
+
+                version_release = subprocess.check_output(
+                    [
+                        "rpm",
+                        "-qp",
+                        "--qf",
+                        "%{VERSION}-%{RELEASE}",
+                        str(rpm_path),
+                    ],
+                    text=True,
+                )
+                self.assertEqual(version_release, "160.0.8155.0-1")
 
                 data = rpm_path.read_bytes()
                 # RPM v4 packages use lead major 3 (RPM v6 uses lead major 4).
