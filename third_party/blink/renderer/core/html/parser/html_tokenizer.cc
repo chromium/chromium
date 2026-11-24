@@ -29,6 +29,8 @@
 
 #include <array>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
@@ -38,6 +40,10 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+#include "third_party/highway/src/hwy/highway.h"
+#endif
 
 namespace blink {
 
@@ -152,13 +158,160 @@ static inline bool VectorEqualsString(
 #define HTML_SWITCH_TO(stateName) SWITCH_TO(HTMLTokenizer, stateName)
 
 HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options)
+    : HTMLTokenizer(
+          options,
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+          base::FeatureList::IsEnabled(features::kHTMLTokenizerSimdScan)
+#else
+          false
+#endif
+      ) {
+}
+
+HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options,
+                             bool simd_scan_enabled)
     : truncated_markup_declaration_enabled_(
           RuntimeEnabledFeatures::
               HTMLParserTruncatedMarkupDeclarationEnabled()),
+      simd_scan_script_data_enabled_(
+          simd_scan_enabled &&
+          features::kHTMLTokenizerSimdScanScriptData.Get()),
+      simd_scan_rawtext_enabled_(simd_scan_enabled &&
+                                 features::kHTMLTokenizerSimdScanRawtext.Get()),
+      simd_scan_min_length_(
+          simd_scan_enabled ? features::kHTMLTokenizerSimdScanMinLength.Get()
+                            : 0),
       options_(options),
       input_stream_preprocessor_(this) {
   Reset();
 }
+
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+namespace {
+
+HWY_ATTR size_t SimdScanScriptOrRawtext8(base::span<const LChar> span) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  const hw::FixedTag<uint8_t, 16> tag;
+  constexpr size_t kStride = hw::MaxLanes(tag);
+  const auto kLt = hw::Set(tag, static_cast<uint8_t>('<'));
+  const auto kLf = hw::Set(tag, static_cast<uint8_t>('\n'));
+  const auto kCr = hw::Set(tag, static_cast<uint8_t>('\r'));
+  const auto kNul = hw::Set(tag, static_cast<uint8_t>('\0'));
+
+  const size_t size = span.size();
+  size_t pos = 0;
+  for (; pos + kStride <= size; pos += kStride) {
+    // SAFETY: `pos + kStride <= size` guarantees `kStride` readable bytes.
+    const auto input = hw::LoadU(tag, UNSAFE_BUFFERS(span.data() + pos));
+    const auto mask = hw::Or(hw::Or(hw::Eq(input, kLt), hw::Eq(input, kLf)),
+                             hw::Or(hw::Eq(input, kCr), hw::Eq(input, kNul)));
+    if (const intptr_t index = hw::FindFirstTrue(tag, mask); index != -1) {
+      return pos + static_cast<size_t>(index);
+    }
+  }
+
+  for (; pos < size; ++pos) {
+    const LChar c = span[pos];
+    if (c == '<' || c == '\n' || c == '\r' || c == '\0') {
+      return pos;
+    }
+  }
+  return size;
+}
+
+HWY_ATTR size_t SimdScanScriptOrRawtext16(base::span<const UChar> span,
+                                          UChar& bitwise_or_out) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  const hw::FixedTag<uint16_t, 8> tag;
+  constexpr size_t kStride = hw::MaxLanes(tag);
+  const auto kLt = hw::Set(tag, static_cast<uint16_t>('<'));
+  const auto kLf = hw::Set(tag, static_cast<uint16_t>('\n'));
+  const auto kCr = hw::Set(tag, static_cast<uint16_t>('\r'));
+  const auto kNul = hw::Set(tag, static_cast<uint16_t>('\0'));
+  const auto kHighByteMask = hw::Set(tag, static_cast<uint16_t>(0xff00));
+  auto or_accum = hw::Zero(tag);
+
+  const size_t size = span.size();
+  size_t pos = 0;
+  UChar scalar_or = 0;
+  for (; pos + kStride <= size; pos += kStride) {
+    // SAFETY: `pos + kStride <= size` guarantees `kStride` readable UChars.
+    const auto input = hw::LoadU(tag, reinterpret_cast<const uint16_t*>(
+                                          UNSAFE_BUFFERS(span.data() + pos)));
+    const auto mask = hw::Or(hw::Or(hw::Eq(input, kLt), hw::Eq(input, kLf)),
+                             hw::Or(hw::Eq(input, kCr), hw::Eq(input, kNul)));
+    if (const intptr_t index = hw::FindFirstTrue(tag, mask); index != -1) {
+      const size_t hit = pos + static_cast<size_t>(index);
+      for (size_t i = pos; i < hit; ++i) {
+        scalar_or |= span[i];
+      }
+      if (!hw::AllTrue(
+              tag, hw::Eq(hw::And(or_accum, kHighByteMask), hw::Zero(tag)))) {
+        scalar_or |= 0x100;
+      }
+      bitwise_or_out = scalar_or;
+      return hit;
+    }
+    or_accum = hw::Or(or_accum, input);
+  }
+
+  if (!hw::AllTrue(tag,
+                   hw::Eq(hw::And(or_accum, kHighByteMask), hw::Zero(tag)))) {
+    scalar_or |= 0x100;
+  }
+  for (; pos < size; ++pos) {
+    const UChar c = span[pos];
+    if (c == '<' || c == '\n' || c == '\r' || c == '\0') {
+      bitwise_or_out = scalar_or;
+      return pos;
+    }
+    scalar_or |= c;
+  }
+  bitwise_or_out = scalar_or;
+  return size;
+}
+
+}  // namespace
+
+bool HTMLTokenizer::TrySimdScanScriptOrRawtext(SegmentedString& source) {
+  // Callers check `cc != '\n'` after InputStreamPreprocessor::Peek(), which
+  // excludes both '\n' and '\r' (normalized to '\n'), so `skip_next_new_line_`
+  // is guaranteed to be false here.
+  DCHECK(!input_stream_preprocessor_.SkipNextNewLine());
+  if (source.IsCurrentSubstring8Bit()) {
+    const base::span<const LChar> remaining =
+        source.CurrentSubstringRemainingSpan8();
+    if (remaining.size() < simd_scan_min_length_) {
+      return false;
+    }
+    const size_t count = SimdScanScriptOrRawtext8(remaining);
+    if (count == 0) {
+      return false;
+    }
+    token_.EnsureIsCharacterToken();
+    token_.AppendToCharacter(remaining.first(count));
+    source.AdvancePastNonNewlinesInCurrentSubstring(
+        base::checked_cast<wtf_size_t>(count));
+    return true;
+  }
+
+  const base::span<const UChar> remaining =
+      source.CurrentSubstringRemainingSpan16();
+  if (remaining.size() < simd_scan_min_length_) {
+    return false;
+  }
+  UChar bitwise_or = 0;
+  const size_t count = SimdScanScriptOrRawtext16(remaining, bitwise_or);
+  if (count == 0) {
+    return false;
+  }
+  token_.EnsureIsCharacterToken();
+  token_.AppendToCharacter(remaining.first(count), bitwise_or);
+  source.AdvancePastNonNewlinesInCurrentSubstring(
+      base::checked_cast<wtf_size_t>(count));
+  return true;
+}
+#endif  // defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
 
 HTMLTokenizer::~HTMLTokenizer() = default;
 
@@ -328,11 +481,21 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kRAWTEXTState) {
-      if (cc == '<')
+      if (cc == '<') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRAWTEXTLessThanSignState);
-      else if (cc == kEndOfFileMarker)
+      } else if (cc == kEndOfFileMarker) {
         return EmitEndOfFile(source);
-      else {
+      } else {
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+        if (simd_scan_rawtext_enabled_ && cc != '\n' &&
+            TrySimdScanScriptOrRawtext(source)) {
+          if (source.IsEmpty() ||
+              !input_stream_preprocessor_.Peek(source, cc)) {
+            return HaveBufferedCharacterToken();
+          }
+          goto kRAWTEXTState;
+        }
+#endif
         BufferCharacter(cc);
         HTML_CONSUME(kRAWTEXTState);
       }
@@ -340,11 +503,21 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kScriptDataState) {
-      if (cc == '<')
+      if (cc == '<') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kScriptDataLessThanSignState);
-      else if (cc == kEndOfFileMarker)
+      } else if (cc == kEndOfFileMarker) {
         return EmitEndOfFile(source);
-      else {
+      } else {
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+        if (simd_scan_script_data_enabled_ && cc != '\n' &&
+            TrySimdScanScriptOrRawtext(source)) {
+          if (source.IsEmpty() ||
+              !input_stream_preprocessor_.Peek(source, cc)) {
+            return HaveBufferedCharacterToken();
+          }
+          goto kScriptDataState;
+        }
+#endif
         BufferCharacter(cc);
         HTML_CONSUME(kScriptDataState);
       }

@@ -451,6 +451,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.THREADED_PRELOAD_SCANNER,
                 "If enabled, the HTMLPreloadScanner will run on a worker thread."),
+        Flag.baseFeature(
+                BlinkFeatures.HTML_TOKENIZER_SIMD_SCAN,
+                "If enabled, HTMLTokenizer uses SIMD to bulk-scan script and style text."),
         Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
         Flag.baseFeature(
                 BaseFeatures.ANDROID_THREAD_PRIORITY,

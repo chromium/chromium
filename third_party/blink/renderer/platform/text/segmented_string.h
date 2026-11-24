@@ -156,6 +156,32 @@ class PLATFORM_EXPORT SegmentedSubstring {
     return static_cast<int>(data_end() - data_.string8_ptr) >> !is_8bit_;
   }
 
+  ALWAYS_INLINE bool Is8Bit() const { return is_8bit_; }
+
+  ALWAYS_INLINE base::span<const LChar> RemainingSpan8() const {
+    DCHECK(is_8bit_);
+    if (!data_last_char_) {
+      return {};
+    }
+    // SAFETY: `data_.string8_ptr` points within `string_`'s 8-bit backing
+    // buffer and `length()` is the exact number of remaining characters up to
+    // and including `data_last_char_`.
+    return UNSAFE_BUFFERS(
+        base::span(data_.string8_ptr, static_cast<size_t>(length())));
+  }
+
+  ALWAYS_INLINE base::span<const UChar> RemainingSpan16() const {
+    DCHECK(!is_8bit_);
+    if (!data_last_char_) {
+      return {};
+    }
+    // SAFETY: `data_.string16_ptr` points within `string_`'s 16-bit backing
+    // buffer and `length()` is the exact number of remaining characters up to
+    // and including `data_last_char_`.
+    return UNSAFE_BUFFERS(
+        base::span(data_.string16_ptr, static_cast<size_t>(length())));
+  }
+
  private:
   ALWAYS_INLINE const LChar* data_end() const {
     if (!data_last_char_)
@@ -237,6 +263,34 @@ class PLATFORM_EXPORT SegmentedString {
   // input string in anyway. As a result, the caller must know `num_lines` and
   // `current_column`.
   void Advance(wtf_size_t num_chars, wtf_size_t num_lines, int current_column);
+
+  ALWAYS_INLINE bool IsCurrentSubstring8Bit() const {
+    return current_string_.Is8Bit();
+  }
+
+  ALWAYS_INLINE base::span<const LChar> CurrentSubstringRemainingSpan8() const {
+    return current_string_.RemainingSpan8();
+  }
+
+  ALWAYS_INLINE base::span<const UChar> CurrentSubstringRemainingSpan16()
+      const {
+    return current_string_.RemainingSpan16();
+  }
+
+  // Advances `num_chars` characters within the current substring when the
+  // caller guarantees none of the skipped characters are newlines.
+  ALWAYS_INLINE void AdvancePastNonNewlinesInCurrentSubstring(
+      wtf_size_t num_chars) {
+    DCHECK_GT(num_chars, 0u);
+    DCHECK_LE(num_chars, static_cast<wtf_size_t>(current_string_.length()));
+    const wtf_size_t advanced = current_string_.Advance(num_chars);
+    if (advanced < num_chars) {
+      DCHECK_EQ(current_string_.length(), 1);
+      AdvanceSubstring();
+    } else {
+      current_char_ = current_string_.GetCurrentChar();
+    }
+  }
 
   ALWAYS_INLINE UChar Advance() {
     if (current_string_.CanAdvance()) [[likely]] {

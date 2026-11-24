@@ -598,6 +598,21 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
                                                kHTMLParserYieldTimeoutInMs);
 
+// If enabled, uses Highway SIMD bulk scanning in HTMLTokenizer for states such
+// as kScriptDataState and kRAWTEXTState.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHTMLTokenizerSimdScan);
+// Enables SIMD bulk scanning in kScriptDataState (e.g. inside <script>).
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHTMLTokenizerSimdScanScriptData);
+// Enables SIMD bulk scanning in kRAWTEXTState (e.g. inside <style>).
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kHTMLTokenizerSimdScanRawtext);
+// Minimum remaining length of the current input buffer (SegmentedSubstring)
+// required to enter the SIMD scanning fast path.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                               kHTMLTokenizerSimdScanMinLength);
+
 // Whether blink::HeapVector promptly frees its backing store via
 // Allocator::FreeVectorBacking(). When disabled, the backing store is left to
 // be reclaimed by garbage collection.

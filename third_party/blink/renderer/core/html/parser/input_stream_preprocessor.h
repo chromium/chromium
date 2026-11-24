@@ -111,6 +111,8 @@ class InputStreamPreprocessor {
     return true;
   }
 
+  ALWAYS_INLINE bool SkipNextNewLine() const { return skip_next_new_line_; }
+
  private:
   ALWAYS_INLINE bool ProcessNextInputCharacter(SegmentedString& source,
                                                UChar& cc) {

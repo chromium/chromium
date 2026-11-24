@@ -349,6 +349,17 @@ class HTMLToken {
     data_.AppendLiteral(characters);
   }
 
+  ALWAYS_INLINE void AppendToCharacter(base::span<const LChar> characters) {
+    DCHECK_EQ(type_, kCharacter);
+    data_.AppendSpan(characters);
+  }
+
+  ALWAYS_INLINE void AppendToCharacter(base::span<const UChar> characters,
+                                       UChar bitwise_or_chars) {
+    DCHECK_EQ(type_, kCharacter);
+    data_.AppendSpan(characters, bitwise_or_chars);
+  }
+
   ALWAYS_INLINE void AppendToProcessingInstructionTarget(UChar character) {
     DCHECK_EQ(type_, kProcessingInstruction);
     DCHECK(processing_instruction_target_);

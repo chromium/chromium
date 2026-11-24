@@ -843,6 +843,26 @@ BASE_FEATURE_PARAM(size_t,
                    "timeout_ms",
                    20);
 
+BASE_FEATURE(kHTMLTokenizerSimdScan, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kHTMLTokenizerSimdScanScriptData,
+                   &kHTMLTokenizerSimdScan,
+                   "script_data",
+                   true);
+
+BASE_FEATURE_PARAM(bool,
+                   kHTMLTokenizerSimdScanRawtext,
+                   &kHTMLTokenizerSimdScan,
+                   "rawtext",
+                   true);
+
+BASE_FEATURE_PARAM(size_t,
+                   kHTMLTokenizerSimdScanMinLength,
+                   &kHTMLTokenizerSimdScan,
+                   "min_length",
+                   64);
+
 BASE_FEATURE(kHeapVectorPromptlyFree, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImageReplacement, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -111,6 +111,23 @@ class LiteralBufferBase {
     UNSAFE_BUFFERS(end_ = std::ranges::copy(base::span(val), end_.get()).out);
   }
 
+  template <typename OtherT>
+  void AppendSpanImpl(base::span<const OtherT> span) {
+    static_assert(sizeof(T) >= sizeof(OtherT),
+                  "T is not big enough to contain OtherT");
+    blink::wtf_size_t count =
+        base::checked_cast<blink::wtf_size_t>(span.size());
+    blink::wtf_size_t new_size =
+        (base::CheckedNumeric<blink::wtf_size_t>(size()) + count).ValueOrDie();
+    if (capacity() < new_size) {
+      Grow(new_size);
+    }
+    // SAFETY: The `Grow()` call above ensures that there is enough capacity to
+    // append `count` characters, or the program would have crashed due to
+    // overflow.
+    UNSAFE_BUFFERS(end_ = std::ranges::copy(span, end_.get()).out);
+  }
+
   template <blink::wtf_size_t kOtherInlineSize>
   void Copy(const LiteralBufferBase<T, kOtherInlineSize>& other) {
     blink::wtf_size_t other_size = other.size();
@@ -314,6 +331,18 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   template <blink::wtf_size_t kOtherSize>
   void AppendLiteral(const LCharLiteralBuffer<kOtherSize>& val) {
     this->AppendLiteralImpl(val);
+  }
+
+  void AppendSpan(base::span<const blink::LChar> span) {
+    this->AppendSpanImpl(span);
+  }
+
+  // Appends `span` of 16-bit characters. `bitwise_or_chars` only needs to have
+  // any high byte bit (`& ~0xff`) set if `span` contains a non-Latin-1 char
+  // (it does not need to be the exact bitwise OR of all code units).
+  void AppendSpan(base::span<const UChar> span, UChar bitwise_or_chars) {
+    this->AppendSpanImpl(span);
+    bitwise_or_all_chars_ |= bitwise_or_chars;
   }
 
   blink::String AsString() const {

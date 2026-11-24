@@ -5,9 +5,13 @@
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
@@ -161,6 +165,227 @@ TEST(HTMLTokenizerTest, HasEntity) {
   if (token3) {
     EXPECT_EQ(HTMLToken::kCharacter, token3->GetType());
     EXPECT_TRUE(token3->HasEntity());
+  }
+}
+
+namespace {
+
+struct RecordedToken {
+  HTMLToken::TokenType type;
+  String data;
+  bool is_8bit = true;
+  bool operator==(const RecordedToken&) const = default;
+};
+
+std::vector<RecordedToken> TokenizeAll(const std::vector<String>& chunks) {
+  HTMLParserOptions options;
+  HTMLTokenizer tokenizer(options);
+  SegmentedString input;
+  for (const String& chunk : chunks) {
+    input.Append(SegmentedString(chunk));
+  }
+  input.Append(SegmentedString(String(base::span_from_ref(kEndOfFileMarker))));
+  input.Close();
+
+  std::vector<RecordedToken> result;
+  while (HTMLToken* token = tokenizer.NextToken(input)) {
+    const HTMLToken::TokenType type = token->GetType();
+    String data;
+    bool is_8bit = true;
+    if (type == HTMLToken::kCharacter || type == HTMLToken::kComment ||
+        type == HTMLToken::kStartTag || type == HTMLToken::kEndTag) {
+      data = token->Data().AsString();
+      is_8bit = data.Is8Bit();
+    }
+    if (type == HTMLToken::kStartTag) {
+      tokenizer.UpdateStateFor(*token);
+    }
+    result.push_back({type, data, is_8bit});
+    tokenizer.ClearToken();
+    if (type == HTMLToken::kEndOfFile) {
+      break;
+    }
+  }
+  return result;
+}
+
+}  // namespace
+
+TEST(HTMLTokenizerTest, SimdScanScriptDataAndRawtextMatchesBaseline) {
+  test::TaskEnvironment task_environment;
+
+  // 8-bit input with long script/style blocks, '<', '\n', '\r\n', '\r', '\0'.
+  std::string long_a(200, 'A');
+  std::string long_b(200, 'B');
+  std::string raw_8bit = "<script>var s='data:image/jpeg;base64," + long_a +
+                         "';\r\nif (a < b) { s += '" + long_b + "'; }\r" +
+                         std::string(1, '\0') + long_a +
+                         "</script><style>.cls{" + long_a + "\n" + long_b +
+                         "\r\n" + std::string(1, '\0') + long_a + "}</style>";
+  String str_8bit(base::as_byte_span(raw_8bit));
+  ASSERT_TRUE(str_8bit.Is8Bit());
+
+  // 16-bit input (contains non-Latin-1 emoji characters).
+  std::string raw_16bit =
+      "<script>var j='😀';" + long_a + "\r\nvar k='🎉' < '😀';" + long_b +
+      "</script><style>/* 😀🎉 */" + long_a + "\n" + long_b + "</style>";
+  String str_16bit = String::FromUtf8(base::as_byte_span(raw_16bit));
+  ASSERT_FALSE(str_16bit.Is8Bit());
+
+  std::vector<std::vector<String>> cases = {
+      {str_8bit},
+      {StringView(str_8bit, 0, 100).ToString(),
+       StringView(str_8bit, 100).ToString()},
+      {str_16bit},
+      {StringView(str_16bit, 0, 120).ToString(),
+       StringView(str_16bit, 120).ToString()},
+  };
+
+  for (const auto& chunks : cases) {
+    std::vector<RecordedToken> baseline;
+    {
+      base::test::ScopedFeatureList disabled;
+      disabled.InitAndDisableFeature(features::kHTMLTokenizerSimdScan);
+      baseline = TokenizeAll(chunks);
+    }
+    std::vector<RecordedToken> simd;
+    {
+      base::test::ScopedFeatureList enabled;
+      enabled.InitAndEnableFeature(features::kHTMLTokenizerSimdScan);
+      simd = TokenizeAll(chunks);
+    }
+    EXPECT_EQ(baseline, simd);
+  }
+}
+
+TEST(HTMLTokenizerTest, SimdScanCrlfAcrossChunkBoundary) {
+  test::TaskEnvironment task_environment;
+  std::string pad(80, 'x');
+  String chunk1(base::as_byte_span("<script>" + pad + "\r"));
+  String chunk2(
+      base::as_byte_span("\n" + pad + "</script><style>" + pad + "\r"));
+  String chunk3(base::as_byte_span("\n" + pad + "</style>"));
+
+  std::vector<RecordedToken> baseline;
+  {
+    base::test::ScopedFeatureList disabled;
+    disabled.InitAndDisableFeature(features::kHTMLTokenizerSimdScan);
+    baseline = TokenizeAll({chunk1, chunk2, chunk3});
+  }
+  std::vector<RecordedToken> simd;
+  {
+    base::test::ScopedFeatureList enabled;
+    enabled.InitAndEnableFeature(features::kHTMLTokenizerSimdScan);
+    simd = TokenizeAll({chunk1, chunk2, chunk3});
+  }
+  EXPECT_EQ(baseline, simd);
+}
+
+TEST(HTMLTokenizerTest, SimdScanFeatureParams) {
+  test::TaskEnvironment task_environment;
+  std::string pad(80, 'z');
+  String input(base::as_byte_span("<script>" + pad + "</script><style>" + pad +
+                                  "</style>"));
+
+  std::vector<RecordedToken> baseline;
+  {
+    base::test::ScopedFeatureList disabled;
+    disabled.InitAndDisableFeature(features::kHTMLTokenizerSimdScan);
+    baseline = TokenizeAll({input});
+  }
+
+  const std::vector<base::FieldTrialParams> param_sets = {
+      {{"min_length", "0"}},
+      {{"min_length", "1"}},
+      {{"min_length", "15"}},
+      {{"min_length", "16"}},
+      {{"min_length", "17"}},
+      {{"min_length", "64"}},
+      {{"script_data", "true"}, {"rawtext", "false"}},
+      {{"script_data", "false"}, {"rawtext", "true"}},
+      {{"script_data", "false"}, {"rawtext", "false"}},
+  };
+  for (const auto& params : param_sets) {
+    base::test::ScopedFeatureList enabled;
+    enabled.InitAndEnableFeatureWithParameters(features::kHTMLTokenizerSimdScan,
+                                               params);
+    EXPECT_EQ(baseline, TokenizeAll({input}));
+  }
+}
+
+TEST(HTMLTokenizerTest, SimdScanVectorStrideBoundaries) {
+  test::TaskEnvironment task_environment;
+  // Cover 0 .. 2 * 16 + 1 prefix lengths to exercise SIMD loop + scalar tail.
+  const std::vector<std::string> specials = {"<", "\n", "\r",
+                                             std::string(1, '\0')};
+  for (size_t prefix_len = 0; prefix_len <= 33; ++prefix_len) {
+    std::string prefix(prefix_len, 'a');
+    std::string suffix(20, 'b');
+    for (const std::string& sp : specials) {
+      std::string raw8 = "<script>" + prefix + sp + suffix + "</script>";
+      String str8(base::as_byte_span(raw8));
+      ASSERT_TRUE(str8.Is8Bit());
+
+      // 16-bit with non-Latin-1 only in the tail (checks bitwise_or in tail).
+      std::string raw16_tail =
+          "<script>" + prefix + sp + suffix + "😀</script>";
+      String str16_tail = String::FromUtf8(base::as_byte_span(raw16_tail));
+      ASSERT_FALSE(str16_tail.Is8Bit());
+
+      // 16-bit buffer whose script content is pure ASCII (checks Is8Bit()
+      // remains true on the emitted character token).
+      std::string raw16_ascii =
+          "<!--😀--><script>" + prefix + sp + suffix + "</script>";
+      String str16_ascii = String::FromUtf8(base::as_byte_span(raw16_ascii));
+      ASSERT_FALSE(str16_ascii.Is8Bit());
+
+      for (const String& s : {str8, str16_tail, str16_ascii}) {
+        std::vector<RecordedToken> baseline;
+        {
+          base::test::ScopedFeatureList disabled;
+          disabled.InitAndDisableFeature(features::kHTMLTokenizerSimdScan);
+          baseline = TokenizeAll({s});
+        }
+        std::vector<RecordedToken> simd;
+        {
+          base::test::ScopedFeatureList enabled;
+          enabled.InitAndEnableFeatureWithParameters(
+              features::kHTMLTokenizerSimdScan, {{"min_length", "1"}});
+          simd = TokenizeAll({s});
+        }
+        EXPECT_EQ(baseline, simd);
+      }
+    }
+  }
+}
+
+TEST(HTMLTokenizerTest, SimdScanNullInRawtextAndScript) {
+  test::TaskEnvironment task_environment;
+  std::string pad(80, 'a');
+  std::string raw_style =
+      "<style>" + pad + std::string(1, '\0') + pad + "</style>";
+  std::string raw_script =
+      "<script>" + pad + std::string(1, '\0') + pad + "</script>";
+
+  for (const std::string& raw : {raw_style, raw_script}) {
+    String input(base::as_byte_span(raw));
+    std::vector<RecordedToken> baseline;
+    {
+      base::test::ScopedFeatureList disabled;
+      disabled.InitAndDisableFeature(features::kHTMLTokenizerSimdScan);
+      baseline = TokenizeAll({input});
+    }
+    std::vector<RecordedToken> simd;
+    {
+      base::test::ScopedFeatureList enabled;
+      enabled.InitAndEnableFeature(features::kHTMLTokenizerSimdScan);
+      simd = TokenizeAll({input});
+    }
+    EXPECT_EQ(baseline, simd);
+    // Ensure the character token does not contain raw NUL bytes.
+    ASSERT_GE(simd.size(), 2u);
+    EXPECT_EQ(HTMLToken::kCharacter, simd[1].type);
+    EXPECT_EQ(kNotFound, simd[1].data.find('\0'));
   }
 }
 
