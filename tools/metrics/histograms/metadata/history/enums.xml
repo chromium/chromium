@@ -43,11 +43,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Killed">The database was razed.</int>
 </enum>
 
-<enum name="BooleanQueried">
-  <int value="0" label="Not Queried"/>
-  <int value="1" label="Queried"/>
-</enum>
-
 <!-- LINT.IfChange(BrowsingDataRemoverTasks) -->
 
 <enum name="BrowsingDataRemoverTasks">

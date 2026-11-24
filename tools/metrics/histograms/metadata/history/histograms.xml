@@ -445,18 +445,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Actions.DidMakeQuery" enum="BooleanQueried"
-    expires_after="2025-06-08">
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Logged when the user closes the chrome://history/journeys page (e.g. closed
-    tab, navigated in the same tab, or closed browser). Logs whether the user
-    made a query on their history from the journeys page.
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Actions.FinalState.Number{Event}"
     units="count" expires_after="never">
 <!-- expires-never: part of vital metric ChromeSearch.Actions -->

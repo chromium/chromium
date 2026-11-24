@@ -53,8 +53,6 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
       "History.Clusters.Actions.FinalState.NumberIndividualVisitsDeleted",
       visits_deleted_count_);
 
-  base::UmaHistogramBoolean("History.Clusters.Actions.DidMakeQuery",
-                            num_queries_ > 0);
   if (num_queries_ > 0) {
     // Only log if at least 1 query was made so we measure the distribution of
     // the number of queries when made.

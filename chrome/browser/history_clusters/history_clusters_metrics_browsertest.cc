@@ -128,7 +128,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(0u, entries.size());
-  histogram_tester.ExpectTotalCount("History.Clusters.Actions.DidMakeQuery", 0);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
@@ -156,8 +155,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kDirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                      false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
@@ -199,8 +196,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kDirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                      true, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.NumQueries", 2,
                                       1);
 }
@@ -234,8 +229,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kDirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                      false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
@@ -260,8 +253,6 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kIndirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                      false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
@@ -291,8 +282,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kIndirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                      false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
