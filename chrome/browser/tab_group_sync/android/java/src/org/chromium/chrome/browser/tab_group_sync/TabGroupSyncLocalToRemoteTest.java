@@ -48,17 +48,20 @@ import java.util.List;
 @DoNotBatch(reason = "TODO(b/40743432): SyncTestRule doesn't support batching.")
 @Restriction(DeviceFormFactor.PHONE)
 public class TabGroupSyncLocalToRemoteTest {
-    public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
 
-    @Rule
-    public FreshCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.wrapTestRule(mSyncTestRule);
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private TabGroupSyncIntegrationTestHelper mHelper;
+    private WebPageStation mFirstPage;
 
     @Before
     public void setUp() {
-        mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule);
+        mFirstPage = mCtaTestRule.startOnBlankPage();
+        mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule, mCtaTestRule);
         mSyncTestRule.setUpAccountAndEnableHistorySync();
         mHelper.assertSyncEntityCount(0);
     }
@@ -69,7 +72,7 @@ public class TabGroupSyncLocalToRemoteTest {
     @DisabledTest(message = "crbug.com/353952795")
     @SuppressWarnings("unchecked") // clickSelectTabs() returns raw TabSwitcherListEditorFacility.
     public void testCreateTabGroup() {
-        WebPageStation firstPage = mCtaTestRule.alreadyStartedOnBlankPage();
+        WebPageStation firstPage = mFirstPage;
         Tab firstTab = firstPage.loadedTabElement.value();
         int firstTabId = firstTab.getId();
         String firstTabTitle = ChromeTabUtils.getTitleOnUiThread(firstTab);

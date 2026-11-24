@@ -72,6 +72,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -147,9 +149,13 @@ public class CollaborationIntegrationTest {
     }
 
     @Rule(order = 0)
-    public SyncTestRule mActivityTestRule = new SyncTestRule();
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
 
     @Rule(order = 1)
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule(order = 2)
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -174,18 +180,18 @@ public class CollaborationIntegrationTest {
 
     @Before
     public void setUp() {
+        mActivityTestRule.startOnBlankPage();
         mDataSharingUIDelegate = new FakeDataSharingUIDelegateImpl();
         mDataSharingSDKDelegate = new DataSharingSDKDelegateTestImpl();
         mCountingShareObserver = new CountingShareObserver();
         mCountingSyncObserver = new CountingSyncObserver();
         DataSharingUiDelegateAndroid.setForTesting(mDataSharingUIDelegate);
         DataSharingSDKDelegateBridge.setForTesting(mDataSharingSDKDelegate);
-        mActivityTestRule.getSigninTestRule().addAccount(ACCOUNT1);
+        mSyncTestRule.getSigninTestRule().addAccount(ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
-                    mCollaborationTestUtils =
-                            new CollaborationTestUtils(mActivityTestRule, mProfile);
+                    mCollaborationTestUtils = new CollaborationTestUtils(mSyncTestRule, mProfile);
                     FirstRunStatus.setFirstRunFlowComplete(true);
                     DataSharingServiceFactory.getForProfile(mProfile)
                             .addObserver(mCountingShareObserver);
@@ -232,7 +238,7 @@ public class CollaborationIntegrationTest {
                     mDataSharingSDKDelegate.addMembers(
                             collaborationId,
                             accountInfoToGroupMember(accountInfo, MemberRole.OWNER));
-                    mActivityTestRule.getFakeServerHelper().addCollaboration(collaborationId);
+                    mSyncTestRule.getFakeServerHelper().addCollaboration(collaborationId);
                     mDataSharingUIDelegate.forceGroupCreation(collaborationId, TEST_ACCESS_TOKEN);
                 };
         mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
@@ -273,7 +279,7 @@ public class CollaborationIntegrationTest {
         mDataSharingSDKDelegate.addMembers(
                 collaborationId, accountInfoToGroupMember(accountInfo, MemberRole.MEMBER));
         // Will override the previous specifics with a different consistency_token.
-        mActivityTestRule.getFakeServerHelper().addCollaborationGroupToFakeServer(collaborationId);
+        mSyncTestRule.getFakeServerHelper().addCollaborationGroupToFakeServer(collaborationId);
 
         int startingChangedCount =
                 ThreadUtils.runOnUiThreadBlocking(() -> mCountingShareObserver.groupChangedCount);
@@ -328,7 +334,7 @@ public class CollaborationIntegrationTest {
         waitForView(withId(R.id.button_secondary)).click();
 
         // The user is signed out.
-        assertNull(mActivityTestRule.getSigninTestRule().getPrimaryAccount());
+        assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
     }
 
     @Test
@@ -393,7 +399,7 @@ public class CollaborationIntegrationTest {
     @Test
     @MediumTest
     public void testHistoryAndSyncDisabled() {
-        mActivityTestRule.getSigninTestRule().addAccountThenSignin(ACCOUNT1);
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(ACCOUNT1);
 
         mActivityTestRule.loadUrlInNewTab(
                 mUrl, /* incognito= */ false, TabLaunchType.FROM_EXTERNAL_APP);
@@ -412,7 +418,7 @@ public class CollaborationIntegrationTest {
         // Setting create flow callback to show share sheet with share link.
         Callback<Boolean> callback =
                 (success) -> {
-                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mSyncTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
                     mDataSharingUIDelegate.forceGroupCreation(
                             TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
                 };
@@ -465,7 +471,7 @@ public class CollaborationIntegrationTest {
                     mDataSharingSDKDelegate.addMembers(
                             TEST_COLLABORATION_ID,
                             accountInfoToGroupMember(ACCOUNT1, MemberRole.OWNER));
-                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mSyncTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
                     mDataSharingUIDelegate.forceGroupCreation(
                             TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
                 };
@@ -513,7 +519,7 @@ public class CollaborationIntegrationTest {
                     mDataSharingSDKDelegate.addMembers(
                             TEST_COLLABORATION_ID,
                             accountInfoToGroupMember(ACCOUNT1, MemberRole.MEMBER));
-                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mSyncTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
                     mDataSharingUIDelegate.forceGroupCreation(
                             TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
                 };
@@ -560,7 +566,7 @@ public class CollaborationIntegrationTest {
                     mDataSharingSDKDelegate.addMembers(
                             TEST_COLLABORATION_ID,
                             accountInfoToGroupMember(ACCOUNT1, MemberRole.MEMBER));
-                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mSyncTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
                     mDataSharingUIDelegate.forceGroupCreation(
                             TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
                 };
@@ -606,7 +612,7 @@ public class CollaborationIntegrationTest {
                     mDataSharingSDKDelegate.addMembers(
                             TEST_COLLABORATION_ID,
                             accountInfoToGroupMember(ACCOUNT1, MemberRole.OWNER));
-                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mSyncTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
                     mDataSharingUIDelegate.forceGroupCreation(
                             TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
                 };

@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.sync.DataType;
@@ -66,14 +67,18 @@ public class TabGroupSyncIntegrationTestHelper {
 
     private Iterator<String> mGuidIterator;
     private final SyncTestRule mSyncTestRule;
+    private final BaseCtaTransitTestRule mCtaTestRule;
 
     /**
      * Helper for handling or asserting on changes to the fake sync server.
      *
      * @param syncTestRule The {@link SyncTestRule} for the test harness using this helper.
+     * @param ctaTestRule The rule that started ChromeTabbedActivity for the test.
      */
-    public TabGroupSyncIntegrationTestHelper(SyncTestRule syncTestRule) {
+    public TabGroupSyncIntegrationTestHelper(
+            SyncTestRule syncTestRule, BaseCtaTransitTestRule ctaTestRule) {
         mSyncTestRule = syncTestRule;
+        mCtaTestRule = ctaTestRule;
         resetGuidIterator();
     }
 
@@ -277,7 +282,7 @@ public class TabGroupSyncIntegrationTestHelper {
 
     /** Returns the regular tab model. */
     public TabModel getTabModel() {
-        return mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
+        return mCtaTestRule.getActivity().getTabModelSelector().getModel(false);
     }
 
     /** Gets the {@link SyncEntity} for a particular sync GUID. */

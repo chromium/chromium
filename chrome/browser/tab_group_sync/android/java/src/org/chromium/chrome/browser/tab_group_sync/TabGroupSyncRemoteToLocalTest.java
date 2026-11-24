@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.GroupInfo;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.TabInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SyncEntity;
@@ -54,7 +56,12 @@ public class TabGroupSyncRemoteToLocalTest {
     private static final String TAB_TITLE_3 = "Title Of More Awesomeness";
     private static final String TAB_TITLE_4 = "iframe test";
 
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     // Create individual tabs
     private TabInfo mTab1;
@@ -71,18 +78,19 @@ public class TabGroupSyncRemoteToLocalTest {
 
     @Before
     public void setUp() {
+        mCtaTestRule.startOnBlankPage();
         setUpUrlConstants();
-        mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule);
+        mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule, mCtaTestRule);
         mSyncTestRule.setUpAccountAndEnableHistorySync();
         mHelper.assertSyncEntityCount(0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = mSyncTestRule.getProfile(/* incognito= */ false);
+                    Profile profile = mCtaTestRule.getProfile(/* incognito= */ false);
                     UserPrefs.get(profile).setBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS, true);
                 });
 
         CriteriaHelper.pollUiThread(
-                mSyncTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+                mCtaTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @After
@@ -99,7 +107,7 @@ public class TabGroupSyncRemoteToLocalTest {
     }
 
     private String getUrl(String url) {
-        return mSyncTestRule.getTestServer().getURL(url);
+        return mCtaTestRule.getTestServer().getURL(url);
     }
 
     @Test
