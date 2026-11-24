@@ -255,13 +255,17 @@
                                    sceneState.profileState.appState);
 
     __weak __typeof(self) weakSelf = self;
-    [self.sceneHandler dismissModalDialogsWithCompletion:^{
-      [weakSelf showForcedSigninPrompt];
-      // Remove the blocker after the showSignin: command to make sure that the
-      // blocker doesn't go down to 0 in which case the other scenes will try to
-      // take over handling the force sign-in prompt.
-      uiBlocker.reset();
-    }];
+    [self.sceneHandler
+        dismissModalDialogsWithCompletion:^{
+          [weakSelf showForcedSigninPrompt];
+          // Remove the blocker after the showSignin: command to make sure that
+          // the blocker doesn't go down to 0 in which case the other scenes
+          // will try to take over handling the force sign-in prompt.
+          uiBlocker.reset();
+        }
+                           dismissOmnibox:YES
+                         dismissSnackbars:YES
+                  geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss];
   }
 }
 

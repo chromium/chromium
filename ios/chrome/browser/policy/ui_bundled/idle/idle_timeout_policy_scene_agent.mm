@@ -332,9 +332,13 @@
   _UIBlocker =
       ScopedUIBlocker::AppScoped(sceneState, sceneState.profileState.appState);
   __weak __typeof(self) weakSelf = self;
-  [_sceneHandler dismissModalDialogsWithCompletion:^{
-    [weakSelf showIdleTimeoutConfirmation];
-  }];
+  [_sceneHandler
+      dismissModalDialogsWithCompletion:^{
+        [weakSelf showIdleTimeoutConfirmation];
+      }
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss];
 }
 
 // Shows the notification dialog for the account on the `viewController`

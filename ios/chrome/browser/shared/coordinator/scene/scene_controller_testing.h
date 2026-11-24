@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
 class Browser;
+enum class GeminiDismissalBehavior;
 struct UrlLoadParams;
 @class SceneCoordinator;
 @class WrangledBrowser;
@@ -22,11 +23,9 @@ struct UrlLoadParams;
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams;
 
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox;
-
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox
-                            dismissGemini:(BOOL)dismissGemini;
+                  geminiDismissalBehavior:
+                      (GeminiDismissalBehavior)geminiDismissalBehavior;
 
 - (WrangledBrowser*)currentInterface;
 
