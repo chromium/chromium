@@ -121,10 +121,11 @@ def _SrcRelative(path):
 
 
 def _GenerateProjectFile(
-    android_manifest,
+    merged_manifest,
     android_sdk_root,
     cache_dir,
     partials_dir,
+    android_manifest=None,
     sources=None,
     classpath=None,
     srcjar_sources=None,
@@ -154,8 +155,17 @@ def _GenerateProjectFile(
     main_module.set('partial-results-dir', partials_dir)
     if android_sdk_version:
         main_module.set('compile_sdk_version', android_sdk_version)
+    if android_manifest:
+        # Pass only the target's own unmerged root manifest for Scope.MANIFEST
+        # checks (e.g. UnusedResources), preserving tools:ignore attributes
+        # stripped by manifest merging. Passing transitive manifests from
+        # libraries/AARs or feature splits on the app module causes false
+        # positives (e.g. ExpiredTargetSdkVersion, MissingPrefix); merged checks
+        # read <merged-manifest> below.
+        manifest = ElementTree.SubElement(main_module, 'manifest')
+        manifest.set('file', android_manifest)
     manifest = ElementTree.SubElement(main_module, 'merged-manifest')
-    manifest.set('file', android_manifest)
+    manifest.set('file', merged_manifest)
     if srcjar_sources:
         srcjar_sources = sorted(set(srcjar_sources))  # Ensure these are unique.
         for srcjar_file in srcjar_sources:
@@ -603,6 +613,7 @@ def _RunAnalysis(args, sources, resource_sources):
             lint_cmd('4G'),
             os.path.join(lint_gen_dir, 'partials'),
             keep_cache=True,
+            merged_manifest=args.merged_manifest,
             android_manifest=args.manifest,
             sources=sources,
             srcjar_sources=srcjar_sources,
@@ -648,7 +659,7 @@ def _RunAnalysis(args, sources, resource_sources):
             cmd,
             _ShardPartialsDir(lint_gen_dir, i),
             keep_cache=False,
-            android_manifest=manifest_path,
+            merged_manifest=manifest_path,
             sources=shards[i],
             # Generated sources are few, so they all go in the first shard.
             srcjar_sources=srcjar_sources if i == 0 else None,
@@ -843,7 +854,10 @@ def _ParseArgs(argv):
     )
     parser.add_argument('--srcjars', help='GN list of included srcjars.')
     parser.add_argument(
-        '--manifest', help='Path to the merged AndroidManifest.xml.'
+        '--manifest', help='Path to the unmerged AndroidManifest.xml.'
+    )
+    parser.add_argument(
+        '--merged-manifest', help='Path to the merged AndroidManifest.xml.'
     )
     parser.add_argument(
         '--resource-sources',
@@ -972,7 +986,13 @@ def main():
         depfile_deps += resource_sources + depfile_classpath
         depfile_deps += args.annotation_zips
         depfile_deps += [
-            p for p in (args.manifest, args.own_annotations_zip) if p
+            p
+            for p in (
+                args.manifest,
+                args.merged_manifest,
+                args.own_annotations_zip,
+            )
+            if p
         ]
         action_helpers.write_depfile(args.depfile, args.stamp, depfile_deps)
     build_utils.Touch(args.stamp)

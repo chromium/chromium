@@ -3289,7 +3289,11 @@ if (!is_robolectric && enable_java_templates) {
                                ])
         build_config = _build_config
         build_config_dep = ":$_build_config_target"
-        manifest = _android_manifest
+        manifest = invoker.android_manifest
+        if (defined(invoker.android_manifest_dep)) {
+          manifest_dep = invoker.android_manifest_dep
+        }
+        merged_manifest = _android_manifest
         reuse_library_analysis = _lint_reuse_library_analysis
 
         # This will use library subtargets under-the-hood

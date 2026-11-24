@@ -1115,6 +1115,10 @@ if (enable_java_templates) {
       _non_lib_deps = filter_exclude(invoker.deps, _lib_deps)
       _deps += _non_lib_deps
     }
+    if (defined(invoker.manifest_dep)) {
+      _non_lib_deps += [ invoker.manifest_dep ]
+      _deps += [ invoker.manifest_dep ]
+    }
     _deps += [ invoker.build_config_dep ]
 
     if (defined(invoker.lint_jar_path)) {
@@ -1184,7 +1188,10 @@ if (enable_java_templates) {
       }
       python_binary = "//build/android:lint"
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = _common_inputs + [ invoker.manifest ]
+      inputs = _common_inputs + [
+                 invoker.manifest,
+                 invoker.merged_manifest,
+               ]
       _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
       outputs = [ _stamp_path ]
 
@@ -1200,6 +1207,8 @@ if (enable_java_templates) {
             "--android-sdk-version=${lint_android_sdk_version}",
             "--manifest",
             rebase_path(invoker.manifest, root_build_dir),
+            "--merged-manifest",
+            rebase_path(invoker.merged_manifest, root_build_dir),
 
             # Lint requires all resource files to be passed in the same
             # invocation for checks like UnusedResources. Sources of analyzed
@@ -1235,10 +1244,13 @@ if (enable_java_templates) {
       python_binary = "//build/android:lint"
       depfile = "$target_gen_dir/$target_name.d"
 
-      # The report reads the merged manifest (e.g. for MissingPermission in
-      # library partial results), which may change without changing the
-      # app's partial results.
-      inputs = _common_inputs + [ invoker.manifest ]
+      # The report reads the manifests named in project.xml (e.g. merged
+      # manifest for MissingPermission in library partial results), which may
+      # change without changing the app's partial results.
+      inputs = _common_inputs + [
+                 invoker.manifest,
+                 invoker.merged_manifest,
+               ]
       _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
       outputs = [ _stamp_path ]
       args = _common_args + [
