@@ -42,6 +42,10 @@ struct txfm_param;
 struct aom_variance_vtable;
 struct search_site_config;
 struct yv12_buffer_config;
+#if CONFIG_PYRAMID_ME
+struct PmeMvCost;
+struct MvStats;
+#endif  // CONFIG_PYRAMID_ME
 struct NN_CONFIG;
 typedef struct NN_CONFIG NN_CONFIG;
 
@@ -185,6 +189,14 @@ RTCD_EXTERN void (*av1_convolve_y_sr)(const uint8_t *src, int src_stride, uint8_
 
 void av1_convolve_y_sr_intrabc_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_y, const int subpel_y_qn);
 #define av1_convolve_y_sr_intrabc av1_convolve_y_sr_intrabc_c
+
+void av1_cost_tokens_from_cdf_2_batch_c(int *costs, int costs_stride, const uint16_t *cdf, int cdf_stride, int n);
+void av1_cost_tokens_from_cdf_2_batch_avx2(int *costs, int costs_stride, const uint16_t *cdf, int cdf_stride, int n);
+RTCD_EXTERN void (*av1_cost_tokens_from_cdf_2_batch)(int *costs, int costs_stride, const uint16_t *cdf, int cdf_stride, int n);
+
+void av1_cost_tokens_from_cdf_4_batch_c(int *costs, int costs_stride, const uint16_t *cdf, int cdf_stride, int n);
+void av1_cost_tokens_from_cdf_4_batch_avx2(int *costs, int costs_stride, const uint16_t *cdf, int cdf_stride, int n);
+RTCD_EXTERN void (*av1_cost_tokens_from_cdf_4_batch)(int *costs, int costs_stride, const uint16_t *cdf, int cdf_stride, int n);
 
 void av1_dist_wtd_convolve_2d_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int subpel_y_qn, ConvolveParams *conv_params);
 void av1_dist_wtd_convolve_2d_ssse3(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int subpel_y_qn, ConvolveParams *conv_params);
@@ -417,6 +429,10 @@ void av1_nn_predict_sse3(const float *input_nodes, const NN_CONFIG *const nn_con
 void av1_nn_predict_avx2(const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
 RTCD_EXTERN void (*av1_nn_predict)(const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
 
+void av1_predict_dc_block_lbd_c(const uint8_t *ref, int ref_stride, uint8_t *dst, int dst_stride, TX_SIZE tx_size, int txwpx, int txhpx, int n_top_px, int n_left_px);
+void av1_predict_dc_block_lbd_sse2(const uint8_t *ref, int ref_stride, uint8_t *dst, int dst_stride, TX_SIZE tx_size, int txwpx, int txhpx, int n_top_px, int n_left_px);
+#define av1_predict_dc_block_lbd av1_predict_dc_block_lbd_sse2
+
 void av1_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t * qm_ptr, const qm_val_t * iqm_ptr, int log_scale);
 #define av1_quantize_b av1_quantize_b_c
 
@@ -583,6 +599,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) av1_convolve_x_sr = av1_convolve_x_sr_avx2;
     av1_convolve_y_sr = av1_convolve_y_sr_sse2;
     if (flags & HAS_AVX2) av1_convolve_y_sr = av1_convolve_y_sr_avx2;
+    av1_cost_tokens_from_cdf_2_batch = av1_cost_tokens_from_cdf_2_batch_c;
+    if (flags & HAS_AVX2) av1_cost_tokens_from_cdf_2_batch = av1_cost_tokens_from_cdf_2_batch_avx2;
+    av1_cost_tokens_from_cdf_4_batch = av1_cost_tokens_from_cdf_4_batch_c;
+    if (flags & HAS_AVX2) av1_cost_tokens_from_cdf_4_batch = av1_cost_tokens_from_cdf_4_batch_avx2;
     av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_c;
     if (flags & HAS_SSSE3) av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_ssse3;
     if (flags & HAS_AVX2) av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_avx2;

@@ -60,6 +60,7 @@ aom_av1_common_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/common/x86/convolve_2d_sse2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/convolve_sse2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/jnt_convolve_sse2.c",
+  "//third_party/libaom/source/libaom/av1/common/x86/reconintra_sse2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/resize_sse2.c",
 ]
 
@@ -179,6 +180,7 @@ aom_av1_encoder_intrin_arm_crc32 =
 
 aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_quantize_avx2.c",
+  "//third_party/libaom/source/libaom/av1/encoder/x86/cost_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/error_intrin_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_fwd_txfm_avx2.h",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_fwd_txfm2d_avx2.c",
@@ -197,6 +199,7 @@ aom_av1_encoder_intrin_neon = [
   "//third_party/libaom/source/libaom/av1/encoder/arm/encodetxb_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/highbd_fwd_txfm_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/hybrid_fwd_txfm_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/intra_mode_search_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/quantize_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/rdopt_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/reconinter_enc_neon.c",
