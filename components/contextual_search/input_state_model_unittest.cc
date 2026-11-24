@@ -2383,6 +2383,30 @@ TEST_F(InputStateModelDynamicAimTest, AttachmentsRouteByMode) {
   EXPECT_TRUE(WillFulfillInAim());
 }
 
+// Create Images with an image follows the SRP input mode and doesn't enter AI
+// Mode.
+TEST_F(InputStateModelDynamicAimTest, ImageGenWithImageStaysOnSrp) {
+  input_state_model_->EnableDynamicAimFulfillment();
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+
+  // Default mode (single image).
+  SetInputs(/*images=*/1);
+  EXPECT_FALSE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_EQ(input_state_model_->GetFulfillmentDecision().url_params,
+            (UrlParams{{"imgn", "1"}}));
+
+  // Removing the image stays on SRP.
+  SetInputs(/*images=*/0);
+  EXPECT_FALSE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  // Two images aren't allowed on SRP, so they go to AIM.
+  SetInputs(/*images=*/2);
+  EXPECT_TRUE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+}
+
 TEST_F(InputStateModelDynamicAimTest, ServerSrpInputModeUsedWhenEnabled) {
   input_state_model_->EnableDynamicAimFulfillment();
 

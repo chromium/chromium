@@ -248,20 +248,37 @@ TEST(InputStateModelRoutingTest, ToolsRouteByTheirParams) {
   EXPECT_TRUE(Compute(state).will_fulfill_in_aim);
 }
 
-TEST(InputStateModelRoutingTest, ToolWithAttachmentsRoutesToAim) {
+TEST(InputStateModelRoutingTest, ToolWithAttachmentsFollowsSrpInputMode) {
   omnibox::InputState state = MakeInputState();
   state.active_tool = ToolMode::TOOL_MODE_IMAGE_GEN;
-  const AttachmentCounts one_image = Counts(/*images=*/1, 0);
+  const auto compute_for_mode = [&](AttachmentCounts counts,
+                                    SrpInputMode mode) {
+    return ComputeFulfillment(state, /*aim_mode_active=*/false, counts,
+                              EligibleAttachmentsForMode(mode),
+                              /*has_valid_config=*/true);
+  };
 
-  FulfillmentDecision result = Compute(state, one_image);
+  // Create Images with one image goes to SRP with only its own params.
+  FulfillmentDecision result = Compute(state, Counts(/*images=*/1, 0));
+  EXPECT_FALSE(result.will_fulfill_in_aim);
+  EXPECT_EQ(result.model, ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_EQ(result.url_params, UrlParams({{"imgn", "1"}}));
+
+  // Two images go to SRP only if the mode allows them.
+  EXPECT_TRUE(Compute(state, Counts(/*images=*/2, 0)).will_fulfill_in_aim);
+  result = compute_for_mode(Counts(/*images=*/2, 0), SrpInputMode::kMultiImage);
+  EXPECT_FALSE(result.will_fulfill_in_aim);
+  EXPECT_EQ(result.url_params, UrlParams({{"imgn", "1"}}));
+
+  // Files and tabs not allowed by the mode go to AIM.
+  EXPECT_TRUE(Compute(state, Counts(0, /*files=*/1)).will_fulfill_in_aim);
+  EXPECT_TRUE(Compute(state, Counts(0, 0, /*tabs=*/1)).will_fulfill_in_aim);
+
+  // A tool that needs AIM still goes there with attachments.
+  state.active_tool = ToolMode::TOOL_MODE_CANVAS;
+  result = Compute(state, Counts(/*images=*/1, 0));
   EXPECT_TRUE(result.will_fulfill_in_aim);
-  EXPECT_EQ(result.url_params, UrlParams({{"imgn", "1"}, {"udm", "50"}}));
-  // Not controlled by the mode.
-  EXPECT_TRUE(ComputeFulfillment(state, /*aim_mode_active=*/false, one_image,
-                                 EligibleAttachmentsForMode(
-                                     SrpInputMode::kAnyCombinationImagesFiles),
-                                 /*has_valid_config=*/true)
-                  .will_fulfill_in_aim);
+  EXPECT_EQ(result.url_params, UrlParams({{"rc", "1"}, {"udm", "50"}}));
 }
 
 TEST(InputStateModelRoutingTest, AimModeRoutesToAim) {
