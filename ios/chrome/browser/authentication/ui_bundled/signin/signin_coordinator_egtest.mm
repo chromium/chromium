@@ -45,6 +45,7 @@
 #import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 using chrome_test_util::BookmarksNavigationBarDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -805,6 +806,56 @@ TAG_SMOKE_TEST(SigninCoordinatorTestCase,
   expecteds.signinSignInStarted = 1;
   expecteds.signinSigninStartedAccessPoint = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
+}
+
+// Tests that opening a URL from an external app dismisses the add-account
+// activity opened from the NTP when there are no identities on the device.
+// Regression test for crbug.com/407593687.
+- (void)testInterruptAddAccountFromNTPWithExternalURL {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupUserActionTester]);
+  [self addTeardownBlock:^{
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseUserActionTester]);
+  }];
+
+  // Select the identity disc particle on the NTP with no device accounts.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
+      performAction:grey_tap()];
+
+  // Ensure the auth activity is displayed.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kFakeAuthActivityViewIdentifier)];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Open a URL as if it was opened from another app.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
+
+  // Verify the auth activity is dismissed, the interruption user action was
+  // recorded, and the user remains signed out.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthActivityViewIdentifier)]
+      assertWithMatcher:grey_nil()];
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+        expectCount:1
+      forUserAction:@"Signin_AddAccount_Interrupted"]);
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify that the add-account view can be opened a second time.
+  // `FakeSystemIdentityInteractionManager` does not enforce the
+  // single-ongoing-operation check from crbug.com/424516331: on iOS 26 the
+  // second tap fails via `viewWillPersist` if the previous coordinator was not
+  // stopped (while on iOS 18 `-[NewTabPageCoordinator identityDiscWasTapped:]`
+  // stops any leftover `_signinCoordinator` first).
+  [ChromeEarlGrey openNewTab];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
+      performAction:grey_tap()];
+  [self assertFakeSSOScreenIsVisible];
 }
 
 // Tests that a signed-out user with the SyncDisabled policy can still open the

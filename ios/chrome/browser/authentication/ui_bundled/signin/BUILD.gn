@@ -240,6 +240,7 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:launch_configuration",
     "//net:test_support",
     "//ui/base",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
