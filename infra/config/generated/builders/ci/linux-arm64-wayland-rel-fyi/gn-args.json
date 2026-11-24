@@ -9,6 +9,7 @@
     "ozone_platform_headless": true,
     "ozone_platform_wayland": true,
     "proprietary_codecs": true,
+    "symbol_level": 1,
     "target_cpu": "arm64",
     "target_os": "linux",
     "use_bundled_mutter": true,

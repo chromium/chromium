@@ -1201,6 +1201,7 @@ ci.builder(
             "gpu_tests",
             "release_builder",
             "remoteexec",
+            "minimal_symbols",
             "linux_wayland",
             "ozone_headless",
             "arm64",
