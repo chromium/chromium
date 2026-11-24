@@ -1147,17 +1147,6 @@ void MenuController::ClearFocusedTextfield() {
   if (!focused) {
     return;
   }
-  ScopedDeletionGuard guard(AsWeakPtr());
-  // The platform ends the IME session when the Textfield blurs. A composition
-  // left in it would still be there when focus returns, and the menu would
-  // leave keys such as Backspace to an IME that is no longer composing.
-  focused->ConfirmCompositionText(/*keep_selection=*/false);
-  // Confirming runs TextfieldController callbacks, which can close the menu or
-  // blur or remove the Textfield.
-  focused = GetFocusedTextfield();
-  if (destroy_pending_ || !focused) {
-    return;
-  }
   if (FocusManager* focus_manager = focused->GetFocusManager()) {
     focus_manager->ClearFocus();
   }

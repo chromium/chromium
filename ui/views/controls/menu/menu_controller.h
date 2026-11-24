@@ -493,8 +493,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // accessibility state follow in OnWillChangeFocus() and OnDidChangeFocus().
   void FocusTextfield(Textfield* text_input);
 
-  // Clears focus from any focused Textfield inside the menu, after confirming
-  // its IME composition (the composing text stays in the Textfield).
+  // Clears focus from any focused Textfield inside the menu.
   void ClearFocusedTextfield();
 
   // Routes a key press the menu did not handle to the focused `text_input`.

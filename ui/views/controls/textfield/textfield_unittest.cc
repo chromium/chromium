@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/format_macros.h"
+#include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_icu_locale.h"
@@ -22,6 +23,7 @@
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -133,6 +135,27 @@ class TextfieldDestroyerController : public TextfieldController {
 
  private:
   std::unique_ptr<Textfield> target_;
+};
+
+// Runs `callback` whenever the Textfield reports changed contents.
+class ContentsChangedCallbackController : public TextfieldController {
+ public:
+  explicit ContentsChangedCallbackController(base::RepeatingClosure callback)
+      : callback_(std::move(callback)) {}
+
+  ContentsChangedCallbackController(const ContentsChangedCallbackController&) =
+      delete;
+  ContentsChangedCallbackController& operator=(
+      const ContentsChangedCallbackController&) = delete;
+
+  // TextfieldController:
+  void ContentsChanged(Textfield* sender,
+                       const std::u16string& new_contents) override {
+    callback_.Run();
+  }
+
+ private:
+  base::RepeatingClosure callback_;
 };
 
 // Base class used to test clipboard functionality of TextfieldController.
@@ -255,6 +278,13 @@ class MockInputMethod : public ui::InputMethodBase {
     return count_show_virtual_keyboard_;
   }
 
+  // Setting false models InputMethodAuraLinux and InputMethodMac, which end
+  // the IME session on focus change without confirming the client's
+  // composition.
+  void set_confirms_composition_on_focus_change(bool confirms) {
+    confirms_composition_on_focus_change_ = confirms;
+  }
+
   // Clears all internal states and result.
   void Clear();
 
@@ -290,6 +320,8 @@ class MockInputMethod : public ui::InputMethodBase {
   bool cancel_composition_called_ = false;
 
   int count_show_virtual_keyboard_ = 0;
+
+  bool confirms_composition_on_focus_change_ = true;
 };
 
 MockInputMethod::MockInputMethod() : ui::InputMethodBase(nullptr) {}
@@ -379,7 +411,8 @@ void MockInputMethod::OnWillChangeFocusedClient(
     ui::TextInputClient* focused_before,
     ui::TextInputClient* focused) {
   ui::TextInputClient* client = GetTextInputClient();
-  if (client && client->HasCompositionText()) {
+  if (confirms_composition_on_focus_change_ && client &&
+      client->HasCompositionText()) {
     client->ConfirmCompositionText(/* keep_selection */ false);
   }
   ClearComposition();
@@ -3614,6 +3647,52 @@ TEST_F(TextfieldTest, CommitEmptyComposingTextTest) {
       textfield_->ConfirmCompositionText(/* keep_selection */ false);
 
   EXPECT_EQ(composed_text_length, 0u);
+}
+
+// Blurring commits a composition that the InputMethod left in the Textfield.
+// The commit runs after the Textfield detaches from the InputMethod, so
+// controller callbacks never see the blurred Textfield as its client.
+TEST_F(TextfieldTest, BlurConfirmsComposition) {
+  InitTextfield();
+  input_method()->set_confirms_composition_on_focus_change(false);
+  ui::CompositionText composition;
+  composition.text = u"abc";
+  textfield_->SetCompositionText(composition);
+  ASSERT_TRUE(textfield_->HasCompositionText());
+  std::vector<const ui::TextInputClient*> clients_during_confirm;
+  ContentsChangedCallbackController controller(base::BindLambdaForTesting([&] {
+    clients_during_confirm.push_back(input_method()->GetTextInputClient());
+  }));
+  textfield_->set_controller(&controller);
+
+  widget_->GetFocusManager()->ClearFocus();
+
+  EXPECT_FALSE(textfield_->HasFocus());
+  EXPECT_FALSE(textfield_->HasCompositionText());
+  EXPECT_EQ(u"abc", textfield_->GetText());
+  EXPECT_EQ(3u, textfield_->GetCursorPosition());
+  ASSERT_EQ(1u, clients_during_confirm.size());
+  EXPECT_EQ(nullptr, clients_during_confirm[0]);
+  textfield_->set_controller(this);
+}
+
+// A blur from inside a user action, such as a controller clearing focus while
+// the composition updates, leaves the composition in place instead of starting
+// a nested user action.
+TEST_F(TextfieldTest, BlurDuringUserActionKeepsComposition) {
+  InitTextfield();
+  input_method()->set_confirms_composition_on_focus_change(false);
+  ContentsChangedCallbackController controller(base::BindLambdaForTesting(
+      [&] { widget_->GetFocusManager()->ClearFocus(); }));
+  textfield_->set_controller(&controller);
+  ui::CompositionText composition;
+  composition.text = u"abc";
+
+  textfield_->SetCompositionText(composition);
+
+  EXPECT_FALSE(textfield_->HasFocus());
+  EXPECT_TRUE(textfield_->HasCompositionText());
+  textfield_->set_controller(this);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

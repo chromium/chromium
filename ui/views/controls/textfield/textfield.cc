@@ -1265,6 +1265,19 @@ void Textfield::OnBlur() {
         GetNativeView()->GetToplevelWindow());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
+  // Some input methods (e.g. Linux, Mac) end the IME session on blur without
+  // committing the composition, which would leave it stale until the next
+  // edit. Others commit it during the detach above, making this a no-op. A
+  // blur during a user action comes from that action's own callbacks, so the
+  // composition is left for the action to finish.
+  if (!performing_user_action_ && HasCompositionText()) {
+    // Confirming runs controller callbacks, which may destroy `this`.
+    base::WeakPtr<Textfield> weak_this = weak_ptr_factory_.GetWeakPtr();
+    ConfirmCompositionText(/*keep_selection=*/false);
+    if (!weak_this) {
+      return;
+    }
+  }
   StopBlinkingCursor();
   cursor_view_->SetVisible(false);
 

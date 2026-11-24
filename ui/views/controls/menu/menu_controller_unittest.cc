@@ -5728,13 +5728,20 @@ TEST_F(MenuControllerTest, MenuHostedTextfieldYieldsToOwnerFocusChange) {
                          ui::mojom::MenuSourceType::kNone);
   ui::InputMethod* const input_method = owner->GetInputMethod();
 
-  // Moving the owner's focus takes the shared InputMethod back from the menu.
+  // Moving the owner's focus takes the shared InputMethod back from the menu
+  // and commits the menu Textfield's composition.
   textfield->RequestFocus();
   ASSERT_EQ(textfield, input_method->GetTextInputClient());
+  ui::CompositionText composition;
+  composition.text = u"ni";
+  textfield->SetCompositionText(composition);
+  ASSERT_TRUE(textfield->HasCompositionText());
   other_owner_textfield->RequestFocus();
   EXPECT_FALSE(textfield->HasFocus());
   EXPECT_TRUE(other_owner_textfield->HasFocus());
   EXPECT_EQ(other_owner_textfield, input_method->GetTextInputClient());
+  EXPECT_FALSE(textfield->HasCompositionText());
+  EXPECT_EQ(u"ni", textfield->GetText());
 
   // Clearing the owner's focus leaves no menu client on the InputMethod.
   textfield->RequestFocus();
