@@ -30,7 +30,6 @@
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_font_webkit_names.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/pref_names_util.h"
 #include "chrome/grit/platform_locale_settings.h"
@@ -69,6 +68,11 @@
 #include <windows.h>
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
+#endif
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 // If a font name in prefs default values starts with a comma, consider it's a
@@ -95,11 +99,11 @@ BASE_FEATURE(kDeferScriptFontPrefResolution, base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-// Registers a preference under the path |pref_name| for each script used for
-// per-script font prefs.
-// For example, for WEBKIT_WEBPREFS_FONTS_SERIF ("fonts.serif"):
-// "fonts.serif.Arab", "fonts.serif.Hang", etc. are registered.
-// |fonts_with_defaults| contains all |pref_names| already registered since they
+// Registers preferences for each script under the per-script font pref maps.
+// For example, for prefs::kWebKitSerifFontFamilyMap
+// ("webkit.webprefs.fonts.serif"): "webkit.webprefs.fonts.serif.Arab",
+// "webkit.webprefs.fonts.serif.Hang", etc. are registered.
+// |fonts_with_defaults| contains all pref names already registered since they
 // have a specified default value.
 // On non-desktop Android there are no default values for these properties and
 // there is no way to set them (because extensions are not supported so the
@@ -107,32 +111,42 @@ namespace {
 void RegisterFontFamilyPrefs(
     user_prefs::PrefRegistrySyncable* registry,
     const base::flat_set<std::string_view>& fonts_with_defaults) {
-  // Expand the font concatenated with script name so this stays at RO memory
-  // rather than allocated in heap.
-  // clang-format off
-  static const auto kFontFamilyMap = std::to_array<const char *>({
-#define EXPAND_SCRIPT_FONT(map_name, script_name) map_name "." script_name,
+  // Enough for "webkit.webprefs.fonts.<family>.<script>"; checked below.
+  constexpr size_t kBufSize = 64;
+  constexpr size_t kMaxScriptLen =
+      prefs::kWebKitScriptsForFontFamilyMaps[0].size() - 1;
+  auto register_family_impl = [&](std::string_view prefix) {
+    std::array<char, kBufSize> buf;
+    base::span<char> remaining(buf);
+    remaining.take_first(prefix.size()).copy_from(prefix);
+    remaining.take_first<1u>()[0] = '.';
 
-#include "chrome/common/pref_font_script_names-inl.h"
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_CURSIVE)
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_FANTASY)
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_FIXED)
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_MATH)
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_SANSERIF)
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_SERIF)
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_STANDARD)
-
-#undef EXPAND_SCRIPT_FONT
-  });
-  // clang-format on
-
-  for (const char* const pref_name : kFontFamilyMap) {
-    if (fonts_with_defaults.find(pref_name) == fonts_with_defaults.end()) {
-      // We haven't already set a default value for this font preference, so set
-      // an empty string as the default.
-      registry->RegisterStringPref(pref_name, std::string());
+    for (const prefs::FontScriptCode& script_arr :
+         prefs::kWebKitScriptsForFontFamilyMaps) {
+      std::string_view script(script_arr.data());
+      remaining.copy_prefix_from(script);
+      std::string_view pref_name = base::as_string_view(
+          base::span(buf).first(prefix.size() + 1 + script.size()));
+      if (!fonts_with_defaults.contains(pref_name)) {
+        // We haven't already set a default value for this font preference, so
+        // set an empty string as the default.
+        registry->RegisterStringPref(pref_name, "");
+      }
     }
-  }
+  };
+  auto register_family =
+      [&]<size_t kPrefixSize>(const char (&prefix)[kPrefixSize]) -> void {
+    static_assert((kPrefixSize - 1) + 1 + kMaxScriptLen <= kBufSize);
+    register_family_impl(prefix);
+  };
+
+  register_family(prefs::kWebKitCursiveFontFamilyMap);
+  register_family(prefs::kWebKitFantasyFontFamilyMap);
+  register_family(prefs::kWebKitFixedFontFamilyMap);
+  register_family(prefs::kWebKitMathFontFamilyMap);
+  register_family(prefs::kWebKitSansSerifFontFamilyMap);
+  register_family(prefs::kWebKitSerifFontFamilyMap);
+  register_family(prefs::kWebKitStandardFontFamilyMap);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

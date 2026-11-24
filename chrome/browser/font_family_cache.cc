@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_font_webkit_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -59,7 +58,9 @@ void FontFamilyCache::FillFontFamilyMap(
   auto it = font_family_map_.find(map_name.value());
   if (it == font_family_map_.end()) {
     blink::web_pref::ScriptFontFamilyMap cached_map;
-    for (const char* script : prefs::kWebKitScriptsForFontFamilyMaps) {
+    for (const prefs::FontScriptCode& script_arr :
+         prefs::kWebKitScriptsForFontFamilyMaps) {
+      const char* script = script_arr.data();
       std::u16string result = FetchFont(script, map_name.value());
       if (!result.empty()) {
         cached_map.emplace(script, std::move(result));
@@ -115,7 +116,9 @@ void FontFamilyCache::OnPrefsChanged(const std::string& pref_name) {
 
   std::string_view script =
       std::string_view(pref_name).substr(delimiter_pos + 1);
-  for (const char* candidate_script : prefs::kWebKitScriptsForFontFamilyMaps) {
+  for (const prefs::FontScriptCode& script_arr :
+       prefs::kWebKitScriptsForFontFamilyMaps) {
+    const char* candidate_script = script_arr.data();
     if (script == candidate_script) {
       std::u16string result = FetchFont(candidate_script, it->first);
       if (result.empty()) {

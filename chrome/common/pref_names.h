@@ -14,7 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/pref_font_webkit_names.h"
 #include "components/compose/buildflags.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -196,14 +195,36 @@ static_assert(std::string_view(kRlzPingDelaySeconds) ==
 // absence of MIME charset specification
 inline constexpr char kDefaultCharset[] = "intl.charset_default";
 
+// Four-letter ISO 15924 script code plus NUL terminator.
+using FontScriptCode = std::array<char, 5>;
+
 // If these change, the corresponding enums in the extension API
-// experimental.fontSettings.json must also change.
+// experimental.fontSettings.json must also change. Stored inline in .rodata
+// to avoid dynamic ELF relocations.
 inline constexpr auto kWebKitScriptsForFontFamilyMaps =
-    std::to_array<const char*>({
-#define EXPAND_SCRIPT_FONT(x, script_name) script_name,
-#include "chrome/common/pref_font_script_names-inl.h"
-        ALL_FONT_SCRIPTS("unused param")
-#undef EXPAND_SCRIPT_FONT
+    std::to_array<FontScriptCode>({
+        {"Afak"}, {"Arab"}, {"Aran"}, {"Armi"}, {"Armn"}, {"Avst"}, {"Bali"},
+        {"Bamu"}, {"Bass"}, {"Batk"}, {"Beng"}, {"Blis"}, {"Bopo"}, {"Brah"},
+        {"Brai"}, {"Bugi"}, {"Buhd"}, {"Cakm"}, {"Cans"}, {"Cari"}, {"Cham"},
+        {"Cher"}, {"Cirt"}, {"Copt"}, {"Cprt"}, {"Cyrl"}, {"Cyrs"}, {"Deva"},
+        {"Dsrt"}, {"Dupl"}, {"Egyd"}, {"Egyh"}, {"Egyp"}, {"Elba"}, {"Ethi"},
+        {"Geor"}, {"Geok"}, {"Glag"}, {"Goth"}, {"Gran"}, {"Grek"}, {"Gujr"},
+        {"Guru"}, {"Hang"}, {"Hani"}, {"Hano"}, {"Hans"}, {"Hant"}, {"Hebr"},
+        {"Hluw"}, {"Hmng"}, {"Hung"}, {"Inds"}, {"Ital"}, {"Java"}, {"Jpan"},
+        {"Jurc"}, {"Kali"}, {"Khar"}, {"Khmr"}, {"Khoj"}, {"Knda"}, {"Kpel"},
+        {"Kthi"}, {"Lana"}, {"Laoo"}, {"Latf"}, {"Latg"}, {"Latn"}, {"Lepc"},
+        {"Limb"}, {"Lina"}, {"Linb"}, {"Lisu"}, {"Loma"}, {"Lyci"}, {"Lydi"},
+        {"Mand"}, {"Mani"}, {"Maya"}, {"Mend"}, {"Merc"}, {"Mero"}, {"Mlym"},
+        {"Moon"}, {"Mong"}, {"Mroo"}, {"Mtei"}, {"Mymr"}, {"Narb"}, {"Nbat"},
+        {"Nkgb"}, {"Nkoo"}, {"Nshu"}, {"Ogam"}, {"Olck"}, {"Orkh"}, {"Orya"},
+        {"Osma"}, {"Palm"}, {"Perm"}, {"Phag"}, {"Phli"}, {"Phlp"}, {"Phlv"},
+        {"Phnx"}, {"Plrd"}, {"Prti"}, {"Rjng"}, {"Roro"}, {"Runr"}, {"Samr"},
+        {"Sara"}, {"Sarb"}, {"Saur"}, {"Sgnw"}, {"Shaw"}, {"Shrd"}, {"Sind"},
+        {"Sinh"}, {"Sora"}, {"Sund"}, {"Sylo"}, {"Syrc"}, {"Syre"}, {"Syrj"},
+        {"Syrn"}, {"Tagb"}, {"Takr"}, {"Tale"}, {"Talu"}, {"Taml"}, {"Tang"},
+        {"Tavt"}, {"Telu"}, {"Teng"}, {"Tfng"}, {"Tglg"}, {"Thaa"}, {"Thai"},
+        {"Tibt"}, {"Tirh"}, {"Ugar"}, {"Vaii"}, {"Visp"}, {"Wara"}, {"Wole"},
+        {"Xpeo"}, {"Xsux"}, {"Yiii"}, {"Zmth"}, {"Zsym"}, {"Zyyy"},
     });
 
 inline constexpr size_t kWebKitScriptsForFontFamilyMapsLength =
@@ -213,16 +234,18 @@ inline constexpr size_t kWebKitScriptsForFontFamilyMapsLength =
 // in pref_names_util.cc and the pref format in font_settings_api.cc must also
 // change.
 inline constexpr char kWebKitStandardFontFamilyMap[] =
-    WEBKIT_WEBPREFS_FONTS_STANDARD;
-inline constexpr char kWebKitFixedFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_FIXED;
-inline constexpr char kWebKitSerifFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_SERIF;
+    "webkit.webprefs.fonts.standard";
+inline constexpr char kWebKitFixedFontFamilyMap[] =
+    "webkit.webprefs.fonts.fixed";
+inline constexpr char kWebKitSerifFontFamilyMap[] =
+    "webkit.webprefs.fonts.serif";
 inline constexpr char kWebKitSansSerifFontFamilyMap[] =
-    WEBKIT_WEBPREFS_FONTS_SANSERIF;
+    "webkit.webprefs.fonts.sansserif";
 inline constexpr char kWebKitCursiveFontFamilyMap[] =
-    WEBKIT_WEBPREFS_FONTS_CURSIVE;
+    "webkit.webprefs.fonts.cursive";
 inline constexpr char kWebKitFantasyFontFamilyMap[] =
-    WEBKIT_WEBPREFS_FONTS_FANTASY;
-inline constexpr char kWebKitMathFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_MATH;
+    "webkit.webprefs.fonts.fantasy";
+inline constexpr char kWebKitMathFontFamilyMap[] = "webkit.webprefs.fonts.math";
 inline constexpr char kWebKitStandardFontFamilyArabic[] =
     "webkit.webprefs.fonts.standard.Arab";
 #if BUILDFLAG(IS_WIN)
