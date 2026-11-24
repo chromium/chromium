@@ -348,7 +348,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "android-desktop-x64-rel-17-tests",
-    # TODO(crbug.com/558813685): Enable branch_selector and gardening when green.
+    # TODO(crbug.com/578043167): Enable branch_selector when ready.
     description_html = "Android desktop x64 release tests on Android 17.",
     parent = "ci/android-desktop-x64-compile-rel",
     builder_spec = builder_config.builder_spec(
@@ -451,6 +451,7 @@ ci.thin_tester(
     builderless = True,
     cores = 8,
     ssd = None,
+    gardener_rotations = gardener_rotations.ANDROID,
     console_view_entry = consoles.console_view_entry(
         category = "tester|x64",
         short_name = "17-rel",

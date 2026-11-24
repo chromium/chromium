@@ -187,6 +187,7 @@ polymorphic.launcher(
             ),
             testers = [
                 "ci/android-desktop-x64-rel-15-tests",
+                "ci/android-desktop-x64-rel-17-tests",
             ],
         ),
     ],
