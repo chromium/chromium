@@ -9,7 +9,6 @@ ci/Mac deterministic
 ci/Mac deterministic (dbg)
 ci/Site Isolation Android
 ci/Win 10 Fast Ring
-ci/android-11-x86-fyi-rel
 ci/android-11-x86-rel
 ci/android-12-x64-dbg-tests
 ci/android-arm64-archive-rel

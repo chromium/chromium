@@ -32,7 +32,6 @@ exempted_from_contact_builders = {
         "Mac deterministic (dbg)",
         "Site Isolation Android",
         "Win 10 Fast Ring",
-        "android-11-x86-fyi-rel",
         "android-11-x86-rel",
         "android-12-x64-dbg-tests",
         "android-arm64-archive-rel",

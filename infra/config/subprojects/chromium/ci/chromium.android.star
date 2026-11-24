@@ -2791,6 +2791,17 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter",
                 ],
             ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
+                    "--timeout-scale=2.0",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        "cores": "8",
+                    },
+                ),
+            ),
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 2,
@@ -2802,14 +2813,23 @@ ci.builder(
                     "--gtest_filter=-FieldFormatterTest.DifferentLocales",
                 ],
             ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10_11.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        # use 8-core to shorten runtime
+                        "cores": "8",
+                    },
+                    shards = 30,
+                ),
+            ),
             "content_shell_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter",
                     "--timeout-scale=2.0",
                 ],
-            ),
-            "content_browsertests": targets.remove(
-                reason = "TODO(crbug.com/40152686): Temporarily remove it from android-11 ci builder until it is stable.",
             ),
             "crashpad_tests": targets.mixin(
                 args = [

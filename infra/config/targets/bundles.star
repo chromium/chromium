@@ -52,16 +52,9 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_11_emulator_fyi_gtests",
-    targets = [
-        "content_browsertests",
-        "android_emulator_specific_chrome_public_tests",
-    ],
-)
-
-targets.bundle(
     name = "android_11_emulator_gtests",
     targets = [
+        "android_emulator_specific_chrome_public_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chrome_public_bundle_smoke_test",
