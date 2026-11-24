@@ -419,13 +419,20 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       return 'AppleTVSimulator.platform'
     return 'iPhoneSimulator.platform'
 
-  def _create_xctest_run_enum_tests(self, include_disabled: bool) -> str:
+  def _create_xctest_run_enum_tests(
+    self, include_disabled: bool = False
+  ) -> str:
     """Creates xctestrun file used for enumerating tests.
 
     Returns:
       A path to the generated xctestrun file.
     """
     test_app = self.get_launch_test_app()
+    # Clear test filters so enumeration inspects the full bundle even after
+    # resolve_eg_test_cases() populates self.test_cases (e.g. when shard 0
+    # enumerates disabled tests with method-level OnlyTestIdentifiers).
+    test_app.included_tests = []
+    test_app.excluded_tests = []
     xctestrun_data = test_app.fill_xctestrun_node(include_disabled)
 
     xctestrun = os.path.join(self.out_dir, 'enumerate_tests.xctestrun')

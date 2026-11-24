@@ -7,6 +7,7 @@
 
 import collections  # noqa: F401
 import contextlib
+import io
 import json
 import logging
 import mock
@@ -770,6 +771,156 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
     mock_uninstall.assert_not_called()
     mock_shutdown.assert_called_once_with(_DESTINATION)
 
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  def test_launch_command_retry_failed_method_with_mixed_sharded_tests(
+    self, mock_collect_results
+  ):
+    """Tests retry of a failing method in a mixed class/method shard."""
+    self.unmock(test_apps.EgtestsApp, 'get_all_tests')
+    all_tests = [
+      ('SmallClass', 'testA'),
+      ('SmallClass', 'testB'),
+      ('BigClass', 'test1'),
+      ('BigClass', 'test2'),
+      ('BigClass', 'test3'),
+    ]
+    shard_entries = ['SmallClass', 'BigClass/test1', 'BigClass/test2']
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH,
+      all_tests,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=shard_entries,
+      test_args=['--run-eg-smoke-tests-only'],
+    )
+    self.mock(test_apps.EgtestsApp, '_additional_inserted_libs', lambda _: [])
+    captured_nodes = []
+
+    def _capture_fill_xctest_run(app, _out_dir):
+      node = app.fill_xctestrun_node()
+      captured_nodes.append(node[app.module_name + '_module'])
+      return 'xctestrun'
+
+    self.mock(test_apps.EgtestsApp, 'fill_xctest_run', _capture_fill_xctest_run)
+    mock_collect_results.side_effect = [
+      ResultCollection(
+        test_results=[
+          TestResult('SmallClass/testA', TestStatus.PASS),
+          TestResult('SmallClass/testB', TestStatus.PASS),
+          TestResult('BigClass/test1', TestStatus.FAIL),
+          TestResult('BigClass/test2', TestStatus.PASS),
+        ]
+      ),
+      ResultCollection(
+        test_results=[
+          TestResult('BigClass/test1', TestStatus.PASS),
+        ]
+      ),
+    ]
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=2,
+      retries=2,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock.MagicMock(),
+    )
+    overall_result = launch_command.launch()
+
+    self.assertEqual(len(captured_nodes), 2)
+    self.assertEqual(captured_nodes[0]['OnlyTestIdentifiers'], shard_entries)
+    self.assertEqual(
+      captured_nodes[1]['OnlyTestIdentifiers'], ['BigClass/test1']
+    )
+    for node in captured_nodes:
+      self.assertEqual(
+        node['CommandLineArguments'], ['--run-eg-smoke-tests-only']
+      )
+    self.assertEqual(egtests.initial_included_tests, shard_entries)
+    self.assertEqual(
+      egtests.get_all_tests(),
+      [
+        'SmallClass/testA',
+        'SmallClass/testB',
+        'BigClass/test1',
+        'BigClass/test2',
+      ],
+    )
+    self.assertEqual(
+      overall_result.expected_tests(),
+      {
+        'SmallClass/testA',
+        'SmallClass/testB',
+        'BigClass/test1',
+        'BigClass/test2',
+      },
+    )
+    self.assertEqual(overall_result.never_expected_tests(), set())
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  def test_launch_command_retry_mid_run_crash_with_mixed_sharded_tests(
+    self, mock_collect_results
+  ):
+    """Tests crash retry runs only unexecuted tests in a mixed shard."""
+    self.unmock(test_apps.EgtestsApp, 'get_all_tests')
+    all_tests = [
+      ('SmallClass', 'testA'),
+      ('SmallClass', 'testB'),
+      ('BigClass', 'test1'),
+      ('BigClass', 'test2'),
+      ('BigClass', 'test3'),
+    ]
+    shard_entries = ['SmallClass', 'BigClass/test1', 'BigClass/test2']
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH,
+      all_tests,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=shard_entries,
+    )
+    self.mock(test_apps.EgtestsApp, '_additional_inserted_libs', lambda _: [])
+    captured_nodes = []
+
+    def _capture_fill_xctest_run(app, _out_dir):
+      node = app.fill_xctestrun_node()
+      captured_nodes.append(node[app.module_name + '_module'])
+      return 'xctestrun'
+
+    self.mock(test_apps.EgtestsApp, 'fill_xctest_run', _capture_fill_xctest_run)
+    crashed_attempt = ResultCollection(
+      test_results=[TestResult('SmallClass/testA', TestStatus.PASS)]
+    )
+    crashed_attempt.crashed = True
+    mock_collect_results.side_effect = [
+      crashed_attempt,
+      ResultCollection(
+        test_results=[
+          TestResult('SmallClass/testB', TestStatus.PASS),
+          TestResult('BigClass/test1', TestStatus.PASS),
+          TestResult('BigClass/test2', TestStatus.PASS),
+        ]
+      ),
+    ]
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=2,
+      retries=2,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock.MagicMock(),
+    )
+    overall_result = launch_command.launch()
+
+    self.assertEqual(len(captured_nodes), 2)
+    self.assertCountEqual(
+      captured_nodes[1]['OnlyTestIdentifiers'],
+      ['SmallClass/testB', 'BigClass/test1', 'BigClass/test2'],
+    )
+    self.assertFalse(overall_result.crashed)
+    self.assertEqual(
+      set(egtests.get_all_tests()) - overall_result.all_test_names(), set()
+    )
+
 
 class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
   """Test case to test xcodebuild_runner.DeviceXcodeTestRunner."""
@@ -1106,6 +1257,144 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
       skip_enumerate_tests=True,
     )
     self.assertEqual(tr.clones, 1)
+
+  def test_create_xctest_run_enum_tests_omits_filters_and_preserves_args(self):
+    """Tests enum xctestrun clears test filters while keeping test_args."""
+    self.unmock(
+      xcodebuild_runner.SimulatorParallelTestRunner,
+      '_create_xctest_run_enum_tests',
+    )
+    dumped_nodes = []
+    self.mock(
+      xcodebuild_runner.plistlib,
+      'dump',
+      lambda data, _: dumped_nodes.append(data),
+    )
+    tr = xcodebuild_runner.SimulatorParallelTestRunner(
+      'fake-app-path',
+      'fake-host-app-path',
+      'fake-version',
+      'fake-platform',
+      'fake-out-dir',
+      test_cases=['BigClass/test1', 'SmallClass'],
+      test_args=['--run-eg-smoke-tests-only'],
+      skip_enumerate_tests=True,
+    )
+    orig_get_launch_test_app = tr.get_launch_test_app
+
+    def _get_launch_test_app_with_excluded():
+      app = orig_get_launch_test_app()
+      app.excluded_tests = ['SkipClass/testSkip']
+      return app
+
+    with (
+      mock.patch.object(
+        tr,
+        'get_launch_test_app',
+        side_effect=_get_launch_test_app_with_excluded,
+      ),
+      mock.patch('builtins.open', mock.mock_open()),
+    ):
+      tr._create_xctest_run_enum_tests()
+      tr._create_xctest_run_enum_tests(include_disabled=True)
+      self.assertEqual(tr.test_cases, ['BigClass/test1', 'SmallClass'])
+      self.assertEqual(tr.test_args, ['--run-eg-smoke-tests-only'])
+      tr.test_args = []
+      tr._create_xctest_run_enum_tests(include_disabled=False)
+
+    module = 'fake-app-path_module'
+    self.assertEqual(len(dumped_nodes), 3)
+    for node in dumped_nodes:
+      module_data = node[module]
+      self.assertNotIn('OnlyTestIdentifiers', module_data)
+      self.assertNotIn('SkipTestIdentifiers', module_data)
+    for node in dumped_nodes[:2]:
+      self.assertEqual(
+        node[module]['CommandLineArguments'], ['--run-eg-smoke-tests-only']
+      )
+    self.assertNotIn(
+      'RUN_DISABLED_EARL_GREY_TESTS',
+      dumped_nodes[0][module]['TestingEnvironmentVariables'],
+    )
+    self.assertEqual(
+      dumped_nodes[1][module]['TestingEnvironmentVariables'][
+        'RUN_DISABLED_EARL_GREY_TESTS'
+      ],
+      '1',
+    )
+    self.assertNotIn(
+      'RUN_DISABLED_EARL_GREY_TESTS',
+      dumped_nodes[2][module]['TestingEnvironmentVariables'],
+    )
+    self.assertNotIn('CommandLineArguments', dumped_nodes[2][module])
+
+  @mock.patch('shard_util.gtest_total_shards', return_value=2)
+  @mock.patch('shard_util.gtest_shard_index', return_value=0)
+  @mock.patch(
+    'shard_util.shard_eg_test_cases', return_value=['Class1/passedTest1']
+  )
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_shard0_output_disabled_tests_omits_only_test_identifiers(
+    self, _platform, mock_result, _shard_cases, _shard_index, _total_shards
+  ):
+    """Tests shard 0 disabled enumeration drops method OnlyTestIdentifiers."""
+    self.unmock(
+      xcodebuild_runner.SimulatorParallelTestRunner,
+      '_create_xctest_run_enum_tests',
+    )
+    self.unmock(test_apps.EgtestsApp, 'get_all_tests')
+    dumped_nodes = []
+    self.mock(
+      xcodebuild_runner.plistlib,
+      'dump',
+      lambda data, _: dumped_nodes.append(data),
+    )
+    orig_open = open
+    enum_outputs = iter(
+      [_ENUMERATE_TESTS_OUTPUT, _ENUMERATE_DISABLED_TESTS_OUTPUT]
+    )
+
+    def _fake_open(path, mode='r', *args, **kwargs):
+      path_str = str(path)
+      if path_str.endswith('enumerate_tests.xctestrun') and 'b' in mode:
+        return io.BytesIO()
+      if 'enumerate_tests_' in path_str and path_str.endswith('.json'):
+        return io.StringIO(next(enum_outputs))
+      return orig_open(path, mode, *args, **kwargs)
+
+    mock_result.return_value = ResultCollection(
+      test_results=[TestResult('Class1/passedTest1', TestStatus.PASS)]
+    )
+
+    with mock.patch('builtins.open', side_effect=_fake_open):
+      tr = xcodebuild_runner.SimulatorParallelTestRunner(
+        'fake-app-path',
+        'fake-host-app-path',
+        'fake-version',
+        'fake-platform',
+        'fake-out-dir',
+        output_disabled_tests=True,
+      )
+      self.assertTrue(tr.launch())
+
+    module = 'fake-app-path_module'
+    self.assertEqual(tr.test_cases, ['Class1/passedTest1'])
+    self.assertEqual(len(dumped_nodes), 2)
+    self.assertNotIn('OnlyTestIdentifiers', dumped_nodes[0][module])
+    self.assertNotIn('OnlyTestIdentifiers', dumped_nodes[1][module])
+    self.assertNotIn('SkipTestIdentifiers', dumped_nodes[1][module])
+    self.assertEqual(
+      dumped_nodes[1][module]['TestingEnvironmentVariables'][
+        'RUN_DISABLED_EARL_GREY_TESTS'
+      ],
+      '1',
+    )
+    tests = tr.test_results['tests']
+    self.assertEqual(tests['Class1/passedTest1']['actual'], 'PASS')
+    self.assertEqual(tests['Class2/disabled_test3']['actual'], 'SKIP')
+    self.assertEqual(tests['Class2/disabled_test3']['expected'], 'SKIP')
+    self.assertNotIn('Class1/passedTest2', tests)
 
 
 class PerfArtifactsCollectionTest(unittest.TestCase):

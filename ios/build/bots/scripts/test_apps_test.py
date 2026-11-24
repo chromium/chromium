@@ -341,6 +341,90 @@ class GTestsAppTest(test_runner_test.TestCase):
       'Developer/Library/PrivateFrameworks',
     )
 
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_fill_xctestrun_node_does_not_mutate_test_args(self, _1, _2):
+    """Tests fill_xctestrun_node does not mutate self.test_args on retries."""
+    orig_test_args = ['--custom-arg']
+    gtests_app = test_apps.GTestsApp(
+      _TEST_APP_PATH,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=['SuiteA.Test1'],
+      repeat_count=2,
+      test_args=orig_test_args,
+    )
+    module = gtests_app.module_name + '_module'
+
+    first_args = gtests_app.fill_xctestrun_node()[module][
+      'CommandLineArguments'
+    ]
+    self.assertEqual(
+      first_args,
+      [
+        '--custom-arg',
+        '--gtest_filter=SuiteA.Test1',
+        '--gtest_repeat=2',
+        test_apps.GENERATE_COMPILED_GTESTS_FILE_TEST_ARG,
+      ],
+    )
+
+    gtests_app.included_tests = ['SuiteA.Test2']
+    second_args = gtests_app.fill_xctestrun_node()[module][
+      'CommandLineArguments'
+    ]
+    self.assertEqual(
+      second_args,
+      [
+        '--custom-arg',
+        '--gtest_filter=SuiteA.Test2',
+        '--gtest_repeat=2',
+        test_apps.GENERATE_COMPILED_GTESTS_FILE_TEST_ARG,
+      ],
+    )
+
+    gtests_app.included_tests = []
+    third_args = gtests_app.fill_xctestrun_node()[module][
+      'CommandLineArguments'
+    ]
+    self.assertEqual(
+      third_args,
+      [
+        '--custom-arg',
+        '--gtest_repeat=2',
+        test_apps.GENERATE_COMPILED_GTESTS_FILE_TEST_ARG,
+      ],
+    )
+    self.assertEqual(gtests_app.test_args, ['--custom-arg'])
+    self.assertEqual(orig_test_args, ['--custom-arg'])
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_init_copies_list_arguments(self, _1, _2):
+    """Tests GTestsApp.__init__ stores independent copies of list arguments."""
+    orig_included = ['SuiteA.Test1']
+    orig_args = ['--custom-arg']
+    orig_excluded = ['SuiteA.Skip1']
+    orig_crashed = ['SuiteA.Crash1']
+    gtests_app = test_apps.GTestsApp(
+      _TEST_APP_PATH,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=orig_included,
+      test_args=orig_args,
+      excluded_tests=orig_excluded,
+      crashed_tests=orig_crashed,
+    )
+
+    orig_included.append('SuiteB.Test2')
+    orig_args.append('--mutated')
+    orig_excluded.append('SuiteB.Skip2')
+    orig_crashed.append('SuiteB.Crash2')
+    gtests_app.included_tests.clear()
+
+    self.assertEqual(gtests_app.initial_included_tests, ['SuiteA.Test1'])
+    self.assertEqual(gtests_app.test_args, ['--custom-arg'])
+    self.assertEqual(gtests_app.excluded_tests, ['SuiteA.Skip1'])
+    self.assertEqual(gtests_app.crashed_tests, ['SuiteA.Crash1'])
+
 
 class EgtestsAppTest(test_runner_test.TestCase):
   """Tests to test methods of EgTestsApp."""
@@ -534,6 +618,156 @@ class EgtestsAppTest(test_runner_test.TestCase):
     )
     self.assertEqual(
       ['TestCase1/testMethod1', 'TestCase2/testMethod2'], egtest.get_all_tests()
+    )
+
+  def test_xctestRunNode_omits_gtest_args_and_preserves_test_args(self):
+    """Tests EgtestsApp omits gtest args while preserving custom test_args."""
+    self.mock(xcode_util, 'xctest_path', lambda _: 'xctest-path')
+    self.mock(test_apps.EgtestsApp, '_additional_inserted_libs', lambda _: [])
+
+    # Subcase 1: empty test_args with mixed included_tests and repeat_count.
+    included = ['SmallClass', 'BigClass/test1', 'BigClass/test2']
+    egtest_empty = test_apps.EgtestsApp(
+      _TEST_APP_PATH,
+      _ALL_EG_TEST_NAMES,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=included,
+      repeat_count=3,
+    )
+    node_empty = egtest_empty.fill_xctestrun_node()['test_app_module']
+    self.assertEqual(node_empty['OnlyTestIdentifiers'], included)
+    self.assertNotIn('CommandLineArguments', node_empty)
+
+    # Subcase 2: non-empty test_args preserved across repeated calls.
+    egtest_args = test_apps.EgtestsApp(
+      _TEST_APP_PATH,
+      _ALL_EG_TEST_NAMES,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=['BigClass/test1'],
+      repeat_count=3,
+      test_args=['--run-eg-smoke-tests-only'],
+    )
+    for _ in range(2):
+      node_args = egtest_args.fill_xctestrun_node(include_disabled=True)[
+        'test_app_module'
+      ]
+      self.assertEqual(
+        node_args['CommandLineArguments'], ['--run-eg-smoke-tests-only']
+      )
+      self.assertIsNot(node_args['CommandLineArguments'], egtest_args.test_args)
+      node_args['CommandLineArguments'].append('--mutated')
+      self.assertEqual(
+        node_args['TestingEnvironmentVariables'][
+          'RUN_DISABLED_EARL_GREY_TESTS'
+        ],
+        '1',
+      )
+    self.assertEqual(egtest_args.test_args, ['--run-eg-smoke-tests-only'])
+
+    # Subcase 3: excluded_tests sets SkipTestIdentifiers without gtest args.
+    egtest_skip = test_apps.EgtestsApp(
+      _TEST_APP_PATH,
+      _ALL_EG_TEST_NAMES,
+      constants.IOSPlatformType.IPHONEOS,
+      excluded_tests=['Class1/passedTest1'],
+    )
+    node_skip = egtest_skip.fill_xctestrun_node()['test_app_module']
+    self.assertEqual(node_skip['SkipTestIdentifiers'], ['Class1/passedTest1'])
+    self.assertNotIn('CommandLineArguments', node_skip)
+
+  def test_get_all_tests_mixed_classes_and_methods(self):
+    """Tests get_all_tests preserves order for mixed class/method filters."""
+    all_tests = [
+      ('SmallClass', 'testA'),
+      ('SmallClass', 'testB'),
+      ('BigClass', 'test1'),
+      ('BigClass', 'test2'),
+      ('BigClass', 'test3'),
+      ('OtherClass', 'testX'),
+    ]
+    egtest_mixed = test_apps.EgtestsApp(
+      _TEST_APP_PATH,
+      all_tests,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=['SmallClass', 'BigClass/test1', 'BigClass/test2'],
+    )
+    self.assertEqual(
+      egtest_mixed.get_all_tests(),
+      [
+        'SmallClass/testA',
+        'SmallClass/testB',
+        'BigClass/test1',
+        'BigClass/test2',
+      ],
+    )
+
+    egtest_all = test_apps.EgtestsApp(
+      _TEST_APP_PATH,
+      all_tests,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=[],
+    )
+    self.assertEqual(
+      egtest_all.get_all_tests(),
+      [
+        'SmallClass/testA',
+        'SmallClass/testB',
+        'BigClass/test1',
+        'BigClass/test2',
+        'BigClass/test3',
+        'OtherClass/testX',
+      ],
+    )
+
+    inheritance_tests = [
+      ('ParentClass', 'test1'),
+      ('ParentClass', 'test2'),
+      ('ChildClass', 'test1'),
+      ('ChildClass', 'test3'),
+    ]
+    egtest_inherit = test_apps.EgtestsApp(
+      _TEST_APP_PATH,
+      inheritance_tests,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=['ParentClass', 'ChildClass/test1'],
+    )
+    self.assertEqual(
+      egtest_inherit.get_all_tests(),
+      ['ParentClass/test1', 'ParentClass/test2', 'ChildClass/test1'],
+    )
+
+  def test_get_all_tests_stable_after_retry_mutation(self):
+    """Tests get_all_tests is unaffected by caller or retry list mutation."""
+    all_tests = [
+      ('SmallClass', 'testA'),
+      ('SmallClass', 'testB'),
+      ('BigClass', 'test1'),
+      ('BigClass', 'test2'),
+      ('OtherClass', 'testX'),
+    ]
+    caller_included = ['SmallClass', 'BigClass/test1', 'BigClass/test2']
+    egtest = test_apps.EgtestsApp(
+      _TEST_APP_PATH,
+      all_tests,
+      constants.IOSPlatformType.IPHONEOS,
+      included_tests=caller_included,
+    )
+    caller_included.append('OtherClass')
+    egtest.included_tests.clear()
+    egtest.included_tests = ['BigClass/test1']
+
+    self.assertEqual(
+      egtest.initial_included_tests,
+      ['SmallClass', 'BigClass/test1', 'BigClass/test2'],
+    )
+    self.assertEqual(
+      egtest.get_all_tests(),
+      [
+        'SmallClass/testA',
+        'SmallClass/testB',
+        'BigClass/test1',
+        'BigClass/test2',
+      ],
     )
 
 

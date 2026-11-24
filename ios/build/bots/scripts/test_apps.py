@@ -162,6 +162,10 @@ class GTestsApp(object):
     test_app: full path to an app.
   """
 
+  # Whether fill_xctestrun_node() should append GoogleTest command-line flags
+  # (--gtest_filter, --gtest_repeat, compiled-tests JSON flag).
+  _use_gtest_args = True
+
   def __init__(self, test_app, platform_type, **kwargs):
     """Initialize Egtests.
 
@@ -191,18 +195,19 @@ class GTestsApp(object):
     self.project_path = os.path.dirname(self.test_app_path)
     self.platform_type = platform_type
     self._xcode_platform_dir_name = kwargs.get('xcode_platform_dir_name')
-    self.test_args = kwargs.get('test_args') or []
+    self.test_args = list(kwargs.get('test_args') or [])
     self.env_vars = {}
     for env_var in kwargs.get('env_vars') or []:
       env_var = env_var.split('=', 1)
       self.env_vars[env_var[0]] = None if len(env_var) == 1 else env_var[1]
+    included_tests = list(kwargs.get('included_tests') or [])
     # Keep the initial included tests since creating target. Do not modify.
-    self.initial_included_tests = kwargs.get('included_tests') or []
+    self.initial_included_tests = included_tests
     # This may be modified between test launches.
-    self.included_tests = kwargs.get('included_tests') or []
+    self.included_tests = list(included_tests)
     # This may be modified between test launches.
-    self.excluded_tests = kwargs.get('excluded_tests') or []
-    self.crashed_tests = kwargs.get('crashed_tests') or []
+    self.excluded_tests = list(kwargs.get('excluded_tests') or [])
+    self.crashed_tests = list(kwargs.get('crashed_tests') or [])
     self.disabled_tests = []
     self.module_name = os.path.splitext(os.path.basename(test_app))[0]
     self.release = kwargs.get('release')
@@ -320,27 +325,29 @@ class GTestsApp(object):
       )
 
     xctestrun_data = {module: module_data}
-    gtest_filter = []
+    test_args = list(self.test_args)
 
-    if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(
-        self.included_tests, self.excluded_tests, self.crashed_tests
-      )
-      # Removed previous gtest-filter if exists.
-      self.test_args = [
-        el for el in self.test_args if not el.startswith('--gtest_filter=')
-      ]
-      self.test_args.append('--gtest_filter=%s' % gtest_filter)
+    if self._use_gtest_args:
+      if self.included_tests or self.excluded_tests:
+        gtest_filter = get_gtest_filter(
+          self.included_tests, self.excluded_tests, self.crashed_tests
+        )
+        # Removed previous gtest-filter if exists.
+        test_args = [
+          el for el in test_args if not el.startswith('--gtest_filter=')
+        ]
+        test_args.append('--gtest_filter=%s' % gtest_filter)
 
-    if self.repeat_count > 1:
-      self.test_args.append('--gtest_repeat=%s' % self.repeat_count)
+      if self.repeat_count > 1:
+        test_args.append('--gtest_repeat=%s' % self.repeat_count)
+
+      test_args.append(GENERATE_COMPILED_GTESTS_FILE_TEST_ARG)
 
     if self.env_vars:
       xctestrun_data[module].update({'EnvironmentVariables': self.env_vars})
 
-    self.test_args.append(GENERATE_COMPILED_GTESTS_FILE_TEST_ARG)
-    if self.test_args:
-      xctestrun_data[module].update({'CommandLineArguments': self.test_args})
+    if test_args:
+      xctestrun_data[module].update({'CommandLineArguments': test_args})
 
     if self.excluded_tests:
       xctestrun_data[module].update(
@@ -416,6 +423,11 @@ class EgtestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
+  # EG/XCTest bundles filter via OnlyTestIdentifiers/SkipTestIdentifiers and
+  # repeat via -test-iterations, so GoogleTest flags are unused and can hit
+  # E2BIG when sharding large suites at method granularity.
+  _use_gtest_args = False
+
   def __init__(
     self,
     egtests_app: str,
@@ -460,14 +472,13 @@ class EgtestsApp(GTestsApp):
     if not self.all_eg_test_names and self.initial_included_tests:
       return list(self.initial_included_tests)
     all_tests = []
+    # |self.initial_included_tests| contains the tests to execute, which
+    # may be a subset of all tests b/c of the iOS test sharding logic in
+    # shard_util.py. Filter by |self.initial_included_tests| if specified.
+    # |self.initial_included_tests| might store test class or full name.
+    included = set(self.initial_included_tests)
     for test_class, test_method in self.all_eg_test_names:
       test_name = '%s/%s' % (test_class, test_method)
-
-      # |self.initial_included_tests| contains the tests to execute, which
-      # may be a subset of all tests b/c of the iOS test sharding logic in
-      # shard_util.py. Filter by |self.initial_included_tests| if specified.
-      # |self.initial_included_tests| might store test class or full name.
-      included = self.initial_included_tests
       if not included or test_name in included or test_class in included:
         all_tests.append(test_name)
     return all_tests
