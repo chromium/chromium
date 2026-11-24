@@ -7,6 +7,7 @@
 
 #import <set>
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol CreateOrEditTabGroupCoordinatorDelegate;
@@ -41,11 +42,12 @@ class WebStateID;
     NS_DESIGNATED_INITIALIZER;
 
 // Initializer when you edit an existing `tabGroup` passed in parameters.
-// `tabGroup` should not be nil.
+// `tabGroup` must be valid.
 - (instancetype)
     initTabGroupEditionWithBaseViewController:(UIViewController*)viewController
                                       browser:(Browser*)browser
-                                     tabGroup:(const TabGroup*)tabGroup
+                                     tabGroup:
+                                         (base::WeakPtr<const TabGroup>)tabGroup
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

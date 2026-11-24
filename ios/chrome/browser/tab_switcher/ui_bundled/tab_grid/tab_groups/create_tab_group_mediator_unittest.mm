@@ -7,6 +7,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -99,7 +100,7 @@ TEST_F(CreateTabGroupMediatorTest, DeletingGroupNotifiesDelegate) {
   const TabGroup* tab_group = builder_->GetTabGroupForIdentifier('0');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
-                             tabGroup:tab_group
+                             tabGroup:tab_group->GetWeakPtr()
                               browser:browser_.get()
                         faviconLoader:nullptr];
   mediator.delegate = delegate_;
@@ -119,7 +120,7 @@ TEST_F(CreateTabGroupMediatorTest, DeletingOtherGroupDoesntNotifyDelegate) {
   const TabGroup* tab_group_1 = builder_->GetTabGroupForIdentifier('1');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
-                             tabGroup:tab_group_0
+                             tabGroup:tab_group_0->GetWeakPtr()
                               browser:browser_.get()
                         faviconLoader:nullptr];
   mediator.delegate = delegate_;
@@ -138,7 +139,7 @@ TEST_F(CreateTabGroupMediatorTest, UpdatingGroupNotifiesDelegate) {
   const TabGroup* tab_group = builder_->GetTabGroupForIdentifier('0');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
-                             tabGroup:tab_group
+                             tabGroup:tab_group->GetWeakPtr()
                               browser:browser_.get()
                         faviconLoader:nullptr];
   mediator.delegate = delegate_;
@@ -160,7 +161,7 @@ TEST_F(CreateTabGroupMediatorTest, UpdatingOtherGroupDoesntNotifyDelegate) {
   const TabGroup* tab_group_1 = builder_->GetTabGroupForIdentifier('1');
   CreateTabGroupMediator* mediator = [[CreateTabGroupMediator alloc]
       initTabGroupEditionWithConsumer:consumer_
-                             tabGroup:tab_group_0
+                             tabGroup:tab_group_0->GetWeakPtr()
                               browser:browser_.get()
                         faviconLoader:nullptr];
   mediator.delegate = delegate_;

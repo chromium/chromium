@@ -80,12 +80,13 @@
 - (instancetype)
     initTabGroupEditionWithBaseViewController:(UIViewController*)viewController
                                       browser:(Browser*)browser
-                                     tabGroup:(const TabGroup*)tabGroup {
+                                     tabGroup:(base::WeakPtr<const TabGroup>)
+                                                  tabGroup {
   CHECK(tabGroup) << "You need to pass a tab group in order to edit it.";
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _editMode = YES;
-    _tabGroup = tabGroup->GetWeakPtr();
+    _tabGroup = tabGroup;
   }
   return self;
 }
@@ -134,7 +135,7 @@
     CHECK(_tabGroup);
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupEditionWithConsumer:_viewController
-                               tabGroup:_tabGroup.get()
+                               tabGroup:_tabGroup
                                 browser:browser
                           faviconLoader:faviconLoader];
     _mediator.delegate = self;

@@ -324,7 +324,7 @@ using collaboration::CollaborationControllerDelegate;
   _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
       initTabGroupEditionWithBaseViewController:backgroundView
                                         browser:self.browser
-                                       tabGroup:tabGroup.get()];
+                                       tabGroup:tabGroup];
   _tabGroupCreator.delegate = self;
   [_tabGroupCreator start];
 }

@@ -142,7 +142,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   _createTabGroupCoordinator = [[CreateTabGroupCoordinator alloc]
       initTabGroupEditionWithBaseViewController:self.baseViewController
                                         browser:self.browser
-                                       tabGroup:tabGroup.get()];
+                                       tabGroup:tabGroup];
   _createTabGroupCoordinator.delegate = self;
   [_createTabGroupCoordinator start];
 }

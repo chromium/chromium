@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_mutator.h"
 
 class Browser;
@@ -47,14 +48,14 @@ class WebStateID;
 
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
-// - `tabGroup` the group to edit.
+// - `tabGroup` the group to edit. Must be valid.
 // - `browser` the browser containing the `tabGroup`.
 // `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
-- (instancetype)initTabGroupEditionWithConsumer:
-                    (id<TabGroupCreationConsumer>)consumer
-                                       tabGroup:(const TabGroup*)tabGroup
-                                        browser:(Browser*)browser
-                                  faviconLoader:(FaviconLoader*)faviconLoader
+- (instancetype)
+    initTabGroupEditionWithConsumer:(id<TabGroupCreationConsumer>)consumer
+                           tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
+                            browser:(Browser*)browser
+                      faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
