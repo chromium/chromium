@@ -288,10 +288,12 @@ source_set("change_password_filling_helper") {
     "//base",
     "//components/actor/public/mojom:mojo_bindings_shared",
     "//components/autofill/core/common",
+    "//url",
   ]
   deps = [
     ":browser",
     ":password_string",
+    "//components/password_manager/core/browser/actor_login:frame_util",
     "//mojo/public/cpp/bindings",
     "//third_party/abseil-cpp:absl",
   ]

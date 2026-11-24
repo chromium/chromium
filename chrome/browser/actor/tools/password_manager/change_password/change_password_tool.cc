@@ -161,7 +161,9 @@ mojom::ActionResultPtr ChangePasswordTool::TimeOfUseValidation(
         "Target frame or password manager driver is unavailable.");
   }
   password_manager::ChangePasswordActionResult validation_result =
-      filling_helper_.ValidateDriverAndTargetFields(*driver);
+      filling_helper_.ValidateDriverAndTargetFields(
+          *driver,
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   if (!validation_result.IsOk()) {
     return ToErrorResult(validation_result);
   }

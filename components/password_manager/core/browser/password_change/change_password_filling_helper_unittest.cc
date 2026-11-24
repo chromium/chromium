@@ -38,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/cred_man_support.h"
@@ -59,6 +60,10 @@ constexpr char16_t kDefaultNewPassword[] = u"provider_new_password";
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
   MOCK_METHOD(PasswordManagerInterface*, GetPasswordManager, (), (override));
+  MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(bool, IsDirectChildOfPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(bool, IsNestedWithinFencedFrame, (), (const, override));
+  MOCK_METHOD(bool, HasCrossOriginAncestor, (), (const, override));
   MOCK_METHOD(
       void,
       FillChangePasswordForm,
@@ -95,11 +100,16 @@ class ChangePasswordFillingHelperTest : public testing::Test {
 
     driver() = std::make_unique<NiceMock<MockPasswordManagerDriver>>();
     other_driver() = std::make_unique<NiceMock<MockPasswordManagerDriver>>();
+    driver()->set_last_committed_url(GURL("https://example.com"));
+    other_driver()->set_last_committed_url(GURL("https://example.com"));
 
     ON_CALL(*driver(), GetPasswordManager())
         .WillByDefault(Return(&password_manager_));
+    ON_CALL(*driver(), IsInPrimaryMainFrame()).WillByDefault(Return(true));
     ON_CALL(*other_driver(), GetPasswordManager())
         .WillByDefault(Return(&password_manager_));
+    ON_CALL(*other_driver(), IsInPrimaryMainFrame())
+        .WillByDefault(Return(true));
     ON_CALL(password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&form_cache_));
     ON_CALL(form_cache_, GetFormManagers())
@@ -199,11 +209,12 @@ class ChangePasswordFillingHelperTest : public testing::Test {
       return false;
     }
     ChangePasswordActionResult result =
-        helper_.ValidateDriverAndTargetFields(*driver_);
+        helper_.ValidateDriverAndTargetFields(*driver_, main_frame_origin_);
     EXPECT_TRUE(result.IsOk()) << result.message;
     return result.IsOk();
   }
   autofill::LocalFrameToken frame_token() const { return frame_token_; }
+  const url::Origin& main_frame_origin() const { return main_frame_origin_; }
   NiceMock<MockPasswordManager>& password_manager() {
     return password_manager_;
   }
@@ -227,6 +238,8 @@ class ChangePasswordFillingHelperTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   autofill::LocalFrameToken frame_token_{base::UnguessableToken::Create()};
+  url::Origin main_frame_origin_ =
+      url::Origin::Create(GURL("https://example.com"));
   StubPasswordManagerClient password_client_;
   NiceMock<MockPasswordManager> password_manager_;
   NiceMock<MockPasswordFormCache> form_cache_;
@@ -368,7 +381,7 @@ TEST_F(ChangePasswordFillingHelperTest,
                   .has_value());
 
   ChangePasswordActionResult result =
-      helper().ValidateDriverAndTargetFields(*driver());
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
   EXPECT_EQ(result.code,
             actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_EQ(result.message,
@@ -387,7 +400,7 @@ TEST_F(ChangePasswordFillingHelperTest,
                   .has_value());
 
   ChangePasswordActionResult result =
-      helper().ValidateDriverAndTargetFields(*driver());
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
   EXPECT_EQ(result.code,
             actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_EQ(result.message,
@@ -404,7 +417,7 @@ TEST_F(ChangePasswordFillingHelperTest,
                   .has_value());
 
   ChangePasswordActionResult result =
-      helper().ValidateDriverAndTargetFields(*driver());
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
   EXPECT_EQ(result.code,
             actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_EQ(result.message,
@@ -425,7 +438,9 @@ TEST_F(ChangePasswordFillingHelperTest,
                                           MakeGlobalId(frame_token(), 30))
                   .has_value());
 
-  EXPECT_TRUE(helper().ValidateDriverAndTargetFields(*driver()).IsOk());
+  EXPECT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
 }
 
 TEST_F(ChangePasswordFillingHelperTest,
@@ -438,7 +453,7 @@ TEST_F(ChangePasswordFillingHelperTest,
                   .has_value());
 
   ChangePasswordActionResult result =
-      helper().ValidateDriverAndTargetFields(*driver());
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
   EXPECT_EQ(result.code,
             actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_EQ(result.message,
@@ -456,7 +471,9 @@ TEST_F(ChangePasswordFillingHelperTest,
                                           MakeGlobalId(frame_token(), 30))
                   .has_value());
 
-  EXPECT_TRUE(helper().ValidateDriverAndTargetFields(*driver()).IsOk());
+  EXPECT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
 }
 
 TEST_F(ChangePasswordFillingHelperTest,
@@ -471,7 +488,9 @@ TEST_F(ChangePasswordFillingHelperTest,
                                           autofill::FieldGlobalId{})
                   .has_value());
 
-  EXPECT_TRUE(helper().ValidateDriverAndTargetFields(*driver()).IsOk());
+  EXPECT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
 }
 
 TEST_F(ChangePasswordFillingHelperTest,
@@ -484,7 +503,7 @@ TEST_F(ChangePasswordFillingHelperTest,
                   .has_value());
 
   ChangePasswordActionResult result =
-      helper().ValidateDriverAndTargetFields(*driver());
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
   EXPECT_EQ(result.code,
             actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_EQ(result.message,
@@ -505,12 +524,108 @@ TEST_F(ChangePasswordFillingHelperTest,
                   .has_value());
 
   ChangePasswordActionResult result =
-      helper().ValidateDriverAndTargetFields(*driver());
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
   EXPECT_EQ(result.code,
             actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_EQ(result.message,
             "Target field is not a valid password field: "
             "current_password_field (id 10).");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       ValidateDriverAndTargetFields_CrossOriginFrame_Fails) {
+  driver()->set_last_committed_url(GURL("https://evil.com"));
+  AddFormManager({MakeFormField(20)});
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(autofill::FieldGlobalId{},
+                                          MakeGlobalId(frame_token(), 20),
+                                          autofill::FieldGlobalId{})
+                  .has_value());
+
+  ChangePasswordActionResult result =
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
+  EXPECT_EQ(result.code, actor::mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_EQ(result.message,
+            "Target frame or origin is not eligible for password filling.");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       ValidateDriverAndTargetFields_FencedFrame_Fails) {
+  ON_CALL(*driver(), IsNestedWithinFencedFrame()).WillByDefault(Return(true));
+  AddFormManager({MakeFormField(20)});
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(autofill::FieldGlobalId{},
+                                          MakeGlobalId(frame_token(), 20),
+                                          autofill::FieldGlobalId{})
+                  .has_value());
+
+  ChangePasswordActionResult result =
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
+  EXPECT_EQ(result.code, actor::mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_EQ(result.message,
+            "Target frame or origin is not eligible for password filling.");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       ValidateDriverAndTargetFields_NestedCrossOriginAncestor_Fails) {
+  driver()->set_last_committed_url(GURL("https://accounts.example.com"));
+  ON_CALL(*driver(), IsInPrimaryMainFrame()).WillByDefault(Return(false));
+  ON_CALL(*driver(), IsDirectChildOfPrimaryMainFrame())
+      .WillByDefault(Return(false));
+  ON_CALL(*driver(), HasCrossOriginAncestor()).WillByDefault(Return(true));
+  AddFormManager({MakeFormField(20)});
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(autofill::FieldGlobalId{},
+                                          MakeGlobalId(frame_token(), 20),
+                                          autofill::FieldGlobalId{})
+                  .has_value());
+
+  ChangePasswordActionResult result =
+      helper().ValidateDriverAndTargetFields(*driver(), main_frame_origin());
+  EXPECT_EQ(result.code, actor::mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_EQ(result.message,
+            "Target frame or origin is not eligible for password filling.");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       ValidateDriverAndTargetFields_SameSiteSubdomain_Succeeds) {
+  driver()->set_last_committed_url(GURL("https://accounts.example.com"));
+  ON_CALL(*driver(), IsInPrimaryMainFrame()).WillByDefault(Return(false));
+  ON_CALL(*driver(), IsDirectChildOfPrimaryMainFrame())
+      .WillByDefault(Return(true));
+  ON_CALL(*driver(), HasCrossOriginAncestor()).WillByDefault(Return(true));
+  AddFormManager({MakeFormField(20)});
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(autofill::FieldGlobalId{},
+                                          MakeGlobalId(frame_token(), 20),
+                                          autofill::FieldGlobalId{})
+                  .has_value());
+
+  EXPECT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_DriverNavigatedCrossOrigin_Fails) {
+  ASSERT_TRUE(PrepareHelperWithFields(/*has_current=*/true, /*has_new=*/true,
+                                      /*has_confirm=*/true));
+  driver()->set_last_committed_url(GURL("https://evil.com"));
+
+  EXPECT_CALL(password_change_service(), GetCredentialsProviderForActorSurface)
+      .Times(0);
+  EXPECT_CALL(credentials_provider(), GetOldPassword()).Times(0);
+  EXPECT_CALL(credentials_provider(), GetNewPassword(_)).Times(0);
+  EXPECT_CALL(*driver(), FillChangePasswordForm).Times(0);
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_EQ(result.code, actor::mojom::ActionResultCode::kUrlBlocked);
+  EXPECT_FALSE(result.requires_page_stabilization);
+  EXPECT_EQ(result.message,
+            "Target frame or origin is not eligible for password filling.");
 }
 
 TEST_F(ChangePasswordFillingHelperTest,
@@ -545,7 +660,9 @@ TEST_F(ChangePasswordFillingHelperTest,
                                           MakeGlobalId(frame_token(), 20),
                                           MakeGlobalId(frame_token(), 30))
                   .has_value());
-  ASSERT_TRUE(helper.ValidateDriverAndTargetFields(*driver()).IsOk());
+  ASSERT_TRUE(
+      helper.ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+          .IsOk());
   EXPECT_CALL(*driver(), FillChangePasswordForm).Times(0);
 
   TestFuture<ChangePasswordActionResult> future;
@@ -681,7 +798,9 @@ TEST_F(ChangePasswordFillingHelperTest,
                                           MakeGlobalId(frame_token(), 20),
                                           autofill::FieldGlobalId{})
                   .has_value());
-  ASSERT_TRUE(helper().ValidateDriverAndTargetFields(*driver()).IsOk());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
 
   const PasswordString kNewPassword(u"existing_generated_secret");
   EXPECT_CALL(credentials_provider(), GetOldPassword()).Times(0);
@@ -717,7 +836,9 @@ TEST_F(ChangePasswordFillingHelperTest,
                                           MakeGlobalId(frame_token(), 20),
                                           MakeGlobalId(frame_token(), 30))
                   .has_value());
-  ASSERT_TRUE(helper().ValidateDriverAndTargetFields(*driver()).IsOk());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
 
   const PasswordString kNewPassword(u"generated_secret");
   EXPECT_CALL(credentials_provider(), GetOldPassword()).Times(0);
@@ -755,7 +876,9 @@ TEST_F(ChangePasswordFillingHelperTest,
                                           MakeGlobalId(frame_token(), 20),
                                           MakeGlobalId(frame_token(), 30))
                   .has_value());
-  ASSERT_TRUE(helper().ValidateDriverAndTargetFields(*driver()).IsOk());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
 
   const PasswordString kNewPassword(u"generated_secret");
   EXPECT_CALL(credentials_provider(), GetOldPassword()).Times(0);

@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_frame_util.h"
 #include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_change/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
@@ -29,6 +30,7 @@
 #include "components/password_manager/core/browser/password_string.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -275,10 +277,19 @@ ChangePasswordFillingHelper::ValidateAndSetFieldIds(
 
 ChangePasswordActionResult
 ChangePasswordFillingHelper::ValidateDriverAndTargetFields(
-    PasswordManagerDriver& driver) {
+    PasswordManagerDriver& driver,
+    const url::Origin& main_frame_origin) {
   CHECK(!driver_ && !driver_.WasInvalidated());
   CHECK(current_password_field_id_ || new_password_field_id_ ||
         confirm_new_password_field_id_);
+
+  if (!actor_login::IsValidFrameAndOriginToFill(&driver, main_frame_origin)) {
+    // TODO(crbug.com/584683291): Introduce a dedicated `ActionResultCode` for
+    // this case.
+    return ChangePasswordActionResult::Error(
+        actor::mojom::ActionResultCode::kUrlBlocked,
+        "Target frame or origin is not eligible for password filling.");
+  }
 
   base::span<const std::unique_ptr<PasswordFormManager>> form_managers =
       GetFormManagers(driver);
@@ -307,6 +318,7 @@ ChangePasswordFillingHelper::ValidateDriverAndTargetFields(
   }
 
   driver_ = driver.AsWeakPtr();
+  main_frame_origin_ = main_frame_origin;
   return ChangePasswordActionResult::Ok();
 }
 
@@ -319,6 +331,14 @@ void ChangePasswordFillingHelper::FillChangePasswordForm(
     std::move(callback).Run(ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kFrameWentAway,
         "Target frame or password manager driver is unavailable."));
+    return;
+  }
+
+  if (!actor_login::IsValidFrameAndOriginToFill(driver_.get(),
+                                                main_frame_origin_)) {
+    std::move(callback).Run(ChangePasswordActionResult::Error(
+        actor::mojom::ActionResultCode::kUrlBlocked,
+        "Target frame or origin is not eligible for password filling."));
     return;
   }
 
@@ -365,7 +385,6 @@ void ChangePasswordFillingHelper::FillChangePasswordForm(
   // Unset (null) or missing `FieldRendererId`s are ignored by the renderer;
   // `FillChangePasswordForm` fills whichever fields resolve to valid input
   // elements and returns `std::nullopt` only if none of them can be filled.
-  // TODO(crbug.com/574401623): check actor_login::IsValidFrameAndOriginToFill.
   driver_->FillChangePasswordForm(
       current_password_field_id_, new_password_field_id_,
       confirm_new_password_field_id_, old_password, new_password,

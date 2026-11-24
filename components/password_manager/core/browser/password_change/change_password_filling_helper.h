@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "components/actor/public/mojom/actor_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -79,12 +80,14 @@ class ChangePasswordFillingHelper {
       const autofill::FieldGlobalId& new_password_field_id,
       const autofill::FieldGlobalId& confirm_new_password_field_id);
 
-  // Validates that every stored target field is managed by `driver`'s
-  // `PasswordFormCache` as a password input element. On success, retains
-  // `driver.AsWeakPtr()`. Requires `ValidateAndSetFieldIds()` to have
-  // succeeded.
+  // Validates that `driver` represents an eligible frame and origin to fill for
+  // `main_frame_origin` and that every stored target field is managed by
+  // `driver`'s `PasswordFormCache` as a password input element. On success,
+  // retains `driver.AsWeakPtr()` and `main_frame_origin`. Requires
+  // `ValidateAndSetFieldIds()` to have succeeded.
   ChangePasswordActionResult ValidateDriverAndTargetFields(
-      PasswordManagerDriver& driver);
+      PasswordManagerDriver& driver,
+      const url::Origin& main_frame_origin);
 
   // Fills the stored target password fields via the validated driver with
   // credentials provided by the credentials provider, evaluates the returned
@@ -96,6 +99,7 @@ class ChangePasswordFillingHelper {
  private:
   const int32_t actor_surface_id_;
   base::WeakPtr<PasswordManagerDriver> driver_;
+  url::Origin main_frame_origin_;
   const raw_ptr<PasswordChangeServiceInterface> password_change_service_;
   autofill::FieldRendererId current_password_field_id_;
   autofill::FieldRendererId new_password_field_id_;
