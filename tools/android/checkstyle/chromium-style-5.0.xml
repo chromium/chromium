@@ -304,6 +304,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="RuntimeEnvironment.application is deprecated. Use RuntimeEnvironment.getApplication() instead."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="RobolectricShadowMimeTypeMap"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="\bShadowMimeTypeMap\b|\bshadowOf\s*\(\s*MimeTypeMap\b|\baddExtensionMimeTypeMapping\s*\("/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="ShadowMimeTypeMap is deprecated. Use real MimeTypeMap directly instead."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="NoNonNull"/>

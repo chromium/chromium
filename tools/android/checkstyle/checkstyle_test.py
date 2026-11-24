@@ -827,6 +827,38 @@ class A {
         self._check()
 
     @java("""
+import org.robolectric.shadows.ShadowMimeTypeMap;
+class A {
+    ShadowMimeTypeMap mShadow;
+}
+""")
+    def test_RobolectricShadowMimeTypeMap(self):
+        self._check('ShadowMimeTypeMap is deprecated.')
+
+    @java("""
+import android.webkit.MimeTypeMap;
+import org.robolectric.Shadows;
+class A {
+    void f() {
+        Shadows.shadowOf(MimeTypeMap.getSingleton())
+                .addExtensionMimeTypeMapping("jpg", "image/jpeg");
+    }
+}
+""")
+    def test_RobolectricShadowMimeTypeMap_shadowOf(self):
+        self._check('ShadowMimeTypeMap is deprecated.')
+
+    @java("""
+import android.webkit.MimeTypeMap;
+class A {
+    // ShadowMimeTypeMap is mentioned in a comment only.
+    String mType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg");
+}
+""")
+    def test_RobolectricShadowMimeTypeMap_good(self):
+        self._check()
+
+    @java("""
 import androidx.annotation.Nullable;
 import org.chromium.build.annotations.NullMarked;
 @NullMarked class MarkImportsAsUsed<T extends @Nullable Object> {}
