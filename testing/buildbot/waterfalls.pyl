@@ -8,7 +8,7 @@
 # * comments are allowed, using '#' syntax; and
 # * trailing commas are allowed.
 
-# Whitespace change #6.
+# Whitespace change #7.
 
 [
   # The following builder groups have been migrated to set their targets in the
