@@ -41,6 +41,10 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/color_space.h"
 
+namespace base {
+class Token;
+}
+
 namespace cc {
 class Layer;
 }
@@ -90,6 +94,9 @@ class PLATFORM_EXPORT MediaPlayerClient : public WebMediaPlayerClient,
   // remote device. A default message will be shown in this case.
   virtual void MediaRemotingStarted(
       const WebString& remote_device_friendly_name) = 0;
+
+  // Sets the tracking ID for the next MediaRemotingStarted() notification.
+  virtual void SetMediaRedirectionTargetId(const base::Token&) {}
 
   // Informs that media stops being rendered remotely. |error_code| corresponds
   // to a localized string that explains the reason as user-readable text.

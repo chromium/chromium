@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/core/paint/video_painter.h"
 
 #include "cc/layers/layer.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/image_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
@@ -54,6 +56,20 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_video_, paint_info.phase))
     return;
+
+  if (layout_video_.VideoElement()->GetTrackedElementSubRect(
+          viz::TrackedElementFeature::kMediaRedirection)) {
+    // Keep the tracked bounds on a drawable layer while video is redirected.
+    const PhysicalRect content_rect =
+        layout_video_.PhysicalContentBoxRect() + paint_offset;
+    DrawingRecorder recorder(paint_info.context, layout_video_,
+                             paint_info.phase, ToEnclosingRect(content_rect));
+    paint_info.context.FillRect(
+        ToPixelSnappedRect(content_rect), Color::kTransparent,
+        PaintAutoDarkMode(layout_video_.Style(),
+                          DarkModeFilter::ElementRole::kBackground));
+    return;
+  }
 
   GraphicsContext& context = paint_info.context;
   // Here we're not painting the video but rather preparing the layer for the

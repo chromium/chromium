@@ -3915,6 +3915,14 @@ void WebMediaPlayerImpl::SwitchToRemoteRenderer(
   }
 }
 
+void WebMediaPlayerImpl::SetMediaRedirectionTargetId(
+    const base::Token& tracked_element_id) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  if (client_) {
+    client_->SetMediaRedirectionTargetId(tracked_element_id);
+  }
+}
+
 void WebMediaPlayerImpl::SwitchToLocalRenderer(
     media::MediaObserverClient::ReasonToSwitchToLocal reason) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());

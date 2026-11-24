@@ -322,6 +322,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // media::MediaObserverClient implementation.
   void SwitchToRemoteRenderer(
       const std::string& remote_device_friendly_name) override;
+  void SetMediaRedirectionTargetId(
+      const base::Token& tracked_element_id) override;
   void SwitchToLocalRenderer(
       media::MediaObserverClient::ReasonToSwitchToLocal reason) override;
   void UpdateRemotePlaybackCompatibility(bool is_compatible) override;

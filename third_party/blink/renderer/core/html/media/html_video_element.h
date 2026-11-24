@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_VIDEO_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_VIDEO_ELEMENT_H_
 
+#include "base/token.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
@@ -165,6 +166,7 @@ class CORE_EXPORT HTMLVideoElement final
   bool IsRemotingInterstitialVisible() const;
 
   void MediaRemotingStarted(const WebString& remote_device_friendly_name) final;
+  void SetMediaRedirectionTargetId(const base::Token& tracked_element_id) final;
   bool SupportsPictureInPicture() const final;
   void MediaRemotingStopped(int error_code) final;
   WebMediaPlayer::DisplayType GetDisplayType() const final;
@@ -301,6 +303,7 @@ class CORE_EXPORT HTMLVideoElement final
 
   Member<MediaRemotingInterstitial> remoting_interstitial_;
   Member<PictureInPictureInterstitial> picture_in_picture_interstitial_;
+  base::Token pending_media_redirection_target_id_;
 
   AtomicString default_poster_url_;
 

@@ -8,6 +8,10 @@
 #include "media/base/pipeline_metadata.h"
 #include "url/gurl.h"
 
+namespace base {
+class Token;
+}
+
 namespace media {
 
 class MEDIA_EXPORT MediaObserverClient {
@@ -28,6 +32,9 @@ class MEDIA_EXPORT MediaObserverClient {
   // |remote_device_friendly_name| can be empty if the remote device is unknown.
   virtual void SwitchToRemoteRenderer(
       const std::string& remote_device_friendly_name) = 0;
+
+  // Sets the tracking ID before switching to a media redirection renderer.
+  virtual void SetMediaRedirectionTargetId(const base::Token&) {}
 
   // Requests to switch to local renderer. According to |reason|, a text message
   // may be displayed to explain why the switch occurred.

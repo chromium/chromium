@@ -4,17 +4,22 @@
 
 #include "third_party/blink/renderer/core/paint/video_painter.h"
 
+#include <algorithm>
 #include <memory>
 
+#include "base/token.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/layer.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
@@ -144,6 +149,58 @@ TEST_F(VideoPainterTest, VideoLayerAppearsInLayerTree) {
   // The layer bounds reflects the aspect ratio and object-fit of the video.
   EXPECT_EQ(gfx::Vector2dF(0, 0), layer->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(300, 300), layer->bounds());
+}
+
+TEST_F(VideoPainterTest, RedirectedVideoPaintsTransparentPlaceholder) {
+  SetBodyInnerHTML(R"HTML(
+    <video id="video" width="120" height="80" src="test.ogv"
+        style="position: absolute; left: 0; top: 0; padding: 5px;
+               will-change: transform"></video>
+  )HTML");
+  test::RunPendingTasks();
+
+  auto* element = To<HTMLMediaElement>(GetElementById("video"));
+  ASSERT_TRUE(element->CcLayer());
+  element->SetCcLayerForTesting(nullptr);
+  ASSERT_FALSE(element->CcLayer());
+  ASSERT_TRUE(element->GetWebMediaPlayer());
+  ASSERT_FALSE(element->GetWebMediaPlayer()->HasAvailableVideoFrame());
+
+  constexpr auto feature = viz::TrackedElementFeature::kMediaRedirection;
+  element->SetTrackedElementSubRect(
+      feature, TrackedElementSubRect(TrackedElementId(base::Token(1, 2))));
+  UpdateAllLifecyclePhasesForTest();
+
+  const DisplayItem::Id foreground_id(element->GetLayoutObject()->Id(),
+                                      kForegroundType);
+  const auto items = ContentDisplayItems();
+  const auto item =
+      std::ranges::find(items, foreground_id, &DisplayItem::GetId);
+  ASSERT_NE(item, items.end());
+  const auto& record = To<DrawingDisplayItem>(*item).GetPaintRecord();
+  ASSERT_EQ(1u, record.size());
+  const cc::PaintOp& op = record.GetFirstOp();
+  ASSERT_EQ(cc::PaintOpType::kDrawRect, op.GetType());
+  const auto& rect = static_cast<const cc::DrawRectOp&>(op);
+  EXPECT_EQ(SkRect::MakeXYWH(5, 5, 120, 80), rect.rect);
+  EXPECT_EQ(0.f, rect.flags.getAlphaf());
+
+  const auto* root_layer = GetDocument().View()->RootCcLayer();
+  ASSERT_TRUE(root_layer);
+  const auto& layers = root_layer->children();
+  const auto layer = std::ranges::find_if(layers, [feature](const auto& layer) {
+    const auto rects = layer->tracked_element_rects();
+    return rects && rects->contains(feature);
+  });
+  ASSERT_NE(layer, layers.end());
+  EXPECT_TRUE((*layer)->draws_content());
+
+  element->ClearTrackedElementSubRect(feature);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(ContentDisplayItems(),
+              testing::Not(testing::Contains(testing::AllOf(
+                  IsSameId(foreground_id),
+                  testing::Property(&DisplayItem::DrawsContent, true)))));
 }
 
 class MockWebMediaPlayer : public StubWebMediaPlayer {

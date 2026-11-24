@@ -29,6 +29,7 @@ using TrackedElementId = base::Token;
 enum class TrackedElementFeature : int32_t {
   kIframeTracking = 0,
   kPasswordTracking = 1,
+  kMediaRedirection = 2,
   kTrackedElementFeatureEnd,
   kTrackedElementFeatureMax = kTrackedElementFeatureEnd + 2,
 };

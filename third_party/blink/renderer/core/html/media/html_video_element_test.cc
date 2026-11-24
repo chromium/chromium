@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/token.h"
 #include "cc/layers/layer.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "components/viz/test/test_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/gfx/paint_canvas_video_renderer.h"
@@ -14,6 +16,7 @@
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -290,6 +293,42 @@ class HTMLVideoElementTest : public PaintTestConfigurations,
   std::unique_ptr<SaveVideoFrameLocalFrameHost> frame_host_;
 };
 INSTANTIATE_PAINT_TEST_SUITE_P(HTMLVideoElementTest);
+
+TEST_P(HTMLVideoElementTest, TracksMediaRedirectionTargetOnlyWhileRemoting) {
+  constexpr auto feature = viz::TrackedElementFeature::kMediaRedirection;
+  const base::Token first_id(1, 2);
+  video()->SetMediaRedirectionTargetId(first_id);
+  EXPECT_FALSE(video()->GetTrackedElementSubRect(feature));
+
+  video()->MediaRemotingStarted(WebString());
+  const auto* tracked = video()->GetTrackedElementSubRect(feature);
+  ASSERT_TRUE(tracked);
+  EXPECT_EQ(first_id, tracked->id.value());
+  EXPECT_FALSE(tracked->should_add_to_compositor_frame_metadata);
+
+  video()->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
+  EXPECT_FALSE(video()->GetTrackedElementSubRect(feature));
+
+  video()->MediaRemotingStarted(WebString());
+  EXPECT_FALSE(video()->GetTrackedElementSubRect(feature));
+  video()->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
+
+  const base::Token second_id(3, 4);
+  video()->SetMediaRedirectionTargetId(second_id);
+  video()->MediaRemotingStarted(WebString());
+  tracked = video()->GetTrackedElementSubRect(feature);
+  ASSERT_TRUE(tracked);
+  EXPECT_EQ(second_id, tracked->id.value());
+}
+
+TEST_P(HTMLVideoElementTest, StopDiscardsPendingMediaRedirectionTargetId) {
+  constexpr auto feature = viz::TrackedElementFeature::kMediaRedirection;
+  video()->SetMediaRedirectionTargetId(base::Token(1, 2));
+  video()->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
+
+  video()->MediaRemotingStarted(WebString());
+  EXPECT_FALSE(video()->GetTrackedElementSubRect(feature));
+}
 
 TEST_P(HTMLVideoElementTest, TrackChangeEventPropagationTest) {
   scoped_refptr<cc::Layer> layer = cc::Layer::Create();
