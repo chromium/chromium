@@ -18,6 +18,7 @@ import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Outcome;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -350,18 +351,22 @@ public class BasePageStation<HostActivity extends ChromeActivity>
     /** Loads a |url| in the same tab to start a Trip. */
     @CheckReturnValue
     public TripBuilder loadUrlTo(String url) {
-        return runOnUiThreadTo(
+        return loadUrlTo(loadedTabElement.value(), url).withContext(this);
+    }
+
+    /** Loads a |url| in |tab| to start a Trip, for tests that don't hold a Station. */
+    @CheckReturnValue
+    public static TripBuilder loadUrlTo(Tab tab, String url) {
+        return Triggers.runOnUiThreadTo(
                         () -> {
                             @PageTransition
                             int transitionType =
                                     PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                            loadedTabElement
-                                    .value()
-                                    .loadUrl(new LoadUrlParams(url, transitionType));
+                            tab.loadUrl(new LoadUrlParams(url, transitionType));
                         })
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
-                .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
+                .waitForAnd(new PageLoadCallbackCondition(tab));
     }
 
     private static Activity getActivityOfTab(Tab tab) {
