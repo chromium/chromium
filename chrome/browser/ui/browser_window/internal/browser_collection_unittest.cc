@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 
 #include <algorithm>
+#include <optional>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -202,4 +205,66 @@ TEST_F(BrowserCollectionTest, ForEachDoesNotEnumerateNewBrowsersByDefault) {
   // Should visit browser1 but NOT browser2.
   EXPECT_EQ(visited.size(), 1u);
   EXPECT_EQ(visited[0], &browser1);
+}
+
+TEST_F(BrowserCollectionTest,
+       ObserverAddedDuringNotificationIsNotNotifiedTwice) {
+  class SeedingObserver : public BrowserCollectionObserver {
+   public:
+    SeedingObserver(BrowserCollection* collection,
+                    bool observe_before_for_each) {
+      if (observe_before_for_each) {
+        observation_.Observe(collection);
+      }
+      collection->ForEach([this](BrowserWindowInterface* browser) {
+        OnBrowserCreated(browser);
+        return true;
+      });
+      if (!observe_before_for_each) {
+        observation_.Observe(collection);
+      }
+    }
+
+    // BrowserCollectionObserver:
+    void OnBrowserCreated(BrowserWindowInterface* browser) override {
+      created_.push_back(browser);
+    }
+
+    const std::vector<BrowserWindowInterface*>& created() const {
+      return created_;
+    }
+
+   private:
+    std::vector<BrowserWindowInterface*> created_;
+    base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+        observation_{this};
+  };
+
+  class MockObserver : public BrowserCollectionObserver {
+   public:
+    MOCK_METHOD(void, OnBrowserCreated, (BrowserWindowInterface*), (override));
+  };
+
+  for (bool observe_before_for_each : {false, true}) {
+    TestBrowserCollection collection;
+    MockBrowserWindowInterface browser1;
+    MockBrowserWindowInterface browser2;
+
+    std::optional<SeedingObserver> late_observer;
+    testing::NiceMock<MockObserver> trigger;
+    base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+        trigger_observation(&trigger);
+    trigger_observation.Observe(&collection);
+    ON_CALL(trigger, OnBrowserCreated(&browser1)).WillByDefault([&] {
+      late_observer.emplace(&collection, observe_before_for_each);
+    });
+
+    collection.NotifyBrowserCreated(&browser1);
+    ASSERT_TRUE(late_observer.has_value());
+    EXPECT_THAT(late_observer->created(), testing::ElementsAre(&browser1));
+
+    collection.NotifyBrowserCreated(&browser2);
+    EXPECT_THAT(late_observer->created(),
+                testing::ElementsAre(&browser1, &browser2));
+  }
 }

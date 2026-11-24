@@ -106,12 +106,15 @@ class BrowserCollection {
   friend base::ScopedObservationTraits<BrowserCollection,
                                        BrowserCollectionObserver>;
 
+  // Subclasses update their browser lists before notifying observers. Skip
+  // observers added mid-iteration so observers that seed existing browsers via
+  // `ForEach()` are not notified a second time for the in-flight event.
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
   base::ObserverList<
       BrowserCollectionObserver,
       /*check_empty=*/false,
       base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
-      observers_;
+      observers_{base::ObserverListPolicy::EXISTING_ONLY};
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_COLLECTION_H_
