@@ -190,15 +190,8 @@ class VTSNotifier:
         Returns:
             True if the VTS has expired, False otherwise.
         """
-        if not vts.expires or vts.expires == 'never':
-            return False
-        for date_format in ['%b %d, %Y', '%B %d, %Y']:
-            try:
-                expiration_date = datetime.datetime.strptime(
-                    vts.expires, date_format
-                )
-                if datetime.datetime.today() >= expiration_date:
-                    return True
-            except ValueError:
-                continue
-        return False
+        expiration_date = vts.parse_expiration_date()
+        return (
+            expiration_date is not None
+            and datetime.datetime.today() >= expiration_date
+        )

@@ -458,6 +458,18 @@ def check_virtual_test_suites(port):
             failure = 'Virtual suite name "{}" has no owner.'.format(prefix)
             failures.append(failure)
 
+        # An invalid date is silently treated as "not expired" by
+        # `VTSNotifier`, so the suite would never get an expiration bug.
+        if (
+            suite.expires is not None
+            and suite.expires != 'never'
+            and suite.parse_expiration_date() is None
+        ):
+            failures.append(
+                f'Virtual suite "{prefix}" has an invalid "expires" value '
+                f'"{suite.expires}". Use "never" or a date like "Jan 1, 2000".'
+            )
+
         if len(prefix) > max_suite_length:
             failure = 'Virtual suite name "{}" is over the "{}" filename length limit'.format(
                 prefix, max_suite_length

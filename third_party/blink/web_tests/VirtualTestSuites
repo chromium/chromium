@@ -1021,7 +1021,7 @@
     "owners": [
       "wangxianzhu@chromium.org"
     ],
-    "expires": "Dev 31, 2024"
+    "expires": "Dec 31, 2024"
   },
   {
     "prefix": "disable-single-axis-scroll-containers",

@@ -43,7 +43,7 @@ import tempfile
 import time
 from collections import defaultdict
 from copy import deepcopy
-from datetime import datetime  # noqa: F401
+from datetime import datetime
 from typing import (
     ByteString,
     Collection,
@@ -3229,6 +3229,8 @@ class Port(object):
 
 
 class VirtualTestSuite(object):
+    EXPIRATION_DATE_FORMATS = ('%b %d, %Y', '%B %d, %Y')
+
     def __init__(
         self,
         prefix=None,
@@ -3269,6 +3271,17 @@ class VirtualTestSuite(object):
         if ENABLE_THREADED_COMPOSITING_FLAG in self.args:
             self.args.remove(ENABLE_THREADED_COMPOSITING_FLAG)
             self.args.append(ENABLE_THREADED_COMPOSITING_FLAG)
+
+    def parse_expiration_date(self) -> Optional[datetime]:
+        """Returns the parsed expiration date, or None if never/missing/invalid."""
+        if not isinstance(self.expires, str) or self.expires == 'never':
+            return None
+        for date_format in self.EXPIRATION_DATE_FORMATS:
+            try:
+                return datetime.strptime(self.expires, date_format)
+            except ValueError:
+                continue
+        return None
 
     def __repr__(self):
         return "VirtualTestSuite('%s', %s, %s, %s)" % (

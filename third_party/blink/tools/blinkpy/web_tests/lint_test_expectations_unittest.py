@@ -763,6 +763,33 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         res = lint_test_expectations.check_virtual_test_suites(self.port)
         self.assertEqual(res, [])
 
+    def test_check_virtual_test_suites_expires(self):
+        self.host.filesystem.exists = lambda _: True
+        self.host.filesystem.isdir = lambda _: True
+
+        def check(expires):
+            self.port.virtual_test_suites = lambda: [
+                VirtualTestSuite(
+                    prefix='test',
+                    platforms=['Linux', 'Mac', 'Win'],
+                    owners=['testowner@chromium.org'],
+                    bases=['test'],
+                    args=['--arg'],
+                    expires=expires,
+                ),
+            ]
+            return lint_test_expectations.check_virtual_test_suites(self.port)
+
+        for expires in ['never', 'Jan 1, 2000', 'January 1, 2000']:
+            self.assertEqual(check(expires), [])
+        self.assertEqual(
+            check('Dev 31, 2024'),
+            [
+                'Virtual suite "test" has an invalid "expires" value '
+                '"Dev 31, 2024". Use "never" or a date like "Jan 1, 2000".'
+            ],
+        )
+
 
 @patch.object(
     lint_test_expectations, 'check_virtual_test_suites', lambda port: []
