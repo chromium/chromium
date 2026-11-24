@@ -71,6 +71,7 @@ AutocompleteMatch CreateCrossDeviceTabMatch(
     const sessions::SerializedNavigationEntry& navigation,
     base::Time tab_last_active_time) {
   CHECK(provider);
+  CHECK(navigation.virtual_url().SchemeIsHTTPOrHTTPS());
 
   AutocompleteMatch match(
       provider, omnibox::kCrossDeviceTabZeroSuggestRelevance,
@@ -177,9 +178,7 @@ CrossDeviceTabProvider::QueryResult CrossDeviceTabProvider::GetMostRecentTab() {
           most_recent_tab->normalized_navigation_index());
 
   const GURL& url = most_recent_navigation.virtual_url();
-  // TODO(crbug.com/508162292): Investigate if `ShouldSyncURL()` should be used
-  //   here.
-  if (!url.is_valid()) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return base::unexpected(Eligibility::kInvalidUrl);
   }
 

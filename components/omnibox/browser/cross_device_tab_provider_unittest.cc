@@ -242,6 +242,35 @@ TEST_F(CrossDeviceTabProviderTest, InvalidURL) {
       "Omnibox.CrossDeviceTab.Provider.MostRecentTabAge", 0);
 }
 
+TEST_F(CrossDeviceTabProviderTest, NonHttpOrHttpsUrl) {
+  for (const char* url_str : {"javascript:alert(1)", "data:text/html,test",
+                              "file:///etc/passwd", "chrome://settings/"}) {
+    base::HistogramTester histogram_tester;
+    auto* session = open_tabs_ui_delegate_.AddForeignSession("test");
+    auto window = std::make_unique<sync_sessions::SyncedSessionWindow>();
+    auto tab = std::make_unique<sessions::SessionTab>();
+
+    tab->timestamp = base::Time::Now() - base::Minutes(1);
+    tab->navigations.push_back(sessions::SerializedNavigationEntry());
+    tab->navigations.back().set_virtual_url(GURL(url_str));
+
+    window->wrapped_window.tabs.push_back(std::move(tab));
+    session->windows[SessionID::NewUnique()] = std::move(window);
+
+    provider_->Start(CreateZeroSuggestInput(), false);
+
+    EXPECT_THAT(provider_->matches(), IsEmpty()) << url_str;
+    EXPECT_TRUE(provider_->most_recent_tab_timestamp().is_null()) << url_str;
+    histogram_tester.ExpectUniqueSample(
+        "Omnibox.CrossDeviceTab.Provider.Eligibility",
+        CrossDeviceTabProvider::Eligibility::kInvalidUrl, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.CrossDeviceTab.Provider.MostRecentTabAge", 0);
+
+    open_tabs_ui_delegate_.DeleteForeignSession("test");
+  }
+}
+
 TEST_F(CrossDeviceTabProviderTest, MeetsDelayedContinuationCriterion) {
   base::HistogramTester histogram_tester;
   // Fast forward to 2 minutes after provider creation.
