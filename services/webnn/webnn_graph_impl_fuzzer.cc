@@ -3593,7 +3593,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::BatchNormalization(
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Clamp(ClampParams params,
                                                   uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto clamp_descs,
       SetUpClampDescriptors(this->context_properties(), params));
 
@@ -3627,7 +3627,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Clamp(ClampParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Concat(ConcatParams params,
                                                    uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto concat_descs,
       SetUpConcatDescriptors(this->context_properties(), params));
 
@@ -3668,7 +3668,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Concat(ConcatParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Conv2d(Conv2dParams params,
                                                    uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto conv2d_descs,
       SetUpConv2dDescriptors(this->context_properties(), params));
 
@@ -3863,8 +3863,9 @@ template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::ElementWiseBinary(
     ElementWiseBinaryParams params,
     uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(auto descs, SetUpElementWiseBinaryDescriptors(
-                                        this->context_properties(), params));
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
+      auto descs,
+      SetUpElementWiseBinaryDescriptors(this->context_properties(), params));
 
   mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
@@ -3896,7 +3897,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::ElementWiseBinary(
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Elu(EluParams params,
                                                 uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto elu_descs, SetUpEluDescriptors(this->context_properties(), params));
 
   mojo::Remote<mojom::WebNNGraphBuilder> remote =
@@ -3981,7 +3982,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Expand(ExpandParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Gather(GatherParams params,
                                                    uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto gather_descs,
       SetUpGatherDescriptors(this->context_properties(), params));
 
@@ -4128,7 +4129,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::GatherND(GatherNDParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Gemm(GemmParams params,
                                                  uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto gemm_descs,
       SetUpGemmDescriptors(this->context_properties(), params));
 
@@ -4662,7 +4663,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::LayerNormalization(
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::LeakyRelu(LeakyReluParams params,
                                                       uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto leaky_relu_descs,
       SetUpLeakyReluDescriptors(this->context_properties(), params));
 
@@ -5127,7 +5128,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Matmul(MatmulParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Pad(PadParams params,
                                                 uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto pad_descs, SetUpPadDescriptors(this->context_properties(), params));
 
   mojo::Remote<mojom::WebNNGraphBuilder> remote =
@@ -5159,7 +5160,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Pad(PadParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Pool2d(Pool2dParams params,
                                                    uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto pool2d_descs,
       SetUpPool2dDescriptors(this->context_properties(), params));
 
@@ -5333,7 +5334,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::QuantizeLinear(
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Reduce(ReduceParams params,
                                                    uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto reduce_descs,
       SetUpReduceDescriptors(this->context_properties(), params));
 
@@ -5366,7 +5367,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Reduce(ReduceParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Reshape(ReshapeParams params,
                                                     uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto reshape_descs,
       SetUpReshapeDescriptors(this->context_properties(), params));
 
@@ -5398,7 +5399,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Reshape(ReshapeParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Resample2d(Resample2dParams params,
                                                        uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto resample2d_descs,
       SetUpResample2dDescriptors(this->context_properties(), params));
 
@@ -5616,7 +5617,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::ScatterND(ScatterNDParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Slice(SliceParams params,
                                                   uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto slice_descs,
       SetUpSliceDescriptors(this->context_properties(), params));
 
@@ -5649,7 +5650,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Slice(SliceParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Softmax(SoftmaxParams params,
                                                     uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto softmax_descs,
       SetUpSoftmaxDescriptors(this->context_properties(), params));
 
@@ -5682,7 +5683,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Softmax(SoftmaxParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Split(SplitParams params,
                                                   uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto split_descs,
       SetUpSplitDescriptors(this->context_properties(), params));
 
@@ -5759,7 +5760,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Tile(TileParams params,
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Transpose(TransposeParams params,
                                                       uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto transpose_descs,
       SetUpTransposeDescriptors(this->context_properties(), params));
 
@@ -6056,7 +6057,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQClampQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto clamp_descs,
       SetUpClampDescriptors(this->context_properties(), clamp_params));
 
@@ -6116,7 +6117,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConcatQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto concat_descs,
       SetUpConcatDescriptors(this->context_properties(), concat_params));
 
@@ -6181,7 +6182,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
     Conv2dParams conv2d_params,
     QuantizationParams quantization_params,
     uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto conv2d_descs,
       SetUpConv2dDescriptors(this->context_properties(), conv2d_params));
 
@@ -6312,8 +6313,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(auto descs, SetUpElementWiseBinaryDescriptors(
-                                        this->context_properties(), params));
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
+      auto descs,
+      SetUpElementWiseBinaryDescriptors(this->context_properties(), params));
 
   // kPerTensor quantization and the same scale/zero_point for both inputs
   // and output is used to exercise the fusible path for TFLite backend:
@@ -6376,7 +6378,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQEluQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto elu_descs,
       SetUpEluDescriptors(this->context_properties(), elu_params));
   const OperandDescriptor& elu_desc = elu_descs.input_desc;
@@ -6437,7 +6439,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGatherQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto gather_descs,
       SetUpGatherDescriptors(this->context_properties(), gather_params));
 
@@ -6530,7 +6532,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
   per_tensor_quantization_params.quantization_kind =
       QuantizationKind::kPerTensor;
 
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto gemm_descs,
       SetUpGemmDescriptors(this->context_properties(), gemm_params));
 
@@ -6623,7 +6625,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQLeakyReluQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto leaky_relu_descs,
       SetUpLeakyReluDescriptors(this->context_properties(), leaky_relu_params));
   const OperandDescriptor& leaky_relu_desc = leaky_relu_descs.input_desc;
@@ -6692,7 +6694,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPadQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto pad_descs,
       SetUpPadDescriptors(this->context_properties(), pad_params));
 
@@ -6749,7 +6751,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPool2dQ(
     Pool2dParams pool2d_params,
     QuantizationParams quantization_params,
     uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto pool2d_descs,
       SetUpPool2dDescriptors(this->context_properties(), pool2d_params));
 
@@ -6823,7 +6825,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto reduce_descs,
       SetUpReduceDescriptors(this->context_properties(), reduce_params));
 
@@ -6897,7 +6899,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReshapeQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto reshape_descs,
       SetUpReshapeDescriptors(this->context_properties(), reshape_params));
 
@@ -6955,9 +6957,10 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(auto resample2d_descs,
-                        SetUpResample2dDescriptors(this->context_properties(),
-                                                   resample2d_params));
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
+      auto resample2d_descs,
+      SetUpResample2dDescriptors(this->context_properties(),
+                                 resample2d_params));
 
   // kPerTensor quantization is used to exercise the fusible path for TFLite
   // backend:
@@ -7021,7 +7024,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSliceQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto slice_descs,
       SetUpSliceDescriptors(this->context_properties(), slice_params));
 
@@ -7081,7 +7084,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSoftmaxQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto softmax_descs,
       SetUpSoftmaxDescriptors(this->context_properties(), softmax_params));
   const OperandDescriptor& softmax_desc = softmax_descs.input_desc;
@@ -7145,7 +7148,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQSplitQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto split_descs,
       SetUpSplitDescriptors(this->context_properties(), split_params));
 
@@ -7217,7 +7220,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
     uint8_t seed_for_input,
     float seed_for_scale,
     uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
       auto transpose_descs,
       SetUpTransposeDescriptors(this->context_properties(), transpose_params));
 

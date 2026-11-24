@@ -173,6 +173,38 @@ TEST(ReturnIfError, OptionalWorksWithAdaptorFunc) {
   EXPECT_STREQ(func(), "EXPECTED");
 }
 
+TEST(ReturnIfError, ExpectedWorksWithNonCopyableAdaptorFunc) {
+  struct Adaptor {
+    Adaptor() = default;
+    Adaptor(const Adaptor&) = delete;
+    Adaptor& operator=(const Adaptor&) = delete;
+
+    std::string operator()(std::string error) const {
+      return error + " EXPECTED B";
+    }
+  };
+  const Adaptor adaptor;
+  const auto func = [&]() -> std::string {
+    RETURN_IF_ERROR(ReturnError("EXPECTED A"), adaptor);
+    return "ERROR";
+  };
+
+  EXPECT_EQ(func(), "EXPECTED A EXPECTED B");
+}
+
+TEST(ReturnIfError, ExpectedWorksWithMemberFunctionAdaptor) {
+  struct Adaptor {
+    std::string Adapt(std::string error) const { return error + " EXPECTED B"; }
+  };
+  const Adaptor adaptor;
+  const auto func = [&]() -> std::string {
+    RETURN_IF_ERROR(ReturnError("EXPECTED A"), &Adaptor::Adapt, &adaptor);
+    return "ERROR";
+  };
+
+  EXPECT_EQ(func(), "EXPECTED A EXPECTED B");
+}
+
 TEST(ReturnIfError, WorksWithAdaptorFuncAndExpectedReturn) {
   const auto adaptor = [](std::string error) { return error + " EXPECTED B"; };
   const auto func = [&]() -> expected<void, std::string> {
@@ -207,6 +239,31 @@ TEST(ReturnIfError, WorksWithAdaptorFuncAndMoveOnlyTypeAndExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Pointee(::testing::Eq(2))));
 }
 
+TEST(ReturnIfError, WorksWithAdaptorReturningImmovableType) {
+  struct Immovable {
+    explicit Immovable(int v) : value(v) {}
+    ~Immovable() = default;
+    Immovable(const Immovable&) = delete;
+    Immovable& operator=(const Immovable&) = delete;
+
+    const int value;
+  };
+
+  const auto optional_func = []() -> std::optional<Immovable> {
+    RETURN_IF_ERROR(ReturnError("ERROR"), [](auto) -> std::optional<Immovable> {
+      return std::nullopt;
+    });
+    return std::optional<Immovable>(std::in_place, 1);
+  };
+  EXPECT_EQ(optional_func(), std::nullopt);
+
+  const auto direct_func = []() -> Immovable {
+    RETURN_IF_ERROR(ReturnNullopt(), [] { return Immovable(2); });
+    return Immovable(1);
+  };
+  EXPECT_EQ(direct_func().value, 2);
+}
+
 TEST(ReturnIfError, ExpectedWorksWithVoidReturnAdaptor) {
   int code = 0;
   int phase = 0;
@@ -239,6 +296,115 @@ TEST(ReturnIfError, OptionalWorksWithVoidReturnAdaptor) {
   func();
   EXPECT_EQ(phase, 2);
   EXPECT_EQ(code, 1);
+}
+
+TEST(ReturnIfError, ExpectedWorksWithValue) {
+  const auto func = []() -> int {
+    RETURN_IF_ERROR(ReturnOk(), 1);
+    RETURN_IF_ERROR(ReturnError("ERROR"), 2);
+    return 3;
+  };
+
+  EXPECT_EQ(func(), 2);
+}
+
+TEST(ReturnIfError, OptionalWorksWithValue) {
+  const auto func = []() -> int {
+    RETURN_IF_ERROR(ReturnOptionalValue(0), 1);
+    RETURN_IF_ERROR(ReturnNullopt(), 2);
+    return 3;
+  };
+
+  EXPECT_EQ(func(), 2);
+}
+
+TEST(ReturnIfError, WorksWithUnexpectedValue) {
+  const auto func = []() -> expected<void, int> {
+    RETURN_IF_ERROR(ReturnOk(), unexpected(1));
+    RETURN_IF_ERROR(ReturnError("ERROR"), unexpected(2));
+    return ok();
+  };
+
+  EXPECT_THAT(func(), test::ErrorIs(2));
+}
+
+// An lvalue is not copied, so a function that returns a reference or a view can
+// return it like in a return statement.
+TEST(ReturnIfError, DoesNotCopyLvalueValue) {
+  const std::string value = "VALUE";
+  const std::string ok_value = "OK";
+  const auto func = [&]() -> const std::string& {
+    RETURN_IF_ERROR(ReturnError("ERROR"), value);
+    return ok_value;
+  };
+
+  EXPECT_EQ(&func(), &value);
+
+  const auto optional_func = [&]() -> const std::string& {
+    RETURN_IF_ERROR(ReturnNullopt(), value);
+    return ok_value;
+  };
+
+  EXPECT_EQ(&optional_func(), &value);
+}
+
+// A value converts to the function's return type like in a return statement.
+TEST(ReturnIfError, ConvertsValueToReturnType) {
+  const auto string_func = []() -> std::string {
+    RETURN_IF_ERROR(ReturnError("ERROR"), "VALUE");
+    return "OK";
+  };
+  EXPECT_EQ(string_func(), "VALUE");
+
+  const auto ptr_func = []() -> std::unique_ptr<const int> {
+    RETURN_IF_ERROR(ReturnNullopt(), std::make_unique<int>(1));
+    return nullptr;
+  };
+  EXPECT_THAT(ptr_func(), ::testing::Pointee(1));
+
+  const auto optional_func = []() -> std::optional<std::string> {
+    RETURN_IF_ERROR(ReturnError("ERROR"), "VALUE");
+    return "OK";
+  };
+  EXPECT_THAT(optional_func(), ::testing::Optional(std::string("VALUE")));
+
+  const auto nested_optional_func = []() -> std::optional<std::optional<int>> {
+    RETURN_IF_ERROR(ReturnError("ERROR"), std::nullopt);
+    return std::optional<int>(1);
+  };
+  EXPECT_EQ(nested_optional_func(), std::nullopt);
+
+  // Temporaries in the value expression live until after conversion to the
+  // return type.
+  constexpr auto temporary_in_value = []() -> std::string {
+    RETURN_IF_ERROR((expected<int, int>(unexpect, 1)),
+                    std::string("LONG_VALUE_EXCEEDING_SSO_BUFFER").c_str());
+    return "OK";
+  };
+  static_assert(temporary_in_value() == "LONG_VALUE_EXCEEDING_SSO_BUFFER");
+  EXPECT_EQ(temporary_in_value(), "LONG_VALUE_EXCEEDING_SSO_BUFFER");
+}
+
+TEST(ReturnIfError, WorksWithMoveOnlyValue) {
+  const auto func = []() -> std::unique_ptr<int> {
+    RETURN_IF_ERROR(ReturnError("ERROR"), std::make_unique<int>(1));
+    return nullptr;
+  };
+
+  EXPECT_THAT(func(), ::testing::Pointee(1));
+}
+
+TEST(ReturnIfError, OnlyEvaluatesValueOnError) {
+  int evaluations = 0;
+  const auto func = [&]() -> int {
+    RETURN_IF_ERROR(ReturnOk(), ++evaluations);
+    RETURN_IF_ERROR(ReturnOptionalValue(0), ++evaluations);
+    RETURN_IF_ERROR(ReturnError("ERROR"), ++evaluations);
+    return 0;
+  };
+
+  EXPECT_EQ(func(), 1);
+  EXPECT_EQ(evaluations, 1);
 }
 
 TEST(AssignOrReturn, ExpectedWorks) {
@@ -363,6 +529,42 @@ TEST(AssignOrReturn, UniquePtrWorksWithNullptrAdapter) {
 
   EXPECT_EQ(func(), nullptr);
   EXPECT_EQ(phase, 1);
+}
+
+TEST(AssignOrReturn, UniquePtrWorksWithNullptr) {
+  int phase = 0;
+  const auto func = [&]() -> std::unique_ptr<int> {
+    phase = 1;
+    ASSIGN_OR_RETURN(int value, ReturnError("ERROR"), nullptr);
+    phase = 2;
+    return std::make_unique<int>(value);
+  };
+
+  EXPECT_EQ(func(), nullptr);
+  EXPECT_EQ(phase, 1);
+}
+
+TEST(AssignOrReturn, ExpectedWorksWithValue) {
+  const auto func = []() -> bool {
+    ASSIGN_OR_RETURN(const int value1, ReturnExpectedValue(1), false);
+    EXPECT_EQ(value1, 1);
+    ASSIGN_OR_RETURN([[maybe_unused]] const int value2, ReturnError("ERROR"),
+                     false);
+    return true;
+  };
+
+  EXPECT_FALSE(func());
+}
+
+TEST(AssignOrReturn, OptionalWorksWithValue) {
+  const auto func = []() -> bool {
+    ASSIGN_OR_RETURN(const int value1, ReturnOptionalValue(1), false);
+    EXPECT_EQ(value1, 1);
+    ASSIGN_OR_RETURN([[maybe_unused]] const int value2, ReturnNullopt(), false);
+    return true;
+  };
+
+  EXPECT_FALSE(func());
 }
 
 TEST(AssignOrReturn, WorksWithMoveOnlyType) {
