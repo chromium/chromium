@@ -6,6 +6,7 @@
 
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
@@ -162,8 +163,13 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
                        NotifyObserversOnEnclaveStateUpdated) {
   AddTestPasskeyToModel();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return passkey_unlock_manager()->ShouldDisplayErrorUi(); }));
+
   testing::NiceMock<MockPasskeyUnlockManagerObserver> observer;
-  passkey_unlock_manager()->AddObserver(&observer);
+  base::ScopedObservation<PasskeyUnlockManager, PasskeyUnlockManager::Observer>
+      observation(&observer);
+  observation.Observe(passkey_unlock_manager());
 
   base::test::TestFuture<void> event_future;
   EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged())
@@ -173,15 +179,12 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
         event_future.SetValue();
       });
 
-  ASSERT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
   // Simulate the operations that make the EnclaveManager ready. This causes a
   // state change, which should be observed by the PasskeyUnlockManager.
   SimulateSuccessfulGpmPinCreation("123456");
 
   EXPECT_TRUE(event_future.Wait());
   ASSERT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
-
-  passkey_unlock_manager()->RemoveObserver(&observer);
 }
 
 class PasskeyUnlockManagerIdentityErrorUiBrowserTest
@@ -197,13 +200,15 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerIdentityErrorUiBrowserTest,
             syncer::SyncService::UserActionableError::kNone);
 
   AddTestPasskeyToModel();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return sync_harness()->service()->GetUserActionableError() ==
+           syncer::SyncService::UserActionableError::kPasskeysLocked;
+  }));
+
   testing::NiceMock<MockPasskeyUnlockManagerObserver> observer;
   base::ScopedObservation<PasskeyUnlockManager, PasskeyUnlockManager::Observer>
       observation(&observer);
   observation.Observe(passkey_unlock_manager());
-
-  EXPECT_EQ(sync_harness()->service()->GetUserActionableError(),
-            syncer::SyncService::UserActionableError::kPasskeysLocked);
 
   base::test::TestFuture<void> event_future;
   EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged())
