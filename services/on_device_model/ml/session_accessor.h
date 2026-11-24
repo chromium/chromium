@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -62,6 +63,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
       base::OnceCallback<void(std::optional<on_device_model::mojom::AsrError>)>
           done_callback);
   void AsrAddAudioChunk(on_device_model::mojom::AudioDataPtr data);
+  // Flushes remaining audio and runs `done_callback` on the calling sequence
+  // once all outputs have been posted.
+  void EndAsrStream(base::OnceClosure done_callback);
   void Hint(on_device_model::mojom::HintOptionsPtr options,
             ConstraintFactory* constraint_factory);
 
@@ -101,6 +105,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
       on_device_model::mojom::AsrStreamOptionsPtr asr_options,
       const ChromeMLASRStreamOutputFn output_fn);
   void AsrAddAudioChunkInternal(on_device_model::mojom::AudioDataPtr data);
+  void EndAsrStreamInternal();
   void HintInternal(on_device_model::mojom::HintOptionsPtr options,
                     ConstraintFactory* constraint_factory);
 

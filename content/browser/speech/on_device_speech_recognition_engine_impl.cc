@@ -4,6 +4,9 @@
 
 #include "content/browser/speech/on_device_speech_recognition_engine_impl.h"
 
+#include <iterator>
+#include <utility>
+
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -12,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "content/public/browser/browser_context.h"
@@ -96,6 +100,9 @@ void OnDeviceSpeechRecognitionEngine::StartRecognition() {
 
 void OnDeviceSpeechRecognitionEngine::EndRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  if (!core_) {
+    return;
+  }
   const bool use_gemini_nano =
       base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
       config_.quality == media::mojom::SpeechRecognitionQuality::kConversation;
@@ -109,9 +116,15 @@ void OnDeviceSpeechRecognitionEngine::EndRecognition() {
 
   core_.AsyncCall(&Core::LogRecognitionEnded).WithArgs(audio_duration_);
 
+  awaiting_stream_completion_ = false;
+  stream_completion_timer_.Stop();
+  pending_final_results_.clear();
+
+  // Reset `asr_stream_responder_` before `asr_stream_` to abort without
+  // flushing remaining audio.
   core_.Reset();
-  asr_stream_.reset();
   asr_stream_responder_.reset();
+  asr_stream_.reset();
 }
 
 void OnDeviceSpeechRecognitionEngine::SetAudioParameters(
@@ -179,8 +192,17 @@ void OnDeviceSpeechRecognitionEngine::UpdateRecognitionContext(
 
 void OnDeviceSpeechRecognitionEngine::OnResponse(
     std::vector<on_device_model::mojom::SpeechRecognitionResultPtr> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   std::vector<media::mojom::WebSpeechRecognitionResultPtr> recognition_results;
   for (const auto& r : result) {
+    // Once the audio has ended only final results matter: interim results are
+    // superseded by the final results that precede completion of the stream.
+    // An empty final result only reports that the last audio contained no
+    // speech.
+    if (awaiting_stream_completion_ &&
+        (!r->is_final || r->transcript.empty())) {
+      continue;
+    }
     auto web_speech_result = media::mojom::WebSpeechRecognitionResult::New();
     web_speech_result->is_provisional = !r->is_final;
     web_speech_result->audio_start_time = r->audio_start_time;
@@ -192,15 +214,59 @@ void OnDeviceSpeechRecognitionEngine::OnResponse(
             base::UTF8ToUTF16(r->transcript), kSpeechRecognitionConfidence));
     recognition_results.push_back(std::move(web_speech_result));
   }
+  if (awaiting_stream_completion_) {
+    pending_final_results_.insert(
+        pending_final_results_.end(),
+        std::make_move_iterator(recognition_results.begin()),
+        std::make_move_iterator(recognition_results.end()));
+    return;
+  }
   if (delegate_) {
     delegate_->OnSpeechRecognitionEngineResults(std::move(recognition_results));
   }
 }
 
+void OnDeviceSpeechRecognitionEngine::OnComplete() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  FinishStream();
+}
+
 void OnDeviceSpeechRecognitionEngine::AudioChunksEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  if (awaiting_stream_completion_) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS's platform model service does not emit `OnComplete()` yet.
+  if (asr_stream_.is_bound() && asr_stream_responder_.is_bound()) {
+    awaiting_stream_completion_ = true;
+    asr_stream_.reset();
+    stream_completion_timer_.Start(
+        FROM_HERE, kStreamCompletionTimeout, this,
+        &OnDeviceSpeechRecognitionEngine::FinishStream);
+    return;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   if (delegate_) {
     delegate_->OnSpeechRecognitionEngineResults({});
+  }
+}
+
+void OnDeviceSpeechRecognitionEngine::FinishStream() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  if (!awaiting_stream_completion_) {
+    return;
+  }
+  awaiting_stream_completion_ = false;
+  stream_completion_timer_.Stop();
+  asr_stream_responder_.reset();
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> results =
+      std::move(pending_final_results_);
+  pending_final_results_.clear();
+  if (delegate_) {
+    delegate_->OnSpeechRecognitionEngineResults(results);
   }
 }
 
@@ -337,6 +403,8 @@ void OnDeviceSpeechRecognitionEngine::OnResponderDisconnectedWithReason(
     uint32_t custom_reason,
     const std::string& description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  // A disconnect before `OnComplete()` is an error even after the audio has
+  // ended: the service may have crashed while processing the remaining audio.
   media::mojom::SpeechRecognitionError error;
   error.code = media::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed;
   error.details = media::mojom::SpeechAudioErrorDetails::kNone;

@@ -6,12 +6,16 @@
 #define CONTENT_BROWSER_SPEECH_ON_DEVICE_SPEECH_RECOGNITION_ENGINE_IMPL_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/common/content_export.h"
@@ -40,6 +44,10 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
     : public SpeechRecognitionEngine,
       public on_device_model::mojom::AsrStreamResponder {
  public:
+  // How long to wait, after the audio has ended, for the service to deliver
+  // the final results and report completion of the stream.
+  static constexpr base::TimeDelta kStreamCompletionTimeout = base::Seconds(5);
+
   explicit OnDeviceSpeechRecognitionEngine(
       const SpeechRecognitionSessionConfig& config);
   ~OnDeviceSpeechRecognitionEngine() override;
@@ -63,6 +71,7 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
   void OnResponse(
       std::vector<on_device_model::mojom::SpeechRecognitionResultPtr> result)
       override;
+  void OnComplete() override;
 
   // Helper class to manage lifetimes of objects that live on the UI thread.
   class Core {
@@ -83,9 +92,11 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
 
    private:
     friend class OnDeviceSpeechRecognitionEngineTest;
-    FRIEND_TEST(OnDeviceSpeechRecognitionEngine, Reinitialization);
-    FRIEND_TEST(OnDeviceSpeechRecognitionEngine, LanguagePropagation);
-    FRIEND_TEST(OnDeviceSpeechRecognitionEngine, EmptyLanguagePropagation);
+    FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine, Reinitialization);
+    FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                             LanguagePropagation);
+    FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                             EmptyLanguagePropagation);
 
     void OnModelClientAvailable(
         base::WeakPtr<optimization_guide::ModelClient> client);
@@ -107,11 +118,21 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
 
  private:
   friend class OnDeviceSpeechRecognitionEngineTest;
-  FRIEND_TEST(OnDeviceSpeechRecognitionEngine, ConvertAccumulatedAudioData);
-  FRIEND_TEST(OnDeviceSpeechRecognitionEngine, Reinitialization);
-  FRIEND_TEST(OnDeviceSpeechRecognitionEngine, LanguagePropagation);
-  FRIEND_TEST(OnDeviceSpeechRecognitionEngine, EmptyLanguagePropagation);
-  FRIEND_TEST(OnDeviceSpeechRecognitionEngine, TakeAudioChunkStereo);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                           ConvertAccumulatedAudioData);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine, Reinitialization);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                           LanguagePropagation);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                           EmptyLanguagePropagation);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                           TakeAudioChunkStereo);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                           AudioChunksEndedWaitsForStreamCompletion);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                           AudioChunksEndedTimesOutWithoutCompletion);
+  FRIEND_TEST_ALL_PREFIXES(OnDeviceSpeechRecognitionEngine,
+                           ResponderDisconnectWhileWaitingForCompletion);
 
   void OnAsrStreamCreated(
       mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> asr_stream,
@@ -121,6 +142,7 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
   void OnRecognizerDisconnected();
   void OnResponderDisconnectedWithReason(uint32_t custom_reason,
                                          const std::string& description);
+  void FinishStream();
 
   on_device_model::mojom::AudioDataPtr ConvertAccumulatedAudioData();
 
@@ -132,6 +154,14 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
   base::circular_deque<int16_t> accumulated_audio_data_;
 
   base::TimeDelta audio_duration_;
+
+  // True while waiting for `OnComplete()` after `AudioChunksEnded()` closes
+  // `asr_stream_`. Final results are buffered in `pending_final_results_` and
+  // delivered together on completion.
+  bool awaiting_stream_completion_ = false;
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr>
+      pending_final_results_;
+  base::OneShotTimer stream_completion_timer_;
 
   SEQUENCE_CHECKER(main_sequence_checker_);
 

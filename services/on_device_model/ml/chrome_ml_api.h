@@ -495,8 +495,11 @@ struct ChromeMLASRAPI {
   // Add an audio chunk to the ASR session.
   void (*AddAudioChunk)(ChromeMLASRStream stream,
                         ml::AudioBuffer* audio_buffer);
-  // Note: This does not destroy the parent ChromeMLSession.
+  // Destroys the stream, discarding pending audio unless `EndStream()` was
+  // called first. Note: This does not destroy the parent `ChromeMLSession`.
   void (*DestroyStream)(ChromeMLASRStream stream);
+  // Flushes pending audio and emits final results before returning.
+  void (*EndStream)(ChromeMLASRStream stream);
 };
 
 // IMPORTANT: All functions that call ChromeMLAPI should be annotated with

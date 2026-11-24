@@ -63,6 +63,7 @@ class OnDeviceLiveCaptionRecognizer
   void OnResponse(
       std::vector<on_device_model::mojom::SpeechRecognitionResultPtr> results)
       override;
+  void OnComplete() override;
 
  private:
   void OnSpeechRecognitionRecognitionEventCallback(bool success);

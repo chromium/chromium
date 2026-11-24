@@ -580,6 +580,8 @@ void DestroyGpuDelegate(TfLiteDelegate* delegate) {}
 struct FakeASRStream {
   ChromeMLASRStreamOutputFn output_fn;
   std::string polisher_data;
+  bool received_audio = false;
+  bool ended = false;
 };
 
 struct LastAsrStreamOptionsState {
@@ -627,6 +629,10 @@ ChromeMLASRStream ASRCreateStream(ChromeMLSession session,
 void ASRAddAudioChunk(ChromeMLASRStream stream, ml::AudioBuffer* audio_buffer) {
   auto* fake_stream = reinterpret_cast<FakeASRStream*>(stream);
   CHECK(fake_stream);
+  if (fake_stream->ended) {
+    return;
+  }
+  fake_stream->received_audio = true;
   if (fake_stream->output_fn) {
     std::string transcript_str(kFakeAsrTranscript);
     if (!fake_stream->polisher_data.empty()) {
@@ -646,6 +652,28 @@ void ASRAddAudioChunk(ChromeMLASRStream stream, ml::AudioBuffer* audio_buffer) {
 
 void ASRDestroyStream(ChromeMLASRStream stream) {
   delete reinterpret_cast<FakeASRStream*>(stream);
+}
+
+void ASREndStream(ChromeMLASRStream stream) {
+  auto* fake_stream = reinterpret_cast<FakeASRStream*>(stream);
+  CHECK(fake_stream);
+  if (fake_stream->ended) {
+    return;
+  }
+  fake_stream->ended = true;
+  // Emit a final result for the "remaining" audio, if there was any audio.
+  if (fake_stream->output_fn && fake_stream->received_audio) {
+    std::string transcript_str(kFakeAsrEndOfStreamTranscript);
+    if (!fake_stream->polisher_data.empty()) {
+      transcript_str += " (Polisher: " + fake_stream->polisher_data + ")";
+    }
+    ChromeMLASRStreamOutput output;
+    output.push_back(ChromeMLASRStreamOutputTranscript{
+        .transcript = transcript_str.c_str(),
+        .is_final = true,
+    });
+    fake_stream->output_fn(output);
+  }
 }
 
 const ChromeMLAPI g_api = {
@@ -681,6 +709,7 @@ const ChromeMLAPI g_api = {
             .CreateStream = &ASRCreateStream,
             .AddAudioChunk = &ASRAddAudioChunk,
             .DestroyStream = &ASRDestroyStream,
+            .EndStream = &ASREndStream,
         },
 };
 

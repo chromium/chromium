@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -328,6 +330,17 @@ void SessionAccessor::CreateAsrStream(
       std::move(done_callback));
 }
 
+void SessionAccessor::EndAsrStream(base::OnceClosure done_callback) {
+  TRACE_EVENT("optimization_guide", "SessionAccessor::EndAsrStream");
+  // The output function posts its results to the calling sequence while
+  // `EndAsrStreamInternal()` runs, so they are queued ahead of the reply.
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::EndAsrStreamInternal,
+                     base::Unretained(this)),
+      std::move(done_callback));
+}
+
 void SessionAccessor::AsrAddAudioChunk(odmm::AudioDataPtr data) {
   TRACE_EVENT("optimization_guide.debug", "SessionAccessor::AsrAddAudioChunk");
   task_runner_->PostTask(
@@ -585,6 +598,16 @@ std::optional<odmm::AsrError> SessionAccessor::CreateAsrStreamInternal(
     return odmm::AsrError::kInitializationFailed;
   }
   return std::nullopt;
+}
+
+void SessionAccessor::EndAsrStreamInternal() {
+  TRACE_EVENT("optimization_guide", "SessionAccessor::EndAsrStreamInternal");
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (asr_stream_ == 0) {
+    return;
+  }
+  // Blocks until the remaining audio has been processed.
+  chrome_ml_->ASREndStream(asr_stream_);
 }
 
 void SessionAccessor::AsrAddAudioChunkInternal(odmm::AudioDataPtr data) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 11
+// Next MinVersion: 12
 
 module on_device_model.mojom;
 
@@ -582,11 +582,17 @@ enum AsrError {
   kInitializationFailed = 1,
 };
 
-// Interface used for listening for ASR transcription results.
+// Interface used for listening for ASR transcription results. Close this pipe
+// to abort the stream.
 [Stable]
 interface AsrStreamResponder {
   // This is called each time a list of transcription results is available.
   OnResponse@0(array<SpeechRecognitionResult> result);
+
+  // Called once after `AsrStreamInput` is closed and all remaining results have
+  // been delivered via OnResponse(), right before this pipe is closed.
+  [MinVersion=11]
+  OnComplete@1();
 };
 
 [Stable]
@@ -596,7 +602,9 @@ struct AsrStreamOptions {
   string? language;
 };
 
-// Used to feed audio into an ASR stream.
+// Used to feed audio into an ASR stream. Close this pipe while keeping
+// `AsrStreamResponder` and `Session` open to flush remaining audio and receive
+// final results followed by `AsrStreamResponder.OnComplete()`.
 [Stable]
 interface AsrStreamInput {
   // Add an audio chunk to the session.

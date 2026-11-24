@@ -252,6 +252,13 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
     api_->asr_api.DestroyStream(stream);
   }
 
+  DISABLE_CFI_DLSYM
+  void ASREndStream(ChromeMLASRStream stream) const {
+    if (api_->asr_api.EndStream) {
+      api_->asr_api.EndStream(stream);
+    }
+  }
+
  private:
   explicit ChromeML(std::unique_ptr<ChromeMLHolder> holder);
   explicit ChromeML(const ChromeMLAPI* api);

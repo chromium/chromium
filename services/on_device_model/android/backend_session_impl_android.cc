@@ -207,6 +207,8 @@ void BackendSessionImplAndroid::AsrAddAudioChunk(
   NOTIMPLEMENTED();
 }
 
+void BackendSessionImplAndroid::AsrEndStream() {}
+
 void BackendSessionImplAndroid::Hint(mojom::HintOptionsPtr options) {}
 
 void BackendSessionImplAndroid::OnResponse(const std::string& response) {

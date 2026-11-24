@@ -25,6 +25,10 @@ inline constexpr char kToolRespPrefix[] = "[ToolResp:";
 
 // Fake ASR stream output values returned by the fake ChromeML API.
 inline constexpr char kFakeAsrTranscript[] = "test";
+// Final transcript emitted when a fake ASR stream that received audio is
+// ended, mimicking the final results for the remaining audio. Unlike the
+// regular transcript, its timestamps are zero.
+inline constexpr char kFakeAsrEndOfStreamTranscript[] = "end of stream";
 // Test audio start and end timestamps in microseconds (1.0s and 2.5s).
 inline constexpr int64_t kFakeAsrStartTimeMicros = 1000000;
 inline constexpr int64_t kFakeAsrEndTimeMicros = 2500000;

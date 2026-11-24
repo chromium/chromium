@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
@@ -407,6 +408,17 @@ class AsrStreamResponder final {
       session_->AsrAddAudioChunk(std::move(data));
     }
   }
+
+  void EndStream() {
+    if (!session_ || !responder_ || !responder_.is_connected()) {
+      Cancel();
+      return;
+    }
+    SessionAccessor::Ptr session = std::move(session_);
+    session->EndAsrStream(base::BindOnce(&AsrStreamResponder::OnStreamEnded,
+                                         weak_ptr_factory_.GetWeakPtr()));
+  }
+
   ChromeMLASRStreamOutputFn CreateOutputFn() {
     return [weak_ptr = weak_ptr_factory_.GetWeakPtr(),
             task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
@@ -440,8 +452,16 @@ class AsrStreamResponder final {
 
  private:
   void Cancel() { session_ = nullptr; }
+  void OnStreamEnded() {
+    if (responder_) {
+      responder_->OnComplete();
+      responder_.reset();
+    }
+  }
   void OnOutput(std::vector<odmm::SpeechRecognitionResultPtr> output) {
-    responder_->OnResponse(std::move(output));
+    if (responder_) {
+      responder_->OnResponse(std::move(output));
+    }
   }
   mojo::Remote<odmm::AsrStreamResponder> responder_;
   SessionAccessor::Ptr session_;
@@ -715,6 +735,13 @@ void SessionImpl::AsrAddAudioChunk(odmm::AudioDataPtr data) {
     return;
   }
   asr_responder_->AddAudioChunk(std::move(data));
+}
+
+void SessionImpl::AsrEndStream() {
+  TRACE_EVENT("optimization_guide", "SessionImpl::AsrEndStream");
+  if (asr_responder_) {
+    asr_responder_->EndStream();
+  }
 }
 
 void SessionImpl::Hint(on_device_model::mojom::HintOptionsPtr options) {

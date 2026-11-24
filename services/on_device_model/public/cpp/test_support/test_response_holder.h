@@ -113,6 +113,7 @@ class TestAsrResponseHolder
   // mojom::AsrStreamResponder:
   void OnResponse(
       std::vector<mojom::SpeechRecognitionResultPtr> results) override;
+  void OnComplete() override;
 
   void WaitForFirstResponse() {
     wait_for_response_ = true;

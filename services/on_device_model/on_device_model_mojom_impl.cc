@@ -199,6 +199,8 @@ SessionWrapper::SessionWrapper(base::WeakPtr<OnDeviceModelMojomImpl> model,
 SessionWrapper::~SessionWrapper() = default;
 
 void SessionWrapper::OnAsrStreamDisconnected() {
+  UpdateIdleTimer();
+  session_->AsrEndStream();
   asr_session_.reset();
 }
 

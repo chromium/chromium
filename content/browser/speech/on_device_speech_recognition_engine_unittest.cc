@@ -5,11 +5,15 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -19,6 +23,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/audio_parameters.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-test-utils.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -206,6 +214,157 @@ TEST(OnDeviceSpeechRecognitionEngine, AudioChunksEndedDispatchesEmptyResult) {
 
   task_environment.RunUntilIdle();
 }
+
+// The engine does not wait for the completion of the stream on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+
+// Receiving end of an ASR stream's input, which records when the engine closes
+// it.
+class FakeAsrStreamInput : public on_device_model::mojom::AsrStreamInput {
+ public:
+  explicit FakeAsrStreamInput(
+      mojo::PendingReceiver<on_device_model::mojom::AsrStreamInput> receiver)
+      : receiver_(this, std::move(receiver)) {
+    receiver_.set_disconnect_handler(disconnected_.GetCallback());
+  }
+
+  // on_device_model::mojom::AsrStreamInput:
+  void AddAudioChunk(on_device_model::mojom::AudioDataPtr data) override {}
+
+  base::test::TestFuture<void>& disconnected() { return disconnected_; }
+
+ private:
+  mojo::Receiver<on_device_model::mojom::AsrStreamInput> receiver_;
+  base::test::TestFuture<void> disconnected_;
+};
+
+std::vector<on_device_model::mojom::SpeechRecognitionResultPtr> MakeAsrResults(
+    const std::string& transcript,
+    bool is_final) {
+  std::vector<on_device_model::mojom::SpeechRecognitionResultPtr> results;
+  auto result = on_device_model::mojom::SpeechRecognitionResult::New();
+  result->transcript = transcript;
+  result->is_final = is_final;
+  results.push_back(std::move(result));
+  return results;
+}
+
+}  // namespace
+
+TEST(OnDeviceSpeechRecognitionEngine,
+     AudioChunksEndedWaitsForStreamCompletion) {
+  BrowserTaskEnvironment task_environment;
+  testing::StrictMock<MockSpeechRecognitionEngineDelegate> delegate;
+  OnDeviceSpeechRecognitionEngine engine(SpeechRecognitionSessionConfig{});
+  engine.set_delegate(&delegate);
+
+  mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> input_remote;
+  FakeAsrStreamInput fake_input(input_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<on_device_model::mojom::AsrStreamResponder> responder;
+  engine.OnAsrStreamCreated(std::move(input_remote),
+                            responder.BindNewPipeAndPassReceiver());
+
+  // Ending the audio closes the stream's input, but does not report the end of
+  // the recognition yet.
+  engine.AudioChunksEnded();
+  EXPECT_TRUE(fake_input.disconnected().Wait());
+
+  // Ending the audio again while waiting does nothing.
+  engine.AudioChunksEnded();
+
+  // Results received before the stream completes are held back, and interim
+  // ones are dropped.
+  responder->OnResponse(MakeAsrResults("hel", /*is_final=*/false));
+  responder->OnResponse(MakeAsrResults("hello", /*is_final=*/true));
+  responder->OnResponse(MakeAsrResults("world", /*is_final=*/true));
+  responder.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Completion of the stream delivers the held final results at once.
+  EXPECT_CALL(delegate, OnSpeechRecognitionEngineResults(testing::_))
+      .WillOnce(
+          [](const std::vector<media::mojom::WebSpeechRecognitionResultPtr>&
+                 results) {
+            ASSERT_EQ(results.size(), 2u);
+            EXPECT_FALSE(results[0]->is_provisional);
+            ASSERT_EQ(results[0]->hypotheses.size(), 1u);
+            EXPECT_EQ(results[0]->hypotheses[0]->utterance, u"hello");
+            EXPECT_FALSE(results[1]->is_provisional);
+            ASSERT_EQ(results[1]->hypotheses.size(), 1u);
+            EXPECT_EQ(results[1]->hypotheses[0]->utterance, u"world");
+          });
+  responder->OnComplete();
+  responder.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // The service closes the responder right after reporting completion. The
+  // engine has already closed its end, so that cannot be mistaken for an
+  // error.
+  EXPECT_FALSE(engine.asr_stream_responder_.is_bound());
+  EXPECT_FALSE(engine.stream_completion_timer_.IsRunning());
+}
+
+TEST(OnDeviceSpeechRecognitionEngine,
+     AudioChunksEndedTimesOutWithoutCompletion) {
+  BrowserTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  testing::StrictMock<MockSpeechRecognitionEngineDelegate> delegate;
+  OnDeviceSpeechRecognitionEngine engine(SpeechRecognitionSessionConfig{});
+  engine.set_delegate(&delegate);
+
+  mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> input_remote;
+  FakeAsrStreamInput fake_input(input_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<on_device_model::mojom::AsrStreamResponder> responder;
+  engine.OnAsrStreamCreated(std::move(input_remote),
+                            responder.BindNewPipeAndPassReceiver());
+
+  engine.AudioChunksEnded();
+  task_environment.FastForwardBy(
+      OnDeviceSpeechRecognitionEngine::kStreamCompletionTimeout -
+      base::Milliseconds(1));
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // A service that never reports completion must not stall the recognition.
+  EXPECT_CALL(delegate, OnSpeechRecognitionEngineResults(testing::IsEmpty()))
+      .Times(1);
+  task_environment.FastForwardBy(base::Milliseconds(1));
+}
+
+TEST(OnDeviceSpeechRecognitionEngine,
+     ResponderDisconnectWhileWaitingForCompletion) {
+  BrowserTaskEnvironment task_environment;
+  testing::StrictMock<MockSpeechRecognitionEngineDelegate> delegate;
+  OnDeviceSpeechRecognitionEngine engine(SpeechRecognitionSessionConfig{});
+  engine.set_delegate(&delegate);
+
+  mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> input_remote;
+  FakeAsrStreamInput fake_input(input_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<on_device_model::mojom::AsrStreamResponder> responder;
+  engine.OnAsrStreamCreated(std::move(input_remote),
+                            responder.BindNewPipeAndPassReceiver());
+
+  engine.AudioChunksEnded();
+  responder->OnResponse(MakeAsrResults("hello", /*is_final=*/true));
+
+  // A disconnect before OnComplete() is reported as an error, and the
+  // subsequent EndRecognition() from the recognizer is a safe no-op.
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnSpeechRecognitionEngineError(testing::_))
+      .WillOnce([&run_loop](const media::mojom::SpeechRecognitionError&) {
+        run_loop.Quit();
+      });
+  responder.ResetWithReason(
+      static_cast<uint32_t>(
+          on_device_model::mojom::AsrError::kInitializationFailed),
+      "");
+  run_loop.Run();
+  EXPECT_FALSE(engine.stream_completion_timer_.IsRunning());
+  engine.EndRecognition();
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST(OnDeviceSpeechRecognitionEngine, LanguagePropagation) {
   BrowserTaskEnvironment task_environment;

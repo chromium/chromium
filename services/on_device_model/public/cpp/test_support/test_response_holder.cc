@@ -53,4 +53,6 @@ void TestAsrResponseHolder::OnResponse(
   }
 }
 
+void TestAsrResponseHolder::OnComplete() {}
+
 }  // namespace on_device_model

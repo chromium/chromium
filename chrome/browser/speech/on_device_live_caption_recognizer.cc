@@ -238,12 +238,9 @@ void OnDeviceLiveCaptionRecognizer::OnLanguageChanged(
   if (!session_.is_bound()) {
     return;
   }
-  if (audio_fifo_) {
-    audio_fifo_->Flush();
-    DrainAudioFifo();
-  }
-  asr_stream_input_.reset();
+  audio_fifo_.reset();
   asr_stream_responder_.reset();
+  asr_stream_input_.reset();
 
   auto asr_options = on_device_model::mojom::AsrStreamOptions::New();
   asr_options->sample_rate_hz = kTargetOutputSampleRate;
@@ -259,6 +256,12 @@ void OnDeviceLiveCaptionRecognizer::OnLanguageChanged(
   asr_stream_responder_.set_disconnect_handler(
       base::BindOnce(&OnDeviceLiveCaptionRecognizer::OnAsrStreamDisconnected,
                      weak_factory_.GetWeakPtr()));
+}
+
+void OnDeviceLiveCaptionRecognizer::OnComplete() {
+  // All results have been delivered after `MarkDone()` closed the stream's
+  // input. The service closes the responder next, which is handled by
+  // `OnAsrStreamDisconnected()`.
 }
 
 void OnDeviceLiveCaptionRecognizer::OnMaskOffensiveWordsChanged(
@@ -303,13 +306,10 @@ void OnDeviceLiveCaptionRecognizer::OnAsrStreamDisconnected() {
 }
 
 void OnDeviceLiveCaptionRecognizer::OnClientDisconnected() {
-  MarkDone();
-  if (session_.is_bound()) {
-    session_.reset();
-  }
-  if (asr_stream_responder_.is_bound()) {
-    asr_stream_responder_.reset();
-  }
+  audio_fifo_.reset();
+  asr_stream_responder_.reset();
+  asr_stream_input_.reset();
+  session_.reset();
   client_remote_.reset();
   is_stopped_ = true;
 }

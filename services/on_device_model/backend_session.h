@@ -59,6 +59,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) BackendSession {
   // Add a chunk of audio the ASR stream.
   virtual void AsrAddAudioChunk(mojom::AudioDataPtr data) = 0;
 
+  // Ends the current ASR stream, flushing remaining audio and sending final
+  // results followed by `OnComplete()` to the stream's `AsrStreamResponder`.
+  virtual void AsrEndStream() = 0;
+
   // Provides hints about future requests.
   virtual void Hint(mojom::HintOptionsPtr options) = 0;
 };
