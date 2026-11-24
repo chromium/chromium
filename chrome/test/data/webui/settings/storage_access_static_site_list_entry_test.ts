@@ -6,16 +6,14 @@
  * @fileoverview Suite of tests for storage-access-static-site-list-entry.
  */
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
 import type {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElement} from 'chrome://settings/lazy_load.js';
 import {ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
-// clang-format on
 
 const origin = 'https://example.com';
 const embeddingOrigin = 'https://embedding-origin.com';
@@ -72,12 +70,11 @@ suite('StorageAccessStaticSiteListEntry', function() {
 
   /**
    * Configures the test element for a particular category.
-   * @param exception The `StorageAccessStaticSiteListEntry` to use.
    */
   function setUpEntry(exception: StorageAccessStaticSiteListEntry):
       Promise<void> {
     testElement.model = exception;
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('origin site name', async function() {
@@ -104,15 +101,15 @@ suite('StorageAccessStaticSiteListEntry', function() {
   test('site incognito', async function() {
     await setUpEntry(incognitoStorageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
-    assertTrue(!!testElement.shadowRoot.querySelector('#incognitoTooltip'));
+    assertTrue(
+        isVisible(testElement.shadowRoot.querySelector('#incognitoTooltip')));
   });
 
   test('site not incognito', async function() {
     await setUpEntry(storageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
-    assertFalse(!!testElement.shadowRoot.querySelector('#incognitoTooltip'));
+    assertFalse(
+        isVisible(testElement.shadowRoot.querySelector('#incognitoTooltip')));
   });
 
   test('reset permission without embedding origin', async function() {

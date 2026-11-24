@@ -4,22 +4,20 @@
 
 /**
  * @fileoverview
- * 'storage-access-embedding-site-list-entry' is an element representing a
+ * 'storage-access-static-site-list-entry' is an element representing a
  * single storage access permission. To be used within
  * 'storage-access-site-list-entry'.
  */
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ContentSettingsTypes} from './constants.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {getTemplate} from './storage_access_static_site_list_entry.html.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
+import {getCss} from './storage_access_static_site_list_entry.css.js';
+import {getHtml} from './storage_access_static_site_list_entry.html.js';
 
 // This interface wraps all the properties we need to display a
 // `StorageAccessStaticSiteListEntryElement`.
@@ -41,7 +39,7 @@ export interface StorageAccessStaticSiteListEntryElement {
 }
 
 const StorageAccessStaticSiteListEntryElementBase =
-    SiteSettingsMixin(PolymerElement);
+    SiteSettingsMixinLit(CrLitElement);
 
 export class StorageAccessStaticSiteListEntryElement extends
     StorageAccessStaticSiteListEntryElementBase {
@@ -49,23 +47,34 @@ export class StorageAccessStaticSiteListEntryElement extends
     return 'storage-access-static-site-list-entry';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      model: Object,
+      model: {type: Object},
     };
   }
 
-  declare model: StorageAccessStaticSiteListEntry;
+  accessor model: StorageAccessStaticSiteListEntry = {
+    faviconOrigin: '',
+    displayName: '',
+    resetAriaLabel: '',
+    origin: '',
+    embeddingOrigin: '',
+    incognito: false,
+  };
 
   /**
    * Triggered when the reset button is clicked. Resets a single storage access
    * site permission.
    */
-  private onResetButtonClick_() {
+  protected onResetButtonClick_() {
     this.browserProxy.resetCategoryPermissionForPattern(
         this.model.origin, this.model.embeddingOrigin,
         ContentSettingsTypes.STORAGE_ACCESS, this.model.incognito);
