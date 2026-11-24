@@ -293,6 +293,10 @@ base::span<const std::string_view> GetUntestedChromeUrlsForTest() {
   // exempted from these basic checks.
   static constexpr std::string_view kChromeUntestedUrls[] = {
       "chrome-untrusted://ai-overlay-dialog",
+      // Only exists when the ChromeDriverExtensionApi feature is enabled from
+      // the command line. This will be moved to GetChromeUrlsForTest() in a
+      // follow up CL http://crrev.com/c/8849991.
+      "chrome-untrusted://bidi-mapper",
       "chrome-untrusted://compose",
       "chrome-untrusted://data-sharing",
       "chrome-untrusted://drive-picker-host",

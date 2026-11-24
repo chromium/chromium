@@ -1,0 +1,90 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/bidi_mapper/buildflags.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+assert(enable_bidi_mapper)
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+minify_js("minify_bidimapper") {
+  deps = [ "//third_party/chromium-bidi/src:mapper_bundle" ]
+  input_dir = get_label_info("//third_party/chromium-bidi/src:mapper_bundle",
+                             "target_gen_dir")
+  in_folder = "$input_dir"
+  in_files = [ "mapperTab.js" ]
+  out_folder = "$target_gen_dir/minified"
+}
+
+static_library("host") {
+  sources = [
+    "bidi_mapper_host.h",
+    "bidi_mapper_host_impl.cc",
+    "bidi_mapper_host_impl.h",
+    "bidi_mapper_ui.cc",
+    "bidi_mapper_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+
+  deps = [
+    ":features",
+    "//components/resources:components_resources_grit",
+    "//content/public/common",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bidi_mapper_host_unittest.cc" ]
+
+  deps = [
+    ":features",
+    ":host",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "bidi_mapper_host_browsertest.cc",
+    "bidi_message_filter_browsertest.cc",
+  ]
+
+  deps = [
+    ":features",
+    ":host",
+    "//base",
+    "//base/test:test_support",
+    "//components/resources:components_resources_grit",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}

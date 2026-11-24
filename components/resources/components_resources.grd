@@ -30,6 +30,11 @@ dev_ui_components_resources.grd.
       <if expr="is_android">
         <part file="android_system_error_page_resources.grdp" />
       </if>
+      <if expr="not is_android">
+        <if expr="enable_bidi_mapper">
+          <part file="bidi_mapper_resources.grdp" />
+        </if>
+      </if>
       <if expr="enable_private_insights">
         <part file="private_insights_resources.grdp" />
       </if>

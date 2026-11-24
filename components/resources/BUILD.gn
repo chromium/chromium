@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/features.gni")
+import("//components/bidi_mapper/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/site_isolation/site_isolation.gni")
 import("//components/supervised_user/buildflags.gni")
@@ -75,6 +76,7 @@ grit("components_resources") {
   ]
 
   defines = [
+    "enable_bidi_mapper=$enable_bidi_mapper",
     "enable_pdf=$enable_pdf",
     "enable_printing=$enable_printing",
     "enable_print_preview=$enable_print_preview",
@@ -96,6 +98,17 @@ grit("components_resources") {
     "//components/security_interstitials/core/browser/resources:bundle_js",
     "//components/web_distiller/core:web_distiller_viewer_js",
   ]
+
+  if (enable_bidi_mapper) {
+    _bidimapper_file =
+        "$root_gen_dir/components/bidi_mapper/host/minified/mapperTab.js"
+    grit_flags += [
+      "-E",
+      "bidimapper_file=" + rebase_path(_bidimapper_file, root_build_dir),
+    ]
+    inputs += [ _bidimapper_file ]
+    deps += [ "//components/bidi_mapper/host:minify_bidimapper" ]
+  }
 
   if (enable_supervised_users) {
     deps += [ "//components/supervised_user/core/browser/resources:bundle_js" ]

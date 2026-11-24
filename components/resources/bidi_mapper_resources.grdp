@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_BIDI_MESSAGE_FILTER_JS" file="../bidi_mapper/host/bidi_message_filter.js" compress="zstd" type="BINDATA" />
+  <include name="IDR_CHROME_BIDI_MAPPER_JS" file="${bidimapper_file}" resource_path="chromedriver/mapperTab.js" use_base_dir="false" compress="zstd" type="BINDATA" />
+</grit-part>

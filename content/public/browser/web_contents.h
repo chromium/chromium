@@ -979,6 +979,11 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // from the extensions webRequest/DNR APIs.
   virtual bool IsPrivileged() = 0;
 
+  // Keeps the primary main frame renderer process of a hidden WebContents
+  // running at foreground scheduling priority across main-frame process
+  // transitions while keeping the WebContents hidden.
+  virtual void BoostBackgroundExecution() = 0;
+
   // Convenience method for notifying the delegate of a navigation state
   // change.
   virtual void NotifyNavigationStateChanged(InvalidateTypes changed_flags) = 0;

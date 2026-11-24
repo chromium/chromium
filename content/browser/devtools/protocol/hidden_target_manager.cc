@@ -5,77 +5,12 @@
 #include "content/browser/devtools/protocol/hidden_target_manager.h"
 
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "content/public/common/child_process_id.h"
 
 namespace content::protocol {
-
-namespace {
-
-// Keeps the hidden target's current primary main frame renderer process marked
-// used and running at foreground scheduling priority
-// (`base::Process::Priority::kUserBlocking`, preventing OS-level background
-// process suppression such as macOS App Nap) while keeping `WebContents`
-// hidden so the compositor pipeline does not run unless screenshotting.
-class HiddenTargetWebContentsObserver
-    : public WebContentsObserver,
-      public WebContentsUserData<HiddenTargetWebContentsObserver> {
- public:
-  ~HiddenTargetWebContentsObserver() override { SetTrackedProcess(nullptr); }
-
-  void RenderFrameHostChanged(RenderFrameHost* old_host,
-                              RenderFrameHost* new_host) override {
-    if (new_host->IsInPrimaryMainFrame()) {
-      SetTrackedProcess(new_host->GetProcess());
-    }
-  }
-
- private:
-  friend class WebContentsUserData<HiddenTargetWebContentsObserver>;
-
-  explicit HiddenTargetWebContentsObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        WebContentsUserData<HiddenTargetWebContentsObserver>(*web_contents) {
-    SetTrackedProcess(web_contents->GetPrimaryMainFrame()->GetProcess());
-  }
-
-  void SetTrackedProcess(RenderProcessHost* new_process) {
-    ChildProcessId new_id =
-        new_process ? new_process->GetID() : ChildProcessId();
-    if (tracked_process_id_ == new_id) {
-      return;
-    }
-    if (RenderProcessHost* old_process =
-            RenderProcessHost::FromID(tracked_process_id_)) {
-      static_cast<RenderProcessHostImpl*>(old_process)
-          ->OnBoostForBackgroundExecutionRemoved();
-    }
-    tracked_process_id_ = new_id;
-    if (new_process) {
-      // Chrome's `PerformanceManager` aggressively throttles processes
-      // with only hidden frames to `kBestEffort` (putting them into OS-level
-      // background states, e.g. macOS App Nap). However, hidden targets need
-      // to execute quickly without being throttled. Applying this boost bypasses
-      // PerformanceManager's override and forces the process back to
-      // `kUserBlocking` without marking the `WebContents` visible or running
-      // the compositor pipeline.
-      static_cast<RenderProcessHostImpl*>(new_process)
-          ->OnBoostForBackgroundExecutionAdded();
-    }
-  }
-
-  ChildProcessId tracked_process_id_;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HiddenTargetWebContentsObserver);
-
-}  // namespace
 
 HiddenTargetManager::HiddenTargetManager() = default;
 
@@ -115,7 +50,7 @@ std::string HiddenTargetManager::CreateHiddenTarget(
   // require a dedicated process, and keep its scheduling priority at
   // foreground across any main-frame RenderProcessHost transitions.
   web_contents->GetPrimaryMainFrame()->GetProcess()->SetIsUsed();
-  HiddenTargetWebContentsObserver::CreateForWebContents(web_contents.get());
+  web_contents->BoostBackgroundExecution();
 
   std::string target_id =
       content::DevToolsAgentHost::GetOrCreateFor(web_contents.get())->GetId();

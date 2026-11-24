@@ -1,0 +1,16 @@
+include_rules = [
+  "+components/grit/components_resources.h",
+  "+content/public/browser",
+  "+content/public/common",
+  "+ui/webui/untrusted_web_ui_controller.h",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*_browsertest\\.cc": [
+    "+content/public/test",
+    "+content/shell/browser",
+    "+net/test",
+    "+ui/base/resource",
+  ],
+}

@@ -886,6 +886,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
   <int value="-1837941403" label="chrome://launcher-internals/"/>
   <int value="-1825876526" label="chrome://delayeduithreadhang/"/>
+  <int value="-1818219151" label="chrome-untrusted://bidi-mapper/"/>
   <int value="-1808179141" label="chrome://password-manager-internals/"/>
   <int value="-1777503123" label="chrome://thumb2/"/>
   <int value="-1774623401" label="chrome://os-print/"/>

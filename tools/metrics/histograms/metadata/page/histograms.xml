@@ -870,6 +870,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".audio"/>
   <variant name=".autofill-internals"/>
   <variant name=".batch-upload"/>
+  <variant name=".bidi-mapper"/>
   <variant name=".bluetooth-internals"/>
   <variant name=".bluetooth-pairing"/>
   <variant name=".boca-app"/>
