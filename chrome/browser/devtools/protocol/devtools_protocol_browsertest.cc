@@ -15,22 +15,26 @@
 #include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
+#include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_switches.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -60,6 +64,9 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
+#include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -1139,6 +1146,95 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandSync("Input.dispatchKeyEvent", std::move(params));
 
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
+}
+
+class DevToolsProtocolAdsTest : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolAdsTest() {
+    feature_list_.InitAndEnableFeature(subresource_filter::kAdTagging);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolAdsTest, GetAdMetricsAndSessionWiring) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  subresource_filter::testing::TestRulesetCreator ruleset_creator;
+  subresource_filter::testing::TestRuleset unindexed_ruleset;
+  ASSERT_NO_FATAL_FAILURE(
+      ruleset_creator.CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
+          "title2.html", &unindexed_ruleset));
+  subresource_filter::testing::TestRulesetPublisher ruleset_publisher(
+      g_browser_process->subresource_filter_ruleset_service());
+  ASSERT_NO_FATAL_FAILURE(ruleset_publisher.SetRuleset(unindexed_ruleset));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/empty.html")));
+  // Wait for main-frame FCP so DisplayAdElementMonitor reports ad rects, then
+  // append a ruleset-tagged ad iframe.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"JS(
+    new Promise(resolve => {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 20;
+      const ctx = canvas.getContext('2d');
+      document.body.appendChild(canvas);
+      let frame = 0;
+      function waitForFcp() {
+        if (performance.getEntriesByName('first-contentful-paint').length > 0) {
+          const iframe = document.createElement('iframe');
+          iframe.style.cssText = 'width:50vw;height:50vh;border:0';
+          iframe.onload = () => resolve(true);
+          iframe.src = '/title2.html';
+          document.body.appendChild(iframe);
+          return;
+        }
+        ctx.fillStyle = (frame++ % 2) ? '#04a' : '#084';
+        ctx.fillRect(0, 0, 20, 20);
+        requestAnimationFrame(waitForFcp);
+      }
+      waitForFcp();
+    })
+  )JS"));
+
+  Attach();
+  bool saw_ad_frame = false;
+  while (true) {
+    const base::DictValue* result = SendCommandSync("Ads.getAdMetrics");
+    ASSERT_TRUE(result);
+    if (const base::ListValue* frames =
+            result->FindListByDottedPath("metrics.updateAdFrames");
+        frames && !frames->empty()) {
+      saw_ad_frame = true;
+    }
+    const int ad_count =
+        result->FindIntByDottedPath("metrics.viewportAdCount").value_or(0);
+    const int density =
+        result->FindIntByDottedPath("metrics.viewportAdDensityByArea")
+            .value_or(0);
+    if (saw_ad_frame && ad_count == 1 && density > 0) {
+      break;
+    }
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        "new Promise(r => requestAnimationFrame(() => r(true)))"));
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(50));
+    run_loop.Run();
+  }
+
+  const base::DictValue* scripts_result = SendCommandSync("Ads.getAdScripts");
+  ASSERT_TRUE(scripts_result);
+  EXPECT_TRUE(scripts_result->FindList("newScripts"));
+
+  DetachProtocolClient();
+  SetIsTrusted(false);
+  Attach();
+  EXPECT_FALSE(SendCommandSync("Ads.getAdMetrics"));
+  ASSERT_TRUE(error());
+  EXPECT_EQ(-32601, error()->FindInt("code"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

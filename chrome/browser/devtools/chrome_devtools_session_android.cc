@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "chrome/browser/devtools/protocol/ads_handler.h"
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
 #include "chrome/browser/devtools/protocol/page_handler.h"
@@ -43,6 +44,12 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
   }
   if (agent_host->GetWebContents() &&
       agent_host->GetType() == content::DevToolsAgentHost::kTypePage) {
+    if (IsDomainAvailableToUntrustedClient<AdsHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      ads_handler_ = std::make_unique<AdsHandler>(
+          agent_host->GetWebContents(), dispatcher(),
+          channel->GetClient()->IsTrusted());
+    }
     if (IsDomainAvailableToUntrustedClient<PageHandler>() ||
         channel->GetClient()->IsTrusted()) {
       page_handler_ = std::make_unique<PageHandler>(

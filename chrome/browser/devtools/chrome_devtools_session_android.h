@@ -14,6 +14,7 @@ namespace content {
 class DevToolsAgentHostClientChannel;
 }  // namespace content
 
+class AdsHandler;
 class AutofillHandler;
 class BrowserHandlerAndroid;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -36,6 +37,7 @@ class ChromeDevToolsSessionAndroid : public ChromeDevToolsSessionBase {
   TargetHandlerAndroid* target_handler() { return target_handler_.get(); }
 
  private:
+  std::unique_ptr<AdsHandler> ads_handler_;
   std::unique_ptr<AutofillHandler> autofill_handler_;
   std::unique_ptr<BrowserHandlerAndroid> browser_handler_;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
