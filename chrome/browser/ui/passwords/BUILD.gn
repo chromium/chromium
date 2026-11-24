@@ -322,6 +322,7 @@ source_set("unit_tests") {
       "//components/autofill/core/common",
       "//components/device_reauth",
       "//components/device_reauth:test_support",
+      "//components/enterprise/isolated_mode:test_support",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:metrics_util",
       "//components/password_manager/core/browser/features:password_features",

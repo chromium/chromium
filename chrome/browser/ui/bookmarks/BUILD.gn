@@ -217,7 +217,7 @@ source_set("unit_tests") {
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
     "//components/bookmarks/test",
-    "//components/enterprise/isolated_mode",
+    "//components/enterprise/isolated_mode:test_support",
     "//components/saved_tab_groups/public:features",
     "//components/saved_tab_groups/test_support",
     "//components/sync_preferences:test_support",

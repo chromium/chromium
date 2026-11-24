@@ -10,7 +10,6 @@
 #include <numeric>
 #include <string>
 
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,8 +30,7 @@
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -71,10 +69,6 @@ class BookmarkContextMenuControllerTest : public testing::Test {
   }
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        enterprise_isolated_mode::switches::
-            kForceEnterpriseIsolatedModeReplacesIncognito);
-
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
@@ -83,10 +77,6 @@ class BookmarkContextMenuControllerTest : public testing::Test {
         BookmarkMergedSurfaceServiceFactory::GetInstance(),
         BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
-    profile_->GetPrefs()->SetInteger(
-        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-        static_cast<int>(
-            enterprise_isolated_mode::IsolatedModeSetting::kDisabled));
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);
     AddTestData(model_);
@@ -776,17 +766,16 @@ TEST_F(
   }
 }
 
+class BookmarkContextMenuControllerIsolatedModeTest
+    : public BookmarkContextMenuControllerTest {
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
+};
+
 // Tests isolated mode menu item visibility, enablement, and command execution
 // for a single URL when isolated mode is enabled.
-TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleURL) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile_->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-
+TEST_F(BookmarkContextMenuControllerIsolatedModeTest, IsolatedModeSingleURL) {
   std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
@@ -837,15 +826,8 @@ TEST_F(BookmarkContextMenuControllerTest, IsolatedModeDisabledSingleURL) {
 
 // Tests isolated mode menu item visibility, enablement, and command execution
 // for a single folder when isolated mode is enabled.
-TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleFolder) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile_->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-
+TEST_F(BookmarkContextMenuControllerIsolatedModeTest,
+       IsolatedModeSingleFolder) {
   std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[1].get(),  // F1 folder
   };

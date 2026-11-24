@@ -198,7 +198,6 @@ source_set("browser_tests") {
     ":impl",
     ":webui_browser",
     "//base/test:test_support",
-    "//build:branding_buildflags",
     "//chrome/browser/devtools",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/side_panel",
@@ -218,7 +217,7 @@ source_set("browser_tests") {
   if (!is_chromeos) {
     deps += [
       "//chrome/browser/ui:browser_tabstrip",
-      "//chrome/test/base:chrome_test_scoped_utils",
+      "//components/enterprise/isolated_mode:test_support",
     ]
   }
 }

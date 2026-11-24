@@ -8,9 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -183,15 +181,15 @@ TEST_F(WellKnownChangePasswordNavigationThrottleTest,
   EXPECT_FALSE(registry.throttles().empty());
 }
 
-TEST_F(WellKnownChangePasswordNavigationThrottleTest,
+class WellKnownChangePasswordNavigationThrottleIsolatedModeTest
+    : public WellKnownChangePasswordNavigationThrottleTest {
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
+};
+
+TEST_F(WellKnownChangePasswordNavigationThrottleIsolatedModeTest,
        CreateNavigationThrottle_EnterpriseIsolatedModeProfile) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile()->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
   Profile* isolated_profile = profile()->GetPrimaryOTRProfile(true);
   ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
 

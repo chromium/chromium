@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -612,14 +612,9 @@ class CredentialProviderSigninDialogWinIsolatedModeTest
   CredentialProviderSigninDialogWinIsolatedModeTest() = default;
   ~CredentialProviderSigninDialogWinIsolatedModeTest() override = default;
 
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CredentialProviderSigninDialogWinIntegrationDialogDisplayTest::
-        SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        enterprise_isolated_mode::switches::
-            kForceEnterpriseIsolatedModeReplacesIncognito);
-  }
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinIsolatedModeTest,
