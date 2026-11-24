@@ -1,0 +1,46 @@
+From 618098508a467e946eb569e901b4b6499bae4a37 Mon Sep 17 00:00:00 2001
+From: Kent Tamura <tkent@chromium.org>
+Date: Tue, 24 Nov 2026 10:45:11 +0900
+Subject: [PATCH 2/4] Avoid OOB pointer add in strided advance loops
+
+Bug: https://github.com/harfbuzz/harfrust/issues/638
+---
+ .../vendor/harfrust_capi-v0_16/src/font.rs                | 8 ++++----
+ .../vendor/harfrust_capi-v0_16/src/font_funcs.rs          | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs
+index bef230ef54d5b..bd3acd661075a 100644
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs
+@@ -1102,10 +1102,10 @@ unsafe fn advances(
+         };
+         // SAFETY: as above, and the advances are writable.
+         unsafe { advance.cast::<hr_position_t>().write_unaligned(value) };
+-        // SAFETY: a stride past the end is only formed, never read, on the
+-        // last turn, and the caller's run is that long.
+-        glyph = unsafe { glyph.add(glyph_stride as usize) };
+-        advance = unsafe { advance.add(advance_stride as usize) };
++        // Use `wrapping_add` so the unused pointer formed on the final turn
++        // does not step out of bounds under `ptr::add`.
++        glyph = glyph.wrapping_add(glyph_stride as usize);
++        advance = advance.wrapping_add(advance_stride as usize);
+     }
+ }
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font_funcs.rs b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font_funcs.rs
+index dd4127c896562..6fc7f032781d8 100644
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font_funcs.rs
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font_funcs.rs
+@@ -1008,7 +1008,7 @@ impl<'a> FontFuncsAdapter<'a> {
+                         self.state.x_scale,
+                     ));
+                 };
+-                advance = unsafe { advance.add(advance_stride as usize) };
++                advance = advance.wrapping_add(advance_stride as usize);
+             }
+         }
+         true
+-- 
+2.56.1.809.ga0b61035b5-goog
+

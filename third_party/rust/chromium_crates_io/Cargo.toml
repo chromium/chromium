@@ -75,6 +75,10 @@ features = [
     "icu",
 ]
 
+[dependencies.harfrust_capi]
+version = "0.16.0"
+features = ["subset"]
+
 [dependencies.icu_capi]
 version = "2.4"
 default-features = false

@@ -1909,6 +1909,7 @@ component("platform") {
     "//third_party/libgav1:libgav1_utils_constants",
     "//third_party/libyuv",
     "//third_party/one_euro_filter",
+    "//third_party/rust/harfrust_capi/v0_16:lib",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/zlib/google:compression_utils",
     "//ui/base/cursor/mojom:cursor_type_blink",

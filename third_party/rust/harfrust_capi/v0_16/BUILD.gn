@@ -1,0 +1,99 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "harfrust_capi"
+  epoch = "0.16"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/aat_layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/blob.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/color.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/draw.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/face.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font_funcs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/object.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_color.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_math.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_name_languages.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_tag.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_var.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/paint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/paint/backend.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/plan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/rendering.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape_plan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/subset/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/subset/user_data.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/unicode.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_name = "harfrust_capi"
+  cargo_pkg_description = "C API for the HarfRust text shaping library, mirroring HarfBuzz's shaping API."
+  cargo_pkg_repository = "https://github.com/harfbuzz/harfrust"
+  cargo_pkg_version = "0.16.0"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/harfrust/v0_16:lib",
+    "//third_party/rust/read_fonts/v0_47:lib",
+    "//third_party/rust/skera/v0_10:lib",
+    "//third_party/rust/smallvec/v1:lib",
+    "//third_party/rust/write_fonts/v0_56:lib",
+  ]
+  features = [
+    "default",
+    "subset",
+  ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

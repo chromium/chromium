@@ -1,0 +1,59 @@
+From 5b1eb1025a3b527f6ad65ac9596c870fee231bf0 Mon Sep 17 00:00:00 2001
+From: Kent Tamura <tkent@chromium.org>
+Date: Tue, 24 Nov 2026 10:45:15 +0900
+Subject: [PATCH 4/4] Use object::as_mutable in shaping entry points
+
+Bug: https://github.com/harfbuzz/harfrust/issues/640
+---
+ .../vendor/harfrust_capi-v0_16/src/shape.rs               | 8 ++++++--
+ .../vendor/harfrust_capi-v0_16/src/shape_plan.rs          | 2 +-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape.rs b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape.rs
+index fbfd4c4403cbc..139ee3163f6be 100644
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape.rs
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape.rs
+@@ -11,6 +11,7 @@ use crate::buffer::{hr_buffer_t, CStrArray};
+ use crate::common::{hr_bool_t, hr_feature_t};
+ use crate::font::hr_font_t;
+ use crate::font_funcs::FontFuncsAdapter;
++use crate::object;
+ 
+ /// Runs `f` over `buffer`, catching any panic rather than letting it unwind
+ /// into C, which would be undefined behaviour. Returns `None` if it panicked.
+@@ -150,14 +151,17 @@ pub unsafe extern "C" fn hr_shape_full(
+     num_features: c_uint,
+     shaper_list: *const *const c_char,
+ ) -> hr_bool_t {
+-    let Some(buffer_ref) = (unsafe { buffer.as_mut() }) else {
++    let Some(buffer_ro) = (unsafe { buffer.as_ref() }) else {
+         return false.into();
+     };
+     // Nothing to shape is nothing to fail at, whatever else was asked for:
+     // HarfBuzz answers an empty buffer before it looks at anything else.
+-    if buffer_ref.buffer.is_empty() {
++    if buffer_ro.buffer.is_empty() {
+         return true.into();
+     }
++    let Some(buffer_ref) = (unsafe { object::as_mutable(buffer) }) else {
++        return false.into();
++    };
+     if !unsafe { shaper_list_allows_ot(shaper_list) } {
+         return false.into();
+     }
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape_plan.rs b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape_plan.rs
+index d84b0fa740be3..7fb420fa6194f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape_plan.rs
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/shape_plan.rs
+@@ -551,7 +551,7 @@ pub unsafe extern "C" fn hr_shape_plan_execute(
+     // Take a share of the plan, so that a callback destroying it during
+     // shaping cannot pull it out from under the call.
+     let plan = Arc::clone(plan);
+-    let Some(buffer_ref) = (unsafe { buffer.as_mut() }) else {
++    let Some(buffer_ref) = (unsafe { object::as_mutable(buffer) }) else {
+         return false.into();
+     };
+     // An empty buffer needs no work, and matches nothing either way.
+-- 
+2.56.1.809.ga0b61035b5-goog
+

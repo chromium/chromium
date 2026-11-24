@@ -1,0 +1,39 @@
+From b847fecb67c76d8e019ae0e030131956bd62c076 Mon Sep 17 00:00:00 2001
+From: Kent Tamura <tkent@chromium.org>
+Date: Tue, 24 Nov 2026 10:39:47 +0900
+Subject: [PATCH 1/4] Fix PreparedFont self-referential Box aliasing UB
+
+Bug: https://github.com/harfbuzz/harfrust/issues/637
+---
+ .../vendor/harfrust_capi-v0_16/src/font.rs             | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs
+index 01218df7fd89a..bef230ef54d5b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/font.rs
+@@ -46,16 +46,16 @@ impl Drop for FontData {
+ /// are ever reordered.
+ struct PreparedFont {
+     shaper: Option<ShaperFont<'static, 'static>>,
+-    instance: Box<Font>,
++    instance: Arc<Font>,
+ }
+ 
+ impl PreparedFont {
+     fn new(instance: Font) -> Self {
+-        let instance = Box::new(instance);
++        let instance = Arc::new(instance);
+         let shaper = ShaperFont::new(&instance);
+-        // SAFETY: the prepared font borrows the allocation owned by `instance`,
+-        // which is stable across moving the Box. `Drop` clears the borrow
+-        // before that allocation is released.
++        // SAFETY: the prepared font borrows the shared allocation owned by
++        // `instance`. Moving `Arc` does not retag the pointee as unique, and
++        // `Drop` clears the borrow before `instance` is released.
+         let shaper = Some(unsafe {
+             core::mem::transmute::<ShaperFont<'_, '_>, ShaperFont<'static, 'static>>(shaper)
+         });
+-- 
+2.56.1.809.ga0b61035b5-goog
+

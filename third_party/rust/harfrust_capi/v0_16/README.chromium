@@ -1,0 +1,11 @@
+Name: harfrust_capi
+URL: https://crates.io/crates/harfrust_capi
+Version: 0.16.0
+Revision: 0de7fe25ded6672336733163b8ff8c7c83b80732
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/../harfrust-v0_16/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: C API for the HarfRust text shaping library, mirroring HarfBuzz's shaping API.

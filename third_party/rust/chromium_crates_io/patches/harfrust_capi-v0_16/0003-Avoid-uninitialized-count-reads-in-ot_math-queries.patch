@@ -1,0 +1,100 @@
+From 88cbf8d260f5e4423bf83a6165ec277ad3a1c7b4 Mon Sep 17 00:00:00 2001
+From: Kent Tamura <tkent@chromium.org>
+Date: Tue, 24 Nov 2026 10:45:13 +0900
+Subject: [PATCH 3/4] Avoid uninitialized count reads in ot_math queries
+
+Bug: https://github.com/harfbuzz/harfrust/issues/639
+---
+ .../vendor/harfrust_capi-v0_16/src/ot_math.rs | 40 +++++++++++--------
+ 1 file changed, 23 insertions(+), 17 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_math.rs b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_math.rs
+index ae5dfcec6bde3..4223c0a100a60 100644
+--- a/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_math.rs
++++ b/third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/src/ot_math.rs
+@@ -309,7 +309,11 @@ pub unsafe extern "C" fn hr_ot_math_get_glyph_kernings(
+     entries_count: *mut c_uint,
+     kern_entries: *mut hr_ot_math_kern_entry_t,
+ ) -> c_uint {
+-    let capacity = unsafe { entries_count.as_ref() }.copied().unwrap_or(0) as usize;
++    let capacity = if kern_entries.is_null() {
++        0
++    } else {
++        unsafe { entries_count.as_ref() }.copied().unwrap_or(0) as usize
++    };
+     let state = unsafe { object::or_empty(font.cast_const()) };
+     let table = corner(kern).and_then(|corner| {
+         font_math(state)
+@@ -347,10 +351,8 @@ pub unsafe extern "C" fn hr_ot_math_get_glyph_kernings(
+             }
+         }
+     }
+-    if !kern_entries.is_null() || !found {
+-        if let Some(count) = unsafe { entries_count.as_mut() } {
+-            *count = written as c_uint;
+-        }
++    if (!kern_entries.is_null() || !found) && !entries_count.is_null() {
++        unsafe { entries_count.write(written as c_uint) };
+     }
+     total
+ }
+@@ -368,7 +370,11 @@ pub unsafe extern "C" fn hr_ot_math_get_glyph_variants(
+     variants_count: *mut c_uint,
+     variants: *mut hr_ot_math_glyph_variant_t,
+ ) -> c_uint {
+-    let capacity = unsafe { variants_count.as_ref() }.copied().unwrap_or(0) as usize;
++    let capacity = if variants.is_null() {
++        0
++    } else {
++        unsafe { variants_count.as_ref() }.copied().unwrap_or(0) as usize
++    };
+     let state = unsafe { object::or_empty(font.cast_const()) };
+     let construction = font_math(state)
+         .and_then(|math| math.math_variants().ok())
+@@ -395,10 +401,8 @@ pub unsafe extern "C" fn hr_ot_math_get_glyph_variants(
+             }
+         }
+     }
+-    if !variants.is_null() || !found {
+-        if let Some(count) = unsafe { variants_count.as_mut() } {
+-            *count = written as c_uint;
+-        }
++    if (!variants.is_null() || !found) && !variants_count.is_null() {
++        unsafe { variants_count.write(written as c_uint) };
+     }
+     total
+ }
+@@ -437,7 +441,11 @@ pub unsafe extern "C" fn hr_ot_math_get_glyph_assembly(
+     parts: *mut hr_ot_math_glyph_part_t,
+     italics_correction: *mut hr_position_t,
+ ) -> c_uint {
+-    let capacity = unsafe { parts_count.as_ref() }.copied().unwrap_or(0) as usize;
++    let capacity = if parts.is_null() {
++        0
++    } else {
++        unsafe { parts_count.as_ref() }.copied().unwrap_or(0) as usize
++    };
+     let state = unsafe { object::or_empty(font.cast_const()) };
+     let assembly = font_math(state)
+         .and_then(|math| math.math_variants().ok())
+@@ -479,13 +487,11 @@ pub unsafe extern "C" fn hr_ot_math_get_glyph_assembly(
+             }
+         }
+     }
+-    if !parts.is_null() || !found {
+-        if let Some(count) = unsafe { parts_count.as_mut() } {
+-            *count = written as c_uint;
+-        }
++    if (!parts.is_null() || !found) && !parts_count.is_null() {
++        unsafe { parts_count.write(written as c_uint) };
+     }
+-    if let Some(out) = unsafe { italics_correction.as_mut() } {
+-        *out = correction;
++    if !italics_correction.is_null() {
++        unsafe { italics_correction.write(correction) };
+     }
+     total
+ }
+-- 
+2.56.1.809.ga0b61035b5-goog
+

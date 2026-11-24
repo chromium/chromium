@@ -1,0 +1,14 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("harfrust_capi_include_dirs") {
+  include_dirs = [
+    "//third_party/rust/chromium_crates_io/vendor/harfrust_capi-v0_16/include",
+  ]
+}
+
+group("harfrust_capi") {
+  public_configs = [ ":harfrust_capi_include_dirs" ]
+  public_deps = [ "//third_party/rust/harfrust_capi/v0_16:lib" ]
+}

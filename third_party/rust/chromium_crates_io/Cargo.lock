@@ -271,6 +271,7 @@ dependencies = [
  "flate2",
  "font-types",
  "harfrust",
+ "harfrust_capi",
  "hex",
  "hmac-sha256",
  "icu_capi",
@@ -763,6 +764,18 @@ dependencies = [
  "read-fonts",
  "smallvec",
  "yoke",
+]
+
+[[package]]
+name = "harfrust_capi"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "harfrust",
+ "read-fonts",
+ "skera",
+ "smallvec",
+ "write-fonts",
 ]
 
 [[package]]
