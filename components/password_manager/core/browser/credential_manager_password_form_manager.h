@@ -41,12 +41,17 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
       std::unique_ptr<PasswordForm> saved_form,
       CredentialManagerPasswordFormManagerDelegate* delegate,
       std::unique_ptr<FormSaver> form_saver,
-      std::unique_ptr<FormFetcher> form_fetcher);
+      std::unique_ptr<FormFetcher> form_fetcher,
+      bool was_returned_by_get);
   CredentialManagerPasswordFormManager(
       const CredentialManagerPasswordFormManager&) = delete;
   CredentialManagerPasswordFormManager& operator=(
       const CredentialManagerPasswordFormManager&) = delete;
   ~CredentialManagerPasswordFormManager() override;
+
+  // Whether `Get()` returned this credential to the calling origin before
+  // `Store()`.
+  bool was_returned_by_get() const { return was_returned_by_get_; }
 
   // FormFetcher::Consumer:
   void OnFetchCompleted() override;
@@ -59,6 +64,7 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
   void NotifyDelegate();
 
   const raw_ptr<CredentialManagerPasswordFormManagerDelegate> delegate_;
+  const bool was_returned_by_get_;
 
   base::WeakPtrFactory<CredentialManagerPasswordFormManager> weak_factory_{
       this};

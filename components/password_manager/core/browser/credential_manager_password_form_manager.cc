@@ -21,7 +21,8 @@ CredentialManagerPasswordFormManager::CredentialManagerPasswordFormManager(
     std::unique_ptr<PasswordForm> saved_form,
     CredentialManagerPasswordFormManagerDelegate* delegate,
     std::unique_ptr<FormSaver> form_saver,
-    std::unique_ptr<FormFetcher> form_fetcher)
+    std::unique_ptr<FormFetcher> form_fetcher,
+    bool was_returned_by_get)
     : PasswordFormManager(
           client,
           std::move(saved_form),
@@ -30,7 +31,8 @@ CredentialManagerPasswordFormManager::CredentialManagerPasswordFormManager(
                            /*profile_form_saver=*/std::move(form_saver),
                            /*account_form_saver=*/nullptr)
                      : std::make_unique<PasswordSaveManagerImpl>(client)),
-      delegate_(delegate) {}
+      delegate_(delegate),
+      was_returned_by_get_(was_returned_by_get) {}
 
 CredentialManagerPasswordFormManager::~CredentialManagerPasswordFormManager() =
     default;

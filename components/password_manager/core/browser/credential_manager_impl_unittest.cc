@@ -655,34 +655,263 @@ TEST_P(CredentialManagerImplTest, CredentialManagerStoreOverwrite) {
             passwords[form_.signon_realm][1].icon_url);
 }
 
+// Storing a credential identical to a PSL match must not silently copy it to
+// the current origin, otherwise the page learns whether its guess matches.
 TEST_P(CredentialManagerImplTest,
-       CredentialManagerStorePSLMatchDoesNotTriggerBubble) {
+       CredentialManagerStorePSLMatchTriggersBubble) {
   PasswordForm psl_form = subdomain_form_;
   psl_form.username_value = form_.username_value;
   psl_form.password_value = form_.password_value;
   store_->AddLogin(password_manager::FromPasswordForm(psl_form));
 
-  // Calling 'Store' with a new credential that is a PSL match for an existing
-  // credential with identical username and password should result in a silent
-  // save without prompting the user.
   auto info = PasswordFormToCredentialInfo(form_);
-  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
   EXPECT_CALL(*client_, NotifyStorePasswordCalled);
   bool called = false;
   CallStore(info, base::BindOnce(&RespondCallback, &called));
   RunAllPendingTasks();
   EXPECT_TRUE(called);
 
-  // Check that both credentials are present in the password store.
+  // Only the original credential is stored; the new one is pending.
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
-  EXPECT_EQ(2U, passwords.size());
-  EXPECT_EQ(1U, passwords[form_.signon_realm].size());
-  EXPECT_EQ(1U, passwords[psl_form.signon_realm].size());
+  EXPECT_THAT(passwords,
+              testing::ElementsAre(testing::Key(psl_form.signon_realm)));
+  ASSERT_TRUE(pending_manager);
+  EXPECT_EQ(info.id, pending_manager->GetPendingCredentials().username_value);
 }
 
-// Checks that using grouped match credential does not trigger save bubble.
+// A PSL match that `Get()` returned to the page (e.g. picked by the user in the
+// account chooser) is already known to the page, so storing it saves a copy for
+// the current origin without a prompt.
 TEST_P(CredentialManagerImplTest,
-       CredentialManagerStoreGroupedMatchDoesNotTriggerBubble) {
+       CredentialManagerStorePSLMatchReturnedByGetDoesNotTriggerBubble) {
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/true, /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+  ASSERT_TRUE(called);
+  ASSERT_TRUE(credential);
+  ASSERT_EQ(CredentialType::CREDENTIAL_TYPE_PASSWORD, credential->type);
+
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  called = false;
+  CallStore(*credential, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords, testing::UnorderedElementsAre(
+                             testing::Key(form_.signon_realm),
+                             testing::Key(subdomain_form_.signon_realm)));
+}
+
+// The exception above applies only to the credential `Get()` returned: after a
+// failed guess has been processed, a later store() of the PSL credential still
+// prompts.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStorePSLMatchAfterOtherStoreTriggersBubble) {
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/true, /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+  ASSERT_TRUE(called);
+  ASSERT_TRUE(credential);
+
+  // Store a credential with a different password first; this consumes the
+  // returned credential.
+  CredentialInfo other_info = *credential;
+  other_info.password = u"other_password";
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(2);
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled).Times(2);
+  called = false;
+  CallStore(other_info, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  called = false;
+  CallStore(*credential, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords,
+              testing::ElementsAre(testing::Key(subdomain_form_.signon_realm)));
+}
+
+// Disconnecting the Mojo pipe (e.g. on navigation) clears the credential
+// returned by `Get()`, so a subsequent `Store()` prompts.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStorePSLMatchAfterDisconnectTriggersBubble) {
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/true, /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+  ASSERT_TRUE(called);
+  ASSERT_TRUE(credential);
+
+  cm_service_impl_->ResetAfterDisconnecting();
+
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword);
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  called = false;
+  CallStore(*credential, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords,
+              testing::ElementsAre(testing::Key(subdomain_form_.signon_realm)));
+}
+
+// A PSL match returned by `Get()` to one origin must still prompt if `Store()`
+// is called from a different origin.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStorePSLMatchFromDifferentOriginTriggersBubble) {
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/true, /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+  ASSERT_TRUE(called);
+  ASSERT_TRUE(credential);
+
+  client_->set_last_committed_url(GURL("https://other.example.com/"));
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword);
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  called = false;
+  CallStore(*credential, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords,
+              testing::ElementsAre(testing::Key(subdomain_form_.signon_realm)));
+}
+
+// If `Store()` is called while still on the origin that received the credential
+// from `Get()`, navigating before the store fetch completes still saves
+// silently.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStorePSLMatchNavigatedDuringStoreDoesNotTriggerBubble) {
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/true, /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+  ASSERT_TRUE(called);
+  ASSERT_TRUE(credential);
+
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  called = false;
+  CallStore(*credential, base::BindOnce(&RespondCallback, &called));
+  // Simulate immediate navigation after `store()` resolves, before the async
+  // store fetch completes.
+  client_->set_last_committed_url(GURL("https://other.example.com/"));
+  cm_service_impl_->ResetAfterDisconnecting();
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords, testing::UnorderedElementsAre(
+                             testing::Key(form_.signon_realm),
+                             testing::Key(subdomain_form_.signon_realm)));
+}
+
+// Storing a federated credential identical to a PSL match without `Get()` must
+// prompt rather than silently creating a copy for the current origin.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStoreFederatedPSLMatchTriggersBubble) {
+  PasswordForm psl_federated = subdomain_form_;
+  psl_federated.federation_origin =
+      url::SchemeHostPort(GURL("https://google.com/"));
+  psl_federated.password_value = PasswordString();
+  store_->AddLogin(password_manager::FromPasswordForm(psl_federated));
+
+  CredentialInfo info = PasswordFormToCredentialInfo(psl_federated);
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  bool called = false;
+  CallStore(info, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords,
+              testing::ElementsAre(testing::Key(psl_federated.signon_realm)));
+  ASSERT_TRUE(pending_manager);
+  EXPECT_EQ(info.id, pending_manager->GetPendingCredentials().username_value);
+}
+
+// A PSL federated credential returned by `Get()` can be stored silently for the
+// current origin.
+TEST_P(
+    CredentialManagerImplTest,
+    CredentialManagerStoreFederatedPSLMatchReturnedByGetDoesNotTriggerBubble) {
+  PasswordForm psl_federated = subdomain_form_;
+  psl_federated.federation_origin =
+      url::SchemeHostPort(GURL("https://google.com/"));
+  psl_federated.password_value = PasswordString();
+  store_->AddLogin(password_manager::FromPasswordForm(psl_federated));
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/false,
+          /*federations=*/{GURL("https://google.com/")},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+  ASSERT_TRUE(called);
+  ASSERT_TRUE(credential);
+  ASSERT_EQ(CredentialType::CREDENTIAL_TYPE_FEDERATED, credential->type);
+
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  called = false;
+  CallStore(*credential, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords,
+              testing::UnorderedElementsAre(
+                  testing::Key("federation://example.com/google.com"),
+                  testing::Key(psl_federated.signon_realm)));
+}
+
+// Storing a credential identical to a grouped match must prompt as well.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStoreGroupedMatchTriggersBubble) {
   PasswordForm grouped_form = affiliated_form1_;
   grouped_form.skip_zero_click = false;
   grouped_form.match_type = affiliations::MatchType::kGrouped;
@@ -690,14 +919,38 @@ TEST_P(CredentialManagerImplTest,
   grouped_form.password_value = form_.password_value;
   store_->AddLogin(password_manager::FromPasswordForm(grouped_form));
 
-  // Calling 'Store' with a new credential that is a grouped match for an
-  // existing credential with identical username and password should result in a
-  // silent save without prompting the user.
   SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(),
       /*affiliated_realms=*/{},
       /*grouped_realms=*/{kTestAndroidRealm1});
   auto info = PasswordFormToCredentialInfo(form_);
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  bool called = false;
+  CallStore(info, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  // Only the original credential is stored; the new one is pending.
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_THAT(passwords,
+              testing::ElementsAre(testing::Key(grouped_form.signon_realm)));
+  ASSERT_TRUE(pending_manager);
+  EXPECT_EQ(info.id, pending_manager->GetPendingCredentials().username_value);
+}
+
+// Affiliated credentials are already available to the current origin, so
+// storing an identical one doesn't prompt and doesn't create a copy.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStoreAffiliatedMatchDoesNotTriggerBubble) {
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
+  SetupAffiliatedAndGroupedRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(),
+      /*affiliated_realms=*/{kTestAndroidRealm1});
+
+  CredentialInfo info = PasswordFormToCredentialInfo(affiliated_form1_);
   EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
   EXPECT_CALL(*client_, NotifyStorePasswordCalled);
   bool called = false;
@@ -705,11 +958,9 @@ TEST_P(CredentialManagerImplTest,
   RunAllPendingTasks();
   EXPECT_TRUE(called);
 
-  // Check that both credentials are present in the password store.
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
-  EXPECT_THAT(passwords, testing::UnorderedElementsAre(
-                             testing::Key(form_.signon_realm),
-                             testing::Key(grouped_form.signon_realm)));
+  EXPECT_THAT(passwords, testing::ElementsAre(
+                             testing::Key(affiliated_form1_.signon_realm)));
 }
 
 TEST_P(CredentialManagerImplTest,

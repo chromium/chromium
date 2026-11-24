@@ -5,6 +5,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/prefs/pref_member.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -89,6 +91,10 @@ class CredentialManagerImpl
   PasswordStoreInterface* GetAccountPasswordStore() override;
   void DoneRequiringUserMediation() override;
 
+  // Returns whether `Get()` returned `credential` to `origin`.
+  bool MatchesLastReturnedCredential(const CredentialInfo& credential,
+                                     const url::Origin& origin) const;
+
   // CredentialManagerPasswordFormManagerDelegate:
   void OnProvisionalSaveComplete() override;
 
@@ -113,6 +119,15 @@ class CredentialManagerImpl
   // `Store` (if it was available) and reset in `OnProvisionalSaveComplete`.
   // Only used on desktop.
   std::optional<PasswordForm> last_submitted_form_;
+
+  // Credential most recently returned to the page by `Get()`, and the origin
+  // that requested it. The page already knows this credential, so storing it
+  // again from the same origin may save a non-exact match silently. Cleared
+  // once a `Store()` call is issued or the Mojo pipe disconnects.
+  // TODO(crbug.com/513276101): Figure out whether `PasswordString` should be
+  // used here instead of keeping a plaintext password in `CredentialInfo`.
+  std::optional<std::pair<url::Origin, CredentialInfo>>
+      last_returned_credential_;
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 

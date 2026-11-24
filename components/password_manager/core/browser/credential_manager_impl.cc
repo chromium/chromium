@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -59,6 +60,11 @@ CredentialManagerImpl::~CredentialManagerImpl() {
 void CredentialManagerImpl::Store(const CredentialInfo& credential,
                                   StoreCallback callback) {
   const url::Origin origin = GetOrigin();
+  const bool was_returned_by_get =
+      MatchesLastReturnedCredential(credential, origin);
+  // Don't keep the returned credential in memory past a `Store()` call.
+  last_returned_credential_.reset();
+
   if (password_manager_util::IsLoggingActive(client_)) {
     CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogStoreCredential(origin, credential.type);
@@ -97,7 +103,8 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
       observed_digest, client_, /*should_migrate_http_passwords=*/false);
   form_fetcher->set_filter_grouped_credentials(false);
   form_manager_ = std::make_unique<CredentialManagerPasswordFormManager>(
-      client_, std::move(form), this, nullptr, std::move(form_fetcher));
+      client_, std::move(form), this, /*form_saver=*/nullptr,
+      std::move(form_fetcher), was_returned_by_get);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!last_submitted_form_) {
     return;
@@ -205,6 +212,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
 void CredentialManagerImpl::ResetAfterDisconnecting() {
   CancelBiometricReauthIfOngoing();
   pending_request_.reset();
+  last_returned_credential_.reset();
 }
 
 bool CredentialManagerImpl::IsZeroClickAllowed() const {
@@ -227,6 +235,10 @@ void CredentialManagerImpl::SendCredential(SendCredentialCallback send_callback,
   if (password_manager_util::IsLoggingActive(client_)) {
     CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogSendCredential(GetOrigin(), info.type);
+  }
+  CHECK(pending_request_);
+  if (info.type != CredentialType::CREDENTIAL_TYPE_EMPTY) {
+    last_returned_credential_.emplace(pending_request_->origin(), info);
   }
   std::move(send_callback).Run(info);
   pending_request_.reset();
@@ -350,6 +362,26 @@ void CredentialManagerImpl::DoneRequiringUserMediation() {
   pending_require_user_mediation_.reset();
 }
 
+bool CredentialManagerImpl::MatchesLastReturnedCredential(
+    const CredentialInfo& credential,
+    const url::Origin& origin) const {
+  if (!last_returned_credential_ ||
+      !last_returned_credential_->first.IsSameOriginWith(origin) ||
+      last_returned_credential_->second.type != credential.type ||
+      last_returned_credential_->second.id != credential.id) {
+    return false;
+  }
+  switch (credential.type) {
+    case CredentialType::CREDENTIAL_TYPE_EMPTY:
+      return false;
+    case CredentialType::CREDENTIAL_TYPE_PASSWORD:
+      return last_returned_credential_->second.password == credential.password;
+    case CredentialType::CREDENTIAL_TYPE_FEDERATED:
+      return last_returned_credential_->second.federation ==
+             credential.federation;
+  }
+}
+
 void CredentialManagerImpl::OnProvisionalSaveComplete() {
   DCHECK(form_manager_);
   const PasswordForm& form = form_manager_->GetPendingCredentials();
@@ -358,24 +390,36 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
 
   if (form.federation_origin.IsValid()) {
     // If this is a federated credential, check it against the federated matches
-    // produced by the PasswordFormManager. If a match is found, update it and
-    // return.
+    // produced by the PasswordFormManager. Only save silently if an exact match
+    // already exists for this origin, or if `Get()` returned this credential to
+    // the origin; otherwise saving a non-exact match (e.g. PSL or grouped)
+    // would silently create a copy for the current origin.
     for (const password_manager::StoredCredential& match :
          form_manager_->GetFormFetcher()->GetFederatedMatches()) {
       if (match.username_value == form.username_value &&
-          match.federation_origin == form.federation_origin) {
+          match.federation_origin == form.federation_origin &&
+          (GetMatchType(match) == GetLoginMatchType::kExact ||
+           form_manager_->was_returned_by_get())) {
         form_manager_->Save();
         return;
       }
     }
-  } else if (form.match_type) {
-    // Otherwise, if this is not a new password credential, update the existing
-    // credential prompting confirmation helium bubble to the user. This will
-    // also update the 'skip_zero_click' state, as we've gotten an explicit
-    // signal that the page understands the credential management API and so can
-    // be trusted to notify us when they sign the user out.
-    // In case the existing match is non-exact, save credential for the current
-    // website automatically.
+  } else if (form.match_type &&
+             (!password_manager_util::IsCredentialWeakMatch(form) ||
+              form_manager_->was_returned_by_get())) {
+    // Otherwise, update an existing exact or affiliated password credential and
+    // show an update confirmation if the password changed. Affiliated matches
+    // are mutually declared and do not create a copy for the current origin.
+    // This also updates the 'skip_zero_click' state, as we've gotten an
+    // explicit signal that the page understands the credential management API
+    // and so can be trusted to notify us when they sign the user out.
+    //
+    // A weak match (PSL or grouped) is only copied to the current origin
+    // silently if `Get()` returned it to this origin before, e.g. after the
+    // user picked it in the account chooser. Otherwise the page supplied the
+    // username and password itself, and a silent copy would reveal whether its
+    // guess matches a credential saved for another origin. Such credentials
+    // fall through to the save prompt below.
     bool is_update_confirmation = form_manager_->IsPasswordUpdate();
     form_manager_->Save();
     if (is_update_confirmation) {
