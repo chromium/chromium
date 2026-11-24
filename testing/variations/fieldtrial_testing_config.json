@@ -7228,6 +7228,30 @@
             ]
         }
     ],
+    "DesktopDynamicAiModeButtonPreventEarlyPaint": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DynamicAiModeButtonPreventEarlyPaint_20261113",
+                    "params": {
+                        "Omnibox_DynamicAnimation": "true",
+                        "Omnibox_DynamicColorScheme": "true"
+                    },
+                    "enable_features": [
+                        "NtpRealboxDynamicAiModeButton",
+                        "NtpRealboxDynamicAiModeButtonPreventEarlyPaint",
+                        "WebUIOmniboxDynamicAiModeButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpModulesTabGroups": [
         {
             "platforms": [
