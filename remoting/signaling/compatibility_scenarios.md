@@ -34,20 +34,26 @@ signaling across three production implementations:
 
 - **`jingle_message_proto_converter_unittest.cc`**:
   - *Scope*: `JingleMessage` <-> `ftl::IqStanza`
-  - *Gaps & Risks*: High Risk. Uses synthetic micro-payloads (`"test_sdp"`,
-    single fake candidate, `{1, 2, 3}`). Lacks real multi-m-line SDPs,
-    IPv6/STUN/TURN candidates, and SPAKE2 tokens.
+  - *Gaps & Risks*: Exercises Protobuf roundtrips across Scenarios 1-8
+    (multi-m-line bundle SDPs, IPv4/IPv6/TCP/srflx/relay ICE candidates,
+    SPAKE2/SessionAuthz tokens, `PairingFailed` empty-error `"unknown"`
+    normalization, and comma-joined `host_attributes` splitting;
+    https://crrev.com/c/8829951), but tests Protobuf in isolation from XML
+    (`XML` <-> `JingleMessage` <-> `Proto` cross-format parity is not yet
+    validated in a unified suite).
 - **`jingle_message_xml_converter_unittest.cc`**:
   - *Scope*: `JingleMessage` <-> XML `XmlElement`
-  - *Gaps & Risks*: Tests XML in total isolation from Protobuf. Does not test
-    cross-format translation fidelity (`XML` -> `Model` -> `Proto` or
-    `Proto` -> `Model` -> `XML`).
+  - *Gaps & Risks*: Tests XML in isolation from Protobuf (including empty
+    `<pairing-failed>` `"unknown"` normalization added in
+    https://crrev.com/c/8829951). Does not test cross-format translation
+    fidelity (`XML` -> `Model` -> `Proto` or `Proto` -> `Model` -> `XML`).
 - **`jingle_message_struct_converter_unittest.cc`**:
   - *Scope*: `JingleMessage` <-> `internal::IqStanzaStruct`
   - *Gaps & Risks*: Tests internal C++ memory representations; does not
     validate wire serialization parity against TypeScript or Kotlin parsers.
 - **`ftl_signal_strategy_unittest.cc`**:
-  - *Scope*: Format negotiation (`BOTH`, `PROTOBUF`, `XML`)
+  - *Scope*: Format negotiation (`BOTH`, `PROTOBUF`, `XML`) and peer cache
+    isolation (https://crrev.com/c/8834622)
   - *Gaps & Risks*: Uses mocked callbacks; does not test full real-world
     multi-round handshakes or concurrent multi-platform traffic.
 - **`jingle_session_unittest.cc`**:
@@ -58,29 +64,30 @@ signaling across three production implementations:
 
 ### 2.2 Exhaustive Gap Breakdown
 
-1. **Payload Complexity Gaps**:
-   - **SDP Descriptions**: Real WebRTC SDP contains bundle groups
-     (`a=group:BUNDLE 0 1 2`), multiple media m-lines (`audio`, `video`,
-     `application`), DTLS certificate fingerprints
-     (`a=fingerprint:sha-256 ...`), ICE credentials (`a=ice-ufrag`,
+1. **Cross-Format Parity Across Realistic Payloads**:
+   While `jingle_message_proto_converter_unittest.cc` exercises complex
+   Protobuf payloads in isolation, unified cross-format (`XML` <->
+   `JingleMessage` <-> `Proto`) equivalence is not yet validated across:
+   - **SDP Descriptions**: Bundle groups (`a=group:BUNDLE 0 1 2`), multiple
+     media m-lines (`audio`, `video`, `application`), DTLS certificate
+     fingerprints (`a=fingerprint:sha-256 ...`), ICE credentials (`a=ice-ufrag`,
      `a=ice-pwd`), and RTP header extensions.
-   - **ICE Candidates**: Real sets include multiple transport protocols (UDP,
-     TCP), candidate types (`host`, `srflx`, `relay`), and IPv4 / IPv6
-     addresses with various priority levels and generation counters.
+   - **ICE Candidates**: Multiple transport protocols (UDP, TCP), candidate
+     types (`host`, `srflx`, `relay`), and IPv4 / IPv6 addresses with priority
+     levels and generation counters.
    - **Authentication Data**: Multi-round SPAKE2 Curve25519 public points (32
      bytes), SHA256 verification hashes (32 bytes), and SessionAuthz bearer
-     tokens (both raw byte arrays and base64 strings).
-   - **Attachment Configurations**: Real host attributes (`Debug-Build`,
-     `HWEncoder`, `SupportsIceDatagramTransport`, `CapturesAudio`,
-     `SupportsDirectPeer`) and configuration key-value pairs
-     (`Av1-Encoder-Speed: 11`, `VideoCodecPreset: high_quality`,
-     `EnableMultimon: true`).
+     tokens (Base64 strings in serialized XML vs decoded raw bytes in Protobuf).
+   - **Attachment Configurations**: Host attributes (`Debug-Build`, `HWEncoder`,
+     `SupportsIceDatagramTransport`, `CapturesAudio`, `SupportsDirectPeer`) and
+     configuration key-value pairs (`Av1-Encoder-Speed: 11`,
+     `VideoCodecPreset: high_quality`, `EnableMultimon: true`).
 2. **Binary vs Base64 Encoding Mismatches**:
    - XML serializes binary data as Base64 strings. Protobuf defines these
      fields as `bytes`.
    - Differences in Base64 padding, URL-safe vs standard Base64 encoding, or
      token string wrappers must be verified across C++, TypeScript, and Kotlin
-     against Chromium's parser heuristics.
+     against Chromium's parser rules.
 3. **Missing Cross-Format Equivalence Tests**:
    - No automated tests verify that an incoming XML stanza from a legacy client
      produces an identical `JingleMessage` model and downstream Protobuf
@@ -101,6 +108,37 @@ signaling across three production implementations:
   - XML: `<iq id="...">`
   - Proto: `optional string id = 1;`
   - Model: `message.message_id`
+  - **1-Based Sequencing Rule (`<prefix>_<seq>`, Requests Only)**:
+    - Sequencing applies **exclusively to Jingle request stanzas** (`type="set"`
+      / `jingle` payload). IQ response stanzas (`type="result"` / `reply` and
+      `type="error"` / `error`) MUST echo the exact `id` of the request they
+      acknowledge and bypass `OrderedMessageQueue`.
+    - Outgoing Jingle request stanzas MUST format `id` as `<prefix>_<seq>`,
+      where `<prefix>` is a random per-session alphanumeric string containing
+      **no underscores** (`_`) and `<seq>` is a monotonically increasing
+      base-10 integer starting at **`1`** (`1, 2, 3, ...`, matching Chromium's
+      `++next_outgoing_id_` and avoiding JavaScript `0` falsiness bugs).
+    - **Ingress `GetSequentialId()` Parsing (`jingle_session.cc`)**:
+      Implementations split `id` on `_`, trim ASCII whitespace from each
+      segment, and **drop empty segments** (`base::SPLIT_WANT_NONEMPTY`). Any
+      request `id` that does not split into **exactly two non-empty `_`-separated
+      tokens**, or whose second token is not a valid base-10 integer, is
+      unsequenced and delivered immediately without queueing. (Note: because
+      empty tokens are dropped, an `id` like `a__5` yields `["a", "5"]` and
+      **is** sequenced--TypeScript/Kotlin parsers MUST filter out empty tokens
+      rather than using a raw `id.split("_")`, whereas 3-token fixture IDs such
+      as `msg_initiate_001` are unsequenced.)
+    - **Initial Expected Sequence Number (`next_incoming_`)**:
+      - *Responder (Host)*: `InitializeIncomingConnection` calls
+        `SetInitialId(initiate.message_id)`. If `session-initiate` carries
+        sequential ID `<seq>` (normally `1`), `next_incoming_` is initialized to
+        `<seq> + 1` (expecting `2` next). If `session-initiate` is unsequenced,
+        `next_incoming_` remains unset (`kAny`) until the first sequenced
+        incoming request arrives, at which point it latches onto that request's
+        `<seq>`.
+      - *Initiator (Client)*: `next_incoming_` starts unset (`kAny`), latches
+        onto the `<seq>` of the responder's first sequenced request (normally
+        `1` on `session-accept`), and expects `<seq> + 1` thereafter.
 - **From Address**:
   - XML: `<iq from="user@example.com/chromoting_ftl_uuid">`
   - Proto: `optional JabberId sender = 2;`
@@ -152,35 +190,64 @@ signaling across three production implementations:
   - XML: `<certificate>` (Base64 DER cert string)
   - Proto: `authentication.certificate` (raw DER `bytes`)
 - **Host Token**:
-  - XML: `<host-token>` (Base64 string)
-  - Proto: `authentication.session_authz_host_token` (raw `bytes`)
+  - XML: `<host-token>` (Base64 string returned by
+    `SessionAuthzService.GenerateHostToken`, written verbatim to XML without
+    additional Base64 encoding)
+  - Proto: `authentication.session_authz_host_token` (Base64-decoded raw
+    `bytes`; converters Base64-decode when writing to Protobuf `bytes` and
+    Base64-encode back to the token string when reading from Protobuf `bytes`)
 - **Session Token**:
-  - XML: `<session-token>` (Base64 string)
-  - Proto: `authentication.session_authz_session_token` (raw `bytes`)
+  - XML: `<session-token>` (Base64 string returned by
+    `SessionAuthzService.AuthorizeSession`, written verbatim to XML without
+    additional Base64 encoding)
+  - Proto: `authentication.session_authz_session_token` (Base64-decoded raw
+    `bytes`; converters Base64-decode when writing to Protobuf `bytes` and
+    Base64-encode back to the token string when reading from Protobuf `bytes`)
 - **Pairing Info Client ID**:
   - XML: `<pairing-info client-id="...">`
   - Proto: `authentication.pairing_info.client_id` (`string`)
-- **Pairing Error**:
-  - XML: `<pairing-failed error="...">` (nested inside `<authentication>` or
-    as a direct child of `<jingle>`)
-  - Model: `authentication.pairing_error` (string)
+- **Pairing Error** (wire support and `"unknown"` normalization added in
+  https://crrev.com/c/8829951):
+  - XML: `<pairing-failed error="...">` nested inside
+    `<authentication xmlns="google:remoting">`. Egress XML serializers MUST
+    always nest `<pairing-failed>` inside `<authentication>` with a non-empty
+    `error` attribute; direct `<jingle><pairing-failed/></jingle>` children are
+    invalid (Chromium `SessionInfoFromXml` and Web `JingleMessage.fromXml`
+    reject them in `session-info` with `UNSUPPORTED_INFO` and ignore them in
+    `session-accept`). Ingress XML parsers MUST treat `<pairing-failed>`
+    presence inside `<authentication>` as a pairing failure and normalize a
+    missing or empty `error` attribute to the exact string **`"unknown"`**.
+  - Proto: `authentication.pairing_failed.error` (`string`, `PairingFailed` at
+    field `9` in `xmpp.proto`). Senders MUST populate a non-empty `error`
+    string. Ingress Protobuf parsers MUST treat `has_pairing_failed()` presence
+    as a pairing failure and normalize an unset or empty `error` field to the
+    exact string **`"unknown"`**.
+  - Model: `authentication.pairing_error` (`string`; treated as an opaque
+    diagnostic reason and never switched on programmatically)
 - **SDP Offer / Answer Encapsulation**:
-  - XML: `<transport><session-description type="offer|answer">` embedded
-    within `<jingle action="session-initiate|session-accept|transport-info">`
+  - XML: `<transport xmlns="google:remoting:webrtc"><session-description
+    type="offer|answer">` embedded within `<jingle action="transport-info">`.
+    Note that XML `session-initiate` and `session-accept` stanzas carry no
+    `<session-description>`, but MUST still include an empty
+    `<transport xmlns="google:remoting:webrtc" />` child inside `<content>`
+    (required by Chromium's `ParseInitiateOrAccept`).
   - Proto: Dedicated `transport_info.session_description.sdp` + `type` enum
-    sent in a `transport_info` Jingle action (or standalone message payload)
+    sent in a `transport_info` Jingle action
 - **SDP Signature**:
-  - XML: `<session-description signature="...">` (Base64 HMAC)
-  - Proto: `transport_info.session_description.signature` (raw `bytes`)
+  - XML: `<session-description signature="...">` (Base64 HMAC-SHA256)
+  - Proto: `transport_info.session_description.signature` (32-byte raw `bytes`)
 - **ICE Candidate Line**:
   - XML: `<candidate>candidate:...</candidate>`
-  - Proto: `transport_info.candidates[i].candidate` (string)
+  - Proto: `transport_info.candidates[i].candidate` (`string`, starting with
+    `candidate:` without an SDP `a=` prefix)
 - **ICE Candidate Mid**:
   - XML: `<candidate sdpMid="...">`
-  - Proto: `transport_info.candidates[i].sdp_mid` (string)
+  - Proto: `transport_info.candidates[i].sdp_mid` (`string`, mandatory;
+    Chromium's `JingleTransportInfoFromProto` skips candidates missing
+    `sdp_mid` or `sdp_m_line_index`)
 - **ICE Candidate Index**:
   - XML: `<candidate sdpMLineIndex="...">`
-  - Proto: `transport_info.candidates[i].sdp_m_line_index` (`int32`)
+  - Proto: `transport_info.candidates[i].sdp_m_line_index` (`int32`, mandatory)
 - **Host Attributes**:
   - XML: `<attachments><host-attributes>attr1,attr2,...</host-attributes>`
     (tokens are whitespace-trimmed and MUST NOT contain `,`. Egress XML
@@ -188,8 +255,10 @@ signaling across three production implementations:
     prior to M160 only parse body text and drop `<attribute>` child elements;
     ingress parsers should also accept `<attribute>` child elements, which take
     precedence over body text when both are present)
-  - Proto: `repeated Attachment.host_attributes.attribute` (string; one
-    discrete attribute token per element, never comma-joined)
+  - Proto: `repeated Attachment.host_attributes.attribute` (string; egress
+    emits one discrete attribute token per element, never comma-joined; ingress
+    parsers split elements on `,` and trim whitespace to normalize M156-M159
+    hosts, added in https://crrev.com/c/8829951)
 - **Host Config Map**:
   - XML: `<attachments><host-configuration>key1:val1,key2:val2</host-configuration>`
     (keys and values are whitespace-trimmed and MUST NOT contain `,` or `:`.
@@ -219,6 +288,48 @@ signaling across three production implementations:
   - XML: `<iq type='error'><error type='...'>...</error></iq>`
   - Proto: `ftl.IqStanza.error = ErrorStanza` (`Condition` enum + `text`)
 
+> **`SessionTerminate` `ErrorCode` & `Reason` Egress / Ingress Mappings**:
+> Because multiple `ErrorCode` values collapse onto `DECLINE` or
+> `GENERAL_ERROR`, egress and ingress mappings are defined separately per
+> `jingle_session.cc`:
+>
+> **1. Egress (`JingleSession::Close(error)` -> `(reason, error_code)`)**:
+> Implementations MUST populate `session_terminate.reason` on every close, and
+> MUST populate `error_code` (`ErrorCodeToString(error)`) for every code except
+> `UNKNOWN_ERROR`:
+> - `OK` -> `SUCCESS` (`<success/>`) + `error_code: "OK"`
+> - `SESSION_REJECTED`, `AUTHENTICATION_FAILED`, `INVALID_ACCOUNT` -> `DECLINE`
+>   (`<decline/>`) + `error_code: ErrorCodeToString(error)`
+> - `INCOMPATIBLE_PROTOCOL` -> `INCOMPATIBLE_PARAMETERS`
+>   (`<incompatible-parameters/>`) + `error_code: "INCOMPATIBLE_PROTOCOL"`
+> - `HOST_OVERLOAD` -> `CANCEL` (`<cancel/>`) + `error_code: "HOST_OVERLOAD"`
+> - `MAX_SESSION_LENGTH` -> `EXPIRED` (`<expired/>`) +
+>   `error_code: "MAX_SESSION_LENGTH"`
+> - `HOST_CONFIGURATION_ERROR` -> `FAILED_APPLICATION`
+>   (`<failed-application/>`) + `error_code: "HOST_CONFIGURATION_ERROR"`
+> - `UNKNOWN_ERROR` -> `GENERAL_ERROR` (`<general-error/>`); **`error_code`
+>   omitted**
+> - All other `ErrorCode` values (`PEER_IS_OFFLINE`,
+>   `CHANNEL_CONNECTION_ERROR`, `SIGNALING_ERROR`, `SIGNALING_TIMEOUT`, etc.) ->
+>   `GENERAL_ERROR` (`<general-error/>`) + `error_code: ErrorCodeToString(error)`
+>
+> **2. Ingress (`JingleSession::OnTerminate` -> `ErrorCode`)**:
+> - *When `error_code` is present and recognized (not `UNKNOWN_ERROR`)*:
+>   - `error_code == "SESSION_REJECTED"` -> rewritten to `AUTHENTICATION_FAILED`
+>     (legacy WebApp compatibility, https://crbug.com/618036)
+>   - Any other recognized `error_code` -> mapped directly to that `ErrorCode`
+>     (takes precedence over `reason`)
+> - *When `error_code` is omitted or unrecognized (`UNKNOWN_ERROR`)*, derive
+>   `ErrorCode` from `reason`:
+>   - `SUCCESS` -> `SESSION_REJECTED` if `state == CONNECTING`, else `OK`
+>   - `DECLINE` -> `AUTHENTICATION_FAILED`
+>   - `CANCEL` -> `HOST_OVERLOAD`
+>   - `EXPIRED` -> `MAX_SESSION_LENGTH`
+>   - `INCOMPATIBLE_PARAMETERS` -> `INCOMPATIBLE_PROTOCOL`
+>   - `FAILED_APPLICATION` -> `HOST_CONFIGURATION_ERROR`
+>   - `GENERAL_ERROR` -> `CHANNEL_CONNECTION_ERROR`
+>   - Unspecified or unrecognized `reason` -> `UNKNOWN_ERROR`
+
 > **Legacy Error Condition Mapping & Namespace Note**: Chromium C++
 > historically maps `JingleMessageReply` error types to legacy XMPP error
 > elements with inverted condition tags compared to strict RFC 6120:
@@ -229,14 +340,16 @@ signaling across three production implementations:
 > - `ErrorStanza.Condition.UNEXPECTED_REQUEST` ⟷ `<unexpected-request/>`
 > - `ErrorStanza.Condition.CONDITION_UNSPECIFIED` ⟷ `<unspecified-error/>`
 >
-> Chromium C++ emits and parses error condition tags in the default
-> `jabber:client` namespace (inherited from `<iq xmlns="jabber:client">`).
-> While RFC 6120 §8.3.2 specifies `urn:ietf:params:xml:ns:xmpp-stanzas`,
-> Chromium matches condition tags within `jabber:client`. Ingress XML parsers
-> should match condition child tags namespace-agnostically or accept both
-> namespaces. This mapping is intentional in Chromium's codebase
-> (`jingle_message_xml_converter.cc` and `jingle_message_proto_converter.cc`).
-> External implementations MUST NOT alter or invert these mappings.
+> **Egress XML serializers MUST emit `<error>`, the condition child element,
+> and optional `<text>` in the `jabber:client` namespace** (never
+> `google:remoting` or `urn:ietf:params:xml:ns:xmpp-stanzas`). While RFC 6120
+> §8.3.2 specifies `urn:ietf:params:xml:ns:xmpp-stanzas`, deployed Chromium C++
+> parsers (`JingleMessageReplyFromXml`) look up `QName("jabber:client", ...)`
+> exclusively and collapse any other namespace to `UNSPECIFIED` with empty
+> text. Ingress XML parsers in Web and Android should match condition child
+> tags namespace-agnostically or accept both namespaces. All 6 `Condition`
+> values (including `BAD_REQUEST`) must be mapped without altering or inverting
+> these tags.
 
 ### 3.3 Signaling Format Negotiation & Dual-Payload Rules
 
@@ -246,40 +359,66 @@ bidirectional compatibility between native Chromium hosts/clients, the Web
 Client, and Android implementations:
 
 1. **Client Initiation Version Thresholds**:
-   - **Host Version <= 155 (or unversioned / Android-to-Android peers)**: The
-     client must send **XML-only** `session-initiate` (`stanza` populated,
-     `iq_stanza` omitted).
-   - **Host Version >= 156**: The client sends **Dual-Payload** (`BOTH`)
-     `session-initiate` (encapsulating both `stanza` XML and `iq_stanza`
-     Protobuf).
+   Clients determine whether to send a **Dual-Payload** (`BOTH`) or
+   **XML-only** `session-initiate` from the target host's `HostInfo.host_version`
+   major milestone (`remoting/proto/remoting/v1/host_info.proto`) according to
+   the following normative table:
+
+   | Client Implementation | Target Host Class & Classification Signal | `BOTH` `session-initiate` Requirement | `XML`-only `session-initiate` Requirement |
+   | :--- | :--- | :--- | :--- |
+   | **Chromium `RemotingClient`** (`remoting/client/common/remoting_client.cc` -- ChromeOS Class Tools enterprise IT2Me client; 12-digit access code / `SPAKE2_CURVE25519`, never Me2Me pairing) | Managed ChromeOS enterprise IT2Me hosts returned by `DirectoryServiceClient::GetManagedChromeOsHost` (`GetManagedChromeOsHostResponse.chrome_os_host`, where `host_os_name == "ChromeOS"`, including managed Android-based ChromeOS devices for which Directory synthesizes `host_os_name = "ChromeOS"` and `host_version = "156.0.0.0"`) | **MUST** send `BOTH` when `host_version` is valid and **`>= 156`** | **MUST** send `XML`-only when `host_version < 156` or is unset/invalid |
+   | **Web Client & Android Client** (Me2Me and general IT2Me clients) | All hosts returned by `GetHostList`, `GetHost`, or `GetSupportHost` (`apis.v1.HostInfo`, regardless of `host_os_name`) | **MUST** send `BOTH` when `host_version` is valid and **`>= 160`** (M160 adds `PairingFailed` wire support in https://crrev.com/c/8829951 and `FtlSignalStrategy` negotiation fixes in https://crrev.com/c/8834622; see https://crbug.com/359620500) | **MUST** send `XML`-only when `host_version < 160` or is unset/invalid (including unversioned / Android-to-Android `GetSupportHost` peers) |
 
 2. **Dual-Payload Mode (`BOTH`) Scope & Negotiation**:
-   - **Strict Scope**: Dual-Payload (`BOTH`) is strictly restricted to the
-     initial `session-initiate` message. Once the session is accepted or
-     locked, all subsequent messages in that session MUST be single-payload
-     (strictly Protobuf-only if negotiated, or XML-only if fallback occurred).
-   - Outbound `session-initiate` messages generated by modern clients targeting
-     hosts >= 156 contain both the serialized XML stanza string
-     (`ftl.ChromotingXmppMessage.stanza`) and the structured Protobuf object
-     (`ftl.ChromotingXmppMessage.iq_stanza`).
-   - When a Protobuf-capable host receives a dual-payload `session-initiate`, it
-     responds with a Protobuf-only `session-accept` (`iq_stanza` present,
-     `stanza` omitted).
-   - Receiving a Protobuf-only response locks the session into `PROTOBUF` mode
-     for all subsequent requests and replies (`session-info`, `transport-info`,
-     etc.).
-   - If the host responds with XML or dual-payload, the session falls back to
-     XML for the lifetime of that session.
+   - **Strict Scope & Pre-Reply Stanzas**: Dual-Payload (`BOTH`: setting both
+     `ftl.ChromotingXmppMessage.stanza` and
+     `ftl.ChromotingXmppMessage.iq_stanza`) MUST NOT be sent on any message
+     other than `session-initiate`. Any non-initiate message sent by the
+     initiator while `session-initiate` is still pending (before the
+     responder's `JingleReply` ACK or `session-accept` arrives, e.g., an
+     immediate `session-terminate` cancellation) MUST be sent as single-payload
+     **`XML`-only** (https://crrev.com/c/8834622; shipped M156-M159
+     `RemotingClient` binaries sent pre-reply non-initiate stanzas as
+     `PROTOBUF`-only).
+   - **Responder Locking (`BOTH` `session-initiate` -> `PROTOBUF`)**: When a
+     Protobuf-capable responder (host) receives a `BOTH` `session-initiate`, it
+     locks the session's **outbound** format for `(peer, sid)` into `PROTOBUF`
+     mode and sends its `JingleReply` ACK and `session-accept` as
+     `PROTOBUF`-only (`iq_stanza` present, `stanza` omitted).
+   - **Initiator Locking (`PROTOBUF` vs `XML`/`BOTH` Response)**: When the
+     initiator receives the responder's first response to `session-initiate`
+     (either the `JingleReply` ACK or `session-accept`, whichever arrives
+     first; https://crrev.com/c/8834622), it locks the session's **outbound**
+     format to `PROTOBUF` if and only if that response is `PROTOBUF`-only. If
+     the response is `XML`-only **or** `BOTH`, the initiator MUST lock the
+     session's outbound format to `XML`-only (updated in
+     https://crrev.com/c/8834622; earlier Chromium builds treated a `BOTH`
+     reply as `PROTOBUF`).
 
-3. **Protobuf-Only Negotiation (`PROTOBUF`)**:
-   - When `PROTOBUF`-only mode is established for a session, all subsequent
-     requests and replies (`JingleMessage` and `JingleMessageReply`) for that
-     `sid` must use Protobuf-only without XML serialization overhead.
+3. **Locked Outbound Session Format (`PROTOBUF` vs `XML`) & Ingress Acceptance**:
+   - Once a session's outbound format is locked for `(peer, sid)` during
+     initiation (`PROTOBUF` per Rule 2, or `XML` when `session-initiate` or its
+     response is `XML`-only / `BOTH`), all subsequent outbound requests on that
+     session MUST use that single locked format until `session-terminate`
+     erases the session state.
+   - **Ingress Format Tolerance & Per-Request Reply Matching**: Session format
+     locking governs **outbound request generation**, not inbound parsing.
+     Endpoints MUST continue parsing both `PROTOBUF` (`iq_stanza`) and
+     `XML`-only (`stanza`) incoming stanzas at any point in the session
+     lifecycle without flipping an already-locked outbound session format
+     (ensuring a `PROTOBUF`-locked responder cleanly processes both an early
+     `XML`-only `session-terminate` per Rule 2 and a `PROTOBUF`-only
+     `session-terminate` from M156-M159 `RemotingClient` peers). Each incoming
+     request MUST be acknowledged (`JingleMessageReply`) in the format of that
+     specific request (`PROTOBUF` for `BOTH` `session-initiate` and `PROTOBUF`
+     requests; `XML` for `XML` requests and any unexpected non-initiate `BOTH`
+     request).
 
-4. **XML-Only Mode (`XML`)**:
-   - If an incoming message contains only an XML stanza (`stanza` present
-     without `iq_stanza`), peers must communicate using XML-only for the
-     lifetime of that session.
+4. **XML-Only Initiation (`XML`)**:
+   - When `session-initiate` contains only an XML stanza (`stanza` present
+     without `iq_stanza`), the responder locks the session's outbound format to
+     `XML`-only, and both peers communicate using `XML`-only for the lifetime
+     of that session.
 
 5. **Address Resolution & JID Routing**:
    - All outgoing XML stanzas must explicitly set the `to` attribute with the
@@ -299,12 +438,16 @@ invariants across all implementations:
      `certificate`, `signature`) and SessionAuthz tokens
      (`session_authz_host_token`, `session_authz_session_token`) must be
      transmitted as raw `bytes` in Protobuf payloads.
-   - Base64 string wrapping is an XML-only artifact; Protobuf builders must
-     never apply Base64 encoding to `bytes` fields.
-   - For backwards compatibility during C++ in-memory conversion
-     (`JingleAuthentication`), deserializers may tolerate legacy Base64
-     inputs, but all canonical Protobuf wire emitters must output raw byte
-     buffers.
+   - For `SessionAuthz`, `SessionAuthzService` issues tokens as Base64-encoded
+     strings: serialized XML (`<host-token>` and `<session-token>`) preserves
+     those Base64 strings unchanged, whereas Protobuf emitters MUST
+     Base64-decode them into raw `bytes` on egress and Base64-encode raw
+     `bytes` back to the token string on ingress.
+   - Base64 string wrapping is never applied inside Protobuf `bytes` fields.
+     (Chromium's `JingleMessageProtoConverter` currently retains a transitional
+     Base64-detection fallback for legacy prototype inputs; Web and Android
+     implementations should unconditionally decode/encode Base64 at the
+     Protobuf `bytes` boundary.)
 
 2. **Normalized Addressing (`resource_part` Raw UUID & Boundary)**:
    - `JabberId.resource_part` must contain strictly the raw FTL registration
@@ -316,19 +459,27 @@ invariants across all implementations:
      strip prefixes on egress when creating Protobuf `JabberId` and handle
      prefix addition/stripping on ingress when constructing `SignalingAddress`.
 
-3. **Transport Decoupling & SDP Line Ending Normalization**:
+3. **Transport Decoupling, SDP Line Endings & HMAC-SHA256 Signature**:
    - `SessionInitiate` and `SessionAccept` actions are dedicated strictly to
      session establishment and authentication payloads.
    - WebRTC session descriptions (`SessionDescription`: SDP string with CRLF
-     `\r\n` line endings and optional HMAC signature) and candidate lists
-     (`IceCandidate`: `candidate`, `sdp_mid`, `sdp_m_line_index`) must be
-     encapsulated within `TransportInfo` actions.
+     `\r\n` line endings plus a trailing `\r\n`, and 32-byte HMAC-SHA256
+     `signature`) and candidate lists (`IceCandidate`: `candidate`, `sdp_mid`,
+     `sdp_m_line_index`) must be encapsulated within `TransportInfo` actions.
    - **SDP Line Ending Normalization**: Per W3C XML §2.11, XML parsers
      normalize line endings (`\r\n` and `\r`) to LF (`\n`) upon parsing
-     `<session-description>`. Implementations ingesting XML MUST normalize `\n`
-     to `\r\n` before populating `SessionDescription.sdp` or passing to WebRTC
-     parsers (`webrtc::SdpDeserialize` / `webrtc::CreateSessionDescription`),
-     while signature verification continues to normalize with `\n`.
+     `<session-description>`. Implementations ingesting XML MUST normalize
+     non-empty trimmed SDP lines to `\r\n`-delimited lines with a trailing
+     `\r\n` (matching Chromium's `SdpMessage::ToString()`) before populating
+     `SessionDescription.sdp` or passing to WebRTC parsers
+     (`webrtc::SdpDeserialize` / `RTCPeerConnection.setRemoteDescription`).
+   - **SDP Signature Formula**: Every WebRTC SDP offer and answer exchanged in
+     an authenticated session MUST be signed with HMAC-SHA256 using the full
+     **64-byte** SPAKE2 `auth_key` (`SPAKE2_MAX_KEY_SIZE`, untruncated) over
+     the UTF-8 string `"<type> " + normalized_sdp`, where `<type>` is lowercase
+     `"offer"` or `"answer"`, followed by a single ASCII space, followed by all
+     non-empty whitespace-trimmed SDP lines joined by `\n` plus a trailing `\n`
+     (matching Chromium's `SdpMessage::NormalizedForSignature()`).
 
 4. **Structured Attachments vs Ad-Hoc String Delimiters**:
    - Host configuration key-value settings must use
@@ -356,20 +507,26 @@ invariants across all implementations:
      Chromium XML parser expectations.
 
 6. **Omission of Legacy & Dead XML Constructs**:
-   - Obsolete XML elements (`<pairing-failed>` in auth bodies or directly under
-     `<jingle>`, `<custom-tag>` generic session-info payloads) and test-only
-     fields (`test_id`, `test_key`) are excluded from the wire Protobuf schema.
-     Ingress XML parsers should accept `<pairing-failed>` both inside
-     `<authentication>` and directly under `<jingle>` for maximum legacy
-     robustness.
+   - Obsolete XML constructs (direct `<jingle><pairing-failed/></jingle>`
+     children outside `<authentication>`, `<custom-tag>` generic `session-info`
+     payloads) and test-only fields (`test_id`, `test_key`) are excluded from
+     the wire Protobuf schema. `<pairing-failed error="...">` inside
+     `<authentication>` is represented on the Protobuf wire via
+     `Authentication.pairing_failed.error` (`PairingFailed` at field `9`, added
+     in https://crrev.com/c/8829951); see Section 3.2 ("Pairing Error") for the
+     normative XML nesting and `"unknown"` empty-error normalization rules.
 
 ---
 
 ## 4. Canonical Test Scenarios & Golden Vectors
 
-> **Fixture Stanza ID Convention**: Cross-platform test suites (Chromium C++,
-> Web TypeScript, Android Kotlin) must use the standardized stanza ID
-> constants defined across these scenarios:
+> **Fixture Stanza ID Convention**: Cross-platform converter test suites
+> (Chromium C++, Web TypeScript, Android Kotlin) use the human-readable stanza
+> ID constants below (note that these static fixture IDs split into 3+
+> non-empty `_`-separated tokens and therefore intentionally bypass
+> `OrderedMessageQueue` sequencing, whereas live `JingleSession` request traffic
+> MUST emit 1-based `<alphanumeric_prefix>_<seq>` IDs such as `a1b2c3d4_1` per
+> Section 3.1):
 > - Scenario 1: `msg_initiate_001`
 > - Scenario 2A: `msg_initiate_002a`
 > - Scenario 2B: `msg_initiate_002b`
@@ -601,9 +758,14 @@ jingle {
 
 ### Scenario 2C: `session-info` with PIN Pairing Fallback (`<pairing-failed>`)
 
-When a paired client initiates a session with a `client-id` that has expired,
-been revoked, or is unrecognized by the host, the host issues a `session-info`
-stanza signaling `<pairing-failed>` to trigger a fallback to manual PIN entry.
+When a paired client's `client-id` is found in the host's pairing registry on
+`session-initiate` (so the host sends `session-accept` using the stored paired
+secret), and the paired SPAKE2 shared-secret check subsequently fails in
+`PairingAuthenticatorBase::CheckForFailedSpakeExchange`, the host resets to a
+PIN-based `Spake2Authenticator` and issues a `session-info` stanza carrying the
+new PIN-derived `<spake-message>`, `<certificate>`, and
+`<pairing-failed error="invalid-shared-secret" />` to trigger client fallback
+to manual PIN entry.
 
 #### XML (Chromium Native Output)
 ```xml
@@ -618,20 +780,96 @@ stanza signaling `<pairing-failed>` to trigger a fallback to manual PIN entry.
       action="session-info"
       sid="crd_sess_987654321">
     <authentication xmlns="google:remoting">
-      <pairing-failed error="invalid-client-id" />
+      <spake-message>
+        AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=
+      </spake-message>
+      <certificate>
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyN3rL6u+eG8H9o3F
+        7w4f1mK2s8u1v9X0y5z6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
+        c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
+        c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
+        c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
+        c7d8e9f0a1b2c3d4e5f6a7b8c9IDAQAB
+      </certificate>
+      <pairing-failed error="invalid-shared-secret" />
     </authentication>
   </jingle>
 </iq>
 ```
 
-#### Protobuf Wire Note
-> **Protobuf Architecture Note**: Per Section 3.4 Invariant 6,
-> `<pairing-failed>` is an obsolete XML-only construct and is intentionally
-> omitted from the wire Protobuf schema (`ftl::Authentication`). For legacy
-> XML compatibility, Chromium C++ ingests `<pairing-failed error="...">` into
-> `JingleAuthentication::pairing_error` and serializes it to XML. In Protobuf
-> signaling, PIN authentication fallback is renegotiated directly over
-> `session_info` authentication messages.
+#### Protobuf (`ftl.IqStanza` Canonical Wire Form)
+```protobuf
+id: "msg_info_002c"
+sender {
+  local_part: "host"
+  domain_part: "example.com"
+  resource_part: "55555555-5555-5555-5555-555555555555"
+}
+receiver {
+  local_part: "user"
+  domain_part: "example.com"
+  resource_part: "11111111-1111-1111-1111-111111111111"
+}
+jingle {
+  session_id: "crd_sess_987654321"
+  session_info {
+    authentication {
+      spake_message:
+          "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10"
+          "\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20"
+      certificate:
+          "\x30\x82\x01\x22\x30\x0d\x06\x09\x2a\x86\x48\x86\xf7\x0d\x01\x01"
+          "\x01\x05\x00\x03\x82\x01\x0f\x00\x30\x82\x01\x0a\x02\x82\x01\x01"
+          "\x00\xc8\xdd\xeb\x2f\xab\xbe\x78\x6f\x07\xf6\x8d\xc5\xef\x0e\x1f"
+          "\xd6\x62\xb6\xb3\xcb\xb5\xbf\xd5\xf4\xcb\x9c\xfa\x6b\xb6\xfc\x73"
+          "\xd7\x74\x7b\x57\xf6\x6b\x76\xf8\x73\x97\x7a\x7b\xb7\xfc\x6b\xd6"
+          "\xf4\x73\x57\x76\x7b\x77\xf8\x6b\x96\xfa\x73\xb7\x7c\x7b\xd7\xf4"
+          "\x6b\x56\xf6\x73\x77\x78\x7b\x97\xfa\x6b\xb6\xfc\x73\xd7\x74\x7b"
+          "\x57\xf6\x6b\x76\xf8\x73\x97\x7a\x7b\xb7\xfc\x6b\xd6\xf4\x73\x57"
+          "\x76\x7b\x77\xf8\x6b\x96\xfa\x73\xb7\x7c\x7b\xd7\xf4\x6b\x56\xf6"
+          "\x73\x77\x78\x7b\x97\xfa\x6b\xb6\xfc\x73\xd7\x74\x7b\x57\xf6\x6b"
+          "\x76\xf8\x73\x97\x7a\x7b\xb7\xfc\x6b\xd6\xf4\x73\x57\x76\x7b\x77"
+          "\xf8\x6b\x96\xfa\x73\xb7\x7c\x7b\xd7\xf4\x6b\x56\xf6\x73\x77\x78"
+          "\x7b\x97\xfa\x6b\xb6\xfc\x73\xd7\x74\x7b\x57\xf6\x6b\x76\xf8\x73"
+          "\x97\x7a\x7b\xb7\xfc\x6b\xd6\xf4\x73\x57\x76\x7b\x77\xf8\x6b\x96"
+          "\xfa\x73\xb7\x7c\x7b\xd7\xf4\x6b\x56\xf6\x73\x77\x78\x7b\x97\xfa"
+          "\x6b\xb6\xfc\x73\xd2\x03\x01\x00\x01"
+      pairing_failed {
+        error: "invalid-shared-secret"
+      }
+    }
+  }
+}
+```
+
+> **Pairing Fallback Contexts (`remoting/protocol/pairing_*_authenticator.cc`)**:
+> Chromium's authenticators always attach `pairing_error` via
+> `PairingAuthenticatorBase::GetNextMessage()` onto the newly created PIN
+> `Spake2Authenticator`'s first message (never as a standalone
+> `<pairing-failed>` without `spake_message`):
+> 1. **Host `session_accept.authentication`**: When the host has no stored
+>    pairing for the client (`"unknown-client-id"` when `client_id` is
+>    unrecognized, or `"client-id-unknown"` when `client_id` is empty),
+>    `NegotiatingHostAuthenticator` still sets
+>    `method: AUTHENTICATION_METHOD_PAIRED_SPAKE2_CURVE25519`
+>    (`method="pair_spake2_curve25519"`) alongside the PIN-derived
+>    `spake_message` and mandatory `certificate` so the client instantiates
+>    `PairingClientAuthenticator` and retains re-pairing capability when
+>    prompting for the PIN.
+> 2. **Host or Client `session_info.authentication`**: When paired SPAKE2 key
+>    verification fails (`"invalid-shared-secret"`, emitted by either host or
+>    client alongside the new PIN-derived `spake_message`, plus `certificate`
+>    when host-originated as in Scenario 2C), or when `PairingClientAuthenticator`
+>    starts without local pairing credentials (`"not-paired"`, client-originated
+>    alongside the client's PIN-derived `spake_message`). (Note: while
+>    `Spake2Authenticator` requires `spake_message`--and `certificate` from the
+>    host--converter implementations still preserve `pairing_failed` even if
+>    other fields are absent in synthetic converter unit tests.)
+>
+> All `pairing_failed.error` strings are opaque diagnostic labels for logging
+> and debugging; implementations MUST trigger fallback based on
+> `pairing_failed` presence (per Section 3.2) rather than matching specific
+> error strings.
 
 ---
 
@@ -652,12 +890,12 @@ stanza signaling `<pairing-failed>` to trigger a fallback to manual PIN entry.
     <content name="chromoting" creator="initiator">
       <description xmlns="google:remoting">
         <authentication method="corp_session_authz_spake2_curve25519">
-          <session-token>
-            c2Vzc2lvbl9hdXRoel90b2tlbl9leGFtcGxlXzA5ODc2NTQzMjE=
-          </session-token>
           <spake-message>
             AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=
           </spake-message>
+          <session-token>
+            c2Vzc2lvbl9hdXRoel90b2tlbl9leGFtcGxlXzA5ODc2NTQzMjE=
+          </session-token>
         </authentication>
       </description>
       <transport xmlns="google:remoting:webrtc" />
@@ -726,16 +964,17 @@ jingle {
     <content name="chromoting" creator="initiator">
       <description xmlns="google:remoting">
         <authentication method="spake2_curve25519">
+          <spake-message>
+            AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=
+          </spake-message>
           <certificate>
             MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyN3rL6u+eG8H9o3F
             7w4f1mK2s8u1v9X0y5z6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
             c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
             c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
+            c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
             c7d8e9f0a1b2c3d4e5f6a7b8c9IDAQAB
           </certificate>
-          <spake-message>
-            AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=
-          </spake-message>
         </authentication>
       </description>
       <transport xmlns="google:remoting:webrtc" />
@@ -985,7 +1224,7 @@ jingle {
       <transport xmlns="google:remoting:webrtc">
         <session-description
             type="answer"
-            signature="c2lnbmF0dXJlX2htYWNfZXhhbXBsZV8xMjM0NTY3ODkw">
+            signature="8lQoAhaKAcktnMveS0dDfWv6x7mfNhAhisfU5aZ8QOk=">
 v=0
 o=- 5123456789012345 2 IN IP4 127.0.0.1
 s=-
@@ -1035,11 +1274,18 @@ jingle {
            "88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99\r\n"
            "a=setup:active\r\na=mid:0\r\na=sendrecv\r\na=rtcp-mux\r\n"
            "a=rtpmap:111 opus/48000/2\r\n"
-      signature: "signature_hmac_example_1234567890"
+      signature:
+          "\xf2\x54\x28\x02\x16\x8a\x01\xc9\x2d\x9c\xcb\xde\x4b\x47\x43\x7d"
+          "\x6b\xfa\xc7\xb9\x9f\x36\x10\x21\x8a\xc7\xd4\xe5\xa6\x7c\x40\xe9"
     }
   }
 }
 ```
+
+> **Test Key Note (`signature` Verification)**: The 32-byte `signature` in
+> Scenario 6A is the real HMAC-SHA256 digest computed per Section 3.4.3 over
+> `"answer " + NormalizedForSignature(sdp)` using the 64-byte test `auth_key`
+> consisting of sequential bytes `0x00, 0x01, ..., 0x3f`.
 
 ---
 
@@ -1126,6 +1372,12 @@ jingle {
 }
 ```
 
+> **Converter Fixture Note (`signature` Presence)**: Scenario 6B intentionally
+> omits `signature` to exercise converter handling when the optional wire field
+> is unset alongside bundled ICE candidates. At the `JingleSession` /
+> `WebrtcTransport` layer, all live SDP offers and answers (including ICE
+> restarts) MUST carry a valid HMAC-SHA256 `signature` per Section 3.4.3.
+
 ---
 
 ### Scenario 7: `session-terminate` (Clean Disconnect vs Error Conditions)
@@ -1166,7 +1418,13 @@ jingle {
 }
 ```
 
-#### B. Error Disconnect (`MAX_SESSION_DURATION_REACHED`)
+> **Note (`error_code` on Clean Close)**: Scenario 7A illustrates the minimal
+> `SUCCESS` stanza with `error_code` omitted. Live `JingleSession::Close(OK)`
+> additionally emits `<error-code xmlns="google:remoting">OK</error-code>` /
+> `error_code: "OK"`; on ingress, omitted `error_code` maps to `OK` once past
+> `CONNECTING` (or `SESSION_REJECTED` during `CONNECTING`).
+
+#### B. Error Disconnect (`MAX_SESSION_LENGTH`)
 **XML:**
 ```xml
 <iq
@@ -1499,11 +1757,27 @@ error {
 
 ### 5.2 Out-of-Order / Race Handling Scenarios
 
-- **Early ICE Candidates**:
-  - *Sequence*: `transport-info` (candidates) arrives before `session-accept`.
-  - *Handling*: Session buffers candidate list in `pending_candidates_` and
-    applies them immediately once `session-accept` SDP answer is set on the
-    peer connection.
+- **Out-of-Order Stanza Delivery (`OrderedMessageQueue`)**:
+  - *Sequence*: Jingle `SET` stanzas arrive out of order over FTL (e.g.,
+    `<prefix>_3` arrives before `<prefix>_2`).
+  - *Handling*: `OrderedMessageQueue` buffers sequenced stanzas keyed by their
+    1-based `<seq>` integer and drains contiguous stanzas strictly in ascending
+    order once `<prefix>_2` arrives.
+- **Early `transport-info` & Trickle ICE Candidates**:
+  - *Sequence A*: `transport-info` arrives while `state == CONNECTING` (before
+    `session-accept`).
+  - *Handling A*: Rejected immediately with IQ error `UNEXPECTED_REQUEST`.
+  - *Sequence B*: `transport-info` arrives while `state == AUTHENTICATING`
+    (after `session-accept`, while multi-round SPAKE2 `session-info` messages
+    are still completing).
+  - *Handling B*: `JingleSession` buffers the message in
+    `pending_transport_info_` and replays it in order immediately upon
+    transitioning to `AUTHENTICATED`.
+  - *Sequence C*: Once `AUTHENTICATED`, Trickle ICE candidates arrive before
+    the initial `transport-info` SDP Offer/Answer is applied.
+  - *Handling C*: Transport buffers candidates in
+    `pending_incoming_candidates_` and applies them immediately once
+    `SetRemoteDescription` completes on the peer connection.
 - **Concurrent Disconnect**:
   - *Sequence*: Host sends `session-terminate` while Client sends
     `transport-info`.
@@ -1528,34 +1802,69 @@ To ensure zero regressions against Chromium before the branch point:
 
 ### 6.1 Web Client Parity Checklist
 - [ ] Parse `ftl.IqStanza` directly without intermediate XML conversion when
-      `iq_stanza` field is present.
-- [ ] For `session_authz_host_token` and `session_authz_session_token`, encode
-      strings into raw byte buffers matching Protobuf schema.
+      `iq_stanza` field is present, and implement the format negotiation,
+      `BOTH`-reply `XML` fallback, pre-reply `XML`-only non-initiate stanza
+      handling, and ingress format tolerance rules in Section 3.3 Rules 2-4
+      (https://crrev.com/c/8834622).
+- [ ] Format outgoing Jingle `SET` request IDs with an underscore-free
+      alphanumeric prefix and **1-based** sequence numbers (`<prefix>_1`,
+      `<prefix>_2`, ...), and implement `OrderedMessageQueue` parsing and
+      `next_incoming_` initialization per Section 3.1 (filtering empty tokens
+      before checking `tokens.length === 2`).
+- [ ] Keep `SessionAuthz` `<host-token>` and `<session-token>` unchanged
+      (Base64 strings) in serialized XML while encoding Base64-decoded raw
+      `bytes` in Protobuf `session_authz_host_token` and
+      `session_authz_session_token`.
 - [ ] For `IceCandidate` objects, always populate `sdp_mid`,
-      `sdp_m_line_index`, and full candidate line string.
-- [ ] Ensure client enforces `MIN_HOST_VERSION_FOR_PROTOBUF = 156` (sending
-      XML-only for hosts <= 155 and unversioned peers; dual payload for
-      hosts >= 156).
+      `sdp_m_line_index`, and full `candidate:...` string (without `a=`).
+- [ ] Emit an empty `<jingle xmlns="urn:xmpp:jingle:1" />` child inside
+      `<iq type="result">` when serializing `JingleReply` to XML, and emit
+      `<error>`, condition child tags (including `BAD_REQUEST`), and `<text>`
+      in the `jabber:client` namespace on XML egress.
+- [ ] Enforce `MIN_HOST_VERSION_FOR_PROTOBUF = 160` per the table in
+      Section 3.3 Rule 1.
+- [ ] Implement `<pairing-failed>` / `authentication.pairing_failed` mapping
+      (including `"unknown"` empty-error normalization and `<authentication>`
+      XML nesting) and comma-joined `host_attributes.attribute` Protobuf
+      ingress splitting per Section 3.2 (https://crrev.com/c/8829951).
 - [ ] Include Scenarios 1-8 in web client unit test suite.
 
 ### 6.2 Android Parity Checklist
 - [ ] In Kotlin/Java proto builders, ensure `JabberId` resource part contains
-      raw UUID (no prefix).
-- [ ] Validate that SPAKE2 public point byte arrays are passed directly as
-      `bytes` fields rather than base64 strings.
+      raw UUID (no `chromoting_ftl_` prefix).
+- [ ] Format outgoing Jingle `SET` request IDs with an underscore-free
+      alphanumeric prefix and **1-based** sequence numbers (`<prefix>_1`,
+      `<prefix>_2`, ...), and implement `OrderedMessageQueue` parsing and
+      `next_incoming_` initialization per Section 3.1 (filtering empty tokens
+      before checking `tokens.size == 2`).
+- [ ] Pass cryptographic fields (`spake_message`, `verification_hash`,
+      `certificate`, `signature`) directly as raw `bytes` in Protobuf, and
+      Base64-decode `SessionAuthz` tokens into raw `bytes` in Protobuf while
+      leaving serialized XML `<host-token>` and `<session-token>` unchanged.
+- [ ] For `IceCandidate` objects, always populate `sdp_mid`,
+      `sdp_m_line_index`, and `candidate:...` (without `a=`); normalize XML
+      `<session-description>` SDP line endings to `\r\n` with a trailing
+      `\r\n` while signing over `\n`-joined lines with the full 64-byte SPAKE2
+      `auth_key` per Section 3.4.3.
+- [ ] Emit `<error>`, legacy XMPP condition tags, and `<text>` in the
+      `jabber:client` namespace on XML egress, implement the egress and ingress
+      `SessionTerminate` `ErrorCode` / `Reason` mappings in Section 3.2, and
+      reject `transport-info` in `CONNECTING` with `UNEXPECTED_REQUEST`
+      (buffering only in `AUTHENTICATING`).
 - [ ] Ensure host configuration settings map keys match exact
       PascalCase/kebab-case strings (`Av1-Encoder-Speed`, `VideoCodecPreset`,
       `EnableMultimon`).
-- [ ] Ensure client enforces `MIN_HOST_VERSION_FOR_PROTOBUF = 156` (sending
-      XML-only for hosts <= 155 and unversioned peers; dual payload for
-      hosts >= 156).
-- [ ] Ensure `pairing_info.client_id` is mapped between XML
-      `<pairing-info client-id="...">` and Protobuf
-      `authentication.pairing_info.client_id`.
+- [ ] Enforce `MIN_HOST_VERSION_FOR_PROTOBUF = 160` in the Android client per
+      the table in Section 3.3 Rule 1.
+- [ ] Implement `<pairing-failed>` / `authentication.pairing_failed` mapping
+      (including `"unknown"` empty-error normalization and `<authentication>`
+      XML nesting) and comma-joined `host_attributes.attribute` Protobuf
+      ingress splitting per Section 3.2 (https://crrev.com/c/8829951).
 - [ ] Ensure host implementations populate raw DER certificate bytes in
       `session_accept.authentication.certificate` during SPAKE2 authentication
-      (omission causes immediate client rejection with `INVALID_STATE`:
-      "No valid host certificate").
+      (preserving `AUTHENTICATION_METHOD_PAIRED_SPAKE2_CURVE25519` on
+      `session-accept` PIN fallback; omitting `certificate` causes immediate
+      client rejection with `INVALID_STATE`: "No valid host certificate").
 - [ ] Include Scenarios 1-8 in Android unit test suite.
 
 ### 6.3 Chromium Unit Test Plan
