@@ -52,6 +52,10 @@ class TestMenuItemView : public MenuItemView {
   static int GetDrawStringFlagsFor(const MenuItemView* view) {
     return view->GetDrawStringFlags();
   }
+
+  static void PaintForDragForTesting(MenuItemView* view, gfx::Canvas* canvas) {
+    view->PaintForDrag(canvas);
+  }
 };
 
 }  // namespace views

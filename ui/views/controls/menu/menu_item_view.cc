@@ -1375,6 +1375,13 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   CHECK_EQ(paint_as_selected, last_paint_as_selected_,
            base::NotFatalUntil::M163);
 
+  // A drag image has no MenuScrollViewContainer behind it, so paint the menu
+  // background. Otherwise only the text is drawn, which may be unreadable over
+  // the content below the drag (e.g. light text in dark mode).
+  if (mode == PaintMode::kForDrag) {
+    canvas->DrawColor(GetColorProvider()->GetColor(ui::kColorMenuBackground));
+  }
+
   // Render the background. As MenuScrollViewContainer draws the background, we
   // only need the background when we want it to look different, as when we're
   // selected.

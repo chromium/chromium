@@ -1203,6 +1203,25 @@ TEST_F(MenuItemViewPaintUnitTest, HighlightSkipsBackgroundPadding) {
   EXPECT_TRUE(is_highlighted(2, kPadding));
 }
 
+// Tests that a drag image of a menu item has the menu background, as nothing
+// else paints one behind it. Without it, the text alone may be unreadable over
+// the content below the drag (e.g. light text in dark mode over a light page).
+TEST_F(MenuItemViewPaintUnitTest, PaintForDragPaintsMenuBackground) {
+  MenuItemView* item = menu_item_view()->AppendMenuItem(1, u"Item");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  const SkColor background =
+      item->GetColorProvider()->GetColor(ui::kColorMenuBackground);
+  ASSERT_EQ(SkColorGetA(background), SK_AlphaOPAQUE);
+
+  gfx::Canvas canvas(item->size(), 1.f, /*is_opaque=*/false);
+  TestMenuItemView::PaintForDragForTesting(item, &canvas);
+  EXPECT_EQ(background, canvas.GetBitmap().getColor(0, 0));
+}
+
 TEST_F(MenuItemViewPaintUnitTest, SelectionIconColors) {
   MenuItemView* item_with_default_color =
       menu_item_view()->AppendMenuItem(1, u"item 1");
