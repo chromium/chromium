@@ -231,6 +231,12 @@ class CORE_EXPORT AuditsIssue {
                                        Element* element,
                                        const String& url);
 
+  // Reports that the frame declared viewport-fit=cover, the browser applied
+  // a non-zero top safe-area inset, but the page's CSS never consumes
+  // env(safe-area-inset-top) and has DOM content likely to be occluded.
+  static void ReportViewportFitCoverMissingSafeAreaInsetTopIssue(
+      LocalFrame* frame);
+
  private:
   std::unique_ptr<protocol::Audits::InspectorIssue> issue_;
 };

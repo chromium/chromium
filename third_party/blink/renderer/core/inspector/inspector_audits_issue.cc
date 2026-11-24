@@ -1051,6 +1051,29 @@ AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(
   return AuditsIssue(std::move(issue));
 }
 
+void AuditsIssue::ReportViewportFitCoverMissingSafeAreaInsetTopIssue(
+    LocalFrame* frame) {
+  if (!frame || !frame->DomWindow()) {
+    return;
+  }
+  auto details_builder =
+      protocol::Audits::ViewportFitCoverMissingSafeAreaInsetTopIssueDetails::
+          create()
+              .setFrameId(IdentifiersFactory::FrameId(frame))
+              .build();
+  auto issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setViewportFitCoverMissingSafeAreaInsetTopIssueDetails(
+              std::move(details_builder))
+          .build();
+  auto issue = protocol::Audits::InspectorIssue::create()
+                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
+                                ViewportFitCoverMissingSafeAreaInsetTopIssue)
+                   .setDetails(std::move(issue_details))
+                   .build();
+  frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
 void AuditsIssue::ReportLazyLoadImageIssue(ExecutionContext* execution_context,
                                            Element* element,
                                            const String& url) {

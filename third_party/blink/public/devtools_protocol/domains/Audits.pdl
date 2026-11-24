@@ -780,6 +780,15 @@ experimental domain Audits
       # Frame containing the image.
       Page.FrameId frameId
 
+  # Details for issues about a page that declares viewport-fit=cover, receives
+  # a non-zero top safe-area inset (e.g. a device cutout or system status bar),
+  # but does not consume env(safe-area-inset-top) anywhere in its CSS while
+  # having DOM content likely to be occluded by that inset.
+  type ViewportFitCoverMissingSafeAreaInsetTopIssueDetails extends object
+    properties
+      # The frame that triggered the issue.
+      Page.FrameId frameId
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -817,6 +826,7 @@ experimental domain Audits
       EmailVerificationRequestIssue
       LazyLoadImageIssue
       WebInstallIssue
+      ViewportFitCoverMissingSafeAreaInsetTopIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -854,6 +864,7 @@ experimental domain Audits
       optional EmailVerificationRequestIssueDetails emailVerificationRequestIssueDetails
       optional LazyLoadImageIssueDetails lazyLoadImageIssueDetails
       optional WebInstallIssueDetails webInstallIssueDetails
+      optional ViewportFitCoverMissingSafeAreaInsetTopIssueDetails viewportFitCoverMissingSafeAreaInsetTopIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

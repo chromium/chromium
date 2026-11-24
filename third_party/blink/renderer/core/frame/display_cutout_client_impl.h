@@ -35,10 +35,23 @@ class CORE_EXPORT DisplayCutoutClientImpl final
   // Notify the renderer that the safe areas have changed.
   void SetSafeArea(const gfx::Insets& safe_area) override;
 
+  // Fires a DevTools Audits issue if `frame` uses viewport-fit=cover, the
+  // applied top safe-area inset is > 0, no CSS consumes
+  // env(safe-area-inset-top), and DOM content is likely occluded by the
+  // inset. No-op unless a DevTools audits agent is attached to the frame.
+  static void MaybeReportMissingSafeAreaInsetTopIssue(
+      LocalFrame* frame,
+      const gfx::Insets& safe_area);
+
   void Trace(Visitor*) const;
 
  private:
   Member<LocalFrame> frame_;
+
+  // Whether this frame has already reported the DevTools issue for a page
+  // using viewport-fit=cover that receives a non-zero top safe-area inset
+  // but never consumes env(safe-area-inset-top).
+  bool has_reported_missing_safe_area_inset_top_issue_ = false;
 
   HeapMojoAssociatedReceiver<mojom::blink::DisplayCutoutClient,
                              DisplayCutoutClientImpl>

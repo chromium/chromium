@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
+#include "third_party/blink/renderer/core/frame/display_cutout_client_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -743,6 +744,13 @@ protocol::Response InspectorEmulationAgent::setSafeAreaInsetsOverride(
       if (auto* widget = frame_impl->FrameWidgetImpl()) {
         widget->UpdateLifecycle(WebLifecycleUpdate::kAll,
                                 DocumentUpdateReason::kInspector);
+      }
+
+      // Occlusion heuristic needs a fresh layout.
+      const int top = static_cast<int>(insets->getTop(0));
+      if (top > 0) {
+        DisplayCutoutClientImpl::MaybeReportMissingSafeAreaInsetTopIssue(
+            local_frame, gfx::Insets().set_top(top));
       }
     }
   }
