@@ -7905,7 +7905,7 @@ TEST_F(CreditCardSaveManagerTest,
           AllOf(
               Field(
                   &payments::GetDetailsForUpdateCardRequestDetails::app_locale,
-                  "en-US"),
+                  base::i18n::GetKnownLanguageTag("en-US")),
               Field(&payments::GetDetailsForUpdateCardRequestDetails::
                         billing_customer_number,
                     123456L),
@@ -8145,7 +8145,8 @@ TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
       multiple_request_payments_network_interface(),
       UpdateCard(
           AllOf(
-              Field(&payments::UpdateCardRequestDetails::app_locale, "en-US"),
+              Field(&payments::UpdateCardRequestDetails::app_locale,
+                    base::i18n::GetKnownLanguageTag("en-US")),
               Field(
                   &payments::UpdateCardRequestDetails::billing_customer_number,
                   123456L),

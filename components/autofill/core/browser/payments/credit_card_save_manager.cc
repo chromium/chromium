@@ -759,7 +759,7 @@ bool CreditCardSaveManager::AttemptToOfferCardholderNameUpdate(
   }
 
   payments::GetDetailsForUpdateCardRequestDetails request_details;
-  request_details.app_locale = client_->GetAppLocale().tag_string();
+  request_details.app_locale = client_->GetAppLocale();
   request_details.billing_customer_number =
       payments::GetBillingCustomerId(payments_data_manager());
   request_details.instrument_id = card.instrument_id();
@@ -1706,8 +1706,7 @@ void CreditCardSaveManager::SendUpdateCardRequest() {
     return;
   }
 
-  update_card_request_details_.app_locale =
-      client_->GetAppLocale().tag_string();
+  update_card_request_details_.app_locale = client_->GetAppLocale();
   update_card_request_details_.billing_customer_number =
       payments::GetBillingCustomerId(payments_data_manager());
   multiple_request_payments_network_interface->UpdateCard(

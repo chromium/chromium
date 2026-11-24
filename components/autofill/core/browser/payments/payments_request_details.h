@@ -184,7 +184,7 @@ struct OptChangeRequestDetails {
   OptChangeRequestDetails(const OptChangeRequestDetails& other);
   ~OptChangeRequestDetails();
 
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
 
   // The reason for making the request.
   enum class Reason {
@@ -237,7 +237,7 @@ struct MigrationRequestDetails {
   int64_t billing_customer_number = 0;
   std::u16string context_token;
   std::string risk_data;
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
 };
 
 // A collection of the information required to make select challenge option
@@ -311,7 +311,7 @@ struct GetDetailsForEnrollmentRequestDetails {
   std::string risk_data;
 
   // |app_locale| is the Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
 };
 
 // A collection of information received in the response for a
@@ -378,7 +378,7 @@ struct UploadIbanRequestDetails {
   UploadIbanRequestDetails(const UploadIbanRequestDetails& other);
   ~UploadIbanRequestDetails();
 
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   int64_t billing_customer_number = 0;
   std::u16string context_token;
   std::u16string value;
@@ -630,7 +630,7 @@ struct GetDetailsForUpdateCardRequestDetails {
   ~GetDetailsForUpdateCardRequestDetails();
 
   // The Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // The platform identifier for the instrument being updated.
@@ -688,7 +688,7 @@ struct UpdateCardRequestDetails {
   ~UpdateCardRequestDetails();
 
   // The Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // The platform identifier for the instrument being updated.
@@ -799,7 +799,7 @@ struct GetDataForAgentRequestDetails {
   // interpret or modify it.
   std::string opaque_token;
   // The Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
 };
 
 // The card credentials returned by a GetDataForAgent request.

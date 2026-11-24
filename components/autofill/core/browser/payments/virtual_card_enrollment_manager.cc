@@ -471,8 +471,7 @@ void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
 
 void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
   payments::GetDetailsForEnrollmentRequestDetails request_details;
-  request_details.app_locale =
-      payments_data_manager_->app_locale().tag_string();
+  request_details.app_locale = payments_data_manager_->app_locale();
   request_details.risk_data = state_.risk_data.value_or("");
   request_details.billing_customer_number =
       payments::GetBillingCustomerId(*payments_data_manager_);

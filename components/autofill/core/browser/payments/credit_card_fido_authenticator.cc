@@ -407,8 +407,7 @@ void CreditCardFidoAuthenticator::MakeCredential(
 void CreditCardFidoAuthenticator::OptChange(
     base::DictValue authenticator_response) {
   payments::OptChangeRequestDetails request_details;
-  request_details.app_locale =
-      payments_data_manager().app_locale().tag_string();
+  request_details.app_locale = payments_data_manager().app_locale();
 
   switch (current_flow_) {
     case Flow::kOptInWithChallengeFlow:

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -104,7 +105,8 @@ std::string GetDataForAgentRequest::GetRequestContent() {
       base::DictValue()
           .Set("encrypted_token", request_details_.opaque_token)
           .Set("context", base::DictValue()
-                              .Set("language_code", request_details_.app_locale)
+                              .Set("language_code",
+                                   request_details_.app_locale.tag_string())
                               .Set("billable_service",
                                    kUnmaskPaymentMethodBillableServiceNumber));
   return base::WriteJson(request_dict).value_or("");

@@ -1927,7 +1927,7 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
   request_details.instrument_id = 12345678;
   request_details.billing_customer_number = 555666777888;
   request_details.risk_data = "fake risk data";
-  request_details.app_locale = "en";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en");
 
   payments_network_interface_->GetVirtualCardEnrollmentDetails(
       request_details,

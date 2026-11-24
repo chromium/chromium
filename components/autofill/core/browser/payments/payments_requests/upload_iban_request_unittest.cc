@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +25,7 @@ class UploadIbanRequestTest : public testing::Test {
  public:
   void SetUp() override {
     UploadIbanRequestDetails request_details;
-    request_details.app_locale = kAppLocale;
+    request_details.app_locale = base::i18n::GetKnownLanguageTag(kAppLocale);
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.context_token = kContextToken;
     request_details.value = kValue;

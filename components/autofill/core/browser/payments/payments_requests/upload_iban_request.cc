@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -65,7 +66,7 @@ std::string UploadIbanRequest::GetRequestContent() {
                    BuildRiskDictionary(request_details_.risk_data));
 
   base::DictValue context;
-  context.Set("language_code", request_details_.app_locale);
+  context.Set("language_code", request_details_.app_locale.tag_string());
   context.Set("billable_service",
               payments::kUploadPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {

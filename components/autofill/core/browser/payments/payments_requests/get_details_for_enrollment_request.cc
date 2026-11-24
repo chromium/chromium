@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -60,7 +61,7 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
   base::DictValue request_dict;
 
   base::DictValue context;
-  context.Set("language_code", request_details_.app_locale);
+  context.Set("language_code", request_details_.app_locale.tag_string());
   int billable_service_number = 0;
   switch (request_details_.source) {
     case VirtualCardEnrollmentSource::kUpstream:

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +34,8 @@ constexpr char16_t kTestCvc[] = u"123";
 class UpdateCardRequestTest : public testing::Test {
  public:
   void SetUp() override {
-    request_details_.app_locale = kTestAppLocale;
+    request_details_.app_locale =
+        base::i18n::GetKnownLanguageTag(kTestAppLocale);
     request_details_.billing_customer_number = kTestBillingCustomerNumber;
     request_details_.instrument_id = kTestInstrumentId;
     request_details_.cardholder_name = kTestCardholderName;

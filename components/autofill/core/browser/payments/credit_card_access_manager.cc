@@ -514,8 +514,7 @@ void CreditCardAccessManager::RetrieveCreditCardForOpaqueToken(
 
   payments::GetDataForAgentRequestDetails request_details;
   request_details.opaque_token = credit_card_opaque_token;
-  request_details.app_locale =
-      payments_data_manager().app_locale().tag_string();
+  request_details.app_locale = payments_data_manager().app_locale();
   // The token is single use, so a failed request is not retried. The response
   // handler does not depend on `this`, so that `callback` is run even if
   // `this` is destroyed while the request is in flight.

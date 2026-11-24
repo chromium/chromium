@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
@@ -29,7 +30,8 @@ constexpr char kTestContextToken[] = "test_context_token_12345";
 class GetDetailsForUpdateCardRequestTest : public testing::Test {
  public:
   void SetUp() override {
-    request_details_.app_locale = kTestAppLocale;
+    request_details_.app_locale =
+        base::i18n::GetKnownLanguageTag(kTestAppLocale);
     request_details_.billing_customer_number = kTestBillingCustomerNumber;
     request_details_.instrument_id = kTestInstrumentId;
   }

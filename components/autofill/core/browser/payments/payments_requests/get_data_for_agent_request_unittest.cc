@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -41,7 +42,7 @@ class GetDataForAgentRequestTest : public testing::Test {
   void SetUp() override {
     GetDataForAgentRequestDetails request_details;
     request_details.opaque_token = "OPAQUE_TOKEN";
-    request_details.app_locale = "en-US";
+    request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
     request_ = std::make_unique<GetDataForAgentRequest>(
         std::move(request_details), mock_callback_.Get());
   }

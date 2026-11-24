@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,7 +47,7 @@ std::string GetDetailsForUpdateCardRequest::GetRequestContentType() {
 std::string GetDetailsForUpdateCardRequest::GetRequestContent() {
   base::DictValue request_dict;
   base::DictValue context;
-  context.Set("language_code", request_details_.app_locale);
+  context.Set("language_code", request_details_.app_locale.tag_string());
   context.Set("billable_service", kUploadPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
     context.Set("customer_context",

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
+
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
-#include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +28,7 @@ class GetDetailsForEnrollmentRequestTest
   void SetUp() override {
     GetDetailsForEnrollmentRequestDetails request_details;
     request_details.instrument_id = 11223344;
-    request_details.app_locale = "en";
+    request_details.app_locale = base::i18n::GetKnownLanguageTag("en");
     request_details.billing_customer_number = 55667788;
     request_details.risk_data = "fake risk data";
     request_details.source = GetParam();
