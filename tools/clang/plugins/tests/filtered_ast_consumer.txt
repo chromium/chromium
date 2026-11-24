@@ -1,0 +1,32 @@
+In file included from filtered_ast_consumer.cpp:11:
+system/filtered_ast_consumer.h:10:1: warning: [chromium-style] kMaxValue enumerator does not match max value 1 of other enumerators
+DECLARE_ENUM(OutOfOrder, FORWARD(VALUE()));
+^
+filtered_ast_consumer.cpp:9:31: note: expanded from macro 'DECLARE_ENUM'
+  enum class name { kOne = 1, kMaxValue = value }
+                              ^
+In file included from filtered_ast_consumer.cpp:11:
+system/filtered_ast_consumer.h:12:1: warning: [chromium-style] kMaxValue enumerator does not match max value 1 of other enumerators
+DECLARE_ENUM(InOrder, 0);
+^
+filtered_ast_consumer.cpp:9:31: note: expanded from macro 'DECLARE_ENUM'
+  enum class name { kOne = 1, kMaxValue = value }
+                              ^
+In file included from filtered_ast_consumer.cpp:11:
+system/filtered_ast_consumer.h:14:1: warning: [chromium-style] kMaxValue enumerator does not match max value 1 of other enumerators
+DECLARE_ENUM(Repeated, FORWARD(0));
+^
+filtered_ast_consumer.cpp:9:31: note: expanded from macro 'DECLARE_ENUM'
+  enum class name { kOne = 1, kMaxValue = value }
+                              ^
+In file included from filtered_ast_consumer.cpp:11:
+system/filtered_ast_consumer.h:20:1: warning: [chromium-style] kMaxValue enumerator does not match max value 1 of other enumerators
+SYSTEM_DECLARE_ENUM(InSystemMacro, VALUE());
+^
+system/filtered_ast_consumer.h:19:42: note: expanded from macro 'SYSTEM_DECLARE_ENUM'
+#define SYSTEM_DECLARE_ENUM(name, value) DECLARE_ENUM(name, value)
+                                         ^
+filtered_ast_consumer.cpp:9:31: note: expanded from macro 'DECLARE_ENUM'
+  enum class name { kOne = 1, kMaxValue = value }
+                              ^
+4 warnings generated.

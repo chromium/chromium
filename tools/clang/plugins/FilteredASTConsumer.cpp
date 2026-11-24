@@ -4,6 +4,7 @@
 
 #include "FilteredASTConsumer.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "clang/AST/Decl.h"
@@ -49,7 +50,22 @@ class FilteredASTConsumer::NonSystemCodeInSystemHeaderFinder
       clang::SourceLocation loc =
           source_manager_.getExpansionLoc(range.getBegin());
       if (source_manager_.isInSystemHeader(loc)) {
-        locations_.push_back(loc);
+        // Nested macro arguments can be expanded before rescanning the macro
+        // body, so callbacks can revisit earlier locations even without
+        // modules. Expansions nested in the same macro invocation also share
+        // its outermost expansion location. Keep unique locations sorted for
+        // HasNonSystemCodeIn().
+        if (locations_.empty() ||
+            source_manager_.isBeforeInTranslationUnit(locations_.back(), loc)) {
+          locations_.push_back(loc);
+        } else if (locations_.back() != loc) {
+          auto it =
+              std::lower_bound(locations_.begin(), locations_.end(), loc,
+                               IsBeforeInTranslationUnit(source_manager_));
+          if (it == locations_.end() || *it != loc) {
+            locations_.insert(it, loc);
+          }
+        }
       }
     }
   }
@@ -57,19 +73,33 @@ class FilteredASTConsumer::NonSystemCodeInSystemHeaderFinder
   // Returns true if code from a non-system file shows up in `range`, which has
   // to consist of file locations.
   bool HasNonSystemCodeIn(clang::SourceRange range) const {
-    for (clang::SourceLocation loc : locations_) {
-      if (!source_manager_.isBeforeInTranslationUnit(loc, range.getBegin()) &&
-          !source_manager_.isBeforeInTranslationUnit(range.getEnd(), loc)) {
-        return true;
-      }
-    }
-    return false;
+    // `locations_` is sorted (see MacroExpands()), so find the first recorded
+    // location that is not before `range`'s start...
+    auto it =
+        std::lower_bound(locations_.begin(), locations_.end(), range.getBegin(),
+                         IsBeforeInTranslationUnit(source_manager_));
+    // ...and check whether it also falls at or before `range`'s end. Any
+    // later locations can't be in `range` either, since they're sorted.
+    return it != locations_.end() &&
+           !source_manager_.isBeforeInTranslationUnit(range.getEnd(), *it);
   }
 
  private:
+  // Functor comparing source locations by isBeforeInTranslationUnit(), for
+  // use with std::lower_bound() on `locations_`.
+  struct IsBeforeInTranslationUnit {
+    explicit IsBeforeInTranslationUnit(
+        const clang::SourceManager& source_manager)
+        : source_manager(source_manager) {}
+    bool operator()(clang::SourceLocation a, clang::SourceLocation b) const {
+      return source_manager.isBeforeInTranslationUnit(a, b);
+    }
+    const clang::SourceManager& source_manager;
+  };
+
   const clang::SourceManager& source_manager_;
   llvm::DenseMap<const clang::MacroInfo*, bool> is_non_system_macro_;
-  // This is almost always empty.
+  // This is almost always empty. Kept sorted and unique; see MacroExpands().
   std::vector<clang::SourceLocation> locations_;
 };
 
