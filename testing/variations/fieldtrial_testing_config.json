@@ -555,6 +555,22 @@
             ]
         }
     ],
+    "AndroidAdaptiveUiTransitions": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAdaptiveUiTransitions"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAnimatedImageDragShadow": [
         {
             "platforms": [

@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -180,6 +181,9 @@ public class TabbedRootUiCoordinatorUnitTest {
         mActivity = activityController.create().get();
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        // Lenient because Adaptive UI only reads the context when its flag is on, and
+        // Chrome-branded builds ignore the flag's defaultValueInTests.
+        lenient().when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         when(mBrowserControlsManager.getBrowserVisibilityDelegate())
                 .thenReturn(
                         new BrowserStateBrowserControlsVisibilityDelegate(
@@ -455,7 +459,6 @@ public class TabbedRootUiCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_ADAPTIVE_UI_TRANSITIONS)
     public void testAdaptiveUiController_attachedWhileAlive() {
-        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         mCoordinator.onPreInflationStartup();
         assertNotNull(AdaptiveUiController.from(mWindowAndroid));
 

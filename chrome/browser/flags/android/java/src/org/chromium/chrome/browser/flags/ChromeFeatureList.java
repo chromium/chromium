@@ -1002,7 +1002,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAllocInstanceIdIncreasedDefaultRange =
             newCachedFlag(ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAdaptiveUiTransitions =
-            newCachedFlag(ANDROID_ADAPTIVE_UI_TRANSITIONS, /* defaultValue= */ false);
+            newCachedFlag(
+                    ANDROID_ADAPTIVE_UI_TRANSITIONS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
             newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, /* defaultValue= */ false);
     public static final CachedFlag sAndroidApb144Patch1 = newCachedFlag(APB144_PATCH1, true);
