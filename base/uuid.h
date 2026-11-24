@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/robolectric_buildflags.h"
+#include "third_party/abseil-cpp/absl/base/config.h"
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/android/jni_string.h"
@@ -25,7 +26,9 @@
 #endif
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 class uint128;
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 namespace base {
