@@ -388,8 +388,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
                             appLocale:
                                 (const base::i18n::LanguageTag&)appLocale {
   autofill::CountryComboboxModel countryModel;
-  countryModel.SetCountries(geoIpCountryCode,
-                            std::string(appLocale.tag_string()));
+  countryModel.SetCountries(geoIpCountryCode, appLocale);
   const autofill::CountryComboboxModel::CountryVector& countriesVector =
       countryModel.countries();
 

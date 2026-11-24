@@ -14,6 +14,10 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "ui/base/models/combobox_model.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class AutofillCountry;
@@ -31,9 +35,8 @@ class CountryComboboxModel : public ui::ComboboxModel {
   ~CountryComboboxModel() override;
 
   // `geo_ip_country_code` is used to determine the default choice of country.
-  void SetCountries(
-      const GeoIpCountryCode& geo_ip_country_code,
-      const std::string& app_locale);
+  void SetCountries(const GeoIpCountryCode& geo_ip_country_code,
+                    const base::i18n::LanguageTag& app_locale);
 
   // ui::ComboboxModel implementation:
   size_t GetItemCount() const override;

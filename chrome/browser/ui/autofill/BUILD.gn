@@ -57,6 +57,7 @@ source_set("autofill") {
     ":bubble_controller_base",
     "//base",
     "//base:i18n",
+    "//base/i18n:language_tag",
     "//chrome/browser:global_features",
     "//chrome/browser/actor",
     "//chrome/browser/feature_engagement",

@@ -11,7 +11,6 @@
 
 #include "base/callback_list.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -41,8 +40,7 @@ AddressEditorController::AddressEditorController(
       pdm_(*pdm),
       locale_(g_browser_process->GetFeatures()
                   ->application_locale_storage()
-                  ->GetTag()
-                  .tag_string()),
+                  ->GetTag()),
       is_validatable_(is_validatable) {
   const variations::VariationsService* variations_service =
       g_browser_process->variations_service();
@@ -67,11 +65,8 @@ void AddressEditorController::UpdateEditorFields(
   editor_fields_.clear();
 
   std::vector<std::vector<AutofillAddressUIComponent>> components;
-  GetAddressComponents(country_code,
-                       base::i18n::GetLanguageTagFromString(locale_).value_or(
-                           base::i18n::GetKnownLanguageTag("und")),
-                       /*include_literals=*/false, &components,
-                       &language_code_);
+  GetAddressComponents(country_code, locale_, /*include_literals=*/false,
+                       &components, &language_code_);
   profile_to_edit_.set_language_code(language_code_);
 
   // Insert the Country combobox at the top.
@@ -121,7 +116,7 @@ void AddressEditorController::SetProfileInfo(FieldType type,
   // `SetRawInfo()`.
   if (type == ADDRESS_HOME_COUNTRY || type == NAME_FULL) {
     profile_to_edit_.SetInfoWithVerificationStatus(
-        type, value, locale_, VerificationStatus::kUserVerified);
+        type, value, locale_.tag_string(), VerificationStatus::kUserVerified);
     return;
   }
 
@@ -131,7 +126,7 @@ void AddressEditorController::SetProfileInfo(FieldType type,
 
 std::u16string AddressEditorController::GetProfileInfo(FieldType type) {
   // TDOD(mamir): Update the implementation to format strings properly.
-  return profile_to_edit_.GetInfo(type, locale_);
+  return profile_to_edit_.GetInfo(type, locale_.tag_string());
 }
 
 const AutofillProfile& AddressEditorController::GetAddressProfile() {

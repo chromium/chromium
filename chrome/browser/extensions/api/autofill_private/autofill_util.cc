@@ -23,10 +23,12 @@
 #include "base/synchronization/lock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -313,7 +315,7 @@ CountryEntryList GenerateCountryList() {
       autofill::GeoIpCountryCode(variations_service
                                      ? variations_service->GetLatestCountry()
                                      : std::string()),
-      extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale());
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
   const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
       model.countries();
 

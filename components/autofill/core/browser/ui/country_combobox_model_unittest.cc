@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,8 @@ class CountryComboboxModelTest : public testing::Test {
  public:
   CountryComboboxModelTest() {
     model_ = std::make_unique<CountryComboboxModel>();
-    model_->SetCountries(GeoIpCountryCode("DE"), "en-US");
+    model_->SetCountries(GeoIpCountryCode("DE"),
+                         base::i18n::GetKnownLanguageTag("en-US"));
   }
 
   CountryComboboxModel* model() { return model_.get(); }

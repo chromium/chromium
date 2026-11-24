@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -28,18 +29,18 @@ CountryComboboxModel::~CountryComboboxModel() = default;
 
 void CountryComboboxModel::SetCountries(
     const GeoIpCountryCode& geo_ip_country_code,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   countries_.clear();
 
   // Insert the default country at the top as well as in the ordered list.
   std::string default_country_code =
-      AutofillCountry::GetDefaultCountryCodeForNewAddress(geo_ip_country_code,
-                                                          app_locale)
+      AutofillCountry::GetDefaultCountryCodeForNewAddress(
+          geo_ip_country_code, app_locale.tag_string())
           .value();
   DCHECK(!default_country_code.empty());
 
-  countries_.push_back(
-      std::make_unique<AutofillCountry>(default_country_code, app_locale));
+  countries_.push_back(std::make_unique<AutofillCountry>(
+      default_country_code, app_locale.tag_string()));
 #if !BUILDFLAG(IS_ANDROID)
   // The separator item. On Android, there are separators after all items, so
   // this is unnecessary.
@@ -53,13 +54,13 @@ void CountryComboboxModel::SetCountries(
   for (const std::string& country_code :
        ::i18n::addressinput::GetRegionCodes()) {
     if (country_data_map->HasCountryCode(country_code)) {
-      sorted_countries.push_back(
-          std::make_unique<AutofillCountry>(country_code, app_locale));
+      sorted_countries.push_back(std::make_unique<AutofillCountry>(
+          country_code, app_locale.tag_string()));
     }
   }
 
-  l10n_util::SortStringsUsingMethod(app_locale, &sorted_countries,
-                                    &AutofillCountry::name);
+  l10n_util::SortStringsUsingMethod(std::string(app_locale.tag_string()),
+                                    &sorted_countries, &AutofillCountry::name);
   std::move(sorted_countries.begin(), sorted_countries.end(),
             std::back_inserter(countries_));
 }

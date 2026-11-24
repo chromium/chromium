@@ -132,10 +132,7 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
         autofill::GeoIpCountryCode(variations_service
                                        ? variations_service->GetLatestCountry()
                                        : std::string()),
-        std::string(GetApplicationContext()
-                        ->GetApplicationLocaleStorage()
-                        ->GetTag()
-                        .tag_string()));
+        GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
     return country_model_.countries();
   }
 

@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -100,7 +101,7 @@ class AddressEditorController {
 
   // The browser locale, used to compute the values of profile fields. (e.g. the
   // locale in which to return the country name).
-  const std::string locale_;
+  const base::i18n::LanguageTag locale_;
 
   std::vector<EditorField> editor_fields_;
 

@@ -168,7 +168,8 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
           autofill::GeoIpCountryCode(
               variations_service ? variations_service->GetLatestCountry()
                                  : std::string()),
-          state()->GetApplicationLocale());
+          base::i18n::GetLanguageTagFromString(state()->GetApplicationLocale())
+              .value_or(base::i18n::GetKnownLanguageTag("und")));
       if (model->countries().size() != countries_.size()) {
         UpdateCountries(model.get());
       }
@@ -427,7 +428,8 @@ void ShippingAddressEditorViewController::UpdateCountries(
         autofill::GeoIpCountryCode(variations_service
                                        ? variations_service->GetLatestCountry()
                                        : std::string()),
-        state()->GetApplicationLocale());
+        base::i18n::GetLanguageTagFromString(state()->GetApplicationLocale())
+            .value_or(base::i18n::GetKnownLanguageTag("und")));
     model = &local_model;
   }
 
