@@ -230,6 +230,15 @@ void ProfilePicker::CancelSignInFlow() {
 }
 
 // static
+void ProfilePicker::ConfirmProfileSwitchToLockedProfile(
+    const base::FilePath& profile_path) {
+  if (g_profile_picker_view && g_profile_picker_view->flow_controller_) {
+    g_profile_picker_view->flow_controller_
+        ->ConfirmProfileSwitchToLockedProfile(profile_path);
+  }
+}
+
+// static
 base::FilePath ProfilePicker::GetPickerProfilePath() {
   return ProfileManager::GetSystemProfilePath();
 }

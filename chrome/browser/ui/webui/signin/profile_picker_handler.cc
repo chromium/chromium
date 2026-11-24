@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 
 #include <algorithm>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -379,6 +380,8 @@ void ProfilePickerHandler::OnJavascriptDisallowed() {
   profile_attributes_storage_observation_.Reset();
   gather_profile_statistics_weak_factory_.InvalidateWeakPtrs();
   profile_statistics_keep_alive_.reset();
+  main_view_initialized_ = false;
+  pending_locked_profile_switch_path_.reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -386,6 +389,12 @@ void ProfilePickerHandler::HandleMainViewInitialize(
     const base::ListValue& args) {
   AllowJavascript();
   PushProfilesList();
+  main_view_initialized_ = true;
+  if (pending_locked_profile_switch_path_.has_value()) {
+    base::FilePath profile_path =
+        *std::exchange(pending_locked_profile_switch_path_, std::nullopt);
+    LaunchLockedProfileByPath(profile_path);
+  }
 }
 
 void ProfilePickerHandler::HandleLaunchSelectedProfile(
@@ -484,6 +493,27 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
       /*profile_path=*/base::FilePath(),
       ForceSigninUIError::ReauthNotAllowed());
   OnResetPickerButtons(false);
+}
+
+void ProfilePickerHandler::TryLaunchLockedProfileWhenInitialized(
+    const base::FilePath& profile_path) {
+  if (main_view_initialized_) {
+    LaunchLockedProfileByPath(profile_path);
+    return;
+  }
+  pending_locked_profile_switch_path_ = profile_path;
+}
+
+void ProfilePickerHandler::LaunchLockedProfileByPath(
+    const base::FilePath& profile_path) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  if (!entry || entry->IsOmitted() || !entry->IsSigninRequired()) {
+    return;
+  }
+  TryLaunchLockedProfile(*entry);
 }
 
 void ProfilePickerHandler::OnProfileLoadedForSwitchToReauth(Profile* profile) {
@@ -680,6 +710,19 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
   std::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
   if (!profile_path) {
+    return;
+  }
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(*profile_path);
+  if (!entry || entry->IsOmitted()) {
+    return;
+  }
+
+  if (entry->IsSigninRequired()) {
+    ProfilePicker::ConfirmProfileSwitchToLockedProfile(*profile_path);
     return;
   }
 

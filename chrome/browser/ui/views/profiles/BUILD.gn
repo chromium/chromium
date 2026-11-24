@@ -1233,10 +1233,12 @@ if (enable_dice_support) {
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:signin_ui_error",
       "//chrome/common:constants",
       "//components/prefs",
       "//components/signin/public/base",
+      "//content/public/browser",
       "//net",
     ]
   }

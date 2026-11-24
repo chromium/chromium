@@ -80,6 +80,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
       const base::FilePath& profile_path,
       const std::variant<ForceSigninUIError, SigninUIError>& error);
 
+  // Launches the locked-profile flow for `profile_path` immediately if the
+  // main picker view is already initialized, or defers it until
+  // `HandleMainViewInitialize()` runs.
+  void TryLaunchLockedProfileWhenInitialized(
+      const base::FilePath& profile_path);
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
@@ -189,6 +195,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Either shows an error dialog with the appropriate information, or attempts
   // to run the signin/reauth flows.
   void TryLaunchLockedProfile(ProfileAttributesEntry& entry);
+  void LaunchLockedProfileByPath(const base::FilePath& profile_path);
   // Callback with the loaded profile to start the reauth flow.
   void OnProfileLoadedForSwitchToReauth(Profile* profile);
 
@@ -224,6 +231,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // to freeze the order of profiles on the picker. Newly added profiles, will
   // be added to the end of the list.
   std::unordered_map<base::FilePath, size_t> profiles_order_;
+
+  bool main_view_initialized_ = false;
+  std::optional<base::FilePath> pending_locked_profile_switch_path_;
 
   // Used to cancel in-flight profile loading and statistics gathering when the
   // profile deletion confirmation dialog is closed or confirmed. Since the

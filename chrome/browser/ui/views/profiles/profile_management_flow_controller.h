@@ -21,6 +21,10 @@ class Profile;
 class ProfileManagementStepController;
 class ProfilePickerWebContentsHost;
 
+namespace base {
+class FilePath;
+}
+
 // Represents an abstract user facing flow related to profile management.
 //
 // A profile management flow is made of a series of steps, implemented as
@@ -116,6 +120,13 @@ class ProfileManagementFlowController
   // returns back to the main picker screen (if the original EntryPoint was to
   // open the picker).
   virtual void CancelSigninFlow() = 0;
+
+  // Resets the sign-in flow from the profile-switch screen back to the main
+  // picker screen and triggers the locked-profile launch flow for
+  // `profile_path`. No-op for flows that do not support the profile-switch
+  // screen.
+  virtual void ConfirmProfileSwitchToLockedProfile(
+      const base::FilePath& profile_path);
 
   // Creates and configures the native toolbar builder with flow-specific
   // buttons. Overrides in subclasses should retrieve the builder from the base

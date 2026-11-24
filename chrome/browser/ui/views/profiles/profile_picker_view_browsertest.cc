@@ -160,6 +160,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/network_connection_change_simulator.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_registrar.h"
@@ -167,6 +168,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/network_change_notifier.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -3084,6 +3086,13 @@ class ProfilePickerEnterpriseCreationFlowBrowserTest
         context, base::BindRepeating(
                      &policy::FakeUserPolicySigninService::BuildForEnterprise));
   }
+
+ protected:
+  void ConfirmProfileSwitch(const base::FilePath& profile_path) {
+    base::ListValue args;
+    args.Append(base::FilePathToValue(profile_path));
+    profile_picker_handler()->HandleConfirmProfileSwitch(args);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
@@ -3291,6 +3300,185 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   EXPECT_EQ(initial_profile_count, g_browser_process->profile_manager()
                                        ->GetProfileAttributesStorage()
                                        .GetNumberOfProfiles());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfilePickerEnterpriseCreationFlowBrowserTest,
+    CreateSignedInProfileSigninAlreadyExistsConfirmSwitchLockedReauth) {
+  // Ensure `ForceSigninVerifier` sees an online connection even in network-
+  // isolated test environments so it immediately evaluates the invalid token.
+  content::NetworkConnectionChangeSimulator().SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+  constexpr char kEmail[] = "joe.consumer@gmail.com";
+
+  // Create a pre-existing profile signed in with the same account and an
+  // invalid refresh token so ForceSignin requires reauth.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* other_profile = profile_manager->GetProfileByPath(other_path);
+  ASSERT_NE(other_profile, nullptr);
+  signin::IdentityManager* other_identity_manager =
+      IdentityManagerFactory::GetForProfile(other_profile);
+  signin::MakePrimaryAccountAvailable(other_identity_manager, kEmail,
+                                      signin::ConsentLevel::kSignin);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(other_identity_manager);
+
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* other_entry =
+      storage.GetProfileAttributesWithPath(other_path);
+  ASSERT_NE(other_entry, nullptr);
+  size_t initial_profile_count = storage.GetNumberOfProfiles();
+
+  GURL expected_switch_url("chrome://profile-picker/profile-switch");
+  expected_switch_url = net::AppendQueryParameter(
+      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
+
+  Profile* contents_profile = SignInForNewProfile(
+      expected_switch_url, kEmail, "Joe", kNoHostedDomainFound,
+      /*start_on_management_page=*/false,
+      /*is_supervised_profile=*/false,
+      /*should_have_primary_account=*/false);
+  base::FilePath contents_profile_path = contents_profile->GetPath();
+
+  // Lock the target profile under ForceSignin before confirming the switch.
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  other_entry->LockForceSigninProfile(true);
+  ASSERT_TRUE(other_entry->IsSigninRequired());
+
+  ProfileDeletionObserver deletion_observer;
+  ConfirmProfileSwitch(other_path);
+
+  // Confirming the switch resets back to the main picker step, deletes the
+  // temporary sign-in profile, and transitions to the reauth flow without
+  // opening a browser window for the locked profile.
+  WaitForLoadStop(GetChromeReauthURL(kEmail));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_TRUE(AreNativeToolbarSigninButtonsVisible());
+  deletion_observer.Wait();
+  EXPECT_EQ(storage.GetProfileAttributesWithPath(contents_profile_path),
+            nullptr);
+  EXPECT_EQ(storage.GetNumberOfProfiles(), initial_profile_count);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+  EXPECT_TRUE(other_entry->IsSigninRequired());
+
+  // Navigating back from reauth returns to the main Profile Picker view with
+  // pruned history rather than the `/profile-switch` screen.
+  SimulateNavigateBack();
+  WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_FALSE(AreNativeToolbarSigninButtonsVisible());
+  EXPECT_FALSE(web_contents()->GetController().CanGoBack());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfilePickerEnterpriseCreationFlowBrowserTest,
+    CreateSignedInProfileSigninAlreadyExistsConfirmSwitchLockedErrorDialog) {
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+  constexpr char kEmail[] = "joe.consumer@gmail.com";
+
+  // Create a pre-existing signed-in profile, activate it so its ActiveTime is
+  // non-null, and unload it from memory while retaining its attributes entry.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* other_profile = profile_manager->GetProfileByPath(other_path);
+  ASSERT_NE(other_profile, nullptr);
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(other_profile), kEmail,
+      signin::ConsentLevel::kSignin);
+
+  ProfileDestructionWaiter profile_destruction_waiter(other_profile);
+  BrowserWindowInterface* extra_browser = CreateBrowser(other_profile);
+  CloseBrowserSynchronously(extra_browser);
+  profile_destruction_waiter.Wait();
+  other_profile = nullptr;
+  ASSERT_EQ(profile_manager->GetProfileByPath(other_path), nullptr);
+
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* other_entry =
+      storage.GetProfileAttributesWithPath(other_path);
+  ASSERT_NE(other_entry, nullptr);
+  ASSERT_FALSE(other_entry->GetActiveTime().is_null());
+  ASSERT_FALSE(other_entry->GetGAIAId().empty());
+  size_t initial_profile_count = storage.GetNumberOfProfiles();
+
+  GURL expected_switch_url("chrome://profile-picker/profile-switch");
+  expected_switch_url = net::AppendQueryParameter(
+      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
+
+  Profile* contents_profile = SignInForNewProfile(
+      expected_switch_url, kEmail, "Joe", kNoHostedDomainFound,
+      /*start_on_management_page=*/false,
+      /*is_supervised_profile=*/false,
+      /*should_have_primary_account=*/false);
+  base::FilePath contents_profile_path = contents_profile->GetPath();
+
+  // Lock the unloaded profile under ForceSignin and restrict allowed usernames
+  // so loading `other_path` clears its primary account and surfaces the
+  // `ReauthNotAllowed` error dialog on `#mainView`.
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  other_entry->LockForceSigninProfile(true);
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, "*@corp.com");
+
+  ProfileDeletionObserver deletion_observer;
+  ConfirmProfileSwitch(other_path);
+
+  WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
+  deletion_observer.Wait();
+  EXPECT_EQ(storage.GetProfileAttributesWithPath(contents_profile_path),
+            nullptr);
+  EXPECT_EQ(storage.GetNumberOfProfiles(), initial_profile_count);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsSigninErrorDialogShown(web_contents()); }));
+  ForceSigninUIError::UiTexts expected_errors =
+      ForceSigninUIError::ReauthNotAllowed().GetErrorTexts();
+  EXPECT_EQ(GetSigninErrorDialogTitleText(web_contents()),
+            expected_errors.first);
+  EXPECT_EQ(GetSigninErrorDialogBodyText(web_contents()),
+            expected_errors.second);
+  EXPECT_FALSE(web_contents()->GetController().CanGoBack());
+  EXPECT_TRUE(other_entry->IsSigninRequired());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+
+  // A duplicate `confirmProfileSwitch` message while on `Step::kProfilePicker`
+  // (outside `Step::kAccountSelection`) is ignored safely.
+  ConfirmProfileSwitch(other_path);
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_TRUE(other_entry->IsSigninRequired());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       ConfirmProfileSwitchLockedIgnoredInNonClassicFlow) {
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+
+  base::FilePath locked_path = CreateNewProfileWithoutBrowser();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(locked_path);
+  ASSERT_NE(entry, nullptr);
+  entry->SetIsGlicEligible(true);
+
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  entry->LockForceSigninProfile(true);
+  ASSERT_TRUE(entry->IsSigninRequired());
+
+  // Open the picker in a non-classic flow (`ProfilePickerGlicFlowController`).
+  // Sending `confirmProfileSwitch` for a locked profile must be a safe no-op
+  // without downcasting `flow_controller_` to `ProfilePickerFlowController`.
+  ProfilePicker::Show(ProfilePicker::Params::ForGlicManager(base::DoNothing()));
+  WaitForLoadStop(GURL("chrome://profile-picker/"));
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  ConfirmProfileSwitch(locked_path);
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_TRUE(entry->IsSigninRequired());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,

@@ -312,6 +312,13 @@ class ProfilePicker {
   // for the signed-in flow.
   static void CancelSignInFlow();
 
+  // Resets the sign-in flow from the profile-switch screen back to the main
+  // picker view, cleaning up the temporary sign-in profile, and runs the
+  // locked-profile launch flow (reauth, fresh sign-in, or error dialog) for
+  // `profile_path`.
+  static void ConfirmProfileSwitchToLockedProfile(
+      const base::FilePath& profile_path);
+
   // Returns the path of the default profile used for rendering the picker.
   static base::FilePath GetPickerProfilePath();
 

@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
@@ -368,6 +369,11 @@ ProfilePickerHandler* ProfilePickerUI::GetProfilePickerHandlerForTesting() {
 void ProfilePickerUI::ShowSigninErrorDialog(
     const std::variant<ForceSigninUIError, SigninUIError>& error) {
   profile_picker_handler_->DisplaySigninErrorDialog(base::FilePath(), error);
+}
+
+void ProfilePickerUI::TryLaunchLockedProfileWhenInitialized(
+    const base::FilePath& profile_path) {
+  profile_picker_handler_->TryLaunchLockedProfileWhenInitialized(profile_path);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfilePickerUI)

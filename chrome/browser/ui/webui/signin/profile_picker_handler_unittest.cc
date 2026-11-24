@@ -740,3 +740,94 @@ TEST_F(ProfilePickerHandlerTest,
             web_ui()->call_data()[1]->arg1()->GetString());
   EXPECT_FALSE(web_ui()->call_data()[1]->arg2()->GetBool());
 }
+
+TEST_F(ProfilePickerHandlerTest,
+       ConfirmProfileSwitchIgnoresMissingOmittedAndClosedPicker) {
+  ProfileAttributesEntry* entry = CreateTestingProfile("LockedSwitchProfile");
+  ProfileAttributesEntry* omitted_entry =
+      CreateTestingProfile("OmittedSwitchProfile");
+  omitted_entry->SetIsEphemeral(true);
+  omitted_entry->SetIsOmitted(true);
+  InitializeMainViewAndVerifyProfileList({entry});
+
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  entry->SetActiveTimeToNow();
+  entry->LockForceSigninProfile(true);
+  omitted_entry->SetActiveTimeToNow();
+  omitted_entry->LockForceSigninProfile(true);
+  web_ui()->ClearTrackedCalls();
+
+  // Unknown profile path is ignored without crashing or firing WebUI callbacks.
+  base::ListValue missing_args;
+  missing_args.Append(base::FilePathToValue(
+      profile_manager()->profiles_dir().AppendASCII("MissingProfile")));
+  web_ui()->HandleReceivedMessage("confirmProfileSwitch", missing_args);
+  EXPECT_TRUE(web_ui()->call_data().empty());
+
+  // Omitted profile path is ignored without crashing or firing WebUI callbacks.
+  base::ListValue omitted_args;
+  omitted_args.Append(base::FilePathToValue(omitted_entry->GetPath()));
+  web_ui()->HandleReceivedMessage("confirmProfileSwitch", omitted_args);
+  EXPECT_TRUE(web_ui()->call_data().empty());
+
+  // When `ProfilePicker` is not open (e.g. `chrome://profile-picker` loaded in
+  // a regular tab), confirming a switch to a locked profile is a safe no-op.
+  ASSERT_FALSE(ProfilePicker::IsOpen());
+  base::ListValue args;
+  args.Append(base::FilePathToValue(entry->GetPath()));
+  web_ui()->HandleReceivedMessage("confirmProfileSwitch", args);
+  EXPECT_TRUE(web_ui()->call_data().empty());
+}
+
+TEST_F(ProfilePickerHandlerTest,
+       TryLaunchLockedProfileWhenInitializedDefersUntilMainViewInitialize) {
+  ProfileAttributesEntry* entry = CreateTestingProfile("DeferredLockedProfile");
+  ProfileAttributesEntry* omitted_entry =
+      CreateTestingProfile("OmittedLockedProfile");
+  omitted_entry->SetIsEphemeral(true);
+  omitted_entry->SetIsOmitted(true);
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  entry->SetActiveTimeToNow();
+  entry->LockForceSigninProfile(true);
+  omitted_entry->SetActiveTimeToNow();
+  omitted_entry->LockForceSigninProfile(true);
+  web_ui()->ClearTrackedCalls();
+
+  // Before `mainViewInitialize`, the launch is deferred.
+  handler()->TryLaunchLockedProfileWhenInitialized(entry->GetPath());
+  EXPECT_TRUE(web_ui()->call_data().empty());
+
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("mainViewInitialize", empty_args);
+
+  ForceSigninUIError::UiTexts expected_error =
+      ForceSigninUIError::ReauthNotAllowed().GetErrorTexts();
+  ASSERT_EQ(web_ui()->call_data().size(), 3u);
+  EXPECT_EQ(web_ui()->call_data()[0]->arg1()->GetString(),
+            "profiles-list-changed");
+  EXPECT_EQ(web_ui()->call_data()[1]->arg1()->GetString(),
+            "display-signin-error-dialog");
+  EXPECT_EQ(web_ui()->call_data()[1]->arg2()->GetString(),
+            base::UTF16ToUTF8(expected_error.first));
+  EXPECT_EQ(web_ui()->call_data()[2]->arg1()->GetString(),
+            "reset-picker-buttons");
+  EXPECT_FALSE(web_ui()->call_data()[2]->arg2()->GetBool());
+
+  // Omitted locked profiles are ignored even after `mainViewInitialize`.
+  web_ui()->ClearTrackedCalls();
+  handler()->TryLaunchLockedProfileWhenInitialized(omitted_entry->GetPath());
+  EXPECT_TRUE(web_ui()->call_data().empty());
+
+  // Disallowing JavaScript resets `main_view_initialized_` and clears any
+  // pending locked-profile switch path.
+  web_ui()->ClearTrackedCalls();
+  handler()->DisallowJavascript();
+  handler()->AllowJavascriptForTesting();
+  handler()->TryLaunchLockedProfileWhenInitialized(entry->GetPath());
+  EXPECT_TRUE(web_ui()->call_data().empty());
+  handler()->DisallowJavascript();
+  web_ui()->HandleReceivedMessage("mainViewInitialize", empty_args);
+  ASSERT_EQ(web_ui()->call_data().size(), 1u);
+  EXPECT_EQ(web_ui()->call_data()[0]->arg1()->GetString(),
+            "profiles-list-changed");
+}

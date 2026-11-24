@@ -20,6 +20,10 @@ class ForceSigninUIError;
 class ProfilePickerUI;
 class SigninUIError;
 
+namespace base {
+class FilePath;
+}
+
 class ProfilePickerUIConfig
     : public content::DefaultWebUIConfig<ProfilePickerUI> {
  public:
@@ -45,6 +49,11 @@ class ProfilePickerUI : public TopChromeWebUIController,
   // Shows a signin error dialog on top of the ProfilePicker.
   void ShowSigninErrorDialog(
       const std::variant<ForceSigninUIError, SigninUIError>& error);
+
+  // Launches the locked-profile flow for `profile_path` once the main picker
+  // view has initialized in JavaScript.
+  void TryLaunchLockedProfileWhenInitialized(
+      const base::FilePath& profile_path);
 
   // Get the minimum size for the picker UI.
   static gfx::Size GetMinimumSize();

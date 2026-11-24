@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/check_deref.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -59,6 +61,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -643,6 +648,43 @@ void ProfilePickerFlowController::CancelSigninFlow() {
       NOTREACHED() << "CancelSigninFlow() is not reachable from "
                       "this entry point";
   }
+}
+
+void ProfilePickerFlowController::ConfirmProfileSwitchToLockedProfile(
+    const base::FilePath& profile_path) {
+  if (current_step() != Step::kAccountSelection) {
+    return;
+  }
+  // Re-register `Step::kProfilePicker` at the root main-view URL before
+  // resetting. Entry points such as `kProfileMenuAddNewProfile` register
+  // `Step::kProfilePicker` with `chrome://profile-picker/new-profile`, whereas
+  // the locked-profile reauth/error-dialog flow requires the main picker view.
+  RegisterStep(Step::kProfilePicker,
+               ProfileManagementStepController::CreateForProfilePickerApp(
+                   host(), GURL(chrome::kChromeUIProfilePickerUrl)));
+  Reset(StepSwitchFinishedCallback(base::BindOnce(
+      &ProfilePickerFlowController::OnResetForLockedProfileSwitch,
+      weak_ptr_factory_.GetWeakPtr(), profile_path)));
+}
+
+void ProfilePickerFlowController::OnResetForLockedProfileSwitch(
+    const base::FilePath& profile_path,
+    bool switch_step_success) {
+  if (!switch_step_success) {
+    return;
+  }
+  content::NavigationController& controller =
+      host()->GetPickerContents()->GetController();
+  if (controller.CanPruneAllButLastCommitted()) {
+    controller.PruneAllButLastCommitted();
+  }
+  ProfilePickerUI* web_ui = host()
+                                ->GetPickerContents()
+                                ->GetWebUI()
+                                ->GetController()
+                                ->GetAs<ProfilePickerUI>();
+  CHECK(web_ui);
+  web_ui->TryLaunchLockedProfileWhenInitialized(profile_path);
 }
 
 std::u16string ProfilePickerFlowController::GetFallbackAccessibleWindowTitle()

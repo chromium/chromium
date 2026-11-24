@@ -20,6 +20,10 @@ class Profile;
 class ProfilePickerPostSignInAdapter;
 class ForceSigninUIError;
 
+namespace base {
+class FilePath;
+}
+
 namespace signin {
 enum class DeviceSignalsDisclaimerResult;
 }
@@ -44,6 +48,9 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 
   void CancelSigninFlow() override;
+
+  void ConfirmProfileSwitchToLockedProfile(
+      const base::FilePath& profile_path) override;
 
   std::u16string GetFallbackAccessibleWindowTitle() const override;
 
@@ -76,6 +83,9 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback,
       const ForceSigninUIError& error,
       bool switch_step_success);
+
+  void OnResetForLockedProfileSwitch(const base::FilePath& profile_path,
+                                     bool switch_step_success);
 
   std::unique_ptr<ProfilePickerPostSignInAdapter> CreatePostSignInAdapter(
       Profile* signed_in_profile,

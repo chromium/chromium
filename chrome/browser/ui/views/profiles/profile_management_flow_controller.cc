@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/check_is_test.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -136,6 +137,9 @@ void ProfileManagementFlowController::OnReloadRequested() {
         base::NotFatalUntil::M162);
   initialized_steps_.at(flow_tracker_.tracked_step())->OnReloadRequested();
 }
+
+void ProfileManagementFlowController::ConfirmProfileSwitchToLockedProfile(
+    const base::FilePath& profile_path) {}
 
 ProfilePickerToolbar::Builder
 ProfileManagementFlowController::CreateToolbarBuilder() {
