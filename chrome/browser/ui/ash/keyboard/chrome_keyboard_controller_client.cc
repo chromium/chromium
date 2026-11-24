@@ -20,11 +20,14 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_web_contents.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
@@ -415,9 +418,19 @@ void ChromeKeyboardControllerClient::OnSessionStateChanged() {
   // virtual keyboard behavior on the login screen.
   pref_change_registrar_.reset();
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* browser_context_helper = ash::BrowserContextHelper::Get();
+  content::BrowserContext* browser_context = nullptr;
+  if (const session_manager::Session* primary_session =
+          session_manager::SessionManager::Get()->GetPrimarySession()) {
+    browser_context = browser_context_helper->GetBrowserContextByAccountId(
+        primary_session->account_id());
+  } else {
+    // Login screen: use the sign-in profile's prefs.
+    browser_context = browser_context_helper->GetSigninBrowserContext();
+  }
+  CHECK(browser_context);
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(profile->GetPrefs());
+  pref_change_registrar_->Init(user_prefs::UserPrefs::Get(browser_context));
   pref_change_registrar_->Add(
       ash::prefs::kTouchVirtualKeyboardEnabled,
       base::BindRepeating(
@@ -464,7 +477,20 @@ Profile* ChromeKeyboardControllerClient::GetProfile() {
   // Always use the active profile for generating keyboard events so that any
   // virtual keyboard extensions associated with the active user are notified.
   // (Note: UI and associated extensions only exist for the active user).
-  return ProfileManager::GetActiveUserProfile();
+  auto* browser_context_helper = ash::BrowserContextHelper::Get();
+  content::BrowserContext* browser_context = nullptr;
+  if (const session_manager::Session* active_session =
+          session_manager::SessionManager::Get()->GetActiveSession()) {
+    browser_context = browser_context_helper->GetBrowserContextByAccountId(
+        active_session->account_id());
+  }
+  // The keyboard runs on the sign-in profile on the login screen, and keeps
+  // using it after login until the user's profile is created.
+  if (!browser_context) {
+    browser_context = browser_context_helper->GetSigninBrowserContext();
+  }
+  CHECK(browser_context);
+  return Profile::FromBrowserContext(browser_context);
 }
 
 gfx::Rect ChromeKeyboardControllerClient::BoundsFromScreen(

@@ -186,7 +186,8 @@ class ChromeKeyboardControllerClient
   // Sets whether smart visibility is enabled from prefs.
   void SetSmartVisibilityFromPrefs();
 
-  // Returns either the test profile or the active user profile.
+  // Returns either the test profile, the active user profile, or the sign-in
+  // profile if the active user's profile doesn't exist.
   Profile* GetProfile();
 
   gfx::Rect BoundsFromScreen(const gfx::Rect& screen_bounds);

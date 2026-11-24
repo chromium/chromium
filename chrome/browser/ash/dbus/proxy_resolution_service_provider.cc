@@ -12,12 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -258,23 +256,26 @@ ProxyResolutionServiceProvider::GetNetworkContext() {
 
   // Can be the profile of the primary user logged in the session or the profile
   // associated with the sign-in screen.
-  Profile* profile = nullptr;
+  content::BrowserContext* browser_context = nullptr;
   auto* primary_session =
       session_manager::SessionManager::Get()->GetPrimarySession();
   if (primary_session) {
-    profile = Profile::FromBrowserContext(
+    browser_context =
         ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-            primary_session->account_id()));
+            primary_session->account_id());
   }
 
-  if (!profile) {
-    profile = ProfileManager::GetActiveUserProfile();
-    if (!profile || !ash::IsSigninBrowserContext(profile)) {
+  // Use the sign-in profile on the login screen, and after login until the
+  // primary user's profile is created.
+  if (!browser_context) {
+    browser_context =
+        ash::BrowserContextHelper::Get()->GetSigninBrowserContext();
+    if (!browser_context) {
       return nullptr;
     }
   }
 
-  auto* storage_partition = profile->GetDefaultStoragePartition();
+  auto* storage_partition = browser_context->GetDefaultStoragePartition();
 
   if (!storage_partition)
     return nullptr;
