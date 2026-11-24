@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Přidat rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2159915644201199628">Nepodařilo se dekódovat obrázek: <ph name="IMAGE_NAME" /></translation>
 <translation id="2193567467390483943">Rodič toto rozšíření neschválil</translation>
+<translation id="2207866393056347613">Uděluje trvalý přístup k vašim datům na všech webech</translation>
 <translation id="23030561267973084">Aplikace <ph name="EXTENSION_NAME" /> požaduje další oprávnění.</translation>
 <translation id="2327492829706409234">Aktivovat aplikaci</translation>
 <translation id="2350172092385603347">Byla použita lokalizace, ale v manifestu nebyl zadán parametr default_locale.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Znovu aktivovat</translation>
 <translation id="2743583586211388067">Přístup k tomuto rozšíření je blokován zásadami vaší organizace ohledně rizik rozšíření.</translation>
 <translation id="2766161002040448006">Požádat rodiče</translation>
+<translation id="2775557057525247505">Zobrazit všechny weby</translation>
 <translation id="2785530881066938471">Nelze načíst soubor <ph name="RELATIVE_PATH" /> s obsahovým skriptem. Soubor není kódován ve formátu UTF-8.</translation>
 <translation id="2850541429955027218">Přidat motiv</translation>
 <translation id="2883143988769190738">Toto rozšíření vyžaduje následující oprávnění:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_ID" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vstupní hodnota pro soukromý klíč musí být platná cesta.</translation>
+<translation id="3769470010314114481">Uděluje dočasný přístup k vašim datům na webu</translation>
 <translation id="3788401245189148511">Mohlo by:</translation>
 <translation id="3834775135533257713">Aplikaci <ph name="TO_INSTALL_APP_NAME" /> nelze přidat, protože je v konfliktu s aplikací <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">Nelze načíst stránku možností „<ph name="OPTIONS_PAGE" />“.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Aktivovat rozšíření</translation>
 <translation id="3927932062596804919">Odmítnout</translation>
 <translation id="3984413272403535372">Při podepisování rozšíření došlo k chybě.</translation>
+<translation id="3990894032742690314">Vždy na uvedených webech</translation>
 <translation id="4014432863917027322">Opravit rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4061696872429826774">Jiný program na počítači přidal rozšíření, které může měnit funkce prohlížeče Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Načtení stránky s informacemi <ph name="ABOUT_PAGE" /> se nezdařilo.</translation>
 <translation id="424963718355121712">Aplikace musí být poskytovány hostitelem, kterého ovlivňují</translation>
 <translation id="4306119971288449206">Aplikace musí být poskytovány s typem obsahu <ph name="CONTENT_TYPE" /></translation>
+<translation id="4307774243840254737">Uděluje trvalý přístup k vašim datům na níže uvedených webech</translation>
 <translation id="4349181963619779233">Z tohohle webu nejde přidávat rozšíření a aplikace</translation>
 <translation id="4625078469366263107">Aktivovat aplikaci</translation>
 <translation id="4633003931260532286">Rozšíření vyžaduje rozhraní <ph name="IMPORT_NAME" /> s minimální verzí <ph name="IMPORT_VERSION" />, máte však nainstalovanou pouze verzi <ph name="INSTALLED_VERSION" /></translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Nejnovější verze rozšíření <ph name="EXTENSION_NAME" /> byla zakázána, protože vyžaduje další oprávnění.</translation>
 <translation id="5242724311594467048">Aktivovat rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5356315618422219272">Zobrazení aplikace: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Jen při kliknutí na rozšíření</translation>
 <translation id="5405650547142096840">Odstranit z prohlížeče Chromium</translation>
 <translation id="5456409301717116725">Rozšíření obsahuje soubor klíče <ph name="KEY_PATH" />. Tuto akci pravděpodobně provést nechcete.</translation>
 <translation id="5485102783864353244">Přidat aplikaci</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Obslužná rutina typu MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Toto rozšíření se obnovovalo příliš často.</translation>
 <translation id="7003844668372540529">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Uvedené weby</translation>
 <translation id="7068383018033524534">Soubor manifestu je neplatný</translation>
 <translation id="7217838517480956708">Správce tohoto počítače vyžaduje instalaci rozšíření <ph name="EXTENSION_NAME" />. Nelze je odebrat ani upravit.</translation>
 <translation id="7287143125007575591">Přístup byl odepřen.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Přední</translation>
 <translation id="8047248493720652249">Tomuto rozšíření se nepodařilo pojmenovat stahovaný soubor „<ph name="ATTEMPTED_FILENAME" />“, protože jiné rozšíření (<ph name="EXTENSION_NAME" />) vybralo jiný název souboru „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8049705080247101012">Rozšíření <ph name="EXTENSION_NAME" /> bylo společností Google označeno jako škodlivé a jeho instalace byla zablokována</translation>
+<translation id="823691536304079791">Číst a měnit vaše data</translation>
 <translation id="8284835137979141223">Zařízení <ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Může:</translation>
 <translation id="8517576857589387417">Soubor manifestu chybí nebo je nečitelný</translation>

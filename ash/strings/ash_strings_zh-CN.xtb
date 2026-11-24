@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">闲置状态数据</translation>
 <translation id="2058456167109518507">检测到的设备</translation>
 <translation id="2064048859448024834">已显示相机预览画面</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 个链接}other{# 个链接}}</translation>
 <translation id="2067220651560163985">以摄氏度显示温度</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />已通过<ph name="PRINTER_NAME" />打印完毕</translation>
 <translation id="2075520525463668108">开启/关闭<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>

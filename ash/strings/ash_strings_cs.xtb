@@ -447,6 +447,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2053312383184521053">Údaje o stavu nečinnosti</translation>
 <translation id="2058456167109518507">Bylo zjištěno zařízení</translation>
 <translation id="2064048859448024834">Je zapnutý náhled kamery</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 odkaz}few{# odkazy}many{# odkazu}other{# odkazů}}</translation>
 <translation id="2067220651560163985">Zobrazit teplotu ve stupních Celsia</translation>
 <translation id="206960706005837784">Aplikace <ph name="APP_NAME" /> dokončila tisk na tiskárně <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Zapnout nebo vypnout funkci <ph name="CAPTURE_MEDIUM" />. Funkce <ph name="CAPTURE_MEDIUM" /> je <ph name="CAPTURE_STATE" /></translation>

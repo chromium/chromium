@@ -308,6 +308,7 @@
 <translation id="1308105352527684175">您可能无法访问某些内容</translation>
 <translation id="1311092170520822848">此网站正在控制连接到您的设备的智能卡读卡器，并且可能会控制读卡器中的智能卡</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
+<translation id="13115907161008983">复制链接</translation>
 <translation id="131188242279372879">了解增强型保护，为下载内容提供最高级别的 Chrome 安全防护</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{修复导致浏览器运行缓慢的标签页}other{修复导致浏览器运行缓慢的标签页}}</translation>
 <translation id="1312721752506309252">增强型保护已开启</translation>
@@ -443,6 +444,7 @@
 <translation id="1482626744466814421">为此标签页添加书签…</translation>
 <translation id="1482772681918035149">修改密码</translation>
 <translation id="1483137792530497944">河流</translation>
+<translation id="1483148302144576204">复制链接</translation>
 <translation id="1483151333977672176">已发送！</translation>
 <translation id="1483431819520123112">已将显示名称复制到剪贴板</translation>
 <translation id="1483493594462132177">发送</translation>
@@ -1058,6 +1060,7 @@
 <translation id="2168036794078614559">举报信息已发送</translation>
 <translation id="2168735174585029637">让标签页呈现全新透明外观</translation>
 <translation id="217120844667431680">开启 AI 模式，事半功倍</translation>
+<translation id="2172046302886074612">已移除“<ph name="MODEL_CATEGORY" />”</translation>
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2175384018164129879">管理搜索引擎和网站搜索(&amp;M)</translation>
 <translation id="2175773164573457310">选择任何文字或图片即可问问 Gemini</translation>
@@ -2080,6 +2083,7 @@
 <translation id="3270965368676314374">读取、更改和删除您计算机上的照片、音乐和其他媒体</translation>
 <translation id="3275464924531706548">收起“<ph name="HEADER" />”</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
+<translation id="3277325180914877290">调大字号</translation>
 <translation id="3280237271814976245">另存为(&amp;A)...</translation>
 <translation id="3280243678470289153">继续使用 Chrome</translation>
 <translation id="3282210178675490297">正在与 <ph name="APP_NAME" /> 分享某个标签页</translation>
@@ -2588,6 +2592,7 @@
 <translation id="3786890785076278600">静态行</translation>
 <translation id="3787434344076711519">正在等待翻译</translation>
 <translation id="3789432704615470433">SharePoint 和 OneDrive 文件</translation>
+<translation id="3789493399245366422">全屏, 全屏模式, 最大, 最大化, 沉浸式, 隐藏工具栏, 演示, F11, fullscreen, full-screen, maximize, maximise, immersive, hide toolbar, presentation</translation>
 <translation id="3789841737615482174">安装</translation>
 <translation id="3790417903123637354">出了点问题。请稍后重试</translation>
 <translation id="379082410132524484">您的卡已过期</translation>
@@ -3357,6 +3362,7 @@
 <translation id="4665035764476941598">点击此处可重新显示其他标签页</translation>
 <translation id="4665446389743427678">即将删除 <ph name="SITE" /> 存储的所有数据。</translation>
 <translation id="4666483368282673356">管理 Gemini 历史记录</translation>
+<translation id="4667646546186544608">缩小, 减小, 更小, 变小, 减少尺寸, 调小, 页面缩放, zoom out, shrink, smaller, reduce, decrease, scale down, page zoom</translation>
 <translation id="4668929960204016307">、</translation>
 <translation id="4670909875730475086">恭喜！您已成功在设备上安装“<ph name="APP_NAME" />”</translation>
 <translation id="4672759829555593783">立即打开“<ph name="FILE_NAME" />”文件</translation>
@@ -4755,6 +4761,7 @@
 <translation id="6255253900817321392">在 Mac 上的任意位置快速搜索，而无需打开新标签页</translation>
 <translation id="6257602895346497974">开启同步功能…</translation>
 <translation id="6258818697161346451">在此设备上使用通行密钥</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{复制链接}other{复制链接}}</translation>
 <translation id="6261688934280090835">ChromeOS 自助服务终端应用日志</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6264060420924719834">此应用包含来自其他网站的 Web 内容</translation>
@@ -4883,6 +4890,7 @@
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">图片文件</translation>
 <translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
+<translation id="6411490324917773403">缩小字号</translation>
 <translation id="6416743254476733475">在您的计算机上允许或禁止。</translation>
 <translation id="6416856063840710198">网站通常会将您的活动记录保存到设备上，以改善您的访问体验。<ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">默认行为</translation>
@@ -6373,6 +6381,7 @@
 <translation id="8041093619605951337">欢欣</translation>
 <translation id="8042142357103597104">文字不透明度</translation>
 <translation id="8042331986490021244">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中</translation>
+<translation id="8042441076562098746">放大, 扩大, 增大, 变大, 更大, 增加尺寸, 调大, 网页缩放, zoom in, magnify, enlarge, bigger, larger, increase, scale up, page zoom</translation>
 <translation id="8045253504249021590">已通过 Google 信息中心阻止同步。</translation>
 <translation id="8045752459073395242">详细了解如何在工作中使用生成式 AI</translation>
 <translation id="8045923671629973368">输入应用 ID 或网上应用店网址</translation>
@@ -6727,6 +6736,7 @@
 <translation id="844059392176531372">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
 <translation id="844063558976952706">始终在该网站上</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{有无痕式窗口或隔离窗口处于打开状态。这个窗口不会重新打开。}other{有 # 个无痕式窗口和隔离窗口在多份个人资料中打开。这些窗口将不会重新打开。}}</translation>
+<translation id="84426883520448311">主题, 颜色, 背景, 壁纸, 浅色, 深色, 模式, 浅色模式, 深色模式, 个性化, 样式, 美学, theme, color, background, wallpaper, light, dark, mode, light mode, dark mode, personal, styling, aesthetic</translation>
 <translation id="8443986842926457191">网址长度超出了 2048 个字符（上限）</translation>
 <translation id="8445281870900174108">此标签页正在使用您的摄像头</translation>
 <translation id="8446884382197647889">了解详情</translation>
@@ -7317,6 +7327,7 @@
 <translation id="9076821103818989526">侧边栏</translation>
 <translation id="907779190626433918">请为每个网站或应用分别使用专用密码。如果有人发现了您重复使用的密码，就能利用此密码访问您的其他账号。</translation>
 <translation id="9078546160009814724">用户名：<ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{复制链接}other{复制链接}}</translation>
 <translation id="907972398081911688">自动更改已外泄的密码</translation>
 <translation id="9081543426177426948">在无痕模式下，系统不会保存您访问过的网站</translation>
 <translation id="9082750838489080452">应用：<ph name="APP_NAME" /></translation>

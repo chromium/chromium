@@ -6359,6 +6359,13 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
 注意：此政策已被弃用，请改用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />（适用于高性能设备）或 <ph name="ISOLATE_ORIGINS_SHORTLIST_POLICY_NAME" />。此政策仅适用于在 RAM 严格超过 1 GB 的设备上运行的 <ph name="ANDROID_NAME" /> 版 Chrome。对于内存不超过 1 GB 的设备，不建议专门配置任何进程隔离。</translation>
 <translation id="4991786313466977061">控制是否显示企业标记</translation>
+<translation id="4991886408515766724">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以请求用户授权其访问 USB 设备。
+
+      如果未设置此政策，在设置了 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 的情况下，系统会将其应用于所有网站。否则，将应用用户的个人设置。
+
+      网址格式不得与 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址同时与这两项政策匹配，则任何一项政策都不会优先生效。
+
+      如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="4995123966071996433">不允许端口转发到 Linux 虚拟机</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" />登录凭证不会被用于网络身份验证。</translation>
 <translation id="4996086761250834365">允许进行 <ph name="PLUGIN_VM_NAME" /> 产品分析</translation>

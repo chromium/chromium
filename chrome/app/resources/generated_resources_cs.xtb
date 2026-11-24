@@ -308,6 +308,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1308105352527684175">K určitému obsahu možná nebudete mít přístup</translation>
 <translation id="1311092170520822848">Tento web ovládá čtečky čipových karet připojené k zařízení a potenciálně také čipové karty, které jsou prostřednictvím nich dostupné</translation>
 <translation id="131112695174432497">Budou smazána data ovlivňující personalizaci reklam</translation>
+<translation id="13115907161008983">Kopírovat odkazy</translation>
 <translation id="131188242279372879">Objevte vylepšenou ochranu a získejte nejvyšší úroveň zabezpečení Chromu pro stažené soubory</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Řešení problému s kartou, která prohlížeč zpomaluje}few{Řešení problému s kartami, které prohlížeč zpomalují}many{Řešení problému s kartami, které prohlížeč zpomalují}other{Řešení problému s kartami, které prohlížeč zpomalují}}</translation>
 <translation id="1312721752506309252">Je zapnutá vylepšená ochrana</translation>
@@ -443,6 +444,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1482626744466814421">Přidat tuto kartu do záložek...</translation>
 <translation id="1482772681918035149">upravovat hesla</translation>
 <translation id="1483137792530497944">Řeka</translation>
+<translation id="1483148302144576204">Kopírovat odkazy</translation>
 <translation id="1483151333977672176">Odesláno.</translation>
 <translation id="1483431819520123112">Zobrazovaný název byl zkopírován do schránky</translation>
 <translation id="1483493594462132177">Odeslat</translation>
@@ -845,6 +847,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1921544956190977703">Máte nejsilnější zabezpečení Chromu před nebezpečnými weby, soubory ke stažení a rozšířeními</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">Rozšíření <ph name="NAME" /> je uložené jen na tomhle zařízení. Pokud ho chcete používat i na jiných zařízeních, uložte ho do svého účtu Google.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Otevřít v aplikaci</translation>
 <translation id="1925017091976104802">Stisknutím kláves <ph name="MODIFIER_KEY_DESCRIPTION" /> provedete vložení</translation>
 <translation id="1925021887439448749">Zadejte vlastní webovou adresu</translation>
@@ -1058,6 +1061,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2168036794078614559">Hlášení bylo odesláno</translation>
 <translation id="2168735174585029637">Dejte svým kartám nový průhledný vzhled</translation>
 <translation id="217120844667431680">Využijte další funkce režimu AI</translation>
+<translation id="2172046302886074612">Model <ph name="MODEL_CATEGORY" /> byl odstraněn</translation>
 <translation id="2173302385160625112">Zkontrolujte připojení k internetu.</translation>
 <translation id="2175384018164129879">&amp;Spravovat vyhledávače a vyhledávání na webech</translation>
 <translation id="2175773164573457310">Vyberte libovolný text nebo obrázek, na který se chcete Gemini zeptat</translation>
@@ -1391,6 +1395,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2528487766183344810">Pokud chcete exportovat certifikát klienta, odemkněte zařízení <ph name="TOKEN_NAME" />.</translation>
 <translation id="2532198298278778531">Spravovat zabezpečené DNS v nastavení systému ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;Pozastavit</translation>
+<translation id="2534439599863644240">Sériový port</translation>
 <translation id="253498598929009420">Web bude moci vidět obsah vaší obrazovky</translation>
 <translation id="253557089021624350">Aktivity zabraňující ukončení</translation>
 <translation id="2537395079978992874">Web <ph name="ORIGIN" /> může zobrazovat a upravovat následující soubory a složky</translation>
@@ -2080,6 +2085,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3270965368676314374">Číst, měnit a mazat fotografie, hudbu a další média v počítači</translation>
 <translation id="3275464924531706548">Sbalit <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Otevřít jako okno</translation>
+<translation id="3277325180914877290">Zvětšit text</translation>
 <translation id="3280237271814976245">Uložit &amp;jako...</translation>
 <translation id="3280243678470289153">Zůstat v Chromu</translation>
 <translation id="3282210178675490297">Nějaká karta se sdílí s aplikací <ph name="APP_NAME" /></translation>
@@ -2588,6 +2594,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3786890785076278600">Statická čára</translation>
 <translation id="3787434344076711519">Čekání na překlad</translation>
 <translation id="3789432704615470433">Soubory SharePoint a OneDrive</translation>
+<translation id="3789493399245366422">celá obrazovka, maximalizovat, pohlcující, skrýt lištu, prezentace, F11</translation>
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="3790417903123637354">Něco se pokazilo. Zkuste to znovu později</translation>
 <translation id="379082410132524484">Platnost vaší karty vypršela.</translation>
@@ -3357,6 +3364,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="4665035764476941598">Kliknutím sem vrátíte ostatní karty zpět</translation>
 <translation id="4665446389743427678">Veškerá data uložená webem <ph name="SITE" /> budou smazána.</translation>
 <translation id="4666483368282673356">Spravovat historii Gemini</translation>
+<translation id="4667646546186544608">oddálit, zmenšit, menší, snížit, zmenšení, oddálení, přiblížení stránky</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Gratulujeme! Na zařízení byla úspěšně nainstalována aplikace <ph name="APP_NAME" /></translation>
 <translation id="4672759829555593783">Otevřít soubor <ph name="FILE_NAME" /></translation>
@@ -4755,6 +4763,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="6255253900817321392">Vyhledávejte rychleji odkudkoli na Macu, bez otevírání nové karty</translation>
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
 <translation id="6258818697161346451">Používejte na tomto zařízení své přístupové klíče</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopírovat odkaz}few{Kopírovat odkazy}many{Kopírovat odkazy}other{Kopírovat odkazy}}</translation>
 <translation id="6261688934280090835">Protokoly terminálových aplikací pro ChromeOS</translation>
 <translation id="6263082573641595914">Verze CA Microsoft</translation>
 <translation id="6264060420924719834">Tato aplikace zahrnuje webový obsah z jiných webů</translation>
@@ -4883,6 +4892,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Obrázkové soubory</translation>
 <translation id="6410390304316730527">Bezpečné prohlížení vás chrání před útočníky, kteří se vás snaží přimět k nebezpečné akci, jako je instalace škodlivého softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). Pokud ji vypnete, budete si muset dávat pozor na neznámé a podezřelé weby.</translation>
+<translation id="6411490324917773403">Zmenšit text</translation>
 <translation id="6416743254476733475">Je třeba je v počítači povolit nebo zablokovat.</translation>
 <translation id="6416856063840710198">Weby za účelem zlepšení prostředí často ukládají vaši aktivitu – často do vašeho zařízení. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Výchozí chování</translation>
@@ -6377,6 +6387,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8041093619605951337">Šťastná</translation>
 <translation id="8042142357103597104">Neprůhlednost textu</translation>
 <translation id="8042331986490021244">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována</translation>
+<translation id="8042441076562098746">přiblížit, zvětšit, větší, nárůst, zvětšení, přiblížení stránky</translation>
 <translation id="8045253504249021590">Synchronizace byla zastavena prostřednictvím Hlavního panelu Google.</translation>
 <translation id="8045752459073395242">Další informace o používání generativní umělé inteligence v práci</translation>
 <translation id="8045923671629973368">Zadejte identifikátor aplikace nebo URL internetového obchodu</translation>
@@ -6731,6 +6742,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="844059392176531372">Sdílení skupiny karet <ph name="GROUP_NAME" /></translation>
 <translation id="844063558976952706">Vždy na tomto webu</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Je otevřeno anonymní nebo izolované okno. Znovu se neotevře.}few{V různých profilech je otevřeno # anonymních a izolovaných oken. Znovu se neotevřou.}many{V různých profilech je otevřeno # anonymních a izolovaných oken. Znovu se neotevřou.}other{V různých profilech je otevřeno # anonymních a izolovaných oken. Znovu se neotevřou.}}</translation>
+<translation id="84426883520448311">motiv, barva, pozadí, tapeta, světlý, tmavý, režim, světlý režim, tmavý režim, osobní, styl, estetika</translation>
 <translation id="8443986842926457191">Adresa URL je delší než 2048 znaků.</translation>
 <translation id="8445281870900174108">Tato karta používá vaši kameru</translation>
 <translation id="8446884382197647889">Další informace</translation>
@@ -7320,6 +7332,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9076821103818989526">Boční panel</translation>
 <translation id="907779190626433918">Na každém webu a v každé aplikaci používejte jedinečné heslo. Pokud někdo zjistí heslo, které jste použili v několika účtech, získá přístup ke všem účtům s daným heslem.</translation>
 <translation id="9078546160009814724">Uživatelské jméno: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopírovat odkaz}few{Kopírovat odkazy}many{Kopírovat odkazy}other{Kopírovat odkazy}}</translation>
 <translation id="907972398081911688">Automaticky změnit prolomené heslo</translation>
 <translation id="9081543426177426948">V anonymním režimu se navštívené weby neukládají</translation>
 <translation id="9082750838489080452">Aplikace: <ph name="APP_NAME" /></translation>

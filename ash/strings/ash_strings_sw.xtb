@@ -447,6 +447,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2053312383184521053">Data ya Wakati wa Hali Tulivu</translation>
 <translation id="2058456167109518507">Imetambua kifaa</translation>
 <translation id="2064048859448024834">Onyesho la kukagua kamera limewashwa</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{Kiungo 1}other{Viungo #}}</translation>
 <translation id="2067220651560163985">Onyesha halijoto katika Selisiasi</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> imemaliza kuchapisha kwenye <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Zima au uwashe <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> ni <ph name="CAPTURE_STATE" /></translation>
