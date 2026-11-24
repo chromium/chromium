@@ -1487,39 +1487,12 @@ public class CustomTabsConnection {
     /**
      * Shows a toast about any possible sign in issues encountered during custom tab startup.
      *
-     * @param intent The intent that launched the custom tab.
-     * @param profileProviderSupplier The supplier of the current profile.
-     */
-    // TODO(crbug.com/472661732): Remove once downstream overrides the
-    // BrowserServicesIntentDataProvider overload.
-    void showSignInToastIfNecessary(
-            Intent intent, Supplier<ProfileProvider> profileProviderSupplier) {}
-
-    /**
-     * Shows a toast about any possible sign in issues encountered during custom tab startup.
-     *
      * @param intentDataProvider The {@link BrowserServicesIntentDataProvider} for the custom tab.
      * @param profileProviderSupplier The supplier of the current profile.
      */
     void showSignInToastIfNecessary(
             BrowserServicesIntentDataProvider intentDataProvider,
-            Supplier<ProfileProvider> profileProviderSupplier) {
-        Intent intent = intentDataProvider.getIntent();
-        if (intent != null) {
-            showSignInToastIfNecessary(intent, profileProviderSupplier);
-        }
-    }
-
-    /**
-     * Returns whether the app launching the CCT may display account mismatch notification UI.
-     *
-     * @param intent The intent that launched the custom tab.
-     */
-    // TODO(crbug.com/472661732): Remove once downstream overrides the
-    // BrowserServicesIntentDataProvider overload.
-    boolean isAppForAccountMismatchNotification(@Nullable Intent intent) {
-        return false;
-    }
+            Supplier<ProfileProvider> profileProviderSupplier) {}
 
     /**
      * Returns whether the app launching the CCT may display account mismatch notification UI.
@@ -1528,27 +1501,6 @@ public class CustomTabsConnection {
      */
     boolean isAppForAccountMismatchNotification(
             BrowserServicesIntentDataProvider intentDataProvider) {
-        return isAppForAccountMismatchNotification(intentDataProvider.getIntent());
-    }
-
-    /**
-     * Whether the account mismatch notification UI should be shown.
-     *
-     * @param intent The intent that launched the custom tab.
-     * @param profile The current profile object.
-     * @param accountId Account ID to be used to access notification data.
-     * @param lastShownTime The last time the notification was shown to user.
-     * @param mimData Mismatch notification data.
-     * @return Whether the notification was shown or not.
-     */
-    // TODO(crbug.com/472661732): Remove once downstream overrides the
-    // BrowserServicesIntentDataProvider overload.
-    boolean shouldShowAccountMismatchNotification(
-            @Nullable Intent intent,
-            Profile profile,
-            String accountId,
-            long lastShownTime,
-            @Nullable MismatchNotificationData mimData) {
         return false;
     }
 
@@ -1568,19 +1520,7 @@ public class CustomTabsConnection {
             String accountId,
             long lastShownTime,
             @Nullable MismatchNotificationData mimData) {
-        return shouldShowAccountMismatchNotification(
-                intentDataProvider.getIntent(), profile, accountId, lastShownTime, mimData);
-    }
-
-    /**
-     * Show the name of the account in which the app launching the custom tab is signed.
-     *
-     * @param intent The intent that launched the custom tab.
-     */
-    // TODO(crbug.com/472661732): Remove once downstream overrides the
-    // BrowserServicesIntentDataProvider overload.
-    @Nullable String getAppAccountName(Intent intent) {
-        return null;
+        return false;
     }
 
     /**
@@ -1589,21 +1529,8 @@ public class CustomTabsConnection {
      * @param intentDataProvider The {@link BrowserServicesIntentDataProvider} for the custom tab.
      */
     @Nullable String getAppAccountName(BrowserServicesIntentDataProvider intentDataProvider) {
-        Intent intent = intentDataProvider.getIntent();
-        return intent != null ? getAppAccountName(intent) : null;
+        return null;
     }
-
-    /**
-     * Updates the account currently used by the external app for account preview.
-     *
-     * @param profile The current profile.
-     * @param intent The intent that launched the custom tab.
-     * @param clientPackageName The package name of the client app.
-     */
-    // TODO(crbug.com/472661732): Remove once downstream overrides the
-    // BrowserServicesIntentDataProvider overload.
-    public void updateAppAccountForAccountPreview(
-            Profile profile, Intent intent, @Nullable String clientPackageName) {}
 
     /**
      * Updates the account currently used by the external app for account preview.
@@ -1612,13 +1539,7 @@ public class CustomTabsConnection {
      * @param intentDataProvider The {@link BrowserServicesIntentDataProvider} for the custom tab.
      */
     public void updateAppAccountForAccountPreview(
-            Profile profile, BrowserServicesIntentDataProvider intentDataProvider) {
-        Intent intent = intentDataProvider.getIntent();
-        if (intent != null) {
-            updateAppAccountForAccountPreview(
-                    profile, intent, intentDataProvider.getClientPackageName());
-        }
-    }
+            Profile profile, BrowserServicesIntentDataProvider intentDataProvider) {}
 
     /**
      * Sends a callback using {@link CustomTabsCallback} with the first run result if necessary.
