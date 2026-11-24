@@ -13,6 +13,9 @@ export const DummyMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T => {
       class DummyMixin extends superClass {
         protected mixinProp_: string = 'mixin';
+        protected mixinMethod_(): string {
+          return this.mixinProp_;
+        }
       }
       return DummyMixin;
     };
@@ -21,6 +24,10 @@ export abstract class BaseDummyElement extends DummyMixin
 (CrLitElement) {
   protected baseProtectedProp_: string = 'base';
   protected unusedBaseProp_: string = 'unused in base';
+  protected baseProtectedMethod_(): string {
+    return this.baseProtectedProp_;
+  }
+  protected abstract baseAbstractMethod_(): void;
 }
 
 export class WithWebuiPluginLitMemberVisibilityViolationsElement extends
@@ -57,8 +64,44 @@ export class WithWebuiPluginLitMemberVisibilityViolationsElement extends
   protected unusedProtectedProp_: number = 0;
   protected override baseProtectedProp_: string = 'overridden';
 
-  protected onButtonClick_() {
+  protected constructor() {
+    super();
+  }
+
+  protected override baseProtectedMethod_(): string {
+    return 'overridden';
+  }
+
+  // Implementing an abstract base class method does not require `override`
+  // even under `noImplicitOverride`.
+  protected baseAbstractMethod_(): void {}
+
+  protected onButtonClick_(): void {}
+
+  protected usedProtectedMethod_(): string {
     return this.privateAccessor_;
+  }
+
+  protected usedInSubTemplateMethod_(): string {
+    return 'sub';
+  }
+
+  protected unusedProtectedMethod_(): string {
+    return 'unused';
+  }
+
+  protected get unusedProtectedGetter_(): string {
+    return 'unused';
+  }
+
+  protected set unusedProtectedSetter_(_val: string) {}
+
+  private privateMethod_(): string {
+    return this.privateAccessor_;
+  }
+
+  callPrivateForTest(): string {
+    return this.privateMethod_();
   }
 }
 

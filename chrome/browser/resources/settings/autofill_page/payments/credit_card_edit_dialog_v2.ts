@@ -147,7 +147,9 @@ export class SettingsCreditCardEditDialogV2Element extends
       primaryAccountName_: {type: String},
       primaryAccountEmail_: {type: String},
       primaryAccountIconUrl_: {type: String},
+      // <if expr="_google_chrome">
       autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -176,8 +178,10 @@ export class SettingsCreditCardEditDialogV2Element extends
   protected accessor primaryAccountName_: string = '';
   protected accessor primaryAccountEmail_: string = '';
   protected accessor primaryAccountIconUrl_: string = '';
+  // <if expr="_google_chrome">
   private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
+  // </if>
 
   override connectedCallback() {
     this.mirrorPref('autofill.payment_cvc_storage', 'cvcStoragePref_');
@@ -597,6 +601,7 @@ export class SettingsCreditCardEditDialogV2Element extends
     return getImage(iconUrl);
   }
 
+  // <if expr="_google_chrome">
   private getScaledSrcSet_(url: string): string {
     return `${url} 1x, ${url}@2x 2x`;
   }
@@ -614,6 +619,7 @@ export class SettingsCreditCardEditDialogV2Element extends
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK';
     return this.getScaledSrcSet_(logoId);
   }
+  // </if>
 }
 
 declare global {

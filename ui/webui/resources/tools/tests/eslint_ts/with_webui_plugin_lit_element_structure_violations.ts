@@ -363,10 +363,11 @@ export class TestNoError3Element extends CrLitElement {
         {bubbles: true, composed: true, cancelable: true, detail: 'bar'}));
 
     this.fire('bar-updated', 'bar');
+    this.onFoo_(new CustomEvent('foo', {detail: 'bar'}));
   }
 
   // Test case where CustomEvent is used with a function parameter.
-  protected onFoo_(someEvent2: CustomEvent<string>) {
+  private onFoo_(someEvent2: CustomEvent<string>) {
     // Test case where CustomEvent is used with a type assertion.
     const _otherEvent2 = someEvent2 as CustomEvent<string>;
   }
