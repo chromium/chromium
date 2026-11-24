@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -215,6 +217,38 @@ class BubbleDialogDelegateViewTest : public ViewsTestBase {
     widget->Init(std::move(params));
     widget->Show();
     return widget;
+  }
+
+  // Changes the theme of `widget` so that its theme observers are notified. One
+  // of the two color modes always differs from the current one, so this works
+  // whether or not theme changes that keep the same color provider key are
+  // skipped.
+  static void ChangeWidgetTheme(Widget* widget) {
+    class ThemeChangedObserver : public WidgetObserver {
+     public:
+      explicit ThemeChangedObserver(Widget* widget) {
+        observation_.Observe(widget);
+      }
+
+      bool theme_changed() const { return theme_changed_; }
+
+      // WidgetObserver:
+      void OnWidgetThemeChanged(Widget* widget) override {
+        theme_changed_ = true;
+      }
+
+     private:
+      bool theme_changed_ = false;
+      base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+    };
+
+    ThemeChangedObserver observer(widget);
+    for (const auto color_mode : {ui::ColorProviderKey::ColorMode::kDark,
+                                  ui::ColorProviderKey::ColorMode::kLight}) {
+      widget->SetColorModeOverride(color_mode);
+      widget->ThemeChanged();
+    }
+    EXPECT_TRUE(observer.theme_changed());
   }
 
  private:
@@ -2476,6 +2510,47 @@ TEST_F(BubbleDialogDelegateViewTest, AcceptDragDrop) {
   EXPECT_TRUE(bubble_delegate->accept_drag_drop());
   bubble_delegate->set_accept_drag_drop(false);
   EXPECT_FALSE(bubble_delegate->accept_drag_drop());
+}
+
+// The anchor widget is observed as soon as the anchor is set, which is before
+// the bubble's own widget is created. A theme change of the anchor widget in
+// that window must not be forwarded to a null widget.
+TEST_F(BubbleDialogDelegateViewTest,
+       AnchorWidgetThemeChangeBeforeBubbleWidgetIsCreated) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  BubbleDialogDelegate delegate(BubbleAnchor(anchor_widget->GetContentsView()),
+                                BubbleBorder::Arrow::TOP_LEFT);
+  ASSERT_EQ(anchor_widget.get(), delegate.anchor_widget());
+  ASSERT_EQ(nullptr, delegate.GetWidget());
+
+  ChangeWidgetTheme(anchor_widget.get());
+
+  EXPECT_EQ(anchor_widget.get(), delegate.anchor_widget());
+}
+
+// A delegate that is not owned by its widget outlives it, and keeps observing
+// the anchor widget until the delegate itself is destroyed. A theme change of
+// the anchor widget in that window must not be forwarded to a null widget.
+TEST_F(BubbleDialogDelegateViewTest,
+       AnchorWidgetThemeChangeAfterBubbleWidgetIsDestroyed) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  auto delegate = std::make_unique<BubbleDialogDelegate>(
+      BubbleAnchor(anchor_widget->GetContentsView()),
+      BubbleBorder::Arrow::TOP_LEFT);
+  delegate->SetContentsView(std::make_unique<View>());
+  std::unique_ptr<Widget> bubble_widget =
+      BubbleDialogDelegate::CreateBubble(delegate.get());
+  ASSERT_EQ(bubble_widget.get(), delegate->GetWidget());
+
+  bubble_widget.reset();
+  ASSERT_EQ(nullptr, delegate->GetWidget());
+  ASSERT_EQ(anchor_widget.get(), delegate->anchor_widget());
+
+  ChangeWidgetTheme(anchor_widget.get());
+
+  EXPECT_EQ(anchor_widget.get(), delegate->anchor_widget());
 }
 
 }  // namespace views

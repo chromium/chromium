@@ -355,7 +355,13 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
   void OnWidgetThemeChanged(Widget* widget) override {
     // TODO(dfried): Consider merging BubbleWidget with ThemeCopyingWidget
     // instead of observing the theme here.
-    owner_->GetWidget()->ThemeChanged();
+    //
+    // `bubble_widget` can be null or closed because the anchor widget is
+    // observed before the bubble's widget is created and after it closes.
+    Widget* const bubble_widget = owner_->GetWidget();
+    if (bubble_widget && !bubble_widget->IsClosed()) {
+      bubble_widget->ThemeChanged();
+    }
   }
 
 #if !BUILDFLAG(IS_MAC)
