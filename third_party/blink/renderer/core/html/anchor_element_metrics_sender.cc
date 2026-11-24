@@ -445,6 +445,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
           *GetSupplementable());
 
+  const int sampling_period = EffectiveSamplingPeriod();
   for (const auto& member_element : anchor_elements_to_report_) {
     HTMLAnchorElementBase& anchor_element = *member_element;
 
@@ -454,8 +455,8 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       continue;
     }
 
-    int random = base::RandIntInclusive(1, EffectiveSamplingPeriod());
-    if (random == 1) {
+    if (sampling_period == 1 ||
+        base::ShouldRecordSubsampledMetric(1.0 / sampling_period)) {
       // This anchor element is sampled in.
       if (viewport_position_tracker) {
         HTMLAnchorElementBase* anchor_unobserved =

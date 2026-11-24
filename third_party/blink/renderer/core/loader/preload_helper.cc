@@ -910,7 +910,8 @@ void PreloadHelper::LoadLinksFromHeader(
 
     // Record UKM by the rate of `kUkmSamplingRate` to avoid UKM infra's
     // automatic downsampling.
-    if (is_subresource_load && base::RandDouble() < kUkmSamplingRate) {
+    if (is_subresource_load &&
+        base::ShouldRecordSubsampledMetric(kUkmSamplingRate)) {
       CHECK(document);
       bool to_same_origin =
           document->GetExecutionContext()

@@ -836,7 +836,7 @@ void ResourceLoader::DidReceiveResponseInternal(
   // Sample the UKM recorded events. Also, a current default task runner is
   // needed to obtain a UKM recorder, so if there is not one, do not record
   // UKMs.
-  if ((base::RandDouble() <= kUkmSamplingRate) &&
+  if (base::ShouldRecordSubsampledMetric(kUkmSamplingRate) &&
       base::SequencedTaskRunner::HasCurrentDefault()) {
     ukm::builders::SubresourceLoad_ZstdContentEncoding builder(
         request.GetUkmSourceId());

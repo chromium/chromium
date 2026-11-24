@@ -37,12 +37,8 @@
 namespace blink {
 
 namespace {
-// Minimum potentially generated value for UKM sampling.
-constexpr int kMinValueForSampling = 1;
-// Maximum potentially generated value for UKM sampling.
-constexpr int kMaxValueForSampling = 100;
-// UKM sampling rate. The sampling strategy is 1/N.
-constexpr int kUkmSamplingRate = 10;
+// UKM sampling rate.
+constexpr double kUkmSamplingRate = 0.1;
 // The name for the histogram which records interaction timings, and the names
 // of the variants for keyboard or click/tap interactions.
 const char kHistogramMaxEventDuration[] =
@@ -594,9 +590,7 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
   if (source_id != ukm::kInvalidSourceId &&
-      (!sampling_ ||
-       base::RandIntInclusive(kMinValueForSampling, kMaxValueForSampling) <=
-           kUkmSamplingRate)) {
+      (!sampling_ || base::ShouldRecordSubsampledMetric(kUkmSamplingRate))) {
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int64_t>(interaction_type))
         .SetMaxEventDuration(duration.InMilliseconds())
