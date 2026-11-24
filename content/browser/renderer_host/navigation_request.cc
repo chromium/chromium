@@ -558,7 +558,6 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
 
 void RecordStartToCommitMetrics(base::TimeTicks navigation_start_time,
                                 ui::PageTransition transition,
-                                const base::TimeTicks& ready_to_commit_time,
                                 std::optional<base::Process::Priority> priority,
                                 bool is_same_process,
                                 bool is_main_frame) {
@@ -592,10 +591,6 @@ void RecordStartToCommitMetrics(base::TimeTicks navigation_start_time,
       LOG_NAVIGATION_TIMING_HISTOGRAM("StartToCommit.CrossProcess.Subframe",
                                       transition, priority, delta);
     }
-  }
-  if (!ready_to_commit_time.is_null()) {
-    LOG_NAVIGATION_TIMING_HISTOGRAM("ReadyToCommitUntilCommit2", transition,
-                                    priority, now - ready_to_commit_time);
   }
 }
 
@@ -9962,9 +9957,9 @@ void NavigationRequest::DidCommitNavigation(
     base::Process::Priority priority =
         GetRenderFrameHost()->GetProcess()->GetPriority();
 
-    RecordStartToCommitMetrics(
-        common_params_->navigation_start, transition, ready_to_commit_time_,
-        priority, is_same_process_, frame_tree_node_->IsMainFrame());
+    RecordStartToCommitMetrics(common_params_->navigation_start, transition,
+                               priority, is_same_process_,
+                               frame_tree_node_->IsMainFrame());
   }
 
   CHECK(!frame_tree_node_->IsMainFrame() || navigation_entry_committed)
@@ -10321,7 +10316,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   common_params_->source_location = network::mojom::SourceLocation::New();
 
   SetState(READY_TO_COMMIT);
-  ready_to_commit_time_ = base::TimeTicks::Now();
+  base::TimeTicks ready_to_commit_time = base::TimeTicks::Now();
   RestartCommitTimeout();
 
   if (!IsSameDocument() && !IsPageActivation()) {
@@ -10340,7 +10335,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
     RecordReadyToCommitMetrics(
         previous_render_frame_host, GetRenderFrameHost(), *common_params_.get(),
-        ready_to_commit_time_, origin_agent_cluster_end_result_,
+        ready_to_commit_time, origin_agent_cluster_end_result_,
         did_receive_early_hints_before_cross_origin_redirect_);
     RecordAdExclusionResultHistogram();
   }

@@ -3240,9 +3240,6 @@ class CONTENT_EXPORT NavigationRequest
   // The time OnResponseStarted() was called.
   base::TimeTicks receive_response_time_;
 
-  // The time this navigation was ready to commit.
-  base::TimeTicks ready_to_commit_time_;
-
   // The first `fetchStart` time. This is different from the
   // `first_request_start_time` in `NavigationHandleTiming` since the
   // `first_fetch_start_time_` is the first time when the browser is

@@ -2006,20 +2006,6 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
-<histogram name="Navigation.ReadyToCommitUntilCommit2{NavigationTypeTiming}"
-    units="ms" expires_after="2023-03-05">
-  <owner>clamy@chromium.org</owner>
-  <owner>nasko@chromium.org</owner>
-  <summary>
-    The time needed to commit a navigation once it is ready to commit. This is
-    the time between ReadyToCommit and DidFinishNavigation (for a navigation
-    that commits).
-
-    Warning: this histogram was expired after M85 and brought back 2021-04-13;
-    data may be missing. {NavigationTypeTiming}
-  </summary>
-</histogram>
-
 <histogram name="Navigation.RegisterNavigationThrottlesTime.{FrameType}"
     units="ms" expires_after="2027-05-24">
   <owner>sisidovski@chromium.org</owner>
