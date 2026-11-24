@@ -502,6 +502,76 @@ TEST_F(GCMConnectionHandlerImplTest, Recv2Msgs) {
   EXPECT_EQ(net::OK, last_error());
 }
 
+// Verify that a short (< 4-byte payload) message such as HeartbeatAck arriving
+// coalesced with a subsequent packet does not consume bytes from the next
+// packet when `MCS_TAG_AND_SIZE` reads up to 6 bytes.
+TEST_F(GCMConnectionHandlerImplTest, RecvShortMsgFollowedByAnotherMsg) {
+  std::string handshake_request = EncodeHandshakeRequest();
+  WriteList write_list(1, net::MockWrite(net::ASYNC, handshake_request));
+  std::string handshake_response = EncodeHandshakeResponse();
+
+  mcs_proto::HeartbeatAck heartbeat_ack;
+  heartbeat_ack.set_last_stream_id_received(2);
+  std::string heartbeat_ack_proto = heartbeat_ack.SerializeAsString();
+  ASSERT_LT(heartbeat_ack_proto.size(), 4U);
+
+  mcs_proto::IqStanza stream_ack = *BuildStreamAck();
+  stream_ack.set_last_stream_id_received(3);
+  std::string stream_ack_proto = stream_ack.SerializeAsString();
+
+  std::string coalesced_pkts =
+      EncodePacket(kHeartbeatAckTag, heartbeat_ack_proto) +
+      EncodePacket(kIqStanzaTag, stream_ack_proto);
+
+  ReadList read_list;
+  read_list.emplace_back(net::ASYNC, handshake_response);
+  read_list.emplace_back(net::SYNCHRONOUS, coalesced_pkts);
+  read_list.emplace_back(net::SYNCHRONOUS, net::OK);  // EOF.
+  BuildSocket(read_list, write_list);
+
+  ScopedMessage received_message;
+  Connect(&received_message);
+  WaitForMessage();  // The login send.
+  WaitForMessage();  // The login response.
+  WaitForMessage();  // The 2-byte HeartbeatAck.
+  ASSERT_TRUE(received_message);
+  EXPECT_EQ(kHeartbeatAckTag, GetMCSProtoTag(*received_message));
+  EXPECT_EQ(heartbeat_ack_proto, received_message->SerializeAsString());
+  received_message.reset();
+  WaitForMessage();  // The coalesced IqStanza following HeartbeatAck.
+  ASSERT_TRUE(received_message);
+  EXPECT_EQ(kIqStanzaTag, GetMCSProtoTag(*received_message));
+  EXPECT_EQ(stream_ack_proto, received_message->SerializeAsString());
+  EXPECT_EQ(net::OK, last_error());
+}
+
+// Verify that a frame containing an embedded zero tag (which stops unbounded
+// stream parsing early without consuming all `message_size_` bytes) is
+// rejected by `ParsePartialFromBoundedZeroCopyStream()`.
+TEST_F(GCMConnectionHandlerImplTest, InvalidZeroTagWithinMessagePayload) {
+  std::string handshake_request = EncodeHandshakeRequest();
+  WriteList write_list(1, net::MockWrite(net::ASYNC, handshake_request));
+  std::string handshake_response = EncodeHandshakeResponse();
+
+  std::string zero_tag_payload("\x00\x01", 2);
+  std::string invalid_pkt = EncodePacket(kHeartbeatAckTag, zero_tag_payload);
+
+  ReadList read_list;
+  read_list.emplace_back(net::ASYNC, handshake_response);
+  read_list.emplace_back(net::SYNCHRONOUS, invalid_pkt);
+  read_list.emplace_back(net::SYNCHRONOUS, net::OK);  // EOF.
+  BuildSocket(read_list, write_list);
+
+  ScopedMessage received_message;
+  Connect(&received_message);
+  WaitForMessage();  // The login send.
+  WaitForMessage();  // The login response.
+  received_message.reset();
+  WaitForMessage();  // The malformed HeartbeatAck.
+  EXPECT_FALSE(received_message);
+  EXPECT_EQ(net::ERR_FAILED, last_error());
+}
+
 // Receive a long (>128 bytes) message.
 TEST_F(GCMConnectionHandlerImplTest, RecvLongMsg) {
   std::string handshake_request = EncodeHandshakeRequest();

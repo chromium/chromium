@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
@@ -409,8 +410,14 @@ void ConnectionHandlerImpl::OnGotMessageBytes() {
 
   int result = net::OK;
   if (message_size_ < kDefaultDataPacketLimit) {
-    io::CodedInputStream coded_input_stream(input_stream_.get());
-    if (!protobuf->ParsePartialFromCodedStream(&coded_input_stream)) {
+    // `WaitForData(MCS_TAG_AND_SIZE)` reads up to
+    // `kTagPacketLen + kSizePacketLenMax` (6) bytes, so for short payloads
+    // (`message_size_ < 4`, such as a 2-byte `HeartbeatAck`) `input_stream_`
+    // may already contain header bytes of the next packet. Bound parsing to
+    // `message_size_` so those trailing bytes are backed up into
+    // `input_stream_` for `GetNextMessage()`.
+    if (!protobuf->ParsePartialFromBoundedZeroCopyStream(
+            input_stream_.get(), base::checked_cast<int>(message_size_))) {
       LOG(ERROR) << "Unable to parse GCM message of type "
                  << static_cast<unsigned int>(message_tag_);
       result = net::ERR_FAILED;
