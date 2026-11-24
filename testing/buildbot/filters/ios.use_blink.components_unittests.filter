@@ -93,6 +93,10 @@
 -All/FormMutationTest.RemoveFormRegisteredDuringDelayWithGarbageCollection/1
 -All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/0
 -All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/1
+-All/FormMutationTest.RemoveFieldIntoUnregisteredForm/0
+-All/FormMutationTest.RemoveFieldIntoUnregisteredForm/1
+-All/FormMutationTest.RemoveFormWithFieldRegisteredFirst/0
+-All/FormMutationTest.RemoveFormWithFieldRegisteredFirst/1
 -All/FormMutationTest.RemoveFormlessFields/0
 -All/FormMutationTest.RemoveFormlessFields/1
 -All/FormMutationTest.RemoveFormlessPasswordFields/0
@@ -105,6 +109,8 @@
 -All/FormMutationTest.RemoveMultipleFormsAndFormlessFields/1
 -All/FormMutationTest.RemoveNonPasswordForm/0
 -All/FormMutationTest.RemoveNonPasswordForm/1
+-All/FormMutationTest.RemoveRegisteredControlTurnedHidden/0
+-All/FormMutationTest.RemoveRegisteredControlTurnedHidden/1
 -All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/0
 -All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/1
 
