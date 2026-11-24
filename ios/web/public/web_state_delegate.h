@@ -138,11 +138,13 @@ class WebStateDelegate {
   // credentials. `failure_response` is the response that caused the challenge
   // to be issued, or nil if no response was received. Clients must call
   // `callback` with `username` and `password` on success, with `error` to
-  // cancel navigation with a specific error, or with nil parameters to cancel
-  // authentication. By default, forwards the challenge to `OnAuthRequired` to
-  // maintain backwards compatibility for embedders that rely on
-  // `OnAuthRequired` for handling proxy auth challenges. Available in iOS 18.1
-  // and later.
+  // cancel the challenge and fail the navigation with `error`, or with nil
+  // parameters to reject the protection space, which lets iOS handle the
+  // challenge, e.g. by prompting for credentials. An `NSURLErrorCancelled`
+  // error only cancels the challenge, without being used as the navigation
+  // error. By default, forwards the challenge to `OnAuthRequired` to maintain
+  // backwards compatibility for embedders that rely on `OnAuthRequired` for
+  // handling proxy auth challenges. Available in iOS 18.1 and later.
   using ProxyAuthCallback = base::OnceCallback<
       void(NSString* username, NSString* password, NSError* error)>;
   virtual void OnProxyAuthChallenge(WebState* source,

@@ -111,8 +111,11 @@
 // specified by `protectionSpace`, and is unable to respond using cached
 // credentials. `failureResponse` is the response that caused the challenge to
 // be issued, or nil if no response was received. Clients must call `handler`
-// with `username` and `password` on success, with `error` to cancel navigation
-// with a specific error, or with nil parameters to cancel authentication.
+// with `username` and `password` on success, with `error` to cancel the
+// challenge and fail the navigation with `error`, or with nil parameters to
+// reject the protection space, which lets iOS handle the challenge, e.g. by
+// prompting for credentials. An `NSURLErrorCancelled` error only cancels the
+// challenge, without being used as the navigation error.
 // If not implemented, forwards the challenge to
 // `webState:didRequestHTTPAuthForProtectionSpace...`
 // to maintain backwards compatibility for embedders that rely on that method

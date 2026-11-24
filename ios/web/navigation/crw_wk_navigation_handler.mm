@@ -2007,7 +2007,8 @@ NSError* SanitizeNavigationError(
 
 // Used in webView:didReceiveAuthenticationChallenge:completionHandler: to reply
 // with NSURLSessionAuthChallengeDisposition and credentials, or cancel with
-// `error` if non-nil.
+// `error` if non-nil. The navigation fails with `error`, unless it is
+// `NSURLErrorCancelled`.
 + (void)processProxyAuthForUser:(NSString*)user
                        password:(NSString*)password
                           error:(NSError*)error
@@ -2015,7 +2016,14 @@ NSError* SanitizeNavigationError(
               completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition,
                                           NSURLCredential*))completionHandler {
   if (error) {
-    navigationHandler.pendingNavigationInfo.cancellationError = error;
+    // `NSURLErrorCancelled` cancels the challenge without rejecting the
+    // protection space. It isn't used as the navigation error since error pages
+    // can't display it: the navigation ends with WebKit's own error instead.
+    BOOL isCancellation = [error.domain isEqualToString:NSURLErrorDomain] &&
+                          error.code == NSURLErrorCancelled;
+    if (!isCancellation) {
+      navigationHandler.pendingNavigationInfo.cancellationError = error;
+    }
     completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge,
                       nil);
     return;

@@ -16,6 +16,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/enterprise/net/core/features.h"
+#import "ios/net/protocol_handler_util.h"
 #import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -299,6 +300,48 @@ TEST_F(HttpProxyAuthTest, ProxyAuthCustomCancellationError) {
   ASSERT_TRUE(observer.Wait());
   EXPECT_NSEQ(custom_error,
               base::ios::GetFinalUnderlyingErrorFromError(observer.error()));
+}
+
+// Tests that cancelling proxy authentication with `NSURLErrorCancelled` cancels
+// the challenge without failing the navigation with `NSURLErrorCancelled`.
+TEST_F(HttpProxyAuthTest, ProxyAuthCancelledErrorNotUsedAsNavigationError) {
+  TestNavigationObserver observer(web_state());
+  GURL url(kProxyTestUrl);
+  test::LoadUrl(web_state(), url);
+  ASSERT_TRUE(WaitForOnProxyAuthChallengeCallback());
+
+  FakeProxyAuthenticationRequest* auth_request =
+      delegate_->last_proxy_authentication_request();
+  ASSERT_TRUE(auth_request);
+
+  NSError* cancellation_error = [NSError errorWithDomain:NSURLErrorDomain
+                                                    code:NSURLErrorCancelled
+                                                userInfo:nil];
+  std::move(auth_request->proxy_auth_callback)
+      .Run(/*username=*/nil, /*password=*/nil, cancellation_error);
+
+  // TODO(crbug.com/559132741): WebKit automatically retries the proxy CONNECT
+  // request after the initial challenge is cancelled or rejected. Until we
+  // find a way to avoid WebKit retrying the request, wait for the second
+  // challenge and cancel it the same way so the navigation can complete.
+  delegate_->ClearLastProxyAuthenticationRequest();
+  ASSERT_TRUE(WaitForOnProxyAuthChallengeCallback());
+  FakeProxyAuthenticationRequest* retry_request =
+      delegate_->last_proxy_authentication_request();
+  ASSERT_TRUE(retry_request);
+  std::move(retry_request->proxy_auth_callback)
+      .Run(/*username=*/nil, /*password=*/nil, cancellation_error);
+
+  ASSERT_TRUE(observer.Wait());
+  // WebKit fails the navigation with `NSURLErrorUserAuthenticationRequired`,
+  // which is translated to a net error that error pages can display. If WebKit
+  // reported `NSURLErrorCancelled` instead, the navigation would be cancelled
+  // without any error.
+  if (observer.error()) {
+    EXPECT_NSEQ(
+        net::kNSErrorDomain,
+        base::ios::GetFinalUnderlyingErrorFromError(observer.error()).domain);
+  }
 }
 
 // Tests successful proxy basic authentication when WebStateDelegate does not
