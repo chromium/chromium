@@ -860,4 +860,195 @@ describe('ActionDispatcher', () => {
     await dispatchPromise;
     assert.deepEqual(events, ['rAF', 'elementCenter', 'elementCenter']);
   });
+
+  it('shifts single-character key values while Shift is held and restores unshifted keyUp after Shift release', async () => {
+    inputState.getOrCreate('keyboard', SourceType.Key);
+    getOrCreateHiddenSandbox.resolves({
+      callFunction: sinon.stub().resolves({
+        type: 'success',
+        result: {type: 'boolean', value: false},
+      }),
+    });
+
+    // Case 1: keyUp('b') while Shift is still depressed (e.g. reversed releaseActions order).
+    await dispatcher.dispatchActions([
+      [{id: 'keyboard', action: {type: 'keyDown', value: '\uE008'}}],
+      [{id: 'keyboard', action: {type: 'keyDown', value: 'b'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: 'b'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: '\uE008'}}],
+    ]);
+
+    // Case 2: Shift released before keyUp('b') still matches normalized 'b' in pressed set.
+    await dispatcher.dispatchActions([
+      [{id: 'keyboard', action: {type: 'keyDown', value: '\uE008'}}],
+      [{id: 'keyboard', action: {type: 'keyDown', value: 'b'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: '\uE008'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: 'b'}}],
+    ]);
+
+    // Case 3: Characters whose uppercase expands to multiple code points (e.g. 'ß' -> 'SS') keep single-char key and text.
+    await dispatcher.dispatchActions([
+      [{id: 'keyboard', action: {type: 'keyDown', value: '\uE008'}}],
+      [{id: 'keyboard', action: {type: 'keyDown', value: 'ß'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: 'ß'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: '\uE008'}}],
+    ]);
+
+    // Case 4: Complex/supplementary graphemes (isGrapheme === true) remain unchanged when Shift is held.
+    await dispatcher.dispatchActions([
+      [{id: 'keyboard', action: {type: 'keyDown', value: '\uE008'}}],
+      [{id: 'keyboard', action: {type: 'keyDown', value: '😄'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: '😄'}}],
+      [{id: 'keyboard', action: {type: 'keyUp', value: '\uE008'}}],
+    ]);
+
+    const keyEvents = sendCommand.args
+      .filter(([method]) => method === 'Input.dispatchKeyEvent')
+      .map(([, params]) => {
+        const {type, key, code, text, unmodifiedText, modifiers} = params as {
+          type: string;
+          key: string;
+          code?: string;
+          text?: string;
+          unmodifiedText?: string;
+          modifiers: number;
+        };
+        return {type, key, code, text, unmodifiedText, modifiers};
+      });
+
+    assert.deepEqual(keyEvents, [
+      // Case 1
+      {
+        type: 'rawKeyDown',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 8,
+      },
+      {
+        type: 'keyDown',
+        key: 'B',
+        code: 'KeyB',
+        text: 'B',
+        unmodifiedText: 'B',
+        modifiers: 8,
+      },
+      {
+        type: 'keyUp',
+        key: 'B',
+        code: 'KeyB',
+        text: 'B',
+        unmodifiedText: 'B',
+        modifiers: 8,
+      },
+      {
+        type: 'keyUp',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 0,
+      },
+      // Case 2
+      {
+        type: 'rawKeyDown',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 8,
+      },
+      {
+        type: 'keyDown',
+        key: 'B',
+        code: 'KeyB',
+        text: 'B',
+        unmodifiedText: 'B',
+        modifiers: 8,
+      },
+      {
+        type: 'keyUp',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 0,
+      },
+      {
+        type: 'keyUp',
+        key: 'b',
+        code: 'KeyB',
+        text: 'b',
+        unmodifiedText: 'b',
+        modifiers: 0,
+      },
+      // Case 3
+      {
+        type: 'rawKeyDown',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 8,
+      },
+      {
+        type: 'keyDown',
+        key: 'ß',
+        code: undefined,
+        text: 'ß',
+        unmodifiedText: 'ß',
+        modifiers: 8,
+      },
+      {
+        type: 'keyUp',
+        key: 'ß',
+        code: undefined,
+        text: 'ß',
+        unmodifiedText: 'ß',
+        modifiers: 8,
+      },
+      {
+        type: 'keyUp',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 0,
+      },
+      // Case 4
+      {
+        type: 'rawKeyDown',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 8,
+      },
+      {
+        type: 'keyDown',
+        key: '😄',
+        code: undefined,
+        text: '😄',
+        unmodifiedText: '😄',
+        modifiers: 8,
+      },
+      {
+        type: 'keyUp',
+        key: '😄',
+        code: undefined,
+        text: '😄',
+        unmodifiedText: '😄',
+        modifiers: 8,
+      },
+      {
+        type: 'keyUp',
+        key: 'Shift',
+        code: 'ShiftLeft',
+        text: undefined,
+        unmodifiedText: undefined,
+        modifiers: 0,
+      },
+    ]);
+  });
 });

@@ -948,6 +948,7 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
+    const eventKey = getKeyEventKey(key, source, isGrapheme);
     const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
     const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
     let command: string | undefined;
@@ -981,7 +982,7 @@ export class ActionDispatcher {
       this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchKeyEvent', {
         type: text ? 'keyDown' : 'rawKeyDown',
         windowsVirtualKeyCode: KeyToKeyCode[key],
-        key,
+        key: eventKey,
         code,
         text,
         unmodifiedText,
@@ -1042,6 +1043,7 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
+    const eventKey = getKeyEventKey(key, source, isGrapheme);
     const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
     const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
     return this.#context.cdpTarget.cdpClient.sendCommand(
@@ -1049,7 +1051,7 @@ export class ActionDispatcher {
       {
         type: 'keyUp',
         windowsVirtualKeyCode: KeyToKeyCode[key],
-        key,
+        key: eventKey,
         code,
         text,
         unmodifiedText,
@@ -1062,6 +1064,20 @@ export class ActionDispatcher {
     // --- Platform-specific code ends here ---
   }
 }
+
+const getKeyEventKey = (
+  key: string,
+  source: KeySource,
+  isGrapheme: boolean,
+): string => {
+  if (!isGrapheme && [...key].length === 1 && source.shift) {
+    const shifted = key.toLocaleUpperCase('en-US');
+    if ([...shifted].length === 1) {
+      return shifted;
+    }
+  }
+  return key;
+};
 
 /**
  * Translates a non-grapheme key to either an `undefined` for a special keys, or a single
@@ -1084,9 +1100,7 @@ const getKeyEventUnmodifiedText = (
   // If key is not a single character, it is a normalized key value, and should be
   // presented as key, not text in the CDP command.
   return [...key].length === 1
-    ? source.shift
-      ? key.toLocaleUpperCase('en-US')
-      : key
+    ? getKeyEventKey(key, source, isGrapheme)
     : undefined;
 };
 
