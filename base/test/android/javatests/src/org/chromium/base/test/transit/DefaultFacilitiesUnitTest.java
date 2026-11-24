@@ -190,7 +190,8 @@ public class DefaultFacilitiesUnitTest {
         // Without an Activity, so the destination doesn't need to be found in a new task.
         StationWithDefaultFacility destination =
                 new StationWithDefaultFacility(/* activityClass= */ null);
-        mTransitRule.runTransition(() -> origin.noopTo().inNewTask().arriveAt(destination));
+        mTransitRule.runTransition(
+                () -> origin.noopTo().reach(Outcome.enter(destination).inNewTask()));
 
         assertEquals(Phase.ACTIVE, destination.getPhase());
         assertEquals(Phase.ACTIVE, destination.defaultFacility.getPhase());

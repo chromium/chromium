@@ -145,16 +145,6 @@ public class TripBuilder {
         return withOptions(Transition.runTriggerOnUiThreadOption());
     }
 
-    /**
-     * Expect the destination Station to be in a new task, and do not assume the currently active
-     * Station will be exited..
-     */
-    @CheckReturnValue
-    public TripBuilder inNewTask() {
-        mOutcome.setInNewTask();
-        return this;
-    }
-
     /** Add a Transition |condition| that will be checked as part of the Transition. */
     @CheckReturnValue
     public TripBuilder waitForAnd(Condition... conditions) {

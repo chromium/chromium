@@ -37,6 +37,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.DoNotBatch;
@@ -210,7 +211,7 @@ public class PopupMultiwindowPTTest {
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
 
         final CctPageStation popup =
-                page.clickOpenPopup().inNewTask().arriveAt(SIMPLE_POPUP_BUILDER.build());
+                page.clickOpenPopup().reach(SIMPLE_POPUP_BUILDER.inNewWindow());
 
         // Assert that no tab has been created in lieu of a window
         assertEquals(
@@ -282,7 +283,7 @@ public class PopupMultiwindowPTTest {
                         mCtaTestRule.getActivityTestRule(), mEntryPage);
 
         final CctPageStation popup =
-                page.clickOpenPopup().inNewTask().arriveAt(SIMPLE_POPUP_BUILDER.build());
+                page.clickOpenPopup().reach(SIMPLE_POPUP_BUILDER.inNewWindow());
 
         watcher.assertExpected();
 
@@ -367,11 +368,15 @@ public class PopupMultiwindowPTTest {
         // Opens a pop-up with features 'left=100, top=100, width=300, height=300'. These dimensions
         // are duplicated in popup_launcher.html.
         final CctPageStation popup = SIMPLE_POPUP_BUILDER.build();
-        popup.declareEnterCondition(new WindowPositionCondition(popup, 100, 100));
-        popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 100, 100));
-        popup.declareEnterCondition(new ViewportSizeCondition(popup, 300, 300));
-        popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 300, 300));
-        page.clickOpenPopupWithBounds().inNewTask().arriveAt(popup);
+        page.clickOpenPopupWithBounds()
+                .reach(
+                        Outcome.enter(popup)
+                                .inNewTask()
+                                .andWaitFor(
+                                        new WindowPositionCondition(popup, 100, 100),
+                                        new WebApiWindowPositionCondition(popup, 100, 100),
+                                        new ViewportSizeCondition(popup, 300, 300),
+                                        new WebApiViewportSizeCondition(popup, 300, 300)));
 
         TransitAsserts.assertFinalDestinations(page, popup);
     }
@@ -401,11 +406,15 @@ public class PopupMultiwindowPTTest {
         // Opens a pop-up with features 'left=50, top=60, width=100, height=100'. These dimensions
         // are duplicated in popup_launcher.html.
         final CctPageStation popup = SIMPLE_POPUP_BUILDER.build();
-        popup.declareEnterCondition(new WindowPositionCondition(popup, 50, 60));
-        popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 50, 60));
-        popup.declareEnterCondition(new WindowSizeCondition(popup, 220, 220));
-        popup.declareEnterCondition(new WebApiWindowSizeCondition(popup, 220, 220));
-        page.clickOpenPopupWithSmallBounds().inNewTask().arriveAt(popup);
+        page.clickOpenPopupWithSmallBounds()
+                .reach(
+                        Outcome.enter(popup)
+                                .inNewTask()
+                                .andWaitFor(
+                                        new WindowPositionCondition(popup, 50, 60),
+                                        new WebApiWindowPositionCondition(popup, 50, 60),
+                                        new WindowSizeCondition(popup, 220, 220),
+                                        new WebApiWindowSizeCondition(popup, 220, 220)));
 
         TransitAsserts.assertFinalDestinations(page, popup);
     }
@@ -437,11 +446,15 @@ public class PopupMultiwindowPTTest {
         // Opens a pop-up with features 'left=50, top=60, width=386, height=220'. These dimensions
         // are duplicated in popup_launcher.html.
         final CctPageStation popup = SIMPLE_POPUP_BUILDER.build();
-        popup.declareEnterCondition(new WindowPositionCondition(popup, 50, 60));
-        popup.declareEnterCondition(new WebApiWindowPositionCondition(popup, 50, 60));
-        popup.declareEnterCondition(new ViewportSizeCondition(popup, 386, 220));
-        popup.declareEnterCondition(new WebApiViewportSizeCondition(popup, 386, 220));
-        page.clickOpenPopupWithMinUserResizableWidth().inNewTask().arriveAt(popup);
+        page.clickOpenPopupWithMinUserResizableWidth()
+                .reach(
+                        Outcome.enter(popup)
+                                .inNewTask()
+                                .andWaitFor(
+                                        new WindowPositionCondition(popup, 50, 60),
+                                        new WebApiWindowPositionCondition(popup, 50, 60),
+                                        new ViewportSizeCondition(popup, 386, 220),
+                                        new WebApiViewportSizeCondition(popup, 386, 220)));
 
         TransitAsserts.assertFinalDestinations(page, popup);
     }
@@ -687,10 +700,13 @@ public class PopupMultiwindowPTTest {
      * fulfilled before running its trigger.
      */
     private static void openPopupAndRefocusOpener(
-            PopupLauncherPageStation opener, TripBuilder openPopupTrigger, CctPageStation popup) {
-        popup.declareEnterCondition(new ActivityFocusedCondition<>(popup.getActivityElement()));
-        popup.declareEnterCondition(new ActivityNotFocusedCondition<>(opener.getActivityElement()));
-        openPopupTrigger.inNewTask().arriveAt(popup);
+            PopupLauncherPageStation opener, TripBuilder openPopupTo, CctPageStation popup) {
+        openPopupTo.reach(
+                Outcome.enter(popup)
+                        .inNewTask()
+                        .andWaitFor(
+                                new ActivityFocusedCondition<>(popup.getActivityElement()),
+                                new ActivityNotFocusedCondition<>(opener.getActivityElement())));
 
         opener.bringWindowToFront();
     }

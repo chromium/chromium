@@ -126,16 +126,6 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
         return IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build();
     }
 
-    /** Default behavior for "Open new window". */
-    protected RegularNewTabPageStation createNewWindowStation() {
-        return RegularNewTabPageStation.newBuilder().withEntryPoint().build();
-    }
-
-    /** Default behavior for "Open new incognito window". */
-    protected IncognitoNewTabPageStation createNewIncognitoWindowStation() {
-        return IncognitoNewTabPageStation.newBuilder().withEntryPoint().build();
-    }
-
     /** Default behavior for "Delete browsing data". */
     protected QuickDeleteDialogFacility createQuickDeleteDialogFacility() {
         return new QuickDeleteDialogFacility();

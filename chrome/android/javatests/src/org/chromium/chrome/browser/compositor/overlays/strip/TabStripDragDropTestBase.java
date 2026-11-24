@@ -127,8 +127,7 @@ public abstract class TabStripDragDropTestBase {
                                 () ->
                                         ContextUtils.getApplicationContext()
                                                 .startActivity(newWindowIntent))
-                        .inNewTask()
-                        .arriveAt(CtaPageStation.newGenericBuilder().withEntryPoint().build());
+                        .reach(CtaPageStation.newGenericBuilder().inNewWindow());
         if (additionalTabs > 0) {
             destStation =
                     Journeys.createTabsFast(

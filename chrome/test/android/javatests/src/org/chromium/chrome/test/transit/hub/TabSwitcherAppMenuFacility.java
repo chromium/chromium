@@ -117,8 +117,7 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             return mNewIncognitoWindow
                     .scrollToAndSelectTo()
-                    .inNewTask()
-                    .arriveAt(createNewIncognitoWindowStation());
+                    .reach(IncognitoNewTabPageStation.newBuilder().inNewWindow());
         } else {
             return mNewIncognitoTab
                     .scrollToAndSelectTo()

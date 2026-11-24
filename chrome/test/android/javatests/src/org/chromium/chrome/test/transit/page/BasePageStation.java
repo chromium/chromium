@@ -256,6 +256,14 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return shownIn(tab)
                     .andWaitFor(new PageLoadStoppedCondition(tab, /* expectedUrl= */ null));
         }
+
+        /**
+         * Outcome: the page shows as the entry point of a new window (a new task). The Stations of
+         * the windows already open stay active.
+         */
+        public Outcome<PageT> inNewWindow() {
+            return Outcome.enter(withEntryPoint().build()).inNewTask();
+        }
     }
 
     public final Element<Tab> activityTabElement;

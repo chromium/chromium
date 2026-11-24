@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.transit;
 
-import static org.chromium.base.test.transit.Triggers.noopTo;
-
 import android.app.Activity;
 
 import org.junit.rules.RuleChain;
@@ -16,6 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.build.annotations.NullMarked;
@@ -131,10 +130,10 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule {
         // point again.
         TrafficControl.hopOffPublicTransit();
 
+        // No Trigger: wait for the Conditions to be met to return an active PageStation in the
+        // existing window, which is a new task to Public Transit after hopping off.
         WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
-
-        // Wait for the Conditions to be met to return an active PageStation.
-        return noopTo().inNewTask().arriveAt(entryPageStation);
+        return Outcome.enter(entryPageStation).inNewTask().await();
     }
 
     /**

@@ -167,6 +167,17 @@ public class Outcome<R extends @Nullable Object> {
     }
 
     /**
+     * The destination Station is in a new task, e.g. a new window. The Stations already active are
+     * not exited.
+     */
+    public Outcome<R> inNewTask() {
+        assert mDestination != null : "A new Station needs to be entered in the new task";
+        assert mHopOnActivity == null : "Hopping on cannot be combined with a new task";
+        mInNewTask = true;
+        return this;
+    }
+
+    /**
      * Return |result| instead, evaluated after the Trip, e.g. a record holding two Facilities
      * entered.
      */
@@ -244,11 +255,6 @@ public class Outcome<R extends @Nullable Object> {
         destination.assertInPhase(Phase.NEW);
         mDestination = destination;
         mHopOnActivity = hopOnActivity;
-    }
-
-    /** The destination Station is in a new task, so the Stations already active are not exited. */
-    void setInNewTask() {
-        mInNewTask = true;
     }
 
     @Nullable Station<?> getDestination() {

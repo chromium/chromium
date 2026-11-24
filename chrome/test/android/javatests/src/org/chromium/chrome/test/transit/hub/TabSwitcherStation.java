@@ -134,8 +134,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
      */
     public RegularNewTabPageStation openNewWindowFast() {
         return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_window_menu_id, this)
-                .inNewTask()
-                .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
+                .reach(RegularNewTabPageStation.newBuilder().inNewWindow());
     }
 
     /**
@@ -144,8 +143,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
      */
     public IncognitoNewTabPageStation openNewIncognitoWindowFast() {
         return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_incognito_window_menu_id, this)
-                .inNewTask()
-                .arriveAt(IncognitoNewTabPageStation.newBuilder().withEntryPoint().build());
+                .reach(IncognitoNewTabPageStation.newBuilder().inNewWindow());
     }
 
     /**

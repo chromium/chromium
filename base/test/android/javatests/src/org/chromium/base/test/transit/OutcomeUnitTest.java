@@ -6,6 +6,7 @@ package org.chromium.base.test.transit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 
 import android.app.Activity;
 
@@ -146,5 +147,16 @@ public class OutcomeUnitTest {
         mTransitRule.runTransition(() -> Outcome.hopOnAt(activity, station).await());
 
         assertEquals(Phase.ACTIVE, station.getPhase());
+    }
+
+    @Test
+    public void testInNewTask_withoutStation_asserts() {
+        Outcome<TestFacility> outcome = Outcome.enter(new TestFacility());
+
+        assertThrows(
+                AssertionError.class,
+                () -> {
+                    var _ = outcome.inNewTask();
+                });
     }
 }

@@ -114,7 +114,9 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
     public RegularNewTabPageStation openNewWindow() {
         TabbedAppMenuPropertiesDelegate delegate = getTabbedAppMenuPropertiesDelegate();
         assert delegate.shouldShowNewWindow() : "App menu is not expected to show 'New window'";
-        return mNewWindow.scrollToAndSelectTo().inNewTask().arriveAt(createNewWindowStation());
+        return mNewWindow
+                .scrollToAndSelectTo()
+                .reach(RegularNewTabPageStation.newBuilder().inNewWindow());
     }
 
     /** Select "New Incognito window" from the app menu. */
@@ -125,8 +127,7 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         assert mNewIncognitoWindow != null;
         return mNewIncognitoWindow
                 .scrollToAndSelectTo()
-                .inNewTask()
-                .arriveAt(createNewIncognitoWindowStation());
+                .reach(IncognitoNewTabPageStation.newBuilder().inNewWindow());
     }
 
     /**

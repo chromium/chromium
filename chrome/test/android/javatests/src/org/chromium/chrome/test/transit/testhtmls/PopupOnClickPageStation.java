@@ -56,14 +56,12 @@ public class PopupOnClickPageStation extends WebPageStation {
     public CctPageStation clickLinkToOpenPopupWithBoundsExpectNewWindow() {
         return linkToPopupWithBounds
                 .clickTo()
-                .inNewTask()
-                .arriveAt(
+                .reach(
                         CctPageStation.newBuilder()
-                                .withEntryPoint()
                                 .withExpectedUrlSubstring("simple.html")
                                 .withExpectedTitle("Simple")
                                 .withIncognito(mIsIncognito)
-                                .build());
+                                .inNewWindow());
     }
 
     /**

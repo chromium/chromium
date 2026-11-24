@@ -119,9 +119,9 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
     /** Selects the "New window" menu option to open a new regular window. */
     public RegularNewTabPageStation selectNewWindow() {
         assert newWindowMenuItemElement != null;
-        RegularNewTabPageStation destination =
-                RegularNewTabPageStation.newBuilder().withEntryPoint().build();
-        return newWindowMenuItemElement.clickTo().inNewTask().arriveAt(destination);
+        return newWindowMenuItemElement
+                .clickTo()
+                .reach(RegularNewTabPageStation.newBuilder().inNewWindow());
     }
 
     /** Selects the "New tab" or "New window" menu option to open a new tab or window. */
@@ -147,9 +147,9 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
     /** Selects the "New Incognito window" menu option to open a new Incognito window. */
     public IncognitoNewTabPageStation selectNewIncognitoWindow() {
         assert newIncognitoWindowMenuItemElement != null;
-        IncognitoNewTabPageStation destination =
-                IncognitoNewTabPageStation.newBuilder().withEntryPoint().build();
-        return newIncognitoWindowMenuItemElement.clickTo().inNewTask().arriveAt(destination);
+        return newIncognitoWindowMenuItemElement
+                .clickTo()
+                .reach(IncognitoNewTabPageStation.newBuilder().inNewWindow());
     }
 
     /**

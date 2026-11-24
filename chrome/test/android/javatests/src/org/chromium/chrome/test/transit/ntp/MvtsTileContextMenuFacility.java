@@ -129,13 +129,7 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
         String url = mMvtsTileFacility.getSiteSuggestion().url.getSpec();
         return openInIncognitoWindow
                 .scrollToAndSelectTo()
-                .inNewTask()
-                .arriveAt(
-                        WebPageStation.newBuilder()
-                                .withEntryPoint()
-                                .withIncognito(true)
-                                .withExpectedUrlSubstring(url)
-                                .build());
+                .reach(WebPageStation.at(url).withIncognito(true).inNewWindow());
     }
 
     @Override
