@@ -1902,8 +1902,8 @@ export const ComposeboxEmbedderMixin =
               model = this.getDefaultModel_();
             }
             // With dynamic AIM fulfillment, a model enters AI Mode and no model
-            // leaves it, including AI Mode left over from an outside-click
-            // close.
+            // leaves it, including AI Mode left over from an outside click on
+            // a composebox with content.
             this.getSearchboxHandler().setActiveModelMode(
                 model, /*isSetByAim=*/ false);
           }

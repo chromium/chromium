@@ -1095,14 +1095,28 @@ export class AppElement extends AppElementBase {
   }
 
   private onComposeboxOutsideClick_() {
+    const composebox =
+        this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+    assert(composebox);
     if (this.composeboxOutsideClickEnabled_) {
+      if (this.shouldLeaveAimModeOnOutsideClick_(composebox)) {
+        composebox.resetToolsAndModels();
+      }
       this.composeboxFocused_ = false;
     } else {
-      const composebox =
-          this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
-      assert(composebox);
       composebox.closeComposebox();
     }
+  }
+
+  // The composebox stays open on an outside click to keep its content. With
+  // no content, the user is done with it, so leave AI Mode as closing would.
+  // Skipped while submitting, since submitting empties the composebox and the
+  // submitted query may still need the model.
+  private shouldLeaveAimModeOnOutsideClick_(composebox: NtpComposeboxElement):
+      boolean {
+    return composebox.dynamicAimFulfillmentEnabled &&
+        composebox.willFulfillInAim && !composebox.submitting &&
+        !composebox.hasContent();
   }
 
   protected onComposeboxContextMenuOpened_() {

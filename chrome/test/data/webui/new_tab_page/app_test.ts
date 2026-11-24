@@ -3678,6 +3678,121 @@ suite('NewTabPageAppTest', () => {
             await openComposebox();
             assertPageBlocked(true);
           });
+
+      suite('LeaveAimMode', () => {
+        let originalDynamicAimFulfillment: boolean;
+
+        suiteSetup(() => {
+          originalDynamicAimFulfillment =
+              loadTimeData.valueExists('dynamicAimFulfillmentEnabled') &&
+              loadTimeData.getBoolean('dynamicAimFulfillmentEnabled');
+          loadTimeData.overrideValues({dynamicAimFulfillmentEnabled: true});
+        });
+
+        suiteTeardown(() => {
+          loadTimeData.overrideValues(
+              {dynamicAimFulfillmentEnabled: originalDynamicAimFulfillment});
+        });
+
+        async function openInMode(
+            text: string, willFulfillInAim: boolean,
+            activeTool: ToolMode =
+                ToolMode.kUnspecified): Promise<NtpComposeboxElement> {
+          const composebox = await openComposebox(text);
+          composebox.onInputStateChanged(new MockInputState({
+            activeTool,
+            activeModel: willFulfillInAim ? ModelMode.kGeminiPro :
+                                            ModelMode.kUnspecified,
+            willFulfillInAim,
+          }));
+          await microtasksFinished();
+          searchboxHandler.resetResolver('setActiveModelMode');
+          searchboxHandler.resetResolver('setActiveToolMode');
+          searchboxHandler.resetResolver('clearFiles');
+          return composebox;
+        }
+
+        test('empty composebox leaves AI Mode', async () => {
+          const composebox = await openInMode('', /*willFulfillInAim=*/ true);
+
+          await clickOutside();
+
+          assertPageBlocked(false);
+          assertEquals(composebox, getComposebox());
+          assertDeepEquals(
+              [[ModelMode.kUnspecified, false]],
+              searchboxHandler.getArgs('setActiveModelMode'));
+          assertDeepEquals(
+              [[ToolMode.kUnspecified, false]],
+              searchboxHandler.getArgs('setActiveToolMode'));
+          assertEquals(0, searchboxHandler.getCallCount('clearFiles'));
+        });
+
+        test('composebox with input stays in AI Mode', async () => {
+          const composebox =
+              await openInMode('draft', /*willFulfillInAim=*/ true);
+
+          await clickOutside();
+
+          assertEquals('draft', composebox.input);
+          assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+        });
+
+        test('composebox with a tool stays in AI Mode', async () => {
+          await openInMode(
+              '', /*willFulfillInAim=*/ true, ToolMode.kDeepSearch);
+
+          await clickOutside();
+
+          assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+          assertEquals(0, searchboxHandler.getCallCount('setActiveToolMode'));
+        });
+
+        test('composebox with an attachment stays in AI Mode', async () => {
+          const composebox = await openInMode('', /*willFulfillInAim=*/ true);
+          const file = ComposeboxFile.createFromFile(
+              'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
+              ContextUploadStatus.kUploadSuccessful);
+          composebox.attachedContext = new Map([[file.uuid, file]]);
+          await microtasksFinished();
+
+          await clickOutside();
+
+          assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+          assertEquals(0, searchboxHandler.getCallCount('clearFiles'));
+        });
+
+        test('empty composebox in SRP mode is left as is', async () => {
+          await openInMode('', /*willFulfillInAim=*/ false);
+
+          await clickOutside();
+
+          assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+          assertEquals(0, searchboxHandler.getCallCount('setActiveToolMode'));
+        });
+
+        test('empty composebox stays in AI Mode while submitting', async () => {
+          // Submitting empties the composebox, but the submitted query may
+          // still need the model.
+          const composebox = await openInMode('', /*willFulfillInAim=*/ true);
+          composebox.submitting = true;
+
+          await clickOutside();
+
+          assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+          assertEquals(0, searchboxHandler.getCallCount('setActiveToolMode'));
+        });
+
+        test('model is kept without dynamic AIM fulfillment', async () => {
+          const composebox = await openInMode('', /*willFulfillInAim=*/ true);
+          composebox.dynamicAimFulfillmentEnabled = false;
+
+          await clickOutside();
+
+          assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+          assertEquals(0, searchboxHandler.getCallCount('setActiveToolMode'));
+        });
+      });
     });
   });
 
