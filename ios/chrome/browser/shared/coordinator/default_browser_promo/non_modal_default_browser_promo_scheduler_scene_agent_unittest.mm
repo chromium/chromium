@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 
+#import <memory>
+#import <utility>
+
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -32,7 +36,9 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -46,6 +52,8 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state_observer.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -138,6 +146,43 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }
 
+  // Stubs `mock_tracker_` to allow `feature` to trigger.
+  void AllowPromoFeature(const base::Feature& feature) {
+    EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(feature)))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::Ref(feature)))
+        .WillRepeatedly(testing::Return(true));
+  }
+
+  // Allows `feature` to pass eligibility checks but expects it never to be
+  // triggered (i.e. the promo is cancelled before it would show).
+  void ExpectPromoFeatureNeverTriggers(const base::Feature& feature) {
+    EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(feature)))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::Ref(feature)))
+        .Times(0);
+  }
+
+  // Inserts a new `FakeWebState` into the `WebStateList` and returns it.
+  web::FakeWebState* InsertNewWebState(bool activate) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web::FakeWebState* raw_web_state = web_state.get();
+    WebStateList::InsertionParams params =
+        WebStateList::InsertionParams::Automatic();
+    if (activate) {
+      params = params.Activate();
+    }
+    browser()->GetWebStateList()->InsertWebState(std::move(web_state), params);
+    return raw_web_state;
+  }
+
+  // Simulates a successful page load on `web_state`.
+  void SimulatePageLoad(web::FakeWebState* web_state) {
+    web_state->SetLoading(true);
+    web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+    web_state->SetLoading(false);
+  }
+
   web::WebTaskEnvironment task_env_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
@@ -224,6 +269,151 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   task_env_.FastForwardBy(base::Seconds(2));
 
   [promo_commands_handler_ verify];
+}
+
+// Tests that when the app is entered via a first party scheme and the link
+// opens in a new, activated tab, the promo shows after that tab loads.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FirstPartySchemeInNewTabShowsPromo) {
+  AllowPromoFeature(
+      feature_engagement::kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature);
+
+  [scheduler_ logUserEnteredAppViaFirstPartyScheme];
+
+  // The link opens in a new tab, which becomes active.
+  web::FakeWebState* new_web_state = InsertNewWebState(/*activate=*/true);
+  SimulatePageLoad(new_web_state);
+
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher];
+  task_env_.FastForwardBy(base::Seconds(3));
+  EXPECT_OCMOCK_VERIFY(promo_commands_handler_);
+}
+
+// Tests that when the app is entered via a first party scheme with an empty
+// `WebStateList` and the link opens in a new, activated tab, the promo shows
+// after that tab loads.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FirstPartySchemeInNewTabWhenWebStateListEmptyShowsPromo) {
+  browser()->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
+  ASSERT_TRUE(browser()->GetWebStateList()->empty());
+  AllowPromoFeature(
+      feature_engagement::kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature);
+
+  [scheduler_ logUserEnteredAppViaFirstPartyScheme];
+
+  web::FakeWebState* new_web_state = InsertNewWebState(/*activate=*/true);
+  SimulatePageLoad(new_web_state);
+
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher];
+  task_env_.FastForwardBy(base::Seconds(3));
+  EXPECT_OCMOCK_VERIFY(promo_commands_handler_);
+}
+
+// Tests that when the app is entered via a first party scheme and a tab is
+// inserted in the background, the scheduler keeps listening to the active tab
+// rather than retargeting to the background tab.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FirstPartySchemeBackgroundNewTabDoesNotRetargetPromo) {
+  AllowPromoFeature(
+      feature_engagement::kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature);
+
+  [scheduler_ logUserEnteredAppViaFirstPartyScheme];
+
+  // Inserting a background tab leaves the initial active tab as the target.
+  InsertNewWebState(/*activate=*/false);
+  SimulatePageLoad(test_web_state());
+
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher];
+  task_env_.FastForwardBy(base::Seconds(3));
+  EXPECT_OCMOCK_VERIFY(promo_commands_handler_);
+}
+
+// Tests that retargeting to an inserted active tab happens at most once per
+// first party scheme entry, so opening a second active tab before page load
+// cancels the promo.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FirstPartySchemeSecondNewTabCancelsPromo) {
+  ExpectPromoFeatureNeverTriggers(
+      feature_engagement::kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature);
+
+  [scheduler_ logUserEnteredAppViaFirstPartyScheme];
+
+  // The external link opens in a first new active tab, then the user opens a
+  // second active tab before the first finishes loading.
+  InsertNewWebState(/*activate=*/true);
+  web::FakeWebState* second_web_state = InsertNewWebState(/*activate=*/true);
+  SimulatePageLoad(second_web_state);
+
+  // The strict mock fails if `showDefaultBrowserNonModalPromoWithReason:` is
+  // called.
+  task_env_.FastForwardBy(base::Seconds(3));
+}
+
+// Tests that once the initial tab finishes loading, closing the sole tab and
+// inserting a new active tab cancels the pending promo instead of re-arming it.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FirstPartySchemeNewTabAfterPageLoadCancelsPendingPromo) {
+  ExpectPromoFeatureNeverTriggers(
+      feature_engagement::kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature);
+
+  [scheduler_ logUserEnteredAppViaFirstPartyScheme];
+  SimulatePageLoad(test_web_state());
+
+  browser()->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
+  web::FakeWebState* new_web_state = InsertNewWebState(/*activate=*/true);
+  SimulatePageLoad(new_web_state);
+
+  // The strict mock fails if `showDefaultBrowserNonModalPromoWithReason:` is
+  // called.
+  task_env_.FastForwardBy(base::Seconds(3));
+}
+
+// Tests that retargeting is only allowed for the first insertion after a first
+// party scheme entry, so a background insertion followed by a new active tab
+// cancels the promo instead of retargeting to the unrelated tab.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FirstPartySchemeBackgroundThenActiveNewTabCancelsPromo) {
+  ExpectPromoFeatureNeverTriggers(
+      feature_engagement::kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature);
+
+  [scheduler_ logUserEnteredAppViaFirstPartyScheme];
+
+  InsertNewWebState(/*activate=*/false);
+  web::FakeWebState* new_web_state = InsertNewWebState(/*activate=*/true);
+  SimulatePageLoad(new_web_state);
+
+  // The strict mock fails if `showDefaultBrowserNonModalPromoWithReason:` is
+  // called.
+  task_env_.FastForwardBy(base::Seconds(3));
+}
+
+// Tests that when the link opens in Incognito, a later unrelated new active tab
+// in the main `WebStateList` cancels the promo instead of retargeting.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FirstPartySchemeIncognitoThenNewTabCancelsPromo) {
+  ExpectPromoFeatureNeverTriggers(
+      feature_engagement::kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature);
+
+  [scheduler_ logUserEnteredAppViaFirstPartyScheme];
+
+  // The link opens in Incognito, then the user returns to regular mode and
+  // opens a new tab.
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+  web::FakeWebState* new_web_state = InsertNewWebState(/*activate=*/true);
+  SimulatePageLoad(new_web_state);
+
+  // The strict mock fails if `showDefaultBrowserNonModalPromoWithReason:` is
+  // called.
+  task_env_.FastForwardBy(base::Seconds(3));
 }
 
 // Tests that the completed share event triggers the promo.

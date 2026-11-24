@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -65,6 +66,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 @interface NonModalDefaultBrowserPromoSchedulerSceneAgent () <
     BrowserObserving,
     CRWWebStateObserver,
+    IncognitoStateObserver,
     OverlayPresenterObserving,
     WebStateListObserving> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
@@ -83,6 +85,14 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 
   __weak id<DefaultBrowserPromoNonModalCommands> _handler;
   NSInteger _userInteractionWithNonModalPromoCount;
+
+  // Whether `webStateToListenTo` may switch once to a newly inserted active
+  // `WebState` for the current `PromoReasonAppSwitcher` flow. Only the first
+  // insertion or activation after entering the app can be the opened link's
+  // tab, so this is reset to `NO` on that change, on entering Incognito (the
+  // link opened outside the observed `WebStateList`), and whenever
+  // `webStateToListenTo` is reassigned (see `-setWebStateToListenTo:`).
+  BOOL _canRetargetToInsertedWebState;
 }
 
 // Time when a promo was shown on screen, used for metrics only.
@@ -192,9 +202,11 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
     return;
   }
 
-  // Store the current web state, so when that web state's page load finishes,
+  // Store the current `WebState` (and allow retargeting once if the link opens
+  // in a new active `WebState`), so when that `WebState`'s page load finishes,
   // the promo can be shown.
   self.webStateToListenTo = self.webStateList->GetActiveWebState();
+  _canRetargetToInsertedWebState = YES;
 }
 
 - (void)logPromoWasDismissed {
@@ -323,6 +335,13 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   }
 }
 
+- (void)setWebStateToListenTo:(web::WebState*)webStateToListenTo {
+  _webStateToListenTo = webStateToListenTo;
+  // Any (re)assignment, including retargeting and clearing, disarms
+  // retargeting; only `-logUserEnteredAppViaFirstPartyScheme` re-arms it.
+  _canRetargetToInsertedWebState = NO;
+}
+
 - (void)setWebStateList:(WebStateList*)webStateList {
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
@@ -376,17 +395,19 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
       // Do nothing when a WebState is replaced.
       break;
     case WebStateListChange::Type::kInsert: {
-      // For the external link open, the opened link can open in a new WebState.
-      // Assume that is the case if a new WebState is inserted and activated
-      // when the current web state is the one that was active when the link was
-      // opened.
-      if (self.currentPromoReason ==
+      // For the external link open, the opened link can open in a new
+      // `WebState`. Assume that is the case if a new `WebState` is inserted and
+      // activated when the previously active `WebState` is the one that was
+      // active when the link was opened. Observers are notified after the
+      // activation, so compare against `status.old_active_web_state`.
+      if (_canRetargetToInsertedWebState &&
+          self.currentPromoReason ==
               NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher &&
-          self.webStateList->GetActiveWebState() == self.webStateToListenTo &&
+          status.old_active_web_state == self.webStateToListenTo &&
           status.active_web_state_change()) {
-        const WebStateListChangeInsert& insertChange =
-            change.As<WebStateListChangeInsert>();
-        self.webStateToListenTo = insertChange.inserted_web_state();
+        // `-setWebStateToListenTo:` also resets
+        // `_canRetargetToInsertedWebState`, so this retargets at most once.
+        self.webStateToListenTo = status.new_active_web_state;
       }
       break;
     }
@@ -404,11 +425,26 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
       break;
   }
 
+  // Only the first insertion or activation after entering the app can be the
+  // opened link's tab, so later ones must not retarget.
+  if (change.type() == WebStateListChange::Type::kInsert ||
+      status.active_web_state_change()) {
+    _canRetargetToInsertedWebState = NO;
+  }
+
   if (status.active_web_state_change()) {
     if (status.new_active_web_state != self.webStateToListenTo) {
       [self cancelShowPromoTimer];
     }
   }
+}
+
+#pragma mark - IncognitoStateObserver
+
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  // The link opened in Incognito, outside the observed `WebStateList`, so a
+  // later insertion in the main `WebStateList` is unrelated to it.
+  _canRetargetToInsertedWebState = NO;
 }
 
 #pragma mark - CRWWebStateObserver
@@ -444,12 +480,14 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  [sceneState.incognitoState removeObserver:self];
   self.browser = nullptr;
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   self.browser = self.sceneState.browserProviderInterface.mainBrowser;
   CHECK(self.browser);
+  [sceneState.incognitoState addObserver:self];
 }
 
 #pragma mark - BrowserObserving
