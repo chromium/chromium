@@ -31,7 +31,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -101,10 +100,6 @@
 #include "services/network/public/mojom/system_dns_resolution.mojom-forward.h"
 #include "services/network/restricted_cookie_manager.h"
 #include "services/network/url_loader.h"
-
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
-#include "third_party/boringssl/src/include/openssl/cpu.h"
-#endif
 
 #if BUILDFLAG(IS_LINUX)
 #include "services/network/network_change_notifier_passive_factory.h"
@@ -450,13 +445,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   TRACE_EVENT0("loading", "NetworkService::Initialize");
 
   initialized_ = true;
-
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
-  // Measure Android kernels with missing AT_HWCAP2 auxv fields. See
-  // https://crbug.com/boringssl/46.
-  UMA_HISTOGRAM_BOOLEAN("Net.NeedsHWCAP2Workaround",
-                        CRYPTO_needs_hwcap2_workaround());
-#endif
 
   if (!params->environment.empty()) {
     SetEnvironment(std::move(params->environment));

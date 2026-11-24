@@ -76,11 +76,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Not QUIC, destination different from origin"/>
 </enum>
 
-<enum name="BooleanBroken">
-  <int value="0" label="Not Broken"/>
-  <int value="1" label="Broken"/>
-</enum>
-
 <enum name="BooleanCoalesced">
   <int value="0" label="not coalesced"/>
   <int value="1" label="coalesced"/>
