@@ -42,8 +42,10 @@ void FakeIOSPasskeyClient::FetchTrustedVaultKeys(
 }
 
 void FakeIOSPasskeyClient::FetchDeviceAuthorizationKeys(
+    bool allow_reauth,
     FetchDeviceAuthKeysCallback callback) {
   fetch_device_authorization_keys_called_ = true;
+  last_device_auth_allow_reauth_ = allow_reauth;
   std::move(callback).Run(device_auth_fetch_result_);
 }
 
@@ -102,6 +104,11 @@ std::optional<bool> FakeIOSPasskeyClient::last_allow_trusted_vault_ui() const {
 
 bool FakeIOSPasskeyClient::DidFetchDeviceAuthorizationKeys() const {
   return fetch_device_authorization_keys_called_;
+}
+
+std::optional<bool> FakeIOSPasskeyClient::last_device_auth_allow_reauth()
+    const {
+  return last_device_auth_allow_reauth_;
 }
 
 void FakeIOSPasskeyClient::SetDeviceAuthFetchResult(

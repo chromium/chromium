@@ -454,7 +454,8 @@ TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeys) {
   client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
-  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+  client_->FetchDeviceAuthorizationKeys(/*allow_reauth=*/true,
+                                        future.GetCallback());
 
   const webauthn::DeviceAuthorizationKeys* fetched_keys = future.Get().keys();
   ASSERT_TRUE(fetched_keys);
@@ -475,7 +476,8 @@ TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeysError) {
   client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
-  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+  client_->FetchDeviceAuthorizationKeys(/*allow_reauth=*/true,
+                                        future.GetCallback());
 
   EXPECT_EQ(future.Get().status(),
             webauthn::DeviceAuthFetchResult::Status::kError);
@@ -505,7 +507,8 @@ TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeysReAuthSucceeds) {
       SetUpEmbeddedReAuthCommandTarget("test_reauth_proof_token");
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
-  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+  client_->FetchDeviceAuthorizationKeys(/*allow_reauth=*/true,
+                                        future.GetCallback());
 
   const webauthn::DeviceAuthorizationKeys* fetched_keys = future.Get().keys();
   ASSERT_TRUE(fetched_keys);
@@ -532,7 +535,8 @@ TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeysReAuthFails) {
       SetUpEmbeddedReAuthCommandTarget("");
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
-  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+  client_->FetchDeviceAuthorizationKeys(/*allow_reauth=*/true,
+                                        future.GetCallback());
 
   EXPECT_EQ(future.Get().status(),
             webauthn::DeviceAuthFetchResult::Status::kError);
@@ -540,6 +544,33 @@ TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeysReAuthFails) {
   EXPECT_NSEQ(reauth_target.lastPackagedLookupToken,
               @"test_packaged_lookup_token");
   EXPECT_OCMOCK_VERIFY(strict_commands_mock_);
+}
+
+// Tests that when ReAuth is required but `allow_reauth` is `false`,
+// `FetchDeviceAuthorizationKeys` returns an error without presenting ReAuth UI
+// or retrying.
+TEST_F(IOSChromePasskeyClientTest,
+       FetchDeviceAuthorizationKeysReAuthNotAllowed) {
+  webauthn::DeviceAuthorizationReAuthParams reauth_params;
+  reauth_params.set_plt("test_packaged_lookup_token");
+
+  EXPECT_CALL(*device_authorization_service_, GetOrFetchKeys)
+      .WillOnce(
+          RunOnceCallback<0>(webauthn::DeviceAuthFetchResult(reauth_params)));
+  EXPECT_CALL(*device_authorization_service_, FetchKeysWithReAuthToken)
+      .Times(0);
+
+  id<IOSPasskeyClientCommands> strict_commands_handler =
+      OCMStrictProtocolMock(@protocol(IOSPasskeyClientCommands));
+  client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client_->FetchDeviceAuthorizationKeys(/*allow_reauth=*/false,
+                                        future.GetCallback());
+
+  EXPECT_EQ(future.Get().status(),
+            webauthn::DeviceAuthFetchResult::Status::kError);
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)strict_commands_handler);
 }
 
 // Tests that when ReAuth is required with an empty Packaged Lookup Token,
@@ -560,7 +591,8 @@ TEST_F(IOSChromePasskeyClientTest,
   client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
-  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+  client_->FetchDeviceAuthorizationKeys(/*allow_reauth=*/true,
+                                        future.GetCallback());
 
   EXPECT_EQ(future.Get().status(),
             webauthn::DeviceAuthFetchResult::Status::kError);
@@ -583,7 +615,8 @@ TEST_F(IOSChromePasskeyClientTest,
   client_->SetIOSPasskeyClientCommandsHandler(nil);
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
-  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+  client_->FetchDeviceAuthorizationKeys(/*allow_reauth=*/true,
+                                        future.GetCallback());
 
   EXPECT_EQ(future.Get().status(),
             webauthn::DeviceAuthFetchResult::Status::kError);
@@ -601,7 +634,8 @@ TEST_F(IOSChromePasskeyClientTest, DeviceAuthorizationServiceNull) {
   IOSChromePasskeyClient client(&fake_web_state);
 
   base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
-  client.FetchDeviceAuthorizationKeys(future.GetCallback());
+  client.FetchDeviceAuthorizationKeys(/*allow_reauth=*/true,
+                                      future.GetCallback());
 
   EXPECT_EQ(future.Get().status(),
             webauthn::DeviceAuthFetchResult::Status::kError);

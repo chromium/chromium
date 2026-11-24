@@ -32,6 +32,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
       bool allow_ui,
       FetchTrustedVaultKeysCallback callback) override;
   void FetchDeviceAuthorizationKeys(
+      bool allow_reauth,
       FetchDeviceAuthKeysCallback callback) override;
   void ShowSuggestionBottomSheet(RequestInfo request_info) override;
   void ShowCreationBottomSheet(RequestInfo request_info) override;
@@ -56,6 +57,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   void SetTrustedVaultKeys(SharedKeyList keys);
   std::optional<bool> last_allow_trusted_vault_ui() const;
   bool DidFetchDeviceAuthorizationKeys() const;
+  std::optional<bool> last_device_auth_allow_reauth() const;
   void SetDeviceAuthFetchResult(DeviceAuthFetchResult result);
   bool DidShowInterstitial() const;
   bool DidOnPasskeyCreated() const;
@@ -73,6 +75,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   std::optional<SharedKeyList> trusted_vault_keys_;
   std::optional<bool> last_allow_trusted_vault_ui_;
   bool fetch_device_authorization_keys_called_ = false;
+  std::optional<bool> last_device_auth_allow_reauth_;
   DeviceAuthFetchResult device_auth_fetch_result_;
   bool show_interstitial_called_ = false;
   bool interstitial_proceeds_ = true;

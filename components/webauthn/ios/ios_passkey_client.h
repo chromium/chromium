@@ -70,10 +70,12 @@ class IOSPasskeyClient {
       bool allow_ui,
       FetchTrustedVaultKeysCallback callback) = 0;
 
-  // Fetches the device authorization keys, which are needed to decrypt
-  // passkeys stored in the `security_domain_encrypted` format, and calls
-  // `callback` with the result.
+  // Fetches the device authorization keys, which are needed to encrypt and
+  // decrypt passkeys stored in the `security_domain_encrypted` format, and
+  // calls `callback` with the result. When `allow_reauth` is `true`, embedded
+  // ReAuth UI may be presented if required to fetch the keys.
   virtual void FetchDeviceAuthorizationKeys(
+      bool allow_reauth,
       FetchDeviceAuthKeysCallback callback) = 0;
 
   // Shows the bottom sheet with passkey suggestions.

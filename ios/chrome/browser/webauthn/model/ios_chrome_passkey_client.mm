@@ -252,6 +252,7 @@ void IOSChromePasskeyClient::FetchTrustedVaultKeys(
 }
 
 void IOSChromePasskeyClient::FetchDeviceAuthorizationKeys(
+    bool allow_reauth,
     webauthn::FetchDeviceAuthKeysCallback callback) {
   webauthn::DeviceAuthorizationService* service =
       IOSDeviceAuthorizationServiceFactory::GetForProfile(profile_);
@@ -261,12 +262,13 @@ void IOSChromePasskeyClient::FetchDeviceAuthorizationKeys(
   }
 
   // TODO(crbug.com/586442316): Explore showing a spinner while fetching keys.
-  service->GetOrFetchKeys(
-      base::BindOnce(&IOSChromePasskeyClient::OnDeviceAuthorizationKeysFetched,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  service->GetOrFetchKeys(base::BindOnce(
+      &IOSChromePasskeyClient::OnDeviceAuthorizationKeysFetched,
+      weak_ptr_factory_.GetWeakPtr(), allow_reauth, std::move(callback)));
 }
 
 void IOSChromePasskeyClient::OnDeviceAuthorizationKeysFetched(
+    bool allow_reauth,
     webauthn::FetchDeviceAuthKeysCallback callback,
     webauthn::DeviceAuthFetchResult result) {
   if (result.status() !=
@@ -277,7 +279,8 @@ void IOSChromePasskeyClient::OnDeviceAuthorizationKeysFetched(
 
   const webauthn::DeviceAuthorizationReAuthParams* reauth_params =
       result.reauth_params();
-  if (!command_handler_ || !reauth_params || reauth_params->plt().empty()) {
+  if (!allow_reauth || !command_handler_ || !reauth_params ||
+      reauth_params->plt().empty()) {
     std::move(callback).Run(webauthn::DeviceAuthFetchResult());
     return;
   }
