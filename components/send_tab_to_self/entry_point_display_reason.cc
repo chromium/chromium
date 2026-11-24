@@ -4,6 +4,7 @@
 
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -20,6 +21,12 @@ namespace {
 
 bool IsSigninPossible(syncer::SyncService* sync_service,
                       PrefService* pref_service) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // In-browser sign-in is not supported on ChromeOS because accounts are
+  // managed at the OS level. Sessions without a Gaia account (such as Managed
+  // Guest Sessions and kiosk sessions) cannot sign in via a browser promo.
+  return false;
+#else
   const bool signin_allowed = pref_service->GetBoolean(prefs::kSigninAllowed);
   if (!signin_allowed) {
     return false;
@@ -32,12 +39,7 @@ bool IsSigninPossible(syncer::SyncService* sync_service,
   }
 
   return true;
-}
-
-bool ShouldOfferSignin(syncer::SyncService* sync_service,
-                       PrefService* pref_service) {
-  return IsSigninPossible(sync_service, pref_service) &&
-         sync_service->GetAccountInfo().IsEmpty();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool ShouldOfferReauth(syncer::SyncService* sync_service,
@@ -104,8 +106,10 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     return std::nullopt;
   }
 
-  if (ShouldOfferSignin(sync_service, pref_service)) {
-    return EntryPointDisplayReason::kOfferSignIn;
+  if (sync_service->GetAccountInfo().IsEmpty()) {
+    return IsSigninPossible(sync_service, pref_service)
+               ? std::make_optional(EntryPointDisplayReason::kOfferSignIn)
+               : std::nullopt;
   }
 
   if (ShouldOfferReauth(sync_service, pref_service)) {

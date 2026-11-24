@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
@@ -50,12 +51,38 @@ class EntryPointDisplayReasonTest : public Test {
   TestingPrefServiceSimple pref_service_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Verifies that the entry point is hidden when signed out on ChromeOS (e.g.
+// Managed Guest Sessions or kiosk sessions) even when sign-in is allowed by
+// prefs and the model reports ready.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfSignedOut) {
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+
+  // Also ensure a ready model does not fall through to `kInformNoTargetDevice`
+  // or `kOfferFeature` when there is no signed-in account.
+  send_tab_to_self_model()->SetIsReady(true);
+  send_tab_to_self_model()->SetHasValidTargetDevice(false);
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+
+  send_tab_to_self_model()->SetHasValidTargetDevice(true);
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
+#else
+// Verifies that the sign-in promo is offered when the user is signed out on
+// platforms that support in-browser sign-in.
 TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSignedOut) {
   EXPECT_EQ(
       EntryPointDisplayReason::kOfferSignIn,
       GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
                                  send_tab_to_self_model(), pref_service()));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Verifies that the reauth promo is offered when the user is in a sign-in
@@ -69,11 +96,81 @@ TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSigninPending) {
       GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
                                  send_tab_to_self_model(), pref_service()));
 }
+
+// Verifies that the reauth promo is hidden when sign-in is disallowed by pref.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideReauthPromoIfSigninDisallowed) {
+  SignIn();
+  sync_service()->SetPersistentAuthError();
+  pref_service()->SetBoolean(prefs::kSigninAllowed, false);
+
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
+
+// Verifies that the reauth promo is hidden when sync is disabled by enterprise
+// policy while in a sign-in pending state.
+TEST_F(EntryPointDisplayReasonTest,
+       ShouldHideReauthPromoIfSyncDisabledByPolicy) {
+  SignIn();
+  sync_service()->SetPersistentAuthError();
+  sync_service()->SetAllowedByEnterprisePolicy(false);
+
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
+#else
+// Verifies that the entry point is hidden on non-DICE platforms when the user
+// is in a persistent auth error state.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfSigninPending) {
+  SignIn();
+  sync_service()->SetPersistentAuthError();
+  send_tab_to_self_model()->SetIsReady(true);
+
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+// Verifies that the entry point is hidden when signed out and browser sign-in
+// is disallowed by `prefs::kSigninAllowed`, even if the model is ready.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfSigninDisallowed) {
+  pref_service()->SetBoolean(prefs::kSigninAllowed, false);
+
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+
+  send_tab_to_self_model()->SetIsReady(true);
+  send_tab_to_self_model()->SetHasValidTargetDevice(true);
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
+
+// Verifies that the entry point is hidden when local sync is enabled and there
+// is no signed-in account, even if the model reports ready.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfLocalSyncEnabled) {
+  sync_service()->SetLocalSyncEnabled(true);
+  send_tab_to_self_model()->SetIsReady(true);
+
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+}
+
+// Verifies that the entry point is hidden when sync is disabled by enterprise
+// policy while signed out, even if the model reports ready.
 TEST_F(EntryPointDisplayReasonTest, ShouldHidePromoIfSyncDisabledByPolicy) {
   sync_service()->SetAllowedByEnterprisePolicy(false);
 
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          send_tab_to_self_model(),
+                                          pref_service()));
+
+  send_tab_to_self_model()->SetIsReady(true);
   EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
                                           send_tab_to_self_model(),
                                           pref_service()));
