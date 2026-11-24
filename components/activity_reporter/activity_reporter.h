@@ -20,7 +20,8 @@ class NetworkFetcherFactory;
 
 namespace activity_reporter {
 
-// The persisted DateLastActive state when ActivityReporter is constructed.
+// The persisted DateLastActive state of `kChromeActivityId` at the first report
+// in a session.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

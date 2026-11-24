@@ -60,6 +60,15 @@ using CrxComponents = std::vector<std::optional<update_client::CrxComponent>>;
 // to commit.
 constexpr char kTestPref[] = "test_pref";
 
+// A pref service with the update_client prefs and `kTestPref` registered.
+class TestPrefService : public TestingPrefServiceSimple {
+ public:
+  TestPrefService() {
+    update_client::RegisterPrefs(registry());
+    registry()->RegisterIntegerPref(kTestPref, 0);
+  }
+};
+
 // The daynum that tests write as if an update check had succeeded.
 constexpr int kTestDaynum = 7100;
 
@@ -136,18 +145,6 @@ std::unique_ptr<ActivityReporter> CreateReporterForPrefs(
 
 class ActivityReporterImplTest : public testing::Test {
  protected:
-  ActivityReporterImplTest() {
-    update_client::RegisterPrefs(pref_service_.registry());
-    pref_service_.registry()->RegisterIntegerPref(kTestPref, 0);
-    persisted_data_ = update_client::CreatePersistedData(
-        base::BindRepeating([](PrefService* prefs) { return prefs; },
-                            &pref_service_),
-        /*activity_data_service=*/nullptr);
-    // The default clock reads the mock time that update_client uses to time
-    // the ping freshness. `task_environment_.GetMockClock()` is offset from it.
-    activity_reporter_ = CreateReporter(base::DefaultClock::GetInstance());
-  }
-
   // Creates a reporter that uses the prefs and update client of this fixture,
   // and reads the time from `clock`.
   std::unique_ptr<ActivityReporter> CreateReporter(const base::Clock* clock) {
@@ -219,15 +216,22 @@ class ActivityReporterImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingPrefServiceSimple pref_service_;
+  TestPrefService pref_service_;
   // What the reporter's pref service provider returns. Tests may clear it to
   // simulate a missing pref service.
   raw_ptr<PrefService> provided_pref_service_ = &pref_service_;
   // Reads and writes the update_client data in `pref_service_`.
-  std::unique_ptr<update_client::PersistedData> persisted_data_;
+  std::unique_ptr<update_client::PersistedData> persisted_data_ =
+      update_client::CreatePersistedData(
+          base::BindRepeating([](PrefService* prefs) { return prefs; },
+                              &pref_service_),
+          /*activity_data_service=*/nullptr);
   scoped_refptr<MockUpdateClient> mock_update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
-  std::unique_ptr<ActivityReporter> activity_reporter_;
+  // The default clock reads the mock time that update_client uses to time the
+  // ping freshness. `task_environment_.GetMockClock()` is offset from it.
+  std::unique_ptr<ActivityReporter> activity_reporter_ =
+      CreateReporter(base::DefaultClock::GetInstance());
 };
 
 TEST_F(ActivityReporterImplTest, ReportActiveThrottles) {
@@ -312,13 +316,21 @@ TEST_F(ActivityReporterImplTest, ReportActiveNoMarkerWithoutPrefService) {
   provided_pref_service_ = nullptr;
   EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _));
 
+  base::HistogramTester histogram_tester;
   activity_reporter_->ReportActive();
   EXPECT_EQ(GetDateLastActive(kChromeActivityId), update_client::kDateUnknown);
+  // Without prefs, the persisted state reads as unknown.
+  histogram_tester.ExpectUniqueSample(
+      "ActivityReporter.InitialDateLastActiveState",
+      InitialDateLastActiveState::kUnknown, 1);
 }
 
-TEST_F(ActivityReporterImplTest, ConstructionWritesNoPrefs) {
+TEST_F(ActivityReporterImplTest, ConstructionRecordsNoMetricsAndWritesNoPrefs) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<ActivityReporter> reporter =
       CreateReporterForPrefs(&pref_service_);
+  histogram_tester.ExpectTotalCount(
+      "ActivityReporter.InitialDateLastActiveState", 0);
   EXPECT_FALSE(
       pref_service_.HasPrefPath(update_client::kPersistedDataPreference));
 }
@@ -626,12 +638,10 @@ TEST_F(ActivityReporterImplTest, IncompleteReportsMultipleInFlight) {
 }
 
 TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateUnknown) {
-  TestingPrefServiceSimple pref_service;
-  update_client::RegisterPrefs(pref_service.registry());
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _));
 
   base::HistogramTester histogram_tester;
-  std::unique_ptr<ActivityReporter> reporter =
-      CreateReporterForPrefs(&pref_service);
+  activity_reporter_->ReportActive();
   histogram_tester.ExpectUniqueSample(
       "ActivityReporter.InitialDateLastActiveState",
       InitialDateLastActiveState::kUnknown, 1);
@@ -639,58 +649,55 @@ TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateUnknown) {
 
 TEST_F(ActivityReporterImplTest,
        InitialDateLastActiveStateFirstTimeUnpersisted) {
-  TestingPrefServiceSimple pref_service;
-  update_client::RegisterPrefs(pref_service.registry());
-  std::unique_ptr<update_client::PersistedData> persisted_data =
-      update_client::CreatePersistedData(
-          base::BindRepeating([](PrefService* prefs) { return prefs; },
-                              &pref_service),
-          nullptr);
-  persisted_data->SetDateLastActive(std::string(kChromeActivityId),
-                                    update_client::kDateFirstTime);
+  persisted_data_->SetDateLastActive(std::string(kChromeActivityId),
+                                     update_client::kDateFirstTime);
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _));
 
   base::HistogramTester histogram_tester;
-  std::unique_ptr<ActivityReporter> reporter =
-      CreateReporterForPrefs(&pref_service);
+  activity_reporter_->ReportActive();
   histogram_tester.ExpectUniqueSample(
       "ActivityReporter.InitialDateLastActiveState",
       InitialDateLastActiveState::kFirstTimeUnpersisted, 1);
 }
 
 TEST_F(ActivityReporterImplTest, InitialDateLastActiveStatePersisted) {
-  TestingPrefServiceSimple pref_service;
-  update_client::RegisterPrefs(pref_service.registry());
-  std::unique_ptr<update_client::PersistedData> persisted_data =
-      update_client::CreatePersistedData(
-          base::BindRepeating([](PrefService* prefs) { return prefs; },
-                              &pref_service),
-          nullptr);
-  persisted_data->SetDateLastActive(std::string(kChromeActivityId), 7100);
+  persisted_data_->SetDateLastActive(std::string(kChromeActivityId), 7100);
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _));
 
   base::HistogramTester histogram_tester;
-  std::unique_ptr<ActivityReporter> reporter =
-      CreateReporterForPrefs(&pref_service);
+  activity_reporter_->ReportActive();
   histogram_tester.ExpectUniqueSample(
       "ActivityReporter.InitialDateLastActiveState",
       InitialDateLastActiveState::kPersisted, 1);
 }
 
 TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateInvalid) {
-  TestingPrefServiceSimple pref_service;
-  update_client::RegisterPrefs(pref_service.registry());
-  std::unique_ptr<update_client::PersistedData> persisted_data =
-      update_client::CreatePersistedData(
-          base::BindRepeating([](PrefService* prefs) { return prefs; },
-                              &pref_service),
-          nullptr);
-  persisted_data->SetDateLastActive(std::string(kChromeActivityId), -3);
+  persisted_data_->SetDateLastActive(std::string(kChromeActivityId), -3);
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _));
 
   base::HistogramTester histogram_tester;
-  std::unique_ptr<ActivityReporter> reporter =
-      CreateReporterForPrefs(&pref_service);
+  activity_reporter_->ReportActive();
   histogram_tester.ExpectUniqueSample(
       "ActivityReporter.InitialDateLastActiveState",
       InitialDateLastActiveState::kInvalid, 1);
+}
+
+TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateRecordedOnce) {
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _)).Times(2);
+
+  base::HistogramTester histogram_tester;
+  activity_reporter_->ReportActive();
+  histogram_tester.ExpectUniqueSample(
+      "ActivityReporter.InitialDateLastActiveState",
+      InitialDateLastActiveState::kUnknown, 1);
+
+  // Later reports, throttled or not, don't record it again.
+  activity_reporter_->ReportActive();
+  task_environment_.FastForwardBy(base::Hours(5));
+  activity_reporter_->ReportActive();
+  histogram_tester.ExpectUniqueSample(
+      "ActivityReporter.InitialDateLastActiveState",
+      InitialDateLastActiveState::kUnknown, 1);
 }
 
 TEST_F(ActivityReporterImplTest, ReportActiveIgnoresLastReportInFuture) {

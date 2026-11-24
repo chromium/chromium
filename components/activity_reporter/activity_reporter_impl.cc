@@ -99,12 +99,7 @@ class ActivityReporterImpl final : public ActivityReporter {
         updater_active_callback_(std::move(updater_active_callback)),
         channel_provider_(std::move(channel_provider)),
         brand_provider_(std::move(brand_provider)),
-        clock_(base::DefaultClock::GetInstance()) {
-    base::UmaHistogramEnumeration(
-        "ActivityReporter.InitialDateLastActiveState",
-        ToState(configurator_->GetPersistedData()->GetDateLastActive(
-            std::string(kChromeActivityId))));
-  }
+        clock_(base::DefaultClock::GetInstance()) {}
 
   ActivityReporterImpl(
       base::RepeatingCallback<PrefService*()> pref_service_provider,
@@ -198,13 +193,16 @@ class ActivityReporterImpl final : public ActivityReporter {
   }
 
  private:
-  // Marks the first report of this session as the browser's first-ever active
-  // report if the browser has no persisted DateLastActive. Does nothing if the
-  // pref service provider returns null.
+  // Records `ActivityReporter.InitialDateLastActiveState`, then marks the first
+  // report of this session as the browser's first-ever active report if the
+  // browser has no persisted DateLastActive.
   void PrepareFirstReport() {
     update_client::PersistedData* data = configurator_->GetPersistedData();
     const std::string app_id(kChromeActivityId);
-    if (data->GetDateLastActive(app_id) == update_client::kDateUnknown) {
+    const int date_last_active = data->GetDateLastActive(app_id);
+    base::UmaHistogramEnumeration("ActivityReporter.InitialDateLastActiveState",
+                                  ToState(date_last_active));
+    if (date_last_active == update_client::kDateUnknown) {
       // The pref store's scheduled write, or `OnCheckForUpdateComplete()` if it
       // runs first, commits this write. If the write is lost before then, the
       // next launch finds the date unknown and sends the same first-time ping.
