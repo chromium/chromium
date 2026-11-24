@@ -2,7 +2,6 @@
 -PasswordManagerBrowserTest.*
 -ContentScriptApiTest.ContentScriptBlobFetch
 -CredentialManagerBrowserTest.*
--DiceManageAccountBrowserTest.ClearManagedProfileOnStartup
 -PasswordManagerDialogBrowserTest.InvokeUi_normal
 -PopupTrackerBrowserTest.ControlClick_HasTracker
 -PrerenderBrowserTest.AutosigninInPrerenderer

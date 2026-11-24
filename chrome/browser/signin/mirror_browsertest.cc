@@ -93,7 +93,7 @@ class ThrottleContentBrowserClient : public ChromeContentBrowserClient {
   const GURL watch_url_;
 };
 
-// Subclass of DiceManageAccountBrowserTest with Mirror enabled.
+// Browser test fixture with Mirror account consistency enabled.
 class MirrorBrowserTest : public InProcessBrowserTest {
  protected:
   MirrorBrowserTest() {

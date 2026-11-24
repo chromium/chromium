@@ -9,15 +9,22 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/apps/platform_apps/shortcut_manager.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -28,19 +35,29 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/accounts_policy_manager_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -233,46 +250,169 @@ IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerBrowserTest,
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerBrowserTest,
+// Fixture for startup profile-deletion tests. Unlike `SigninBrowserTestBase`,
+// this does not attach `IdentityTestEnvironmentProfileAdaptor` to `browser()`
+// in `SetUpOnMainThread()`, because `AccountsPolicyManager` asynchronously
+// deletes the initial profile and closes its browser during startup.
+class AccountsPolicyManagerStartupBrowserTest : public InProcessBrowserTest {
+ public:
+  AccountsPolicyManagerStartupBrowserTest() = default;
+  ~AccountsPolicyManagerStartupBrowserTest() override = default;
+
+  AccountsPolicyManagerStartupBrowserTest(
+      const AccountsPolicyManagerStartupBrowserTest&) = delete;
+  AccountsPolicyManagerStartupBrowserTest& operator=(
+      const AccountsPolicyManagerStartupBrowserTest&) = delete;
+
+  void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
+    // See crbug.com/40686320.
+    AppShortcutManager::SuppressShortcutsForTesting();
+#endif
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    url_loader_helper_.SetUp();
+    // Ignore native window activation changes from parallel browser test
+    // shards so `DeleteProfileDialogManager` is not stalled by focus loss.
+    views::DisableActivationChangeHandlingForTests();
+  }
+
+ private:
+  ChromeSigninClientWithURLLoaderHelper url_loader_helper_;
+  base::AutoReset<bool> skip_message_box_for_test_{
+      &chrome::internal::g_should_skip_message_box_for_test, true};
+};
+
+IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerStartupBrowserTest,
                        PRE_ProfileSigninAllowedPrefChanged_Managed) {
-  // Sign in with a managed account.
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kManagedEmail, signin::ConsentLevel::kSignin);
-  enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
-  ASSERT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+  ASSERT_TRUE(local_state->GetList(prefs::kProfilesDeleted).empty());
 
-  // Toggle the pref.
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowedOnNextStartup,
-                                       false);
-
-  // Verify that the user is still signed in (pref doesn't take effect
-  // immediately).
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Also verify that the test has been using the initial profile.
-  EXPECT_EQ(GetProfile()->GetPath(),
+  Profile* profile = browser()->GetProfile();
+  EXPECT_EQ(profile->GetPath(),
             g_browser_process->profile_manager()->user_data_dir().AppendASCII(
                 chrome::kInitialProfile));
+
+  // Sign in with a managed primary account and a secondary account.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, kManagedEmail, signin::ConsentLevel::kSignin);
+  AccountInfo secondary_account_info =
+      signin::MakeAccountAvailable(identity_manager, kNonManagedEmail);
+  enterprise_util::SetUserAcceptedAccountManagement(profile, true);
+
+  // Prohibit sign-in on next start-up.
+  profile->GetPrefs()->SetBoolean(prefs::kSigninAllowedOnNextStartup, false);
+
+  // Verify that the user remains signed in with valid tokens until restart.
+  EXPECT_EQ(
+      primary_account_info.GetAccountId(),
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      primary_account_info.GetAccountId()));
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_info.GetAccountId()));
+  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      secondary_account_info.GetAccountId()));
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          secondary_account_info.GetAccountId()));
 }
 
-IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerStartupBrowserTest,
                        ProfileSigninAllowedPrefChanged_Managed) {
-  // `AccountsPolicyManager` should have deleted the original profile before the
-  // test started.
-  base::FilePath default_profile_path =
-      g_browser_process->profile_manager()->user_data_dir().AppendASCII(
-          chrome::kInitialProfile);
+  // Startup deletes the initial profile and closes its browser asynchronously;
+  // clear `browser_` until the replacement browser window is ready.
+  SetBrowser(nullptr);
 
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(default_profile_path);
-  EXPECT_FALSE(entry);
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const base::FilePath initial_profile_path =
+      profile_manager->user_data_dir().AppendASCII(chrome::kInitialProfile);
 
-  // The current profile should be different.
-  EXPECT_NE(browser()->GetProfile()->GetPath(), default_profile_path);
+  // If the initial profile still has an open browser window that has not been
+  // activated yet, lock paint-as-active and activate it so
+  // `DeleteProfileDialogManager` proceeds with profile deletion without losing
+  // active state to transient child widgets.
+  std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock;
+  if (Profile* initial_profile =
+          profile_manager->GetProfileByPath(initial_profile_path)) {
+    ProfileBrowserCollection::GetForProfile(initial_profile)
+        ->ForEach([&](BrowserWindowInterface* browser_window) {
+          if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+                  browser_window->GetWindow()->GetNativeWindow())) {
+            paint_as_active_lock = widget->LockPaintAsActive();
+          }
+          BrowserActiveStateManager::From(browser_window)->DidBecomeActive();
+          return false;
+        });
+  }
+
+  // Wait for the initial profile to be marked for deletion if startup deletion
+  // has not reached `MarkProfileDirectoryForDeletion()` yet.
+  if (local_state->GetList(prefs::kProfilesDeleted).empty()) {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kProfilesDeleted, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  const base::ListValue& deleted_profiles =
+      local_state->GetList(prefs::kProfilesDeleted);
+  ASSERT_EQ(1U, deleted_profiles.size());
+  EXPECT_EQ(base::ValueToFilePath(deleted_profiles[0]),
+            initial_profile_path.BaseName());
+  EXPECT_FALSE(profile_manager->GetProfileAttributesStorage()
+                   .GetProfileAttributesWithPath(initial_profile_path));
+
+  // Wait until the deleted profile finishes unloading (`Profile::Wipe()` holds
+  // a `ScopedProfileKeepAlive` asynchronously) and a browser window opens for
+  // the replacement profile.
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    if (Profile* initial_profile =
+            profile_manager->GetProfileByPath(initial_profile_path)) {
+      ProfileDestructionWaiter(initial_profile).Wait();
+    }
+  }
+
+  BrowserWindowInterface* replacement_browser = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [&](BrowserWindowInterface* browser_window) {
+          if (browser_window->GetProfile()->GetPath() != initial_profile_path) {
+            replacement_browser = browser_window;
+            return false;
+          }
+          return true;
+        });
+    return replacement_browser != nullptr;
+  }));
+  SetBrowser(replacement_browser);
+
+  // Verify that the replacement profile is active and signed out.
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    EXPECT_EQ(1U, profile_manager->GetLoadedProfiles().size());
+  }
+  EXPECT_EQ(
+      1U, profile_manager->GetProfileAttributesStorage().GetNumberOfProfiles());
+  EXPECT_EQ(profile_manager->GetLastUsedProfile(),
+            replacement_browser->GetProfile());
+  signin::IdentityManager* replacement_identity_manager =
+      IdentityManagerFactory::GetForProfile(replacement_browser->GetProfile());
+  signin::WaitForRefreshTokensLoaded(replacement_identity_manager);
+  EXPECT_FALSE(replacement_identity_manager->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(
+      replacement_identity_manager->GetAccountsWithRefreshTokens().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AccountsPolicyManagerBrowserTest,

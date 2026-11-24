@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -40,11 +39,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -70,7 +67,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
@@ -169,7 +165,6 @@ const char kChromeSyncEndpointURL[] = "/signin/chrome/sync";
 const char kEnableSyncURL[] = "/enable_sync";
 const char kGoogleSignoutResponseHeader[] = "Google-Accounts-SignOut";
 const char kMainGmailEmail[] = "main_email@gmail.com";
-const char kMainManagedEmail[] = "main_email@managed.com";
 const char kNoDiceRequestHeader[] = "NoDiceHeader";
 const char kOAuth2TokenExchangeURL[] = "/oauth2/v4/token";
 const char kOAuth2TokenRevokeURL[] = "/o/oauth2/revoke";
@@ -621,6 +616,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
   void TearDownOnMainThread() override {
     identity_manager_observation_.Reset();
     account_reconcilor_observation_.Reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   // Calls |closure| if it is not null and resets it after.
@@ -709,6 +705,15 @@ class DiceBrowserTest : public InProcessBrowserTest,
     RunClosureIfValid(std::move(tokens_loaded_quit_closure_));
   }
 
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override {
+    identity_manager_observation_.Reset();
+    // `AccountReconcilor::Observer` has no shutdown hook; `KeyedService`
+    // two-phase shutdown runs `IdentityManager::Shutdown()` before
+    // `~AccountReconcilor()` checks that its observer list is empty.
+    account_reconcilor_observation_.Reset();
+  }
+
   // Returns true if the account reconcilor is currently blocked.
   bool IsReconcilorBlocked() {
     EXPECT_GE(reconcilor_blocked_count_, reconcilor_unblocked_count_);
@@ -775,12 +780,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
       WaitForClosure(&token_revoked_quit_closure_);
     }
     EXPECT_EQ(count, token_revoked_count_);
-  }
-
-  void CloseBrowser() {
-    identity_manager_observation_.Reset();
-    account_reconcilor_observation_.Reset();
-    CloseBrowserSynchronously(browser());
   }
 
   void UpdateAccountInfoForAccount(AccountInfo account_info) {
@@ -2539,82 +2538,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithChromeSigninIPH,
   RunTestSequence(
       WaitForPromo(feature_engagement::
                        kIPHExplicitBrowserSigninPreferenceRememberedFeature));
-}
-
-// This test is not specifically related to DICE, but it extends
-// |DiceBrowserTest| for convenience.
-class DiceManageAccountBrowserTest : public DiceBrowserTest {
- public:
-  DiceManageAccountBrowserTest()
-      : DiceBrowserTest(kMainManagedEmail),
-        // Skip showing the error message box to avoid freezing the main thread.
-        skip_message_box_auto_reset_(
-            &chrome::internal::g_should_skip_message_box_for_test,
-            true) {}
-
-  void SetUp() override {
-#if BUILDFLAG(IS_WIN)
-    // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
-    // See crbug.com/40686320.
-    AppShortcutManager::SuppressShortcutsForTesting();
-#endif
-    DiceBrowserTest::SetUp();
-  }
-
- protected:
-  base::AutoReset<bool> skip_message_box_auto_reset_;
-  unsigned int number_of_profiles_added_ = 0;
-};
-
-// Tests that prohiting sign-in on startup for a managed profile clears the
-// profile directory on next start-up.
-IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
-                       PRE_ClearManagedProfileOnStartup) {
-  // Ensure that there are not deleted profiles before running this test.
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  const base::ListValue& deleted_profiles =
-      local_state->GetList(prefs::kProfilesDeleted);
-  ASSERT_TRUE(deleted_profiles.empty());
-
-  // Sign the profile in.
-  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
-                                                    true);
-
-  // Prohibit sign-in on next start-up.
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kSigninAllowedOnNextStartup, false);
-}
-
-IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
-                       ClearManagedProfileOnStartup) {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-
-  // Initial profile should have been deleted as sign-in and sign out were no
-  // longer allowed. If the profile has not yet been deleted, wait for the pref
-  // to be updated.
-  if (local_state->GetList(prefs::kProfilesDeleted).empty()) {
-    base::RunLoop run_loop;
-    PrefChangeRegistrar pref_registrar;
-    pref_registrar.Init(local_state);
-    // Quit the run loop when the 'kProfilesDeleted' pref changes.
-    pref_registrar.Add(prefs::kProfilesDeleted, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  const base::ListValue& deleted_profiles =
-      local_state->GetList(prefs::kProfilesDeleted);
-  EXPECT_EQ(1U, deleted_profiles.size());
-
-  content::RunAllTasksUntilIdle();
-
-  // Verify that there is an active profile.
-  Profile* initial_profile = browser()->GetProfile();
-  EXPECT_EQ(1U, g_browser_process->profile_manager()->GetNumberOfProfiles());
-  EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfile(),
-            initial_profile);
 }
 
 namespace {

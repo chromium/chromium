@@ -61,7 +61,6 @@
 -DevToolsTest.TestNetworkTiming
 -DevToolsTest.TestRawHeadersWithRedirectAndHSTS
 -DevToolsExtensionTest.TestExtensionOnNewTab
--DiceManageAccountBrowserTest.ClearManagedProfileOnStartup
 -DownloadTest.FeedbackServiceDiscardDownload
 -DownloadTestWithFakeSafeBrowsing.SendUncommonDownloadReportIfUserProceed
 -ExtensionWebRequestApiTest.WebRequestWithWithheldPermissions
