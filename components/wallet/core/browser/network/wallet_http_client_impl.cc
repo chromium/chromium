@@ -171,6 +171,7 @@ void WalletHttpClientImpl::SendRequestInternal(
           data:
             "Serialised proto data specific to the request."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "wallet1ppasses.pa.googleapis.com"
           internal {
             contacts {
               email: "wallet-1p-integrations@google.com"
