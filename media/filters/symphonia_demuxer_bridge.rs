@@ -502,7 +502,7 @@ pub fn convert_track_info(track: &Track) -> ffi::SymphoniaTrackInfo {
                 if let Some(ref ch) = audio_params.channels {
                     track_info.channels = ch.count() as u32;
                     track_info.channel_mask = match ch {
-                        Channels::Positioned(pos) => pos.bits() as u32,
+                        Channels::Positioned(pos) => u32::try_from(pos.bits()).unwrap_or(0),
                         _ => 0,
                     };
                 }

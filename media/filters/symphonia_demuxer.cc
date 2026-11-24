@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +30,7 @@
 #include "media/filters/symphonia_demuxer_bridge.rs.h"
 #include "media/filters/symphonia_demuxer_stream.h"
 #include "media/filters/symphonia_demuxer_util.h"
+#include "media/formats/common/opus_constants.h"
 
 namespace media {
 
@@ -125,6 +127,68 @@ void RecordInitOutcome(SymphoniaDemuxer::InitOutcome outcome) {
                                 outcome);
 }
 
+bool IsPcmCodec(AudioCodec codec) {
+  switch (codec) {
+    case AudioCodec::kPCM:
+    case AudioCodec::kPCM_S16BE:
+    case AudioCodec::kPCM_S24BE:
+    case AudioCodec::kPCM_ALAW:
+    case AudioCodec::kPCM_MULAW:
+      return true;
+    default:
+      return false;
+  }
+}
+
+uint32_t SanitizeSymphoniaChannelMask(AudioCodec codec,
+                                      uint32_t channel_mask,
+                                      uint32_t channels) {
+  // Symphonia's WAV, AIFF, and MP4 LPCM readers synthesize a `(1 << n) - 1`
+  // prefix mask (`Position::from_count(n)`) when a PCM stream has no speaker
+  // mask or `dwChannelMask == 0`. For 4 channels that yields `0xF`
+  // (`CHANNEL_LAYOUT_3_1`) instead of `CHANNEL_LAYOUT_QUAD`. Clear synthesized
+  // prefix masks on PCM tracks so `FromChannelMask()` falls back to `Guess()`,
+  // while keeping explicit `WAVEFORMATEXTENSIBLE` masks like `0x33` or `0x60F`.
+  if (IsPcmCodec(codec) && channels > 0 && channels < 32 &&
+      channel_mask == ((uint32_t{1} << channels) - 1)) {
+    return 0;
+  }
+  return channel_mask;
+}
+
+// TODO(crbug.com/550619039): Switch `codec_delay` to `uint32_t` once
+// `AudioDecoderConfig::Initialize()` takes an unsigned delay.
+int GetCodecDelayFrames(AudioCodec codec,
+                        uint32_t delay_frames,
+                        base::span<const uint8_t> extra_data) {
+  if (codec != AudioCodec::kOpus) {
+    // Only Opus uses pipeline decoder delay in Chromium. For other codecs
+    // (such as AAC and MP3), delay/padding is either discarded via packet
+    // discard padding or handled by the decoder.
+    return 0;
+  }
+  if (delay_frames > 0) {
+    return static_cast<int>(delay_frames);
+  }
+  // TODO(crbug.com/583935554): `symphonia-format-mkv` leaves `Track::delay`
+  // unset when `CodecDelay` is omitted or only present in the `OpusHead`
+  // identification header. Fall back to the 16-bit little-endian pre-skip
+  // field in `OpusHead`.
+  if (extra_data.size() >= OPUS_EXTRADATA_SKIP_SAMPLES_OFFSET + 2) {
+    return base::U16FromLittleEndian(
+        extra_data.subspan<OPUS_EXTRADATA_SKIP_SAMPLES_OFFSET, 2>());
+  }
+  return 0;
+}
+
+base::TimeDelta GetSeekPreroll(AudioCodec codec) {
+  // RFC 7845 Section 5.1 specifies an 80 ms seek preroll for Opus.
+  if (codec == AudioCodec::kOpus) {
+    return base::Milliseconds(80);
+  }
+  return base::TimeDelta();
+}
+
 // Builds the `AudioDecoderConfig` for an audio `track`, or returns
 // `std::nullopt` if its codec is unsupported or the config is invalid.
 std::optional<AudioDecoderConfig> CreateAudioDecoderConfig(
@@ -136,10 +200,19 @@ std::optional<AudioDecoderConfig> CreateAudioDecoderConfig(
 
   std::vector<uint8_t> extra_data(track.extra_data.begin(),
                                   track.extra_data.end());
-  AudioDecoderConfig config(
+  const int codec_delay =
+      GetCodecDelayFrames(codec, track.delay_frames, extra_data);
+  const base::TimeDelta seek_preroll = GetSeekPreroll(codec);
+
+  AudioDecoderConfig config;
+  config.Initialize(
       codec, SymphoniaCodecToSampleFormat(track.codec, track.bits_per_sample),
-      ChannelLayoutConfig::Guess(track.channels), track.sample_rate,
-      std::move(extra_data), EncryptionScheme::kUnencrypted);
+      ChannelLayoutConfig::FromChannelMask(
+          SanitizeSymphoniaChannelMask(codec, track.channel_mask,
+                                       track.channels),
+          track.channels),
+      track.sample_rate, std::move(extra_data), EncryptionScheme::kUnencrypted,
+      seek_preroll, codec_delay);
   if (!config.IsValidConfig()) {
     return std::nullopt;
   }
@@ -533,6 +606,7 @@ void SymphoniaDemuxer::Seek(base::TimeDelta time,
   CHECK(!pending_seek_cb_);
 
   is_eos_ = false;
+  last_buffered_timestamp_ = kNoTimestamp;
   pending_seek_cb_ = std::move(status_cb);
   int64_t seek_track_id = -1;
   for (const auto& stream : streams_) {
@@ -542,8 +616,21 @@ void SymphoniaDemuxer::Seek(base::TimeDelta time,
     }
   }
 
+  base::TimeDelta seek_time = std::max(base::TimeDelta(), time);
+  // Like `FFmpegDemuxer`, seek earlier by `seek_preroll()` for Opus so the
+  // decoder receives enough preroll data to reconstruct accurate output at
+  // `time`.
+  for (const auto& stream : streams_) {
+    if (stream->is_enabled() &&
+        stream->audio_decoder_config().codec() == AudioCodec::kOpus) {
+      seek_time =
+          std::max(base::TimeDelta(),
+                   seek_time - stream->audio_decoder_config().seek_preroll());
+      break;
+    }
+  }
   const uint64_t seek_time_us =
-      static_cast<uint64_t>(std::max(int64_t{0}, time.InMicroseconds()));
+      static_cast<uint64_t>(seek_time.InMicroseconds());
 
   // Unretained is safe: the bridges are only destroyed by a task that `Stop()`
   // posts to the same sequenced `blocking_task_runner_`, so they outlive this
@@ -884,6 +971,22 @@ void SymphoniaDemuxer::OnReadPacketDone(
   }
 
   (*it)->EnqueueBuffer(std::move(buffer));
+  if (duration != kNoTimestamp && duration.is_positive()) {
+    const base::TimeDelta packet_start = std::max(base::TimeDelta(), timestamp);
+    // Connect adjacent packets in the same read run so microsecond rounding
+    // (e.g. at 44.1 kHz) does not leave 1-us holes in `buffered_ranges_`.
+    const base::TimeDelta range_start =
+        (last_buffered_timestamp_ != kNoTimestamp &&
+         last_buffered_timestamp_ <= packet_start)
+            ? last_buffered_timestamp_
+            : packet_start;
+    const base::TimeDelta range_end = timestamp + duration;
+    if (range_end > range_start) {
+      buffered_ranges_.Add(range_start, range_end);
+      last_buffered_timestamp_ = range_end;
+      host_->OnBufferedTimeRangesChanged(buffered_ranges_);
+    }
+  }
   if (has_chained_stream_ && duration_ != kInfiniteDuration &&
       max_packet_end_time_ > duration_) {
     duration_ = max_packet_end_time_;
@@ -914,6 +1017,14 @@ void SymphoniaDemuxer::OnEndOfStream() {
   if (should_update_duration) {
     duration_ = max_packet_end_time_;
     host_->SetDuration(duration_);
+  }
+  // Close any sub-packet rounding gap between the last demuxed packet and
+  // `duration_`, without marking ranges skipped by a seek as buffered.
+  if (last_buffered_timestamp_ != kNoTimestamp &&
+      duration_ != kInfiniteDuration && duration_ > last_buffered_timestamp_) {
+    buffered_ranges_.Add(last_buffered_timestamp_, duration_);
+    last_buffered_timestamp_ = duration_;
+    host_->OnBufferedTimeRangesChanged(buffered_ranges_);
   }
   for (const auto& stream : streams_) {
     stream->SetEndOfStream();

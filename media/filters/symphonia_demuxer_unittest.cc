@@ -241,6 +241,7 @@ class SymphoniaDemuxerTest : public testing::Test, public ScopedFeatureState {
 
   void InitializeDemuxer(PipelineStatus expected_status = PIPELINE_OK) {
     EXPECT_CALL(host_, SetDuration(_)).Times(AnyNumber());
+    EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_)).Times(AnyNumber());
     base::test::TestFuture<PipelineStatus> status;
     demuxer_->Initialize(&host_, status.GetCallback());
     EXPECT_EQ(status.Get(), expected_status) << status.Get().message();
@@ -521,6 +522,7 @@ TEST_F(SymphoniaDemuxerTest, ReadsAllPacketsChainedOgg) {
   base::TimeDelta latest_duration;
   EXPECT_CALL(host_, SetDuration(_))
       .WillRepeatedly(testing::SaveArg<0>(&latest_duration));
+  EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_)).Times(AnyNumber());
   base::test::TestFuture<PipelineStatus> init_status;
   demuxer_->Initialize(&host_, init_status.GetCallback());
   ASSERT_EQ(init_status.Get(), PIPELINE_OK);
@@ -1189,6 +1191,7 @@ TEST_F(SymphoniaDemuxerTest, UnknownDurationIsSetAtEndOfStream) {
   ASSERT_TRUE(
       data_source->Initialize(GetTestDataFilePath("silent-section.mp3")));
   CreateDemuxerForDataSource(std::move(data_source));
+  EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_)).Times(AnyNumber());
   {
     testing::InSequence sequence;
     EXPECT_CALL(host_, SetDuration(kInfiniteDuration));
@@ -1221,6 +1224,7 @@ TEST_F(SymphoniaDemuxerTest, ShortKnownDurationIsRaisedAsPacketsArrive) {
   CreateDemuxerWithContents(flac);
 
   std::vector<base::TimeDelta> reported_durations;
+  EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_)).Times(AnyNumber());
   EXPECT_CALL(host_, SetDuration(_))
       .WillRepeatedly([&](base::TimeDelta duration) {
         reported_durations.push_back(duration);
@@ -1279,6 +1283,7 @@ TEST_F(SymphoniaDemuxerTest, ConstructedOnMainThreadAndUsedOnMediaSequence) {
       base::DoNothing(), media_log_.Clone(), /*allow_fallback=*/true);
 
   EXPECT_CALL(host_, SetDuration(_));
+  EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_)).Times(AnyNumber());
   base::test::TestFuture<PipelineStatus> init_status;
   media_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&SymphoniaDemuxer::Initialize,
@@ -1293,6 +1298,115 @@ TEST_F(SymphoniaDemuxerTest, ConstructedOnMainThreadAndUsedOnMediaSequence) {
   ASSERT_TRUE(stopped.Wait());
 
   demuxer_.reset();
+}
+
+TEST_F(SymphoniaDemuxerTest, PopulatesOpusCodecDelayAndSeekPreroll) {
+  CreateDemuxer("bear-opus.ogg");
+  InitializeDemuxer();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  AudioDecoderConfig config = stream->audio_decoder_config();
+  EXPECT_EQ(config.codec(), AudioCodec::kOpus);
+  EXPECT_GT(config.codec_delay(), 0);
+  EXPECT_EQ(config.seek_preroll(), base::Milliseconds(80));
+}
+
+TEST_F(SymphoniaDemuxerTest, PopulatesOpusWebmCodecDelayAndSeekPreroll) {
+  CreateDemuxer("bear-opus.webm");
+  InitializeDemuxer();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  AudioDecoderConfig config = stream->audio_decoder_config();
+  EXPECT_EQ(config.codec(), AudioCodec::kOpus);
+  EXPECT_GT(config.codec_delay(), 0);
+  EXPECT_EQ(config.seek_preroll(), base::Milliseconds(80));
+}
+
+TEST_F(SymphoniaDemuxerTest, OpusSeekAppliesSeekPreroll) {
+  CreateDemuxer("bear-opus.ogg");
+  InitializeDemuxer();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  ASSERT_EQ(stream->audio_decoder_config().seek_preroll(),
+            base::Milliseconds(80));
+
+  constexpr base::TimeDelta kOpusSeekTarget = base::Milliseconds(500);
+  Seek(kOpusSeekTarget);
+  scoped_refptr<DecoderBuffer> buffer = ReadBuffer(stream);
+  ASSERT_NE(buffer, nullptr);
+  ASSERT_FALSE(buffer->end_of_stream());
+  EXPECT_LE(buffer->timestamp(),
+            kOpusSeekTarget - stream->audio_decoder_config().seek_preroll());
+}
+
+TEST_F(SymphoniaDemuxerTest, UnmaskedFourChannelWavUsesQuadLayout) {
+  CreateDemuxer("4ch.wav");
+  InitializeDemuxer();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  AudioDecoderConfig config = stream->audio_decoder_config();
+  EXPECT_EQ(config.channels(), 4);
+  EXPECT_EQ(config.channel_layout(), CHANNEL_LAYOUT_QUAD);
+}
+
+TEST_F(SymphoniaDemuxerTest, SupportsDiscreteMultichannelAudio) {
+  CreateDemuxer("9ch.wav");
+  InitializeDemuxer();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  AudioDecoderConfig config = stream->audio_decoder_config();
+  EXPECT_EQ(config.channels(), 9);
+  EXPECT_EQ(config.channel_layout(), CHANNEL_LAYOUT_DISCRETE);
+}
+
+TEST_F(SymphoniaDemuxerTest, ReportsBufferedTimeRanges) {
+  CreateDemuxer("sfx_s16le.wav");
+  InitializeDemuxer();
+
+  Ranges<base::TimeDelta> last_ranges;
+  EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_))
+      .WillRepeatedly(
+          [&](const Ranges<base::TimeDelta>& ranges) { last_ranges = ranges; });
+
+  ExpectReadsAllPackets();
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  ASSERT_EQ(last_ranges.size(), 1u);
+  EXPECT_EQ(last_ranges.start(0), base::TimeDelta());
+  EXPECT_GE(last_ranges.end(0), stream->duration());
+}
+
+TEST_F(SymphoniaDemuxerTest, SeekLeavesSkippedMiddleUnbuffered) {
+  CreateDemuxer("silent-section.mp3");
+  Ranges<base::TimeDelta> last_ranges;
+  EXPECT_CALL(host_, SetDuration(_)).Times(AnyNumber());
+  EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_))
+      .WillRepeatedly(
+          [&](const Ranges<base::TimeDelta>& ranges) { last_ranges = ranges; });
+  base::test::TestFuture<PipelineStatus> status;
+  demuxer_->Initialize(&host_, status.GetCallback());
+  ASSERT_EQ(status.Get(), PIPELINE_OK);
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  scoped_refptr<DecoderBuffer> first = ReadBuffer(stream);
+  ASSERT_NE(first, nullptr);
+  ASSERT_FALSE(first->end_of_stream());
+
+  // Jump near the end of the ~14.4s file and read to EOS; the skipped middle
+  // must not be reported as buffered.
+  Seek(base::Seconds(13));
+  ExpectReadsAllPackets();
+
+  ASSERT_EQ(last_ranges.size(), 2u);
+  EXPECT_LT(last_ranges.end(0), base::Seconds(5));
+  EXPECT_GT(last_ranges.start(1), base::Seconds(12));
 }
 
 namespace {

@@ -378,4 +378,22 @@ ChannelLayoutConfig ChannelLayoutConfig::Guess(int channels) {
   return ChannelLayoutConfig(GuessChannelLayout(channels), channels);
 }
 
+ChannelLayoutConfig ChannelLayoutConfig::FromChannelMask(
+    ChannelMask channel_mask,
+    uint32_t channels) {
+  if (channels == 0 || channels > static_cast<uint32_t>(limits::kMaxChannels)) {
+    return ChannelLayoutConfig(CHANNEL_LAYOUT_UNSUPPORTED, 0);
+  }
+  const int channel_count = static_cast<int>(channels);
+  if (channel_mask != 0) {
+    const ChannelLayout layout = ChannelMaskToLayout(channel_mask);
+    if (layout != CHANNEL_LAYOUT_DISCRETE &&
+        layout != CHANNEL_LAYOUT_UNSUPPORTED &&
+        ChannelLayoutToChannelCount(layout) == channel_count) {
+      return ChannelLayoutConfig(layout, channel_count);
+    }
+  }
+  return Guess(channel_count);
+}
+
 }  // namespace media

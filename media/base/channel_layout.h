@@ -197,6 +197,7 @@ MEDIA_EXPORT int ChannelLayoutToChannelCount(ChannelLayout layout);
 
 // Given the number of channels, return the best layout,
 // or return CHANNEL_LAYOUT_UNSUPPORTED if there is no good match.
+// TODO(crbug.com/550619039): Take `uint32_t` instead of a signed `int`.
 MEDIA_EXPORT ChannelLayout GuessChannelLayout(int channels);
 
 // Returns the channel layout for a given channel mask. This code assumes that
@@ -264,7 +265,16 @@ class MEDIA_EXPORT ChannelLayoutConfig {
     return ChannelLayoutConfig(Passkey(), CHANNEL_LAYOUT_STEREO, 2u);
   }
 
+  // TODO(crbug.com/550619039): Take `uint32_t` instead of a signed `int`.
   static ChannelLayoutConfig Guess(int channels);
+
+  // Returns a `ChannelLayoutConfig` matching `channel_mask` when it names a
+  // standard layout with `channels` channels, falling back to `Guess()`
+  // (including `CHANNEL_LAYOUT_DISCRETE` for valid high channel counts) and
+  // returning `CHANNEL_LAYOUT_UNSUPPORTED` when `channels` is 0 or exceeds
+  // `limits::kMaxChannels`.
+  static ChannelLayoutConfig FromChannelMask(ChannelMask channel_mask,
+                                             uint32_t channels);
 
   constexpr ChannelLayout channel_layout() const { return channel_layout_; }
 

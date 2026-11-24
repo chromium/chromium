@@ -106,6 +106,32 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_Guess) {
   EXPECT_EQ(0, invalid_layout.channels());
 }
 
+TEST(ChannelLayoutTest, ChannelLayoutConfig_FromChannelMask) {
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED,
+            ChannelLayoutConfig::FromChannelMask(0, 0).channel_layout());
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED,
+            ChannelLayoutConfig::FromChannelMask(
+                0, static_cast<uint32_t>(limits::kMaxChannels) + 1)
+                .channel_layout());
+
+  // Valid explicit mask overrides default 4-channel guess (`QUAD`).
+  const ChannelMask mask_3_1 =
+      (1 << LEFT) | (1 << RIGHT) | (1 << CENTER) | (1 << LFE);
+  auto three_one = ChannelLayoutConfig::FromChannelMask(mask_3_1, 4);
+  EXPECT_EQ(CHANNEL_LAYOUT_3_1, three_one.channel_layout());
+  EXPECT_EQ(4, three_one.channels());
+
+  // Mismatched mask falls back to `Guess()`.
+  auto mismatch = ChannelLayoutConfig::FromChannelMask(1 << CENTER, 4);
+  EXPECT_EQ(CHANNEL_LAYOUT_QUAD, mismatch.channel_layout());
+  EXPECT_EQ(4, mismatch.channels());
+
+  // Zero mask with >8 channels falls back to `DISCRETE`.
+  auto nine = ChannelLayoutConfig::FromChannelMask(0, 9);
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, nine.channel_layout());
+  EXPECT_EQ(9, nine.channels());
+}
+
 TEST(ChannelLayoutTest, ChannelLayoutConfig_basic_constructor) {
   EXPECT_EQ(ChannelLayoutConfig(), ChannelLayoutConfig(CHANNEL_LAYOUT_NONE, 0));
 

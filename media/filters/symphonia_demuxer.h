@@ -29,6 +29,8 @@
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
 #include "media/base/pipeline_status.h"
+#include "media/base/ranges.h"
+#include "media/base/timestamp_constants.h"
 #include "media/filters/symphonia_data_source_bridge.h"
 #include "media/filters/symphonia_demuxer_stream.h"
 #include "third_party/rust/cxx/v1/cxx.h"
@@ -61,7 +63,11 @@ struct SymphoniaTrackInfo;
 //
 // What works now:
 // - Probing all container formats and starting the first supported audio track.
+// - Audio decoder config metadata: codec delay (including Opus pre-skip), seek
+//   preroll (80 ms for Opus), and channel layout configurations (including
+//   discrete multichannel layouts).
 // - Reading packets, including gapless trimming represented by discard padding.
+// - Reporting buffered time ranges to `DemuxerHost`.
 // - Seeking, aborting reads, and enabling/disabling tracks.
 //
 // What does not work yet:
@@ -231,6 +237,11 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
   // End time of the latest packet read so far, used to set the duration at end
   // of stream.
   base::TimeDelta max_packet_end_time_;
+  // End time of the latest packet added to `buffered_ranges_` in the current
+  // contiguous read run, or `kNoTimestamp` before any packet (and after a
+  // `Seek()`).
+  base::TimeDelta last_buffered_timestamp_ = kNoTimestamp;
+  Ranges<base::TimeDelta> buffered_ranges_;
   // Atomic because `OnInitializeDone()` sets it on the media sequence, while
   // `DemuxerManager::GetContainerForMetrics()` reads it from the main thread.
   std::atomic<container_names::MediaContainerName> container_name_{

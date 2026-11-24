@@ -75,6 +75,8 @@ class MEDIA_EXPORT AudioDecoderConfig {
   SampleFormat sample_format() const { return sample_format_; }
   int bytes_per_frame() const { return bytes_per_frame_; }
   base::TimeDelta seek_preroll() const { return seek_preroll_; }
+  // TODO(crbug.com/550619039): Switch `codec_delay` from signed `int` to
+  // `uint32_t`, since decoder delay is never negative.
   int codec_delay() const { return codec_delay_; }
 
   // Optional byte data required to initialize audio decoders such as Vorbis
