@@ -1206,7 +1206,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       prefs::kVerticalTabsExpandOnHoverEnabled));
   ASSERT_FALSE(region_view()->is_expanded_on_hover());
 
-  region_view()->GetFocusManager()->SetFocusedView(region_view());
+  region_view()->RequestFocus();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return region_view()->is_expanded_on_hover(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
@@ -1237,7 +1237,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ModeChanged) {
 
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, true);
-  region_view()->GetFocusManager()->SetFocusedView(region_view());
+  region_view()->RequestFocus();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return region_view()->is_expanded_on_hover(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
@@ -1260,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, true);
 
-  region_view()->GetFocusManager()->SetFocusedView(region_view());
+  region_view()->RequestFocus();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return region_view()->is_expanded_on_hover(); }));
   ASSERT_FALSE(region_view()->resize_area_for_testing()->GetVisible());
