@@ -12,28 +12,15 @@ export function getHtml(this: ThreadsRailElement) {
     <cr-icon-button id="logoButton"
         suppress-rtl-flip
         @click="${this.onLogoClick_}"
-        aria-label="${this.i18n('aimThreadsGoogleSearchLabel')}">
+        title="${this.i18n('aimThreadsGoogleSearchLabel')}">
     </cr-icon-button>
-    ${!this.inert ? html`
-      <cr-tooltip for="logoButton" position="right" offset="16"
-          animation-delay="0" hide-delay="0">
-        ${this.i18n('aimThreadsGoogleSearchLabel')}
-      </cr-tooltip>
-    ` : nothing}
     <div id="iconsContainer">
       ${this.getItems_().map((item, index) => html`
-        <cr-icon-button id="railItem-${index}"
-            data-index="${index}"
+        <cr-icon-button data-index="${index}"
             style="${this.getIconStyle_(item) || nothing}"
             @click="${this.onItemClick_}"
-            aria-label="${item.name || nothing}">
+            title="${item.name || nothing}">
         </cr-icon-button>
-        ${!this.inert && item.name ? html`
-          <cr-tooltip for="railItem-${index}" position="right"
-              offset="16" animation-delay="0" hide-delay="0">
-            ${item.name}
-          </cr-tooltip>
-        ` : nothing}
       `)}
     </div>
   </div>
