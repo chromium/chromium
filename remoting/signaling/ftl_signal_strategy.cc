@@ -4,6 +4,7 @@
 
 #include "remoting/signaling/ftl_signal_strategy.h"
 
+#include <string>
 #include <utility>
 
 #include "base/containers/lru_cache.h"
@@ -130,22 +131,37 @@ class FtlSignalStrategy::Core {
   base::ObserverList<Listener, true> listeners_;
   base::ObserverList<FtlListener, true> ftl_listeners_;
 
+  using PeerMessageKey = std::pair<std::string, std::string>;
+  using PeerSessionKey = std::pair<std::string, std::string>;
+
+  struct PendingInitiate {
+    SignalingAddress peer_address;
+    std::string sid;
+  };
+
   SignalingFormat GetFormatForMessage(const JingleMessage& message);
   SignalingFormat GetFormatForMessage(const JingleMessageReply& reply);
-  bool IsSessionPending(const std::string& sid) const;
+  bool IsSessionPending(const SignalingAddress& peer_address,
+                        const std::string& sid) const;
+  void ErasePendingInitiates(const SignalingAddress& peer_address,
+                             const std::string& sid);
+  void EraseSessionState(const SignalingAddress& peer_address,
+                         const std::string& sid);
 
-  // Tracks the format (XML or Proto) of incoming requests by their message ID,
-  // so we can reply using the same format. Uses LRUCache to prevent leaks.
-  base::LRUCache<std::string, SignalingFormat> incoming_request_formats_{
+  // Tracks the format (XML or Proto) of incoming requests by
+  // (peer_address_id, message_id), so we can reply using the same format.
+  // Uses LRUCache to prevent leaks.
+  base::LRUCache<PeerMessageKey, SignalingFormat> incoming_request_formats_{
       /*max_size=*/1000};
-  // Tracks the negotiated format for active sessions by their session ID (sid).
-  // Uses LRUCache to prevent leaks.
-  base::LRUCache<std::string, SignalingFormat> session_formats_{
+  // Tracks the negotiated format for active sessions by
+  // (peer_address_id, sid). Uses LRUCache to prevent leaks.
+  base::LRUCache<PeerSessionKey, SignalingFormat> session_formats_{
       /*max_size=*/100};
-  // Maps outbound session-initiate message IDs to their session IDs (sid),
-  // so we can determine the session format when the reply arrives.
-  // Uses LRUCache to prevent leaks.
-  base::LRUCache<std::string, std::string> outbound_request_to_sid_{
+  // Maps outbound session-initiate (peer_address_id, message_id) keys to
+  // {peer_address, sid}, so we can verify the peer and determine the session
+  // format when the reply or session-accept arrives. Uses LRUCache to prevent
+  // leaks.
+  base::LRUCache<PeerMessageKey, PendingInitiate> outbound_request_to_sid_{
       /*max_size=*/100};
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -263,13 +279,19 @@ void FtlSignalStrategy::Core::SetSendProtobufInInitiate(bool send) {
 }
 
 bool FtlSignalStrategy::Core::SendMessage(JingleMessage&& message) {
-  if (message.action() == JingleMessage::ActionType::kSessionInitiate) {
-    // Track outbound initiate to correlate the reply's format to the session.
-    outbound_request_to_sid_.Put(message.message_id, message.sid);
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   JingleMessage::ActionType action = message.action();
+  SignalingAddress destination_address = message.to;
   std::string sid = message.sid;
+
+  if (GetState() == CONNECTED &&
+      action == JingleMessage::ActionType::kSessionInitiate) {
+    // Track outbound initiate to correlate the reply's format to the session.
+    outbound_request_to_sid_.Put(
+        PeerMessageKey{destination_address.id(), message.message_id},
+        PendingInitiate{destination_address, sid});
+  }
 
   // Note that duplicate messages may be sent, but the client and host are
   // responsible for filtering out duplicates.
@@ -281,11 +303,9 @@ bool FtlSignalStrategy::Core::SendMessage(JingleMessage&& message) {
   bool result = Send(std::move(message), "message", std::move(policy));
 
   if (result && action == JingleMessage::ActionType::kSessionTerminate) {
-    // Clean up session format when the session is terminated.
-    auto it = session_formats_.Peek(sid);
-    if (it != session_formats_.end()) {
-      session_formats_.Erase(it);
-    }
+    // Clean up session format and pending initiate state when the session is
+    // terminated.
+    EraseSessionState(destination_address, sid);
   }
 
   return result;
@@ -558,32 +578,58 @@ void FtlSignalStrategy::Core::OnMessageReceived(
       SignalingFormat chosen_format = (incoming_format == SignalingFormat::BOTH)
                                           ? SignalingFormat::PROTOBUF
                                           : incoming_format;
-      session_formats_.Put(jm->sid, chosen_format);
+      session_formats_.Put(PeerSessionKey{sender_address.id(), jm->sid},
+                           chosen_format);
+    } else if (jm->action() == JingleMessage::ActionType::kSessionAccept) {
+      // Hosts send the JingleReply ACK for session-initiate and the
+      // session-accept stanza as independent async RPCs. If session-accept
+      // arrives before the JingleReply (or the ACK is lost), lock the client
+      // session format now and remove the pending initiate entry.
+      if (IsSessionPending(sender_address, jm->sid)) {
+        SignalingFormat chosen_format =
+            (incoming_format == SignalingFormat::PROTOBUF)
+                ? SignalingFormat::PROTOBUF
+                : SignalingFormat::XML;
+        session_formats_.Put(PeerSessionKey{sender_address.id(), jm->sid},
+                             chosen_format);
+        ErasePendingInitiates(sender_address, jm->sid);
+      }
     } else if (jm->action() == JingleMessage::ActionType::kSessionTerminate) {
       // Clean up session format on terminate.
-      auto it = session_formats_.Peek(jm->sid);
-      if (it != session_formats_.end()) {
-        session_formats_.Erase(it);
-      }
+      EraseSessionState(sender_address, jm->sid);
     }
     // Track the format of the incoming request so we can match it in the reply.
-    // If request was BOTH, respond with PROTOBUF to lock the session into
-    // Proto.
-    SignalingFormat reply_format = (incoming_format == SignalingFormat::BOTH)
-                                       ? SignalingFormat::PROTOBUF
-                                       : incoming_format;
-    incoming_request_formats_.Put(jm->message_id, reply_format);
+    // Dual-payload (BOTH) is only valid on session-initiate, where the host
+    // replies with PROTOBUF to lock Protobuf mode; any non-initiate dual
+    // payload falls back to XML.
+    SignalingFormat reply_format =
+        (jm->action() == JingleMessage::ActionType::kSessionInitiate)
+            ? ((incoming_format == SignalingFormat::XML)
+                   ? SignalingFormat::XML
+                   : SignalingFormat::PROTOBUF)
+            : ((incoming_format == SignalingFormat::PROTOBUF)
+                   ? SignalingFormat::PROTOBUF
+                   : SignalingFormat::XML);
+    incoming_request_formats_.Put(
+        PeerMessageKey{sender_address.id(), jm->message_id}, reply_format);
   } else if (const auto* jmr =
                  std::get_if<JingleMessageReply>(&*parsed_message)) {
     // Correlate the reply to the outbound initiate request to set session
-    // format.
-    auto it = outbound_request_to_sid_.Peek(jmr->message_id);
-    if (it != outbound_request_to_sid_.end()) {
-      SignalingFormat chosen_format = (incoming_format == SignalingFormat::BOTH)
-                                          ? SignalingFormat::PROTOBUF
-                                          : incoming_format;
-      session_formats_.Put(it->second, chosen_format);
-      outbound_request_to_sid_.Erase(it);
+    // format, verifying that the sender matches the target peer. Only a
+    // single-payload PROTOBUF reply locks PROTOBUF; XML or BOTH falls back to
+    // XML.
+    auto it = outbound_request_to_sid_.Peek(
+        PeerMessageKey{sender_address.id(), jmr->message_id});
+    if (it != outbound_request_to_sid_.end() &&
+        it->second.peer_address == sender_address) {
+      SignalingFormat chosen_format =
+          (incoming_format == SignalingFormat::PROTOBUF)
+              ? SignalingFormat::PROTOBUF
+              : SignalingFormat::XML;
+      std::string sid = it->second.sid;
+      session_formats_.Put(PeerSessionKey{sender_address.id(), sid},
+                           chosen_format);
+      ErasePendingInitiates(sender_address, sid);
     }
   }
 
@@ -716,13 +762,38 @@ void FtlSignalStrategy::Core::HandleHttpStatusError(
   Disconnect();
 }
 
-bool FtlSignalStrategy::Core::IsSessionPending(const std::string& sid) const {
-  for (const auto& pair : outbound_request_to_sid_) {
-    if (pair.second == sid) {
+bool FtlSignalStrategy::Core::IsSessionPending(
+    const SignalingAddress& peer_address,
+    const std::string& sid) const {
+  for (const auto& [key, pending] : outbound_request_to_sid_) {
+    if (pending.peer_address == peer_address && pending.sid == sid) {
       return true;
     }
   }
   return false;
+}
+
+void FtlSignalStrategy::Core::ErasePendingInitiates(
+    const SignalingAddress& peer_address,
+    const std::string& sid) {
+  for (auto it = outbound_request_to_sid_.begin();
+       it != outbound_request_to_sid_.end();) {
+    if (it->second.peer_address == peer_address && it->second.sid == sid) {
+      it = outbound_request_to_sid_.Erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void FtlSignalStrategy::Core::EraseSessionState(
+    const SignalingAddress& peer_address,
+    const std::string& sid) {
+  auto it = session_formats_.Peek(PeerSessionKey{peer_address.id(), sid});
+  if (it != session_formats_.end()) {
+    session_formats_.Erase(it);
+  }
+  ErasePendingInitiates(peer_address, sid);
 }
 
 SignalingFormat FtlSignalStrategy::Core::GetFormatForMessage(
@@ -734,20 +805,19 @@ SignalingFormat FtlSignalStrategy::Core::GetFormatForMessage(
                                       : SignalingFormat::XML;
   }
   // For other messages, use the negotiated format for the session.
-  auto it = session_formats_.Get(message.sid);
+  auto it = session_formats_.Get(PeerSessionKey{message.to.id(), message.sid});
   if (it != session_formats_.end()) {
     return it->second;
   }
 
-  if (IsSessionPending(message.sid)) {
-    // If the session is pending negotiation, we don't know the format yet.
-    // Subsequent non-initiate messages must never be sent in BOTH format;
-    // default to PROTOBUF if we initiated with PROTOBUF/BOTH, otherwise XML.
+  if (IsSessionPending(message.to, message.sid)) {
+    // While the session is pending negotiation (before JingleReply or
+    // session-accept locks the format), subsequent non-initiate stanzas (such
+    // as an early session-terminate) must never be sent as BOTH or
+    // PROTOBUF-only because the target host may only speak XML.
     VLOG(1) << "Session " << message.sid
-            << " is pending negotiation. Defaulting to "
-            << (send_protobuf_in_initiate_ ? "PROTOBUF" : "XML");
-    return send_protobuf_in_initiate_ ? SignalingFormat::PROTOBUF
-                                      : SignalingFormat::XML;
+            << " is pending negotiation. Defaulting to XML.";
+    return SignalingFormat::XML;
   }
 
   LOG(WARNING) << "No signaling format negotiated for session " << message.sid
@@ -759,7 +829,8 @@ SignalingFormat FtlSignalStrategy::Core::GetFormatForMessage(
     const JingleMessageReply& reply) {
   // Use the same format as the incoming request we are replying to, and
   // erase the entry to prevent leaks.
-  auto it = incoming_request_formats_.Peek(reply.message_id);
+  auto it = incoming_request_formats_.Peek(
+      PeerMessageKey{reply.to.id(), reply.message_id});
   if (it != incoming_request_formats_.end()) {
     SignalingFormat format = it->second;
     incoming_request_formats_.Erase(it);

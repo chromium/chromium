@@ -79,7 +79,7 @@ class FtlSignalStrategy : public SignalStrategy {
   virtual void RemoveFtlListener(FtlListener* listener);
 
   // Enables dual signaling (XML and Protobuf) for outbound session-initiate
-  // and pending sessions.
+  // messages.
   void SetSendProtobufInInitiate(bool send);
 
   std::string GetNextId() override;
