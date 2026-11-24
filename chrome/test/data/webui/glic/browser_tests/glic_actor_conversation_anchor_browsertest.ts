@@ -6,13 +6,19 @@
 // chrome/browser/glic/actor/glic_actor_conversation_anchor_browsertest.cc
 
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason} from '/glic/glic_api/glic_api.js';
-import type {PerformActionsOptions} from '/glic/glic_api/glic_api.js';
+import type {NavigationConfirmationRequest, PerformActionsOptions} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertTrue, checkDefined, observeSequence, testMain} from './browser_test_base.js';
 
 class GlicActorConversationAnchorBrowserTest extends ApiTestFixtureBase {
   override async setUpTest() {
     await this.client.waitForFirstOpen();
+    this.host.selectNavigationConfirmationRequestHandler?.()?.subscribe(
+        (request: NavigationConfirmationRequest) => {
+          request.onConfirmationDecision({
+            response: {permissionGranted: true},
+          });
+        });
   }
 
   async getFocusedTabId(): Promise<string> {
