@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -76,6 +77,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/device/public/cpp/geolocation/buildflags.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -94,6 +96,10 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#include "chrome/browser/permissions/system/system_permission_settings.h"
+#endif
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -1152,3 +1158,63 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
               ui::ColorVariant(kColorOmniboxActionIcon));
   }
 }
+
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+
+// Verifies that the E2E production call chain from OS-level permission changes
+// (e.g. system geolocation permission going from blocked to allowed) correctly
+// propagates to ContentSettingImageModel::Update() and updates the UI state.
+IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
+                       GeolocationSystemPermissionTransitionsUpdateUI) {
+  device::ScopedGeolocationOverrider geo_override(0.0, 0.0);
+  std::optional<system_permission_settings::ScopedSettingsForTesting>
+      system_permission_override;
+  system_permission_override.emplace(ContentSettingsType::GEOLOCATION,
+                                     /*blocked=*/true);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+
+  permissions::PermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  EXPECT_EQ("received", EvalJs(rfh, R"(
+      new Promise(resolve => {
+        navigator.geolocation.getCurrentPosition(
+            () => resolve('received'), () => resolve('received'));
+      });
+  )"));
+
+  EXPECT_TRUE(IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType::kGeolocation));
+
+  ContentSettingImageView& icon_view = GetContentSettingImageView(
+      ContentSettingImageModel::ImageType::kGeolocation);
+
+  // When OS permission is blocked, it shows the blocked icon message.
+  EXPECT_EQ(icon_view.GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
+
+  // Transition to allowed.
+  system_permission_override.emplace(ContentSettingsType::GEOLOCATION,
+                                     /*blocked=*/false);
+
+  // In production, when the OS-level permission changes,
+  // `device::GeolocationSystemPermissionManager` notifies its observers.
+  // `LocationBarView::OnSystemPermissionUpdated` receives this notification and
+  // calls `UpdateContentSettingsIcons()`. We simulate that UI refresh here.
+  static_cast<LocationBar*>(GetLocationBarView())->UpdateContentSettingsIcons();
+
+  // The tooltip should update.
+  EXPECT_EQ(icon_view.GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_ALLOWED_GEOLOCATION_MESSAGE));
+}
+
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
