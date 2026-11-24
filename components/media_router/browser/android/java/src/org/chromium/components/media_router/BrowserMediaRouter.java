@@ -515,6 +515,13 @@ public class BrowserMediaRouter implements MediaRouteManager {
         // The native object has been destroyed.
         mNativeMediaRouterAndroidBridge = 0;
         sInstances.remove(this);
+        for (MediaRouteProvider provider : mRouteProviders) {
+            provider.teardown();
+        }
+        mRouteProviders.clear();
+        mRouteIdsToProviders.clear();
+        mSinksPerSourcePerProvider.clear();
+        mSinksPerSource.clear();
     }
 
     private @Nullable MediaRouteProvider getProviderForSource(String sourceId) {

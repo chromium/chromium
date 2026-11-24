@@ -7,6 +7,9 @@ package org.chromium.components.media_router;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.After;
@@ -20,6 +23,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.Collections;
 
 /** Route tests for BrowserMediaRouter. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -192,5 +197,40 @@ public class BrowserMediaRouterRouteTest extends BrowserMediaRouterTestBase {
 
         mBrowserMediaRouter.onRouteTerminated(routeId1);
         assertEquals(0, mBrowserMediaRouter.getRouteIdsToProvidersForTest().size());
+    }
+
+    @Test
+    @Feature({"MediaRouter"})
+    public void testTeardownTearsDownProvidersAndClearsState() {
+        MediaRouteProvider secondProvider = mock(MediaRouteProvider.class);
+        mBrowserMediaRouter.addMediaRouteProvider(secondProvider);
+
+        mBrowserMediaRouter.createRoute(
+                SOURCE_ID1, SINK_ID1, PRESENTATION_ID1, ORIGIN1, mWebContents1, REQUEST_ID1);
+        String routeId1 = new MediaRoute(SINK_ID1, SOURCE_ID1, PRESENTATION_ID1).id;
+        mBrowserMediaRouter.onRouteCreated(routeId1, SINK_ID1, REQUEST_ID1, mRouteProvider, true);
+        mBrowserMediaRouter.onSinksReceived(
+                SOURCE_ID1,
+                mRouteProvider,
+                Collections.singletonList(new MediaSink(SINK_ID1, SINK_NAME1)));
+
+        mBrowserMediaRouter.teardown();
+
+        verify(mRouteProvider).teardown();
+        verify(secondProvider).teardown();
+        assertTrue(mBrowserMediaRouter.getRouteProvidersForTest().isEmpty());
+        assertTrue(mBrowserMediaRouter.getRouteIdsToProvidersForTest().isEmpty());
+        assertTrue(mBrowserMediaRouter.getSinksPerSourceForTest().isEmpty());
+        assertTrue(mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().isEmpty());
+
+        // Calling teardown again is a safe no-op and torn-down routers no longer receive
+        // permission broadcasts.
+        mBrowserMediaRouter.teardown();
+        BrowserMediaRouter.setNeedsLocalNetworkPermissionForTesting(null);
+        BrowserMediaRouter.onLocalNetworkPermissionResult(/* granted= */ true);
+        verify(mRouteProvider, times(1)).teardown();
+        verify(secondProvider, times(1)).teardown();
+        verify(mRouteProvider, never()).onLocalNetworkPermissionGranted();
+        verify(secondProvider, never()).onLocalNetworkPermissionGranted();
     }
 }

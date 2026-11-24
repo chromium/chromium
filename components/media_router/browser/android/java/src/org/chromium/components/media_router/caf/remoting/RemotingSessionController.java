@@ -58,6 +58,22 @@ public class RemotingSessionController extends BaseSessionController {
     }
 
     @Override
+    public void detachFromCastSession() {
+        if (getSession() == null) return;
+
+        try {
+            getSession().removeMessageReceivedCallbacks(CastSessionUtil.MEDIA_NAMESPACE);
+        } catch (Exception e) {
+            Log.e(
+                    TAG,
+                    "Failed to remove namespace listener for %s",
+                    CastSessionUtil.MEDIA_NAMESPACE,
+                    e);
+        }
+        super.detachFromCastSession();
+    }
+
+    @Override
     public void onSessionStarted() {
         super.onSessionStarted();
         // An adapter from an earlier session must not be able to control the new one.

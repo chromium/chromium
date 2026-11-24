@@ -406,6 +406,15 @@ public class CafBaseMediaRouteProviderTest {
 
         inOrder.verify(mProvider).removeAllRoutes("Launch error");
         inOrder.verify(mManager).onCreateRouteRequestError("Launch error", 1);
+        verify(mSessionManager, times(1))
+                .removeSessionManagerListener(mProvider, CastSession.class);
+        verify(mSessionController, times(1)).clearRouteCreationInfo();
+
+        // Subsequent teardown should not end an unrelated session or re-remove the listener.
+        mProvider.teardown();
+        verify(mSessionController, never()).endSession();
+        verify(mSessionManager, times(1))
+                .removeSessionManagerListener(mProvider, CastSession.class);
     }
 
     @Test
@@ -662,6 +671,188 @@ public class CafBaseMediaRouteProviderTest {
         verify(mManager).onRouteTerminated(route1.id);
         verify(mManager).onRouteTerminated(route2.id);
         verify(mManager, never()).onRouteClosed(eq(route1.id), anyString());
+    }
+
+    @Test
+    public void testTeardown_activeSessionAfterDetachRoute() {
+        MediaSource mockSource = mock(MediaSource.class);
+        MediaRouteSelector mockSelector = mock(MediaRouteSelector.class);
+        prepareMediaSource(mockSource, mockSelector, "source-id", "app-id");
+        doReturn("source-id").when(mockSource).getSourceId();
+
+        // Register a discovery callback and start an off-the-record Cast session.
+        mProvider.startObservingMediaSinks("source-id", "https://incognito-secret.example");
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(1, mProvider.mDiscoveryCallbacks.size());
+        MediaRouter.Callback discoveryCallback = mProvider.mDiscoveryCallbacks.get("app-id");
+
+        startOffTheRecordSession();
+        doReturn(true).when(mSessionController).isConnected();
+        doReturn(mCastSession).when(mSessionController).getSession();
+
+        // Closing the Incognito tab detaches the route without ending the Cast session.
+        assertEquals(1, mProvider.mRoutes.size());
+        String routeId = mProvider.mRoutes.keySet().iterator().next();
+        mProvider.detachRoute(routeId);
+        assertTrue(mProvider.mRoutes.isEmpty());
+
+        InOrder inOrder =
+                inOrder(
+                        mSessionController,
+                        mProvider,
+                        mSessionManager,
+                        mMediaRouterHelper.getShadowImpl());
+
+        mProvider.teardown();
+
+        inOrder.verify(mMediaRouterHelper.getShadowImpl()).removeCallback(discoveryCallback);
+        verifyTeardownSessionEnd(inOrder);
+        assertTrue(mProvider.mDiscoveryCallbacks.isEmpty());
+        assertNull(mProvider.getPendingCreateRouteRequestInfo());
+    }
+
+    @Test
+    public void testTeardown_suspendedSessionEndsSessionAndCleansUp() {
+        startOffTheRecordSession();
+
+        // Suspend detaches the CastSession so getSession() is null and isConnected() is false.
+        mProvider.onSessionSuspended(mCastSession, 0);
+        doReturn(false).when(mSessionController).isConnected();
+        doReturn(null).when(mSessionController).getSession();
+
+        InOrder inOrder =
+                inOrder(
+                        mSessionController,
+                        mProvider,
+                        mSessionManager,
+                        mMediaRouterHelper.getShadowImpl());
+
+        mProvider.teardown();
+
+        verifyTeardownSessionEnd(inOrder);
+    }
+
+    @Test
+    public void testCreateRoute_endsSuspendedSession() {
+        startOffTheRecordSession();
+
+        mProvider.onSessionSuspended(mCastSession, 0);
+        doReturn(false).when(mSessionController).isConnected();
+        doReturn(null).when(mSessionController).getSession();
+
+        InOrder inOrder =
+                inOrder(
+                        mSessionController,
+                        mProvider,
+                        mSessionManager,
+                        mMediaRouterHelper.getShadowImpl());
+
+        mProvider.createRoute("source-id", "cast-route", "presentation-id-2", "origin", 2, false, 2);
+
+        inOrder.verify(mSessionController).endSession();
+        verifySessionEnd(inOrder);
+    }
+
+    @Test
+    public void testTeardown_pendingCreateRouteRequest() {
+        createOffTheRecordRoute();
+        assertEquals(
+                "https://incognito-secret.example",
+                mProvider.getPendingCreateRouteRequestInfo().origin);
+
+        InOrder inOrder =
+                inOrder(
+                        mSessionController,
+                        mProvider,
+                        mSessionManager,
+                        mMediaRouterHelper.getShadowImpl());
+
+        mProvider.teardown();
+
+        assertNull(mProvider.getPendingCreateRouteRequestInfo());
+        verifyTeardownSessionEnd(inOrder);
+    }
+
+    @Test
+    public void testTeardown_idleProviderDoesNotEndGlobalSession() {
+        MediaSource mockSource = mock(MediaSource.class);
+        MediaRouteSelector mockSelector = mock(MediaRouteSelector.class);
+        prepareMediaSource(mockSource, mockSelector, "source-id", "app-id");
+
+        mProvider.startObservingMediaSinks("source-id", "origin");
+        RobolectricUtil.runAllBackgroundAndUi();
+        MediaRouter.Callback discoveryCallback = mProvider.mDiscoveryCallbacks.get("app-id");
+
+        mProvider.teardown();
+
+        verify(mMediaRouterHelper.getShadowImpl()).removeCallback(discoveryCallback);
+        assertTrue(mProvider.mDiscoveryCallbacks.isEmpty());
+        verify(mSessionController, never()).endSession();
+        verify(mSessionController).clearRouteCreationInfo();
+        verify(mMediaRouterHelper.getShadowImpl(), never())
+                .selectRoute(mMediaRouterHelper.getDefaultRoute());
+        verify(mSessionManager, never())
+                .removeSessionManagerListener(mProvider, CastSession.class);
+    }
+
+    @Test
+    public void testTeardown_cancelsDeferredDiscoveryTask() {
+        List<Runnable> deferredTasks = new ArrayList<>();
+        MediaRouterClient.setInstance(
+                new TestMediaRouterClient() {
+                    @Override
+                    public void addDeferredTask(Runnable deferredTask) {
+                        deferredTasks.add(deferredTask);
+                    }
+                });
+
+        MediaSource mockSource = mock(MediaSource.class);
+        MediaRouteSelector mockSelector = mock(MediaRouteSelector.class);
+        prepareMediaSource(mockSource, mockSelector, "source-id", "app-id");
+
+        mProvider.startObservingMediaSinks("source-id", "origin");
+        assertEquals(1, deferredTasks.size());
+
+        mProvider.teardown();
+        deferredTasks.get(0).run();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(mProvider.mDiscoveryCallbacks.isEmpty());
+        verify(mMediaRouterHelper.getShadowImpl(), never())
+                .addCallback(
+                        any(MediaRouteSelector.class), any(MediaRouter.Callback.class), anyInt());
+    }
+
+    private void createOffTheRecordRoute() {
+        if (mProvider.getSourceFromId("source-id") == null) {
+            MediaSource mockSource = mock(MediaSource.class);
+            doReturn(mockSource).when(mProvider).getSourceFromId("source-id");
+            doReturn("source-id").when(mockSource).getSourceId();
+        }
+        mProvider.createRoute(
+                "source-id",
+                "cast-route",
+                "presentation-id",
+                "https://incognito-secret.example",
+                1,
+                /* isOffTheRecord= */ true,
+                1);
+    }
+
+    private void startOffTheRecordSession() {
+        createOffTheRecordRoute();
+        doReturn(mCastSession).when(mSessionManager).getCurrentCastSession();
+        mProvider.onSessionStarted(mCastSession, "session-id");
+    }
+
+    private void verifyTeardownSessionEnd(InOrder inOrder) {
+        inOrder.verify(mSessionManager).removeSessionManagerListener(mProvider, CastSession.class);
+        inOrder.verify(mSessionController).endSession();
+        inOrder.verify(mSessionController).onSessionEnded();
+        inOrder.verify(mSessionController).detachFromCastSession();
+        inOrder.verify(mMediaRouterHelper.getShadowImpl())
+                .selectRoute(mMediaRouterHelper.getDefaultRoute());
+        inOrder.verify(mProvider).terminateAllRoutes();
     }
 
     private void prepareMediaSource(

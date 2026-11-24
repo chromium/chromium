@@ -6,6 +6,7 @@ package org.chromium.components.media_router.caf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -448,6 +449,21 @@ public class CafMediaRouteProviderTest {
 
         // Mismatching origin is not allowed.
         assertFalse(mProvider.canJoinExistingSession("auto-join", "origin-2", 1, mSource2));
+    }
+
+    @Test
+    public void testTeardown_clearsClientRecordsAndLastRemovedRouteRecord() {
+        mProvider.addRoute(mRoute1, "https://incognito-secret.example", 1, 1, false);
+        mProvider.addRoute(mRoute2, "https://incognito-secret.example", 2, 2, false);
+        mProvider.detachRoute(mRoute1.id);
+        assertEquals(1, mProvider.getClientIdToRecords().size());
+        assertEquals("https://incognito-secret.example", mProvider.mLastRemovedRouteRecord.origin);
+
+        mProvider.teardown();
+
+        verify(mMessageHandler).teardown();
+        assertTrue(mProvider.getClientIdToRecords().isEmpty());
+        assertNull(mProvider.mLastRemovedRouteRecord);
     }
 
     private void verifyJoinRouteRequestError(InOrder inOrder, String error, int nativeRequestId) {

@@ -59,8 +59,10 @@ public abstract class BaseNotificationController
 
     @Override
     public void onSessionEnded() {
-        MediaNotificationManager.hideForAllTabs(getNotificationId());
-        mNotificationBuilder = null;
+        if (mNotificationBuilder != null) {
+            MediaNotificationManager.hideForAllTabs(getNotificationId());
+            mNotificationBuilder = null;
+        }
     }
 
     /** Called when media status updated. */

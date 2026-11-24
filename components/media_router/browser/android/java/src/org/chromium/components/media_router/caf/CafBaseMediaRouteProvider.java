@@ -50,6 +50,8 @@ public abstract class CafBaseMediaRouteProvider
     protected Handler mHandler = new Handler();
 
     private @Nullable CreateRouteRequestInfo mPendingCreateRouteRequestInfo;
+    private boolean mIsSessionManagerListenerRegistered;
+    private boolean mHasActiveSession;
 
     protected CafBaseMediaRouteProvider(MediaRouter androidMediaRouter, MediaRouteManager manager) {
         mAndroidMediaRouter = androidMediaRouter;
@@ -188,7 +190,7 @@ public abstract class CafBaseMediaRouteProvider
             boolean isOffTheRecord,
             int nativeRequestId) {
         Log.d(TAG, "createRoute");
-        if (sessionController().isConnected()) {
+        if (mHasActiveSession || sessionController().isConnected()) {
             // If there is an active session or a pending create route request, force end the
             // current session and clean up the routes (can't wait for session ending as the signal
             // might be delayed).
@@ -225,6 +227,7 @@ public abstract class CafBaseMediaRouteProvider
         CastUtils.getCastContext()
                 .getSessionManager()
                 .addSessionManagerListener(this, CastSession.class);
+        mIsSessionManagerListenerRegistered = true;
 
         mPendingCreateRouteRequestInfo =
                 new CreateRouteRequestInfo(
@@ -262,6 +265,38 @@ public abstract class CafBaseMediaRouteProvider
         removeRoute(routeId, /* error= */ null);
     }
 
+    @Override
+    public void teardown() {
+        for (DiscoveryCallback callback : mDiscoveryCallbacks.values()) {
+            mAndroidMediaRouter.removeCallback(callback);
+        }
+        mDiscoveryCallbacks.clear();
+        mHandler.removeCallbacksAndMessages(null);
+
+        boolean hadPendingRequest = mPendingCreateRouteRequestInfo != null;
+        mPendingCreateRouteRequestInfo = null;
+
+        // Unregister before endSession() so a synchronous onSessionEnding/onSessionEnded
+        // callback from GMS does not re-enter handleSessionEnd().
+        if (mIsSessionManagerListenerRegistered) {
+            CastUtils.getCastContext()
+                    .getSessionManager()
+                    .removeSessionManagerListener(this, CastSession.class);
+            mIsSessionManagerListenerRegistered = false;
+        }
+
+        if (mHasActiveSession
+                || hasSession()
+                || sessionController().getSession() != null
+                || hadPendingRequest) {
+            sessionController().endSession();
+            handleSessionEnd(/* removeSessionManagerListener= */ false);
+        } else {
+            terminateAllRoutes();
+            sessionController().clearRouteCreationInfo();
+        }
+    }
+
     ///////////////////////////////////////////////////////
     // SessionManagerListener implementation begin
     ///////////////////////////////////////////////////////
@@ -273,8 +308,16 @@ public abstract class CafBaseMediaRouteProvider
 
     @Override
     public void onSessionStartFailed(CastSession session, int error) {
+        mHasActiveSession = false;
         removeAllRoutes("Launch error");
         cancelPendingRequest("Launch error");
+        if (mIsSessionManagerListenerRegistered) {
+            CastUtils.getCastContext()
+                    .getSessionManager()
+                    .removeSessionManagerListener(this, CastSession.class);
+            mIsSessionManagerListenerRegistered = false;
+        }
+        sessionController().clearRouteCreationInfo();
     }
 
     @Override
@@ -327,6 +370,7 @@ public abstract class CafBaseMediaRouteProvider
     ///////////////////////////////////////////////////////
 
     protected void handleSessionStart(CastSession session, String sessionId) {
+        mHasActiveSession = true;
         sessionController().attachToCastSession(session);
         sessionController().onSessionStarted();
         assumeNonNull(mPendingCreateRouteRequestInfo);
@@ -349,6 +393,10 @@ public abstract class CafBaseMediaRouteProvider
     }
 
     private void handleSessionEnd() {
+        handleSessionEnd(/* removeSessionManagerListener= */ true);
+    }
+
+    private void handleSessionEnd(boolean removeSessionManagerListener) {
         if (mPendingCreateRouteRequestInfo != null) {
             // The Cast SDK notifies about session ending when a route is unselected, even when
             // there's no current session. Because CastSessionController unselects the route to set
@@ -356,13 +404,17 @@ public abstract class CafBaseMediaRouteProvider
             // sure the listener is not unregistered during a session relaunch.
             return;
         }
+        mHasActiveSession = false;
         sessionController().onSessionEnded();
         sessionController().detachFromCastSession();
         mAndroidMediaRouter.selectRoute(mAndroidMediaRouter.getDefaultRoute());
         terminateAllRoutes();
-        CastUtils.getCastContext()
-                .getSessionManager()
-                .removeSessionManagerListener(this, CastSession.class);
+        if (removeSessionManagerListener) {
+            CastUtils.getCastContext()
+                    .getSessionManager()
+                    .removeSessionManagerListener(this, CastSession.class);
+            mIsSessionManagerListenerRegistered = false;
+        }
     }
 
     private void cancelPendingRequest(String error) {

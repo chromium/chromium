@@ -86,6 +86,11 @@ public abstract class BaseSessionController {
         return mRouteCreationInfo;
     }
 
+    /** Clears the stored route creation info (e.g. origin and media source). */
+    public void clearRouteCreationInfo() {
+        mRouteCreationInfo = null;
+    }
+
     public @Nullable CastSession getSession() {
         return mCastSession;
     }
@@ -162,6 +167,7 @@ public abstract class BaseSessionController {
     /** Called when session ended. */
     public void onSessionEnded() {
         notifyCallback((Callback callback) -> callback.onSessionEnded());
+        clearRouteCreationInfo();
     }
 
     protected final CafBaseMediaRouteProvider getProvider() {

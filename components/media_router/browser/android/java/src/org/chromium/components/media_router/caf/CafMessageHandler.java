@@ -568,6 +568,14 @@ public class CafMessageHandler {
         }
     }
 
+    /** Cleans up pending handler callbacks and request state on provider teardown. */
+    public void teardown() {
+        mHandler.removeCallbacksAndMessages(null);
+        mRequests.clear();
+        mVolumeRequests.clear();
+        mStopRequests.clear();
+    }
+
     /**
      * When the Cast device volume really changed, updates the session status and notify all
      * requesting clients.

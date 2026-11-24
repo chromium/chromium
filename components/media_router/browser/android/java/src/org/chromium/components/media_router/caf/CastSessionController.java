@@ -60,6 +60,13 @@ public class CastSessionController extends BaseSessionController {
     public void detachFromCastSession() {
         if (getSession() == null) return;
 
+        for (String namespace : mNamespaces) {
+            try {
+                getSession().removeMessageReceivedCallbacks(namespace);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to remove the namespace listener for %s", namespace, e);
+            }
+        }
         mNamespaces.clear();
         getSession().removeCastListener(mCastListener);
         super.detachFromCastSession();

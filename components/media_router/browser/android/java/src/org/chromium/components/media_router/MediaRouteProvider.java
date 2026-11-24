@@ -98,4 +98,7 @@ public interface MediaRouteProvider {
 
     /** Called when the local network access permission is granted at runtime. */
     default void onLocalNetworkPermissionGranted() {}
+
+    /** Tears down this provider and releases any active sessions, routes, and callbacks. */
+    default void teardown() {}
 }

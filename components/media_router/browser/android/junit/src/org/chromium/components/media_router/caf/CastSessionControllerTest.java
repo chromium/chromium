@@ -91,6 +91,23 @@ public class CastSessionControllerTest {
     }
 
     @Test
+    public void testDetachFromCastSession_unregistersNamespaces() throws Exception {
+        List<String> namespaces = new ArrayList<>();
+        namespaces.add("namespace1");
+        namespaces.add("namespace2");
+        doReturn(namespaces).when(mApplicationMetadata).getSupportedNamespaces();
+
+        mController.attachToCastSession(mCastSession);
+        assertNamespacesContainsExactly(mController.getNamespaces(), "namespace1", "namespace2");
+
+        mController.detachFromCastSession();
+
+        verify(mCastSession).removeMessageReceivedCallbacks("namespace1");
+        verify(mCastSession).removeMessageReceivedCallbacks("namespace2");
+        assertTrue(mController.getNamespaces().isEmpty());
+    }
+
+    @Test
     public void testOnSessionEnded() {
         mController.attachToCastSession(mCastSession);
         mController.onSessionEnded();

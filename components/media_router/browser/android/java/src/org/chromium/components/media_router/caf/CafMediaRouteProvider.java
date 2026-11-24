@@ -107,6 +107,14 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     }
 
     @Override
+    public void teardown() {
+        super.teardown();
+        mMessageHandler.teardown();
+        mClientIdToRecords.clear();
+        mLastRemovedRouteRecord = null;
+    }
+
+    @Override
     protected @Nullable MediaSource getSourceFromId(String sourceId) {
         return CastMediaSource.from(sourceId);
     }

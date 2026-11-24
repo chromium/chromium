@@ -165,12 +165,25 @@ public class BaseSessionControllerTest {
 
     @Test
     public void testOnSessionStarted() {
+        mController.requestSessionLaunch();
+        assertSame(mRequestInfo, mController.getRouteCreationInfo());
+
         mController.attachToCastSession(mCastSession);
         mController.onSessionStarted();
         verify(mNotificationController).onSessionStarted();
 
         mController.onSessionEnded();
         verify(mNotificationController).onSessionEnded();
+        assertNull(mController.getRouteCreationInfo());
+    }
+
+    @Test
+    public void testClearRouteCreationInfo() {
+        mController.requestSessionLaunch();
+        assertSame(mRequestInfo, mController.getRouteCreationInfo());
+
+        mController.clearRouteCreationInfo();
+        assertNull(mController.getRouteCreationInfo());
     }
 
     @Test
