@@ -792,8 +792,12 @@ TEST(PlatformThreadCpuAffinity, DefaultToAllCores) {
     GTEST_SKIP();
   }
 
-  test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
-  EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+  {
+    test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
+    PlatformThread::InitializeFeatures();
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+  }
+  PlatformThread::InitializeFeatures();
 }
 
 TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
@@ -817,6 +821,7 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
 
   {
     test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
+    PlatformThread::InitializeFeatures();
 
     EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
     PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
@@ -835,6 +840,7 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
   {
     test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(kRestrictBigCoreThreadAffinity);
+    PlatformThread::InitializeFeatures();
 
     PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
     EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
@@ -843,6 +849,7 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
   }
 
   SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
+  PlatformThread::InitializeFeatures();
 }
 
 TEST(PlatformThreadCpuAffinity, RestrictAffinityNoopWithTwoCoreTypes) {
@@ -854,13 +861,17 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinityNoopWithTwoCoreTypes) {
   SetMaxFrequencyPerProcessorOverrideForTesting(&fake_frequencies);
   EXPECT_FALSE(IsEligibleForBigCoreAffinityChange());
 
-  test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
+  {
+    test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
+    PlatformThread::InitializeFeatures();
 
-  EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
-  PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
-  EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+    PlatformThread::SetDefaultThreadType(ThreadType::kBackground);
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+  }
 
   SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
+  PlatformThread::InitializeFeatures();
 }
 
 TEST(PlatformThreadCpuAffinity, IsEligibleForBigCoreAffinityChange) {
@@ -881,6 +892,51 @@ TEST(PlatformThreadCpuAffinity, IsEligibleForBigCoreAffinityChange) {
   EXPECT_FALSE(IsEligibleForBigCoreAffinityChange());
 
   SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
+}
+
+TEST(PlatformThreadTest, AndroidThreadPriorityInitializeFeatures) {
+  auto expect_nice_values = [](int bg, int util, int def, int pres, int audio,
+                               int rt) {
+    EXPECT_EQ(bg, internal::ThreadTypeToNiceValue(ThreadType::kBackground));
+    EXPECT_EQ(util, internal::ThreadTypeToNiceValue(ThreadType::kUtility));
+    EXPECT_EQ(def, internal::ThreadTypeToNiceValue(ThreadType::kDefault));
+    EXPECT_EQ(pres, internal::ThreadTypeToNiceValue(ThreadType::kPresentation));
+    EXPECT_EQ(audio,
+              internal::ThreadTypeToNiceValue(ThreadType::kAudioProcessing));
+    EXPECT_EQ(rt, internal::ThreadTypeToNiceValue(ThreadType::kRealtimeAudio));
+  };
+
+  {
+    test::ScopedFeatureList feature_list;
+    feature_list.InitFromCommandLine(/*enable_features=*/"",
+                                     "AndroidThreadPriority");
+    PlatformThread::InitializeFeatures();
+  }
+
+  {
+    test::ScopedFeatureList feature_list;
+    feature_list.InitFromCommandLine(
+        "AndroidThreadPriority:background/12/utility/2/default/1/"
+        "presentation/-6/interactive/-8/obey_soc_restrictions/false",
+        /*disable_features=*/"");
+
+    // ThreadTypeToNiceValue() reads cached atomics rather than FeatureList
+    // directly, so values do not change until InitializeFeatures() is called.
+    expect_nice_values(10, 1, 0, -4, -4, -16);
+
+    PlatformThread::InitializeFeatures();
+    expect_nice_values(12, 2, 1, -6, -8, -16);
+  }
+
+  // Verify disabling restores defaults.
+  {
+    test::ScopedFeatureList feature_list;
+    feature_list.InitFromCommandLine(/*enable_features=*/"",
+                                     "AndroidThreadPriority");
+    PlatformThread::InitializeFeatures();
+    expect_nice_values(10, 1, 0, -4, -4, -16);
+  }
+  PlatformThread::InitializeFeatures();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

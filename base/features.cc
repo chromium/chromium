@@ -280,7 +280,7 @@ void Init() {
   MessagePumpEpoll::InitializeFeatures();
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   PlatformThread::InitializeFeatures();
 #endif
 

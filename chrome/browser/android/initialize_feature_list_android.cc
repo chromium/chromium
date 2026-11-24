@@ -8,6 +8,7 @@
 #include "base/android/background_thread_pool_field_trial.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
@@ -79,6 +80,10 @@ void EnsureFeatureListInitialized() {
   // the task executor was created before FeatureList and could not access
   // Finch/field trial configurations.
   content::PostFeatureListInit();
+
+  // Initialize PlatformThread features before starting the ThreadPool so the
+  // worker threads pick up the configured priorities and affinity.
+  base::PlatformThread::InitializeFeatures();
 
   // The FeatureList needs to be created before starting the ThreadPool.
   content::StartThreadPool();

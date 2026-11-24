@@ -14,14 +14,17 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <iterator>
 #include <optional>
 #include <vector>
 
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
@@ -36,36 +39,18 @@ namespace base {
 // Enable with e.g.
 // --enable-features=AndroidThreadPriority:presentation/-8/default/-1
 BASE_FEATURE(kAndroidThreadPriority, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kBackgroundThreadPriority,
-                   &kAndroidThreadPriority,
-                   "background",
-                   10);
-BASE_FEATURE_PARAM(int,
-                   kUtilityThreadPriority,
-                   &kAndroidThreadPriority,
-                   "utility",
-                   1);
-BASE_FEATURE_PARAM(int,
-                   kDefaultThreadPriority,
-                   &kAndroidThreadPriority,
-                   "default",
-                   0);
-BASE_FEATURE_PARAM(int,
-                   kPresentationThreadPriority,
-                   &kAndroidThreadPriority,
-                   "presentation",
-                   -4);
-BASE_FEATURE_PARAM(int,
-                   kInteractiveThreadPriority,
-                   &kAndroidThreadPriority,
-                   "interactive",
-                   -4);
-BASE_FEATURE_PARAM(bool,
-                   kObeySocRestrictions,
-                   &kAndroidThreadPriority,
-                   "obey_soc_restrictions",
-                   true);
+constexpr FeatureParam<int> kBackgroundThreadPriority{&kAndroidThreadPriority,
+                                                      "background", 10};
+constexpr FeatureParam<int> kUtilityThreadPriority{&kAndroidThreadPriority,
+                                                   "utility", 1};
+constexpr FeatureParam<int> kDefaultThreadPriority{&kAndroidThreadPriority,
+                                                   "default", 0};
+constexpr FeatureParam<int> kPresentationThreadPriority{&kAndroidThreadPriority,
+                                                        "presentation", -4};
+constexpr FeatureParam<int> kInteractiveThreadPriority{&kAndroidThreadPriority,
+                                                       "interactive", -4};
+constexpr FeatureParam<bool> kObeySocRestrictions{
+    &kAndroidThreadPriority, "obey_soc_restrictions", true};
 // kRealtimeAudio cannot be configured on the command line and should be the
 // effective maximum.
 
@@ -76,6 +61,24 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kRestrictBigCoreThreadAffinity, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
+
+constexpr int kRealtimeAudioNice = -16;
+// ADPF-equipped Google Pixels can suffer input jank if the presentation nice
+// value is lowered below -4.
+constexpr int kGoogleSocMinPresentationNice = -4;
+
+// Use atomics to access FeatureList values when setting up a thread, since
+// there are cases when FeatureList initialization is not synchronized with
+// PlatformThread creation (including ScopedFeatureList in tests).
+constinit std::atomic<int> g_background_nice{
+    kBackgroundThreadPriority.default_value};
+constinit std::atomic<int> g_utility_nice{kUtilityThreadPriority.default_value};
+constinit std::atomic<int> g_default_nice{kDefaultThreadPriority.default_value};
+constinit std::atomic<int> g_presentation_nice{
+    kPresentationThreadPriority.default_value};
+constinit std::atomic<int> g_audio_processing_nice{
+    kInteractiveThreadPriority.default_value};
+constinit std::atomic<bool> g_restrict_big_core_thread_affinity{false};
 
 std::vector<uint64_t>* g_max_frequency_per_processor_override = nullptr;
 
@@ -182,18 +185,6 @@ void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run) {
 
 namespace internal {
 
-static int GetAdjustedPresentationThreadPriority() {
-  // ADPF-equipped Google Pixels seem to have issues with input jank if the
-  // kDisplayCriticalThreadPriority value is lowered below -4.
-  static bool is_google_soc = SysInfo::SocManufacturer() == "Google";
-  const bool allowed_to_lower =
-      (!is_google_soc || !kObeySocRestrictions.Get()) &&
-      base::FeatureList::IsEnabled(kAndroidThreadPriority);
-  const int requested_priority = kPresentationThreadPriority.Get();
-  return allowed_to_lower ? requested_priority
-                          : std::max(-4, requested_priority);
-}
-
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 // - kPresentation corresponds to Android's PRIORITY_DISPLAY = -4 value.
 // - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
@@ -206,53 +197,27 @@ const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
     {ThreadType::kBackground, 10},
 };
 
-// If we're not in the AndroidThreadPriorityTrial:
-//    - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10 value.
-//    - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1
-//      value.
-//    - kPresentation and kInteractive correspond to Android's
-//      PRIORITY_DISPLAY = -4 value.
-//    - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
+// Returns the cached nice value for `thread_type`. Before InitializeFeatures()
+// runs or when kAndroidThreadPriority is disabled, the defaults are:
+//    - kBackground: Android's PRIORITY_BACKGROUND = 10.
+//    - kUtility: Android's THREAD_PRIORITY_LESS_FAVORABLE = 1.
+//    - kDefault: 0.
+//    - kPresentation and kAudioProcessing: Android's PRIORITY_DISPLAY = -4.
+//    - kRealtimeAudio: Android's PRIORITY_AUDIO = -16.
 int ThreadTypeToNiceValue(const ThreadType thread_type) {
-  if (base::FeatureList::IsEnabled(kAndroidThreadPriority)) {
-    [[unlikely]]
-    // Establish weak partial ordering from high to low.
-    DCHECK_LE(kUtilityThreadPriority.Get(), kBackgroundThreadPriority.Get());
-    DCHECK_LE(kDefaultThreadPriority.Get(), kUtilityThreadPriority.Get());
-    DCHECK_LE(GetAdjustedPresentationThreadPriority(),
-              kDefaultThreadPriority.Get());
-    DCHECK_LE(kInteractiveThreadPriority.Get(),
-              GetAdjustedPresentationThreadPriority());
-    // Check that -16 is the highest priority in the system.
-    DCHECK_LT(-16, kInteractiveThreadPriority.Get());
-    switch (thread_type) {
-      case ThreadType::kBackground:
-        return kBackgroundThreadPriority.Get();
-      case ThreadType::kUtility:
-        return kUtilityThreadPriority.Get();
-      case ThreadType::kDefault:
-        return kDefaultThreadPriority.Get();
-      case ThreadType::kPresentation:
-        return GetAdjustedPresentationThreadPriority();
-      case ThreadType::kAudioProcessing:
-        return kInteractiveThreadPriority.Get();
-      case ThreadType::kRealtimeAudio:
-        // Not configurable, should be the effective highest.
-        return -16;
-    }
-  }
   switch (thread_type) {
     case ThreadType::kBackground:
-      return 10;
+      return g_background_nice.load(std::memory_order_relaxed);
     case ThreadType::kUtility:
-      return 1;
+      return g_utility_nice.load(std::memory_order_relaxed);
     case ThreadType::kDefault:
-      return 0;
+      return g_default_nice.load(std::memory_order_relaxed);
     case ThreadType::kPresentation:
+      return g_presentation_nice.load(std::memory_order_relaxed);
     case ThreadType::kAudioProcessing:
-      return -4;
+      return g_audio_processing_nice.load(std::memory_order_relaxed);
     case ThreadType::kRealtimeAudio:
-      return -16;
+      return kRealtimeAudioNice;
   }
 }
 
@@ -283,8 +248,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     SetThreadNiceFromType(PlatformThread::CurrentId(), thread_type);
   }
 
-  if (IsEligibleForBigCoreAffinityChange() &&
-      base::FeatureList::IsEnabled(kRestrictBigCoreThreadAffinity)) {
+  if (g_restrict_big_core_thread_affinity.load(std::memory_order_relaxed)) {
     SetCanRunOnBigCore(PlatformThread::CurrentId(),
                        thread_type >= ThreadType::kPresentation);
   }
@@ -325,7 +289,7 @@ void RemoveThreadTypeOverride(
 
 }  // namespace internal
 
-void PlatformThread::SetName(const std::string& name) {
+void PlatformThreadBase::SetName(const std::string& name) {
   SetNameCommon(name);
 
   // Like linux, on android we can get the thread names to show up in the
@@ -341,6 +305,46 @@ void PlatformThread::SetName(const std::string& name) {
   if (err < 0 && errno != EPERM) {
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
   }
+}
+
+// static
+void PlatformThreadAndroid::InitializeFeatures() {
+  int background = kBackgroundThreadPriority.default_value;
+  int utility = kUtilityThreadPriority.default_value;
+  int default_prio = kDefaultThreadPriority.default_value;
+  int presentation = kPresentationThreadPriority.default_value;
+  int audio_processing = kInteractiveThreadPriority.default_value;
+  if (FeatureList::IsEnabled(kAndroidThreadPriority)) {
+    background = kBackgroundThreadPriority.Get();
+    utility = kUtilityThreadPriority.Get();
+    default_prio = kDefaultThreadPriority.Get();
+    static const bool is_google_soc = SysInfo::SocManufacturer() == "Google";
+    presentation = kPresentationThreadPriority.Get();
+    if (is_google_soc && kObeySocRestrictions.Get()) {
+      presentation = std::max(kGoogleSocMinPresentationNice, presentation);
+    }
+    audio_processing = kInteractiveThreadPriority.Get();
+
+    // Establish weak partial ordering from high to low.
+    DCHECK_LE(utility, background);
+    DCHECK_LE(default_prio, utility);
+    DCHECK_LE(presentation, default_prio);
+    DCHECK_LE(audio_processing, presentation);
+    // Check that -16 is the highest priority in the system.
+    DCHECK_LT(kRealtimeAudioNice, audio_processing);
+  }
+  g_background_nice.store(background, std::memory_order_relaxed);
+  g_utility_nice.store(utility, std::memory_order_relaxed);
+  g_default_nice.store(default_prio, std::memory_order_relaxed);
+  g_presentation_nice.store(presentation, std::memory_order_relaxed);
+  g_audio_processing_nice.store(audio_processing, std::memory_order_relaxed);
+
+  // Only query `kRestrictBigCoreThreadAffinity` on eligible devices so
+  // ineligible devices are not included in the experiment.
+  g_restrict_big_core_thread_affinity.store(
+      IsEligibleForBigCoreAffinityChange() &&
+          FeatureList::IsEnabled(kRestrictBigCoreThreadAffinity),
+      std::memory_order_relaxed);
 }
 
 void InitThreading() {}

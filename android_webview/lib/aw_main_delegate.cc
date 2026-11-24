@@ -47,6 +47,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
 #include "base/timer/elapsed_timer.h"
@@ -374,6 +375,7 @@ std::optional<int> AwMainDelegate::PostEarlyInitialization(
 
   InitializeMemorySystem(is_browser_process);
   base::Lock::InitializeFeatures();
+  base::PlatformThread::InitializeFeatures();
 
   return std::nullopt;
 }

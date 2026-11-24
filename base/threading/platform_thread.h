@@ -413,6 +413,14 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+class BASE_EXPORT PlatformThreadAndroid : public PlatformThreadBase {
+ public:
+  // Initializes features for this class. See `base::features::Init()`.
+  static void InitializeFeatures();
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Alias to the correct platform-specific class based on preprocessor directives
 #if BUILDFLAG(IS_APPLE)
 using PlatformThread = PlatformThreadApple;
@@ -420,6 +428,8 @@ using PlatformThread = PlatformThreadApple;
 using PlatformThread = PlatformThreadChromeOS;
 #elif BUILDFLAG(IS_LINUX)
 using PlatformThread = PlatformThreadLinux;
+#elif BUILDFLAG(IS_ANDROID)
+using PlatformThread = PlatformThreadAndroid;
 #else
 using PlatformThread = PlatformThreadBase;
 #endif

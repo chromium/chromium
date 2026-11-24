@@ -28,7 +28,7 @@ extern const ThreadTypeToNiceValuePairForTest
 
 // Returns the nice value matching |priority| based on the platform-specific
 // implementation of kThreadTypeToNiceValueMap.
-int ThreadTypeToNiceValue(ThreadType thread_type);
+BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type);
 
 // Returns whether SetCurrentThreadType can set a thread as kRealtimeAudio.
 bool CanSetThreadTypeToRealtimeAudio();
