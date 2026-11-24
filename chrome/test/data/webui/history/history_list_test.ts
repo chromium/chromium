@@ -379,61 +379,56 @@ suite('HistoryListTest', function() {
         loadTimeData.getString('noResults'),
         element.$.noResults.textContent.trim());
 
+    interface ChangeQueryPayload {
+      search: string;
+      includeUserVisits: boolean;
+      includeActorVisits: boolean;
+      clientIds: string[];
+      timePeriodOptionId: TimePeriodOptionId;
+      domain: string;
+    }
+
+    async function applyQuery(
+        {
+          search = '',
+          includeUserVisits = true,
+          includeActorVisits = true,
+          clientIds = [],
+          timePeriodOptionId = TimePeriodOptionId.kAllTime,
+          domain = '',
+        }: Partial<ChangeQueryPayload>,
+        expectedStringId: string) {
+      testProxy.handler.resetResolver('queryHistory');
+      testProxy.handler.setResultFor('queryHistory', Promise.resolve({
+        results: {info: createHistoryInfo(search), value: []},
+      }));
+      app.fire('change-query', {
+        search,
+        includeUserVisits,
+        includeActorVisits,
+        clientIds,
+        timePeriodOptionId,
+        domain,
+      });
+      await testProxy.handler.whenCalled('queryHistory');
+      await microtasksFinished();
+      assertFalse(element.$.noResults.hidden);
+      assertEquals(
+          loadTimeData.getString(expectedStringId),
+          element.$.noResults.textContent.trim());
+    }
+
     // Filtering by search query alone.
-    element.searchedTerm = 'test query';
-    element.queryState = {
-      ...element.queryState,
-      includeUserVisits: true,
-      includeActorVisits: true,
-      clientIds: [],
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noMatchingResults'),
-        element.$.noResults.textContent.trim());
+    await applyQuery({search: 'test query'}, 'noMatchingResults');
 
     // Filtering by device alone.
-    element.searchedTerm = '';
-    element.queryState = {
-      ...element.queryState,
-      includeUserVisits: true,
-      includeActorVisits: true,
-      clientIds: ['device_1'],
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noMatchingResults'),
-        element.$.noResults.textContent.trim());
+    await applyQuery({clientIds: ['device_1']}, 'noMatchingResults');
 
     // Filtering by user visits alone.
-    element.searchedTerm = '';
-    element.queryState = {
-      ...element.queryState,
-      includeUserVisits: true,
-      includeActorVisits: false,
-      clientIds: [],
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noMatchingResults'),
-        element.$.noResults.textContent.trim());
+    await applyQuery({includeActorVisits: false}, 'noMatchingResults');
 
     // Filtering by actor visits alone.
-    element.searchedTerm = '';
-    element.queryState = {
-      ...element.queryState,
-      includeUserVisits: false,
-      includeActorVisits: true,
-      clientIds: [],
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noMatchingResults'),
-        element.$.noResults.textContent.trim());
+    await applyQuery({includeUserVisits: false}, 'noMatchingResults');
 
     // Filtering by time period alone when only time-period filtering is
     // enabled.
@@ -443,30 +438,10 @@ suite('HistoryListTest', function() {
       isBrowsingHistoryFilterByTimePeriodEnabled: true,
       isBrowsingHistoryFilterByDomainEnabled: false,
     });
-    element.searchedTerm = '';
-    element.queryState = {
-      ...element.queryState,
-      includeUserVisits: true,
-      includeActorVisits: true,
-      clientIds: [],
-      timePeriodOptionId: TimePeriodOptionId.kAllTime,
-      domain: '',
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noResults'),
-        element.$.noResults.textContent.trim());
-
-    element.queryState = {
-      ...element.queryState,
-      timePeriodOptionId: TimePeriodOptionId.kYesterday,
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noMatchingResults'),
-        element.$.noResults.textContent.trim());
+    await applyQuery({}, 'noResults');
+    await applyQuery(
+        {timePeriodOptionId: TimePeriodOptionId.kYesterday},
+        'noMatchingResults');
 
     // Filtering by domain alone when only domain filtering is enabled.
     loadTimeData.overrideValues({
@@ -475,47 +450,12 @@ suite('HistoryListTest', function() {
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
       isBrowsingHistoryFilterByDomainEnabled: true,
     });
-    element.searchedTerm = '';
-    element.queryState = {
-      ...element.queryState,
-      includeUserVisits: true,
-      includeActorVisits: true,
-      clientIds: [],
-      timePeriodOptionId: TimePeriodOptionId.kAllTime,
-      domain: '',
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noResults'),
-        element.$.noResults.textContent.trim());
-
-    element.queryState = {
-      ...element.queryState,
-      domain: 'example.com',
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noMatchingResults'),
-        element.$.noResults.textContent.trim());
+    await applyQuery({}, 'noResults');
+    await applyQuery({domain: 'example.com'}, 'noMatchingResults');
 
     // Resetting all filters and the search query restores the default
     // empty-state message.
-    element.searchedTerm = '';
-    element.queryState = {
-      ...element.queryState,
-      includeUserVisits: true,
-      includeActorVisits: true,
-      clientIds: [],
-      timePeriodOptionId: TimePeriodOptionId.kAllTime,
-      domain: '',
-    };
-    await microtasksFinished();
-    assertFalse(element.$.noResults.hidden);
-    assertEquals(
-        loadTimeData.getString('noResults'),
-        element.$.noResults.textContent.trim());
+    await applyQuery({}, 'noResults');
   });
 
   test('MoreFromThisSiteSendsAndSetsCorrectData', async function() {
