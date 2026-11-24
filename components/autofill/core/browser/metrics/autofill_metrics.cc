@@ -1501,18 +1501,37 @@ const char* AutofillMetrics::GetMetricsSyncStateSuffix(
 }
 
 // static
-void AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
-    ukm::UkmRecorder* recorder,
+void AutofillMetrics::LogWebOtpPhoneCollection(
+    ukm::UkmRecorder* ukm_recorder,
     ukm::SourceId source_id,
-    uint32_t phone_collection_metric_state) {
-  // UKM recording is not supported for WebViews.
-  if (!recorder || source_id == ukm::kInvalidSourceId) {
-    return;
+    bool has_observed_phone_number_field,
+    bool has_observed_one_time_code_field,
+    bool used_web_otp) {
+  constexpr uint32_t kOtcUsed = 1 << 0;
+  constexpr uint32_t kWebOtpUsed = 1 << 1;
+  constexpr uint32_t kPhoneCollected = 1 << 2;
+  constexpr uint32_t kMaxValue = kOtcUsed | kWebOtpUsed | kPhoneCollected;
+
+  uint32_t phone_collection_metric_state = 0;
+  if (has_observed_phone_number_field) {
+    phone_collection_metric_state |= kPhoneCollected;
+  }
+  if (has_observed_one_time_code_field) {
+    phone_collection_metric_state |= kOtcUsed;
+  }
+  if (used_web_otp) {
+    phone_collection_metric_state |= kWebOtpUsed;
   }
 
-  ukm::builders::WebOTPImpact builder(source_id);
-  builder.SetPhoneCollection(phone_collection_metric_state);
-  builder.Record(recorder);
+  base::UmaHistogramExactLinear("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
+                                phone_collection_metric_state, kMaxValue + 1);
+
+  // UKM recording is not supported for WebViews.
+  if (ukm_recorder && source_id != ukm::kInvalidSourceId) {
+    ukm::builders::WebOTPImpact(source_id)
+        .SetPhoneCollection(phone_collection_metric_state)
+        .Record(ukm_recorder);
+  }
 }
 
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(

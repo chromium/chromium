@@ -115,6 +115,8 @@ class BrowserAutofillManager : public AutofillManager {
     explicit MetricsState(BrowserAutofillManager* owner);
     ~MetricsState();
 
+    const raw_ref<BrowserAutofillManager> owner;
+
     // The address and credit card event loggers are used to emit key and funnel
     // metrics.
     autofill_metrics::AddressFormEventLogger address_form_event_logger;
@@ -697,10 +699,6 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       FormGlobalId form_id,
       const FormFieldData& field);
-
-  // Reports whether a document collects phone numbers, uses one time code, uses
-  // WebOTP.
-  void ReportAutofillWebOtpMetrics();
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.

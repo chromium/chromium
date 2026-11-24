@@ -876,12 +876,14 @@ class AutofillMetrics {
 
   static const char* GetMetricsSyncStateSuffix(PaymentsSigninState sync_state);
 
-  // Records whether a document collected phone number, and/or used WebOTP,
-  // and/or used OneTimeCode (OTC) during its lifecycle.
-  static void LogWebOTPPhoneCollectionMetricStateUkm(
-      ukm::UkmRecorder* ukm_recorder,
-      ukm::SourceId source_id,
-      uint32_t phone_collection_metric_state);
+  // Records whether a document collected a phone number, used a one-time code
+  // (`autocomplete="one-time-code"`), and/or used the WebOTP API during its
+  // lifecycle to both UMA and UKM.
+  static void LogWebOtpPhoneCollection(ukm::UkmRecorder* ukm_recorder,
+                                       ukm::SourceId source_id,
+                                       bool has_observed_phone_number_field,
+                                       bool has_observed_one_time_code_field,
+                                       bool used_web_otp);
 
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);

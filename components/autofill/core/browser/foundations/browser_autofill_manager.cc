@@ -962,7 +962,8 @@ std::unique_ptr<OtpManager> CreateOtpManager(
 
 BrowserAutofillManager::MetricsState::MetricsState(
     BrowserAutofillManager* owner)
-    : address_form_event_logger(owner),
+    : owner(CHECK_DEREF(owner)),
+      address_form_event_logger(owner),
       credit_card_form_event_logger(owner),
       loyalty_card_form_event_logger(owner),
       otp_form_event_logger(owner) {}
@@ -972,6 +973,19 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
     base::UmaHistogramBoolean("Autofill.WebOTP.OneTimeCode.FromAutocomplete",
                               has_observed_one_time_code_field);
   }
+#if !BUILDFLAG(IS_IOS)
+  const bool used_web_otp = owner->DocumentUsedWebOtp();
+  // It's possible that a frame without any form uses WebOTP. E.g., a server
+  // may send the verification code to a phone number that was collected
+  // beforehand and uses the WebOTP API for authentication purpose without user
+  // manually entering the code.
+  if (has_parsed_forms || used_web_otp) {
+    AutofillMetrics::LogWebOtpPhoneCollection(
+        owner->client().GetUkmRecorder(), owner->driver().GetPageUkmSourceId(),
+        has_observed_phone_number_field, has_observed_one_time_code_field,
+        used_web_otp);
+  }
+#endif
   credit_card_form_event_logger.OnDestroyed();
   address_form_event_logger.OnDestroyed();
   loyalty_card_form_event_logger.OnDestroyed();
@@ -993,9 +1007,6 @@ BrowserAutofillManager::~BrowserAutofillManager() {
     ProcessFieldLogEventsInForm(form_structure);
   });
   client().GetSingleFieldFillRouter().CancelPendingQueries();
-
-  // This is bad: It calls a virtual function of BAM's owning AutofillDriver.
-  ReportAutofillWebOtpMetrics();
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -3637,43 +3648,6 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
       return nullptr;
   }
   NOTREACHED();
-}
-
-void BrowserAutofillManager::ReportAutofillWebOtpMetrics() {
-#if !BUILDFLAG(IS_IOS)
-  const bool used_web_otp = DocumentUsedWebOtp();
-
-  // It's possible that a frame without any form uses WebOTP. e.g. a server may
-  // send the verification code to a phone number that was collected beforehand
-  // and uses the WebOTP API for authentication purpose without user manually
-  // entering the code.
-  if (!metrics_->has_parsed_forms && !used_web_otp) {
-    return;
-  }
-
-  constexpr uint32_t kOtcUsed = 1 << 0;
-  constexpr uint32_t kWebOtpUsed = 1 << 1;
-  constexpr uint32_t kPhoneCollected = 1 << 2;
-  constexpr uint32_t kMaxValue = kOtcUsed | kWebOtpUsed | kPhoneCollected;
-
-  uint32_t phone_collection_metric_state = 0;
-  if (metrics_->has_observed_phone_number_field) {
-    phone_collection_metric_state |= kPhoneCollected;
-  }
-  if (metrics_->has_observed_one_time_code_field) {
-    phone_collection_metric_state |= kOtcUsed;
-  }
-  if (used_web_otp) {
-    phone_collection_metric_state |= kWebOtpUsed;
-  }
-
-  AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
-      client().GetUkmRecorder(), driver().GetPageUkmSourceId(),
-      phone_collection_metric_state);
-
-  base::UmaHistogramExactLinear("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
-                                phone_collection_metric_state, kMaxValue + 1);
-#endif
 }
 
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(
