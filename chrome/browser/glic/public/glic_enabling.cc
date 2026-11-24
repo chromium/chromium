@@ -504,6 +504,21 @@ mojom::ProfileReadyState GetSanitizedProfileReadyState(int state_val) {
   return mojom::ProfileReadyState::kUnknownError;
 }
 
+// Decides to still show the entry point if the user has previously onboarded,
+// but is missing an overridable requirement (account capability or country).
+void MaybeAnchorForOverridableRequirements(
+    Profile* profile,
+    GlicEnabling::ProfileEnablement& result) {
+  const bool overridable_requirements_met =
+      result.primary_account_is_capable && result.allowed_by_country_filter;
+  if (!overridable_requirements_met &&
+      IsAnchorable(profile, result.fre_is_consented) &&
+      base::FeatureList::IsEnabled(
+          features::kGlicAnchorEntryPointForOnboardedUsers)) {
+    result.anchor_entrypoint_override_active = true;
+  }
+}
+
 void ApplyGeminiAccountEligibility(
     Profile* profile,
     std::optional<std::pair<std::string_view, std::string_view>>
@@ -568,16 +583,7 @@ void ApplyGeminiAccountEligibility(
             primary_account.GetAccountCapabilities());
       }
 
-      // Decide to still show the entry point if the user has previously
-      // onboarded, but is missing an overridable requirement.
-      bool overridable_requirements_met =
-          result.primary_account_is_capable && result.allowed_by_country_filter;
-      if (!overridable_requirements_met &&
-          IsAnchorable(profile, result.fre_is_consented) &&
-          base::FeatureList::IsEnabled(
-              features::kGlicAnchorEntryPointForOnboardedUsers)) {
-        result.anchor_entrypoint_override_active = true;
-      }
+      MaybeAnchorForOverridableRequirements(profile, result);
 
       result.live_allowed = GlicEnabling::CanUseAdultFeatures(
           primary_account.GetAccountCapabilities());
@@ -678,6 +684,10 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
   if (provider_spec.RequiresGeminiAccountEligibility()) {
     ApplyGeminiAccountEligibility(profile, country_override,
                                   account_info_override, result);
+  } else {
+    // These providers keep the default (capable) account state, so only the
+    // country filter can fail here.
+    MaybeAnchorForOverridableRequirements(profile, result);
   }
 
   result.live_allowed =

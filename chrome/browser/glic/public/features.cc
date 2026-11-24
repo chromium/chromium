@@ -287,6 +287,14 @@ BASE_FEATURE(kGeicProviderSwitchNotice,
 #endif
 );
 
+BASE_FEATURE(kGeicAnchorEntryPointForOnboardedUsers,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
                                                     ""};
 

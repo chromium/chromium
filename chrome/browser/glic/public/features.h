@@ -207,6 +207,12 @@ BASE_DECLARE_FEATURE(kGeicProviderChangePrompt);
 // `kGeic`.
 BASE_DECLARE_FEATURE(kGeicProviderSwitchNotice);
 
+// Keeps the Gemini Enterprise (GEiC) entry point visible, in an error state,
+// for profiles that completed the GEiC FRE (`geic.completed_fre`) but fail a
+// Glic requirement. GEiC counterpart of
+// `kGlicAnchorEntryPointForOnboardedUsers`, which must also be enabled.
+BASE_DECLARE_FEATURE(kGeicAnchorEntryPointForOnboardedUsers);
+
 BASE_DECLARE_FEATURE(kGlicHotkeyLocalScope);
 BASE_DECLARE_FEATURE(kGlicKeyboardPrint);
 

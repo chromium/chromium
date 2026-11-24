@@ -390,9 +390,16 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
     return url.is_empty() ? url : GetLocalizedGuestURL(url);
   }
   const GeicSpec* GetGeicSpec() const override { return this; }
-  // The anchored error state shows consumer copy and help links.
-  // TODO(b/576834093): Support anchoring with GEiC error states.
-  bool SupportsAnchoredEntryPoint() const override { return false; }
+  // Without `features::kGeicFre`, every GEiC profile reads as consented (see
+  // `GeminiEnterpriseGlicFreStore::GetStatus()`), so anchoring would also show
+  // the entry point to profiles that never onboarded.
+  // TODO(b/589847184): The anchored error state uses the consumer copy and help
+  // link; switch to Gemini Enterprise ones.
+  bool SupportsAnchoredEntryPoint() const override {
+    return base::FeatureList::IsEnabled(features::kGeicFre) &&
+           base::FeatureList::IsEnabled(
+               features::kGeicAnchorEntryPointForOnboardedUsers);
+  }
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
   std::string GetGuestUrlKey() const override {
     // GE profiles are only latched with a valid guest URL (see

@@ -67,6 +67,45 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsSsrFollowsGeicSsr) {
   }
 }
 
+// kGeicAnchorEntryPointForOnboardedUsers only applies to Gemini Enterprise.
+TEST(GlicProviderSpecImplTest, GeminiSupportsAnchoredEntryPoint) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {},
+      {features::kGeicAnchorEntryPointForOnboardedUsers, features::kGeicFre});
+  EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
+                  ->SupportsAnchoredEntryPoint());
+}
+
+TEST(GlicProviderSpecImplTest,
+     GeminiEnterpriseSupportsAnchoredEntryPointFollowsGeicFlags) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kGeicAnchorEntryPointForOnboardedUsers, features::kGeicFre},
+        {});
+    EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                    ->SupportsAnchoredEntryPoint());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kGeicFre},
+        {features::kGeicAnchorEntryPointForOnboardedUsers});
+    EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                     ->SupportsAnchoredEntryPoint());
+  }
+  // Without kGeicFre, every GEiC profile reads as consented.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kGeicAnchorEntryPointForOnboardedUsers},
+        {features::kGeicFre});
+    EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                     ->SupportsAnchoredEntryPoint());
+  }
+}
+
 TEST(GlicProviderSpecImplTest, GeminiRequiresNoWebviewWhenGlicCicEnabled) {
   {
     base::test::ScopedFeatureList feature_list;
