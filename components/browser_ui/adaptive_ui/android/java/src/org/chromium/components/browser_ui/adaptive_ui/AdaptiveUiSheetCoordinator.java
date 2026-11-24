@@ -171,6 +171,15 @@ final class AdaptiveUiSheetCoordinator
                         : R.layout.adaptive_ui_sheet_body);
         bodyStub.inflate();
         mBodyScrollView = mContentView.findViewById(R.id.adaptive_ui_sheet_scroll_view);
+        if (mBodyScrollView != null) {
+            // A Tab stop only when it can scroll, like ModalDialogView's title scroll view.
+            mBodyScrollView.addOnLayoutChangeListener(
+                    (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                        boolean isScrollable =
+                                v.canScrollVertically(-1) || v.canScrollVertically(1);
+                        v.setFocusable(isScrollable);
+                    });
+        }
         mCustomViewContainer =
                 mContentView.findViewById(R.id.adaptive_ui_sheet_custom_view_container);
 

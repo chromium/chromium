@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +46,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowInstrumentation;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -79,12 +81,20 @@ public class AdaptiveUiSheetCoordinatorTest {
     @Mock private BottomSheetContent mOtherSheetContent;
 
     private Activity mActivity;
+    private boolean mInitialInTouchMode;
     private int mShownCount;
     private final List<Integer> mSheetDismissals = new ArrayList<>();
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mInitialInTouchMode = mActivity.getWindow().getDecorView().isInTouchMode();
+    }
+
+    @After
+    public void tearDown() {
+        ShadowInstrumentation.getInstrumentation().setInTouchMode(mInitialInTouchMode);
+        mActivity.finish();
     }
 
     private AdaptiveUiSheetCoordinator createContent(PropertyModel model) {
@@ -2058,5 +2068,71 @@ public class AdaptiveUiSheetCoordinatorTest {
                         .build();
 
         assertEquals(0, createContent(model).getVerticalScrollOffset());
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Body scroll view focusability.
+    // ---------------------------------------------------------------------------------------
+
+    @Test
+    public void testBodyScrollView_NotFocusableWhenCustomViewFits() {
+        View shortCustomView = new View(mActivity);
+        shortCustomView.setLayoutParams(
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, shortCustomView)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        layoutAsSheet(content.getContentView());
+
+        ScrollView scrollView = find(content, R.id.adaptive_ui_sheet_scroll_view);
+        assertFalse(scrollView.canScrollVertically(-1));
+        assertFalse(scrollView.canScrollVertically(1));
+        assertFalse(scrollView.isFocusable());
+    }
+
+    @Test
+    public void testBodyScrollView_TabOrderSkipsScrollViewWhenCustomViewFits() {
+        ShadowInstrumentation.getInstrumentation().setInTouchMode(false);
+        View shortCustomView = new View(mActivity);
+        shortCustomView.setLayoutParams(
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
+        PropertyModel model =
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, shortCustomView)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        mActivity.setContentView(content.getContentView());
+        mActivity.getWindow().getDecorView().layout(0, 0, 1000, 1000);
+        layoutAsSheet(content.getContentView());
+
+        View closeButton = find(content, R.id.adaptive_ui_sheet_close_button);
+        View primaryButton = find(content, R.id.adaptive_ui_sheet_primary_button);
+        assertSame(primaryButton, closeButton.focusSearch(View.FOCUS_FORWARD));
+    }
+
+    @Test
+    public void testBodyScrollView_FocusableWhenCustomViewScrolls() {
+        View tallCustomView = new View(mActivity);
+        tallCustomView.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, TALL_CONTENT_HEIGHT_PX));
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, tallCustomView)
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        layoutAsSheet(content.getContentView());
+
+        ScrollView scrollView = find(content, R.id.adaptive_ui_sheet_scroll_view);
+        assertTrue(scrollView.canScrollVertically(1));
+        assertTrue(scrollView.isFocusable());
     }
 }
