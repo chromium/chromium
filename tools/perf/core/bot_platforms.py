@@ -1297,12 +1297,6 @@ PLATFORM_INFO = {
     'is_fyi': False,
     'pinpoint_only': True,
   },
-  'android-pixel-fold-perf': {
-    'description': 'Android U',
-    'num_shards': 8,
-    'platform_os': 'android',
-    'is_fyi': False,
-  },
   'android-pixel-tangor-perf': {
     'description': 'Android U',
     'num_shards': 8,
@@ -1322,18 +1316,6 @@ PLATFORM_INFO = {
     'is_fyi': False,
   },
   'android-pixel9-perf': {
-    'description': 'Android B',
-    'num_shards': 4,
-    'platform_os': 'android',
-    'is_fyi': False,
-  },
-  'android-pixel9-pro-perf': {
-    'description': 'Android B',
-    'num_shards': 4,
-    'platform_os': 'android',
-    'is_fyi': False,
-  },
-  'android-pixel9-pro-xl-perf': {
     'description': 'Android B',
     'num_shards': 4,
     'platform_os': 'android',

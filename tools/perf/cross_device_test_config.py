@@ -42,16 +42,6 @@ TARGET_DEVICES = {
     'speedometer3.crossbench': 4,
     'speedometer3.a11y.crossbench': 4,
   },
-  'android-pixel9-pro-perf': {
-    'motionmark1.3.crossbench': 4,
-    'speedometer3.crossbench': 4,
-    'speedometer3.a11y.crossbench': 4,
-  },
-  'android-pixel9-pro-xl-perf': {
-    'motionmark1.3.crossbench': 4,
-    'speedometer3.crossbench': 4,
-    'speedometer3.a11y.crossbench': 4,
-  },
   'android-pixel10-perf': {
     'motionmark1.3.crossbench': 10,
     'speedometer3.crossbench': 10,

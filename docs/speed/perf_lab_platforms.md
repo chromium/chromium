@@ -11,7 +11,6 @@
  * [android-brya-kano-i5-8gb-perf](https://ci.chromium.org/p/chrome/builders/ci/android-brya-kano-i5-8gb-perf): Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB.
  * [android-go-wembley-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley-perf): Android U.
  * [android-go-wembley_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley_webview-perf): Android U.
- * [android-pixel-fold-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-fold-perf): Android U.
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
  * [android-pixel10-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10-perf): Android B.
  * [android-pixel10_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10_webview-perf): Android B.
@@ -23,8 +22,6 @@
  * [android-pixel4_webview-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf-pgo): Android R.
  * [android-pixel6-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf-pgo): Android U.
  * [android-pixel9-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel9-perf): Android B.
- * [android-pixel9-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel9-pro-perf): Android B.
- * [android-pixel9-pro-xl-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel9-pro-xl-perf): Android B.
 
 ### Linux
 

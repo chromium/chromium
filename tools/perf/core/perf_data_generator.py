@@ -142,15 +142,12 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset(
     'android-builder-perf',
     'android-go-wembley-perf',
     'android-go-wembley_webview-perf',
-    'android-pixel-fold-perf',
     'android-pixel-tangor-perf',
     'android-pixel4-perf',
     'android-pixel4_webview-perf',  # One of the mobile testers.
     'android-pixel4_webview-perf-pgo',
     'android-pixel6-perf-pgo',
     'android-pixel9-perf',
-    'android-pixel9-pro-perf',
-    'android-pixel9-pro-xl-perf',
     'android-pixel10-perf',
     'android-pixel10_webview-perf',
     'android-pixel10_webview-perf-pgo',
@@ -197,15 +194,12 @@ PUBLIC_PERF_BUILDERS = [
   'android-builder-perf',
   'android-go-wembley-perf',
   'android-go-wembley_webview-perf',
-  'android-pixel-fold-perf',
   'android-pixel-tangor-perf',
   'android-pixel4-perf',
   'android-pixel4_webview-perf',  # One of the mobile testers.
   'android-pixel4_webview-perf-pgo',
   'android-pixel6-perf-pgo',
   'android-pixel9-perf',
-  'android-pixel9-pro-perf',
-  'android-pixel9-pro-xl-perf',
   'android-pixel10-perf',
   'android-pixel10_webview-perf',
   'android-pixel10_webview-perf-pgo',
@@ -769,21 +763,6 @@ BUILDERS = {
       'device_os_flavor': 'google',
     },
   },
-  'android-pixel-fold-perf': {
-    'tests': [
-      {
-        'isolate': 'performance_test_suite_android_chrome_google_bundle',
-      }
-    ],
-    'platform': 'android-chrome-bundle',
-    'dimension': {
-      'pool': 'chrome.tests.perf',
-      'os': 'Android',
-      'device_type': 'felix',
-      # 'device_os': 'UQ1A.240205.002', # relax before all pixel folds are reimaged
-      'device_os_flavor': 'google',
-    },
-  },
   'android-pixel-tangor-perf': {
     'tests': [
       {
@@ -824,36 +803,6 @@ BUILDERS = {
       'pool': 'chrome.tests.perf',
       'os': 'Android',
       'device_type': 'tokay',
-      'device_os': 'B',
-      'device_os_flavor': 'google',
-    },
-  },
-  'android-pixel9-pro-perf': {
-    'tests': [
-      {
-        'isolate': 'performance_test_suite_android_chrome_google_bundle',
-      }
-    ],
-    'platform': 'android-chrome-bundle',
-    'dimension': {
-      'pool': 'chrome.tests.perf',
-      'os': 'Android',
-      'device_type': 'caiman',
-      'device_os': 'B',
-      'device_os_flavor': 'google',
-    },
-  },
-  'android-pixel9-pro-xl-perf': {
-    'tests': [
-      {
-        'isolate': 'performance_test_suite_android_chrome_google_bundle',
-      }
-    ],
-    'platform': 'android-chrome-bundle',
-    'dimension': {
-      'pool': 'chrome.tests.perf',
-      'os': 'Android',
-      'device_type': 'komodo',
       'device_os': 'B',
       'device_os_flavor': 'google',
     },

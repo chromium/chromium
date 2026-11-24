@@ -1,5 +1,4 @@
 bot,repeat,shard
-android-pixel-fold-perf,1,1
 android-pixel-tangor-perf,1,1
 android-pixel10-perf,1,1
 android-pixel10_webview-perf,1,1
@@ -11,5 +10,3 @@ android-pixel4_webview-perf-pgo,1,1
 android-pixel6-perf-pgo,1,1
 android-pixel6-pro-perf-pgo,1,1
 android-pixel9-perf,1,1
-android-pixel9-pro-perf,1,1
-android-pixel9-pro-xl-perf,1,1
