@@ -4,13 +4,15 @@
 
 component("certificate_matching") {
   sources = [
+    "auto_select_certificates.cc",
+    "auto_select_certificates.h",
     "certificate_principal_pattern.cc",
     "certificate_principal_pattern.h",
   ]
 
   defines = [ "IS_CERTIFICATE_MATCHING_IMPL" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//net",
   ]
@@ -18,12 +20,16 @@ component("certificate_matching") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "certificate_principal_pattern_unittest.cc" ]
+  sources = [
+    "auto_select_certificates_unittest.cc",
+    "certificate_principal_pattern_unittest.cc",
+  ]
 
   deps = [
     ":certificate_matching",
     "//base",
     "//net",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

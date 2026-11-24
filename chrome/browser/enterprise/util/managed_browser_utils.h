@@ -27,10 +27,6 @@ class GURL;
 class PrefRegistrySimple;
 class Profile;
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace enterprise_util {
 
 enum EnterpriseProfileBadgingTemporarySetting : int {
@@ -67,18 +63,6 @@ std::string GetDomainFromEmail(std::string_view email);
 // This is intended to be used to build a `requesting_url` for
 // `AutoSelectCertificates`.
 GURL GetRequestingUrl(const net::HostPortPair host_port_pair);
-
-// Partitions `client_certs` according to `auto_selection_filters` (where each
-// item corresponds to the "filter" dictionary of an
-// AutoSelectCertificateForUrls rule). All certificates that match any filter
-// are returned in `matching_client_certs`, and all certificates that don't in
-// `nonmatching_client_certs`. Both `matching_client_certs` and
-// `nonmatching_client_certs` must be non-null.
-void AutoSelectCertificates(
-    const base::ListValue& auto_selection_filters,
-    net::ClientCertIdentityList client_certs,
-    net::ClientCertIdentityList* matching_client_certs,
-    net::ClientCertIdentityList* nonmatching_client_certs);
 
 // Partitions |client_certs| according to the value of the
 // |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting for the

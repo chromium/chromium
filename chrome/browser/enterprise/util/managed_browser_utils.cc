@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/certificate_matching/certificate_principal_pattern.h"
+#include "components/certificate_matching/auto_select_certificates.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -46,7 +46,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/host_port_pair.h"
-#include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
@@ -112,33 +111,6 @@ base::ListValue GetCertAutoSelectionFilters(Profile* profile,
     return {};
   }
   return std::move(*filters);
-}
-
-// Returns whether the client certificate matches any of the auto-selection
-// filters. Returns false when there's no valid filter.
-bool CertMatchesSelectionFilters(
-    const net::ClientCertIdentity& client_cert,
-    const base::ListValue& auto_selection_filters) {
-  for (const auto& filter : auto_selection_filters) {
-    if (!filter.is_dict()) {
-      // The filter has a wrong format, so ignore it. Note that reporting of
-      // schema violations, like this, to UI is already implemented in the
-      // policy handler - see configuration_policy_handler_list_factory.cc.
-      continue;
-    }
-    auto issuer_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(filter.GetDict().FindDict("ISSUER"), "CN", "L",
-                              "O", "OU");
-    auto subject_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(filter.GetDict().FindDict("SUBJECT"), "CN", "L",
-                              "O", "OU");
-
-    if (issuer_pattern.Matches(client_cert.certificate()->issuer()) &&
-        subject_pattern.Matches(client_cert.certificate()->subject())) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void OnManagementIconReceived(
@@ -275,24 +247,6 @@ GURL GetRequestingUrl(const net::HostPortPair host_port_pair) {
 }
 
 void AutoSelectCertificates(
-    const base::ListValue& auto_selection_filters,
-    net::ClientCertIdentityList client_certs,
-    net::ClientCertIdentityList* matching_client_certs,
-    net::ClientCertIdentityList* nonmatching_client_certs) {
-  CHECK(matching_client_certs);
-  CHECK(nonmatching_client_certs);
-  matching_client_certs->clear();
-  nonmatching_client_certs->clear();
-  for (auto& client_cert : client_certs) {
-    if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters)) {
-      matching_client_certs->push_back(std::move(client_cert));
-    } else {
-      nonmatching_client_certs->push_back(std::move(client_cert));
-    }
-  }
-}
-
-void AutoSelectCertificates(
     Profile* profile,
     const GURL& requesting_url,
     net::ClientCertIdentityList client_certs,
@@ -300,8 +254,9 @@ void AutoSelectCertificates(
     net::ClientCertIdentityList* nonmatching_client_certs) {
   const base::ListValue auto_selection_filters =
       GetCertAutoSelectionFilters(profile, requesting_url);
-  AutoSelectCertificates(auto_selection_filters, std::move(client_certs),
-                         matching_client_certs, nonmatching_client_certs);
+  certificate_matching::AutoSelectCertificates(
+      auto_selection_filters, std::move(client_certs), matching_client_certs,
+      nonmatching_client_certs);
 }
 
 bool IsMachinePolicyPref(const std::string& pref_name) {

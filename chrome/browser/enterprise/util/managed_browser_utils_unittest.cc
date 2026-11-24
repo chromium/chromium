@@ -615,18 +615,3 @@ TEST_F(AutoSelectCertificateTest, MatchingCertOnDifferentUrlDoesntSelectCerts) {
   EXPECT_THAT(nonmatching_certs_list,
               UnorderedElementsAre(CertEq(client_1()), CertEq(client_2())));
 }
-
-TEST_F(AutoSelectCertificateTest, DirectFilterListOverloadSelectsMatchingCert) {
-  net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
-
-  base::ListValue filters;
-  filters.Append(CreateFilterValue("B CA", ""));
-
-  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
-  enterprise_util::AutoSelectCertificates(filters, std::move(client_certs_list),
-                                          &matching_certs_list,
-                                          &nonmatching_certs_list);
-
-  EXPECT_THAT(matching_certs_list, UnorderedElementsAre(CertEq(client_1())));
-  EXPECT_THAT(nonmatching_certs_list, UnorderedElementsAre(CertEq(client_2())));
-}
