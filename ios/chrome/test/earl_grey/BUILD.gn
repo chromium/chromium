@@ -243,6 +243,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers:eg_app_support+eg2",
     "//ios/chrome/browser/intents/model:constants",
+    "//ios/chrome/browser/lens/ui_bundled:lens_availability",
     "//ios/chrome/browser/lens_overlay/test:eg_app_support+eg2",
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",

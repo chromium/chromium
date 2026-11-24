@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 
 class PrefService;
+class TemplateURLService;
 
 // Enum representing the possible Lens avaiability statuses on iOS.
 // Current values should not be renumbered. Please keep in sync with
@@ -33,16 +34,20 @@ extern const char kIOSLensNewTabPageSupportStatusHistogramName[];
 
 namespace lens_availability {
 
-// Verifies the availability of the given Lens entry point and search engine
-// default provider.
-bool CheckAvailabilityForLensEntryPoint(LensEntrypoint entry_point,
-                                        bool is_google_default_search_engine);
-
 // Checks for and performs UMA logging for the availability of the given
 // Lens entry point and search engine default provider.
 bool CheckAndLogAvailabilityForLensEntryPoint(
     LensEntrypoint entry_point,
     bool is_google_default_search_engine);
+
+// Returns whether Lens is available on the device for the given default search
+// engine support status, independently of the entry point.
+bool IsLensAvailable(bool is_google_default_search_engine);
+
+// Returns whether Lens is available on the device for the default search engine
+// of the given service, independently of the entry point.
+bool IsLensAvailable(TemplateURLService* template_url_service);
+
 }  // namespace lens_availability
 
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_LENS_AVAILABILITY_H_

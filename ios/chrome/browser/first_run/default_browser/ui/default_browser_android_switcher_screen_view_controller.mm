@@ -53,7 +53,10 @@ UIView* CreateFeatureIconView(Symbol symbol) {
 
 }  // namespace
 
-@implementation DefaultBrowserAndroidSwitcherScreenViewController
+@implementation DefaultBrowserAndroidSwitcherScreenViewController {
+  // Feature shown in the Lens slot of the promo.
+  AndroidSwitcherLensSlotFeature _lensSlotFeature;
+}
 
 #pragma mark - UIViewController
 
@@ -106,23 +109,42 @@ UIView* CreateFeatureIconView(Symbol symbol) {
 }
 
 - (UIView*)contentViewForPromo {
+  int lensSlotRowMessageID;
+  Symbol lensSlotRowSymbol;
+  switch (_lensSlotFeature) {
+    case AndroidSwitcherLensSlotFeature::kLens:
+      lensSlotRowMessageID =
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_LENS_ROW;
+      lensSlotRowSymbol = SymbolCameraLens;
+      break;
+    case AndroidSwitcherLensSlotFeature::kSafeBrowsing:
+      lensSlotRowMessageID =
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SAFE_BROWSING_ROW;
+      lensSlotRowSymbol = SymbolShield;
+      break;
+  }
   NSArray<NSString*>* instructions = @[
     l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_YOUTUBE_MAPS_ROW),
     l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_DRIVE_PHOTOS_ROW),
-    l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_LENS_ROW),
+    l10n_util::GetNSString(lensSlotRowMessageID),
   ];
   NSArray<UIView*>* iconViews = @[
     CreateFeatureIconView(SymbolExternalLink),
     CreateFeatureIconView(SymbolShare),
-    CreateFeatureIconView(SymbolCameraLens),
+    CreateFeatureIconView(lensSlotRowSymbol),
   ];
 
   return [[InstructionView alloc] initWithList:instructions
                                          style:InstructionViewStyleDefault
                                      iconViews:iconViews];
+}
+
+#pragma mark - DefaultBrowserAndroidSwitcherScreenConsumer
+
+- (void)setLensSlotFeature:(AndroidSwitcherLensSlotFeature)lensSlotFeature {
+  _lensSlotFeature = lensSlotFeature;
 }
 
 @end

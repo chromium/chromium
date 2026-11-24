@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
@@ -1954,6 +1955,12 @@ NSSet<UISceneSession*>* AllSceneSessions() {
   return ios::provider::IsLensSupported() &&
          ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET &&
          search_engines::SupportsSearchImageWithLens(service);
+}
+
++ (BOOL)isLensAvailable {
+  return lens_availability::IsLensAvailable(
+      ios::TemplateURLServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile()));
 }
 
 + (BOOL)isCurrentLayoutBottomOmnibox {

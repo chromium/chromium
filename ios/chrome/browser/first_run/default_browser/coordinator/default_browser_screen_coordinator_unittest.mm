@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/switcher_info/test_switcher_info.h"
 #import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
@@ -181,6 +183,9 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindOnce(&CreateTestSyncService));
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
@@ -870,6 +875,34 @@ TEST_F(
   ExpectSignalMetrics(
       first_run::DefaultBrowserPromoSegmentationResult::kNotAndroidSwitcher,
       /*is_success=*/true);
+}
+
+// Tests that the Android Switcher promo shows the Safe Browsing row instead of
+// the Lens row when the Lens provider is unsupported, as in test builds.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsSafeBrowsingRowWhenLensProviderUnsupported) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSegmentationSignal);
+  ConfigureSegmentationLabels(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+  SignIn();
+
+  [coordinator_ start];
+
+  ASSERT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserAndroidSwitcherScreenViewController
+                          class]]);
+  // The view controller defaults to showing Lens, so rendering the Safe
+  // Browsing row verifies that the mediator updated the consumer.
+  UIView* view = navigation_controller_.topViewController.view;
+  EXPECT_TRUE(chrome_test_util::FindLabelWithText(
+      view,
+      l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SAFE_BROWSING_ROW)));
+  EXPECT_FALSE(chrome_test_util::FindLabelWithText(
+      view, l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_LENS_ROW)));
 }
 
 }  // namespace

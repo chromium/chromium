@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -29,10 +30,9 @@ const char kIOSPlusButtonSupportStatusHistogramName[] =
 
 namespace lens_availability {
 
-/// Returns the `LensSupportStatus` for the `entry_point` with
-/// `is_google_default_search_engine`.
-LensSupportStatus LensSupportStatusForLensEntryPoint(
-    LensEntrypoint entry_point,
+/// Returns the `LensSupportStatus` with `is_google_default_search_engine`. The
+/// status is the same for every entry point.
+LensSupportStatus LensSupportStatusForSearchEngine(
     bool is_google_default_search_engine) {
   if (!ios::provider::IsLensSupported()) {
     return LensSupportStatus::ProviderUnsupported;
@@ -92,22 +92,25 @@ void LogLensSupportStatusForLensEntryPoint(
   }
 }
 
-bool CheckAvailabilityForLensEntryPoint(LensEntrypoint entry_point,
-                                        bool is_google_default_search_engine) {
-  return LensSupportStatusForLensEntryPoint(entry_point,
-                                            is_google_default_search_engine) ==
-         LensSupportStatus::LensSearchSupported;
-}
-
 bool CheckAndLogAvailabilityForLensEntryPoint(
     LensEntrypoint entry_point,
     BOOL is_google_default_search_engine) {
-  LensSupportStatus lens_support_status = LensSupportStatusForLensEntryPoint(
-      entry_point, is_google_default_search_engine);
+  LensSupportStatus lens_support_status =
+      LensSupportStatusForSearchEngine(is_google_default_search_engine);
   bool supported =
       lens_support_status == LensSupportStatus::LensSearchSupported;
   LogLensSupportStatusForLensEntryPoint(entry_point, lens_support_status);
   return supported;
+}
+
+bool IsLensAvailable(bool is_google_default_search_engine) {
+  return LensSupportStatusForSearchEngine(is_google_default_search_engine) ==
+         LensSupportStatus::LensSearchSupported;
+}
+
+bool IsLensAvailable(TemplateURLService* template_url_service) {
+  return IsLensAvailable(
+      search_engines::SupportsSearchImageWithLens(template_url_service));
 }
 
 }  // namespace lens_availability

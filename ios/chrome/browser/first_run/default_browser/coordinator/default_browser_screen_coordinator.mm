@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/first_run/tos/coordinator/tos_coordinator.h"
 #import "ios/chrome/browser/first_run/uma/coordinator/uma_coordinator.h"
 #import "ios/chrome/browser/instructions_bottom_sheet/ui/instructions_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -85,7 +86,9 @@
                                          GetForProfile(_profile)
       deviceSwitcherResultDispatcher:segmentation_platform::
                                          SegmentationPlatformServiceFactory::
-                                             GetDispatcherForProfile(_profile)];
+                                             GetDispatcherForProfile(_profile)
+                  templateURLService:ios::TemplateURLServiceFactory::
+                                         GetForProfile(_profile)];
   _mediator.delegate = self;
   [_mediator startPromoEvaluation];
   if (!_viewController) {
@@ -100,6 +103,7 @@
   _viewController = nil;
   _delegate = nil;
   _mediator.consumer = nil;
+  _mediator.androidSwitcherConsumer = nil;
   _mediator.delegate = nil;
   [_mediator disconnect];
   _mediator = nil;
@@ -223,8 +227,19 @@
   default_browser::NotifyDefaultBrowserFREPromoShown(
       feature_engagement::TrackerFactory::GetForProfile(_profile));
 
-  _viewController = [self
-      createViewControllerWithAndroidSwitcherPromo:showAndroidSwitcherPromo];
+  if (first_run::IsAnimatedDefaultBrowserPromoInFREEnabled()) {
+    DefaultBrowserAnimatedScreenViewController* viewController =
+        [[DefaultBrowserAnimatedScreenViewController alloc] init];
+    viewController.shouldHideBanner = YES;
+    _viewController = viewController;
+  } else if (showAndroidSwitcherPromo) {
+    DefaultBrowserAndroidSwitcherScreenViewController* viewController =
+        [[DefaultBrowserAndroidSwitcherScreenViewController alloc] init];
+    _mediator.androidSwitcherConsumer = viewController;
+    _viewController = viewController;
+  } else {
+    _viewController = [[DefaultBrowserScreenViewController alloc] init];
+  }
   _viewController.delegate = self;
   _viewController.modalInPresentation = YES;
   _mediator.consumer = _viewController;
@@ -260,22 +275,6 @@
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   _transparentView.backgroundColor = [UIColor clearColor];
   [self.baseViewController.view addSubview:_transparentView];
-}
-
-// Creates and configures the promo view controller to present.
-- (PromoStyleViewController<DefaultBrowserScreenConsumer>*)
-    createViewControllerWithAndroidSwitcherPromo:
-        (BOOL)showAndroidSwitcherPromo {
-  if (first_run::IsAnimatedDefaultBrowserPromoInFREEnabled()) {
-    DefaultBrowserAnimatedScreenViewController* viewController =
-        [[DefaultBrowserAnimatedScreenViewController alloc] init];
-    viewController.shouldHideBanner = YES;
-    return viewController;
-  }
-  if (showAndroidSwitcherPromo) {
-    return [[DefaultBrowserAndroidSwitcherScreenViewController alloc] init];
-  }
-  return [[DefaultBrowserScreenViewController alloc] init];
 }
 
 - (void)finishPresenting {

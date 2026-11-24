@@ -28,10 +28,12 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "ios/chrome/browser/first_run/default_browser/ui/default_browser_android_switcher_screen_consumer.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_consumer.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -165,6 +167,9 @@ void RecordDeviceSwitcherSignalMetrics(
   // Dispatcher providing device switcher segmentation classification results.
   raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       _deviceSwitcherResultDispatcher;
+  // Template URL service used to check whether the default search engine is
+  // Google, which Lens requires.
+  raw_ptr<TemplateURLService> _templateURLService;
   // Timestamp captured when async device switcher signal evaluation begins.
   base::TimeTicks _evaluationStartTime;
   // Timer bounding the switcher info wait duration.
@@ -182,12 +187,14 @@ void RecordDeviceSwitcherSignalMetrics(
              accountManagerService:
                  (ChromeAccountManagerService*)accountManagerService
     deviceSwitcherResultDispatcher:
-        (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher {
+        (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
+                templateURLService:(TemplateURLService*)templateURLService {
   self = [super init];
   if (self) {
     _authenticationService = authenticationService;
     _accountManagerService = accountManagerService;
     _deviceSwitcherResultDispatcher = dispatcher;
+    _templateURLService = templateURLService;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _localState = GetApplicationContext()->GetLocalState();
     _firstScreenInFRESequence =
@@ -228,6 +235,7 @@ void RecordDeviceSwitcherSignalMetrics(
   _authenticationService = nullptr;
   _accountManagerService = nullptr;
   _deviceSwitcherResultDispatcher = nullptr;
+  _templateURLService = nullptr;
 }
 
 - (void)setConsumer:(id<DefaultBrowserScreenConsumer>)consumer {
@@ -246,6 +254,21 @@ void RecordDeviceSwitcherSignalMetrics(
   } else {
     _consumer.screenIntent = DefaultBrowserScreenConsumerScreenIntent::kDefault;
   }
+}
+
+- (void)setAndroidSwitcherConsumer:
+    (id<DefaultBrowserAndroidSwitcherScreenConsumer>)androidSwitcherConsumer {
+  if (_androidSwitcherConsumer == androidSwitcherConsumer) {
+    return;
+  }
+  _androidSwitcherConsumer = androidSwitcherConsumer;
+  if (!_androidSwitcherConsumer) {
+    return;
+  }
+  [_androidSwitcherConsumer
+      setLensSlotFeature:lens_availability::IsLensAvailable(_templateURLService)
+                             ? AndroidSwitcherLensSlotFeature::kLens
+                             : AndroidSwitcherLensSlotFeature::kSafeBrowsing];
 }
 
 - (void)finishPresenting {

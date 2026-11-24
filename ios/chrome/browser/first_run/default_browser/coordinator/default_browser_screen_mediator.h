@@ -9,11 +9,13 @@
 
 class AuthenticationService;
 class ChromeAccountManagerService;
+class TemplateURLService;
 
 namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;
 }  // namespace segmentation_platform
 
+@protocol DefaultBrowserAndroidSwitcherScreenConsumer;
 @protocol DefaultBrowserScreenConsumer;
 @class DefaultBrowserScreenMediator;
 
@@ -33,6 +35,10 @@ class DeviceSwitcherResultDispatcher;
 
 // Main consumer for this mediator.
 @property(nonatomic, weak) id<DefaultBrowserScreenConsumer> consumer;
+// Consumer for the Android Switcher promo, set only when that promo is shown.
+// Must be set before the view is loaded.
+@property(nonatomic, weak) id<DefaultBrowserAndroidSwitcherScreenConsumer>
+    androidSwitcherConsumer;
 // Delegate notified once promo evaluation finishes.
 @property(nonatomic, weak) id<DefaultBrowserScreenMediatorDelegate> delegate;
 // Contains the user choice for UMA reporting. This value is set to the default
@@ -44,13 +50,15 @@ class DeviceSwitcherResultDispatcher;
 @property(nonatomic, assign) BOOL UMALinkWasTapped;
 
 // Designated initializer with `authenticationService`, `accountManagerService`,
-// and segmentation `dispatcher`.
+// segmentation `dispatcher`, and `templateURLService` used to determine Lens
+// availability.
 - (instancetype)
      initWithAuthenticationService:(AuthenticationService*)authenticationService
              accountManagerService:
                  (ChromeAccountManagerService*)accountManagerService
     deviceSwitcherResultDispatcher:
         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
+                templateURLService:(TemplateURLService*)templateURLService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

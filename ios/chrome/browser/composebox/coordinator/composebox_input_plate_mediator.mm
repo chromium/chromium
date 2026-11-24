@@ -2715,8 +2715,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   BOOL hasContent = hasAttachments || _hasText;
   BOOL dseGoogle = [_stateManager isDSEGoogle];
   BOOL eligibleToAIM = [_stateManager isEligibleToAIM];
-  BOOL lensAvailable = lens_availability::CheckAvailabilityForLensEntryPoint(
-      LensEntrypoint::Composebox, [_stateManager isDSEGoogle]);
+  BOOL lensAvailable = lens_availability::IsLensAvailable(dseGoogle);
   BOOL compactInCobrowse = compactMode && self.isCobrowse;
   BOOL allowsMultimodalActions =
       dseGoogle && eligibleToAIM && !compactInCobrowse;

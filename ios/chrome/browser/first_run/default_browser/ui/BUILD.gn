@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "default_browser_android_switcher_screen_consumer.h",
     "default_browser_android_switcher_screen_view_controller.h",
     "default_browser_android_switcher_screen_view_controller.mm",
     "default_browser_animated_screen_view_controller.h",
@@ -35,4 +36,17 @@ source_set("ui") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources =
+      [ "default_browser_android_switcher_screen_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
 }

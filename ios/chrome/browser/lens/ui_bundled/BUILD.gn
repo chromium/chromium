@@ -66,6 +66,7 @@ source_set("lens_availability") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
+    "//ios/chrome/browser/search_engines/model:search_engines_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

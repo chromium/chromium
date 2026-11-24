@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_FIRST_RUN_DEFAULT_BROWSER_UI_DEFAULT_BROWSER_ANDROID_SWITCHER_SCREEN_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_FIRST_RUN_DEFAULT_BROWSER_UI_DEFAULT_BROWSER_ANDROID_SWITCHER_SCREEN_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/first_run/default_browser/ui/default_browser_android_switcher_screen_consumer.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_view_controller.h"
 
 // View controller of the Default Browser promo screen shown to Android
 // switchers during the First Run Experience.
 @interface DefaultBrowserAndroidSwitcherScreenViewController
-    : DefaultBrowserScreenViewController
+    : DefaultBrowserScreenViewController <
+          DefaultBrowserAndroidSwitcherScreenConsumer>
 
 @end
 

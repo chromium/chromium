@@ -3534,6 +3534,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_LENS_ROW" desc="Text of the row on the Android switcher Default Browser screen in First Run explaining Google Lens integration [iOS only]">
         Search what you see with Lens
       </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SAFE_BROWSING_ROW" desc="Text of the row on the Android switcher Default Browser screen in First Run explaining that Chrome protects the user from unsafe websites. Shown instead of the Google Lens row when Lens is not available on the device [iOS only]">
+        Protect yourself from unsafe sites
+      </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_YOUTUBE_MAPS_ROW" desc="Text of the row on the Android switcher Default Browser screen in First Run explaining YouTube and Google Maps links integration [iOS only]">
         Quickly open links in YouTube, Maps, and more
       </message>

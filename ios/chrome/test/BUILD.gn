@@ -403,6 +403,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/first_run/best_features/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/default_browser/coordinator:unit_tests",
+    "//ios/chrome/browser/first_run/default_browser/ui:unit_tests",
     "//ios/chrome/browser/first_run/guided_tour/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/live_activity/model:unit_tests",
     "//ios/chrome/browser/first_run/tos/coordinator:unit_tests",
