@@ -159,6 +159,16 @@ using content::BrowserThread;
 using content::DownloadManagerDelegate;
 using testing::NiceMock;
 using testing::Return;
+
+// Returns `path`, or a new unique temporary profile directory if `path` is
+// empty.
+base::FilePath PathOrNewTempProfilePath(const base::FilePath& path) {
+  if (!path.empty()) {
+    return path;
+  }
+  return base::CreateUniqueTempDirectoryScopedToTestInDir(
+      base::PathService::CheckedGet(chrome::DIR_USER_DATA));
+}
 }  // namespace
 
 TestingProfile::TestingFactory::TestingFactory(
@@ -264,7 +274,7 @@ TestingProfile::TestingProfile(
     bool profile_load_tracker_enabled
 #endif
     )
-    : Profile(otr_profile_id),
+    : Profile(PathOrNewTempProfilePath(path), otr_profile_id),
       prefs_(std::move(prefs)),
       original_profile_(parent),
       guest_session_(guest_session),
@@ -272,7 +282,6 @@ TestingProfile::TestingProfile(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_special_storage_policy_(extension_policy),
 #endif
-      profile_path_(path),
       delegate_(delegate),
       profile_name_(profile_name),
       override_policy_connector_is_managed_(
@@ -317,11 +326,6 @@ TestingProfile::TestingProfile(
   // Only OffTheRecord profiles have an OTRProfileID.
   DCHECK(!parent || otr_profile_id_.has_value());
 
-  // If no profile path was supplied, create one.
-  if (profile_path_.empty()) {
-    profile_path_ = base::CreateUniqueTempDirectoryScopedToTestInDir(
-        base::PathService::CheckedGet(chrome::DIR_USER_DATA));
-  }
 
   // Set any testing factories prior to initializing the services.
   for (auto& f : testing_factories) {
@@ -380,7 +384,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
     key_ = std::make_unique<TestingProfileKey>(
         this, original_profile_->GetPath(), original_profile_->GetProfileKey());
   } else {
-    key_ = std::make_unique<TestingProfileKey>(this, profile_path_);
+    key_ = std::make_unique<TestingProfileKey>(this, GetPath());
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -412,17 +416,18 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   key_->SetPrefs(prefs_.get());
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 
-  if (!base::PathExists(profile_path_))
-    base::CreateDirectory(profile_path_);
+  if (!base::PathExists(GetPath())) {
+    base::CreateDirectory(GetPath());
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Initialize |account_manager::AccountManager|.
-  auto* account_manager = ash::AccountManagerFactory::Get()->GetAccountManager(
-      profile_path_.value());
+  auto* account_manager =
+      ash::AccountManagerFactory::Get()->GetAccountManager(GetPath().value());
   account_manager::AccountManager::DelayNetworkCallRunner
       immediate_callback_runner = base::BindRepeating(
           [](base::OnceClosure closure) -> void { std::move(closure).Run(); });
-  account_manager->Initialize(profile_path_, GetURLLoaderFactory(),
+  account_manager->Initialize(GetPath(), GetURLLoaderFactory(),
                               immediate_callback_runner);
   account_manager->SetPrefService(GetPrefs());
   if (!ash::CrosSettings::IsInitialized()) {
@@ -444,7 +449,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
     if (!IsOffTheRecord())
       CreateProfilePolicyConnector();
 
-    extensions_path_ = profile_path_.AppendASCII("Extensions");
+    extensions_path_ = GetPath().AppendASCII("Extensions");
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // Note that the GetPrefs() creates a TestingPrefService, therefore
@@ -521,7 +526,7 @@ void TestingProfile::InitializeProfileType() {
   } else {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     if (profile_manager) {
-      is_system = (profile_path_ == profile_manager->GetSystemProfilePath());
+      is_system = (GetPath() == profile_manager->GetSystemProfilePath());
     }
   }
   if (is_system) {
@@ -629,10 +634,6 @@ void TestingProfile::SetGuestSession(bool guest) {
 
 void TestingProfile::SetIsNewProfile(bool is_new_profile) {
   is_new_profile_ = is_new_profile;
-}
-
-base::FilePath TestingProfile::GetPath() const {
-  return profile_path_;
 }
 
 base::Time TestingProfile::GetCreationTime() const {

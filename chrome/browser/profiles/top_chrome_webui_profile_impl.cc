@@ -63,7 +63,8 @@ TopChromeWebUIProfileImpl::TopChromeWebUIProfileImpl()
 
 TopChromeWebUIProfileImpl::TopChromeWebUIProfileImpl(
     const OTRProfileID& otr_profile_id)
-    : Profile(&otr_profile_id), start_time_(base::Time::Now()) {
+    : Profile(/*path=*/base::FilePath(), &otr_profile_id),
+      start_time_(base::Time::Now()) {
   TRACE_EVENT0("browser,startup", "TopChromeWebUIProfileImpl::ctor");
 
   // No keyed service is created for this profile unless its factory explicitly
@@ -220,11 +221,6 @@ GURL TopChromeWebUIProfileImpl::GetHomePage() {
 void TopChromeWebUIProfileImpl::SetCreationTimeForTesting(
     base::Time creation_time) {
   start_time_ = creation_time;
-}
-
-base::FilePath TopChromeWebUIProfileImpl::GetPath() const {
-  // This profile keeps no data on disk.
-  return base::FilePath();
 }
 
 base::Time TopChromeWebUIProfileImpl::GetCreationTime() const {

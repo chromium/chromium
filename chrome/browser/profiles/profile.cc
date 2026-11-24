@@ -270,9 +270,10 @@ std::string Profile::OTRProfileID::Serialize() const {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-Profile::Profile(const OTRProfileID* otr_profile_id)
+Profile::Profile(const base::FilePath& path, const OTRProfileID* otr_profile_id)
     : otr_profile_id_(otr_profile_id ? std::make_optional(*otr_profile_id)
-                                     : std::nullopt) {
+                                     : std::nullopt),
+      path_(path) {
 #if DCHECK_IS_ON()
   base::AutoLock lock(GetProfileInstancesLock());
   GetProfileInstances().insert(this);
@@ -326,6 +327,10 @@ void Profile::AddObserver(ProfileObserver* observer) {
 
 void Profile::RemoveObserver(ProfileObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+base::FilePath Profile::GetPath() const {
+  return path_;
 }
 
 base::FilePath Profile::GetBaseName() const {

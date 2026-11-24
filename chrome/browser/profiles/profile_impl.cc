@@ -477,8 +477,7 @@ ProfileImpl::ProfileImpl(
     CreateMode create_mode,
     base::Time path_creation_time,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : Profile(nullptr),
-      path_(path),
+    : Profile(path, /*otr_profile_id=*/nullptr),
       path_creation_time_(path_creation_time),
       io_task_runner_(std::move(io_task_runner)),
       start_time_(base::Time::Now()),
@@ -491,9 +490,10 @@ ProfileImpl::ProfileImpl(
   // In ChromeOS Guest Mode, there can be only three profiles, main guest
   // profile, otr guest profile and sign in profile, and only main and otr ,
   // which are 'user profile', should be the guest
-  bool is_guest_session = base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              ash::switches::kGuestSession) &&
-                          ash::IsUserBrowserContextBaseName(path_.BaseName());
+  bool is_guest_session =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kGuestSession) &&
+      ash::IsUserBrowserContextBaseName(GetPath().BaseName());
 #else
   bool is_guest_session = path == ProfileManager::GetGuestProfilePath();
 #endif
@@ -563,11 +563,11 @@ ProfileImpl::ProfileImpl(
     // Consider removing this initialization and fixing failing tests.
     // See https://crbug.com/40635309 for reference.
     ash::InitializeAccountManager(
-        std::move(shared_url_loader_factory), path_,
+        std::move(shared_url_loader_factory), GetPath(),
         base::DoNothing() /* initialization_callback */);
 
     auto* account_manager =
-        ash::AccountManagerFactory::Get()->GetAccountManager(path_.value());
+        ash::AccountManagerFactory::Get()->GetAccountManager(GetPath().value());
     account_manager->SetPrefService(GetPrefs());
   }
 #endif
@@ -755,8 +755,8 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       pref_registry_, CreateExtensionPrefStore(this, false),
       profile_policy_connector_->policy_service(),
       g_browser_process->browser_policy_connector(),
-      std::move(pref_validation_delegate), GetIOTaskRunner(), key_.get(), path_,
-      async_prefs, g_browser_process->os_crypt_async(),
+      std::move(pref_validation_delegate), GetIOTaskRunner(), key_.get(),
+      GetPath(), async_prefs, g_browser_process->os_crypt_async(),
       g_browser_process->device_parental_controls());
   key_->SetPrefs(prefs_.get());
 }
@@ -818,7 +818,7 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // It would be nice to use PathService for fetching this directory, but
   // the cache directory depends on the profile directory, which isn't available
   // to PathService.
-  chrome::GetUserCacheDirectory(path_, &base_cache_path);
+  chrome::GetUserCacheDirectory(GetPath(), &base_cache_path);
   // Always create the cache directory asynchronously.
   CreateProfileDirectory(io_task_runner_.get(), base_cache_path, false);
 
@@ -1081,10 +1081,6 @@ ProfileImpl::CreateZoomLevelDelegate(const base::FilePath& partition_path) {
   return std::make_unique<ChromeZoomLevelPrefs>(
       GetPrefs(), GetPath(), partition_path,
       zoom::ZoomEventManager::GetForBrowserContext(this)->GetWeakPtr());
-}
-
-base::FilePath ProfileImpl::GetPath() const {
-  return path_;
 }
 
 base::Time ProfileImpl::GetCreationTime() const {

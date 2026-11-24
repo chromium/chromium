@@ -120,7 +120,6 @@ class ProfileImpl : public Profile {
   // not the Chrome user's display name.
   std::string GetProfileUserName() const override;
   base::Time GetCreationTime() const override;
-  base::FilePath GetPath() const override;
   Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
                                   bool create_if_needed) override;
   std::vector<Profile*> GetAllOffTheRecordProfiles() override;
@@ -233,7 +232,6 @@ class ProfileImpl : public Profile {
 
   policy::ConfigurationPolicyProvider* configuration_policy_provider();
 
-  base::FilePath path_;
 
   base::Time path_creation_time_;
 

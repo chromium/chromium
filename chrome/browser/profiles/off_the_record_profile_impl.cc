@@ -162,7 +162,7 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
 OffTheRecordProfileImpl::OffTheRecordProfileImpl(
     Profile* real_profile,
     const OTRProfileID& otr_profile_id)
-    : Profile(&otr_profile_id),
+    : Profile(real_profile->GetPath(), &otr_profile_id),
       profile_(real_profile),
       start_time_(base::Time::Now()),
       key_(std::make_unique<ProfileKey>(profile_->GetPath(),
@@ -345,10 +345,6 @@ void OffTheRecordProfileImpl::TrackZoomLevelsFromParent() {
 std::string OffTheRecordProfileImpl::GetProfileUserName() const {
   // Incognito profile should not return the username.
   return std::string();
-}
-
-base::FilePath OffTheRecordProfileImpl::GetPath() const {
-  return profile_->GetPath();
 }
 
 base::Time OffTheRecordProfileImpl::GetCreationTime() const {

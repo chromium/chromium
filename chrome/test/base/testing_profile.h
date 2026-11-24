@@ -362,7 +362,6 @@ class TestingProfile : public Profile {
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
   // content::BrowserContext
-  base::FilePath GetPath() const override;
   base::Time GetCreationTime() const override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
@@ -537,10 +536,6 @@ class TestingProfile : public Profile {
   scoped_refptr<ExtensionSpecialStoragePolicy>
       extension_special_storage_policy_;
 #endif
-
-  // The path to this profile. This will be valid in either of the two above
-  // cases.
-  base::FilePath profile_path_;
 
   base::FilePath extensions_path_;
 

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -35,7 +36,6 @@ class ThemeService;
 class InstantService;
 
 namespace base {
-class FilePath;
 class SequencedTaskRunner;
 class Time;
 }
@@ -184,7 +184,10 @@ class Profile : public content::BrowserContext {
   // Key used to bind profile to the widget with which it is associated.
   static const char kProfileKey[];
 
-  explicit Profile(const OTRProfileID* otr_profile_id);
+  // `path` is the directory where this profile's data is stored (see
+  // `GetPath()`). It is fixed for the lifetime of the profile. Off-the-record
+  // profiles pass their original profile's path.
+  Profile(const base::FilePath& path, const OTRProfileID* otr_profile_id);
   Profile(const Profile&) = delete;
   Profile& operator=(const Profile&) = delete;
   ~Profile() override;
@@ -213,7 +216,7 @@ class Profile : public content::BrowserContext {
   // content::BrowserContext implementation ------------------------------------
 
   // Returns the path of the directory where this context's data is stored.
-  base::FilePath GetPath() const override = 0;
+  base::FilePath GetPath() const final;
 
   // Returns the base name of the profile, which is the profile directory name
   // within the user data directory, e.g. "Default", "Profile 1", "Profile 2".
@@ -569,6 +572,8 @@ class Profile : public content::BrowserContext {
   const std::optional<OTRProfileID> otr_profile_id_;
 
  private:
+  const base::FilePath path_;
+
   LifecycleState lifecycle_state_ = LifecycleState::kNotRegistered;
 
   bool restored_last_session_ = false;

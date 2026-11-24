@@ -88,7 +88,6 @@ class OffTheRecordProfileImpl : public Profile {
   void SetCreationTimeForTesting(base::Time creation_time) override;
 
   // content::BrowserContext implementation:
-  base::FilePath GetPath() const override;
   base::Time GetCreationTime() const override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
