@@ -961,10 +961,10 @@ TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledAfterRetentionPeriod) {
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
-  // Within the 30-day retention period, the asset should remain installed.
+  // Within the 45-day retention period, the asset should remain installed.
   {
     base::HistogramTester histogram_tester;
-    task_environment_.FastForwardBy(base::Days(29));
+    task_environment_.FastForwardBy(base::Days(44));
     UpdateManifest(DummyManifest().Add(asset));
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
@@ -1000,10 +1000,10 @@ TEST_F(ManifestAssetManagerTest,
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
-  // Within the 30-day retention period, the asset should remain installed.
+  // Within the 45-day retention period, the asset should remain installed.
   {
     base::HistogramTester histogram_tester;
-    task_environment_.FastForwardBy(base::Days(29));
+    task_environment_.FastForwardBy(base::Days(44));
     UpdateManifest(DummyManifest().Add(asset));
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
@@ -1012,7 +1012,7 @@ TEST_F(ManifestAssetManagerTest,
         1);
   }
 
-  // After the 30-day retention period expires, the asset should be uninstalled.
+  // After the 45-day retention period expires, the asset should be uninstalled.
   {
     base::HistogramTester histogram_tester;
     task_environment_.FastForwardBy(base::Days(2));
@@ -1044,11 +1044,11 @@ TEST_F(ManifestAssetManagerTest, AutoRemoveUnusedModelsPrefControlsEviction) {
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
-  // Advance past the 30-day retention period. Because auto-remove is false, the
+  // Advance past the 45-day retention period. Because auto-remove is false, the
   // asset should remain installed.
   {
     base::HistogramTester histogram_tester;
-    task_environment_.FastForwardBy(base::Days(31));
+    task_environment_.FastForwardBy(base::Days(46));
     UpdateManifest(DummyManifest().Add(asset));
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return histogram_tester
@@ -1108,14 +1108,14 @@ TEST_F(ManifestAssetManagerTest, UninstallModels) {
       "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
       Manifest::UninstallReason::kUserRequested, 1);
 
-  // Re-install the asset and advance past the 30-day retention period. Because
+  // Re-install the asset and advance past the 45-day retention period. Because
   // auto-remove is still false, background eviction must remain disabled.
   task_environment_.FastForwardBy(base::Seconds(2));
   MakeAssetsInstallable(DummyManifest().Add(asset));
   manifest_broker_state_->SetUseCaseRequested(asset.use_case, true);
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
   EXPECT_EQ(component_state_.GetRegistrationCount(asset.public_key), 2);
-  task_environment_.FastForwardBy(base::Days(31));
+  task_environment_.FastForwardBy(base::Days(46));
   UpdateManifest(DummyManifest().Add(asset));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
@@ -1145,9 +1145,9 @@ TEST_F(ManifestAssetManagerTest,
   EXPECT_TRUE(
       component_state_.WaitForRegistration(test_asset.ToInstallTarget()));
 
-  // Advance past the 30-day retention period so `test_asset` is kEvictable,
+  // Advance past the 45-day retention period so `test_asset` is kEvictable,
   // but retained because auto-remove is disabled.
-  task_environment_.FastForwardBy(base::Days(31));
+  task_environment_.FastForwardBy(base::Days(46));
 
   base::HistogramTester histogram_tester;
   manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kGemma4);

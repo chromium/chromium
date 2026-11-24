@@ -38,7 +38,7 @@ AssetPriorities::AssetPriorities(const Manifest& manifest,
             *manifest.GetRequiredAssets(use_case_name));
     } else if (usage_tracker.HasUseCaseUsage(use_case_name)) {
       // Skip use cases that have never been used.
-      // `GetPriority()` returns `kEvictable` for both expired (>30d) and
+      // `GetPriority()` returns `kEvictable` for both expired (>45d) and
       // never-used use cases; raising `kEvictable` for a never-used use case
       // would overwrite `kUninstall` on shared assets (e.g. a shared safety
       // model) when another capability is uninstalled.

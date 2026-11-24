@@ -46,7 +46,7 @@ const base::FeatureParam<base::TimeDelta> kRecentUsePeriod{
     &kOnDeviceModelUsageTracking, "recent_use_period", base::Days(1)};
 
 const base::FeatureParam<base::TimeDelta> kRetentionPeriod{
-    &kOnDeviceModelUsageTracking, "retention_period", base::Days(30)};
+    &kOnDeviceModelUsageTracking, "retention_period", base::Days(45)};
 
 const base::FeatureParam<base::TimeDelta> kTrackingPeriod{
     &kOnDeviceModelUsageTracking, "tracking_period", base::Days(180)};

@@ -237,7 +237,7 @@ TEST_F(UsageTrackerTest, RetentionPeriodPriorityRetain) {
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kUserBlocking);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kBestEffort);
 
-  // After 25 hours (>1 day recent use window, <30 days retention period),
+  // After 25 hours (>1 day recent use window, <45 days retention period),
   // priorities transition to Priority::kRetain.
   task_environment().FastForwardBy(base::Hours(2));
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kRetain);
@@ -264,13 +264,13 @@ TEST_F(UsageTrackerTest, PrefPruningAfterTrackingPeriod) {
   task_environment().FastForwardBy(base::Days(15));
   usage_tracker().RaisePriority("use_case_2", Priority::kBestEffort);
 
-  // Advance another 16 days: use_case_1 is 31 days old (>30 days retention,
-  // <=180 days tracking), use_case_2 is 16 days old (>1d, <30d retention).
-  task_environment().FastForwardBy(base::Days(16));
+  // Advance another 31 days: use_case_1 is 46 days old (>45 days retention,
+  // <=180 days tracking), use_case_2 is 31 days old (>1d, <45d retention).
+  task_environment().FastForwardBy(base::Days(31));
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
 
-  // On restart at 31 days, prefs within the 180-day tracking period are not
+  // On restart at 46 days, prefs within the 180-day tracking period are not
   // pruned yet.
   ResetUsageTracker();
   {
@@ -282,9 +282,9 @@ TEST_F(UsageTrackerTest, PrefPruningAfterTrackingPeriod) {
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
 
-  // Advance another 150 days: use_case_1 is 181 days old (>180 days tracking),
-  // use_case_2 is 166 days old (30 < age <= 180 days).
-  task_environment().FastForwardBy(base::Days(150));
+  // Advance another 135 days: use_case_1 is 181 days old (>180 days tracking),
+  // use_case_2 is 166 days old (45 < age <= 180 days).
+  task_environment().FastForwardBy(base::Days(135));
   ResetUsageTracker();
   {
     const auto& dict = local_state().GetDict(

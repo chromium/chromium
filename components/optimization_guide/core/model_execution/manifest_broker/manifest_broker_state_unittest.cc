@@ -389,14 +389,14 @@ TEST_F(ManifestBrokerStateTest,
     EXPECT_TRUE(asr_future.Take());
   }
 
-  // Advance past the 30-day retention window so that "test"
+  // Advance past the 45-day retention window so that "test"
   // (nano_v3_gpu_component), "summarizer_api"
   // (summarizer_small_expert_model_component), and
   // "speech_recognition_small_expert_model"
   // (speech_recognition_small_expert_model_component) become kEvictable. With
   // Auto-Removal disabled, uninstalling kV3NanoGpu should still retain the
   // other expired models.
-  task_environment_.FastForwardBy(base::Days(31));
+  task_environment_.FastForwardBy(base::Days(46));
 
   OnDeviceModelControl* model_control = fake_.state().GetModelControl();
   ASSERT_NE(model_control, nullptr);
