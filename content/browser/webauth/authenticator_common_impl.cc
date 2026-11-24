@@ -250,7 +250,7 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
 // |out_transports|. Returns true if any transports were added.
 bool AddTransportsFromCertificate(
     base::span<const uint8_t> der_cert,
-    base::flat_set<device::FidoTransportProtocol>* out_transports) {
+    device::FidoTransportProtocolSet* out_transports) {
   // See
   // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-authenticator-transports-extension-v1.2-ps-20170411.html#fido-u2f-certificate-transports-extension
   static constexpr std::array<uint8_t, 11> kTransportTypesOID = {
@@ -291,7 +291,7 @@ bool AddTransportsFromCertificate(
   bool ret = false;
   for (const auto& mapping : kTransportMapping) {
     if (transport_bits->AssertsBit(mapping.bit_index)) {
-      out_transports->insert(mapping.transport);
+      out_transports->Put(mapping.transport);
       ret |= true;
     }
   }
@@ -2740,20 +2740,20 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
       RequestSource(), device::FidoRequestType::kMakeCredential,
       authenticator->GetType());
 
-  base::flat_set<device::FidoTransportProtocol> transports;
+  device::FidoTransportProtocolSet transports;
   std::optional<device::FidoTransportProtocol> authenticator_transport =
       authenticator->AuthenticatorTransport();
   if (authenticator_transport) {
-    transports.emplace(*authenticator_transport);
+    transports.Put(*authenticator_transport);
   } else if (response_data->transports) {
     // On platforms where we delegate handling different transports to the OS,
     // use the list of transports reported by the credential instead.
     transports = *response_data->transports;
   }
   bool is_transport_used_internal =
-      transports.contains(device::FidoTransportProtocol::kInternal);
+      transports.Has(device::FidoTransportProtocol::kInternal);
   bool is_transport_used_cable =
-      transports.contains(device::FidoTransportProtocol::kHybrid);
+      transports.Has(device::FidoTransportProtocol::kHybrid);
 
   const auto attestation =
       std::get<device::CtapMakeCredentialRequest>(req_state_->ctap_request)
@@ -3158,17 +3158,16 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
                 *response_data.transport_used)
           : device::AuthenticatorAttachment::kAny;
 
-  base::flat_set<device::FidoTransportProtocol> transports;
+  device::FidoTransportProtocolSet transports;
   // transports_authoritative tracks whether the contents of `transports` are
   // considered to be sufficient complete to report back to the website.
   bool transports_authoritative = false;
 
   if (response_data.transport_used) {
-    transports.insert(*response_data.transport_used);
+    transports.Put(*response_data.transport_used);
   }
   if (response_data.transports) {
-    transports.insert(response_data.transports->begin(),
-                      response_data.transports->end());
+    transports.PutAll(*response_data.transports);
     transports_authoritative = true;
   }
   // Also include any transports from the attestation certificate.
@@ -3185,15 +3184,15 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
     // Windows doesn't provide transport data, but can provide the transport
     // used. If the transport was hybrid then we assume that ['hybrid',
     // 'internal'] is a reasonable set of transports.
-    transports.insert(device::FidoTransportProtocol::kHybrid);
-    transports.insert(device::FidoTransportProtocol::kInternal);
+    transports.Put(device::FidoTransportProtocol::kHybrid);
+    transports.Put(device::FidoTransportProtocol::kInternal);
     transports_authoritative = true;
   }
 
   // The order of transports doesn't matter because Blink will sort the
   // resulting strings before returning them.
   if (transports_authoritative) {
-    response->transports.assign(transports.begin(), transports.end());
+    response->transports = base::ToVector(transports);
   }
 
   switch (attestation_erasure) {

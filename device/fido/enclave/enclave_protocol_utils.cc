@@ -573,9 +573,8 @@ ParseMakeCredentialResponse(cbor::Value response_value,
   response.large_blob_type =
       large_blob_supported ? std::make_optional(LargeBlobSupportType::kBespoke)
                            : std::nullopt;
-  response.transports.emplace();
-  response.transports->insert(FidoTransportProtocol::kInternal);
-  response.transports->insert(FidoTransportProtocol::kHybrid);
+  response.transports = {FidoTransportProtocol::kInternal,
+                         FidoTransportProtocol::kHybrid};
   response.prf_enabled = prf_enabled;
   response.prf_results = std::move(prf_results);
 

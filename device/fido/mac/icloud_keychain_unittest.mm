@@ -348,10 +348,8 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
       EXPECT_TRUE(response.is_resident_key.value_or(false));
       EXPECT_FALSE(response.enterprise_attestation_returned);
       EXPECT_EQ(response.transports->size(), 2u);
-      EXPECT_TRUE(
-          response.transports->contains(FidoTransportProtocol::kHybrid));
-      EXPECT_TRUE(
-          response.transports->contains(FidoTransportProtocol::kInternal));
+      EXPECT_TRUE(response.transports->Has(FidoTransportProtocol::kHybrid));
+      EXPECT_TRUE(response.transports->Has(FidoTransportProtocol::kInternal));
       EXPECT_EQ(response.transport_used, FidoTransportProtocol::kInternal);
     }
 

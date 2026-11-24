@@ -236,8 +236,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
   AuthenticatorMakeCredentialResponse fido_response(
       FidoTransportProtocol::kInternal,
       AttestationObject(std::move(*authenticator_data), std::move(statement)));
-  fido_response.transports.emplace();
-  fido_response.transports->insert(FidoTransportProtocol::kInternal);
+  fido_response.transports = {FidoTransportProtocol::kInternal};
 
   std::move(callback).Run(MakeCredentialStatus::kSuccess,
                           std::move(fido_response));

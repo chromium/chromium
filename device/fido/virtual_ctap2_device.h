@@ -24,6 +24,7 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
 #include "device/fido/virtual_fido_device.h"
 
@@ -108,7 +109,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool include_transports_in_attestation_certificate = true;
     // transports_in_get_info, if not empty, contains the transports that will
     // be reported via getInfo. Otherwise no transports will be reported.
-    std::vector<FidoTransportProtocol> transports_in_get_info;
+    FidoTransportProtocolSet transports_in_get_info;
 
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;

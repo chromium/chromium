@@ -745,7 +745,7 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       std::optional<FidoTransportProtocol> maybe_transport(
           ConvertToFidoTransportProtocol(transport_str.GetString()));
       if (maybe_transport.has_value()) {
-        response.transports->insert(*maybe_transport);
+        response.transports->Put(*maybe_transport);
       }
     }
   }

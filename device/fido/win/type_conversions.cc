@@ -156,11 +156,8 @@ ToAuthenticatorMakeCredentialResponse(
               std::move(*cbor_attestation_statement))));
   if (credential_attestation.dwVersion >=
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_8) {
-    ret.transports.emplace();
-    for (FidoTransportProtocol transport :
-         FromWinTransportsBitmask(credential_attestation.dwTransports)) {
-      ret.transports->insert(transport);
-    }
+    ret.transports =
+        FromWinTransportsBitmask(credential_attestation.dwTransports);
   } else if (transport_used == FidoTransportProtocol::kInternal) {
     // Before webauthn.dll version 9, Windows would only enumerate platform
     // credentials. These credentials can't be used from other devices, so we

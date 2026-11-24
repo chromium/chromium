@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
 
   // transports contains the full set of transports supported by the
   // authenticator, if known.
-  std::optional<base::flat_set<FidoTransportProtocol>> transports;
+  std::optional<FidoTransportProtocolSet> transports;
 
   // Contains the transport used to register the credential in this case. It is
   // nullopt for cases where we cannot determine the transport (Windows).

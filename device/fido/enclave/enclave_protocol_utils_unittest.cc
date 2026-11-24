@@ -610,9 +610,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
   EXPECT_EQ(entity.credential_id(),
             std::string(response_cred_id.begin(), response_cred_id.end()));
   EXPECT_TRUE(
-      register_response.transports->contains(FidoTransportProtocol::kInternal));
+      register_response.transports->Has(FidoTransportProtocol::kInternal));
   EXPECT_TRUE(
-      register_response.transports->contains(FidoTransportProtocol::kHybrid));
+      register_response.transports->Has(FidoTransportProtocol::kHybrid));
   EXPECT_TRUE(register_response.is_resident_key);
   EXPECT_TRUE(register_response.attestation_object.authenticator_data()
                   .obtained_user_presence());

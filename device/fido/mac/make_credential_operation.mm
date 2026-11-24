@@ -158,8 +158,7 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
               /*x509_certificates=*/std::vector<std::vector<uint8_t>>())));
   // New credentials are always discoverable.
   response.is_resident_key = true;
-  response.transports.emplace();
-  response.transports->insert(FidoTransportProtocol::kInternal);
+  response.transports = {FidoTransportProtocol::kInternal};
   std::move(callback_).Run(MakeCredentialStatus::kSuccess, std::move(response));
 }
 

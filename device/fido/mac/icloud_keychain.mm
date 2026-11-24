@@ -615,9 +615,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     }
 
     response.is_resident_key = true;
-    response.transports.emplace();
-    response.transports->insert(FidoTransportProtocol::kHybrid);
-    response.transports->insert(FidoTransportProtocol::kInternal);
+    response.transports = {FidoTransportProtocol::kHybrid,
+                           FidoTransportProtocol::kInternal};
     response.transport_used = FidoTransportProtocol::kInternal;
     if (@available(macOS 15.0, *)) {
       if ([result isKindOfClass:
