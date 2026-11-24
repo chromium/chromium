@@ -14,13 +14,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -29,7 +34,7 @@ import java.nio.ByteBuffer;
  * Tests whether TabState can be saved and restored to disk properly. Also checks to see if
  * TabStates from previous versions of Chrome can still be loaded and upgraded.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 public class TabStateTest {
     private TestTabModelDirectory mTestTabModelDirectory;
     private CipherFactory mCipherFactory;
@@ -134,6 +139,7 @@ public class TabStateTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
     public void testWebContentsStateMetadataUrlSanitization() throws Exception {
         // We need a profile to create a single navigation state
         Profile profile =
@@ -157,6 +163,36 @@ public class TabStateTest {
         WebContentsState.WebContentsStateMetadata metadata = state.getMetadata();
         Assert.assertNotNull(metadata);
         Assert.assertEquals("chrome-native://newtab/", metadata.virtualUrl);
+        Assert.assertEquals("New Tab", metadata.title);
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.DESKTOP)
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testWebContentsStateMetadataUrlSanitization_DesktopWebUiNtp() throws Exception {
+        // We need a profile to create a single navigation state
+        Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(() -> ProfileManager.getLastUsedRegularProfile());
+        Assert.assertNotNull(profile);
+
+        // 1. Create a serialized state with a raw NTP URL: "chrome://newtab/"
+        ByteBuffer buffer =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return WebContentsStateJni.get()
+                                    .createSingleNavigationStateAsByteBuffer(
+                                            profile, "New Tab", "chrome://newtab/", null, 0, null);
+                        });
+        Assert.assertNotNull(buffer);
+
+        WebContentsState state = new WebContentsState(buffer, 2); // Version 2
+
+        // 2. Query virtual URL. It should remain "chrome://newtab/" when Desktop WebUI NTP is
+        // enabled.
+        WebContentsState.WebContentsStateMetadata metadata = state.getMetadata();
+        Assert.assertNotNull(metadata);
+        Assert.assertEquals("chrome://newtab/", metadata.virtualUrl);
         Assert.assertEquals("New Tab", metadata.title);
     }
 }

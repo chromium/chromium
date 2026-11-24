@@ -244,7 +244,9 @@ source_set("unit_tests") {
   deps = [
     ":sessions",
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/prefs:util",
+    "//chrome/common",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
@@ -254,6 +256,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  }
 
   if (enable_session_service) {
     sources += [

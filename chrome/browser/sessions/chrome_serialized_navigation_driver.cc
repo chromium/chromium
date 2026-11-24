@@ -69,8 +69,12 @@ void ChromeSerializedNavigationDriver::Sanitize(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // Rewrite the old new tab URL to the new NTP URL.
-  if (search::IsNewTabOrigin(navigation->virtual_url())) {
+  // If the WebUI NTP is enabled, then we need to skip the rewrite from
+  // chrome://newtab to the native chrome-native://newtab url. Otherwise,
+  // users that previously had a WebUI NTP open will see the native NTP upon
+  // session restore.
+  if (!search::IsWebUiNtpEnabledForDesktopAndroid() &&
+      search::IsNewTabOrigin(navigation->virtual_url())) {
     ChangeDestination(GURL(chrome::kChromeUINativeNewTabURL), navigation);
   }
 #endif  // BUILDFLAG(IS_ANDROID)

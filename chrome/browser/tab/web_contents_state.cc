@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -457,13 +458,15 @@ bool WebContentsState::ExtractMetadata(base::span<const uint8_t> buffer,
   }
 
   // To match the sanitization in ChromeSerializedNavigationDriver::Sanitize.
-  std::string_view newtab_no_slash = chrome::kChromeUINewTabURL;
-  if (!newtab_no_slash.empty() && newtab_no_slash.back() == '/') {
-    newtab_no_slash.remove_suffix(1);
-  }
-  if (*virtual_url == chrome::kChromeUINewTabURL ||
-      *virtual_url == newtab_no_slash) {
-    *virtual_url = chrome::kChromeUINativeNewTabURL;
+  if (!search::IsWebUiNtpEnabledForDesktopAndroid()) {
+    std::string_view newtab_no_slash = chrome::kChromeUINewTabURL;
+    if (!newtab_no_slash.empty() && newtab_no_slash.back() == '/') {
+      newtab_no_slash.remove_suffix(1);
+    }
+    if (*virtual_url == chrome::kChromeUINewTabURL ||
+        *virtual_url == newtab_no_slash) {
+      *virtual_url = chrome::kChromeUINativeNewTabURL;
+    }
   }
 
   return true;

@@ -4,12 +4,20 @@
 
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 
+#include "build/build_config.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "ui/base/page_transition_types.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/common/webui_url_constants.h"
+#endif
 
 class ChromeSerializedNavigationDriverTest : public ::testing::Test {
  public:
@@ -28,6 +36,9 @@ class ChromeSerializedNavigationDriverTest : public ::testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_ANDROID)
+    base::android::device_info::reset_is_desktop_for_testing();
+#endif
     sessions::ContentSerializedNavigationDriver::SetInstance(nullptr);
   }
 };
@@ -117,3 +128,56 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyNever) {
 
 // TODO(dbeam): add tests for clearing session restore state from new Material
 // Design URLs that we're pulling out of the uber page.
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeSerializedNavigationDriverTest,
+       SanitizeRewritesNewTabUrlWhenWebUiNtpDisabled) {
+  base::android::device_info::set_is_desktop_for_testing(false);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chrome::android::kUseWebUiNtpAndroid);
+
+  sessions::ContentSerializedNavigationDriver* driver =
+      sessions::ContentSerializedNavigationDriver::GetInstance();
+  sessions::SerializedNavigationEntry navigation =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  sessions::SerializedNavigationEntryTestHelper::SetVirtualURL(
+      GURL(chrome::kChromeUINewTabURL), &navigation);
+  blink::PageState page_state =
+      blink::PageState::CreateFromURL(GURL(chrome::kChromeUINewTabPageURL));
+  sessions::SerializedNavigationEntryTestHelper::SetEncodedPageState(
+      page_state.ToEncodedData(), &navigation);
+
+  driver->Sanitize(&navigation);
+
+  EXPECT_EQ(GURL(chrome::kChromeUINativeNewTabURL), navigation.virtual_url());
+  EXPECT_EQ(GURL(chrome::kChromeUINativeNewTabURL),
+            navigation.original_request_url());
+  EXPECT_EQ(
+      blink::PageState::CreateFromURL(GURL(chrome::kChromeUINativeNewTabURL))
+          .ToEncodedData(),
+      navigation.encoded_page_state());
+}
+
+TEST_F(ChromeSerializedNavigationDriverTest,
+       SanitizePreservesNewTabUrlWhenDesktopWebUiNtpEnabled) {
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chrome::android::kUseWebUiNtpAndroid);
+
+  sessions::ContentSerializedNavigationDriver* driver =
+      sessions::ContentSerializedNavigationDriver::GetInstance();
+  sessions::SerializedNavigationEntry navigation =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  sessions::SerializedNavigationEntryTestHelper::SetVirtualURL(
+      GURL(chrome::kChromeUINewTabURL), &navigation);
+  blink::PageState page_state =
+      blink::PageState::CreateFromURL(GURL(chrome::kChromeUINewTabPageURL));
+  sessions::SerializedNavigationEntryTestHelper::SetEncodedPageState(
+      page_state.ToEncodedData(), &navigation);
+
+  driver->Sanitize(&navigation);
+
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), navigation.virtual_url());
+  EXPECT_EQ(page_state.ToEncodedData(), navigation.encoded_page_state());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
