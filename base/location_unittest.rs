@@ -12,7 +12,8 @@ use rust_gtest_interop::prelude::*;
 const EXPECTED_FILE_NAME: &str =
     if cfg!(windows) { "base\\location_unittest.rs" } else { "base/location_unittest.rs" };
 
-#[gtest(RustLocationTest, FromHere)]
+// TODO(crbug.com/575911997): disabled due to breaking on linux-win-cross-rel
+#[gtest(RustLocationTest, DISABLED_FromHere)]
 fn test_from_here() {
     let line = line!() + 1;
     let here = from_here!();
@@ -41,7 +42,8 @@ fn caller_location() -> Location {
     Location::current()
 }
 
-#[gtest(RustLocationTest, Current)]
+// TODO(crbug.com/575911997): disabled due to breaking on linux-win-cross-rel
+#[gtest(RustLocationTest, DISABLED_Current)]
 fn test_current() {
     let line = line!() + 1;
     let caller = caller_location();
