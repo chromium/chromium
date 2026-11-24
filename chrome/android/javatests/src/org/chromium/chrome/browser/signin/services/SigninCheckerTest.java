@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -77,31 +76,22 @@ public class SigninCheckerTest {
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
-    @Before
-    public void setUp() {
+    @Test
+    @MediumTest
+    @RequiresRestart("Must add the child account before Chrome and SigninChecker start")
+    public void signinWhenChildAccountIsAlreadyOnDeviceOnStartup() {
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mActivityTestRule.startOnBlankPage();
-        ThreadUtils.runOnUiThreadBlocking(() -> getSigninChecker().resetForTesting());
-    }
 
-    private SigninChecker getSigninChecker() {
-        SigninManagerImpl signinManager =
-                (SigninManagerImpl)
-                        IdentityServicesProvider.get()
-                                .getSigninManager(mActivityTestRule.getProfile(false));
-        assert signinManager != null;
-        SigninChecker checker = signinManager.getSigninCheckerForTesting();
-        assert checker != null;
-        return checker;
-    }
-
-    private int getNumOfChildAccountChecksDone() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> getSigninChecker().getNumOfChildAccountChecksDoneForTests());
+        CriteriaHelper.pollUiThread(
+                () -> TestAccounts.CHILD_ACCOUNT.equals(mSigninTestRule.getPrimaryAccount()));
+        Assert.assertEquals(2, getNumOfChildAccountChecksDone());
     }
 
     @Test
     @MediumTest
     public void signinWhenChildAccountIsTheOnlyAccount() {
+        startMainActivityAndResetCounter();
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         CriteriaHelper.pollUiThread(
@@ -114,6 +104,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
+        startMainActivityAndResetCounter();
         UserActionTester actionTester = new UserActionTester();
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -129,6 +120,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void noSigninWhenChildAccountIsTheSecondaryAccount() {
+        startMainActivityAndResetCounter();
         // If a child account co-exists with another account on the device, then the child account
         // must be the first device (this is enforced by the Kids Module).  The behaviour in this
         // test case therefore is not currently hittable on a real device; however it is included
@@ -146,6 +138,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void signinWhenChildAccountIsFirstAccount() {
+        startMainActivityAndResetCounter();
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -163,6 +156,7 @@ public class SigninCheckerTest {
     @RequiresRestart("Leaves AccountManagedStatusFinder pending until after-class LeakCanary runs")
     @EnableFeatures({ChromeFeatureList.VERIFY_STARTUP_SIGNIN_STATE})
     public void startupSigninStateCheckDoesNotLeakActivityWhenPending() {
+        startMainActivityAndResetCounter();
         mActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
         TrafficControl.hopOffPublicTransit();
         AccountInfo pendingManagedAccount =
@@ -182,5 +176,26 @@ public class SigninCheckerTest {
                                 .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                                 .setUserAcceptedAccountManagement(false));
         mActivityTestRule.startOnBlankPage();
+    }
+
+    private void startMainActivityAndResetCounter() {
+        mActivityTestRule.startOnBlankPage();
+        ThreadUtils.runOnUiThreadBlocking(() -> getSigninChecker().resetForTesting());
+    }
+
+    private SigninChecker getSigninChecker() {
+        SigninManagerImpl signinManager =
+                (SigninManagerImpl)
+                        IdentityServicesProvider.get()
+                                .getSigninManager(mActivityTestRule.getProfile(false));
+        assert signinManager != null;
+        SigninChecker checker = signinManager.getSigninCheckerForTesting();
+        assert checker != null;
+        return checker;
+    }
+
+    private int getNumOfChildAccountChecksDone() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> getSigninChecker().getNumOfChildAccountChecksDoneForTests());
     }
 }

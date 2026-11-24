@@ -38,7 +38,6 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
         if (mAccountManagerFacade.getAccounts().isFulfilled()) {
             onAccountsChanged();
         }
-        mNumOfChildAccountChecksDone = 0;
     }
 
     @Override
