@@ -19,11 +19,11 @@
 @interface FakeActorTaskInterventionDelegate
     : NSObject <ActorTaskInterventionDelegate>
 
-// When set to YES, automatically invokes the completion handler immediately
-// upon receiving a user intervention request. Defaults to NO.
+// When set to YES, automatically invokes the callback immediately upon
+// receiving a user intervention request. Defaults to NO.
 @property(nonatomic, assign) BOOL autoConfirmInterventions;
 
-// When set to YES, automatically invokes the completion handler with the first
+// When set to YES, automatically invokes the callback with the first
 // suggestion and `shouldStorePermission = NO`. Defaults to NO.
 @property(nonatomic, assign) BOOL autoSelectFirstSuggestion;
 
@@ -31,8 +31,8 @@
 // intervention.
 @property(nonatomic, copy) ProceduralBlock onUserInterventionRequested;
 
-// A callback invoked synchronously right after the user intervention completion
-// handler is executed.
+// A callback invoked synchronously right after the user intervention callback
+// is executed.
 @property(nonatomic, copy) ProceduralBlock onUserInterventionCompleted;
 
 // Whether `requestUserInterventionWithTitle:...` was called.
@@ -44,8 +44,7 @@
 @property(nonatomic, readonly) NSString* confirmationSubtitle;
 @property(nonatomic, readonly) NSString* confirmationButtonText;
 
-// Whether an unhandled user intervention completion handler is currently
-// pending.
+// Whether an unhandled user intervention callback is currently pending.
 @property(nonatomic, readonly) BOOL hasPendingUserIntervention;
 
 // Whether `selectFromSuggestions:...` was called.
@@ -55,8 +54,7 @@
 @property(nonatomic, readonly)
     NSArray<ActorFormSuggestion*>* promptedSuggestions;
 
-// Whether an unhandled suggestion selection completion handler is currently
-// pending.
+// Whether an unhandled suggestion selection callback is currently pending.
 @property(nonatomic, readonly) BOOL hasPendingSuggestionSelection;
 
 // Whether `actorTaskDidCancelSuggestionSelection:` was called.
@@ -69,26 +67,37 @@
 // call.
 @property(nonatomic, readonly) NSString* promptedNavigationDomain;
 
-// Whether an unhandled navigation confirmation completion handler is currently
-// pending.
+// Whether an unhandled navigation confirmation callback is currently pending.
 @property(nonatomic, readonly) BOOL hasPendingNavigationConfirmation;
 
-// Invokes the stored navigation confirmation completion handler with
-// `confirmed` and clears it.
+// Invokes the stored navigation confirmation callback with `confirmed` and
+// clears it.
 - (void)runNavigationConfirmationCompletion:(BOOL)confirmed;
+
+// Invokes the stored navigation confirmation callback with `error` and clears
+// it.
+- (void)failNavigationConfirmationWithError:
+    (actor::InterventionDelegateError)error;
 
 // Resets `requestConfirmationCalled` to NO.
 - (void)resetRequestConfirmationCalled;
 
-// Invokes the stored user intervention completion handler and clears it.
+// Invokes the stored user intervention callback and clears it.
 - (void)runUserInterventionCompletion;
 
-// Invokes the stored suggestion completion handler with `selectedSuggestion`
-// and `shouldStorePermission`. Clears the stored completion handler.
+// Invokes the stored user intervention callback with `error` and clears it.
+- (void)failUserInterventionWithError:(actor::InterventionDelegateError)error;
+
+// Invokes the stored suggestion callback with `selectedSuggestion` and
+// `shouldStorePermission`. Clears the stored callback.
 - (void)runCompletionWithSuggestion:(ActorFormSuggestion*)selectedSuggestion
               shouldStorePermission:(BOOL)shouldStorePermission;
 // Convenience overload with `shouldStorePermission = NO`.
 - (void)runCompletionWithSuggestion:(ActorFormSuggestion*)selectedSuggestion;
+
+// Invokes the stored suggestion callback with `error` and clears it.
+- (void)failSuggestionSelectionWithError:
+    (actor::InterventionDelegateError)error;
 
 @end
 

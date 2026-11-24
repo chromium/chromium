@@ -11,46 +11,68 @@
 
 @class ActorFormSuggestion;
 
+namespace actor {
+
+// The user's choice in a suggestion selection prompt.
+struct SuggestionSelection {
+  // The selected suggestion, or `nil` if the user closed the prompt.
+  ActorFormSuggestion* suggestion = nil;
+  // Whether the suggestion can be used in future calls to the tool.
+  bool should_store_permission = false;
+};
+
+}  // namespace actor
+
+// Receives the result of a confirmation prompt.
+using ActorConfirmationCallback =
+    void (^)(actor::InterventionDelegateResult<void>);
+
+// Receives the user's choice in a suggestion selection prompt.
+using ActorSuggestionSelectionCallback =
+    void (^)(actor::InterventionDelegateResult<actor::SuggestionSelection>);
+
+// Receives the user's decision on a navigation confirmation prompt (`true` if
+// the user confirmed).
+using ActorNavigationConfirmationCallback =
+    void (^)(actor::InterventionDelegateResult<bool>);
+
 // The ActorTask intervention delegate protocol (1-to-1). Used for blocking
 // interventions (likely user facing prompts, but can be programmatic in
-// headless Actor mode).
+// headless Actor mode). A delegate that cannot handle a request runs its
+// callback with `kUnsupported`.
 @protocol ActorTaskInterventionDelegate <NSObject>
 
 // Dismisses the prompt shown by `selectFromSuggestions:` for `taskID` without
-// calling its completion handler. Called when the tool that requested a
-// selection ends before the user answers.
+// running its callback. Called when the tool that requested a selection ends
+// before the user answers.
 - (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID;
 
-// TODO(crbug.com/501043031): Remove @optional when API stabilizes.
-@optional
-
-// Prompts the user to select a suggestion from the list. The completion handler
-// is called with the selected suggestion, or with `nil` if the user closed the
-// prompt without making a selection. `shouldStorePermission` means the
-// credential can be used in future calls to the tool.
+// Prompts the user to select a suggestion from the list. `callback` must be
+// non-nil and runs at most once, with the selection, or with an error if the
+// prompt cannot be shown.
 - (void)actorTask:(actor::ActorTaskId)taskID
     selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-        completionHandler:
-            (void (^)(ActorFormSuggestion* selectedSuggestion,
-                      BOOL shouldStorePermission))completionHandler;
+                 callback:(ActorSuggestionSelectionCallback)callback;
 
 // Prompts the user with an intervention card containing a title,
-// subtitle, and action button text. The `completionHandler` is only invoked
-// when the user confirms the action to resume the task. To abort, the user
-// should stop the execution.
+// subtitle, and action button text. `callback` must be non-nil and runs at
+// most once: when the user confirms the action to resume the task, or with an
+// error if the card cannot be shown. To abort, the user should stop the
+// execution.
 - (void)actorTask:(actor::ActorTaskId)taskID
     requestUserInterventionWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
-                   completionHandler:(void (^)(void))completionHandler;
+                            callback:(ActorConfirmationCallback)callback;
 
-// Prompts the user to confirm or decline navigating to `domain`.
-// Invokes `completionHandler` with `YES` if the user taps "Continue", or `NO`
-// if the user taps "Don't use this site."
+// Prompts the user to confirm or decline navigating to `domain`. `callback`
+// must be non-nil and runs at most once: with `true` if the user taps
+// "Continue", `false` if the user taps "Don't use this site.", or with an
+// error if the prompt cannot be shown.
 - (void)actorTask:(actor::ActorTaskId)taskID
     requestNavigationConfirmationForDomain:(NSString*)domain
-                         completionHandler:
-                             (void (^)(BOOL confirmed))completionHandler;
+                                  callback:(ActorNavigationConfirmationCallback)
+                                               callback;
 
 @end
 

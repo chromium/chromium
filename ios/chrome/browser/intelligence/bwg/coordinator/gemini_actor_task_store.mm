@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/expected.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
@@ -39,10 +40,6 @@ NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTaskPausedCardTitle = @"Task paused";
 // Label of the intervention button resuming the task paused by the user.
 NSString* const kResumeTaskButtonText = @"Resume task";
-
-// Completion handler for suggestion selection interventions.
-using SuggestionSelectionCompletionHandler = void (
-    ^)(ActorFormSuggestion* selectedSuggestion, BOOL shouldStorePermission);
 
 // Creates an `ActuationWorklogItem` card for a non-federated credential
 // `suggestion`.
@@ -194,7 +191,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   // of the action the user resolves it with.
   void (^_interventionCompletion)(InterventionActionIdentifier);
   // Completion of a suggestions `_intervention`.
-  SuggestionSelectionCompletionHandler _suggestionsCompletion;
+  ActorSuggestionSelectionCallback _suggestionsCompletion;
   // Suggestions selectable for `_suggestionsEntry`, if any.
   NSArray<ActorFormSuggestion*>* _suggestions;
   // Entry for which `_suggestions` are selectable.
@@ -312,9 +309,8 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 
 - (void)actorTask:(actor::ActorTaskId)taskID
     selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-        completionHandler:
-            (void (^)(ActorFormSuggestion* selectedSuggestion,
-                      BOOL shouldStorePermission))completionHandler {
+                 callback:(ActorSuggestionSelectionCallback)callback {
+  CHECK(callback);
   CHECK(!_intervention, base::NotFatalUntil::M165);
   CHECK(!_interventionCompletion, base::NotFatalUntil::M165);
   CHECK(!_suggestionsCompletion, base::NotFatalUntil::M165);
@@ -351,15 +347,13 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 
   ActuationWorklogItem* cardItem = CardItemForSuggestion(suggestion);
   if (!cardItem) {
-    if (completionHandler) {
-      completionHandler(nil, NO);
-    }
+    callback(base::unexpected(actor::InterventionDelegateError::kUnsupported));
     return;
   }
   _suggestionsEntry = [self appendItem:cardItem toolType:std::nullopt];
   _suggestions = [suggestions copy];
   _selectedSuggestionIndex = 0;
-  _suggestionsCompletion = completionHandler;
+  _suggestionsCompletion = callback;
 
   // TODO(crbug.com/571139088): Prefix the secondary button with the SF symbol
   // "hand.tap".
@@ -387,18 +381,22 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
     requestUserInterventionWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
-                   completionHandler:(void (^)(void))completionHandler {
+                            callback:(ActorConfirmationCallback)callback {
+  CHECK(callback);
   [self showCardInterventionWithTitle:title
                              subtitle:subtitle
                            buttonText:buttonText
-                    completionHandler:completionHandler];
+                    completionHandler:^{
+                      callback(base::ok());
+                    }];
   [self publishState];
 }
 
 - (void)actorTask:(actor::ActorTaskId)taskID
     requestNavigationConfirmationForDomain:(NSString*)domain
-                         completionHandler:
-                             (void (^)(BOOL confirmed))completionHandler {
+                                  callback:(ActorNavigationConfirmationCallback)
+                                               callback {
+  CHECK(callback);
   [self cancelSuggestionSelection];
   [self discardIntervention];
 
@@ -415,12 +413,9 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 
   _navigationConfirmationEntry = [self appendItem:item toolType:std::nullopt];
 
-  if (completionHandler) {
-    _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {
-      completionHandler(actionIdentifier ==
-                        InterventionActionIdentifier::kContinue);
-    };
-  }
+  _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {
+    callback(actionIdentifier == InterventionActionIdentifier::kContinue);
+  };
 
   ActuationInterventionAction* declineAction = [[ActuationInterventionAction
       alloc]
@@ -446,7 +441,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   if (!_intervention) {
     return;
   }
-  SuggestionSelectionCompletionHandler suggestionsCompletion =
+  ActorSuggestionSelectionCallback suggestionsCompletion =
       _suggestionsCompletion;
   ActorFormSuggestion* selectedSuggestion = nil;
   if (suggestionsCompletion &&
@@ -464,7 +459,8 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   [self publishState];
   // Called last, as it may synchronously resume the task.
   if (suggestionsCompletion) {
-    suggestionsCompletion(selectedSuggestion, NO);
+    suggestionsCompletion(
+        actor::SuggestionSelection{.suggestion = selectedSuggestion});
   } else if (interventionCompletion) {
     interventionCompletion(action.identifier);
   }

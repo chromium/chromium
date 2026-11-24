@@ -115,17 +115,21 @@ GeminiActuationResponse* MakeTaskWentAwayResponse() {
 }
 
 // Returns the response for a request that failed with `error`.
-GeminiActuationResponse* MakeErrorResponse(actor::ActorTaskError error) {
+GeminiActuationResponse* MakeErrorResponse(actor::InterventionError error) {
   switch (error) {
-    case actor::ActorTaskError::kRejected:
+    case actor::InterventionError::kTaskRejected:
       // TODO(crbug.com/578539528): Map rejection causes to dedicated result
       // codes and error messages.
       return [[GeminiActuationResponse alloc]
           initWithResultCode:actor::mojom::ActionResultCode::
                                  kInvalidTaskStateForAct
                 errorMessage:"Task rejected the request."];
-    case actor::ActorTaskError::kTaskWentAway:
+    case actor::InterventionError::kTaskWentAway:
       return MakeTaskWentAwayResponse();
+    case actor::InterventionError::kDelegateUnsupported:
+      return [[GeminiActuationResponse alloc]
+          initWithResultCode:actor::mojom::ActionResultCode::kNotImplemented
+                errorMessage:"The request is not supported yet."];
   }
   NOTREACHED();
 }
@@ -278,7 +282,7 @@ GeminiActuationResponse* MakePerformActionsResponse(
 
 // Returns the response for the `result` of a confirmation interrupt.
 GeminiActuationResponse* MakeConfirmationResultResponse(
-    const actor::ActorTaskResult<actor::InterruptTaskResult>& result) {
+    const actor::InterventionResult<actor::InterruptTaskResult>& result) {
   if (!result.has_value()) {
     return MakeErrorResponse(result.error());
   }
@@ -717,7 +721,7 @@ void ForwardNavigationConfirmation(
   _actorService->InterruptTask(
       taskID, std::move(confirmation),
       base::BindOnce(
-          ^(actor::ActorTaskResult<actor::InterruptTaskResult> result) {
+          ^(actor::InterventionResult<actor::InterruptTaskResult> result) {
             AnswerRequest(weakSelf, taskID, completionBlock,
                           MakeConfirmationResultResponse(result));
           }));

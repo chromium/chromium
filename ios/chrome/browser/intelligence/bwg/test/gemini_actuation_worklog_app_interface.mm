@@ -170,15 +170,15 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
   [worklogHelper.interventionDelegate
                   actorTask:taskID
       selectFromSuggestions:suggestions
-          completionHandler:^(ActorFormSuggestion* selectedSuggestion,
-                              BOOL shouldStorePermission) {
-            [GeminiActuationWorklogAppInterface
-                handleSelectedSuggestion:selectedSuggestion
-                                 forTask:taskID
-                            actorService:weakActorService.get()
-                       completionHandler:completionHandler
-                              nextAction:nextActionProto];
-          }];
+                   callback:^(actor::InterventionDelegateResult<
+                              actor::SuggestionSelection> result) {
+                     [GeminiActuationWorklogAppInterface
+                         handleSelectedSuggestion:result.value().suggestion
+                                          forTask:taskID
+                                     actorService:weakActorService.get()
+                                completionHandler:completionHandler
+                                       nextAction:nextActionProto];
+                   }];
 }
 
 #pragma mark - Private

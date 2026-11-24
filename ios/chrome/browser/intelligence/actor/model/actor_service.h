@@ -141,14 +141,14 @@ class ActorService : public KeyedService {
 
   // Enqueues the interrupt described by `request`. `callback` runs at most
   // once, asynchronously and never after `Shutdown()`: with the user's answer
-  // and an observation of the task's tab, `kRejected` if the task cannot take
-  // the interrupt, or `kTaskWentAway` if the task does not exist or stops
-  // first. The answer is `kUserPaused` if the user paused the task since the
-  // last reply, once the task resumes. When `callback` runs with an answer, the
-  // task has resumed.
+  // and an observation of the task's tab, `kTaskRejected` if the task cannot
+  // take the interrupt, `kTaskWentAway` if the task does not exist or stops
+  // first, or the intervention delegate's error. The answer is `kUserPaused` if
+  // the user paused the task since the last reply, once the task resumes. When
+  // `callback` runs with an answer or a delegate error, the task has resumed.
   void InterruptTask(ActorTaskId task_id,
                      InterruptRequest request,
-                     ActorTaskResultCallback<InterruptTaskResult> callback);
+                     InterventionResultCallback<InterruptTaskResult> callback);
 
   // Enqueues a stop of a task. The task remains active, e.g. for getters,
   // until the command runs. A stop still queued at `Shutdown()` never runs: the
@@ -263,9 +263,10 @@ class ActorService : public KeyedService {
       std::string task_update,
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins,
       PerformActionsCallback callback);
-  void DoInterruptTask(ActorTaskId task_id,
-                       InterruptRequest request,
-                       ActorTaskResultCallback<InterruptTaskResult> callback);
+  void DoInterruptTask(
+      ActorTaskId task_id,
+      InterruptRequest request,
+      InterventionResultCallback<InterruptTaskResult> callback);
   void DoPauseTask(ActorTaskId task_id);
   void DoResumeTask(ActorTaskId task_id);
   void DoStopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);
@@ -284,8 +285,8 @@ class ActorService : public KeyedService {
   // interrupt, then runs `callback`.
   void OnInterruptCompleted(
       ActorTaskId task_id,
-      ActorTaskResultCallback<InterruptTaskResult> callback,
-      ActorTaskResult<InterruptResponse> result);
+      InterventionResultCallback<InterruptTaskResult> callback,
+      InterventionResult<InterruptResponse> result);
 
   // Runs `callback` with `response` and the observation of the tab
   // `web_state_id`, or with `kTaskWentAway` if the task stopped meanwhile.
@@ -296,7 +297,7 @@ class ActorService : public KeyedService {
       ActorTaskId task_id,
       web::WebStateID web_state_id,
       InterruptResponse response,
-      ActorTaskResultCallback<InterruptTaskResult> callback,
+      InterventionResultCallback<InterruptTaskResult> callback,
       PageContextWrapperCallbackResponse page_context_response);
 
   // Returns the active task identified by `task_id`, or nullptr.

@@ -153,13 +153,15 @@ class ActorTask : public web::WebStateObserver,
   void SetInterventionDelegate(id<ActorTaskInterventionDelegate> delegate);
 
   // Interrupts the task as described by `request` and prompts the user.
-  // `on_response` is posted at most once: with the user's answer once the task
-  // has resumed, `kRejected` if the task cannot take the interrupt, or
-  // `kTaskWentAway` if it stops first. The answer is `kUserPaused`, without
-  // prompting, if the user paused the task since the last reply; while the
-  // task is paused, it waits until the user resumes it.
+  // `on_response` is posted at most once with:
+  // - the user's answer once the task has resumed (`kUserPaused`, without
+  //   prompting, if the user paused the task since the last reply; waits until
+  //   resumed while paused),
+  // - `kTaskRejected` if the task cannot take the interrupt,
+  // - `kTaskWentAway` if it stops first, or
+  // - the intervention delegate's error once the task has resumed.
   void Interrupt(const InterruptRequest& request,
-                 ActorTaskResultCallback<InterruptResponse> on_response);
+                 InterventionResultCallback<InterruptResponse> on_response);
 
   // Interrupts the task while a tool waits on the user, without prompting.
   void InterruptForTool(base::PassKey<ActorEngine> pass_key);
@@ -326,19 +328,21 @@ class ActorTask : public web::WebStateObserver,
 
   // Handles `Interrupt()` for a `ConfirmationInterrupt`.
   void InterruptFor(const ConfirmationInterrupt& confirmation,
-                    ActorTaskResultCallback<InterruptResponse> on_response);
+                    InterventionResultCallback<InterruptResponse> on_response);
 
   // Shows the `confirmation` prompt via the intervention delegate.
   void ShowInterruptConfirmation(const ConfirmationInterrupt& confirmation);
 
-  // Handles the user confirming.
-  void OnInterruptConfirmationResolved();
+  // Handles the user confirming, or the delegate failing with an error.
+  void OnInterruptConfirmationResolved(InterventionDelegateResult<void> result);
 
   // Returns whether the task is in a state that can be paused.
   bool CanBePaused() const;
 
-  // Invoked when the user responds to the navigation confirmation card.
-  void OnNavigationUserConfirmationResolved(bool permission_granted);
+  // Handles the user's decision on a navigation confirmation prompt, or the
+  // delegate failing with an error.
+  void OnNavigationUserConfirmationResolved(
+      InterventionDelegateResult<bool> result);
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
@@ -397,7 +401,7 @@ class ActorTask : public web::WebStateObserver,
   std::optional<PendingAct> pending_act_;
 
   // Reply of the pending `Interrupt()`, if any.
-  ActorTaskResultCallback<InterruptResponse> pending_interrupt_;
+  InterventionResultCallback<InterruptResponse> pending_interrupt_;
 
   // Whether the user paused the task since the last reply. The next reply then
   // tells the caller the task was paused, as the pages may have changed.

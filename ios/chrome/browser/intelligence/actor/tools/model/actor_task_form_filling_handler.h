@@ -39,6 +39,7 @@ namespace actor {
 class ActorEngine;
 class ActorTask;
 class AggregatedJournal;
+struct SuggestionSelection;
 
 // Combines a `credential` and a user choice in the account picker, and
 // whether user has permitted Chrome to always actuate with this credential.
@@ -145,14 +146,16 @@ class ActorTaskFormFillingHandler {
       std::optional<actor_login::Credential> credential,
       bool should_store_permission);
 
-  // Handles the user selection of a credential suggestion.
-  void OnCredentialSelectedByUser(ActorFormSuggestion* selected_suggestion,
-                                  bool always_allow);
+  // Handles the user selection of a credential suggestion, or the delegate
+  // failing to show the prompt.
+  void OnCredentialSelectedByUser(
+      InterventionDelegateResult<SuggestionSelection> result);
 
-  // Handles the user selection of an autofill suggestion.
+  // Handles the user selection of an autofill suggestion, or the delegate
+  // failing to show the prompt.
   void OnAutofillSuggestionSelectedByUser(
       size_t form_index,
-      ActorFormSuggestion* selected_suggestion);
+      InterventionDelegateResult<SuggestionSelection> result);
 
   ActorTaskId task_id_;
   std::unique_ptr<actor_login::ActorLoginService> login_service_;

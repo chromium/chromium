@@ -1036,6 +1036,25 @@ TEST_F(GeminiActuationHandlerTest,
             response.resultCode);
 }
 
+// Tests that a `kConfirmation` yield is answered with `kNotImplemented` when
+// the intervention delegate does not support the confirmation.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_DelegateUnsupported) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = CreateTask(handler);
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  FakeActorTaskInterventionDelegate* delegate = DispatchConfirmationRequest(
+      handler, task_id, kConfirmationMessage, future);
+  [delegate failUserInterventionWithError:actor::InterventionDelegateError::
+                                              kUnsupported];
+
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kNotImplemented,
+            response.resultCode);
+}
+
 // Tests that `dispatchActuationRequest` with `kTaskComplete` stops the
 // task and returns `kOk`.
 TEST_F(GeminiActuationHandlerTest,

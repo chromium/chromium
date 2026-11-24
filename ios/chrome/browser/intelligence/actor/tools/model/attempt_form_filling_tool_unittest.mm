@@ -18,6 +18,7 @@
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_service.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
@@ -781,6 +782,48 @@ TEST_F(AttemptFormFillingToolTest, Execute_DialogClosedError) {
 
   // Run the selection with nil (dialog dismissed).
   [intervention_delegate() runCompletionWithSuggestion:nil];
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFormFillingDialogError);
+}
+
+// Tests that if the intervention delegate fails to show the suggestion prompt,
+// the tool execution fails with `kFormFillingDialogError`.
+TEST_F(AttemptFormFillingToolTest, Execute_DelegateFailsSelectionPrompt) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+
+  optimization_guide::proto::AttemptFormFillingAction action = CreateAction();
+  std::unique_ptr<AttemptFormFillingTool> tool = CreateTool(action, web_state);
+  ASSERT_TRUE(tool);
+
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result = {
+      CreateAddressFormFillingRequest(),
+  };
+
+  base::test::TestFuture<void> get_suggestions_called_future;
+  EXPECT_CALL(*mock_form_filling_service(),
+              GetSuggestions(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](autofill::AutofillClient& client,
+              base::span<const autofill::ActorFormFillingService::FillRequest>
+                  fill_requests,
+              autofill::ActorFormFillingService::GetSuggestionsCallback
+                  callback) {
+            std::move(callback).Run(std::move(suggestions_result));
+            get_suggestions_called_future.SetValue();
+          });
+
+  EXPECT_CALL(*mock_form_filling_service(), ScrollToForm(testing::_, 0));
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ASSERT_TRUE(get_suggestions_called_future.Wait());
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+
+  [intervention_delegate()
+      failSuggestionSelectionWithError:InterventionDelegateError::kUnsupported];
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());

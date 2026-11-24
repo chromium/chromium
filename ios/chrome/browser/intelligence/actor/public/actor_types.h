@@ -73,21 +73,35 @@ enum class ActorTaskStoppedReason {
   kUserStartedNewChat = 6
 };
 
-// Why a task request failed.
-enum class ActorTaskError {
-  // The task cannot take the request now. The task is not stopped.
-  kRejected,
-  // The task does not exist or stopped.
-  kTaskWentAway,
+// Why an intervention delegate failed to show a prompt.
+enum class InterventionDelegateError {
+  // The intervention delegate does not support the request.
+  kUnsupported,
 };
 
-// Result of a task request.
+// Result from an intervention delegate prompt.
 template <typename T>
-using ActorTaskResult = base::expected<T, ActorTaskError>;
+using InterventionDelegateResult = base::expected<T, InterventionDelegateError>;
 
-// Receives the result of a task request.
+// Why an intervention request failed.
+enum class InterventionError {
+  // The task could not take the request when it was sent. The task is not
+  // stopped.
+  kTaskRejected,
+  // The task does not exist or was stopped.
+  kTaskWentAway,
+  // The intervention delegate does not support the request.
+  kDelegateUnsupported,
+};
+
+// Result of an intervention request.
 template <typename T>
-using ActorTaskResultCallback = base::OnceCallback<void(ActorTaskResult<T>)>;
+using InterventionResult = base::expected<T, InterventionError>;
+
+// Receives the result of an intervention request.
+template <typename T>
+using InterventionResultCallback =
+    base::OnceCallback<void(InterventionResult<T>)>;
 
 // Represents the result of an action execution.
 // TODO(crbug.com/505085267): Add latency and stabilization information.

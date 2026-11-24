@@ -8,6 +8,7 @@
 #import <string>
 
 #import "base/base64.h"
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
@@ -17,6 +18,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "base/types/expected.h"
 #import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/task_source_info.h"
@@ -934,10 +936,9 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
 
 - (void)actorTask:(actor::ActorTaskId)taskID
     selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-        completionHandler:
-            (void (^)(ActorFormSuggestion* selectedSuggestion,
-                      BOOL shouldStorePermission))completionHandler {
-  completionHandler(suggestions.firstObject, NO);
+                 callback:(ActorSuggestionSelectionCallback)callback {
+  CHECK(callback);
+  callback(actor::SuggestionSelection{.suggestion = suggestions.firstObject});
 }
 
 - (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID {
@@ -948,10 +949,17 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
     requestUserInterventionWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
-                   completionHandler:(void (^)(void))completionHandler {
-  if (completionHandler) {
-    completionHandler();
-  }
+                            callback:(ActorConfirmationCallback)callback {
+  CHECK(callback);
+  callback(base::ok());
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestNavigationConfirmationForDomain:(NSString*)domain
+                                  callback:(ActorNavigationConfirmationCallback)
+                                               callback {
+  CHECK(callback);
+  callback(base::unexpected(actor::InterventionDelegateError::kUnsupported));
 }
 
 @end

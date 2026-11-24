@@ -69,12 +69,7 @@ void ActorTaskFormFillingHandler::PromptToSelectCredential(
   CHECK(!autofill_suggestion_selected_callback_);
   CHECK(!credentials.empty());
 
-  // TODO(crbug.com/501043031): Drop the `respondsToSelector:` check once the
-  // selector is no longer `@optional`.
-  if (!intervention_delegate_ ||
-      ![intervention_delegate_
-          respondsToSelector:
-              @selector(actorTask:selectFromSuggestions:completionHandler:)]) {
+  if (!intervention_delegate_) {
     ToolExecutionResult error_result(mojom::ActionResultCode::kActorUiError,
                                      /*requires_page_stabilization=*/false,
                                      "ActorTaskInterventionDelegate unset.");
@@ -96,16 +91,14 @@ void ActorTaskFormFillingHandler::PromptToSelectCredential(
   has_pending_prompt_ = true;
   // Posted so that a delegate completing synchronously never re-enters the
   // handler or the tool.
-  auto on_selected = base::CallbackToBlock(base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&ActorTaskFormFillingHandler::OnCredentialSelectedByUser,
-                     weak_ptr_factory_.GetWeakPtr())));
+  ActorSuggestionSelectionCallback on_selected =
+      base::CallbackToBlock(base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &ActorTaskFormFillingHandler::OnCredentialSelectedByUser,
+          weak_ptr_factory_.GetWeakPtr())));
 
   [intervention_delegate_ actorTask:task_id_
               selectFromSuggestions:suggestions
-                  completionHandler:^(ActorFormSuggestion* selected_credential,
-                                      BOOL always_allow) {
-                    on_selected(selected_credential, always_allow);
-                  }];
+                           callback:on_selected];
 }
 
 void ActorTaskFormFillingHandler::RegisterAutofillSuggestionsAndCallback(
@@ -153,12 +146,7 @@ void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
     return;
   }
 
-  // TODO(crbug.com/501043031): Drop the `respondsToSelector:` check once the
-  // selector is no longer `@optional`.
-  if (!intervention_delegate_ ||
-      ![intervention_delegate_
-          respondsToSelector:
-              @selector(actorTask:selectFromSuggestions:completionHandler:)]) {
+  if (!intervention_delegate_) {
     ToolExecutionResult error_result(
         mojom::ActionResultCode::kFormFillingDialogError,
         /*requires_page_stabilization=*/false,
@@ -174,17 +162,14 @@ void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
   has_pending_prompt_ = true;
   // Posted so that a delegate completing synchronously never re-enters the
   // handler or the tool.
-  auto on_selected =
+  ActorSuggestionSelectionCallback on_selected =
       base::CallbackToBlock(base::BindPostTaskToCurrentDefault(base::BindOnce(
           &ActorTaskFormFillingHandler::OnAutofillSuggestionSelectedByUser,
           weak_ptr_factory_.GetWeakPtr(), index)));
 
   [intervention_delegate_ actorTask:task_id_
               selectFromSuggestions:suggestions
-                  completionHandler:^(ActorFormSuggestion* selected_suggestion,
-                                      BOOL always_allow) {
-                    on_selected(selected_suggestion);
-                  }];
+                           callback:on_selected];
 }
 
 void ActorTaskFormFillingHandler::CancelPendingPrompt() {
@@ -200,23 +185,41 @@ void ActorTaskFormFillingHandler::CancelPendingPrompt() {
 }
 
 void ActorTaskFormFillingHandler::OnCredentialSelectedByUser(
-    ActorFormSuggestion* selected_suggestion,
-    bool always_allow) {
+    InterventionDelegateResult<SuggestionSelection> result) {
   has_pending_prompt_ = false;
   CHECK(credential_selected_callback_);
+  if (!result.has_value()) {
+    std::move(credential_selected_callback_)
+        .Run(base::unexpected(
+            ToolExecutionResult(mojom::ActionResultCode::kActorUiError,
+                                /*requires_page_stabilization=*/false,
+                                "Showing credentials to the user failed.")));
+    return;
+  }
+  ActorFormSuggestion* selected_suggestion = result.value().suggestion;
   if (!selected_suggestion.formSuggestion) {
     std::move(credential_selected_callback_).Run(std::nullopt);
     return;
   }
   CHECK(selected_suggestion.type == autofill::SuggestionType::kPasswordEntry);
-  SetUserSelectedCredential(selected_suggestion.credential, always_allow);
+  SetUserSelectedCredential(selected_suggestion.credential,
+                            result.value().should_store_permission);
 }
 
 void ActorTaskFormFillingHandler::OnAutofillSuggestionSelectedByUser(
     size_t form_index,
-    ActorFormSuggestion* selected_suggestion) {
+    InterventionDelegateResult<SuggestionSelection> result) {
   has_pending_prompt_ = false;
   CHECK(autofill_suggestion_selected_callback_);
+  if (!result.has_value()) {
+    autofill_suggestion_selected_callback_.Run(
+        form_index, base::unexpected(ToolExecutionResult(
+                        mojom::ActionResultCode::kFormFillingDialogError,
+                        /*requires_page_stabilization=*/false,
+                        "Showing suggestions to the user failed.")));
+    return;
+  }
+  ActorFormSuggestion* selected_suggestion = result.value().suggestion;
   if (!selected_suggestion.formSuggestion) {
     autofill_suggestion_selected_callback_.Run(form_index, std::nullopt);
     return;

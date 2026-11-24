@@ -27,6 +27,7 @@
 #import "components/password_manager/ios/actor_login/actor_login_tool_delegate.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
@@ -406,6 +407,33 @@ TEST_F(AttemptLoginToolTest, Execute_UserDeclinesCredential) {
 
   EXPECT_EQ(future.Get().code(),
             mojom::ActionResultCode::kLoginNoCredentialsAvailable);
+}
+
+// Tests that execution returns `kActorUiError` if the intervention delegate
+// fails to show the credential prompt.
+TEST_F(AttemptLoginToolTest, Execute_DelegateFailsCredentialPrompt) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state_ptr = CreateAndInsertWebState();
+  action.set_tab_id(web_state_ptr->GetUniqueIdentifier().identifier());
+
+  base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
+      result = CreateToolAndValidate(action, web_state_ptr);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = false;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  [intervention_delegate()
+      failSuggestionSelectionWithError:InterventionDelegateError::kUnsupported];
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kActorUiError);
 }
 
 // Tests that cancelling the tool while the credential prompt is shown dismisses

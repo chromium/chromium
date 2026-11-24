@@ -23,6 +23,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/to_string.h"
+#import "base/types/expected.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -713,10 +714,9 @@ void TtcActuationHandler::OnTaskStopped(actor::ActorTaskId task_id) {
 
 - (void)actorTask:(actor::ActorTaskId)taskID
     selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-        completionHandler:
-            (void (^)(ActorFormSuggestion* selectedSuggestion,
-                      BOOL shouldStorePermission))completionHandler {
-  completionHandler(suggestions.firstObject, NO);
+                 callback:(ActorSuggestionSelectionCallback)callback {
+  CHECK(callback);
+  callback(actor::SuggestionSelection{.suggestion = suggestions.firstObject});
 }
 
 - (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID {
@@ -727,10 +727,17 @@ void TtcActuationHandler::OnTaskStopped(actor::ActorTaskId task_id) {
     requestUserInterventionWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
-                   completionHandler:(void (^)(void))completionHandler {
-  if (completionHandler) {
-    completionHandler();
-  }
+                            callback:(ActorConfirmationCallback)callback {
+  CHECK(callback);
+  callback(base::ok());
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestNavigationConfirmationForDomain:(NSString*)domain
+                                  callback:(ActorNavigationConfirmationCallback)
+                                               callback {
+  CHECK(callback);
+  callback(base::unexpected(actor::InterventionDelegateError::kUnsupported));
 }
 
 @end
