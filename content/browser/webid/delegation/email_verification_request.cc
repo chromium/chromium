@@ -11,6 +11,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -382,7 +383,14 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   }
 
   if (on_dns_resolved_callback) {
+    // Preventative: guard against `on_dns_resolved_callback` synchronously
+    // destroying `this` (only exercised in unit tests today).
+    base::WeakPtr<EmailVerificationRequest> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     std::move(on_dns_resolved_callback).Run();
+    if (!weak_this) {
+      return;
+    }
   }
 
   auto well_known = base::MakeRefCounted<WellKnownOrError>();

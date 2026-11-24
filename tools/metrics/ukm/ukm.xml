@@ -4515,29 +4515,33 @@ be describing additional metrics about the same event.
   <metric name="Status.IsVerifiable" enum="EvpRequestStatus">
     <summary>
       Records the status of the IsVerifiable stage of an Email Verification
-      Protocol (EVP) request. Recorded once per request when the IsVerifiable
-      check completes.
+      Protocol (EVP) request. Recorded at most once per request, when the
+      IsVerifiable check completes (with success or failure). Not recorded if
+      the request is cancelled before completion.
     </summary>
   </metric>
   <metric name="Status.Verify" enum="EvpRequestStatus">
     <summary>
       Records the status of the Verify stage of an Email Verification Protocol
-      (EVP) request. Recorded once per request when the Verify operation
-      completes.
+      (EVP) request. Recorded at most once per request, when the Verify
+      operation completes (with success or failure). Not recorded if the request
+      is cancelled before completion.
     </summary>
   </metric>
   <metric name="Timing.IsVerifiable">
     <summary>
       Records the time taken (in milliseconds) from the start of checking if an
       email is verifiable until the pre-prompt background verification check
-      completes.
+      completes (with success or failure). Recorded at most once per request.
+      Not recorded if the request is cancelled before completion.
     </summary>
   </metric>
   <metric name="Timing.Verify">
     <summary>
       Records the time taken (in milliseconds) from the start of the token
       verification call until the post-prompt token verification and fetch
-      completes.
+      completes (with success or failure). Recorded at most once per request.
+      Not recorded if the request is cancelled before completion.
     </summary>
   </metric>
 </event>

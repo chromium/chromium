@@ -4,6 +4,11 @@
 
 #include "content/browser/webid/delegation/email_verification_request.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/base64url.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -12,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -48,6 +54,7 @@ using blink::mojom::EmailVerificationRequestResult;
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
+using testing::StrictMock;
 using testing::WithArgs;
 
 void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
@@ -2383,6 +2390,51 @@ TEST_F(EmailVerificationRequestTest, DnsResolvedCallbackCalledOnDnsSuccess) {
   request.CheckIfVerifiable("test@example.com", dns_resolved.GetCallback(),
                             is_verifiable.GetCallback());
   EXPECT_TRUE(dns_resolved.Wait());
+}
+
+// Verifies that destroying `EmailVerificationRequest` inside
+// `on_dns_resolved_callback` returns early without starting well-known fetches
+// or accessing freed memory.
+TEST_F(EmailVerificationRequestTest, DnsResolvedCallbackDestroysRequest) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  auto mock_network_manager_ptr =
+      std::make_unique<StrictMock<MockEmailVerifierNetworkRequestManager>>();
+  EXPECT_CALL(*mock_network_manager_ptr, FetchWellKnown).Times(0);
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  EXPECT_CALL(*mock_idp_network_manager_ptr, FetchWellKnown).Times(0);
+  auto mock_dns_request_ptr = std::make_unique<StrictMock<MockDnsRequest>>();
+  StrictMock<MockDnsRequest>* mock_dns_request = mock_dns_request_ptr.get();
+
+  auto request = std::make_unique<EmailVerificationRequest>(
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
+      *RenderFrameHostImpl::From(main_rfh()));
+
+  EXPECT_CALL(*mock_dns_request,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  StrictMock<base::MockCallback<EmailVerifier::IsVerifiableCallback>>
+      is_verifiable_cb;
+  EXPECT_CALL(is_verifiable_cb, Run).Times(0);
+  bool dns_resolved = false;
+  request->CheckIfVerifiable(
+      "test@example.com",
+      base::BindLambdaForTesting([&request, &dns_resolved]() {
+        dns_resolved = true;
+        request.reset();
+      }),
+      is_verifiable_cb.Get());
+  EXPECT_TRUE(dns_resolved);
+  EXPECT_FALSE(request);
+  histogram_tester.ExpectTotalCount("Blink.Evp.Status.IsVerifiable", 0);
+  histogram_tester.ExpectTotalCount("Blink.Evp.Timing.IsVerifiable", 0);
 }
 
 TEST_F(EmailVerificationRequestTest, DnsResolvedCallbackNotCalledOnDnsFailure) {

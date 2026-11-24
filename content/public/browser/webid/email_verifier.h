@@ -58,6 +58,9 @@ class EmailVerifier : public base::SupportsUserData::Data {
       blink::mojom::EmailVerificationRequestResult status,
       base::TimeDelta verify_duration)>;
 
+  // Destroying `this` cancels any in-flight `CheckIfVerifiable()` and
+  // `Verify()` requests; their callbacks are not invoked after `this` is
+  // destroyed.
   ~EmailVerifier() override = default;
 
   // Phase 1: Pre-Prompt Validation
@@ -70,9 +73,9 @@ class EmailVerifier : public base::SupportsUserData::Data {
   // Embedders MUST call this before showing a permission prompt to ensure
   // the browser only requests permission for flows it is confident it can
   // fulfill.
-  // `on_dns_resolved_callback` is invoked immediately after DNS TXT record
-  // lookup confirms the domain supports EVP, before well-known and account
-  // metadata fetches begin.
+  // `on_dns_resolved_callback` may be null; if non-null, it is invoked
+  // immediately after DNS TXT record lookup confirms the domain supports EVP,
+  // before well-known and account metadata fetches begin.
   // `is_verifiable_duration` measures the elapsed time from when
   // `CheckIfVerifiable()` was initiated until discovery completed or failed.
   using IsVerifiableCallback = base::OnceCallback<void(

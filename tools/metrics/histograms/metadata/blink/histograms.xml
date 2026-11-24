@@ -1397,8 +1397,9 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the status of the IsVerifiable stage of an Email Verification
-    Protocol (EVP) request. Recorded once per request when the IsVerifiable
-    check completes.
+    Protocol (EVP) request. Recorded at most once per CheckIfVerifiable()
+    request, when the check completes (with success or failure). Not recorded if
+    the request is cancelled when the verifier is destroyed before completion.
   </summary>
 </histogram>
 
@@ -1408,8 +1409,9 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the status of the Verify stage of an Email Verification Protocol
-    (EVP) request. Recorded once per request when the Verify operation
-    completes.
+    (EVP) request. Recorded at most once per Verify() request, when the
+    operation completes (with success or failure). Not recorded if the request
+    is cancelled when the verifier is destroyed before completion.
   </summary>
 </histogram>
 
@@ -1418,9 +1420,11 @@ chromium-metrics-reviews@google.com.
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the time taken from the start of checking if an email is verifiable
-    until the pre-prompt background verification check completes. Recorded once
-    per pre-prompt check.
+    Records the elapsed time from when
+    EmailVerificationRequest::CheckIfVerifiable() starts until the pre-prompt
+    verification check completes (with success or failure). Recorded at most
+    once per CheckIfVerifiable() request. Not recorded if the request is
+    cancelled when the verifier is destroyed before completion.
   </summary>
 </histogram>
 
@@ -1428,9 +1432,10 @@ chromium-metrics-reviews@google.com.
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the time taken from the start of the token verification call until
-    the post-prompt token verification and fetch completes. Recorded once per
-    verification request execution.
+    Records the elapsed time from when EmailVerificationRequest::Verify() starts
+    until token issuance and verification completes (with success or failure).
+    Recorded at most once per Verify() request. Not recorded if the request is
+    cancelled when the verifier is destroyed before completion.
   </summary>
 </histogram>
 
