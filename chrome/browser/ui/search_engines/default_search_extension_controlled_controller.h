@@ -18,10 +18,6 @@ class Profile;
 class GURL;
 class BrowserWindowInterface;
 
-namespace content {
-class WebContents;
-}
-
 // Manages the confirmation UI logic for extension-controlled default search
 // engines. Used by Omnibox interception to show a dialog before navigation.
 class DefaultSearchExtensionControlledController {
@@ -55,8 +51,7 @@ class DefaultSearchExtensionControlledController {
 
   // Shows the confirmation dialog. The callback is run when the request
   // completes -- see ConfirmationCallback for the no-dialog-shown case.
-  void ShowConfirmationDialog(content::WebContents& web_contents,
-                              ConfirmationCallback callback);
+  void ShowConfirmationDialog(ConfirmationCallback callback);
 
   void DialogResolved(
       std::optional<SettingsOverriddenDialogController::DialogResult>

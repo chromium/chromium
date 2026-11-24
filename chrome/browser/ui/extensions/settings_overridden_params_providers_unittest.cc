@@ -275,11 +275,11 @@ class SettingsOverriddenParamsProvidersUnitTest
   // in a run loop for icon resource fetching to complete.
   std::optional<ExtensionSettingsOverriddenDialog::Params>
   GetSearchOverriddenParamsSync() {
-    return GetSearchOverriddenParamsSync(profile());
+    return GetSearchOverriddenParamsSync(*profile());
   }
 
   std::optional<ExtensionSettingsOverriddenDialog::Params>
-  GetSearchOverriddenParamsSync(Profile* target_profile) {
+  GetSearchOverriddenParamsSync(Profile& target_profile) {
     std::optional<ExtensionSettingsOverriddenDialog::Params> result;
     base::RunLoop run_loop;
     settings_overridden_params::GetSearchOverriddenParamsThenRun(
@@ -911,7 +911,7 @@ TEST_P(SearchOverriddenParamsProvidersOffTheRecordUnitTest,
   // to the original profile in OTR profiles), so `secondary_extension` is
   // still used as the backup search provider in the OTR profile.
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      GetSearchOverriddenParamsSync(off_the_record_profile);
+      GetSearchOverriddenParamsSync(*off_the_record_profile);
   ASSERT_TRUE(params);
   EXPECT_EQ(primary_extension->id(), params->controlling_extension_id);
   if (IsExplicitChoiceDialog()) {

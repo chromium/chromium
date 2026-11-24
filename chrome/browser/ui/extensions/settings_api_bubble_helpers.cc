@@ -138,9 +138,9 @@ void MaybeShowExtensionControlledSearchNotification(
     return;
   }
 
-  // Ansynchronously collect the parameters needed for the dialog, then show it.
+  // Asynchronously collect the parameters needed for the dialog, then show it.
   settings_overridden_params::GetSearchOverriddenParamsThenRun(
-      profile,
+      *profile,
       base::BindOnce(
           [](Profile* profile, content::WebContents* web_contents,
              std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>

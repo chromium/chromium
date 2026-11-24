@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -25,7 +26,7 @@
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_key.h"  // IWYU pragma: keep
 #include "chrome/browser/resources_util.h"
 #include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -68,6 +69,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "url/gurl.h"
 
 namespace settings_overridden_params {
 
@@ -106,7 +108,7 @@ std::u16string FormatSearchUrl(const GURL& search_url) {
 // Helper to find the matching built-in prepopulated engine for a search URL,
 // if any, by matching the URL's domain against known prepopulated engines.
 const TemplateURLPrepopulateData::PrepopulatedEngine*
-GetPrepopulatedEngineForSearchUrl(const GURL& search_url, Profile* profile) {
+GetPrepopulatedEngineForSearchUrl(const GURL& search_url, Profile& profile) {
   if (!search_url.is_valid()) {
     return nullptr;
   }
@@ -123,7 +125,7 @@ GetPrepopulatedEngineForSearchUrl(const GURL& search_url, Profile* profile) {
   // prepopulate system for this, rather than attempting a bespoke domain-match,
   // for consistency and maintainability.
   return CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
-                         profile))
+                         &profile))
       .GetEngineFromFullList(engine_type);
 }
 
@@ -168,8 +170,8 @@ std::optional<ui::ImageModel> GetBuiltinSearchEngineIcon(
 
 // Returns the number of extensions that are currently enabled that override the
 // default search setting.
-size_t GetNumberOfExtensionsThatOverrideSearch(Profile* profile) {
-  const auto* const registry = extensions::ExtensionRegistry::Get(profile);
+size_t GetNumberOfExtensionsThatOverrideSearch(Profile& profile) {
+  const auto* const registry = extensions::ExtensionRegistry::Get(&profile);
   const auto overrides_search = [](auto extension) {
     auto* const settings = extensions::SettingsOverrides::Get(extension.get());
     return settings && settings->search_engine;
@@ -208,7 +210,7 @@ struct SecondarySearchInfo {
 
 // Returns details about the search that would take over, if the currently-
 // controlling extension were to be disabled.
-SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
+SecondarySearchInfo GetSecondarySearchInfo(Profile& profile) {
   // First, check if there's another extension that would take over.
   size_t num_overriding_extensions =
       GetNumberOfExtensionsThatOverrideSearch(profile);
@@ -223,7 +225,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
         DefaultSearchManager::kDefaultSearchProviderDataPrefName;
 
     ExtensionPrefValueMap* extension_prefs_value_map =
-        ExtensionPrefValueMapFactory::GetForBrowserContext(profile);
+        ExtensionPrefValueMapFactory::GetForBrowserContext(&profile);
 
     std::string primary_ext_id =
         extension_prefs_value_map->GetExtensionControllingPref(search_pref_key);
@@ -247,7 +249,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   }
 
   TemplateURLService* const template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
+      TemplateURLServiceFactory::GetForProfile(&profile);
   const TemplateURL* const secondary_search =
       secondary_extension_search
           ? &(*secondary_extension_search)
@@ -362,14 +364,13 @@ inline constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
 // fetch fails).
 void FetchIconsThenRun(
     std::unique_ptr<ExtensionSettingsOverriddenDialog::Params> params,
-    Profile* profile,
+    Profile& profile,
     base::OnceCallback<
         void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
         done_callback) {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kSearchEngineExplicitChoiceDialog));
   CHECK(params);
-  CHECK(profile);
 
   std::vector<IconFetchParams> lookups;
   if (params->content.previous_setting &&
@@ -400,7 +401,7 @@ void FetchIconsThenRun(
   }
 
   image_fetcher::ImageFetcher* image_fetcher =
-      ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+      ImageFetcherServiceFactory::GetForKey(profile.GetProfileKey())
           ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly);
 
   for (auto& lookup : lookups) {
@@ -570,7 +571,7 @@ bool ExtensionSearchOverrideMatchesExistingEngine(Profile* profile) {
   // etc. This is okay here, because if the origins don't match we fall through
   // to showing the dialog. That's likely good if any extension is doing
   // something as crazy as using filesystem: URLs as a search engine.
-  const SecondarySearchInfo secondary_search = GetSecondarySearchInfo(profile);
+  const SecondarySearchInfo secondary_search = GetSecondarySearchInfo(*profile);
   return !secondary_search.origin.is_empty() &&
          secondary_search.origin == search_url.DeprecatedGetOriginAsURL();
 }
@@ -598,13 +599,9 @@ bool HasUnacknowledgedMatchingDseExtension(Profile* profile) {
 namespace {
 
 std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>
-GetSearchOverriddenParams(Profile* profile) {
-  if (!profile) {
-    return nullptr;
-  }
-
+GetSearchOverriddenParams(Profile& profile) {
   const extensions::Extension* extension =
-      extensions::GetExtensionOverridingSearchEngine(profile);
+      extensions::GetExtensionOverridingSearchEngine(&profile);
   if (!extension) {
     return nullptr;
   }
@@ -616,7 +613,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // case the extension isn't actually controlling search, so there is nothing
   // to show.
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
+      TemplateURLServiceFactory::GetForProfile(&profile);
   if (!template_url_service ||
       !template_url_service->IsExtensionControlledDefaultSearch()) {
     return nullptr;
@@ -644,7 +641,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // Nothing was actually overridden; there is nothing to confirm. Callers check
   // this synchronously before withholding a navigation; re-check here in case
   // extension state changed in between.
-  if (ExtensionSearchOverrideMatchesExistingEngine(profile)) {
+  if (ExtensionSearchOverrideMatchesExistingEngine(&profile)) {
     return nullptr;
   }
 
@@ -653,7 +650,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // Extension preferences live on the original profile, so an incognito
   // window sees the same stack.
   std::optional<extensions::SearchOverrideStackInfo> search_override_stack =
-      extensions::GetSearchOverrideStackInfo(*profile->GetOriginalProfile(),
+      extensions::GetSearchOverrideStackInfo(*profile.GetOriginalProfile(),
                                              extension->id());
 
   constexpr char kGenericDialogHistogramName[] =
@@ -798,7 +795,7 @@ GetSearchOverriddenParams(Profile* profile) {
 }  // namespace
 
 void GetSearchOverriddenParamsThenRun(
-    Profile* profile,
+    Profile& profile,
     base::OnceCallback<
         void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
         done_callback) {

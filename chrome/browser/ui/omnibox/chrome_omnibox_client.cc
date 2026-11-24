@@ -355,17 +355,15 @@ bool ChromeOmniboxClient::
                      std::make_unique<PendingNavigationGuard>(
                          std::move(callback), *location_bar_, web_contents));
 
-  controller->ShowConfirmationDialog(
-      *web_contents,
-      base::BindOnce(
-          [](base::OnceCallback<void(ExtensionControlledDialogResult)>
-                 client_callback,
-             std::optional<SettingsOverriddenDialogController::DialogResult>
-                 result) {
-            std::move(client_callback)
-                .Run(SettingDialogResultToExtensionDialogResult(result));
-          },
-          std::move(guarded_callback)));
+  controller->ShowConfirmationDialog(base::BindOnce(
+      [](base::OnceCallback<void(ExtensionControlledDialogResult)>
+             client_callback,
+         std::optional<SettingsOverriddenDialogController::DialogResult>
+             result) {
+        std::move(client_callback)
+            .Run(SettingDialogResultToExtensionDialogResult(result));
+      },
+      std::move(guarded_callback)));
 
   return true;
 #else

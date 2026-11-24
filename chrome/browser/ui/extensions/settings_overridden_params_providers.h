@@ -53,10 +53,10 @@ bool HasUnacknowledgedMatchingDseExtension(Profile* profile);
 // Retrieves the params for displaying the dialog indicating that the default
 // search engine has been overridden, if there is a controlling extension, and
 // asynchronously passes them to the supplied callback. Otherwise, the callback
-// is invoked with nullopt. Asynchronous operation allows fetching of
+// is invoked with nullptr. Asynchronous operation allows fetching of
 // extension-related resources such as icons.
 void GetSearchOverriddenParamsThenRun(
-    Profile* profile,
+    Profile& profile,
     base::OnceCallback<
         void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
         done_callback);
