@@ -6,3 +6,7 @@
 
 NSString* const kAutofillAIEntityEditTableViewId =
     @"kAutofillAIEntityEditTableViewId";
+NSString* const kAutofillAIEntityEditSaveButtonId =
+    @"kAutofillAIEntityEditSaveButtonId";
+NSString* const kAutofillAIEntityEditCancelButtonId =
+    @"kAutofillAIEntityEditCancelButtonId";

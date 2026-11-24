@@ -36,6 +36,9 @@
 // The footer link URLs passed to the consumer.
 @property(nonatomic, copy) NSArray<CrURL*>* footerURLs;
 
+// Whether an explicit decline button is shown in the bottom stack.
+@property(nonatomic, assign) BOOL showsExplicitDeclineButton;
+
 // YES if `setLoadingState:YES` was called on the consumer.
 @property(nonatomic, assign) BOOL showLoadingStateCalled;
 

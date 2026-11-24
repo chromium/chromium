@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
@@ -30,6 +31,11 @@ namespace {
 // 16pt padding to make the combined padding between attributes and
 // the footer text 24pt.
 constexpr CGFloat kAttributesSectionFooterHeight = 16.0;
+
+// Button stack layout constants.
+constexpr CGFloat kButtonStackSpacing = 8.0;
+constexpr CGFloat kButtonStackHorizontalMargin = 16.0;
+constexpr CGFloat kButtonStackVerticalMargin = 16.0;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAttributes = kSectionIdentifierEnumZero,
@@ -63,6 +69,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // The bottom save button displayed when creating a new entity.
   ChromeButton* _saveButton;
+
+  // The bottom cancel button displayed when explicit decline is enabled.
+  ChromeButton* _cancelButton;
+
+  // The stack view containing the bottom action button(s).
+  UIStackView* _buttonStack;
+
+  // Denotes if an explicit decline button should be displayed in the button
+  // stack instead of the navigation bar close button.
+  BOOL _showsExplicitDeclineButton;
 
   // The title text for the view.
   NSString* _titleText;
@@ -102,11 +118,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (_mode == AutofillAIEntityEditMode::kCreate) {
     [self setEditing:YES animated:NO];
     self.shouldHideDoneButton = YES;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                             target:self
-                             action:@selector(didTapCancel)];
-    [self setupBottomSaveButton];
+    if (!_showsExplicitDeclineButton) {
+      self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(didTapCancel)];
+    }
+    [self setupBottomButtons];
   } else {
     self.navigationItem.rightBarButtonItem = [self editButtonItem];
   }
@@ -165,29 +183,94 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Setup
 
-- (void)setupBottomSaveButton {
-  _saveButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  _saveButton.title =
-      l10n_util::GetNSString(autofill::GetSaveEntityAcceptButtonStringId());
-  _saveButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_saveButton addTarget:self
-                  action:@selector(didTapSaveNewEntity)
-        forControlEvents:UIControlEventTouchUpInside];
+- (void)setupBottomButtons {
+  _saveButton = [self createSaveButton];
 
-  [self.view addSubview:_saveButton];
+  _buttonStack = [[UIStackView alloc] init];
+  _buttonStack.axis = UILayoutConstraintAxisVertical;
+  _buttonStack.alignment = UIStackViewAlignmentFill;
+  _buttonStack.spacing = kButtonStackSpacing;
+  _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
+  [_buttonStack addArrangedSubview:_saveButton];
+  if (_showsExplicitDeclineButton) {
+    _cancelButton = [self createCancelButton];
+    [_buttonStack addArrangedSubview:_cancelButton];
+  }
 
+  [self.view addSubview:_buttonStack];
+
+  // `self.view` is the table view, a scroll view, so its own leading and
+  // trailing anchors track the scrollable content rather than the visible
+  // width. Its `safeAreaLayoutGuide` follows the visible frame, and also keeps
+  // the buttons clear of the notch and rounded corners in landscape.
+  UILayoutGuide* safeArea = self.view.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
-    [_saveButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-    [_saveButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
-                                            constant:-32],
-    [_saveButton.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-16]
+    [_buttonStack.leadingAnchor
+        constraintEqualToAnchor:safeArea.leadingAnchor
+                       constant:kButtonStackHorizontalMargin],
+    [_buttonStack.trailingAnchor
+        constraintEqualToAnchor:safeArea.trailingAnchor
+                       constant:-kButtonStackHorizontalMargin],
+    [_buttonStack.bottomAnchor
+        constraintEqualToAnchor:safeArea.bottomAnchor
+                       constant:-kButtonStackVerticalMargin],
   ]];
+}
 
-  // Add bottom inset to the table view so the last cell doesn't get hidden
-  // behind the button.
-  self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 80, 0);
+// Updates the table view's bottom inset so the last cell and the footer can be
+// scrolled above the button stack. The inset is derived from the stack's laid
+// out height because the buttons grow with Dynamic Type and long localizations.
+- (void)updateTableViewBottomInsetForButtonStack {
+  if (!_buttonStack) {
+    return;
+  }
+  // The inset covers the stack, the margin between the stack and the bottom
+  // safe area, and an equal margin above the stack so the scrolled content
+  // doesn't end flush against the buttons.
+  CGFloat bottomInset =
+      CGRectGetHeight(_buttonStack.bounds) + 2 * kButtonStackVerticalMargin;
+  if (self.tableView.contentInset.bottom == bottomInset) {
+    return;
+  }
+  UIEdgeInsets contentInset = self.tableView.contentInset;
+  contentInset.bottom = bottomInset;
+  self.tableView.contentInset = contentInset;
+  UIEdgeInsets indicatorInsets = self.tableView.verticalScrollIndicatorInsets;
+  indicatorInsets.bottom = bottomInset;
+  self.tableView.verticalScrollIndicatorInsets = indicatorInsets;
+}
+
+// Creates the sticky "Save" action button.
+- (ChromeButton*)createSaveButton {
+  // When the explicit decline button is shown, both buttons share the tertiary
+  // style so neither choice is visually favored.
+  ChromeButtonStyle style = _showsExplicitDeclineButton
+                                ? ChromeButtonStyleTertiary
+                                : ChromeButtonStylePrimary;
+  ChromeButton* button = [[ChromeButton alloc] initWithStyle:style];
+  button.accessibilityIdentifier = kAutofillAIEntityEditSaveButtonId;
+  button.title =
+      l10n_util::GetNSString(autofill::GetSaveEntityAcceptButtonStringId());
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(didTapSaveNewEntity)
+      forControlEvents:UIControlEventTouchUpInside];
+  return button;
+}
+
+// Creates the sticky "Cancel" action button, styled like the "Save" button so
+// neither choice is visually favored.
+- (ChromeButton*)createCancelButton {
+  ChromeButton* button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleTertiary];
+  button.accessibilityIdentifier = kAutofillAIEntityEditCancelButtonId;
+  button.title = l10n_util::GetNSString(IDS_CANCEL);
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.enabled = !_loadingState;
+  [button addTarget:self
+                action:@selector(didTapCancel)
+      forControlEvents:UIControlEventTouchUpInside];
+  return button;
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -208,6 +291,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)setMode:(AutofillAIEntityEditMode)mode {
   _mode = mode;
+}
+
+- (void)setShowsExplicitDeclineButton:(BOOL)showsExplicitDeclineButton {
+  // The button layout is built once in `viewDidLoad` and is not swapped while
+  // the user is filling in the form.
+  CHECK(!self.isViewLoaded);
+  _showsExplicitDeclineButton = showsExplicitDeclineButton;
 }
 
 - (void)setTitle:(NSString*)title {
@@ -296,7 +386,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.tableView.userInteractionEnabled = !_loadingState;
   self.navigationItem.leftBarButtonItem.enabled = !_loadingState;
 
-  // Prevent swipe-to-dismiss for modals in loading state.
+  // Prevent swipe-to-dismiss for modals in loading state. The navigation
+  // controller derives its own `modalInPresentation` from its top view
+  // controller, so it is not set directly; this avoids leaving it set on a
+  // shared navigation stack after this view controller is popped.
   self.modalInPresentation = _loadingState;
 
   // Prevent edge-swipe back gesture in loading state.
@@ -686,6 +779,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     if (_saveButton) {
       _saveButton.enabled = buttonEnabled;
     }
+    if (_cancelButton) {
+      _cancelButton.enabled = !_loadingState;
+    }
   } else {
     self.navigationItem.rightBarButtonItem.enabled = buttonEnabled;
   }
@@ -738,12 +834,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _activeDatePickerSourceTextField = nil;
 }
 
-- (UIButton*)saveButton {
+- (ChromeButton*)saveButton {
   return _saveButton;
+}
+
+- (ChromeButton*)cancelButton {
+  return _cancelButton;
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+
+  [self updateTableViewBottomInsetForButtonStack];
 
   if (!_activeDateItem || _isTransitioningDatePickerStyle) {
     return;

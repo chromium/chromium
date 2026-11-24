@@ -8,12 +8,14 @@
 #import "ios/chrome/browser/settings/autofill/ui/autofill_edit_table_view_controller.h"
 
 // Expose private methods for testing.
+@class ChromeButton;
 @class TableViewTextEditItem;
 
 @interface AutofillAIEntityEditTableViewController (Testing)
 - (void)didTapSaveNewEntity;
 - (void)didTapCancel;
-- (UIButton*)saveButton;
+- (ChromeButton*)saveButton;
+- (ChromeButton*)cancelButton;
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem;
 @end
 

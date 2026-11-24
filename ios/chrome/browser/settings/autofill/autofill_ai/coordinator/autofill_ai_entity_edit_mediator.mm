@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
+#import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #import "components/autofill/core/browser/proto/server.pb.h"
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -190,6 +191,12 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   _consumer = consumer;
 
   [consumer setMode:_mode];
+
+  const bool show_explicit_decline_button =
+      _mode == AutofillAIEntityEditMode::kCreate &&
+      autofill::MustShowEquallyWeightedButtons(_identityManager,
+                                               _entityInstance->type());
+  [_consumer setShowsExplicitDeclineButton:show_explicit_decline_button];
 
   [self updateTitle];
 

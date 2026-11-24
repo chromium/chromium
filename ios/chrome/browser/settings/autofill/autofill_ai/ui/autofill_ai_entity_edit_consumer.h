@@ -40,6 +40,11 @@ enum class AutofillAIEntityEditMode {
 // corresponding tappable link URLs.
 - (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls;
 
+// Sets whether an explicit decline button ("Cancel") should be displayed in the
+// button stack instead of the navigation bar close button. Must be called
+// before the consumer's view is loaded.
+- (void)setShowsExplicitDeclineButton:(BOOL)showsExplicitDeclineButton;
+
 // Updates the given item.
 - (void)updateItem:(TableViewItem*)item;
 

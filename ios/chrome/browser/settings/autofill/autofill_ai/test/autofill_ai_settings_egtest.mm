@@ -29,6 +29,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::NavigationBarCloseButton;
 using chrome_test_util::NavigationBarEditButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
@@ -90,9 +91,17 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
       autofill::features::kAutofillAiReauthRequired);
 
   if ([self isRunningTest:@selector(testAddAndDeleteEntityUsingMenu)] ||
-      [self isRunningTest:@selector(testSimultaneousRowAndSectionDeletion)]) {
+      [self isRunningTest:@selector(testSimultaneousRowAndSectionDeletion)] ||
+      [self isRunningTest:@selector(
+                              testPrivatePassCreateSymmetricButtonsInGDPR)]) {
     config.features_enabled.push_back(
         autofill::features::debug::kAutofillAiForceOptIn);
+  }
+
+  if ([self isRunningTest:@selector(
+                              testPrivatePassCreateSymmetricButtonsInGDPR)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillRegionalizedPrivatePassesUxRefine);
   }
 
   if ([self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
@@ -114,7 +123,16 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   [AutofillAppInterface
       removeEntityModifiedSince:[NSDate dateWithTimeIntervalSince1970:0]];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  if ([self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
+  if ([self isRunningTest:@selector(
+                              testPrivatePassCreateSymmetricButtonsInGDPR)]) {
+    [SigninEarlGrey
+         addFakeIdentity:fakeIdentity
+        withCapabilities:@{
+          @(kMustShowEquallyWeightedButtonsForPrivatePassesInAutofillCapabilityName) :
+              @YES,
+        }];
+  } else if ([self isRunningTest:@selector(
+                                     testToggleSuggestionsFromGeminiSwitch)]) {
     [SigninEarlGrey addFakeIdentity:fakeIdentity
                    withCapabilities:@{
                      @(kCanUseModelExecutionFeaturesName) : @YES,
@@ -660,6 +678,56 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
                      labelMatcher, valueOnMatcher, nil)];
 
   [self exitSettingsMenu];
+}
+
+// Tests that adding a private pass (passport) in GDPR shows symmetric Save and
+// Cancel action buttons and omits the top close button.
+- (void)testPrivatePassCreateSymmetricButtonsInGDPR {
+  [AutofillAISettingsTestUtil openIdentityDocsSettings];
+
+  // Verify and tap the "Add" button.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsToolbarAddButton()];
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      performAction:grey_tap()];
+
+  // Tap the "Passport" menu item.
+  id<GREYMatcher> passportMenuItem =
+      grey_allOf(grey_accessibilityLabel(base::SysUTF16ToNSString(
+                     autofill::EntityType(autofill::EntityTypeName::kPassport)
+                         .GetNameForI18n())),
+                 grey_accessibilityTrait(UIAccessibilityTraitButton),
+                 grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:passportMenuItem];
+  [[EarlGrey selectElementWithMatcher:passportMenuItem]
+      performAction:grey_tap()];
+
+  [AutofillAISettingsTestUtil entityEditViewIsVisible:YES];
+
+  // Verify that the top close button is not present. The search is limited to
+  // navigation bars because on iPad the tab strip's "Close" button stays
+  // visible behind the form sheet.
+  [[[EarlGrey selectElementWithMatcher:NavigationBarCloseButton()]
+      inRoot:grey_kindOfClassName(@"UINavigationBar")]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that the symmetric "Save" and "Cancel" buttons are visible.
+  id<GREYMatcher> saveButton =
+      grey_accessibilityID(kAutofillAIEntityEditSaveButtonId);
+  id<GREYMatcher> cancelButton = grey_allOf(
+      grey_accessibilityID(kAutofillAIEntityEditCancelButtonId),
+      grey_accessibilityLabel(l10n_util::GetNSString(IDS_CANCEL)), nil);
+  [[EarlGrey selectElementWithMatcher:saveButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:cancelButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the bottom "Cancel" button to dismiss the view.
+  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+
+  // Verify that the entity edit view is dismissed.
+  [AutofillAISettingsTestUtil entityEditViewIsVisible:NO];
 }
 
 @end

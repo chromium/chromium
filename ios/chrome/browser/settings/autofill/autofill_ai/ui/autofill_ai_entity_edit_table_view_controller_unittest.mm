@@ -8,7 +8,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_date_picker_input_view.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
@@ -20,6 +22,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -78,8 +81,15 @@ class AutofillAIEntityEditTableViewControllerTest
         test_name == "TestStartInEditModeHidesDoneButton" ||
         test_name == "TestDidFinishSavingWithLocalFallbackTrue" ||
         test_name == "TestDidFinishSavingWithLocalFallbackFalse" ||
-        test_name == "TestSaveButtonState") {
+        test_name == "TestSaveButtonState" ||
+        test_name.starts_with("TestCreateMode")) {
       [controller setMode:AutofillAIEntityEditMode::kCreate];
+    }
+
+    // The explicit decline button must be configured before the fixture loads
+    // the view.
+    if (test_name.ends_with("WithExplicitDecline")) {
+      [controller setShowsExplicitDeclineButton:YES];
     }
 
     return controller;
@@ -511,6 +521,191 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapLinkWithURL) {
   OCMExpect([mock_delegate_ didTapLinkWithURL:url]);
   [view_controller view:nil didTapLinkURL:url];
   [mock_delegate_ verify];
+}
+
+// Tests that equally weighted save and cancel buttons are stacked at the bottom
+// and the navigation bar close button is omitted when
+// `showsExplicitDeclineButton` is `YES`.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestCreateModeSymmetricButtonsWithExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  EXPECT_EQ(view_controller.navigationItem.leftBarButtonItem, nil);
+  ASSERT_NE(view_controller.saveButton, nil);
+  ASSERT_NE(view_controller.cancelButton, nil);
+  EXPECT_NSEQ(view_controller.cancelButton.accessibilityIdentifier,
+              kAutofillAIEntityEditCancelButtonId);
+  EXPECT_NSEQ(view_controller.cancelButton.title,
+              l10n_util::GetNSString(IDS_CANCEL));
+
+  // Both buttons share the same style so neither choice is visually favored.
+  EXPECT_EQ(view_controller.saveButton.style, ChromeButtonStyleTertiary);
+  EXPECT_EQ(view_controller.cancelButton.style, ChromeButtonStyleTertiary);
+
+  // "Cancel" is stacked directly below "Save".
+  UIStackView* button_stack = base::apple::ObjCCastStrict<UIStackView>(
+      view_controller.saveButton.superview);
+  NSArray<UIView*>* expected_buttons =
+      @[ view_controller.saveButton, view_controller.cancelButton ];
+  EXPECT_NSEQ(button_stack.arrangedSubviews, expected_buttons);
+}
+
+// Tests that the navigation bar close button and the single primary save button
+// are shown when `showsExplicitDeclineButton` is `NO`.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestCreateModeCloseButtonWithoutExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  EXPECT_NE(view_controller.navigationItem.leftBarButtonItem, nil);
+  ASSERT_NE(view_controller.saveButton, nil);
+  EXPECT_EQ(view_controller.saveButton.style, ChromeButtonStylePrimary);
+  EXPECT_EQ(view_controller.cancelButton, nil);
+}
+
+// Tests that tapping the cancel button asks the delegate to dismiss the view
+// controller.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestCreateModeTapCancelButtonDismissesWithExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  OCMExpect([mock_delegate_ dismissViewController:view_controller]);
+  [view_controller.cancelButton
+      sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests that the table view's bottom inset leaves room for the whole button
+// stack so the footer can be scrolled above the buttons.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestCreateModeBottomInsetCoversButtonStackWithExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  ScopedKeyWindow scoped_window;
+  scoped_window.Get().rootViewController = view_controller;
+  [view_controller.view layoutIfNeeded];
+
+  // In the stack's coordinate space, the bottom of the last button is the
+  // stack's height.
+  CGFloat button_stack_height =
+      CGRectGetMaxY(view_controller.cancelButton.frame);
+  ASSERT_GT(button_stack_height, 0);
+  EXPECT_GE(view_controller.tableView.contentInset.bottom, button_stack_height);
+  EXPECT_EQ(view_controller.tableView.verticalScrollIndicatorInsets.bottom,
+            view_controller.tableView.contentInset.bottom);
+}
+
+// Tests that the bottom buttons span the safe area width minus the side margins
+// rather than shrinking to fit their titles.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestCreateModeButtonsSpanViewWidthWithExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  ScopedKeyWindow scoped_window;
+  scoped_window.Get().rootViewController = view_controller;
+  [view_controller.view layoutIfNeeded];
+
+  CGFloat expected_width =
+      CGRectGetWidth(view_controller.view.safeAreaLayoutGuide.layoutFrame) - 32;
+  ASSERT_GT(expected_width, 0);
+  EXPECT_EQ(CGRectGetWidth(view_controller.saveButton.frame), expected_width);
+  EXPECT_EQ(CGRectGetWidth(view_controller.cancelButton.frame), expected_width);
+}
+
+// Tests that the cancel button remains enabled even when the save button is
+// disabled due to incomplete form validation.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestCreateModeCancelEnabledWhileSaveDisabledWithExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  FakeMutator* fake_mutator = [[FakeMutator alloc] init];
+  autofill::DenseSet<autofill::AttributeType> missing_fields;
+  missing_fields.insert(
+      autofill::AttributeType(autofill::AttributeTypeName::kPassportName));
+  fake_mutator.missingFields = missing_fields;
+  view_controller.mutator = fake_mutator;
+
+  [view_controller tableViewItemDidChange:nil];
+
+  EXPECT_FALSE(view_controller.saveButton.enabled);
+  EXPECT_TRUE(view_controller.cancelButton.enabled);
+}
+
+// Tests that both save and cancel buttons are disabled and the modal cannot be
+// swiped away (`modalInPresentation`) during the loading state.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestCreateModeLoadingStateDisablesButtonsWithExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  UINavigationController* navigation_controller =
+      [[UINavigationController alloc]
+          initWithRootViewController:view_controller];
+
+  EXPECT_TRUE(view_controller.saveButton.enabled);
+  EXPECT_TRUE(view_controller.cancelButton.enabled);
+  EXPECT_FALSE(view_controller.isModalInPresentation);
+  EXPECT_FALSE(navigation_controller.isModalInPresentation);
+
+  [view_controller setLoadingState:YES];
+
+  EXPECT_FALSE(view_controller.saveButton.enabled);
+  EXPECT_FALSE(view_controller.cancelButton.enabled);
+  EXPECT_TRUE(view_controller.isModalInPresentation);
+  EXPECT_TRUE(navigation_controller.isModalInPresentation);
+
+  [view_controller setLoadingState:NO];
+
+  EXPECT_TRUE(view_controller.saveButton.enabled);
+  EXPECT_TRUE(view_controller.cancelButton.enabled);
+  EXPECT_FALSE(view_controller.isModalInPresentation);
+  EXPECT_FALSE(navigation_controller.isModalInPresentation);
+}
+
+// Tests that the view and edit mode shows no bottom buttons even when
+// `showsExplicitDeclineButton` is `YES`.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestViewAndEditModeHasNoBottomButtonsWithExplicitDecline) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  EXPECT_EQ(view_controller.saveButton, nil);
+  EXPECT_EQ(view_controller.cancelButton, nil);
+  EXPECT_NE(view_controller.navigationItem.rightBarButtonItem, nil);
+}
+
+// Tests that popping the view controller while it is in loading state does not
+// leave the navigation stack it was pushed onto blocked from dismissal.
+TEST_F(
+    AutofillAIEntityEditTableViewControllerTest,
+    TestViewAndEditModePopDuringLoadingKeepsNavigationControllerDismissable) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+  UIViewController* parent_view_controller = [[UIViewController alloc] init];
+  UINavigationController* navigation_controller =
+      [[UINavigationController alloc]
+          initWithRootViewController:parent_view_controller];
+  [navigation_controller pushViewController:view_controller animated:NO];
+
+  [view_controller setLoadingState:YES];
+  [navigation_controller popViewControllerAnimated:NO];
+
+  EXPECT_EQ(navigation_controller.topViewController, parent_view_controller);
+  EXPECT_FALSE(navigation_controller.isModalInPresentation);
 }
 
 }  // namespace
