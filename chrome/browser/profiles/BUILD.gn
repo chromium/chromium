@@ -1332,7 +1332,7 @@ if (!is_android) {
       "//chrome/test/base:profile_lifecycle_test_utils",
       "//chrome/test/base:testing_browser_process",
       "//components/commerce/core:feature_list",
-      "//components/enterprise/isolated_mode",
+      "//components/enterprise/isolated_mode:test_support",
       "//components/policy/core/common:test_support",
       "//components/spellcheck/common",
       "//components/universal_optout:features",
@@ -1403,6 +1403,7 @@ source_set("test_support") {
   ]
   deps = [
     "//chrome/test/base:testing_browser_process",
+    "//components/enterprise/isolated_mode:test_support",
     "//testing/gtest",
   ]
 

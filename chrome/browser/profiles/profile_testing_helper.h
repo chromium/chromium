@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_TESTING_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 
@@ -54,7 +53,6 @@ class ProfileTestingHelper {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
 

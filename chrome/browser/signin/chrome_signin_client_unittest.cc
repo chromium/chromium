@@ -24,8 +24,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -419,14 +418,10 @@ INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
 
 TEST(ChromeSigninClientTest, ClearSigninPrefsForIsolatedProfile) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
 
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
-  profile->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
   const std::string parent_list_accounts_data = "parent_list_accounts_data";
   const std::string parent_account_id = "parent_account_id";

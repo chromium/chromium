@@ -4,12 +4,9 @@
 
 #include "chrome/browser/signin/identity_manager_factory.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -28,19 +25,7 @@ constexpr char kTestEmail[] = "test@example.com";
 
 class IdentityManagerFactoryIsolatedModeBrowserTest
     : public InProcessBrowserTest {
- public:
-  IdentityManagerFactoryIsolatedModeBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  }
-
  protected:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
-    SetupIsolatedMode(Profile::FromBrowserContext(context));
-  }
-
   // Returns the IdentityManager for the regular profile.
   signin::IdentityManager* GetIdentityManager() {
     return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
@@ -60,15 +45,8 @@ class IdentityManagerFactoryIsolatedModeBrowserTest
   }
 
  private:
-  void SetupIsolatedMode(Profile* profile) {
-    ASSERT_TRUE(profile);
-    profile->GetPrefs()->SetInteger(
-        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-        static_cast<int>(
-            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityManagerFactoryIsolatedModeBrowserTest,

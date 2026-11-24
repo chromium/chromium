@@ -17,8 +17,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -415,14 +414,9 @@ TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
 
   // Isolated profile.
   {
-    base::test::ScopedFeatureList scoped_feature_list(
-        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-
+    enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+        scoped_isolated_mode;
     TestingProfile profile;
-    profile.GetPrefs()->SetInteger(
-        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-        static_cast<int>(
-            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
     Profile* isolated_profile =
         profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);

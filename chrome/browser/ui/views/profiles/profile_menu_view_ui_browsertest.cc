@@ -7,7 +7,6 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
@@ -31,7 +30,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -52,10 +51,6 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_channel_override.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -484,11 +479,6 @@ class ProfileMenuViewPixelTest
       command_line->AppendSwitch(
           user_education::features::kDisableRateLimitingCommandLine);
     }
-    if (GetProfileType() == ProfileTypePixelTestParam::kIsolated) {
-      command_line->AppendSwitch(
-          enterprise_isolated_mode::switches::
-              kForceEnterpriseIsolatedModeReplacesIncognito);
-    }
   }
 
   ProfileTypePixelTestParam GetProfileType() const {
@@ -865,10 +855,9 @@ class ProfileMenuViewPixelTest
                        : nullptr;
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-  chrome::ScopedChannelOverride channel_override_{
-      chrome::ScopedChannelOverride::Channel::kDev};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{GetProfileType() ==
+                            ProfileTypePixelTestParam::kIsolated};
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_;
