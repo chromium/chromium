@@ -921,7 +921,45 @@ struct InputHandler::DragController::InitialState {
 InputHandler::DragController::DragController(InputHandler& handler)
     : handler_(handler) {}
 
-InputHandler::DragController::~DragController() = default;
+InputHandler::DragController::~DragController() {
+  StopObservingSource();
+}
+
+void InputHandler::DragController::OnInputEvent(
+    const RenderWidgetHost& host,
+    const blink::WebInputEvent& event,
+    InputEventSource source) {
+  if (!drag_state_ ||
+      (event.GetModifiers() & blink::WebInputEvent::kFromDebugger)) {
+    return;
+  }
+  // The renderer ignores input while dragging, so a drag that the CDP client
+  // never releases would leave the page unresponsive to the user. Treat a
+  // user's click or key press as cancelling the drag, as it would for an OS
+  // drag.
+  switch (event.GetType()) {
+    case blink::WebInputEvent::Type::kMouseDown:
+    case blink::WebInputEvent::Type::kRawKeyDown:
+    case blink::WebInputEvent::Type::kKeyDown:
+      CancelDragging(base::DoNothing());
+      break;
+    default:
+      break;
+  }
+}
+
+void InputHandler::DragController::DragEnded() {
+  StopObservingSource();
+  drag_state_ = nullptr;
+  initial_state_ = nullptr;
+}
+
+void InputHandler::DragController::StopObservingSource() {
+  if (source_host_) {
+    source_host_->RemoveInputEventObserver(this);
+  }
+  source_host_ = nullptr;
+}
 
 bool InputHandler::DragController::HandleMouseEvent(
     RenderWidgetHostImpl& host,
@@ -1023,6 +1061,9 @@ void InputHandler::DragController::StartDragging(
   drag_state_ = std::make_unique<DragState>(
       DragState{drop_data, drag_operations_mask, nullptr, gfx::PointF(), 0,
                 base::DoNothing()});
+  StopObservingSource();
+  source_host_ = initial_state_->host;
+  source_host_->AddInputEventObserver(this);
   UpdateDragging(*initial_state_->host,
                  // Note we don't move it here. See
                  // InputHandler::DragController::HandleMouseEvent.
@@ -1069,8 +1110,11 @@ void InputHandler::DragController::DragUpdated(
     bool document_is_handling_drag) {
   if (!drag_state_) {
     // Dragging ended, perhaps due to a previous mouse up or a drag
-    // cancellation.
-    handler_->HandleMouseEvent(std::move(event), callback->release());
+    // cancellation. The update from `StartDragging` has no callback; its
+    // event was already dispatched.
+    if (callback) {
+      handler_->HandleMouseEvent(std::move(event), callback->release());
+    }
     return;
   }
   drag_state_->data.operation = operation;
@@ -1631,8 +1675,7 @@ void InputHandler::StartDragging(const content::DropData& drop_data,
 }
 
 void InputHandler::DragEnded() {
-  drag_controller_.drag_state_ = nullptr;
-  drag_controller_.initial_state_ = nullptr;
+  drag_controller_.DragEnded();
 }
 
 Response InputHandler::SetInterceptDrags(bool enabled) {

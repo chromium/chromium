@@ -189,11 +189,11 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
  private:
   class InputInjector;
-  class DragController {
+  class DragController : public RenderWidgetHost::InputEventObserver {
    public:
     // `handler` must live as long as the drag controller.
     explicit DragController(InputHandler& handler);
-    ~DragController();
+    ~DragController() override;
 
     DragController(const DragController&) = delete;
     DragController& operator=(const DragController&) = delete;
@@ -222,6 +222,15 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
         blink::DragOperationsMask drag_operations_mask,
         bool* intercepted);
     friend void InputHandler::DragEnded();
+
+    // RenderWidgetHost::InputEventObserver:
+    void OnInputEvent(const RenderWidgetHost& host,
+                      const blink::WebInputEvent& event,
+                      InputEventSource source) override;
+
+    // Resets the drag state once the drag has ended.
+    void DragEnded();
+    void StopObservingSource();
 
     void EnsureDraggingEntered(RenderWidgetHostImpl& host,
                                const blink::WebMouseEvent& event);
@@ -269,6 +278,10 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
     std::unique_ptr<InitialState> initial_state_;
 
     std::unique_ptr<DragState> drag_state_;
+
+    // The widget the drag started from. It ignores all input until the drag
+    // ends, so non-CDP input to it cancels the drag.
+    base::WeakPtr<RenderWidgetHostImpl> source_host_;
 
     base::WeakPtrFactory<DragController> weak_factory_{this};
   };

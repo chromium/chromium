@@ -558,6 +558,57 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinates) {
   ASSERT_EQ("mousedown,15,15", GetMouseDownLog());
 }
 
+// A drag started with Input.dispatchMouseEvent and never released must not
+// leave the page ignoring the user's input (https://crbug.com/42323681).
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
+                       UserMouseDownCancelsUnreleasedDrag) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "document.body.style.margin = '0';"
+      "document.body.innerHTML = '<div id=source draggable=true "
+      "style=\"width:100px;height:100px\">drag</div>';"
+      "dragStarted = new Promise(r => source.addEventListener('dragstart', "
+      "r, {once: true}));"
+      "dragEnded = new Promise(r => source.addEventListener('dragend', "
+      "r, {once: true}));"
+      "void 0;"));
+
+  auto send_mouse_event = [&](const std::string& type, int x, int y,
+                              int buttons) {
+    base::DictValue params;
+    params.Set("type", type);
+    params.Set("x", x);
+    params.Set("y", y);
+    params.Set("button", "left");
+    params.Set("buttons", buttons);
+    params.Set("clickCount", 1);
+    SendCommandSync("Input.dispatchMouseEvent", std::move(params));
+  };
+  send_mouse_event("mouseMoved", 50, 50, 0);
+  send_mouse_event("mousePressed", 50, 50, 1);
+  send_mouse_event("mouseMoved", 60, 60, 1);
+  send_mouse_event("mouseMoved", 150, 150, 1);
+  ASSERT_EQ(true, content::EvalJs(shell()->web_contents(),
+                                  "dragStarted.then(() => true)"));
+
+  // A user click (not from CDP) cancels the drag.
+  content::SimulateMouseClickAt(shell()->web_contents(), 0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(150, 150));
+  EXPECT_EQ(true, content::EvalJs(shell()->web_contents(),
+                                  "dragEnded.then(() => true)"));
+
+  // The page handles user input again.
+  InitMouseDownLog();
+  content::SimulateMouseClickAt(shell()->web_contents(), 0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(150, 150));
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !GetMouseDownLog().empty(); }));
+}
+
 IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
