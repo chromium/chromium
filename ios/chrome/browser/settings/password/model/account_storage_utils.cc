@@ -6,24 +6,22 @@
 
 #import <algorithm>
 
-#import "base/containers/span.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/service/sync_service.h"
 
-namespace password_manager {
-
-bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
-                             const syncer::SyncService* sync_service) {
+bool ShouldShowLocalOnlyIcon(
+    const password_manager::CredentialUIEntry& credential,
+    const syncer::SyncService* sync_service) {
   if (credential.blocked_by_user) {
     // The account/local concept is harder to grasp for "Never saved" pages, do
     // not distinguish. It's also less important to back those up anyway.
     return false;
   }
 
-  if (credential.stored_in.contains(PasswordForm::Store::kAccountStore)) {
+  if (credential.stored_in.contains(
+          password_manager::PasswordForm::Store::kAccountStore)) {
     // If the data is stored both in kProfileStore and kAccountStore, it's
     // backed up, no need to bother the user.
     return false;
@@ -43,12 +41,11 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
   return true;
 }
 
-bool ShouldShowLocalOnlyIconForGroup(const AffiliatedGroup& affiliated_group,
-                                     const syncer::SyncService* sync_service) {
+bool ShouldShowLocalOnlyIconForGroup(
+    const password_manager::AffiliatedGroup& affiliated_group,
+    const syncer::SyncService* sync_service) {
   return std::ranges::any_of(affiliated_group.GetCredentials(),
-                             [&](const CredentialUIEntry& c) {
+                             [&](const password_manager::CredentialUIEntry& c) {
                                return ShouldShowLocalOnlyIcon(c, sync_service);
                              });
 }
-
-}  // namespace password_manager

@@ -268,7 +268,7 @@ bool AllowsAddPassword(PrefService* pref_service) {
 
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group {
-  return password_manager::ShouldShowLocalOnlyIconForGroup(group, _syncService);
+  return ShouldShowLocalOnlyIconForGroup(group, _syncService);
 }
 
 - (void)notifyFETOfPasswordManagerWidgetPromoDismissal {

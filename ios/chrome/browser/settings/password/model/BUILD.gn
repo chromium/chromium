@@ -8,8 +8,6 @@ source_set("account_storage_utils") {
     "account_storage_utils.h",
   ]
   deps = [
-    "//base",
-    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/ui",
     "//components/sync/service",
