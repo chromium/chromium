@@ -1,0 +1,57 @@
+Tests framework black-boxing on DOM, XHR and Event breakpoints.
+
+Running test: testDOMBreakpoint
+Call stack:
+  * 0) Framework.appendChild (framework.js:10)
+    1) appendElement (frameworks-dom-xhr-event-breakpoints-1.js:7)
+    2)  (:1)
+Paused reason: DOM
+Breakpoint node matches #rootElement: true
+Target node: div#rootElement
+Paused data: {
+    insertion : true
+    nodeId : <number>
+    targetNodeId : <number>
+    type : subtree-modified
+}
+Pause count: 1
+
+Running test: testXHRBreakpoint
+Call stack:
+  * 0) Framework.sendXHR (framework.js:17)
+    1) sendXHR (frameworks-dom-xhr-event-breakpoints-1.js:12)
+    2)  (:1)
+Paused reason: XHR
+Paused data: {
+    breakpointURL : foo
+    url : http://127.0.0.1:8000/inspector-protocol/debugger/resources/foo?xhr
+}
+Pause count: 1
+
+Running test: testEventListenerBreakpoint
+Call stack:
+    0) testElementClicked (frameworks-dom-xhr-event-breakpoints-1.js:19)
+  * 1) Framework_bound (framework.js:43)
+  * 2) Framework_eventListener (framework.js:24)
+    3) addListenerAndClick (frameworks-dom-xhr-event-breakpoints-1.js:30)
+    4)  (:1)
+Paused reason: EventListener
+Paused data: {
+    eventName : listener:click
+    targetName : INPUT
+}
+Executing Resume...
+Call stack:
+    0) testElementClicked (frameworks-dom-xhr-event-breakpoints-1.js:19)
+  * 1) Framework_bound (framework.js:43)
+  * 2) Framework_eventListener (framework.js:24)
+    3) addListenerAndClick (frameworks-dom-xhr-event-breakpoints-1.js:36)
+    4)  (:1)
+Paused reason: EventListener
+Paused data: {
+    eventName : listener:click
+    targetName : INPUT
+}
+Executing Resume...
+Pause count: 2
+
