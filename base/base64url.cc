@@ -121,18 +121,6 @@ std::string Base64ToBase64Url(std::string input, Base64UrlEncodePolicy policy) {
 
 }  // namespace
 
-void Base64UrlEncode(span<const uint8_t> input,
-                     Base64UrlEncodePolicy policy,
-                     std::string* output) {
-  *output = Base64UrlEncode(input, policy);
-}
-
-void Base64UrlEncode(std::string_view input,
-                     Base64UrlEncodePolicy policy,
-                     std::string* output) {
-  Base64UrlEncode(base::as_byte_span(input), policy, output);
-}
-
 std::string Base64UrlEncode(span<const uint8_t> input,
                             Base64UrlEncodePolicy policy) {
   return Base64ToBase64Url(Base64Encode(input), policy);
