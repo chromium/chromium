@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -5482,6 +5483,230 @@ TEST_F(AIPageContentAgentTest, SelectionFromEditContext) {
   EXPECT_EQ(selection.end_dom_node_id, editor_id);
   EXPECT_EQ(selection.start_offset, 6);
   EXPECT_EQ(selection.end_offset, 11);
+}
+
+TEST_F(AIPageContentAgentTest, SelectionFromInvalidatedEditContext) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body data-requests="0">
+          <div id="editor"></div>
+          <script>
+            const editor = document.getElementById('editor');
+            const ec = new EditContext({
+              text: '_',
+              selectionStart: 1,
+              selectionEnd: 1,
+            });
+            editor.editContext = ec;
+            ec.addEventListener('contextrequest', () => {
+              document.body.dataset.requests =
+                  String(Number(document.body.dataset.requests) + 1);
+              ec.updateText(0, ec.text.length, 'Hello world');
+              ec.updateSelection(6, 11);
+            });
+            editor.focus();
+            ec.invalidate();
+          </script>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* doc = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  {
+    ScopedEditContextOnDemandForTest disabled(false);
+    GetAIPageContent();
+    EXPECT_FALSE(Content()->frame_data->frame_interaction_info->selection);
+    EXPECT_EQ("0", doc->body()->getAttribute(AtomicString("data-requests")));
+  }
+
+  GetAIPageContent();
+  EXPECT_EQ("1", doc->body()->getAttribute(AtomicString("data-requests")));
+
+  const auto& frame_interaction_info =
+      Content()->frame_data->frame_interaction_info;
+  ASSERT_TRUE(frame_interaction_info->selection);
+  const auto& selection = *frame_interaction_info->selection;
+  EXPECT_EQ(selection.selected_text, "world");
+  const DOMNodeId editor_id =
+      DOMNodeIds::IdForNode(doc->getElementById(AtomicString("editor")));
+  EXPECT_EQ(selection.start_dom_node_id, editor_id);
+  EXPECT_EQ(selection.end_dom_node_id, editor_id);
+  EXPECT_EQ(selection.start_offset, 6);
+  EXPECT_EQ(selection.end_offset, 11);
+}
+
+TEST_F(AIPageContentAgentTest,
+       ContextRequestDetachingChildIframePreservesSiblingAndNestedExtraction) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <iframe id="f1" srcdoc="<div id='ed1'></div>"></iframe>
+          <iframe id="f2" srcdoc="<p>Sibling frame text</p><iframe id='nested' srcdoc='<div id=&quot;ed2&quot;></div>'></iframe>"></iframe>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  test::RunPendingTasks();
+  test::RunPendingTasks();
+
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    const f2 = document.getElementById('f2');
+    const nested = f2.contentDocument.getElementById('nested');
+    const ed2 = nested.contentDocument.getElementById('ed2');
+    const ec2 = new nested.contentWindow.EditContext({
+      text: '_',
+      selectionStart: 1,
+      selectionEnd: 1,
+    });
+    ed2.editContext = ec2;
+    ec2.addEventListener('contextrequest', () => {
+      ec2.updateText(0, ec2.text.length, 'Nested text');
+      ec2.updateSelection(0, 6);
+    });
+    ec2.invalidate();
+
+    const f1 = document.getElementById('f1');
+    const ed1 = f1.contentDocument.getElementById('ed1');
+    const ec1 = new f1.contentWindow.EditContext({text: '_'});
+    ed1.editContext = ec1;
+    ec1.addEventListener('contextrequest', () => {
+      f1.remove();
+      nested.focus();
+      ed2.focus();
+    });
+    f1.focus();
+    ed1.focus();
+    ec1.invalidate();
+  )JS"));
+
+  GetAIPageContent();
+  EXPECT_TRUE(
+      TreeContainsTextSubstring(ContentRootNode(), "Sibling frame text"));
+  ASSERT_EQ(ContentRootNode().children_nodes.size(), 1u);
+  const auto& f2_node = *ContentRootNode().children_nodes[0];
+  CheckIframeNode(f2_node);
+  ASSERT_EQ(f2_node.children_nodes.size(), 1u);
+  ASSERT_EQ(f2_node.children_nodes[0]->children_nodes.size(), 2u);
+  const auto& nested_node = *f2_node.children_nodes[0]->children_nodes[1];
+  CheckIframeNode(nested_node);
+  ASSERT_TRUE(nested_node.content_attributes->iframe_data->content);
+  const auto& nested_frame_data = *nested_node.content_attributes->iframe_data
+                                       ->content->get_local_frame_data();
+  ASSERT_TRUE(nested_frame_data.frame_interaction_info->selection);
+  EXPECT_EQ(nested_frame_data.frame_interaction_info->selection->selected_text,
+            "Nested");
+}
+
+TEST_F(AIPageContentAgentTest,
+       ContextRequestInCrossSiteIframeRespectsSameSiteFilter) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <iframe id="cross" sandbox="allow-scripts" srcdoc="<body data-requests='0'><div id='ed'></div><script>
+            const ed = document.getElementById('ed');
+            const ec = new EditContext({
+              text: '_',
+              selectionStart: 1,
+              selectionEnd: 1,
+            });
+            ed.editContext = ec;
+            ec.addEventListener('contextrequest', () => {
+              document.body.dataset.requests =
+                  String(Number(document.body.dataset.requests) + 1);
+              ec.updateText(0, ec.text.length, 'Cross-site text');
+              ec.updateSelection(0, 10);
+            });
+            ec.invalidate();
+          </script></body>"></iframe>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  test::RunPendingTasks();
+
+  auto* iframe = To<HTMLIFrameElement>(
+      helper_.LocalMainFrame()->GetFrame()->GetDocument()->getElementById(
+          AtomicString("cross")));
+  ASSERT_TRUE(iframe);
+  auto* cross_frame = To<LocalFrame>(iframe->ContentFrame());
+  ASSERT_TRUE(cross_frame);
+  Document* cross_doc = cross_frame->GetDocument();
+  ASSERT_TRUE(cross_doc);
+  Element* cross_ed = cross_doc->getElementById(AtomicString("ed"));
+  ASSERT_TRUE(cross_ed);
+  cross_ed->Focus(FocusParams(FocusTrigger::kUserGesture));
+  ASSERT_EQ(cross_doc->FocusedElement(), cross_ed);
+
+  // When `include_same_site_only` is true, the sandboxed opaque-origin iframe
+  // is redacted as cross-site, so `contextrequest` must not be fired.
+  auto same_site_options = GetAIPageContentOptionsForTest();
+  same_site_options->include_same_site_only = true;
+  GetAIPageContent(std::move(same_site_options));
+  EXPECT_EQ("0",
+            cross_doc->body()->getAttribute(AtomicString("data-requests")));
+  ASSERT_EQ(ContentRootNode().children_nodes.size(), 1u);
+  const auto& redacted_node = *ContentRootNode().children_nodes[0];
+  CheckIframeNode(redacted_node);
+  ASSERT_TRUE(redacted_node.content_attributes->iframe_data->content
+                  ->is_redacted_frame_metadata());
+
+  // When `include_same_site_only` is false, the iframe is extracted and its
+  // active EditContext receives `contextrequest`.
+  auto all_frames_options = GetAIPageContentOptionsForTest();
+  all_frames_options->include_same_site_only = false;
+  GetAIPageContent(std::move(all_frames_options));
+  EXPECT_EQ("1",
+            cross_doc->body()->getAttribute(AtomicString("data-requests")));
+  ASSERT_EQ(ContentRootNode().children_nodes.size(), 1u);
+  const auto& extracted_node = *ContentRootNode().children_nodes[0];
+  CheckIframeNode(extracted_node);
+  const auto& cross_frame_data = *extracted_node.content_attributes->iframe_data
+                                      ->content->get_local_frame_data();
+  ASSERT_TRUE(cross_frame_data.frame_interaction_info->selection);
+  EXPECT_EQ(cross_frame_data.frame_interaction_info->selection->selected_text,
+            "Cross-site");
+}
+
+TEST_F(AIPageContentAgentTest, ContextRequestDetachingRootFrameReturnsNullptr) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <iframe id="f1" srcdoc="<div id='ed'></div>"></iframe>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  test::RunPendingTasks();
+
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    const f1 = document.getElementById('f1');
+    const ed = f1.contentDocument.getElementById('ed');
+    const ec = new f1.contentWindow.EditContext({text: '_'});
+    ed.editContext = ec;
+    ec.addEventListener('contextrequest', () => {
+      f1.remove();
+    });
+    f1.focus();
+    ed.focus();
+    ec.invalidate();
+  )JS"));
+
+  auto* iframe = To<HTMLIFrameElement>(
+      helper_.LocalMainFrame()->GetFrame()->GetDocument()->getElementById(
+          AtomicString("f1")));
+  ASSERT_TRUE(iframe);
+  Document* child_document = iframe->contentDocument();
+  ASSERT_TRUE(child_document);
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*child_document);
+  ASSERT_TRUE(agent);
+
+  // Removing `f1` synchronously detaches `child_document` during
+  // `CleanContextIfNeeded()`, so `ContentBuilder::Build()` bails out with
+  // `nullptr` instead of extracting a detached `Document`.
+  mojom::blink::AIPageContentPtr content =
+      agent->GetAIPageContentInternal(*GetAIPageContentOptionsForTest());
+  EXPECT_FALSE(content);
 }
 
 TEST_F(AIPageContentAgentTest, EditContextSelectionPreferredOverDOMSelection) {

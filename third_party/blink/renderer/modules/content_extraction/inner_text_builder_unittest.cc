@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -20,9 +21,11 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -217,6 +220,187 @@ TEST(InnerTextBuilderTest, IncludesActiveEditContextTextAtElementPosition) {
   ASSERT_TRUE(frame);
   ASSERT_EQ(1u, frame->segments.size());
   EXPECT_EQ("before\nHello world\n\nafter", frame->segments[0]->get_text());
+}
+
+TEST(InnerTextBuilderTest, IncludesInvalidatedEditContextText) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize();
+  frame_test_helpers::LoadHTMLString(
+      helper.LocalMainFrame(),
+      R"HTML(
+        <body data-requests="0">
+          <div>before</div>
+          <div id="editor"></div>
+          <div>after</div>
+          <script>
+            const editor = document.getElementById('editor');
+            const ec = new EditContext({text: '_'});
+            editor.editContext = ec;
+            ec.addEventListener('contextrequest', () => {
+              document.body.dataset.requests =
+                  String(Number(document.body.dataset.requests) + 1);
+              ec.updateText(0, ec.text.length, 'Hello world');
+            });
+            editor.focus();
+            ec.invalidate();
+          </script>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  LocalFrame& local_frame = *helper.LocalMainFrame()->GetFrame();
+
+  // When `include_edit_context` is false, `contextrequest` must not be fired.
+  mojom::blink::InnerTextParams params;
+  params.include_edit_context = false;
+  mojom::blink::InnerTextFramePtr frame_without_ec =
+      InnerTextBuilder::Build(local_frame, params);
+  ASSERT_TRUE(frame_without_ec);
+  ASSERT_EQ(1u, frame_without_ec->segments.size());
+  EXPECT_EQ("before\nafter", frame_without_ec->segments[0]->get_text());
+  EXPECT_EQ("0", local_frame.GetDocument()->body()->getAttribute(
+                     AtomicString("data-requests")));
+
+  params.include_edit_context = true;
+  {
+    ScopedEditContextOnDemandForTest disabled(false);
+    mojom::blink::InnerTextFramePtr frame_flag_disabled =
+        InnerTextBuilder::Build(local_frame, params);
+    ASSERT_TRUE(frame_flag_disabled);
+    EXPECT_EQ("0", local_frame.GetDocument()->body()->getAttribute(
+                       AtomicString("data-requests")));
+  }
+
+  mojom::blink::InnerTextFramePtr frame =
+      InnerTextBuilder::Build(local_frame, params);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(1u, frame->segments.size());
+  EXPECT_EQ("before\nHello world\n\nafter", frame->segments[0]->get_text());
+  EXPECT_EQ("1", local_frame.GetDocument()->body()->getAttribute(
+                     AtomicString("data-requests")));
+}
+
+TEST(InnerTextBuilderTest, ContextRequestDetachingBodyDoesNotCrash) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize();
+  frame_test_helpers::LoadHTMLString(
+      helper.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <div id="editor"></div>
+          <script>
+            const editor = document.getElementById('editor');
+            const ec = new EditContext({text: '_'});
+            editor.editContext = ec;
+            ec.addEventListener('contextrequest', () => {
+              document.body.remove();
+            });
+            editor.focus();
+            ec.invalidate();
+          </script>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  LocalFrame& local_frame = *helper.LocalMainFrame()->GetFrame();
+  mojom::blink::InnerTextParams params;
+  params.include_edit_context = true;
+  mojom::blink::InnerTextFramePtr frame =
+      InnerTextBuilder::Build(local_frame, params);
+  ASSERT_TRUE(frame);
+  EXPECT_TRUE(frame->segments.empty());
+}
+
+TEST(InnerTextBuilderTest,
+     ContextRequestDetachingChildIframeOmitsDetachedFrameSegment) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize();
+  frame_test_helpers::LoadHTMLString(
+      helper.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <div>before</div>
+          <iframe id="f1" srcdoc="<body><div id='ed'></div><script>
+            const ed = document.getElementById('ed');
+            const ec = new EditContext({text: '_'});
+            ed.editContext = ec;
+            ec.addEventListener('contextrequest', () => {
+              window.frameElement.remove();
+            });
+            window.focus();
+            ed.focus();
+            ec.invalidate();
+          </script></body>"></iframe>
+          <iframe id="f2" srcdoc="<body>sibling</body>"></iframe>
+          <div>after</div>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  test::RunPendingTasks();
+  LocalFrame& local_frame = *helper.LocalMainFrame()->GetFrame();
+  mojom::blink::InnerTextParams params;
+  params.include_edit_context = true;
+  mojom::blink::InnerTextFramePtr frame =
+      InnerTextBuilder::Build(local_frame, params);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(3u, frame->segments.size());
+  EXPECT_EQ("before", frame->segments[0]->get_text());
+  ASSERT_TRUE(frame->segments[1]->is_frame());
+  ASSERT_EQ(1u, frame->segments[1]->get_frame()->segments.size());
+  EXPECT_EQ("sibling",
+            frame->segments[1]->get_frame()->segments[0]->get_text());
+  EXPECT_EQ("\nafter", frame->segments[2]->get_text());
+}
+
+TEST(InnerTextBuilderTest,
+     ContextRequestSkippedInExcludedCrossOriginChildIframe) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize();
+  frame_test_helpers::LoadHTMLString(
+      helper.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <div>main</div>
+          <iframe id="cross" sandbox="allow-scripts" srcdoc="<body data-requests='0'><div id='ed'></div><script>
+            const ed = document.getElementById('ed');
+            const ec = new EditContext({text: '_'});
+            ed.editContext = ec;
+            ec.addEventListener('contextrequest', () => {
+              document.body.dataset.requests =
+                  String(Number(document.body.dataset.requests) + 1);
+              ec.updateText(0, ec.text.length, 'Cross-origin text');
+            });
+            ec.invalidate();
+          </script></body>"></iframe>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  test::RunPendingTasks();
+
+  LocalFrame& local_frame = *helper.LocalMainFrame()->GetFrame();
+  auto* iframe = To<HTMLIFrameElement>(
+      local_frame.GetDocument()->getElementById(AtomicString("cross")));
+  ASSERT_TRUE(iframe);
+  auto* cross_frame = To<LocalFrame>(iframe->ContentFrame());
+  ASSERT_TRUE(cross_frame);
+  Document* cross_doc = cross_frame->GetDocument();
+  ASSERT_TRUE(cross_doc);
+  Element* cross_ed = cross_doc->getElementById(AtomicString("ed"));
+  ASSERT_TRUE(cross_ed);
+  cross_ed->Focus(FocusParams(FocusTrigger::kUserGesture));
+  ASSERT_EQ(cross_doc->FocusedElement(), cross_ed);
+
+  mojom::blink::InnerTextParams params;
+  params.include_edit_context = true;
+  mojom::blink::InnerTextFramePtr frame =
+      InnerTextBuilder::Build(local_frame, params);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(1u, frame->segments.size());
+  EXPECT_EQ("main", frame->segments[0]->get_text());
+  EXPECT_EQ("0",
+            cross_doc->body()->getAttribute(AtomicString("data-requests")));
 }
 
 TEST(InnerTextBuilderTest, EditContextTextKeepsDocumentOrderWithIFrames) {

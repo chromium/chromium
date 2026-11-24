@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/modules/content_extraction/document_chunker.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -33,7 +35,46 @@ mojom::blink::InnerTextFramePtr InnerTextBuilder::Build(
     const mojom::blink::InnerTextParams& params) {
   auto inner_text_frame = mojom::blink::InnerTextFrame::New();
   inner_text_frame->token = frame.GetLocalFrameToken();
-  auto* body = frame.GetDocument()->body();
+  if (params.include_edit_context &&
+      RuntimeEnabledFeatures::EditContextOnDemandEnabled()) {
+    // Snapshot and clean extracted local frames upfront before walking the DOM,
+    // since `contextrequest` listeners run synchronously and may replace `body`
+    // or detach child iframes. Only descend into local `HTMLIFrameElement`
+    // children that pass `ShouldContentExtractionIncludeIFrame()`.
+    HeapVector<Member<LocalFrame>> frames = {&frame};
+    for (wtf_size_t i = 0; i < frames.size(); ++i) {
+      for (Frame* child = frames[i]->Tree().FirstChild(); child;
+           child = child->Tree().NextSibling()) {
+        auto* local_frame = DynamicTo<LocalFrame>(child);
+        if (!local_frame || !local_frame->GetDocument()) {
+          continue;
+        }
+        const auto* iframe_element =
+            DynamicTo<HTMLIFrameElement>(local_frame->DeprecatedLocalOwner());
+        if (!iframe_element ||
+            !ShouldContentExtractionIncludeIFrame(*iframe_element)) {
+          continue;
+        }
+        frames.push_back(local_frame);
+      }
+    }
+    for (const Member<LocalFrame>& target_frame : frames) {
+      if (Document* target_document = target_frame->GetDocument();
+          !target_document || !target_document->IsActive() ||
+          target_document->InvalidationDisallowed()) {
+        continue;
+      }
+      if (EditContext* edit_context =
+              target_frame->GetInputMethodController().GetActiveEditContext()) {
+        edit_context->CleanContextIfNeeded();
+      }
+    }
+  }
+  Document* document = frame.GetDocument();
+  if (!document || !document->IsActive()) {
+    return inner_text_frame;
+  }
+  auto* body = document->body();
   if (!body) {
     return inner_text_frame;
   }

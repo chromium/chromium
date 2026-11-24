@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -114,6 +115,7 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -2712,8 +2714,55 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
       forced_activatable_locks;
 
   // If we're doing this extraction as a part of the document lifecycle, we
-  // can't invalidate style/layout.
+  // can't invalidate style/layout or dispatch script events.
   if (!document.InvalidationDisallowed()) {
+    if (RuntimeEnabledFeatures::EditContextOnDemandEnabled()) {
+      // Snapshot extracted local frames before calling
+      // `CleanContextIfNeeded()`, since `contextrequest` listeners run
+      // synchronously and may mutate the frame tree (e.g. removing an iframe)
+      // or navigate `frame`. Walk `FirstChild()` / `NextSibling()` rather than
+      // `TraverseNext()` so we do not cross `RemoteFrame` boundaries or descend
+      // into redacted cross-site local subtrees.
+      HeapVector<Member<LocalFrame>> frames = {&frame};
+      for (wtf_size_t i = 0; i < frames.size(); ++i) {
+        for (Frame* child = frames[i]->Tree().FirstChild(); child;
+             child = child->Tree().NextSibling()) {
+          auto* local_frame = DynamicTo<LocalFrame>(child);
+          if (!local_frame) {
+            continue;
+          }
+          if (options_->include_same_site_only &&
+              !local_frame->IsOutermostMainFrame()) {
+            const SecurityOrigin* frame_origin =
+                local_frame->GetSecurityContext()->GetSecurityOrigin();
+            const SecurityOrigin* main_frame_origin =
+                local_frame->Top()->GetSecurityContext()->GetSecurityOrigin();
+            CHECK(frame_origin);
+            CHECK(main_frame_origin);
+            if (!frame_origin->IsSameSiteWith(main_frame_origin)) {
+              continue;
+            }
+          }
+          frames.push_back(local_frame);
+        }
+      }
+      for (const Member<LocalFrame>& target_frame : frames) {
+        if (Document* target_document = target_frame->GetDocument();
+            !target_document || !target_document->IsActive() ||
+            target_document->InvalidationDisallowed()) {
+          continue;
+        }
+        if (EditContext* edit_context = target_frame->GetInputMethodController()
+                                            .GetActiveEditContext()) {
+          edit_context->CleanContextIfNeeded();
+        }
+      }
+      if (frame.GetDocument() != &document || !document.IsActive() ||
+          !document.View()) {
+        return nullptr;
+      }
+    }
+
     // Force activatable locks so content which is accessible via find-in-page
     // is styled/laid out and included when walking the tree below.
     //
