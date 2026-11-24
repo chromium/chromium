@@ -476,6 +476,14 @@ class BrowsingDataModelBrowserTest
     return browsing_data_model.Take();
   }
 
+  // Sets a cookie from script. `document.cookie` writes reach the network
+  // service asynchronously, so read the cookie back from the page to make
+  // sure the write is committed before the cookie store is queried.
+  void SetCookieAndWait() {
+    SetDataForType("Cookie", web_contents());
+    ASSERT_TRUE(HasDataForType("Cookie", web_contents()));
+  }
+
   content::StoragePartition* default_storage_partition() {
     return browser()->GetProfile()->GetDefaultStoragePartition();
   }
@@ -1379,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
       browser(), https_test_server()->GetURL(kYouTubeHost,
                                              "/browsing_data/site_data.html")));
 
-  SetDataForType("Cookie", web_contents());
+  SetCookieAndWait();
 
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BuildBrowsingDataModel();
@@ -1409,7 +1417,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
       browser(), https_test_server()->GetURL(kYouTubeHost,
                                              "/browsing_data/site_data.html")));
 
-  SetDataForType("Cookie", web_contents());
+  SetCookieAndWait();
 
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BuildBrowsingDataModel();
@@ -1434,7 +1442,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
-  SetDataForType("Cookie", web_contents());
+  SetCookieAndWait();
 
   // Ensure that cookie is fetched.
   browsing_data_model = BuildBrowsingDataModel();
