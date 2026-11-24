@@ -4409,16 +4409,19 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void setAudioMuted(boolean mute) {
+        if (isDestroyed(WARN)) return;
         mWebContents.setAudioMuted(mute);
     }
 
     public boolean isAudioMuted() {
+        if (isDestroyed(WARN)) return false;
         return mWebContents.isAudioMuted();
     }
 
     public void setRendererPriorityPolicy(
             @RendererPriority int rendererRequestedPriority, boolean waivedWhenNotVisible) {
         if (TRACE) Log.i(TAG, "%s setRendererPriorityPolicy", this);
+        if (isDestroyed(WARN)) return;
         mRendererPriority = rendererRequestedPriority;
         mRendererPriorityWaivedWhenNotVisible = waivedWhenNotVisible;
         updateChildProcessImportance();
@@ -4426,12 +4429,14 @@ public class AwContents implements SmartClipProvider {
 
     public void setTextClassifier(TextClassifier textClassifier) {
         if (TRACE) Log.i(TAG, "%s setTextClassifier", this);
+        if (isDestroyed(WARN)) return;
         assert mWebContents != null;
         SelectionPopupController.fromWebContents(mWebContents).setTextClassifier(textClassifier);
     }
 
     public TextClassifier getTextClassifier() {
         if (TRACE) Log.i(TAG, "%s getTextClassifier", this);
+        if (isDestroyed(WARN)) return TextClassifier.NO_OP;
         assert mWebContents != null;
         return SelectionPopupController.fromWebContents(mWebContents).getTextClassifier();
     }
