@@ -74,6 +74,7 @@ source_set("model") {
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser",
     "//components/signin/ios/browser:signin_enabled_datasource",
+    "//components/signin/public/base",
     "//components/signin/public/base:signin_switches",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/ios",

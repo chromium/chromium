@@ -13,6 +13,7 @@
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -168,7 +169,7 @@ void AccountConsistencyBrowserAgent::OnAddAccount(
   }
 
   if (prefilled_email.empty()) {
-    OnAddUnkwownAccount(url);
+    OnAddUnknownAccount(url);
   } else {
     OnAddPrefilledAccount(url, prefilled_email);
   }
@@ -186,14 +187,7 @@ void AccountConsistencyBrowserAgent::OnAddPrefilledAccount(
   if (!email_in_identity_on_device) {
     // No account with this email is on the device. Let’s ask the user to add
     // the account.
-    id<BrowserCoordinatorCommands> browser_coordinator_handler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(),
-                           BrowserCoordinatorCommands);
-    signin_metrics::AccessPoint access_point =
-        signin_metrics::AccessPoint::kAccountConsistencyService;
-    [browser_coordinator_handler
-        showAddAccountWithAccessPoint:access_point
-                       prefilledEmail:base::SysUTF8ToNSString(prefilled_email)];
+    ShowAddAccount(base::SysUTF8ToNSString(prefilled_email));
     return;
   }
   if (HasPrimaryAccount()) {
@@ -209,7 +203,7 @@ void AccountConsistencyBrowserAgent::OnAddPrefilledAccount(
   }
 }
 
-void AccountConsistencyBrowserAgent::OnAddUnkwownAccount(const GURL& url) {
+void AccountConsistencyBrowserAgent::OnAddUnknownAccount(const GURL& url) {
   size_t num_profiles = GetApplicationContext()
                             ->GetProfileManager()
                             ->GetProfileAttributesStorage()
@@ -219,13 +213,7 @@ void AccountConsistencyBrowserAgent::OnAddUnkwownAccount(const GURL& url) {
   if (num_profiles > 1 && HasPrimaryAccount()) {
     ShowAccountMenu(url);
   } else {
-    id<BrowserCoordinatorCommands> browser_coordinator_handler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(),
-                           BrowserCoordinatorCommands);
-    signin_metrics::AccessPoint access_point =
-        signin_metrics::AccessPoint::kAccountConsistencyService;
-    [browser_coordinator_handler showAddAccountWithAccessPoint:access_point
-                                                prefilledEmail:nil];
+    ShowAddAccount(nil);
   }
 }
 
@@ -273,6 +261,19 @@ bool AccountConsistencyBrowserAgent::HasPrimaryAccount() const {
 
 void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
   [application_handler_ showAccountMenuFromWebWithURL:url];
+}
+
+void AccountConsistencyBrowserAgent::ShowAddAccount(NSString* prefilled_email) {
+  // TODO(crbug.com/588895765): Pass the continuation `url` from
+  // `OnAddAccount()` and navigate to it after sign-in, as `ShowAccountMenu()`
+  // does.
+  id<BrowserCoordinatorCommands> browser_coordinator_handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kAccountConsistencyService;
+  [browser_coordinator_handler showAddAccountWithAccessPoint:access_point
+                                              prefilledEmail:prefilled_email];
 }
 
 bool AccountConsistencyBrowserAgent::IsActiveWebState(

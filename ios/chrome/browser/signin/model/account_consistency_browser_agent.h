@@ -13,6 +13,7 @@
 
 class Browser;
 @class ManageAccountsDelegateBridge;
+@class NSString;
 @protocol SceneCommands;
 @protocol SceneSignInCommands;
 @class SceneState;
@@ -56,12 +57,15 @@ class AccountConsistencyBrowserAgent
   friend class BrowserUserData<AccountConsistencyBrowserAgent>;
 
   // Opens the account menu if the prefilled account is on the device.
-  // Otherwise, open the Add Account view.
+  // Otherwise, opens the Add Account view. `url` is the continuation URL
+  // received from the server (used when opening the account menu or web sign-in
+  // promo).
   void OnAddPrefilledAccount(const GURL& url,
                              const std::string& prefilled_email);
   // Opens the account menu if there is at least another profile. Otherwise open
-  // the Add Account View.
-  void OnAddUnkwownAccount(const GURL& url);
+  // the Add Account view. `url` is the continuation URL received from the
+  // server (used when opening the account menu).
+  void OnAddUnknownAccount(const GURL& url);
 
   void StopSigninCoordinator();
 
@@ -78,8 +82,14 @@ class AccountConsistencyBrowserAgent
 
   // Opens the account menu, offering to switch to a different account (even one
   // that's in a different profile). Assumes sign-in is enabled and there is a
-  // primary account.
+  // primary account. `url` is the continuation URL received from the server.
   void ShowAccountMenu(const GURL& url);
+
+  // Opens the Add Account view with an optional `prefilled_email`.
+  // TODO(crbug.com/588895765): Pass the continuation `url` from
+  // `OnAddAccount()` and navigate to it after sign-in, as `ShowAccountMenu()`
+  // does.
+  void ShowAddAccount(NSString* prefilled_email);
 
   // Whether `web_state` is the active one in the active browser.
   bool IsActiveWebState(web::WebState* web_state);
