@@ -24,8 +24,9 @@ public class CommonLeaks implements LeakCanaryConfigProvider {
             "com.android.internal.jank.InteractionJankMonitor$Configuration#mContext";
 
     // Android 17's remote selection toolbar keeps a binder stub alive from native code after the
-    // toolbar is dismissed. Through its client (the toolbar popup) and its provider, the stub
-    // references the destroyed activity. The stub is released only when the system side drops it.
+    // toolbar is dismissed. Through its client (the toolbar popup), its provider, and the
+    // provider's ServiceConnectionHandler, the stub references the destroyed activity. The stub is
+    // released only when the system side drops it.
     private static final String sSelectionToolbarClientWrapperClass =
             "android.view.selectiontoolbar.SelectionToolbarClientWrapper";
     private static final String sSelectionToolbarClientWrapperField =
@@ -36,6 +37,12 @@ public class CommonLeaks implements LeakCanaryConfigProvider {
     private static final String sSelectionToolbarProviderField =
             "android.view.selectiontoolbar.SelectionToolbarProviderFactory"
                     + "$SelectionToolbarProviderImpl#mContext";
+    private static final String sSelectionToolbarServiceConnectionHandlerClass =
+            "android.view.selectiontoolbar.SelectionToolbarProviderFactory"
+                    + "$SelectionToolbarProviderImpl$ServiceConnectionHandler";
+    private static final String sSelectionToolbarServiceConnectionHandlerField =
+            "android.view.selectiontoolbar.SelectionToolbarProviderFactory"
+                    + "$SelectionToolbarProviderImpl$ServiceConnectionHandler#mContext";
 
     @Override
     public Map<String, String> getInstanceFieldLeaks() {
@@ -45,6 +52,8 @@ public class CommonLeaks implements LeakCanaryConfigProvider {
                 sSelectionToolbarClientWrapperClass,
                 sSelectionToolbarClientWrapperField,
                 sSelectionToolbarProviderClass,
-                sSelectionToolbarProviderField);
+                sSelectionToolbarProviderField,
+                sSelectionToolbarServiceConnectionHandlerClass,
+                sSelectionToolbarServiceConnectionHandlerField);
     }
 }
