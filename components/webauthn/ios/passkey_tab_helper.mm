@@ -183,6 +183,20 @@ std::optional<sync_pb::WebauthnCredentialSpecifics> FindPasskey(
   return *it;
 }
 
+// Returns all unhidden, unshadowed passkeys for `rp_id`.
+std::vector<sync_pb::WebauthnCredentialSpecifics> GetVisiblePasskeys(
+    const PasskeyModel& passkey_model,
+    std::string_view rp_id) {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model.GetPasskeys(rp_id,
+                                PasskeyModel::ShadowedCredentials::kExclude);
+  std::erase_if(passkeys,
+                [](const sync_pb::WebauthnCredentialSpecifics& passkey) {
+                  return passkey.hidden();
+                });
+  return passkeys;
+}
+
 }  // namespace
 
 PasskeyTabHelper::~PasskeyTabHelper() = default;
@@ -674,10 +688,11 @@ bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
   if (!passkey_model_->IsReady()) {
     return false;
   }
-  return passkey_model_
-      ->GetPasskey(rp_id, credential_id,
-                   webauthn::PasskeyModel::ShadowedCredentials::kExclude)
-      .has_value();
+  std::optional<sync_pb::WebauthnCredentialSpecifics> passkey =
+      passkey_model_->GetPasskey(
+          rp_id, credential_id,
+          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
+  return passkey.has_value() && !passkey->hidden();
 }
 
 PasskeyTabHelper::PasskeyTabHelper(
@@ -744,10 +759,8 @@ bool PasskeyTabHelper::HasExcludedPasskey(
     return false;
   }
 
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeys(params.RpId(),
-                                  PasskeyModel::ShadowedCredentials::kExclude);
-  for (const auto& passkey : passkeys) {
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey :
+       GetVisiblePasskeys(*passkey_model_, params.RpId())) {
     if (exclude_credentials.contains(ToByteVector(passkey.credential_id()))) {
       return true;
     }
@@ -759,23 +772,23 @@ std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeyTabHelper::GetFilteredPasskeys(
     const AssertionRequestParams& params) const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeys(params.RpId(),
-                                  PasskeyModel::ShadowedCredentials::kExclude);
+      GetVisiblePasskeys(*passkey_model_, params.RpId());
   if (passkeys.empty()) {
     return passkeys;
   }
 
   // If the allowed credentials array is empty, then the relying party accepts
-  // any passkey credential.
+  // any unhidden passkey credential.
   std::set<std::vector<uint8_t>> allow_credentials =
       params.GetAllowCredentialIds();
   if (allow_credentials.empty()) {
     return passkeys;
   }
 
-  std::erase_if(passkeys, [&](sync_pb::WebauthnCredentialSpecifics cred) {
-    return !allow_credentials.contains(ToByteVector(cred.credential_id()));
-  });
+  std::erase_if(
+      passkeys, [&](const sync_pb::WebauthnCredentialSpecifics& cred) {
+        return !allow_credentials.contains(ToByteVector(cred.credential_id()));
+      });
 
   return passkeys;
 }

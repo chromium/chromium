@@ -517,6 +517,51 @@ TEST_F(PasskeyTabHelperTest, FilterPasskeys) {
   EXPECT_EQ(filtered_passkeys.size(), 2u);
 }
 
+// Tests that `HasCredential` ignores hidden passkeys.
+TEST_F(PasskeyTabHelperTest, HasCredentialIgnoresHiddenPasskey) {
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+  EXPECT_TRUE(passkey_tab_helper()->HasCredential(kRpId, kCredentialId));
+
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->HidePasskey(kCredentialId, base::Time::Now());
+  EXPECT_FALSE(passkey_tab_helper()->HasCredential(kRpId, kCredentialId));
+}
+
+// Tests that `HasExcludedPasskey` ignores hidden passkeys.
+TEST_F(PasskeyTabHelperTest, HasExcludedPasskeyIgnoresHiddenPasskey) {
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->HidePasskey(kCredentialId, base::Time::Now());
+
+  std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials = {
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId)}};
+  EXPECT_FALSE(
+      HasExcludedPasskey(BuildRegistrationRequestParams(exclude_credentials)));
+}
+
+// Tests that `GetFilteredPasskeys` excludes hidden credentials both when
+// `allow_credentials` is empty and when it explicitly includes the hidden
+// credential ID.
+TEST_F(PasskeyTabHelperTest, FilterPasskeysExcludesHiddenCredentials) {
+  passkey_model_->AddNewPasskeyForTesting(GetTestPasskey(kCredentialId));
+  passkey_model_->AddNewPasskeyForTesting(GetTestPasskey(kCredentialId2));
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->HidePasskey(kCredentialId, base::Time::Now());
+
+  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered_passkeys =
+      GetFilteredPasskeys(
+          BuildAssertionRequestParams(/*allow_credentials=*/{}));
+  ASSERT_EQ(filtered_passkeys.size(), 1u);
+  EXPECT_EQ(filtered_passkeys[0].credential_id(), kCredentialId2);
+
+  std::vector<device::PublicKeyCredentialDescriptor> allow_hidden = {
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId)}};
+  EXPECT_TRUE(
+      GetFilteredPasskeys(BuildAssertionRequestParams(allow_hidden)).empty());
+}
+
 // Tests that the IOSWebAuthnCredentialsDelegate receives the available passkeys
 // when a passkey assertion request is processed.
 TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
