@@ -108,7 +108,6 @@ suite('OrganizerListSectionHeaderTest', () => {
 
     assertTrue(header.expanded);
     assertTrue(expandButton.expanded);
-    assertEquals('cr:keyboard-arrow-up', expandIcon.ironIcon);
     assertEquals('true', expandIcon.getAttribute('aria-expanded'));
 
     let whenExpandedChanged = eventToPromise<CustomEvent<{value: boolean}>>(
@@ -120,7 +119,6 @@ suite('OrganizerListSectionHeaderTest', () => {
     assertFalse(event.detail.value);
     assertFalse(header.expanded);
     assertFalse(expandButton.expanded);
-    assertEquals('cr:keyboard-arrow-down', expandIcon.ironIcon);
     assertEquals('false', expandIcon.getAttribute('aria-expanded'));
 
     whenExpandedChanged = eventToPromise<CustomEvent<{value: boolean}>>(
@@ -132,7 +130,6 @@ suite('OrganizerListSectionHeaderTest', () => {
     assertTrue(event.detail.value);
     assertTrue(header.expanded);
     assertTrue(expandButton.expanded);
-    assertEquals('cr:keyboard-arrow-up', expandIcon.ironIcon);
     assertEquals('true', expandIcon.getAttribute('aria-expanded'));
   });
 

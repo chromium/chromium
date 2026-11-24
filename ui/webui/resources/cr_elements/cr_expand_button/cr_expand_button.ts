@@ -19,6 +19,13 @@ import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 import {getCss} from './cr_expand_button.css.js';
 import {getHtml} from './cr_expand_button.html.js';
 
+export enum CrExpandButtonDirection {
+  UP = 'up',
+  DOWN = 'down',
+  LEFT = 'left',
+  RIGHT = 'right',
+}
+
 export interface CrExpandButtonElement {
   $: {
     icon: CrIconButtonElement,
@@ -41,9 +48,9 @@ export class CrExpandButtonElement extends CrLitElement {
   static override get properties() {
     return {
       /**
-       * If true, the button is in the expanded state and will show the icon
-       * specified in the `collapseIcon` property. If false, the button shows
-       * the icon specified in the `expandIcon` property.
+       * If true, the button is in the expanded state and the chevron points in
+       * the `collapseDirection`. If false, the chevron points in the
+       * `expandDirection`.
        */
       expanded: {
         type: Boolean,
@@ -63,8 +70,19 @@ export class CrExpandButtonElement extends CrLitElement {
       ariaLabel: {type: String},
 
       tabIndex: {type: Number},
-      expandIcon: {type: String},
-      collapseIcon: {type: String},
+
+      /**
+       * The direction the chevron points when collapsed (`expanded` is false).
+       * Horizontal directions (`left` and `right`) are mirrored in RTL.
+       */
+      expandDirection: {type: String},
+
+      /**
+       * The direction the chevron points when expanded (`expanded` is true).
+       * Horizontal directions (`left` and `right`) are mirrored in RTL.
+       */
+      collapseDirection: {type: String},
+
       expandTitle: {type: String},
       collapseTitle: {type: String},
     };
@@ -74,8 +92,10 @@ export class CrExpandButtonElement extends CrLitElement {
   accessor disabled: boolean = false;
   override accessor ariaDescription: string|null = null;
   override accessor ariaLabel: string = '';
-  accessor expandIcon: string = 'cr:keyboard-arrow-down';
-  accessor collapseIcon: string = 'cr:keyboard-arrow-up';
+  accessor expandDirection: CrExpandButtonDirection =
+      CrExpandButtonDirection.DOWN;
+  accessor collapseDirection: CrExpandButtonDirection =
+      CrExpandButtonDirection.UP;
   accessor expandTitle: string|undefined;
   accessor collapseTitle: string|undefined;
   override accessor tabIndex: number = 0;
@@ -107,8 +127,8 @@ export class CrExpandButtonElement extends CrLitElement {
     this.$.icon.focus();
   }
 
-  protected getIcon_(): string {
-    return this.expanded ? this.collapseIcon : this.expandIcon;
+  protected getIconDirection_(): CrExpandButtonDirection {
+    return this.expanded ? this.collapseDirection : this.expandDirection;
   }
 
   protected getAriaExpanded_(): string {

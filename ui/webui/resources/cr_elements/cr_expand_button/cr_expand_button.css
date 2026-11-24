@@ -23,7 +23,26 @@
   padding: var(--cr-section-vertical-padding) 0;
 }
 
-cr-icon-button {
+#icon {
   --cr-icon-button-icon-size: var(--cr-expand-button-icon-size, 20px);
   --cr-icon-button-size: var(--cr-expand-button-size, 36px);
+}
+
+/* Rotate only the inner <cr-icon> so focus outlines stay upright.
+ * cr:keyboard-arrow-down points down at 0deg; horizontal directions are
+ * mirrored in RTL by cr-icon-button's built-in scaleX(-1). */
+#icon::part(icon) {
+  transform: rotate(0deg);
+}
+
+#icon[data-direction='up']::part(icon) {
+  transform: rotate(180deg);
+}
+
+#icon[data-direction='left']::part(icon) {
+  transform: rotate(90deg);
+}
+
+#icon[data-direction='right']::part(icon) {
+  transform: rotate(-90deg);
 }

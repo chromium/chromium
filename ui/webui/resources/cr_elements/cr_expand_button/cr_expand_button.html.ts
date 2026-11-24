@@ -14,6 +14,7 @@ export function getHtml(this: CrExpandButtonElement) {
 <cr-icon-button id="icon" aria-labelledby="label" ?disabled="${this.disabled}"
     aria-expanded="${this.getAriaExpanded_()}" tabindex="${this.tabIndex}"
     aria-description="${this.ariaDescription || nothing}" part="icon"
-    iron-icon="${this.getIcon_()}">
+    iron-icon="cr:keyboard-arrow-down"
+    data-direction="${this.getIconDirection_()}">
 </cr-icon-button>`;
 }

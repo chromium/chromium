@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrExpandButtonDirection} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {PowerBookmarkRowItemElement} from './power_bookmark_row_item.ts';
@@ -25,8 +26,8 @@ export function getHtml(this: PowerBookmarkRowItemElement) {
   ${this.isExpandable ? html`
     <cr-expand-button slot="prefix" id="expandButton" no-hover
         .expanded="${this.expanded}" aria-expanded="${this.expanded}"
-        tab-index="-1" collapse-icon="cr:keyboard-arrow-down"
-        expand-icon="cr:chevron-right"
+        tab-index="-1" .collapseDirection="${CrExpandButtonDirection.DOWN}"
+        .expandDirection="${CrExpandButtonDirection.RIGHT}"
         @expanded-changed="${this.onExpandedChanged_}">
     </cr-expand-button>
   ` : ''}

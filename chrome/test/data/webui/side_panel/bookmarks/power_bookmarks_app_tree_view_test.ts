@@ -11,6 +11,8 @@ import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'c
 import {browserProxyFactory as priceTrackingBrowserProxyFactory, PriceTrackingHandlerRemote} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
+import {CrExpandButtonDirection} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -291,15 +293,19 @@ suite('TreeView', () => {
     assertTrue(!!folderItem);
 
     let expandButton =
-        folderItem.shadowRoot.querySelector<HTMLElement>('#expandButton');
+        folderItem.shadowRoot.querySelector<CrExpandButtonElement>(
+            '#expandButton');
     assertTrue(!!expandButton);
+    assertEquals(CrExpandButtonDirection.RIGHT, expandButton.expandDirection);
+    assertEquals(CrExpandButtonDirection.DOWN, expandButton.collapseDirection);
 
     const singleBookmarkItem =
         getPowerBookmarksRowItemElement(powerBookmarksApp, '3');
     assertTrue(!!singleBookmarkItem);
 
-    expandButton = singleBookmarkItem.shadowRoot.querySelector<HTMLElement>(
-        '#expandButton');
+    expandButton =
+        singleBookmarkItem.shadowRoot.querySelector<CrExpandButtonElement>(
+            '#expandButton');
     assertFalse(!!expandButton);
   });
 

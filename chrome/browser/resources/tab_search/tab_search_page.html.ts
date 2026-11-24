@@ -53,8 +53,6 @@ export function getHtml(this: TabSearchPageElement) {
                 <cr-expand-button
                     aria-label="$i18n{recentlyClosedExpandA11yLabel}"
                     data-title="${item.title}" data-index="${index}"
-                    expand-icon="cr:keyboard-arrow-down"
-                    collapse-icon="cr:keyboard-arrow-up"
                     ?expanded="${item.expanded}"
                     expand-title="$i18n{expandRecentlyClosed}"
                     collapse-title="$i18n{collapseRecentlyClosed}"

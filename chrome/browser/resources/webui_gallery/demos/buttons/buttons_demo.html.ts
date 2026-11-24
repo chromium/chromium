@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrExpandButtonDirection} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ButtonsDemoElement} from './buttons_demo.js';
@@ -69,9 +70,9 @@ export function getHtml(this: ButtonsDemoElement) {
   </cr-expand-button>
   <cr-collapse ?opened="${this.expanded_}">Some content goes here.</cr-collapse>
 
-  <cr-expand-button expand-icon="cr:arrow-drop-down"
-      collapse-icon="cr:arrow-drop-up">
-    With custom icons
+  <cr-expand-button .expandDirection="${CrExpandButtonDirection.RIGHT}"
+      .collapseDirection="${CrExpandButtonDirection.DOWN}">
+    With custom directions
   </cr-expand-button>
   <cr-expand-button no-hover>
     With no hover effect on entire row
