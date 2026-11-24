@@ -787,6 +787,9 @@ void AddressDataManager::OnProfileChangeDone() {
 }
 
 void AddressDataManager::LogStoredDataMetrics() const {
+  // TODO(crbug.com/588383630): Consider moving all stored profile metrics
+  // below onto a single background task together with
+  // `LogStoredProfileScriptTypeMetrics()`.
   const std::vector<const AutofillProfile*> profile_pointers = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profile_pointers);
