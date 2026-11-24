@@ -7,14 +7,18 @@
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/services/storage/service_worker/service_worker_storage.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_core_observer.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -2846,6 +2850,243 @@ TEST_F(
           }));
   SimulateRestart();
   loop.Run();
+}
+
+TEST_F(ServiceWorkerRegistryTest, InvalidUserDataArgumentsDoNotWipeStorage) {
+  EnsureRemoteCallsAreExecuted();
+
+  struct StorageWipeObserver : public ServiceWorkerContextCoreObserver {
+    void OnDeleteAndStartOver() override { ++delete_and_start_over_count; }
+    void OnStorageWiped() override { ++storage_wiped_count; }
+    int delete_and_start_over_count = 0;
+    int storage_wiped_count = 0;
+  } observer;
+
+  base::ScopedObservation<ServiceWorkerContextWrapper,
+                          ServiceWorkerContextCoreObserver>
+      observation(&observer);
+  observation.Observe(helper()->context_wrapper());
+
+  // Store two registrations on distinct origins with script resources and user
+  // data.
+  const GURL kScopeA("https://a.example.com/scope/");
+  const GURL kScriptA("https://a.example.com/sw.js");
+  const blink::StorageKey kKeyA =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScopeA));
+  constexpr int64_t kResourceIdA = 1;
+  ASSERT_LT(0, WriteBasicResponse(storage_control(), kResourceIdA));
+  scoped_refptr<ServiceWorkerRegistration> registration_a =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScopeA, kScriptA,
+                                                kKeyA, kResourceIdA);
+  const int64_t kRegistrationIdA = registration_a->id();
+  ASSERT_EQ(
+      StoreRegistration(registration_a, registration_a->waiting_version()),
+      blink::ServiceWorkerStatusCode::kOk);
+
+  const GURL kScopeB("https://b.example.com/scope/");
+  const GURL kScriptB("https://b.example.com/sw.js");
+  const blink::StorageKey kKeyB =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScopeB));
+  constexpr int64_t kResourceIdB = 2;
+  ASSERT_LT(0, WriteBasicResponse(storage_control(), kResourceIdB));
+  scoped_refptr<ServiceWorkerRegistration> registration_b =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScopeB, kScriptB,
+                                                kKeyB, kResourceIdB);
+  const int64_t kRegistrationIdB = registration_b->id();
+  ASSERT_EQ(
+      StoreRegistration(registration_b, registration_b->waiting_version()),
+      blink::ServiceWorkerStatusCode::kOk);
+
+  {
+    base::test::TestFuture<blink::ServiceWorkerStatusCode> future;
+    registry().StoreUserData(
+        kRegistrationIdA, kKeyA,
+        {{"sample_key", "value_a"}, {"prefixed_key", "prefixed_a"}},
+        future.GetCallback());
+    ASSERT_EQ(future.Get(), blink::ServiceWorkerStatusCode::kOk);
+  }
+  {
+    base::test::TestFuture<blink::ServiceWorkerStatusCode> future;
+    registry().StoreUserData(kRegistrationIdB, kKeyB,
+                             {{"sample_key", "value_b"}}, future.GetCallback());
+    ASSERT_EQ(future.Get(), blink::ServiceWorkerStatusCode::kOk);
+  }
+  EnsureRemoteCallsAreExecuted();
+
+  // Exercise all 9 UserData methods with invalid registration IDs and empty
+  // key/prefix arguments; each must fail with kErrorFailed without issuing
+  // remote storage calls or scheduling storage recovery.
+  auto expect_get_failed = [&](auto invoke_fn) {
+    base::test::TestFuture<const std::vector<std::string>&,
+                           blink::ServiceWorkerStatusCode>
+        future;
+    invoke_fn(future.GetCallback());
+    EXPECT_EQ(inflight_call_count(), 0U);
+    EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kErrorFailed);
+    EXPECT_TRUE(future.Get<0>().empty());
+  };
+
+  expect_get_failed([&](ServiceWorkerRegistry::GetUserDataCallback cb) {
+    registry().GetUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
+                           {"sample_key"}, std::move(cb));
+  });
+  expect_get_failed([&](ServiceWorkerRegistry::GetUserDataCallback cb) {
+    registry().GetUserData(kRegistrationIdA, {}, std::move(cb));
+  });
+  expect_get_failed([&](ServiceWorkerRegistry::GetUserDataCallback cb) {
+    registry().GetUserData(kRegistrationIdA, {"sample_key", ""}, std::move(cb));
+  });
+  expect_get_failed([&](ServiceWorkerRegistry::GetUserDataCallback cb) {
+    registry().GetUserDataByKeyPrefix(
+        blink::mojom::kInvalidServiceWorkerRegistrationId, "prefixed_",
+        std::move(cb));
+  });
+  expect_get_failed([&](ServiceWorkerRegistry::GetUserDataCallback cb) {
+    registry().GetUserDataByKeyPrefix(kRegistrationIdA, "", std::move(cb));
+  });
+
+  for (const auto& [reg_id, prefix] :
+       std::vector<std::pair<int64_t, std::string>>{
+           {blink::mojom::kInvalidServiceWorkerRegistrationId, "prefixed_"},
+           {kRegistrationIdA, ""}}) {
+    base::test::TestFuture<blink::ServiceWorkerStatusCode,
+                           const base::flat_map<std::string, std::string>&>
+        future;
+    registry().GetUserKeysAndDataByKeyPrefix(reg_id, prefix,
+                                             future.GetCallback());
+    EXPECT_EQ(inflight_call_count(), 0U);
+    EXPECT_EQ(future.Get<0>(), blink::ServiceWorkerStatusCode::kErrorFailed);
+    EXPECT_TRUE(future.Get<1>().empty());
+  }
+
+  auto expect_status_failed = [&](auto invoke_fn) {
+    base::test::TestFuture<blink::ServiceWorkerStatusCode> future;
+    invoke_fn(future.GetCallback());
+    EXPECT_EQ(inflight_call_count(), 0U);
+    EXPECT_EQ(future.Get(), blink::ServiceWorkerStatusCode::kErrorFailed);
+  };
+
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().StoreUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
+                             kKeyA, {{"sample_key", "v"}}, std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().StoreUserData(kRegistrationIdA, kKeyA, {}, std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().StoreUserData(kRegistrationIdA, kKeyA,
+                             {{"sample_key", "v"}, {"", "empty_key_value"}},
+                             std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().ClearUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
+                             {"sample_key"}, std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().ClearUserData(kRegistrationIdA, {}, std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().ClearUserData(kRegistrationIdA, {"sample_key", ""},
+                             std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().ClearUserDataByKeyPrefixes(
+        blink::mojom::kInvalidServiceWorkerRegistrationId, {"prefixed_"},
+        std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().ClearUserDataByKeyPrefixes(kRegistrationIdA, {}, std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().ClearUserDataByKeyPrefixes(kRegistrationIdA, {"prefixed_", ""},
+                                          std::move(cb));
+  });
+  expect_status_failed([&](ServiceWorkerRegistry::StatusCallback cb) {
+    registry().ClearUserDataForAllRegistrationsByKeyPrefix("", std::move(cb));
+  });
+
+  {
+    base::test::TestFuture<const std::vector<std::pair<int64_t, std::string>>&,
+                           blink::ServiceWorkerStatusCode>
+        future;
+    registry().GetUserDataForAllRegistrations("", future.GetCallback());
+    EXPECT_EQ(inflight_call_count(), 0U);
+    EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kErrorFailed);
+    EXPECT_TRUE(future.Get<0>().empty());
+  }
+  {
+    base::test::TestFuture<const std::vector<std::pair<int64_t, std::string>>&,
+                           blink::ServiceWorkerStatusCode>
+        future;
+    registry().GetUserDataForAllRegistrationsByKeyPrefix("",
+                                                         future.GetCallback());
+    EXPECT_EQ(inflight_call_count(), 0U);
+    EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kErrorFailed);
+    EXPECT_TRUE(future.Get<0>().empty());
+  }
+
+  // Non-existent positive IDs and synthetic response registration IDs (<= -10)
+  // must return kErrorNotFound without wiping storage.
+  {
+    base::test::TestFuture<const std::vector<std::string>&,
+                           blink::ServiceWorkerStatusCode>
+        future;
+    registry().GetUserData(/*registration_id=*/9999, {"sample_key"},
+                           future.GetCallback());
+    EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kErrorNotFound);
+  }
+  {
+    base::test::TestFuture<const std::vector<std::string>&,
+                           blink::ServiceWorkerStatusCode>
+        future;
+    registry().GetUserData(
+        blink::mojom::kSyntheticResponseServiceWorkerRegistrationId,
+        {"sample_key"}, future.GetCallback());
+    EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kErrorNotFound);
+  }
+
+  EnsureRemoteCallsAreExecuted();
+  EXPECT_EQ(0, observer.delete_and_start_over_count);
+  EXPECT_EQ(0, observer.storage_wiped_count);
+
+  observation.Reset();
+  registration_a.reset();
+  registration_b.reset();
+  SimulateRestart();
+
+  // Verify registrations, script resources, and user data for both origins
+  // remain intact across restarts.
+  ASSERT_TRUE(VerifyBasicResponse(storage_control(), kResourceIdA, true));
+  ASSERT_TRUE(VerifyBasicResponse(storage_control(), kResourceIdB, true));
+
+  scoped_refptr<ServiceWorkerRegistration> found_a;
+  EXPECT_EQ(FindRegistrationForScope(kScopeA, kKeyA, found_a),
+            blink::ServiceWorkerStatusCode::kOk);
+  ASSERT_TRUE(found_a);
+
+  scoped_refptr<ServiceWorkerRegistration> found_b;
+  EXPECT_EQ(FindRegistrationForScope(kScopeB, kKeyB, found_b),
+            blink::ServiceWorkerStatusCode::kOk);
+  ASSERT_TRUE(found_b);
+
+  {
+    base::test::TestFuture<const std::vector<std::string>&,
+                           blink::ServiceWorkerStatusCode>
+        future;
+    registry().GetUserData(kRegistrationIdA, {"sample_key"},
+                           future.GetCallback());
+    ASSERT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kOk);
+    EXPECT_THAT(future.Get<0>(), testing::ElementsAre("value_a"));
+  }
+  {
+    base::test::TestFuture<const std::vector<std::string>&,
+                           blink::ServiceWorkerStatusCode>
+        future;
+    registry().GetUserData(kRegistrationIdB, {"sample_key"},
+                           future.GetCallback());
+    ASSERT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kOk);
+    EXPECT_THAT(future.Get<0>(), testing::ElementsAre("value_b"));
+  }
 }
 
 // Tests loading registration that has hid event handlers.

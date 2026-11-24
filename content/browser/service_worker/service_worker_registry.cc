@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_registry.h"
 
+#include <algorithm>
 #include <type_traits>
 #include <utility>
 
@@ -41,6 +42,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/origin.h"
@@ -161,11 +163,21 @@ constexpr size_t kServiceWorkerScopeCacheLimitSize = 100;
 // (https://crbug.com/40254732).
 constexpr size_t kServiceWorkerRegistrationCacheSize = 100;
 
+bool HasEmptyUserDataKey(const std::vector<std::string>& keys) {
+  return keys.empty() || std::ranges::any_of(keys, [](const std::string& key) {
+           return key.empty();
+         });
+}
+
 }  // namespace
 
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
 BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Validates UserData registration IDs and keys before sending storage requests.
+BASE_FEATURE(kServiceWorkerValidateUserDataArguments,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 template <typename... ReplyArgs>
 class InflightCallWithInvoker final
@@ -816,6 +828,14 @@ void ServiceWorkerRegistry::GetUserData(int64_t registration_id,
                                         const std::vector<std::string>& keys,
                                         GetUserDataCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if ((registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+       HasEmptyUserDataKey(keys)) &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback), std::vector<std::string>(),
+                           blink::ServiceWorkerStatusCode::kErrorFailed));
+    return;
+  }
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetUserData,
       base::BindOnce(&ServiceWorkerRegistry::DidGetUserData,
@@ -828,6 +848,14 @@ void ServiceWorkerRegistry::GetUserDataByKeyPrefix(
     const std::string& key_prefix,
     GetUserDataCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if ((registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+       key_prefix.empty()) &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback), std::vector<std::string>(),
+                           blink::ServiceWorkerStatusCode::kErrorFailed));
+    return;
+  }
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetUserDataByKeyPrefix,
       base::BindOnce(&ServiceWorkerRegistry::DidGetUserData,
@@ -840,6 +868,15 @@ void ServiceWorkerRegistry::GetUserKeysAndDataByKeyPrefix(
     const std::string& key_prefix,
     GetUserKeysAndDataCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if ((registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+       key_prefix.empty()) &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           blink::ServiceWorkerStatusCode::kErrorFailed,
+                           base::flat_map<std::string, std::string>()));
+    return;
+  }
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           GetUserKeysAndDataByKeyPrefix,
@@ -866,6 +903,13 @@ void ServiceWorkerRegistry::StoreUserData(
   // storage::mojom::ServiceWorkerUserDataPtr instead of converting
   //|key_value_pairs|.
   for (const auto& kv : key_value_pairs) {
+    if (kv.first.empty() &&
+        base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+      RunSoon(FROM_HERE,
+              base::BindOnce(std::move(callback),
+                             blink::ServiceWorkerStatusCode::kErrorFailed));
+      return;
+    }
     user_data.push_back(storage::mojom::ServiceWorkerUserData::New(
         registration_id, kv.first, kv.second));
   }
@@ -884,6 +928,14 @@ void ServiceWorkerRegistry::ClearUserData(int64_t registration_id,
                                           const std::vector<std::string>& keys,
                                           StatusCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if ((registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+       HasEmptyUserDataKey(keys)) &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           blink::ServiceWorkerStatusCode::kErrorFailed));
+    return;
+  }
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
@@ -898,6 +950,14 @@ void ServiceWorkerRegistry::ClearUserDataByKeyPrefixes(
     const std::vector<std::string>& key_prefixes,
     StatusCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if ((registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+       HasEmptyUserDataKey(key_prefixes)) &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           blink::ServiceWorkerStatusCode::kErrorFailed));
+    return;
+  }
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
@@ -911,6 +971,13 @@ void ServiceWorkerRegistry::ClearUserDataForAllRegistrationsByKeyPrefix(
     const std::string& key_prefix,
     StatusCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (key_prefix.empty() &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           blink::ServiceWorkerStatusCode::kErrorFailed));
+    return;
+  }
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
@@ -925,6 +992,14 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrations(
     const std::string& key,
     GetUserDataForAllRegistrationsCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (key.empty() &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           std::vector<std::pair<int64_t, std::string>>(),
+                           blink::ServiceWorkerStatusCode::kErrorFailed));
+    return;
+  }
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<std::pair<int64_t, std::string>>(),
       blink::ServiceWorkerStatusCode::kErrorFailed);
@@ -940,6 +1015,14 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
     const std::string& key_prefix,
     GetUserDataForAllRegistrationsCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (key_prefix.empty() &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           std::vector<std::pair<int64_t, std::string>>(),
+                           blink::ServiceWorkerStatusCode::kErrorFailed));
+    return;
+  }
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<std::pair<int64_t, std::string>>(),
       blink::ServiceWorkerStatusCode::kErrorFailed);

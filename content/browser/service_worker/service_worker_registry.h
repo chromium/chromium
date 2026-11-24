@@ -46,6 +46,7 @@ FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerMergeFindRegistrationForClientUrl);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerValidateUserDataArguments);
 
 // Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
@@ -254,6 +255,12 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void StoreUncommittedResourceId(int64_t resource_id,
                                   const blink::StorageKey& key);
   void DoomUncommittedResource(int64_t resource_id);
+
+  // Reads, writes, or clears custom metadata associated with service worker
+  // registrations. Passing `blink::mojom::kInvalidServiceWorkerRegistrationId`
+  // or empty keys/key prefixes fails asynchronously with
+  // `blink::ServiceWorkerStatusCode::kErrorFailed` without triggering storage
+  // error recovery.
   void GetUserData(int64_t registration_id,
                    const std::vector<std::string>& keys,
                    GetUserDataCallback callback);

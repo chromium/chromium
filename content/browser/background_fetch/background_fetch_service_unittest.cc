@@ -31,6 +31,7 @@
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
@@ -535,10 +537,30 @@ TEST_F(BackgroundFetchServiceTest, FetchInvalidArguments) {
     blink::mojom::BackgroundFetchRegistrationPtr registration;
 
     Fetch(/* service_worker_registration_id= */ 42, kExampleDeveloperId,
-          std::move(requests), std::move(options), SkBitmap(), &error,
+          std::move(requests), options.Clone(), SkBitmap(), &error,
           &registration);
     EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
     EXPECT_EQ("Null request", bad_message_observer.WaitForBadMessage());
+  }
+
+  // The |service_worker_registration_id| must not be invalid.
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    std::vector<blink::mojom::FetchAPIRequestPtr> requests;
+    requests.push_back(CreateRequestWithProvidedResponse(
+        "GET", GURL("https://example.com/sample_data.txt"),
+        TestResponseBuilder(200).MakeIndefinitelyPending().Build()));
+
+    blink::mojom::BackgroundFetchError error;
+    blink::mojom::BackgroundFetchRegistrationPtr registration;
+
+    Fetch(blink::mojom::kInvalidServiceWorkerRegistrationId,
+          kExampleDeveloperId, std::move(requests), std::move(options),
+          SkBitmap(), &error, &registration);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
+    EXPECT_EQ("Invalid service_worker_registration_id",
+              bad_message_observer.WaitForBadMessage());
   }
 }
 
@@ -1411,6 +1433,82 @@ TEST_F(BackgroundFetchServiceTest,
 
   // Spin the |event_dispatched_loop| to wait for the dispatched event.
   event_dispatched_loop.Run();
+}
+
+TEST_F(BackgroundFetchServiceTest, InvalidServiceWorkerRegistrationId) {
+  int64_t valid_registration_id = RegisterServiceWorker();
+  ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
+            valid_registration_id);
+
+  EXPECT_CALL(*this, OnStorageWiped()).Times(0);
+  EXPECT_CALL(*this, OnServiceWorkerDatabaseCorrupted(_)).Times(0);
+
+  // GetRegistration with kInvalidServiceWorkerRegistrationId must report a bad
+  // message, return INVALID_ARGUMENT, and not wipe Service Worker storage.
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    blink::mojom::BackgroundFetchError error =
+        blink::mojom::BackgroundFetchError::NONE;
+    blink::mojom::BackgroundFetchRegistrationPtr registration;
+
+    GetRegistration(blink::mojom::kInvalidServiceWorkerRegistrationId,
+                    kExampleDeveloperId, &error, &registration);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
+    EXPECT_EQ("Invalid service_worker_registration_id",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  // GetDeveloperIds with kInvalidServiceWorkerRegistrationId must report a bad
+  // message and return INVALID_ARGUMENT.
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    blink::mojom::BackgroundFetchError error =
+        blink::mojom::BackgroundFetchError::NONE;
+    std::vector<std::string> developer_ids;
+
+    GetDeveloperIds(blink::mojom::kInvalidServiceWorkerRegistrationId, &error,
+                    &developer_ids);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
+    EXPECT_TRUE(developer_ids.empty());
+    EXPECT_EQ("Invalid service_worker_registration_id",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  // Fetch with kInvalidServiceWorkerRegistrationId must report a bad message
+  // and return INVALID_ARGUMENT rather than hitting a browser CHECK.
+  std::vector<blink::mojom::FetchAPIRequestPtr> requests;
+  requests.push_back(CreateDefaultRequest());
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    auto options = blink::mojom::BackgroundFetchOptions::New();
+    blink::mojom::BackgroundFetchError error =
+        blink::mojom::BackgroundFetchError::NONE;
+    blink::mojom::BackgroundFetchRegistrationPtr registration;
+
+    Fetch(blink::mojom::kInvalidServiceWorkerRegistrationId,
+          kExampleDeveloperId, CloneRequestVector(requests), std::move(options),
+          SkBitmap(), &error, &registration);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
+    EXPECT_EQ("Invalid service_worker_registration_id",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  content::RunAllTasksUntilIdle();
+
+  // Verify the valid Service Worker registration still operates normally.
+  {
+    auto options = blink::mojom::BackgroundFetchOptions::New();
+    blink::mojom::BackgroundFetchError error =
+        blink::mojom::BackgroundFetchError::INVALID_ARGUMENT;
+    blink::mojom::BackgroundFetchRegistrationPtr registration;
+
+    Fetch(valid_registration_id, kExampleDeveloperId, std::move(requests),
+          std::move(options), SkBitmap(), &error, &registration);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
+  }
 }
 
 }  // namespace content

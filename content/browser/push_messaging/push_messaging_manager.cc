@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +25,7 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_registry.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -37,6 +39,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
@@ -178,6 +181,13 @@ void PushMessagingManager::Subscribe(
   if (IsRequestFromFencedFrame()) {
     bad_message::ReceivedBadMessage(&*render_process_host_,
                                     bad_message::PMM_SUBSCRIBE_IN_FENCED_FRAME);
+    return;
+  }
+
+  if (service_worker_registration_id ==
+          blink::mojom::kInvalidServiceWorkerRegistrationId &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    receivers_.ReportBadMessage("Invalid service worker registration ID");
     return;
   }
 
@@ -533,6 +543,13 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
     return;
   }
 
+  if (service_worker_registration_id ==
+          blink::mojom::kInvalidServiceWorkerRegistrationId &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    receivers_.ReportBadMessage("Invalid service worker registration ID");
+    return;
+  }
+
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
@@ -612,6 +629,13 @@ void PushMessagingManager::GetSubscription(
     bad_message::ReceivedBadMessage(
         &*render_process_host_,
         bad_message::PMM_GET_SUBSCRIPTION_IN_FENCED_FRAME);
+    return;
+  }
+
+  if (service_worker_registration_id ==
+          blink::mojom::kInvalidServiceWorkerRegistrationId &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    receivers_.ReportBadMessage("Invalid service worker registration ID");
     return;
   }
 

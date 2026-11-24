@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
@@ -16,6 +17,7 @@
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_registry.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,6 +27,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 namespace content {
 
@@ -138,7 +141,8 @@ void BackgroundFetchServiceImpl::Fetch(
     FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ValidateDeveloperId(developer_id) || !ValidateRequests(requests)) {
+  if (!ValidateServiceWorkerRegistrationId(service_worker_registration_id) ||
+      !ValidateDeveloperId(developer_id) || !ValidateRequests(requests)) {
     std::move(callback).Run(
         blink::mojom::BackgroundFetchError::INVALID_ARGUMENT,
         /* registration= */ nullptr);
@@ -169,7 +173,8 @@ void BackgroundFetchServiceImpl::GetRegistration(
     const std::string& developer_id,
     GetRegistrationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!ValidateDeveloperId(developer_id)) {
+  if (!ValidateServiceWorkerRegistrationId(service_worker_registration_id) ||
+      !ValidateDeveloperId(developer_id)) {
     std::move(callback).Run(
         blink::mojom::BackgroundFetchError::INVALID_ARGUMENT,
         /* registration= */ nullptr);
@@ -185,8 +190,29 @@ void BackgroundFetchServiceImpl::GetDeveloperIds(
     int64_t service_worker_registration_id,
     GetDeveloperIdsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ValidateServiceWorkerRegistrationId(service_worker_registration_id)) {
+    std::move(callback).Run(
+        blink::mojom::BackgroundFetchError::INVALID_ARGUMENT,
+        /* developer_ids= */ {});
+    return;
+  }
+
   background_fetch_context_->GetDeveloperIdsForServiceWorker(
       service_worker_registration_id, storage_key_, std::move(callback));
+}
+
+bool BackgroundFetchServiceImpl::ValidateServiceWorkerRegistrationId(
+    int64_t service_worker_registration_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (service_worker_registration_id ==
+          blink::mojom::kInvalidServiceWorkerRegistrationId &&
+      base::FeatureList::IsEnabled(kServiceWorkerValidateUserDataArguments)) {
+    mojo::ReportBadMessage("Invalid service_worker_registration_id");
+    return false;
+  }
+
+  return true;
 }
 
 bool BackgroundFetchServiceImpl::ValidateDeveloperId(

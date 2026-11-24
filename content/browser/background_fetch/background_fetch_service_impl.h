@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_SERVICE_IMPL_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -68,9 +70,12 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
                        GetDeveloperIdsCallback callback) override;
 
  private:
-  // Validates and returns whether the |developer_id|, |unique_id|, |requests|
-  // and |title| respectively have valid values. The renderer will be flagged
-  // for having sent a bad message if the values are invalid.
+  // Validates and returns whether the `service_worker_registration_id`,
+  // `developer_id`, `unique_id`, and `requests` respectively have valid values.
+  // The renderer will be flagged for having sent a bad message if the values
+  // are invalid.
+  [[nodiscard]] bool ValidateServiceWorkerRegistrationId(
+      int64_t service_worker_registration_id);
   [[nodiscard]] bool ValidateDeveloperId(const std::string& developer_id);
   [[nodiscard]] bool ValidateUniqueId(const std::string& unique_id);
   [[nodiscard]] bool ValidateRequests(
