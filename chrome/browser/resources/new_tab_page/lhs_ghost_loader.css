@@ -27,11 +27,14 @@
   overflow: hidden;
 }
 
-/* NTP: placeholders for icons, labels and the logo. */
+/* NTP: placeholders for icons, labels and the logo. Like .ghost-line, they
+ * clip the .ghost-shimmer layers inside them. */
 .ghost-icon,
 .ghost-label,
 .ghost-wordmark {
   background: var(--aim-loading-bar-base-color, #e4e7ee);
+  overflow: hidden;
+  position: relative;
 }
 
 :host([is-dark]) .ghost-icon,

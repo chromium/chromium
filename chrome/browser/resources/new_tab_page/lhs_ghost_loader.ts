@@ -21,6 +21,13 @@ const BAR_BORDER_RADIUS_PX = '9px';
 const GHOST_BAR_WIDTHS = [85, 75, 90, 80, 95, 78, 88, 82, 92, 85];
 const LOADING_BAR_INDICES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
+// NTP: rows of the header and footer placeholders, in the same stagger
+// sequence as the thread lines so the shimmer moves from top to bottom.
+const LOGO_ROW_INDEX = -3;
+const NEW_THREAD_ROW_INDEX = -2;
+const SEARCH_THREADS_ROW_INDEX = -1;
+const SETTINGS_ROW_INDEX = LOADING_BAR_INDICES.length;
+
 // Search: google3/java/com/google/search/next/aim/ui/loadingbar/
 // loading_bar.sfc.tsx
 const LINE_STAGGER_MS = 200;
@@ -36,23 +43,43 @@ export interface GhostLoadingBar {
   layerDelaysMs: number[];
 }
 
-// Search: LoadingGhostBars() and LoadingBar().
-function createGhostLoadingBar(index: number): GhostLoadingBar {
+// NTP: shimmer layer delays for the header and footer placeholders.
+export interface GhostShimmerDelays {
+  logo: number[];
+  newThread: number[];
+  searchThreads: number[];
+  settings: number[];
+}
+
+// Search: LoadingBar().
+function getLayerDelaysMs(index: number): number[] {
   const baseGap = LINE_STAGGER_MS * index;
+  return [
+    baseGap + LAYER_1_BASE_DELAY_MS,
+    baseGap + LAYER_2_BASE_DELAY_MS,
+    baseGap + LAYER_3_BASE_DELAY_MS,
+  ];
+}
+
+// Search: LoadingGhostBars().
+function createGhostLoadingBar(index: number): GhostLoadingBar {
   return {
     width: `${GHOST_BAR_WIDTHS[index % GHOST_BAR_WIDTHS.length]}%`,
     height: BAR_HEIGHT_PX,
     borderRadius: BAR_BORDER_RADIUS_PX,
-    layerDelaysMs: [
-      baseGap + LAYER_1_BASE_DELAY_MS,
-      baseGap + LAYER_2_BASE_DELAY_MS,
-      baseGap + LAYER_3_BASE_DELAY_MS,
-    ],
+    layerDelaysMs: getLayerDelaysMs(index),
   };
 }
 
 const GHOST_LOADING_BARS: GhostLoadingBar[] =
     LOADING_BAR_INDICES.map(createGhostLoadingBar);
+
+const GHOST_SHIMMER_DELAYS: GhostShimmerDelays = {
+  logo: getLayerDelaysMs(LOGO_ROW_INDEX),
+  newThread: getLayerDelaysMs(NEW_THREAD_ROW_INDEX),
+  searchThreads: getLayerDelaysMs(SEARCH_THREADS_ROW_INDEX),
+  settings: getLayerDelaysMs(SETTINGS_ROW_INDEX),
+};
 
 export class LhsGhostLoaderElement extends CrLitElement {
   static get is() {
@@ -79,6 +106,8 @@ export class LhsGhostLoaderElement extends CrLitElement {
   // Selects the dark fallback colors in lhs_ghost_loader.css.
   accessor isDark: boolean = false;
   protected readonly ghostLoadingBars_: GhostLoadingBar[] = GHOST_LOADING_BARS;
+  protected readonly shimmerDelaysMs_: GhostShimmerDelays =
+      GHOST_SHIMMER_DELAYS;
 }
 
 declare global {
