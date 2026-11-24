@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/selected_grid_items.h"
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -17,7 +17,7 @@
 #import "ios/web/public/web_state.h"
 
 @implementation SelectedGridItems {
-  raw_ptr<WebStateList, DanglingUntriaged> _webStateList;
+  base::WeakPtr<WebStateList> _webStateList;
   std::set<web::WebStateID> _sharableItemsIDs;
   NSMutableSet<GridItemIdentifier*>* _itemsIdentifiers;
 }
@@ -26,7 +26,7 @@
   CHECK(webStateList);
   self = [super init];
   if (self) {
-    _webStateList = webStateList;
+    _webStateList = webStateList->AsWeakPtr();
     _itemsIdentifiers = [NSMutableSet set];
   }
   return self;
@@ -37,7 +37,7 @@
 }
 
 - (void)addItem:(GridItemIdentifier*)item {
-  if ([self containItem:item]) {
+  if ([self containItem:item] || !_webStateList) {
     return;
   }
   switch (item.type) {
@@ -84,6 +84,9 @@
       return;
     }
     case GridItemType::kGroup: {
+      if (!_webStateList) {
+        return;
+      }
       const TabGroup* group = item.tabGroupItem.tabGroup;
       const TabGroupRange range = group->range();
       for (int i : range) {
@@ -131,6 +134,9 @@
         tabs.insert(item.tabSwitcherItem.identifier);
         break;
       case GridItemType::kGroup: {
+        if (!_webStateList) {
+          break;
+        }
         CHECK(item.tabGroupItem.tabGroup);
         for (int i : item.tabGroupItem.tabGroup->range()) {
           tabs.insert(_webStateList->GetWebStateAt(i)->GetUniqueIdentifier());
@@ -147,10 +153,13 @@
 }
 
 - (NSArray<URLWithTitle*>*)selectedTabsURLs {
+  if (!_webStateList) {
+    return @[];
+  }
   NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
   for (const web::WebStateID itemID : _sharableItemsIDs) {
     TabItem* item = GetTabItem(
-        _webStateList,
+        _webStateList.get(),
         WebStateSearchCriteria{
             .identifier = itemID,
             .pinned_state = WebStateSearchCriteria::PinnedState::kAny,
@@ -169,8 +178,11 @@
 
 // Returns YES if the provided webState can be shared.
 - (BOOL)isItemWithIDShareable:(web::WebStateID)itemID {
+  if (!_webStateList) {
+    return NO;
+  }
   web::WebState* webState =
-      GetWebState(_webStateList,
+      GetWebState(_webStateList.get(),
                   WebStateSearchCriteria{
                       .identifier = itemID,
                       .pinned_state = WebStateSearchCriteria::PinnedState::kAny,

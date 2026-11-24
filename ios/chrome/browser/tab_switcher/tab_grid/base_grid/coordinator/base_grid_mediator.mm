@@ -230,6 +230,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
     _profile = nullptr;
     _URLLoader = nullptr;
     _tabImagesConfigurator.reset();
+    _selectedEditingItems = nil;
   }
 
   BOOL multipleScenesAvailable =
@@ -292,6 +293,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   _webStateList->RemoveObserver(_webStateListObserverBridge.get());
   _webStateListObserverBridge.reset();
   _webStateList = nil;
+  _selectedEditingItems = nil;
 
   [_modeHolder removeObserver:self];
   _modeHolder = nil;

@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_mediator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/selected_grid_items.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
@@ -1342,6 +1343,77 @@ TEST_P(BaseGridMediatorTest, MultipleScenesAvailable) {
 
   scene_state_.multipleScenesAvailable = NO;
   EXPECT_FALSE(consumer_.multipleScenesAvailable);
+}
+
+// Tests that `selectedEditingItems` is cleared when the browser is reset, and
+// that holding a `SelectedGridItems` reference across `WebStateList`
+// destruction does not crash or cause a dangling pointer when interacted with
+// or deallocated.
+TEST_P(BaseGridMediatorTest, SelectedEditingItemsOutlivesWebStateList) {
+  ASSERT_NE(nil, mediator_.selectedEditingItems);
+  mediator_.browser = nullptr;
+  EXPECT_EQ(nil, mediator_.selectedEditingItems);
+
+  SelectedGridItems* selected_items = nil;
+  GridItemIdentifier* selected_tab_item = nil;
+  GridItemIdentifier* selected_group_item = nil;
+  GridItemIdentifier* unselected_tab_item = nil;
+  web::WebStateID selected_tab_id;
+
+  {
+    auto scoped_browser = std::make_unique<TestBrowser>(
+        profile_, nil, std::make_unique<BrowserWebStateListDelegate>(profile_));
+    SnapshotBrowserAgent::CreateForBrowser(scoped_browser.get());
+    SnapshotBrowserAgent::FromBrowser(scoped_browser.get())
+        ->SetSessionID("ScopedIdentifier");
+    WebStateList* web_state_list = scoped_browser->GetWebStateList();
+    web_state_list->InsertWebState(
+        CreateFakeWebStateWithURL(GURL("https://example.com/1")));
+    web_state_list->InsertWebState(
+        CreateFakeWebStateWithURL(GURL("https://example.com/2")));
+    web_state_list->InsertWebState(
+        CreateFakeWebStateWithURL(GURL("https://example.com/3")));
+    const TabGroup* group = web_state_list->CreateGroup(
+        {1},
+        tab_groups::TabGroupVisualData(u"Group",
+                                       tab_groups::TabGroupColorId::kBlue),
+        TabGroupId::GenerateNew());
+
+    mediator_.browser = scoped_browser.get();
+    selected_items = mediator_.selectedEditingItems;
+    ASSERT_NE(nil, selected_items);
+
+    web::WebState* tab_0 = web_state_list->GetWebStateAt(0);
+    selected_tab_id = tab_0->GetUniqueIdentifier();
+    selected_tab_item = [GridItemIdentifier tabIdentifier:tab_0];
+    selected_group_item = [GridItemIdentifier groupIdentifier:group];
+    unselected_tab_item =
+        [GridItemIdentifier tabIdentifier:web_state_list->GetWebStateAt(2)];
+
+    [selected_items addItem:selected_tab_item];
+    [selected_items addItem:selected_group_item];
+    EXPECT_EQ(2u, selected_items.tabsCount);
+
+    mediator_.browser = nullptr;
+    EXPECT_EQ(nil, mediator_.selectedEditingItems);
+  }
+
+  // `scoped_browser` and its `WebStateList` are now destroyed while
+  // `selected_items` is still alive. Interacting with `selected_items` should
+  // gracefully handle the invalidated `WebStateList` weak pointer.
+  EXPECT_EQ(std::set<web::WebStateID>{selected_tab_id},
+            [selected_items allTabs]);
+  EXPECT_EQ(0u, [selected_items selectedTabsURLs].count);
+
+  [selected_items addItem:unselected_tab_item];
+  EXPECT_FALSE([selected_items containItem:unselected_tab_item]);
+
+  [selected_items removeItem:selected_group_item];
+  [selected_items removeItem:selected_tab_item];
+  EXPECT_FALSE([selected_items containItem:selected_tab_item]);
+
+  selected_items = nil;
+  mediator_.browser = browser_.get();
 }
 
 INSTANTIATE_TEST_SUITE_P(
