@@ -29,7 +29,7 @@ if [ "$repo_add_once" = "true" ]; then
   determine_rpm_package_manager
 
   # Let's run through this for each supported package manager as detected...
-  for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
+  for PACKAGEMANAGER in $PACKAGEMANAGERS
   do
     # The initial install happens in the post-install scripts, but there have been
     # reports of configuration problems, so just verify that everything looks
@@ -42,7 +42,7 @@ if [ "$repo_add_once" = "true" ]; then
 
   if [ $? -eq 0 ]; then
     # Do this for each supported package manager...
-    for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
+    for PACKAGEMANAGER in $PACKAGEMANAGERS
     do
       # Before we quit auto-configuration, check that everything looks sane, since
       # part of this happened during package install and we don't have the return

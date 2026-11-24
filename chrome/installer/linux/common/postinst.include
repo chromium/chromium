@@ -17,7 +17,7 @@ update-desktop-database > /dev/null 2>&1 || true
 update_defaults_list() {
   # $1: name of the .desktop file
 
-  local DEFAULTS_LIST="/usr/share/applications/defaults.list"
+  DEFAULTS_LIST="/usr/share/applications/defaults.list"
 
   if [ ! -f "${DEFAULTS_LIST}" ]; then
     return

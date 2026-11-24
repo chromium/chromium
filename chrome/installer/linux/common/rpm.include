@@ -67,17 +67,17 @@ KEYDATA
 }
 
 determine_rpm_package_manager() {
-  local RELEASE
+  PACKAGEMANAGERS=""
 
   # Modern method using os-release(5)
   if [ -f "/etc/os-release" ]; then
     RELEASE=$(. "/etc/os-release"; echo "$ID")
     case $RELEASE in
     "fedora"|"rhel"|"centos"|"amzn"|"mageia"|"openmandriva")
-      PACKAGEMANAGERS=(yum)
+      PACKAGEMANAGERS="yum"
       ;;
     "suse"|"sles"|"sled"|"opensuse"|"opensuse-leap"|"opensuse-tumbleweed")
-      PACKAGEMANAGERS=(zypp)
+      PACKAGEMANAGERS="zypp"
       ;;
     esac
   fi
@@ -92,10 +92,10 @@ determine_rpm_package_manager() {
     RELEASE=$(lsb_release -i 2> /dev/null | sed 's/:\t/:/' | cut -d ':' -f 2-)
     case $RELEASE in
     "Fedora"|"Amazon"|"Mageia"|"OpenMandrivaLinux")
-      PACKAGEMANAGERS=(yum)
+      PACKAGEMANAGERS="yum"
       ;;
     "SUSE LINUX"|"openSUSE")
-      PACKAGEMANAGERS=(zypp)
+      PACKAGEMANAGERS="zypp"
       ;;
     esac
   fi
@@ -106,11 +106,11 @@ determine_rpm_package_manager() {
 
   # Fallback methods that are probably unnecessary on modern systems.
   if [ -f "/etc/fedora-release" ] || [ -f "/etc/redhat-release" ]; then
-    PACKAGEMANAGERS=(yum)
+    PACKAGEMANAGERS="yum"
   elif [ -f "/etc/system-release" ] && grep -Fq "Amazon Linux" "/etc/system-release"; then
-    PACKAGEMANAGERS=(yum)
+    PACKAGEMANAGERS="yum"
   elif [ -f "/etc/SuSE-release" ]; then
-    PACKAGEMANAGERS=(zypp)
+    PACKAGEMANAGERS="zypp"
   fi
 }
 
@@ -186,7 +186,7 @@ update_bad_repo() {
 
   determine_rpm_package_manager
 
-  for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
+  for PACKAGEMANAGER in $PACKAGEMANAGERS
   do
     case $PACKAGEMANAGER in
     "yum")

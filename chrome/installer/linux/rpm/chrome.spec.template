@@ -139,7 +139,7 @@ fi
 if [ "$repo_add_once" = "true" ]; then
   determine_rpm_package_manager
 
-  for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
+  for PACKAGEMANAGER in $PACKAGEMANAGERS
   do
     case $PACKAGEMANAGER in
     "yum")
@@ -223,7 +223,7 @@ fi
 #
 #determine_rpm_package_manager
 #
-#for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
+#for PACKAGEMANAGER in $PACKAGEMANAGERS
 #do
 #  case $PACKAGEMANAGER in
 #  "yum")
