@@ -61,11 +61,6 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
   using GetWindowOwnerPidCallback =
       base::RepeatingCallback<pid_t(DesktopMediaID::Id)>;
 
-  // The longest idle timeout that `RetainSessionForScreenshots()` grants.
-  // Longer requests are clamped to this value.
-  static constexpr base::TimeDelta kMaxCachedSessionIdleTimeout =
-      base::Hours(8);
-
   // Must be called on the UI thread.
   static NativeScreenCapturePickerMac* GetInstance();
 
@@ -73,15 +68,20 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
   ~NativeScreenCapturePickerMac() override;
 
   // Marks the session `session_id` as retained for screenshots and starts its
-  // idle timer: the session's content filter is released once `idle_timeout`,
-  // clamped to `kMaxCachedSessionIdleTimeout`, has elapsed, deactivating the
-  // picker if no other capture or picker request is active. Retained sessions
-  // are for repeated screenshots only (`CreateDevice()` returns nullptr for
-  // them). Returns false, without creating or changing any state, if
-  // `idle_timeout` is not positive, if `session_id` already has an active
-  // capture device, or if no session with that id holds a content filter (for
-  // example because nothing has been picked for it yet or it was already
-  // cleaned up).
+  // idle timer. Once `idle_timeout` elapses, clamped to
+  // `media::kMacNativeScreenCapturePickerSessionCacheMaxIdleTimeout` (falling
+  // back to its default if non-positive or infinite), the session's content
+  // filter is released and the picker is deactivated if no other capture or
+  // picker request is active.
+  //
+  // Retained sessions are for repeated screenshots only (`CreateDevice()`
+  // returns nullptr for them).
+  //
+  // Returns false without creating or changing any state if:
+  // - `idle_timeout` is not positive,
+  // - `session_id` already has an active capture device, or
+  // - no session with that id holds a content filter (e.g., nothing was picked
+  //   yet or it was already cleaned up).
   bool RetainSessionForScreenshots(DesktopMediaID::Id session_id,
                                    base::TimeDelta idle_timeout);
 
@@ -120,8 +120,8 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
     // True once `RetainSessionForScreenshots()` has succeeded for this session.
     bool is_retained_for_screenshots = false;
     // How long a retained session may stay idle before `cleanup_timer` releases
-    // it. Already clamped to `kMaxCachedSessionIdleTimeout`. Only meaningful
-    // when `is_retained_for_screenshots` is true.
+    // it. Already clamped to the configured maximum idle timeout. Only
+    // meaningful when `is_retained_for_screenshots` is true.
     base::TimeDelta idle_timeout;
     // Timer to cleanup the session state, either after the device is closed or
     // once a retained session has been idle for `idle_timeout`.

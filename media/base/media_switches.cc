@@ -1524,6 +1524,23 @@ BASE_FEATURE(kCastStreamingMacHardwareH264, base::FEATURE_ENABLED_BY_DEFAULT);
 // compatible AirPods (Off, Fixed, Head Tracking).
 BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Will gate caching macOS native screen-capture picker sessions across
+// repeated captures in a follow-up (`RetainNativeScreenCaptureSession()`).
+// Currently only configures the `max_idle_timeout` parameter below and is not
+// yet checked as a gate by
+// `NativeScreenCapturePickerMac::RetainSessionForScreenshots()`. Tracked under
+// crbug.com/575410002; remove once caching has launched.
+BASE_FEATURE(kMacNativeScreenCapturePickerSessionCache,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Upper bound on the idle timeout that `NativeScreenCapturePickerMac` grants
+// to a retained capture session. Longer requests are clamped to this value;
+// non-positive or infinite values fall back to the default.
+const base::FeatureParam<base::TimeDelta>
+    kMacNativeScreenCapturePickerSessionCacheMaxIdleTimeout{
+        &kMacNativeScreenCapturePickerSessionCache, "max_idle_timeout",
+        base::Hours(8)};
+
 // Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
 // flag will only use the built-in picker on macOS 26.4 and later due to OS
 // issues in earlier versions.

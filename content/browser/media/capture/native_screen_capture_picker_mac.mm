@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/desktop_capture_util_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
@@ -31,6 +32,7 @@
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "media/base/media_switches.h"
 #include "media/capture/video/video_capture_device.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -379,6 +381,15 @@ CGFloat GetBackingScaleFactorForRect(CGRect rect) {
 
 API_AVAILABLE(macos(14.0))
 std::atomic<NativeScreenCapturePickerMac*> g_instance{nullptr};
+
+base::TimeDelta GetMaxCachedSessionIdleTimeout() {
+  const base::TimeDelta max_timeout =
+      media::kMacNativeScreenCapturePickerSessionCacheMaxIdleTimeout.Get();
+  return (max_timeout.is_positive() && !max_timeout.is_inf())
+             ? max_timeout
+             : media::kMacNativeScreenCapturePickerSessionCacheMaxIdleTimeout
+                   .default_value;
+}
 }  // namespace
 
 // static
@@ -897,7 +908,8 @@ bool NativeScreenCapturePickerMac::RetainSessionForScreenshots(
 
   CaptureSession& session = *it->second;
   session.is_retained_for_screenshots = true;
-  session.idle_timeout = std::min(idle_timeout, kMaxCachedSessionIdleTimeout);
+  session.idle_timeout =
+      std::min(idle_timeout, GetMaxCachedSessionIdleTimeout());
   session.cleanup_timer.Start(
       FROM_HERE, session.idle_timeout,
       base::BindOnce(
