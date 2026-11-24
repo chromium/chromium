@@ -77,6 +77,7 @@ if (!is_chromeos) {
       "//base/test:test_support",
       "//build:buildflag_header_h",
       "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
+      "//chrome/common:chrome_features",
       "//content/test:test_support",
       "//ui/accessibility",
       "//ui/events:test_support",

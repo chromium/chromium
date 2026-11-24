@@ -231,6 +231,20 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
 
 class CookieControlsUiTest : public CookieControlsInteractiveTestBase {};
 
+// TODO(crbug.com/588381562): Support WebUILocationBar in tab-switch reload
+// tests and merge back into `CookieControlsUiTest` (`kWebUIToolbar` also
+// enables `IsWebUILocationBarEnabled()`).
+class CookieControlsTabChangedUiTest : public CookieControlsUiTest {
+ protected:
+  std::vector<base::test::FeatureRef> DisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled =
+        CookieControlsUiTest::DisabledFeatures();
+    disabled.push_back(features::kWebUILocationBar);
+    disabled.push_back(features::kWebUIToolbar);
+    return disabled;
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveTestBase,
                        BubbleOpensWhenIconPressed) {
   BlockThirdPartyCookies();
@@ -342,7 +356,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadViewTimeout) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadView_TabChanged_NoReload) {
+IN_PROC_BROWSER_TEST_F(CookieControlsTabChangedUiTest,
+                       ReloadView_TabChanged_NoReload) {
   // Test that opening the bubble making a change, then changing tabs while
   // the bubble is open, then re-opening the bubble on the new tab and closing
   // _doesn't_ reload the page. Regression test for crbug.com/40068793.
@@ -384,7 +399,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadView_TabChanged_NoReload) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadView_TabChanged_Reload) {
+IN_PROC_BROWSER_TEST_F(CookieControlsTabChangedUiTest,
+                       ReloadView_TabChanged_Reload) {
   // Test that opening the bubble, _not_ making a change, then changing tabs
   // while the bubble is open, then re-opening the bubble on the new tab and
   // making a change _does_ reload the page, and that on page reload the
@@ -427,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadView_TabChanged_Reload) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsUiTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsTabChangedUiTest,
                        ReloadView_TabChangedDifferentSetting_NoReload) {
   // Test that loading a page with cookies allowed, then swapping to a tab
   // where cookies are disabled, then opening and closing the bubble without

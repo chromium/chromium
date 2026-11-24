@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -83,9 +84,16 @@ class FeaturePromoDialogTest : public TestBase {
       // FeatureEngagementTracker is used.
       : TestBase(UseMockTracker()) {
     feature_ = GetFeatureForTest();
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (feature_ == &feature_engagement::kIPHDesktopPwaInstallFeature) {
+      // TODO(crbug.com/587341975): Support WebUILocationBar in the PWA install
+      // promo dialog pixel test and remove this override (`kWebUIToolbar` also
+      // enables `IsWebUILocationBarEnabled()`).
+      disabled_features = {features::kWebUILocationBar,
+                           features::kWebUIToolbar};
+    }
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features =*/{*feature_},
-        /* disabled_features =*/{});
+        /* enabled_features =*/{*feature_}, disabled_features);
 
     // TODO(crbug.com/40727458): fix cause of bubbles overflowing the
     // screen and remove this.

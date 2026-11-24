@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -18,6 +21,17 @@ namespace {
 class TextfieldDumpAccessibilityEventsTest
     : public DumpAccessibilityEventsViewsTestBase {
  public:
+  // TODO(crbug.com/588382425): Re-enable WebUILocationBar once background
+  // browser WebUI toolbar accessibility events no longer leak into this test.
+  void ChooseFeatures(
+      std::vector<base::test::FeatureRef>* enabled_features,
+      std::vector<base::test::FeatureRef>* disabled_features) override {
+    DumpAccessibilityEventsViewsTestBase::ChooseFeatures(enabled_features,
+                                                         disabled_features);
+    disabled_features->push_back(::features::kWebUILocationBar);
+    disabled_features->push_back(::features::kWebUIToolbar);
+  }
+
   void SetUpTestViews() override {
     auto container = std::make_unique<View>();
     container->SetLayoutManager(std::make_unique<FillLayout>());
