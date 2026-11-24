@@ -48,6 +48,9 @@ class NavigateTool : public ActorTool, public web::WebStateObserver {
 
   void Cancel() override;
 
+  void NotifyPaused() override;
+  void NotifyResumed() override;
+
   // web::WebStateObserver:
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
@@ -71,6 +74,9 @@ class NavigateTool : public ActorTool, public web::WebStateObserver {
   ToolExecutionCallback invoke_callback_;
   std::optional<int64_t> pending_navigation_id_;
   base::OneShotTimer navigation_timeout_timer_;
+  // True if `navigation_timeout_timer_` was running when `NotifyPaused()` was
+  // called and should be restarted on `NotifyResumed()`.
+  bool is_timeout_paused_ = false;
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
 

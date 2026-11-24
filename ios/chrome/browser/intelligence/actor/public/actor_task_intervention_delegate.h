@@ -44,6 +44,14 @@
                           buttonText:(NSString*)buttonText
                    completionHandler:(void (^)(void))completionHandler;
 
+// Prompts the user to confirm or decline navigating to `domain`.
+// Invokes `completionHandler` with `YES` if the user taps "Continue", or `NO`
+// if the user taps "Don't use this site."
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestNavigationConfirmationForDomain:(NSString*)domain
+                         completionHandler:
+                             (void (^)(BOOL confirmed))completionHandler;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TASK_INTERVENTION_DELEGATE_H_

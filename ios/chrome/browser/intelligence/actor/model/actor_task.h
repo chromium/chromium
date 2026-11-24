@@ -215,6 +215,13 @@ class ActorTask : public web::WebStateObserver,
       const url::Origin& navigation_origin,
       NavigationConfirmationDecisionCallback callback);
 
+  // Prompts the user via `intervention_delegate_` to confirm navigating to
+  // `navigation_origin`. Transitions the task from `kActing` to
+  // `kWaitingOnUser` while waiting for the user's response.
+  void RequestUserConfirmationForNavigation(
+      const url::Origin& navigation_origin,
+      UserConfirmationDialogDecisionCallback callback);
+
   // web::WebStateObserver overrides.
   void DidStopLoading(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -265,6 +272,10 @@ class ActorTask : public web::WebStateObserver,
   // and registers the safety timeout timer.
   void DeferActCompletion(std::vector<ActionResult> results);
 
+  // Starts the safety timeout timer for a deferred `Act()` waiting on page
+  // loads.
+  void StartPageLoadTimeout();
+
   // Transitions to `kReflecting` and replies to the pending `Act()` with
   // `results`.
   void FinishAct(std::vector<ActionResult> results);
@@ -304,11 +315,13 @@ class ActorTask : public web::WebStateObserver,
   // Returns whether the task is in a state that can be interrupted.
   bool CanBeInterrupted() const;
 
-  // Suspends ongoing actions and transitions to `kWaitingOnUser`.
+  // Suspends ongoing actions and any deferred page-load timer, and transitions
+  // to `kWaitingOnUser`.
   void EnterWaitingOnUser();
 
   // Transitions from `kWaitingOnUser` to `resumed_state` and resumes the
-  // engine. No-op if the task is not waiting on the user.
+  // engine (and any deferred page-load wait when returning to `kActing`).
+  // No-op if the task is not waiting on the user.
   void ExitWaitingOnUser(ActorTaskState resumed_state);
 
   // Handles `Interrupt()` for a `ConfirmationInterrupt`.
@@ -323,6 +336,9 @@ class ActorTask : public web::WebStateObserver,
 
   // Returns whether the task is in a state that can be paused.
   bool CanBePaused() const;
+
+  // Invoked when the user responds to the navigation confirmation card.
+  void OnNavigationUserConfirmationResolved(bool permission_granted);
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
@@ -412,6 +428,10 @@ class ActorTask : public web::WebStateObserver,
   // Callback for confirming out-of-turn cross-origin navigations via the
   // Origin Critic model.
   NavigationConfirmationCallback navigation_confirmation_callback_;
+
+  // Held while waiting on the user to confirm a cross-origin navigation.
+  UserConfirmationDialogDecisionCallback
+      pending_navigation_confirmation_callback_;
 
   // Weak pointer factory for callbacks scoped to the current operation (action
   // completion, page load, interrupt confirmation). Invalidated when the

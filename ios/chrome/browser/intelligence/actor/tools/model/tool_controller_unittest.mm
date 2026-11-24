@@ -106,8 +106,14 @@ class SyncActorToolFactory : public ActorToolFactory {
 // A test tool that never completes and optionally records when it is cancelled.
 class AsyncActorTool : public ActorTool {
  public:
-  AsyncActorTool(bool* cancelled_flag, base::RepeatingClosure on_cancel)
-      : cancelled_flag_(cancelled_flag), on_cancel_(std::move(on_cancel)) {}
+  AsyncActorTool(bool* cancelled_flag,
+                 base::RepeatingClosure on_cancel,
+                 bool* paused_flag,
+                 bool* resumed_flag)
+      : cancelled_flag_(cancelled_flag),
+        on_cancel_(std::move(on_cancel)),
+        paused_flag_(paused_flag),
+        resumed_flag_(resumed_flag) {}
 
   void Validate(ToolExecutionCallback callback) override {
     std::move(callback).Run(ToolExecutionResult::Ok());
@@ -125,6 +131,16 @@ class AsyncActorTool : public ActorTool {
     }
     ActorTool::Cancel();
   }
+  void NotifyPaused() override {
+    if (paused_flag_) {
+      *paused_flag_ = true;
+    }
+  }
+  void NotifyResumed() override {
+    if (resumed_flag_) {
+      *resumed_flag_ = true;
+    }
+  }
   base::WeakPtr<web::WebState> GetTargetWebState() const override {
     return nullptr;
   }
@@ -134,25 +150,34 @@ class AsyncActorTool : public ActorTool {
  private:
   raw_ptr<bool> cancelled_flag_ = nullptr;
   base::RepeatingClosure on_cancel_;
+  raw_ptr<bool> paused_flag_ = nullptr;
+  raw_ptr<bool> resumed_flag_ = nullptr;
 };
 
 class AsyncActorToolFactory : public ActorToolFactory {
  public:
   explicit AsyncActorToolFactory(ProfileIOS* profile,
                                  bool* cancelled_flag = nullptr,
-                                 base::RepeatingClosure on_cancel = {})
+                                 base::RepeatingClosure on_cancel = {},
+                                 bool* paused_flag = nullptr,
+                                 bool* resumed_flag = nullptr)
       : ActorToolFactory(profile),
         cancelled_flag_(cancelled_flag),
-        on_cancel_(std::move(on_cancel)) {}
+        on_cancel_(std::move(on_cancel)),
+        paused_flag_(paused_flag),
+        resumed_flag_(resumed_flag) {}
   base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
       const ActorToolRequest& request,
       ToolDelegate* tool_delegate) override {
-    return std::make_unique<AsyncActorTool>(cancelled_flag_, on_cancel_);
+    return std::make_unique<AsyncActorTool>(cancelled_flag_, on_cancel_,
+                                            paused_flag_, resumed_flag_);
   }
 
  private:
   raw_ptr<bool> cancelled_flag_ = nullptr;
   base::RepeatingClosure on_cancel_;
+  raw_ptr<bool> paused_flag_ = nullptr;
+  raw_ptr<bool> resumed_flag_ = nullptr;
 };
 
 // A test tool that completes by requiring page stabilization.
@@ -777,6 +802,37 @@ TEST_F(ToolControllerTest, ReusedForConsecutiveTools) {
   task_environment_.FastForwardBy(GetActorObservationDelayTimeout() / 2);
   EXPECT_TRUE(second_invoke_future.Get().IsOk());
   EXPECT_EQ(ToolController::State::kReady, controller_->state());
+}
+
+// Tests that `Pause()` and `Resume()` notify the active tool when invoking
+// and are no-ops when idle.
+TEST_F(ToolControllerTest, PauseAndResumeForwardsToInvokingTool) {
+  bool tool_paused = false;
+  bool tool_resumed = false;
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(
+      profile_.get(), /*cancelled_flag=*/nullptr,
+      /*on_cancel=*/base::RepeatingClosure(), &tool_paused, &tool_resumed);
+
+  // Calling Pause/Resume in `kReady` is a no-op.
+  controller_->Pause();
+  controller_->Resume();
+  EXPECT_FALSE(tool_paused);
+  EXPECT_FALSE(tool_resumed);
+
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
+
+  controller_->Invoke(base::DoNothing());
+  ASSERT_EQ(ToolController::State::kInvoking, controller_->state());
+
+  controller_->Pause();
+  EXPECT_TRUE(tool_paused);
+  EXPECT_FALSE(tool_resumed);
+  controller_->Resume();
+  EXPECT_TRUE(tool_resumed);
+  controller_->Cancel();
 }
 
 }  // namespace

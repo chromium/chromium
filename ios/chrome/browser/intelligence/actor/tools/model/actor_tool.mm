@@ -18,4 +18,8 @@ void ActorTool::Validate(ToolExecutionCallback callback) {
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
+void ActorTool::NotifyPaused() {}
+
+void ActorTool::NotifyResumed() {}
+
 }  // namespace actor

@@ -1066,4 +1066,123 @@ TEST_F(GeminiActorTaskStoreTest, PauseTaskAfterDisconnectIsNoOp) {
   EXPECT_NE(actor_service_->GetActiveTaskState(), kPausedByUser);
 }
 
+// Tests the navigation confirmation flow when the user taps "Continue".
+TEST_F(GeminiActorTaskStoreTest, NavigationConfirmationContinue) {
+  AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
+  __block BOOL completion_called = NO;
+  __block BOOL confirmed_result = NO;
+  [store_ actorTask:task_id_
+      requestNavigationConfirmationForDomain:@"healthequity.com"
+                           completionHandler:^(BOOL confirmed) {
+                             completion_called = YES;
+                             confirmed_result = confirmed;
+                           }];
+
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+  ActuationWorklogItem* item = observer_.items.lastObject;
+  ASSERT_NE(item, nil);
+  EXPECT_EQ(item.style, ActuationWorklogItemStyle::kLabeled);
+  EXPECT_NSEQ(item.title,
+              l10n_util::GetNSStringF(
+                  IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_TITLE,
+                  u"healthequity.com"));
+  EXPECT_NSEQ(item.subtitle,
+              l10n_util::GetNSString(
+                  IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_SUBTITLE));
+
+  ASSERT_NE(observer_.intervention, nil);
+  EXPECT_EQ(observer_.intervention.type, ActuationInterventionType::kRow);
+  ASSERT_EQ(observer_.intervention.actions.count, 2u);
+  EXPECT_EQ(observer_.intervention.actions[0].identifier,
+            InterventionActionIdentifier::kDecline);
+  EXPECT_EQ(observer_.intervention.actions[1].identifier,
+            InterventionActionIdentifier::kContinue);
+
+  // Tap "Continue" (index 1). The answered entry stays in the worklog.
+  [store_ resolveInterventionWithAction:observer_.intervention.actions[1]];
+  EXPECT_TRUE(completion_called);
+  EXPECT_TRUE(confirmed_result);
+  EXPECT_EQ(observer_.intervention, nil);
+  EXPECT_EQ(observer_.items.count, item_count + 1);
+}
+
+// Tests the navigation confirmation flow when the user taps "Don't use this
+// site".
+TEST_F(GeminiActorTaskStoreTest, NavigationConfirmationDecline) {
+  AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
+  __block BOOL completion_called = NO;
+  __block BOOL confirmed_result = YES;
+  [store_ actorTask:task_id_
+      requestNavigationConfirmationForDomain:@"healthequity.com"
+                           completionHandler:^(BOOL confirmed) {
+                             completion_called = YES;
+                             confirmed_result = confirmed;
+                           }];
+
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+  ASSERT_NE(observer_.intervention, nil);
+  ASSERT_EQ(observer_.intervention.actions.count, 2u);
+
+  // Tap "Don't use this site" (index 0). The answered entry stays in the
+  // worklog.
+  [store_ resolveInterventionWithAction:observer_.intervention.actions[0]];
+  EXPECT_TRUE(completion_called);
+  EXPECT_FALSE(confirmed_result);
+  EXPECT_EQ(observer_.intervention, nil);
+  EXPECT_EQ(observer_.items.count, item_count + 1);
+}
+
+// Tests that stopping the task drops a pending navigation confirmation and
+// removes its unanswered worklog entry without invoking its completion.
+TEST_F(GeminiActorTaskStoreTest,
+       StopDiscardsPendingNavigationConfirmationEntry) {
+  AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
+  __block BOOL completion_called = NO;
+  [store_ actorTask:task_id_
+      requestNavigationConfirmationForDomain:@"healthequity.com"
+                           completionHandler:^(BOOL confirmed) {
+                             completion_called = YES;
+                           }];
+  ASSERT_NE(observer_.intervention, nil);
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+
+  [store_ stopTask];
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.intervention == nil; }));
+  // The unanswered confirmation entry is removed and replaced by the task ended
+  // item.
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+  EXPECT_NSEQ(observer_.items.lastObject.title,
+              l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_TASK_ENDED));
+  EXPECT_FALSE(completion_called);
+}
+
+// Tests that pausing the task drops a pending navigation confirmation and
+// removes its unanswered worklog entry without invoking its completion.
+TEST_F(GeminiActorTaskStoreTest,
+       PauseDiscardsPendingNavigationConfirmationEntry) {
+  AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
+  __block BOOL completion_called = NO;
+  [store_ actorTask:task_id_
+      requestNavigationConfirmationForDomain:@"healthequity.com"
+                           completionHandler:^(BOOL confirmed) {
+                             completion_called = YES;
+                           }];
+  ASSERT_NE(observer_.intervention, nil);
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+
+  [store_ pauseTask];
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer_.state.headerPrimaryAction ==
+           ActuationHeaderPrimaryAction::kStop;
+  }));
+  EXPECT_NSEQ(observer_.intervention.title, @"Task paused");
+  EXPECT_EQ(observer_.items.count, item_count);
+  EXPECT_FALSE(completion_called);
+}
+
 }  // namespace

@@ -203,6 +203,8 @@ ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
       origin_gating_delegate_(
           owner_task_->policy_checker(),
           base::BindRepeating(&ActorTask::ConfirmNavigationToOrigin,
+                              base::Unretained(owner_task_)),
+          base::BindRepeating(&ActorTask::RequestUserConfirmationForNavigation,
                               base::Unretained(owner_task_))),
       form_filling_handler_(ActorTaskFormFillingHandler::Create(
           base::PassKey<ActorEngine>(),
@@ -242,6 +244,7 @@ void ActorEngine::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
 void ActorEngine::CancelOngoingAndPendingActions(
     ActorEngine::EngineResult reason) {
   weak_ptr_factory_.InvalidateWeakPtrs();
+  deferred_finish_tool_invoke_.Reset();
   action_sequence_.clear();
 
   tool_controller_->Cancel();
@@ -262,15 +265,25 @@ void ActorEngine::FailCurrentTool(mojom::ActionResultCode reason) {
     return;
   }
 
+  if (deferred_finish_tool_invoke_) {
+    deferred_finish_tool_invoke_ = base::BindOnce(
+        &ActorEngine::FinishedToolInvoke, weak_ptr_factory_.GetWeakPtr(),
+        ActionResult(ToolExecutionResult(reason)));
+    return;
+  }
+
   tool_controller_->FailCurrentTool(reason);
 }
 
 void ActorEngine::PauseOngoingActions() {
-  // TODO(crbug.com/548051839): Support pausing in-progress tool actions.
+  tool_controller_->Pause();
 }
 
 void ActorEngine::DidUninterruptTask() {
-  // TODO(crbug.com/548051839): Support resuming deferred tool invoke.
+  tool_controller_->Resume();
+  if (deferred_finish_tool_invoke_) {
+    std::move(deferred_finish_tool_invoke_).Run();
+  }
 }
 
 #pragma mark - ToolDelegate
@@ -518,6 +531,13 @@ void ActorEngine::OnToolExecutionComplete(ToolExecutionResult result) {
 }
 
 void ActorEngine::FinishedToolInvoke(ActionResult result) {
+  if (owner_task_->GetState() == ActorTaskState::kWaitingOnUser) {
+    deferred_finish_tool_invoke_ =
+        base::BindOnce(&ActorEngine::FinishedToolInvoke,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(result));
+    return;
+  }
+
   bool success = result.tool_result.IsOk();
 
   if (!success) {

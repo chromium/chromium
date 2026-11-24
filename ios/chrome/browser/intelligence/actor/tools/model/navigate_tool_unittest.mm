@@ -66,7 +66,8 @@ class NavigateToolTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   TestUrlLoadingObserver url_loading_observer_;
@@ -635,6 +636,52 @@ TEST_F(NavigateToolTest, Execute_IgnoresConcurrentNavigation) {
 
   web_state_ptr->OnNavigationFinished(&valid_context);
   EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Tests that `NotifyPaused()` stops the navigation timeout timer while waiting
+// on user intervention and `NotifyResumed()` restarts the timer.
+TEST_F(NavigateToolTest, Execute_PauseAndResumeNavigationTimeoutTimer) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  const GURL kTargetUrl("https://www.example.com/");
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kTargetUrl.spec());
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  // Advance 5s (half of the 10s timeout), then pause the tool.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  maybe_tool.value()->NotifyPaused();
+
+  // While paused, advancing 20s should not trigger a timeout.
+  task_environment_.FastForwardBy(base::Seconds(20));
+  EXPECT_FALSE(future.IsReady());
+
+  // Resume the tool; advancing 5s should still not time out, and advancing
+  // another 5s (10s total after resume) should trigger the timeout.
+  maybe_tool.value()->NotifyResumed();
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(mojom::ActionResultCode::kNavigateFailedToStart,
+            future.Get().code());
 }
 
 }  // namespace actor

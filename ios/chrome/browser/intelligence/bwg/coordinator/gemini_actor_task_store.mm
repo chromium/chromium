@@ -202,6 +202,9 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   // Index in `_suggestions` of the suggestion resolved by the "Allow" action,
   // or `NSNotFound` if no suggestion selection is pending.
   NSInteger _selectedSuggestionIndex;
+  // Worklog entry for the pending navigation confirmation prompt, cleared once
+  // answered so unanswered entries are removed when discarded.
+  ActuationWorklogEntry* _navigationConfirmationEntry;
   // Latest published state, `nil` until the task is registered.
   ActuationWorklogState* _state;
 }
@@ -392,6 +395,51 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   [self publishState];
 }
 
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestNavigationConfirmationForDomain:(NSString*)domain
+                         completionHandler:
+                             (void (^)(BOOL confirmed))completionHandler {
+  [self cancelSuggestionSelection];
+  [self discardIntervention];
+
+  NSString* title = l10n_util::GetNSStringF(
+      IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_TITLE,
+      base::SysNSStringToUTF16(domain));
+  NSString* subtitle = l10n_util::GetNSString(
+      IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_SUBTITLE);
+
+  ActuationWorklogItem* item = [ActuationWorklogItem
+      labeledItemWithTitle:title
+                  subtitle:subtitle
+                      icon:SymbolWithPointSize(SymbolCustomShield, kIconSize)];
+
+  _navigationConfirmationEntry = [self appendItem:item toolType:std::nullopt];
+
+  if (completionHandler) {
+    _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {
+      completionHandler(actionIdentifier ==
+                        InterventionActionIdentifier::kContinue);
+    };
+  }
+
+  ActuationInterventionAction* declineAction = [[ActuationInterventionAction
+      alloc]
+      initWithIdentifier:InterventionActionIdentifier::kDecline
+                   title:
+                       l10n_util::GetNSString(
+                           IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_DECLINE_BUTTON)];
+  ActuationInterventionAction* continueAction = [[ActuationInterventionAction
+      alloc]
+      initWithIdentifier:InterventionActionIdentifier::kContinue
+                   title:
+                       l10n_util::GetNSString(
+                           IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_CONTINUE_BUTTON)];
+
+  _intervention = [ActuationInterventionData
+      rowItemWithActions:@[ declineAction, continueAction ]];
+  [self publishState];
+}
+
 #pragma mark - ActorTaskActionHandler
 
 - (void)resolveInterventionWithAction:(ActuationInterventionAction*)action {
@@ -410,7 +458,8 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   }
   void (^interventionCompletion)(InterventionActionIdentifier) =
       _interventionCompletion;
-
+  // Clear before discarding so the answered entry remains in the worklog.
+  _navigationConfirmationEntry = nil;
   [self discardIntervention];
   [self publishState];
   // Called last, as it may synchronously resume the task.
@@ -578,9 +627,13 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   return YES;
 }
 
-// Clears the pending intervention and its suggestions, and drops their
-// completions without calling them.
+// Clears the pending intervention and its suggestions, drops its completion
+// without calling it, and removes any unanswered navigation confirmation entry.
 - (void)discardIntervention {
+  if (_navigationConfirmationEntry) {
+    [_entries removeObjectIdenticalTo:_navigationConfirmationEntry];
+    _navigationConfirmationEntry = nil;
+  }
   _interventionCompletion = nil;
   _suggestionsCompletion = nil;
   _intervention = nil;

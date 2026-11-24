@@ -13,6 +13,7 @@
 #import "components/origin_gating/core/gateable_event.h"
 #import "components/origin_gating/core/gating_decision.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
@@ -20,9 +21,11 @@ namespace actor {
 
 ActorOriginGatingCheckerDelegateIOS::ActorOriginGatingCheckerDelegateIOS(
     const ActorEnterprisePolicyCheckerIOS* policy_checker,
-    NavigationConfirmationCallback confirm_navigation_callback)
+    NavigationConfirmationCallback confirm_navigation_callback,
+    UserConfirmationDialogCallback user_confirmation_callback)
     : policy_checker_(policy_checker),
-      confirm_navigation_callback_(std::move(confirm_navigation_callback)) {}
+      confirm_navigation_callback_(std::move(confirm_navigation_callback)),
+      user_confirmation_callback_(std::move(user_confirmation_callback)) {}
 
 ActorOriginGatingCheckerDelegateIOS::~ActorOriginGatingCheckerDelegateIOS() =
     default;
@@ -85,12 +88,11 @@ void ActorOriginGatingCheckerDelegateIOS::OnNoVerdict(
     return;
   }
 
-  // When confirmation is requried but iOS UI prompt support is pending, block
-  // by default.
+  const url::Origin destination_origin =
+      url::Origin::Create(event.destination());
+
   if (requires_user_confirmation) {
-    // TODO(crbug.com/556689818): Trigger iOS user confirmation prompt dialog
-    std::move(callback).Run(
-        {.is_allowed = false, .did_prompt_user = false, .bypass_cache = false});
+    RequestUserConfirmation(destination_origin, std::move(callback));
     return;
   }
 
@@ -103,9 +105,20 @@ void ActorOriginGatingCheckerDelegateIOS::OnNoVerdict(
   }
 
   CHECK(event.is_navigation_response());
-  const url::Origin destination_origin =
-      url::Origin::Create(event.destination());
-  if (confirm_navigation_callback_ && !destination_origin.opaque()) {
+  if (destination_origin.opaque()) {
+    std::move(callback).Run(
+        {.is_allowed = false, .did_prompt_user = false, .bypass_cache = false});
+    return;
+  }
+
+  // Check preconditions before evaluating the feature parameter.
+  if (user_confirmation_callback_ &&
+      ShouldPromptUserForActorNavigationToNewOrigins()) {
+    RequestUserConfirmation(destination_origin, std::move(callback));
+    return;
+  }
+
+  if (confirm_navigation_callback_) {
     confirm_navigation_callback_.Run(
         destination_origin,
         base::BindOnce(&ActorOriginGatingCheckerDelegateIOS::
@@ -120,11 +133,37 @@ void ActorOriginGatingCheckerDelegateIOS::OnNoVerdict(
       {.is_allowed = false, .did_prompt_user = false, .bypass_cache = false});
 }
 
+void ActorOriginGatingCheckerDelegateIOS::RequestUserConfirmation(
+    const url::Origin& destination_origin,
+    base::OnceCallback<void(NoVerdictResult)> callback) {
+  if (!user_confirmation_callback_ || destination_origin.opaque()) {
+    std::move(callback).Run(
+        {.is_allowed = false, .did_prompt_user = false, .bypass_cache = false});
+    return;
+  }
+
+  user_confirmation_callback_.Run(
+      destination_origin,
+      base::BindOnce(
+          &ActorOriginGatingCheckerDelegateIOS::OnUserConfirmationDecision,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ActorOriginGatingCheckerDelegateIOS::OnUserConfirmationDecision(
+    base::OnceCallback<void(NoVerdictResult)> callback,
+    bool permission_granted) {
+  // `did_prompt_user = true` causes `OriginGatingChecker::OnNoVerdictAnswer`
+  // to cache approved origins under
+  // `DecisionSource::kCacheWithUserConfirmation` (ignored when `is_allowed` is
+  // false).
+  std::move(callback).Run({.is_allowed = permission_granted,
+                           .did_prompt_user = true,
+                           .bypass_cache = false});
+}
+
 void ActorOriginGatingCheckerDelegateIOS::OnNavigationConfirmationDecision(
     base::OnceCallback<void(NoVerdictResult)> callback,
     bool permission_granted) {
-  // TODO(crbug.com/556689818): Trigger iOS user confirmation prompt dialog when
-  // the Origin Critic rejects the navigation. Until then, fail closed.
   std::move(callback).Run({.is_allowed = permission_granted,
                            .did_prompt_user = false,
                            .bypass_cache = false});

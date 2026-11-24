@@ -279,6 +279,10 @@ class ActorEngine : public ToolDelegate {
   // first.
   const std::unique_ptr<ToolController> tool_controller_;
 
+  // Holds a deferred `FinishedToolInvoke` call if a tool finishes while
+  // `owner_task_` is in `kWaitingOnUser`.
+  base::OnceClosure deferred_finish_tool_invoke_;
+
   // Weak pointer factory.
   base::WeakPtrFactory<ActorEngine> weak_ptr_factory_{this};
 };

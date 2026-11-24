@@ -522,5 +522,44 @@ TEST_F(HistoryToolTest, Execute_IgnoresConcurrentNavigation) {
   EXPECT_TRUE(future.Get().IsOk());
 }
 
+// Tests that `NotifyPaused()` stops the navigation timeout timer while waiting
+// on user intervention and `NotifyResumed()` restarts the timer.
+TEST_F(HistoryToolTest, Execute_PauseAndResumeNavigationTimeoutTimer) {
+  CompletingFakeNavigationManager* nav_manager =
+      InsertWebStateWithNavigationManager(/*first_item_active=*/false);
+  nav_manager->set_auto_complete(false);
+  auto* web_state = static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetWebStateAt(0));
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
+      CreateToolAndValidate(action.back(), web_state);
+
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  // Advance 5s, then pause the tool.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  maybe_tool.value()->NotifyPaused();
+
+  // While paused, advancing 20s should not trigger a timeout.
+  task_environment_.FastForwardBy(base::Seconds(20));
+  EXPECT_FALSE(future.IsReady());
+
+  // Resume the tool; it should only time out 10s after resuming.
+  maybe_tool.value()->NotifyResumed();
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(mojom::ActionResultCode::kHistoryNoNavigationsCreated,
+            future.Get().code());
+}
+
 }  // namespace
 }  // namespace actor

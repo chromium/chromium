@@ -13,11 +13,14 @@
 @property(nonatomic, readwrite, copy)
     NSArray<ActorFormSuggestion*>* promptedSuggestions;
 @property(nonatomic, readwrite) BOOL cancelSuggestionSelectionCalled;
+@property(nonatomic, readwrite) BOOL requestNavigationConfirmationCalled;
+@property(nonatomic, readwrite, copy) NSString* promptedNavigationDomain;
 @end
 
 @implementation FakeActorTaskInterventionDelegate {
   void (^_confirmationCompletionHandler)(void);
   void (^_selectSuggestionCompletionHandler)(ActorFormSuggestion*, BOOL);
+  void (^_navigationConfirmationCompletionHandler)(BOOL);
 }
 
 #pragma mark - Public
@@ -52,6 +55,18 @@
         _selectSuggestionCompletionHandler;
     _selectSuggestionCompletionHandler = nil;
     completion(selectedSuggestion, shouldStorePermission);
+  }
+}
+
+- (BOOL)hasPendingNavigationConfirmation {
+  return _navigationConfirmationCompletionHandler != nil;
+}
+
+- (void)runNavigationConfirmationCompletion:(BOOL)confirmed {
+  if (_navigationConfirmationCompletionHandler) {
+    void (^completion)(BOOL) = _navigationConfirmationCompletionHandler;
+    _navigationConfirmationCompletionHandler = nil;
+    completion(confirmed);
   }
 }
 
@@ -100,6 +115,19 @@
 - (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID {
   self.cancelSuggestionSelectionCalled = YES;
   _selectSuggestionCompletionHandler = nil;
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestNavigationConfirmationForDomain:(NSString*)domain
+                         completionHandler:
+                             (void (^)(BOOL confirmed))completionHandler {
+  self.requestNavigationConfirmationCalled = YES;
+  self.promptedNavigationDomain = domain;
+  _navigationConfirmationCompletionHandler = [completionHandler copy];
+
+  if (self.autoConfirmInterventions) {
+    [self runNavigationConfirmationCompletion:YES];
+  }
 }
 
 @end

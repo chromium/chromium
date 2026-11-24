@@ -23,6 +23,7 @@
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/sessions/core/session_id.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
@@ -433,6 +434,7 @@ bool ActorTask::CanBeInterrupted() const {
 
 void ActorTask::EnterWaitingOnUser() {
   engine_->PauseOngoingActions();
+  load_timeout_timer_.Stop();
   SetState(ActorTaskState::kWaitingOnUser);
 }
 
@@ -440,8 +442,18 @@ void ActorTask::ExitWaitingOnUser(ActorTaskState resumed_state) {
   if (state_ != ActorTaskState::kWaitingOnUser) {
     return;
   }
+  // Snapshot before `DidUninterruptTask()`, which may synchronously complete an
+  // in-flight tool and start a new page-load wait via `OnActCompleted()`.
+  const bool has_deferred_act = pending_act_ && pending_act_->deferred_results;
   SetState(resumed_state);
   engine_->DidUninterruptTask();
+  if (resumed_state == ActorTaskState::kActing && has_deferred_act) {
+    if (scoped_web_state_observations_.IsObservingAnySource()) {
+      StartPageLoadTimeout();
+    } else {
+      FinishDeferredAct();
+    }
+  }
 }
 
 void ActorTask::InterruptFor(
@@ -676,6 +688,9 @@ void ActorTask::CancelOngoingOperation() {
   if (pending_act_) {
     pending_act_->deferred_results.reset();
   }
+  if (pending_navigation_confirmation_callback_) {
+    std::move(pending_navigation_confirmation_callback_).Run(false);
+  }
 }
 
 void ActorTask::OnActCompleted(std::vector<ActionResult> results) {
@@ -702,7 +717,10 @@ bool ActorTask::ObserveLoadingWebStates() {
 
 void ActorTask::DeferActCompletion(std::vector<ActionResult> results) {
   pending_act_->deferred_results = std::move(results);
+  StartPageLoadTimeout();
+}
 
+void ActorTask::StartPageLoadTimeout() {
   load_timeout_timer_.Start(
       FROM_HERE, kPageLoadTimeout,
       base::BindOnce(&ActorTask::OnPageLoadedTimeout,
@@ -737,7 +755,8 @@ void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
   }
   scoped_web_state_observations_.RemoveObservation(web_state);
 
-  if (scoped_web_state_observations_.IsObservingAnySource()) {
+  if (scoped_web_state_observations_.IsObservingAnySource() ||
+      state_ == ActorTaskState::kWaitingOnUser) {
     return;
   }
 
@@ -827,6 +846,58 @@ void ActorTask::ConfirmNavigationToOrigin(
   navigation_confirmation_callback_.Run(
       navigation_origin,
       base::BindPostTaskToCurrentDefault(std::move(guarded_callback)));
+}
+
+void ActorTask::RequestUserConfirmationForNavigation(
+    const url::Origin& navigation_origin,
+    UserConfirmationDialogDecisionCallback callback) {
+  if (state_ != ActorTaskState::kActing ||
+      ![intervention_delegate_
+          respondsToSelector:
+              @selector(actorTask:requestNavigationConfirmationForDomain:
+                        completionHandler:)]) {
+    std::move(callback).Run(false);
+    return;
+  }
+  CHECK(!pending_navigation_confirmation_callback_);
+
+  pending_navigation_confirmation_callback_ = std::move(callback);
+  EnterWaitingOnUser();
+
+  std::u16string formatted_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          navigation_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+
+  // Posted so that a delegate completing synchronously never re-enters the
+  // task.
+  auto completion = base::CallbackToBlock(base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&ActorTask::OnNavigationUserConfirmationResolved,
+                     operation_weak_ptr_factory_.GetWeakPtr())));
+
+  [intervention_delegate_ actorTask:task_id_
+      requestNavigationConfirmationForDomain:base::SysUTF16ToNSString(
+                                                 formatted_origin)
+                           completionHandler:^(BOOL confirmed) {
+                             completion(confirmed);
+                           }];
+}
+
+void ActorTask::OnNavigationUserConfirmationResolved(bool permission_granted) {
+  CHECK_EQ(state_, ActorTaskState::kWaitingOnUser);
+  CHECK(pending_navigation_confirmation_callback_);
+
+  UserConfirmationDialogDecisionCallback callback =
+      std::move(pending_navigation_confirmation_callback_);
+
+  if (!permission_granted) {
+    OnNavigationBlocked(mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  }
+
+  // Resume `kActing` and unpause tool timers before running `callback` so the
+  // resumed navigation sees the task in `kActing`.
+  ExitWaitingOnUser(ActorTaskState::kActing);
+
+  std::move(callback).Run(permission_granted);
 }
 
 #pragma mark - ActorTaskBackgroundWorker::TaskStateDelegate

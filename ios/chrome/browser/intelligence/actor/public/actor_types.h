@@ -217,6 +217,17 @@ using NavigationConfirmationCallback = base::RepeatingCallback<void(
     const url::Origin& navigation_origin,
     NavigationConfirmationDecisionCallback callback)>;
 
+// Callback invoked with the user's decision on whether allow navigating to
+// a sensitive or unconfirmed origin (`true` if the user confirmed).
+using UserConfirmationDialogDecisionCallback =
+    base::OnceCallback<void(bool permission_granted)>;
+
+// Callback to prompt the user for confirmation before navigating to
+// `navigation_origin`.
+using UserConfirmationDialogCallback = base::RepeatingCallback<void(
+    const url::Origin& navigation_origin,
+    UserConfirmationDialogDecisionCallback callback)>;
+
 }  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TYPES_H_

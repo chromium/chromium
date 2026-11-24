@@ -52,6 +52,8 @@ class HistoryTool : public ActorTool, public web::WebStateObserver {
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
   std::string DebugString() const override;
+  void NotifyPaused() override;
+  void NotifyResumed() override;
 
   // web::WebStateObserver:
   void DidStartNavigation(web::WebState* web_state,
@@ -74,6 +76,9 @@ class HistoryTool : public ActorTool, public web::WebStateObserver {
   ToolExecutionCallback invoke_callback_;
   std::optional<int64_t> pending_navigation_id_;
   base::OneShotTimer navigation_timeout_timer_;
+  // True if `navigation_timeout_timer_` was running when `NotifyPaused()` was
+  // called and should be restarted on `NotifyResumed()`.
+  bool is_timeout_paused_ = false;
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
 

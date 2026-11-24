@@ -157,6 +157,7 @@ void NavigateTool::DidFinishNavigation(
   }
 
   navigation_timeout_timer_.Stop();
+  is_timeout_paused_ = false;
   web_state_observation_.Reset();
   pending_navigation_id_.reset();
 
@@ -176,6 +177,7 @@ void NavigateTool::DidFinishNavigation(
 
 void NavigateTool::Cancel() {
   navigation_timeout_timer_.Stop();
+  is_timeout_paused_ = false;
   web_state_observation_.Reset();
   pending_navigation_id_.reset();
   invoke_callback_.Reset();
@@ -183,6 +185,7 @@ void NavigateTool::Cancel() {
 
 void NavigateTool::WebStateDestroyed(web::WebState* web_state) {
   navigation_timeout_timer_.Stop();
+  is_timeout_paused_ = false;
   web_state_observation_.Reset();
   pending_navigation_id_.reset();
   if (invoke_callback_) {
@@ -191,4 +194,20 @@ void NavigateTool::WebStateDestroyed(web::WebState* web_state) {
   }
 }
 
+void NavigateTool::NotifyPaused() {
+  if (navigation_timeout_timer_.IsRunning()) {
+    navigation_timeout_timer_.Stop();
+    is_timeout_paused_ = true;
+  }
+}
+
+void NavigateTool::NotifyResumed() {
+  if (is_timeout_paused_ && invoke_callback_) {
+    is_timeout_paused_ = false;
+    navigation_timeout_timer_.Start(
+        FROM_HERE, kNavigationTimeout,
+        base::BindOnce(&NavigateTool::OnNavigationTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 }  // namespace actor

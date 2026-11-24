@@ -166,6 +166,10 @@ class ActorEngineTest : public PlatformTest {
     return engine_->tool_controller_.get();
   }
 
+  bool HasTaskDeferredFinishToolInvoke() const {
+    return !task_->engine().deferred_finish_tool_invoke_.is_null();
+  }
+
   // Runs tasks until the current tool is executing. Returns false on timeout.
   [[nodiscard]] bool WaitForToolInvoking() {
     return base::test::RunUntil([this]() {
@@ -873,6 +877,47 @@ TEST_F(ActorEngineFailCurrentToolTest,
   // If run in reverse, the uninterrupt is ignored and the task never acts.
   EXPECT_TRUE(base::test::RunUntil(
       [this]() { return task_->GetState() == ActorTaskState::kActing; }));
+}
+
+// Tests that if a tool finishes while the owning task is in `kWaitingOnUser`,
+// `FinishedToolInvoke` is deferred until the task exits `kWaitingOnUser`.
+TEST_F(ActorEngineFailCurrentToolTest,
+       ToolCompletionWhileWaitingOnUserIsDeferredUntilUninterrupted) {
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task_->Act(std::move(actions), "Acting", act_future.GetCallback());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [this]() { return !hooks_.validate_callback.is_null(); }));
+  CompleteValidation(ToolExecutionResult::Ok());
+  ASSERT_TRUE(base::test::RunUntil(
+      [this]() { return !hooks_.execute_callback.is_null(); }));
+
+  // Enter `kWaitingOnUser` via navigation confirmation request.
+  base::test::TestFuture<bool> confirm_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://example.com")),
+      confirm_future.GetCallback());
+  ASSERT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+
+  // Complete the tool while the task is still waiting on the user.
+  CompleteExecution(ToolExecutionResult::Ok());
+  ASSERT_TRUE(base::test::RunUntil(
+      [this]() { return HasTaskDeferredFinishToolInvoke(); }));
+  EXPECT_FALSE(act_future.IsReady());
+
+  // Once the user confirms, the deferred tool completion runs and finishes
+  // `Act()`.
+  [intervention_delegate runNavigationConfirmationCompletion:YES];
+  EXPECT_TRUE(confirm_future.Get());
+  const std::vector<ActionResult>& results = act_future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
 }
 
 class ActorEngineOriginGatingTest : public ActorEngineTest {
@@ -1756,6 +1801,124 @@ TEST_F(ActorEngineOriginGatingTest,
             origin_gating::DecisionSource::kCacheWithoutUserConfirmation);
 }
 
+// Tests that when `kActorOriginGatingPromptUserForNavigationToNewOriginsParam`
+// is enabled and the user confirms the prompt, the navigation succeeds and
+// caches the origin under `DecisionSource::kCacheWithUserConfirmation`.
+TEST_F(ActorEngineOriginGatingTest,
+       Act_UserConfirmationApprovedCachesOriginWithUserConfirmation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kActorOriginGating,
+      {{kActorOriginGatingPromptUserForNavigationToNewOriginsParam, "true"}});
+
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  intervention_delegate.autoConfirmInterventions = YES;
+  task_->SetInterventionDelegate(intervention_delegate);
+
+  ControlledTab tab = AddControlledTab(GURL("https://safe.com"));
+  tab.navigation_manager->set_simulated_response_url(
+      GURL("https://user-approved.com/landing"));
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://new-destination.com/welcome");
+  action.mutable_navigate()->set_tab_id(tab.tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Navigating", future.GetCallback());
+  const std::vector<ActionResult>& results = future.Get();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_TRUE(intervention_delegate.requestNavigationConfirmationCalled);
+
+  origin_gating::OriginGatingChecker* task_checker =
+      task_->engine().GetOriginGatingChecker();
+  ASSERT_NE(task_checker, nullptr);
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      cached_future;
+  task_checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://user-approved.com/checkout")}),
+      cached_future.GetCallback());
+
+  const origin_gating::GatingDecision& cached_decision = cached_future.Get<1>();
+  EXPECT_TRUE(cached_decision.is_allowed);
+  EXPECT_EQ(cached_decision.attribution,
+            origin_gating::DecisionSource::kCacheWithUserConfirmation);
+}
+
+// Tests that when `kActorOriginGatingPromptUserForNavigationToNewOriginsParam`
+// is enabled and the user declines the prompt, the navigation is cancelled, the
+// action fails with `kTriggeredNavigationBlocked`, and the origin is not
+// cached.
+TEST_F(ActorEngineOriginGatingTest,
+       Act_UserConfirmationDeclinedCancelsNavigationAndDoesNotCacheOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kActorOriginGating,
+      {{kActorOriginGatingPromptUserForNavigationToNewOriginsParam, "true"}});
+
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+
+  ControlledTab tab = AddControlledTab(GURL("https://safe.com"));
+  tab.navigation_manager->set_simulated_response_url(
+      GURL("https://user-declined.com/landing"));
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://new-destination.com/welcome");
+  action.mutable_navigate()->set_tab_id(tab.tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Navigating", future.GetCallback());
+
+  ASSERT_TRUE(base::test::RunUntil([intervention_delegate]() {
+    return intervention_delegate.hasPendingNavigationConfirmation;
+  }));
+  EXPECT_TRUE(intervention_delegate.requestNavigationConfirmationCalled);
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+  EXPECT_FALSE(future.IsReady());
+
+  [intervention_delegate runNavigationConfirmationCompletion:NO];
+
+  const std::vector<ActionResult>& results = future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            results[0].tool_result.code());
+  ASSERT_TRUE(tab.navigation_manager->last_response_decision().has_value());
+  EXPECT_TRUE(tab.navigation_manager->last_response_decision()
+                  ->ShouldCancelNavigation());
+
+  origin_gating::OriginGatingChecker* task_checker =
+      task_->engine().GetOriginGatingChecker();
+  ASSERT_NE(task_checker, nullptr);
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      uncached_future;
+  task_checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://user-declined.com/checkout")}),
+      uncached_future.GetCallback());
+
+  const origin_gating::GatingDecision& decision = uncached_future.Get<1>();
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, origin_gating::DecisionSource::kNoVerdict);
+}
+
 // Test fixture for `EnqueueFollowupAction()` using `ControllableActorTool`.
 class ActorEngineFollowupTest : public ActorEngineTest {
  protected:
@@ -2171,5 +2334,4 @@ TEST_F(ActorEngineFollowupTest, FollowupPageActionBlockedByOriginGating) {
   EXPECT_TRUE(results[0].tool_result.requires_page_stabilization());
   EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
 }
-
 }  // namespace actor

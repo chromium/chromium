@@ -258,8 +258,19 @@ bool ActorDisablesInputDuringActuation();
 // Feature flag controlling Actor origin gating.
 BASE_DECLARE_FEATURE(kActorOriginGating);
 
+// Feature parameter controlling whether uncached navigation responses prompt
+// the user for confirmation directly.
+extern const char kActorOriginGatingPromptUserForNavigationToNewOriginsParam[];
+BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kActorOriginGatingPromptUserForNavigationToNewOrigins);
+
 // Returns true if Actor origin gating is enabled.
 bool IsActorOriginGatingEnabled();
+
+// Returns true if uncached navigations to new origins should prompt the user
+// for confirmation.
+bool ShouldPromptUserForActorNavigationToNewOrigins();
 
 extern const char kActorOriginGatingExplicitParam[];
 extern const char kActorOriginGatingImplicitParam[];

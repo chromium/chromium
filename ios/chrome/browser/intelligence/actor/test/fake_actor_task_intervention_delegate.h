@@ -62,6 +62,21 @@
 // Whether `actorTaskDidCancelSuggestionSelection:` was called.
 @property(nonatomic, readonly) BOOL cancelSuggestionSelectionCalled;
 
+// Whether `requestNavigationConfirmationForDomain:...` was called.
+@property(nonatomic, readonly) BOOL requestNavigationConfirmationCalled;
+
+// The domain received in the last `requestNavigationConfirmationForDomain:...`
+// call.
+@property(nonatomic, readonly) NSString* promptedNavigationDomain;
+
+// Whether an unhandled navigation confirmation completion handler is currently
+// pending.
+@property(nonatomic, readonly) BOOL hasPendingNavigationConfirmation;
+
+// Invokes the stored navigation confirmation completion handler with
+// `confirmed` and clears it.
+- (void)runNavigationConfirmationCompletion:(BOOL)confirmed;
+
 // Resets `requestConfirmationCalled` to NO.
 - (void)resetRequestConfirmationCalled;
 

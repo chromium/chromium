@@ -2876,4 +2876,292 @@ TEST_F(ActorTaskTest,
 
   EXPECT_FALSE(decision_future.Get());
 }
+
+// Tests that `RequestUserConfirmationForNavigation` transitions the task from
+// `kActing` to `kWaitingOnUser`, formats the origin for display, and resumes
+// `kActing` with `true` when the user confirms.
+TEST_F(ActorTaskTest,
+       RequestUserConfirmationForNavigation_PromptsDelegateAndResumesActing) {
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+  SetTaskState(ActorTaskState::kActing);
+
+  const url::Origin target_origin =
+      url::Origin::Create(GURL("https://www.airline.com:8443/path"));
+  base::test::TestFuture<bool> decision_future;
+  task_->RequestUserConfirmationForNavigation(target_origin,
+                                              decision_future.GetCallback());
+
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+
+  EXPECT_TRUE(intervention_delegate.requestNavigationConfirmationCalled);
+  EXPECT_NSEQ(@"www.airline.com:8443",
+              intervention_delegate.promptedNavigationDomain);
+
+  EXPECT_TRUE(intervention_delegate.hasPendingNavigationConfirmation);
+  EXPECT_FALSE(decision_future.IsReady());
+
+  // Simulate the user tapping "Continue".
+  [intervention_delegate runNavigationConfirmationCompletion:YES];
+
+  EXPECT_TRUE(decision_future.Get());
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+}
+
+// Tests that `RequestUserConfirmationForNavigation` resolves the decision
+// callback with `false` and fails the ongoing action with
+// `kTriggeredNavigationBlocked` when the user declines ("Don't use this site").
+TEST_F(ActorTaskTest,
+       RequestUserConfirmationForNavigation_Declined_BlocksNavigation) {
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  task_->AddControlledWebState(web_state.get());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task_->Act(std::move(actions), "Clicking cross-origin link",
+             act_future.GetCallback());
+
+  // Let the tool finish into `DeferActCompletion` while `web_state` is loading.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(act_future.IsReady());
+  base::test::TestFuture<bool> decision_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://www.airline.com:8443/path")),
+      decision_future.GetCallback());
+
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+  EXPECT_TRUE(intervention_delegate.requestNavigationConfirmationCalled);
+  EXPECT_NSEQ(@"www.airline.com:8443",
+              intervention_delegate.promptedNavigationDomain);
+
+  // Simulate the user tapping "Don't use this site."
+  [intervention_delegate runNavigationConfirmationCompletion:NO];
+  EXPECT_FALSE(decision_future.Get());
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+  // Simulate the cancelled navigation finishing loading.
+  web_state->SetLoading(false);
+  const std::vector<ActionResult>& results = act_future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            results[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+}
+
+// Tests that `RequestUserConfirmationForNavigation` fails closed immediately
+// when no `intervention_delegate_` is set.
+TEST_F(ActorTaskTest,
+       RequestUserConfirmationForNavigation_WithoutDelegate_FailsClosed) {
+  SetTaskState(ActorTaskState::kActing);
+
+  base::test::TestFuture<bool> decision_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://www.airline.com")),
+      decision_future.GetCallback());
+
+  EXPECT_TRUE(decision_future.IsReady());
+  EXPECT_FALSE(decision_future.Get());
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+}
+
+// Tests that stopping the task while waiting on navigation user confirmation
+// resolves the pending decision callback with `false`.
+TEST_F(ActorTaskTest,
+       RequestUserConfirmationForNavigation_StopWhileWaiting_FailsClosed) {
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+  SetTaskState(ActorTaskState::kActing);
+
+  base::test::TestFuture<bool> decision_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://www.airline.com")),
+      decision_future.GetCallback());
+  ASSERT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+  EXPECT_FALSE(decision_future.IsReady());
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+
+  EXPECT_TRUE(decision_future.IsReady());
+  EXPECT_FALSE(decision_future.Get());
+}
+
+// Tests that entering `kWaitingOnUser` during a deferred `Act()` pauses the
+// page-load timeout timer, and that exiting back to `kActing` restarts it
+// while a page is still loading.
+TEST_F(ActorTaskTest,
+       RequestUserConfirmationForNavigation_PausesAndRestartsPageLoadTimeout) {
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  task_->AddControlledWebState(web_state.get());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task_->Act(std::move(actions), "Clicking cross-origin link",
+             act_future.GetCallback());
+
+  // Let the engine complete into `DeferActCompletion()` while `web_state` is
+  // loading.
+  FlushCurrentSequence();
+  ASSERT_FALSE(act_future.IsReady());
+  ASSERT_EQ(ActorTaskState::kActing, task_->GetState());
+
+  base::test::TestFuture<bool> decision_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://www.airline.com")),
+      decision_future.GetCallback());
+  ASSERT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+
+  // Advancing past the page-load timeout while waiting on the user must not
+  // complete `Act()` or leave `kWaitingOnUser`.
+  task_environment_.FastForwardBy(kPastPageLoadTimeout);
+  EXPECT_FALSE(act_future.IsReady());
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+
+  // User confirms: task returns to `kActing` and restarts the timeout timer.
+  [intervention_delegate runNavigationConfirmationCompletion:YES];
+  EXPECT_TRUE(decision_future.Get());
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+  EXPECT_FALSE(act_future.IsReady());
+
+  // Advancing past the timeout again now completes the deferred `Act()`.
+  task_environment_.FastForwardBy(kPastPageLoadTimeout);
+  ASSERT_EQ(1u, act_future.Get().size());
+  EXPECT_TRUE(act_future.Get()[0].tool_result.IsOk());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+}
+
+// Tests that if all observed pages finish loading while waiting on user
+// confirmation, the deferred `Act()` stays pending until the user responds
+// and finishes when exiting `kWaitingOnUser`.
+TEST_F(
+    ActorTaskTest,
+    RequestUserConfirmationForNavigation_PageFinishesWhileWaiting_CompletesOnExit) {
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  task_->AddControlledWebState(web_state.get());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task_->Act(std::move(actions), "Clicking cross-origin link",
+             act_future.GetCallback());
+
+  FlushCurrentSequence();
+  ASSERT_FALSE(act_future.IsReady());
+
+  base::test::TestFuture<bool> decision_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://www.airline.com")),
+      decision_future.GetCallback());
+  ASSERT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+
+  // Page finishes loading while the user prompt is open; `Act()` must stay
+  // deferred and the task must remain in `kWaitingOnUser`.
+  web_state->SetLoading(false);
+  FlushCurrentSequence();
+  EXPECT_FALSE(act_future.IsReady());
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+
+  // Once the user declines, exiting `kWaitingOnUser` finishes the deferred
+  // `Act()` with `kTriggeredNavigationBlocked`.
+  [intervention_delegate runNavigationConfirmationCompletion:NO];
+  EXPECT_FALSE(decision_future.Get());
+  const std::vector<ActionResult>& results = act_future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            results[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+}
+
+// Tests that pausing the task while waiting on navigation user confirmation
+// fails the pending decision closed, ignores any late completion from the
+// discarded prompt, and allows a subsequent `Act()` after resuming to request
+// navigation confirmation again cleanly.
+TEST_F(ActorTaskTest,
+       RequestUserConfirmationForNavigation_PauseWhileWaiting_FailsClosed) {
+  FakeActorTaskInterventionDelegate* intervention_delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(intervention_delegate);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  task_->AddControlledWebState(web_state.get());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> first_actions;
+  first_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> first_act_future;
+  task_->Act(std::move(first_actions), "First navigation",
+             first_act_future.GetCallback());
+  FlushCurrentSequence();
+  ASSERT_FALSE(first_act_future.IsReady());
+  ASSERT_EQ(ActorTaskState::kActing, task_->GetState());
+
+  base::test::TestFuture<bool> decision_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://www.airline.com")),
+      decision_future.GetCallback());
+  ASSERT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+  EXPECT_FALSE(decision_future.IsReady());
+
+  task_->Pause();
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+  EXPECT_TRUE(decision_future.IsReady());
+  EXPECT_FALSE(decision_future.Get());
+  EXPECT_FALSE(first_act_future.IsReady());
+
+  // A late completion from the discarded prompt must be ignored rather than
+  // crashing.
+  [intervention_delegate runNavigationConfirmationCompletion:YES];
+  FlushCurrentSequence();
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  // Resuming answers the paused `Act()` with `kTaskPaused`, allowing a
+  // subsequent `Act()` to request navigation confirmation cleanly.
+  task_->Resume();
+  ASSERT_EQ(1u, first_act_future.Get().size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskPaused,
+            first_act_future.Get()[0].tool_result.code());
+  ASSERT_EQ(ActorTaskState::kReflecting, task_->GetState());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> second_actions;
+  second_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> second_act_future;
+  task_->Act(std::move(second_actions), "Second navigation",
+             second_act_future.GetCallback());
+  FlushCurrentSequence();
+  ASSERT_FALSE(second_act_future.IsReady());
+  ASSERT_EQ(ActorTaskState::kActing, task_->GetState());
+
+  base::test::TestFuture<bool> second_decision_future;
+  task_->RequestUserConfirmationForNavigation(
+      url::Origin::Create(GURL("https://www.hotel.com")),
+      second_decision_future.GetCallback());
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+
+  [intervention_delegate runNavigationConfirmationCompletion:YES];
+  EXPECT_TRUE(second_decision_future.Get());
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+
+  web_state->SetLoading(false);
+  ASSERT_EQ(1u, second_act_future.Get().size());
+  EXPECT_TRUE(second_act_future.Get()[0].tool_result.IsOk());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+}
+
 }  // namespace actor

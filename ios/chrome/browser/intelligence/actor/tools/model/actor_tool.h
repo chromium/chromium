@@ -44,6 +44,14 @@ class ActorTool {
   // Returns a human-readable description of the tool and its arguments for
   // debugging and trace logging.
   virtual std::string DebugString() const = 0;
+
+  // Called when the owning task enters `kWaitingOnUser` while this tool is
+  // invoking. Subclasses with internal timeouts should pause their timers.
+  virtual void NotifyPaused();
+
+  // Called when the owning task resumes from `kWaitingOnUser` while this tool
+  // is invoking. Subclasses should resume any paused timers.
+  virtual void NotifyResumed();
 };
 
 }  // namespace actor

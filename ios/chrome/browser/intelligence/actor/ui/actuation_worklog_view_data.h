@@ -156,6 +156,8 @@ enum class ActuationInterventionType {
 enum class InterventionActionIdentifier : NSInteger {
   // Continue the current task.
   kContinue,
+  // Decline the proposed action.
+  kDecline,
   // "Allow this suggestion" action.
   kAllow,
   // "Manually enter" or "Manual sign in" action.

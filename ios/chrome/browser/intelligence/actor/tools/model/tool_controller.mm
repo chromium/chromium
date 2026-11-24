@@ -270,6 +270,18 @@ void ToolController::FailCurrentTool(mojom::ActionResultCode code) {
                                 weak_ptr_factory_.GetWeakPtr(), code));
 }
 
+void ToolController::Pause() {
+  if (state_ == State::kInvoking && active_state_ && active_state_->tool) {
+    active_state_->tool->NotifyPaused();
+  }
+}
+
+void ToolController::Resume() {
+  if (state_ == State::kInvoking && active_state_ && active_state_->tool) {
+    active_state_->tool->NotifyResumed();
+  }
+}
+
 void ToolController::DoFailCurrentTool(mojom::ActionResultCode code) {
   if (state_ != State::kInvoking) {
     return;

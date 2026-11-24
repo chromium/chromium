@@ -28,7 +28,8 @@ class ActorOriginGatingCheckerDelegateIOS
  public:
   ActorOriginGatingCheckerDelegateIOS(
       const ActorEnterprisePolicyCheckerIOS* policy_checker,
-      NavigationConfirmationCallback confirm_navigation_callback);
+      NavigationConfirmationCallback confirm_navigation_callback,
+      UserConfirmationDialogCallback user_confirmation_callback);
   ~ActorOriginGatingCheckerDelegateIOS() override;
 
   ActorOriginGatingCheckerDelegateIOS(
@@ -52,6 +53,17 @@ class ActorOriginGatingCheckerDelegateIOS
                    base::OnceCallback<void(NoVerdictResult)> callback) override;
 
  private:
+  // Requests explicit user confirmation for navigating to `destination_origin`
+  // and resolves `callback` once the user responds.
+  void RequestUserConfirmation(
+      const url::Origin& destination_origin,
+      base::OnceCallback<void(NoVerdictResult)> callback);
+
+  // Handles the user's decision from the confirmation prompt.
+  void OnUserConfirmationDecision(
+      base::OnceCallback<void(NoVerdictResult)> callback,
+      bool permission_granted);
+
   // Handles the result of querying the Origin Critic model for an out-of-turn
   // cross-origin navigation.
   void OnNavigationConfirmationDecision(
@@ -64,6 +76,10 @@ class ActorOriginGatingCheckerDelegateIOS
   // Callback to ask the owning task whether an out-of-turn cross-origin
   // navigation is aligned with the task.
   NavigationConfirmationCallback confirm_navigation_callback_;
+
+  // Callback to prompt the user for confirmation via the task's intervention
+  // delegate.
+  UserConfirmationDialogCallback user_confirmation_callback_;
 
   base::WeakPtrFactory<ActorOriginGatingCheckerDelegateIOS> weak_ptr_factory_{
       this};

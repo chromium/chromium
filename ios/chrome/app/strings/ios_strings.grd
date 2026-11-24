@@ -392,6 +392,18 @@
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_WAITING" desc="Worklog chip label indicating the actor is waiting. [iOS only]">
         Waiting
       </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_CONTINUE_BUTTON" desc="Primary button label allowing Gemini to continue navigating to a sensitive site. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_DECLINE_BUTTON" desc="Secondary button label declining Gemini navigation to a sensitive site. [iOS only]">
+        Don't use this site
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_SUBTITLE" desc="Subtitle in the actuation worklog explaining that Gemini is about to act on a site that may have sensitive info. [iOS only]">
+        Gemini is about to act on a site that may have your sensitive info
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_NAVIGATION_CONFIRMATION_TITLE" desc="Title in the actuation worklog asking the user whether to let Gemini navigate to a specific domain. [iOS only]">
+        Let Gemini go to <ph name="SITE_DOMAIN">$1<ex>healthequity.com</ex></ph>?
+      </message>
       <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_ADDRESS_TITLE" desc="Title of worklog card prompting the user to select an address. [iOS only]">
         Select address
       </message>

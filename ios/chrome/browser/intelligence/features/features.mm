@@ -580,6 +580,8 @@ bool IsActorOriginGatingEnabled() {
 
 const char kActorOriginGatingExplicitParam[] = "gate_explicit_navigation";
 const char kActorOriginGatingImplicitParam[] = "gate_implicit_navigation";
+const char kActorOriginGatingPromptUserForNavigationToNewOriginsParam[] =
+    "prompt_user_for_navigation_to_new_origins";
 
 BASE_FEATURE_PARAM(bool,
                    kActorOriginGatingExplicitFeatureParam,
@@ -593,6 +595,12 @@ BASE_FEATURE_PARAM(bool,
                    kActorOriginGatingImplicitParam,
                    true);  // Default to true when kActorOriginGating is enabled
 
+BASE_FEATURE_PARAM(bool,
+                   kActorOriginGatingPromptUserForNavigationToNewOrigins,
+                   &kActorOriginGating,
+                   kActorOriginGatingPromptUserForNavigationToNewOriginsParam,
+                   false);
+
 bool IsActorOriginGatingForExplicitNavigationEnabled() {
   return IsActorOriginGatingEnabled() &&
          kActorOriginGatingExplicitFeatureParam.Get();
@@ -601,6 +609,11 @@ bool IsActorOriginGatingForExplicitNavigationEnabled() {
 bool IsActorOriginGatingForImplicitNavigationEnabled() {
   return IsActorOriginGatingEnabled() &&
          kActorOriginGatingImplicitFeatureParam.Get();
+}
+
+bool ShouldPromptUserForActorNavigationToNewOrigins() {
+  return IsActorOriginGatingEnabled() &&
+         kActorOriginGatingPromptUserForNavigationToNewOrigins.Get();
 }
 
 BASE_FEATURE(kActorBackgroundedSceneRenderingMode,

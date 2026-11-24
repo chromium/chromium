@@ -70,6 +70,12 @@ class ToolController {
   // cancelled before it runs.
   void PostTaskForActiveTool(base::OnceClosure task);
 
+  // Pauses any in-flight tool timer while the task is waiting on the user.
+  void Pause();
+
+  // Resumes any paused tool timer after the user responds.
+  void Resume();
+
   // Returns the current state of the controller.
   State state() const { return state_; }
 
