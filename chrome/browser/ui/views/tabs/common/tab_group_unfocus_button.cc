@@ -50,6 +50,7 @@ TabGroupUnfocusButton::TabGroupUnfocusButton(Delegate& delegate,
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label()->SetElideBehavior(gfx::NO_ELIDE);
   UpdateBorder();
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Install(this);
   UpdateAccessibleName();
 }

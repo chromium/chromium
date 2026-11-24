@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_focus_announcer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -2572,6 +2573,11 @@ void TabStripModel::EnterFocusModeImpl(const tab_groups::TabGroupId& group) {
                  /*triggered_by_other_operation=*/false);
     NotifyTabGroupFocusChanged(old_focused_group);
 
+    if (auto* const announcer = TabStripFocusAnnouncer::From(
+            delegate_->GetBrowserWindowInterface())) {
+      announcer->AnnounceFocusEntered(*tab_group);
+    }
+
     // Ephemeral tab groups do not trigger a browser theme change upon entering
     // focus mode, so we manually update the visual data here to ensure
     // correctness.
@@ -2630,16 +2636,29 @@ void TabStripModel::ExitFocusModeImpl(
     NotifyTabGroupFocusChanged(old_focused_group);
   }
 
+  BrowserWindowInterface* const browser =
+      delegate_->GetBrowserWindowInterface();
+  const TabGroup* const old_group =
+      group_model_->GetTabGroup(old_focused_group.value());
+  bool toast_shown = false;
   if (reason == TabGroupFocusExitReason::kTabOutsideGroupActivated) {
     if (ToastController* const toast_controller =
-            ToastController::From(delegate_->GetBrowserWindowInterface())) {
+            ToastController::From(browser)) {
       ToastParams params(ToastId::kTabGroupFocusExited);
       if (is_ephemeral) {
         params.body_string_override = l10n_util::GetPluralStringFUTF16(
-            IDS_NON_GROUP_FOCUS_EXITED_TOAST_BODY,
-            group_model_->GetTabGroup(old_focused_group.value())->tab_count());
+            IDS_NON_GROUP_FOCUS_EXITED_TOAST_BODY, old_group->tab_count());
       }
-      toast_controller->MaybeShowToast(std::move(params));
+      toast_shown = toast_controller->MaybeShowToast(std::move(params));
+    }
+  }
+
+  if (auto* const announcer = TabStripFocusAnnouncer::From(browser)) {
+    // Skip when the exit toast already alerts screen readers or on teardown.
+    if (toast_shown || closing_all_) {
+      announcer->CancelPendingAnnouncement();
+    } else {
+      announcer->AnnounceFocusExited(*old_group);
     }
   }
 

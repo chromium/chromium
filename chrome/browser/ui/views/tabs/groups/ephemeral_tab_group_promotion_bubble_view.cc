@@ -24,6 +24,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -34,6 +35,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -131,6 +133,8 @@ EphemeralTabGroupPromotionBubbleView::EphemeralTabGroupPromotionBubbleView(
   SetModalType(ui::mojom::ModalType::kNone);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowTitle(false);
+  SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_TO_GROUP));
   SetShowCloseButton(false);
 
   browser_->GetTabStripModel()->AddObserver(this);
@@ -207,6 +211,8 @@ EphemeralTabGroupPromotionBubbleView::BuildContentsView(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_TO_GROUP),
       views::style::CONTEXT_LABEL, views::style::STYLE_HEADLINE_5);
   heading->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  heading->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
+  heading->GetViewAccessibility().SetHierarchicalLevel(1);
   heading->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(control_insets.top(), control_insets.left(), 0,
@@ -264,6 +270,7 @@ EphemeralTabGroupPromotionBubbleView::BuildButtonRow() {
           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CREATE_GROUP));
   create_button->SetStyle(ui::ButtonStyle::kProminent);
+  create_button->SetIsDefault(true);
   create_button->SetProperty(views::kMarginsKey,
                              gfx::Insets::TLBR(0, button_spacing / 2, 0, 0));
   create_button->SetProperty(views::kElementIdentifierKey, kCreateButtonId);

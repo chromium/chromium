@@ -34,6 +34,8 @@
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -42,6 +44,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -228,6 +231,17 @@ IN_PROC_BROWSER_TEST_F(EphemeralTabGroupPromotionBubbleViewBrowserTest,
   EXPECT_EQ(nullptr,
             contents->GetViewByID(
                 TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP));
+
+  EXPECT_EQ(
+      delegate->GetAccessibleWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_TO_GROUP));
+  ui::AXNodeData heading_data;
+  heading->GetViewAccessibility().GetAccessibleNodeData(&heading_data);
+  EXPECT_EQ(heading_data.role, ax::mojom::Role::kHeading);
+  EXPECT_EQ(
+      heading_data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+      1);
+  EXPECT_TRUE(create->GetIsDefault());
 
   EXPECT_EQ(delegate->GetInitiallyFocusedView(), title_field);
   EXPECT_EQ(widget->GetFocusManager()->GetStoredFocusView(), title_field);

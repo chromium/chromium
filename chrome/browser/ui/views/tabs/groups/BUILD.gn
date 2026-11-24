@@ -165,6 +165,8 @@ source_set("browser_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
     "//ui/base:test_support",
     "//ui/base/clipboard:clipboard_test_support",

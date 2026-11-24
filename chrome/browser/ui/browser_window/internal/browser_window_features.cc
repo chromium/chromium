@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_injector_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
+#include "chrome/browser/ui/tabs/tab_strip_focus_announcer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_iph_controller.h"
@@ -1163,6 +1164,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
 
     if (browser->GetTabStripModel()->SupportsTabGroups() &&
         base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+      tab_strip_focus_announcer_ =
+          GetUserDataFactory().CreateInstance<TabStripFocusAnnouncer>(*browser,
+                                                                      browser);
       tab_group_focus_iph_controller_ =
           GetUserDataFactory().CreateInstance<TabGroupFocusIphController>(
               *browser, browser);
@@ -1198,6 +1202,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   // TYPE_NORMAL members.
   tab_group_focus_iph_controller_.reset();
+  tab_strip_focus_announcer_.reset();
   send_tab_to_self_iph_controller_.reset();
   vertical_tab_iph_controller_.reset();
   ttc_entrypoint_controller_.reset();
