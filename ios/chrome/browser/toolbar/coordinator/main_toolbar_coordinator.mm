@@ -1603,11 +1603,11 @@ inline LayoutStateToolbarPassKey PassKey() {
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
-// Helper for public methods returning the toolbar height. Returns whether the
-// toolbar is hidden. The toolbar is only hidden on the NTP when idle. During
-// transitions or navigations, the toolbar view may still have `isHidden == YES`
-// before the layout pass finishes, but the full toolbar height is returned
-// immediately so the webpage lays out with correct content insets.
+// Helper for public methods returning the toolbar height. Returns whether
+// `toolbarView` is hidden. The toolbar is only legitimately hidden on the NTP.
+// During transitions or navigations to a webpage, `toolbarView` may still have
+// `isHidden == YES` before the layout pass finishes, so `NO` is returned
+// immediately to lay out the webpage with full toolbar content insets.
 - (BOOL)isToolbarHidden:(UIView*)toolbarView {
   CHECK(IsChromeNextIaEnabled());
   if (!toolbarView) {
@@ -1625,8 +1625,10 @@ inline LayoutStateToolbarPassKey PassKey() {
     return YES;
   }
 
-  // The toolbar is only legitimately hidden on the NTP when not loading.
-  if (IsVisibleURLNewTabPage(webState) && !webState->IsLoading()) {
+  // The toolbar is only legitimately hidden on the NTP (including while the
+  // NTP is still loading, as `-toolbarsHeightChanged` is not re-triggered when
+  // loading completes).
+  if (IsVisibleURLNewTabPage(webState)) {
     return YES;
   }
 

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
@@ -283,6 +285,27 @@ class MainToolbarCoordinatorTest : public PlatformTest {
     [browserLayoutState removeObserver:observer];
   }
 
+  // Inserts and activates a `FakeWebState` at index 0 configured with `url`,
+  // `is_loading`, and required tab helpers, returning the inserted `WebState`.
+  web::FakeWebState* InsertActiveWebState(const GURL& url, bool is_loading) {
+    auto test_web_state = std::make_unique<web::FakeWebState>();
+    test_web_state->SetBrowserState(profile_.get());
+    test_web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    test_web_state->SetCurrentURL(url);
+    test_web_state->SetLoading(is_loading);
+    NewTabPageTabHelper::CreateForWebState(test_web_state.get());
+    WebViewProxyTabHelper::CreateForWebState(test_web_state.get());
+    InfoBarManagerImpl::CreateForWebState(test_web_state.get());
+    InfobarBadgeTabHelper::CreateForWebState(test_web_state.get());
+
+    web::FakeWebState* web_state = test_web_state.get();
+    browser()->GetWebStateList()->InsertWebState(
+        std::move(test_web_state),
+        WebStateList::InsertionParams::AtIndex(0).Activate());
+    return web_state;
+  }
+
   Browser* browser() {
     return scene_state_.browserProviderInterface.currentBrowser;
   }
@@ -342,21 +365,7 @@ TEST_F(MainToolbarCoordinatorTest,
 TEST_F(MainToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
   coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
   [coordinator_ start];
-  // Add a dummy WebState to the WebStateList.
-  auto test_web_state = std::make_unique<web::FakeWebState>();
-  test_web_state->SetBrowserState(profile_.get());
-  test_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-
-  // Add required web state service dependencies.
-  web::WebState* web_state = test_web_state.get();
-  WebViewProxyTabHelper::CreateForWebState(web_state);
-  InfoBarManagerImpl::CreateForWebState(web_state);
-  InfobarBadgeTabHelper::CreateForWebState(web_state);
-
-  browser()->GetWebStateList()->InsertWebState(
-      std::move(test_web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
+  web::WebState* web_state = InsertActiveWebState(GURL(), /*is_loading=*/false);
 
   // Add the coordinator's view to a window to ensure it has a window property.
   UIWindow* window = [[UIWindow alloc]
@@ -426,21 +435,9 @@ TEST_F(MainToolbarCoordinatorTest,
   coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
   [coordinator_ start];
 
-  // 1. Add an active WebState loading a webpage.
-  auto test_web_state = std::make_unique<web::FakeWebState>();
-  test_web_state->SetBrowserState(profile_.get());
-  test_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  WebViewProxyTabHelper::CreateForWebState(test_web_state.get());
-  InfoBarManagerImpl::CreateForWebState(test_web_state.get());
-  InfobarBadgeTabHelper::CreateForWebState(test_web_state.get());
-  test_web_state->SetCurrentURL(GURL("https://chromium.org"));
-  test_web_state->SetLoading(true);
-  browser()->GetWebStateList()->InsertWebState(
-      std::move(test_web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
+  InsertActiveWebState(GURL("https://chromium.org"), /*is_loading=*/true);
 
-  // 2. Simulate the primary toolbar view being hidden during transition.
+  // Simulate the primary toolbar view being hidden during transition.
   coordinator_.primaryToolbarViewController.view.hidden = YES;
 
   // Verify the expanded height is non-zero even while the view is hidden.
@@ -465,21 +462,9 @@ TEST_F(MainToolbarCoordinatorTest,
   coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
   [coordinator_ start];
 
-  // 1. Add an active WebState loading a webpage.
-  auto test_web_state = std::make_unique<web::FakeWebState>();
-  test_web_state->SetBrowserState(profile_.get());
-  test_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  WebViewProxyTabHelper::CreateForWebState(test_web_state.get());
-  InfoBarManagerImpl::CreateForWebState(test_web_state.get());
-  InfobarBadgeTabHelper::CreateForWebState(test_web_state.get());
-  test_web_state->SetCurrentURL(GURL("https://chromium.org"));
-  test_web_state->SetLoading(true);
-  browser()->GetWebStateList()->InsertWebState(
-      std::move(test_web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
+  InsertActiveWebState(GURL("https://chromium.org"), /*is_loading=*/true);
 
-  // 2. Set omnibox to bottom position and simulate secondary view hidden.
+  // Set omnibox to bottom position and simulate secondary view hidden.
   GetApplicationContext()->GetLocalState()->SetBoolean(
       omnibox::kIsOmniboxInBottomPosition, true);
   coordinator_.secondaryToolbarViewController.view.hidden = YES;
@@ -511,18 +496,7 @@ TEST_F(MainToolbarCoordinatorTest,
   coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
   [coordinator_ start];
 
-  auto test_web_state = std::make_unique<web::FakeWebState>();
-  test_web_state->SetBrowserState(profile_.get());
-  test_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
-  WebViewProxyTabHelper::CreateForWebState(test_web_state.get());
-  InfoBarManagerImpl::CreateForWebState(test_web_state.get());
-  InfobarBadgeTabHelper::CreateForWebState(test_web_state.get());
-  test_web_state->SetCurrentURL(GURL("https://chromium.org"));
-  test_web_state->SetLoading(true);
-  browser()->GetWebStateList()->InsertWebState(
-      std::move(test_web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
+  InsertActiveWebState(GURL("https://chromium.org"), /*is_loading=*/true);
 
   GetApplicationContext()->GetLocalState()->SetBoolean(
       omnibox::kIsOmniboxInBottomPosition, true);
@@ -550,4 +524,29 @@ TEST_F(MainToolbarCoordinatorTest,
   fullscreen_agent->InvalidateInsetRange();
   EXPECT_LE(fullscreen_agent->min_insets().bottom,
             fullscreen_agent->max_insets().bottom);
+}
+
+// Tests that primary and secondary toolbar heights are zero when an active NTP
+// is still loading.
+TEST_F(MainToolbarCoordinatorTest,
+       TestToolbarHeightsOnLoadingNTP_ChromeNextIa) {
+  // Toolbar hiding on the NTP and bottom omnibox only apply on iPhone.
+  if (!IsBottomOmniboxAvailable()) {
+    return;
+  }
+
+  feature_list_.InitAndEnableFeature(kChromeNextIa);
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
+  [coordinator_ start];
+
+  InsertActiveWebState(GURL(kChromeUINewTabURL), /*is_loading=*/true);
+
+  EXPECT_EQ([coordinator_ collapsedPrimaryToolbarHeight], 0.0);
+  EXPECT_EQ([coordinator_ expandedPrimaryToolbarHeight], 0.0);
+
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, true);
+
+  EXPECT_EQ([coordinator_ collapsedSecondaryToolbarHeight], 0.0);
+  EXPECT_EQ([coordinator_ expandedSecondaryToolbarHeight], 0.0);
 }
