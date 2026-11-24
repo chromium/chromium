@@ -13,7 +13,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -54,6 +53,7 @@
 #include "media/base/video_transformation.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/fp16/src/include/fp16.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -691,15 +691,20 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
         return false;
       }
       PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-          frame_.get(), UNSAFE_SKBITMAP_TO_BYTES_SPAN(temp_bitmap),
+          frame_.get(), skia::as_writable_byte_span(temp_bitmap.pixmap()),
           temp_bitmap.rowBytes(), kN32_SkColorType);
       return temp_bitmap.pixmap().readPixels(dst_pixmap);
     }
 
     // If skia couldn't do the YUV conversion on GPU, we will on CPU.
+    base::span<uint8_t> dst_pixels = skia::as_writable_byte_span(dst_pixmap);
+    // ConvertVideoFrameToRGBPixels() writes through the span's data pointer for
+    // most formats, so don't pass it an empty span if `dst_pixmap` has no
+    // pixels or its size overflows.
+    CHECK(!dst_pixels.empty());
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-        frame_.get(), UNSAFE_SKPIXMAP_TO_BYTES_SPAN(dst_pixmap),
-        dst_pixmap.rowBytes(), dst_pixmap.colorType());
+        frame_.get(), dst_pixels, dst_pixmap.rowBytes(),
+        dst_pixmap.colorType());
 
     if (!SkColorSpace::Equals(GetSkImageInfo().colorSpace(),
                               dst_pixmap.colorSpace())) {
@@ -1071,10 +1076,13 @@ void PaintCanvasVideoRenderer::Paint(
   }
 
   SkImageInfo info;
-  size_t row_bytes;
-  SkIPoint origin;
-  base::span<uint8_t> pixels = UNSAFE_PAINTCANVAS_TOP_LAYER_TO_BYTES_SPAN(
-      canvas, &info, &row_bytes, &origin);
+  size_t row_bytes = 0;
+  SkIPoint origin = SkIPoint::Make(0, 0);
+  void* top_layer_pixels =
+      canvas->accessTopLayerPixels(&info, &row_bytes, &origin);
+  // Empty if the canvas has no top layer pixels or their size overflows.
+  base::span<uint8_t> pixels =
+      skia::as_writable_byte_span(SkPixmap(info, top_layer_pixels, row_bytes));
   // This if is a special handling of video for SkiaPaintcanvas backend, where
   // the video does not need any transform and it is enough to draw the frame
   // directly into the skia canvas

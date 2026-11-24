@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/bits.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +21,7 @@ uint64_t GetDataFromBuffer(base::span<const uint8_t> ptr, uint64_t num_bits) {
     got |= (ptr[0] & 0xff);
     num_bits -= 8;
     got <<= (num_bits > 8 ? 8 : num_bits);
-    base::PostIncrementSpan(ptr);
+    ptr = ptr.subspan(1u);
   }
   if (num_bits > 0) {
     uint64_t temp = (ptr[0] & 0xff);
