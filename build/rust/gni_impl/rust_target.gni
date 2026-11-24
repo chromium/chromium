@@ -113,11 +113,8 @@ template("rust_target") {
   }
   if (_override_crate_type_as_dylib) {
     assert(defined(invoker.crate_type) && invoker.crate_type == "rlib")
-
     invoker.crate_type = "dylib"
     invoker.target_type = "shared_library"
-
-    _copy_so_or_dll_dylib_target_name = target_name + "_copy_so_or_dll_dylib"
   }
 
   # Only one of `crate_root` or `generate_crate_root` can be specified, or
@@ -413,10 +410,6 @@ template("rust_target") {
         }
         public_deps = [ ":${_main_target_name}" ]
         public_deps += _cxx_generated_deps_for_cpp
-
-        if (_override_crate_type_as_dylib) {
-          data_deps = [ ":${_copy_so_or_dll_dylib_target_name}" ]
-        }
       }
     }
 
@@ -445,60 +438,6 @@ template("rust_target") {
         # do the same for 3p crates or those with a `crate_name` set
         # explicitly.
         _output_name = _crate_name
-      }
-    }
-
-    if (_override_crate_type_as_dylib) {
-      # Building a `--crate-type=dylib` means that `rustc` generates a `.dll` /
-      # `.so` in target-specific subdirectories of the build directory.  This
-      # is particularly important for the standard library, which `rustc`
-      # expects to find under the sysroot when building other crates - this is
-      # why targets in `//build/rust/std/rules/BUILD.gn` set `output_dir =
-      # "$root_out_dir/local_rustc_sysroot/...".
-      #
-      # OTOH, executables linked against these `.dll`s / `.so`s need to find
-      # them at runtime (i.e. the runtime linker needs to find them). The `copy`
-      # target here helps with this part by copying them to the root of the
-      # build directory (same directory where executables go by default).
-      copy(_copy_so_or_dll_dylib_target_name) {
-        # TODO(https://crbug.com/gn/490160737): If `get_target_outputs` can
-        # support binary targets (unclear) then it should be used here, instead
-        # of replicating how `...toolchain.gni` calculates the `.so` path in the
-        # `outputs` of `tool("rust_dylib")` (which feels rather fragile).
-        #
-        # `_source_ext` is an equivalent of `{{output_extension}}`
-        _source_ext = shlib_extension
-
-        # When cross-compiling for Windows from Linux, the toolchain might
-        # use `.dll` even for Linux targets (like the Rust stdlib which
-        # is part of the sysroot).
-        if (target_os == "win" && current_os == "linux" &&
-            _source_ext == ".so") {
-          _source_ext = ".dll"
-        }
-
-        # `_source_prefix` is an equivalent of `output_prefix` in `tool`.
-        _source_prefix = shlib_prefix
-
-        assert(defined(invoker.output_name))  # Only tested with `cargo_crate`.
-
-        # `_source_path` is the equivalent of `dllname` in the toolchain.
-        _source_filename = "${_source_prefix}${_output_name}${_source_ext}"
-        _source_path = "${_output_dir}/${_source_filename}"
-
-        # `_target_dir` is the equivalent of `default_output_dir` in toolchain.
-        if (defined(invoker.default_shlib_subdir)) {
-          _target_dir = "${root_out_dir}${invoker.default_shlib_subdir}"
-        } else {
-          _target_dir = "${root_out_dir}"
-        }
-
-        sources = [ _source_path ]
-        outputs = [ "${_target_dir}/{{source_file_part}}" ]
-        deps = [ ":${_main_target_name}" ]
-        if (defined(invoker.testonly)) {
-          testonly = invoker.testonly
-        }
       }
     }
 
@@ -662,9 +601,6 @@ template("rust_target") {
         visibility += [ ":${_cpp_api_from_rust_target_name}_crubit_action" ]
         visibility += [ ":${_cpp_api_from_rust_target_name}_crubit_impl" ]
       }
-      if (_override_crate_type_as_dylib) {
-        visibility += [ ":${_copy_so_or_dll_dylib_target_name}" ]
-      }
 
       testonly = _testonly
       crate_name = _crate_name
@@ -820,9 +756,9 @@ template("rust_target") {
           forward_variables_from(_cpp_api_from_rust_attributes,
                                  [ "visibility" ])
 
-          # `:${_target_name}` (rather than `:${_main_target_name}`), so that
-          # dependents of the bindings also get the `data_deps` of the group
-          # above (e.g. the `.so` / `.dll` copy of a `dylib`).
+          # `:${_target_name}` (rather than `:${_main_target_name}`), because
+          # for `dylib`s the main target is an internal `..._shared_library`
+          # target behind the public `group` above.
           rust_target = ":${_target_name}"
           rustc_env_and_flags = _rustc_env_and_flags
           original_attributes = _cpp_api_from_rust_attributes
@@ -844,8 +780,7 @@ template("rust_target") {
         }
       }
     }
-    if (!_override_crate_type_as_dylib &&
-        !_enable_cpp_api_from_rust_for_this_target) {
+    if (!_enable_cpp_api_from_rust_for_this_target) {
       not_needed([ "_output_dir" ])
     }
   }

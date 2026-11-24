@@ -9,6 +9,7 @@ import json
 import pathlib
 import subprocess
 import shlex
+import shutil
 import os
 import signal
 import sys
@@ -34,6 +35,8 @@ import action_helpers
 # * Saving `rustc` command-line flags and environment, so that it can be reused
 #   when invoking `cc_bindings_from_rs`, `clippy-driver`, or
 #   `build/rust/apply_fixes.py`.
+# * Copying `--crate-type=dylib` outputs to where the runtime linker can find
+#   them (see `--runtime-copy` below).
 #
 # LDFLAGS ESCAPING
 #
@@ -369,6 +372,22 @@ def main():
     parser.add_argument('-o', type=pathlib.Path, required=True)
     parser.add_argument('--emit', type=str, required=True)
 
+    # Path where a copy of the `-o` output should be written.
+    #
+    # Used by `tool("rust_dylib")` in `//build/toolchain/gcc_toolchain.gni`,
+    # `//build/toolchain/apple/toolchain.gni`, and
+    # `//build/toolchain/win/toolchain.gni`: `rustc` looks for a
+    # `--crate-type=dylib` output in `{{output_dir}}` (e.g. in the sysroot for
+    # the `std` crate), but the runtime linker looks for it next to the
+    # executables (in the root build directory).  In the GCC and Apple
+    # toolchains the copy is the `link_output` (used by C++ dependents) and the
+    # original is the `depend_output` (used by Rust dependents for `--extern`).
+    # Having a `link_output` that differs from the `depend_output` makes GN
+    # list the copy in `solibs` of C++ dependents (like `.so` vs `.so.TOC` of
+    # `tool("solink")`).  This e.g. lets Siso know which shared libraries are
+    # needed to run an executable during the build.
+    parser.add_argument('--runtime-copy', type=pathlib.Path)
+
     parser.add_argument('args', metavar='ARG', nargs='+')
 
     args = parser.parse_args()
@@ -462,6 +481,17 @@ def main():
             args.depfile, only_if_changed=False
         ) as output:
             output.write("\n".join(final_depfile_lines).encode("utf-8"))
+
+    if args.runtime_copy:
+        # Replace the copy atomically, so that an interrupted build doesn't
+        # leave a truncated file behind, and so that the copy gets a new inode
+        # (overwriting a signed Mach-O file in place can break macOS code
+        # signature checks).
+        with action_helpers.atomic_output(
+            args.runtime_copy, only_if_changed=False
+        ) as tmp:
+            tmp.close()
+            shutil.copy2(args.o, tmp.name)
 
 
 if __name__ == '__main__':
