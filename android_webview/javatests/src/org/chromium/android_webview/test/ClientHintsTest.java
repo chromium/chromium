@@ -907,6 +907,98 @@ public class ClientHintsTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    @CommandLineFlags.Add({
+        "enable-features=ClientHintsFormFactors",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
+    public void testOverrideUserAgentMetadataDefaultValuesWithCustomUserAgent() throws Throwable {
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwContents contents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentsClient)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(contents);
+        contents.getSettings().setJavaScriptEnabled(true);
+        AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(contents);
+
+        Map<String, Object> defaultMetadata = settings.getUserAgentMetadataMap();
+        String defaultFullVersion =
+                (String) defaultMetadata.get(AwUserAgentMetadata.MetadataKeys.FULL_VERSION);
+        String defaultPlatformVersion =
+                (String) defaultMetadata.get(AwUserAgentMetadata.MetadataKeys.PLATFORM_VERSION);
+        String defaultModel = (String) defaultMetadata.get(AwUserAgentMetadata.MetadataKeys.MODEL);
+        Assert.assertFalse(defaultFullVersion.isEmpty());
+        Assert.assertFalse(defaultPlatformVersion.isEmpty());
+
+        settings.setUserAgentString("customUserAgent");
+
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        // 1. Override a single metadata field with its default value while keeping a custom UA.
+        // High-entropy client hints should still be populated with system defaults.
+        settings.setUserAgentMetadataFromMap(
+                Map.of(AwUserAgentMetadata.MetadataKeys.PLATFORM, "Android"));
+        ClientHintsTestResult clientHintsResult =
+                makeRequestAndGetClientHints(server, contents, contentsClient);
+        Map<String, String> clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
+        Assert.assertEquals("\"Android\"", clientHintsMap.get("sec-ch-ua-platform"));
+        Assert.assertEquals(
+                "\"" + defaultFullVersion + "\"", clientHintsMap.get("sec-ch-ua-full-version"));
+        Assert.assertFalse(clientHintsMap.get("sec-ch-ua-full-version-list").isEmpty());
+        Assert.assertEquals(
+                "\"" + defaultPlatformVersion + "\"",
+                clientHintsMap.get("sec-ch-ua-platform-version"));
+        Assert.assertEquals("\"" + defaultModel + "\"", clientHintsMap.get("sec-ch-ua-model"));
+
+        JSONObject jsClientHints = clientHintsResult.mJsClientHints;
+        Assert.assertNotEquals("[]", jsClientHints.getString("fullVersionList"));
+        Assert.assertEquals(defaultFullVersion, jsClientHints.getString("uaFullVersion"));
+        Assert.assertEquals(defaultPlatformVersion, jsClientHints.getString("platformVersion"));
+        Assert.assertEquals(defaultModel, jsClientHints.getString("model"));
+
+        // 2. Clear metadata overrides with an empty map; custom UA should revert to low-entropy
+        // client hints only even though mAwUserAgentMetadata already matched defaults.
+        settings.setUserAgentMetadataFromMap(Map.of());
+        clientHintsResult = makeRequestAndGetClientHints(server, contents, contentsClient);
+        clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
+        Assert.assertEquals("\"\"", clientHintsMap.get("sec-ch-ua-full-version"));
+        Assert.assertEquals("", clientHintsMap.get("sec-ch-ua-full-version-list"));
+        Assert.assertEquals("\"\"", clientHintsMap.get("sec-ch-ua-platform-version"));
+
+        jsClientHints = clientHintsResult.mJsClientHints;
+        Assert.assertEquals("[]", jsClientHints.getString("fullVersionList"));
+        Assert.assertEquals("", jsClientHints.getString("uaFullVersion"));
+        Assert.assertEquals("", jsClientHints.getString("platformVersion"));
+
+        // 3. Re-enable default metadata using the full default metadata map (e.g.
+        // getUserAgentMetadataMap); high-entropy client hints should be populated again.
+        settings.setUserAgentMetadataFromMap(defaultMetadata);
+        clientHintsResult = makeRequestAndGetClientHints(server, contents, contentsClient);
+        clientHintsMap = clientHintsResult.mHttpHeaderClientHints;
+        Assert.assertEquals(
+                "\"" + defaultFullVersion + "\"", clientHintsMap.get("sec-ch-ua-full-version"));
+        Assert.assertFalse(clientHintsMap.get("sec-ch-ua-full-version-list").isEmpty());
+        Assert.assertEquals(
+                "\"" + defaultPlatformVersion + "\"",
+                clientHintsMap.get("sec-ch-ua-platform-version"));
+        Assert.assertEquals("\"" + defaultModel + "\"", clientHintsMap.get("sec-ch-ua-model"));
+
+        jsClientHints = clientHintsResult.mJsClientHints;
+        Assert.assertNotEquals("[]", jsClientHints.getString("fullVersionList"));
+        Assert.assertEquals(defaultFullVersion, jsClientHints.getString("uaFullVersion"));
+        Assert.assertEquals(defaultPlatformVersion, jsClientHints.getString("platformVersion"));
+        Assert.assertEquals(defaultModel, jsClientHints.getString("model"));
+
+        // Cleanup after test.
+        clearCookies();
+        server.stopAndDestroyServer();
+    }
+
+    @Test
+    @SmallTest
     @Feature({"AndroidWebView"})
     @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
     public void testDefaultUserAgentDefaultReductionOverride() throws Throwable {

@@ -943,15 +943,14 @@ public class AwSettings {
             final AwUserAgentMetadata overrideUaMetadata =
                     AwUserAgentMetadata.fromMap(
                             uaMetadataMap, LazyDefaultUserAgentMetadata.sInstance);
-            if (!mAwUserAgentMetadata.equals(overrideUaMetadata)) {
+            final boolean hasOverrides = (uaMetadataMap != null && !uaMetadataMap.isEmpty());
+            // Also check mHasUserAgentMetadataOverrides != hasOverrides so that passing non-empty
+            // metadata matching the system defaults still enables high-entropy client hints when a
+            // custom user-agent string is set (and passing null/empty clears it).
+            if (!mAwUserAgentMetadata.equals(overrideUaMetadata)
+                    || mHasUserAgentMetadataOverrides != hasOverrides) {
                 mAwUserAgentMetadata = overrideUaMetadata;
-                // We only consider it has override when the input is not empty and has difference
-                // with the existing user-agent metadata. e.g. user overrides the user-agent with a
-                // totally different value, initially they provide the user-agent metadata
-                // overrides, we should only generate low-entropy user-agent client hints once users
-                // clear the user-agent metadata overrides.
-                mHasUserAgentMetadataOverrides =
-                        (uaMetadataMap != null && !uaMetadataMap.isEmpty());
+                mHasUserAgentMetadataOverrides = hasOverrides;
                 mEventHandler.runOnUiThreadBlockingAndLocked(
                         () -> updateUserAgentOnUiThreadLocked());
             }
