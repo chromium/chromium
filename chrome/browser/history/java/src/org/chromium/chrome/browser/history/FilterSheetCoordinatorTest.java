@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -87,7 +88,8 @@ public class FilterSheetCoordinatorTest {
                         activity -> {
                             mActivity = activity;
                             Drawable icon =
-                                    activity.getResources().getDrawable(R.drawable.ic_devices_16dp);
+                                    AppCompatResources.getDrawable(
+                                            activity, R.drawable.devices_black_24dp);
                             List<FilterItem<String>> items = new ArrayList<>();
                             items.add(new FilterItem<>(APPID_YOUTUBE, icon, APPLABEL_YOUTUBE));
                             items.add(new FilterItem<>(APPID_CHROME, icon, APPLABEL_CHROME));
