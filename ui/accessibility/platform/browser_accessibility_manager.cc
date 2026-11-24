@@ -154,15 +154,37 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
     AXTreeID ax_tree_id) {
   CHECK(ax_tree_id != AXTreeIDUnknown(), base::NotFatalUntil::M163);
-  auto* manager = AXTreeManager::FromID(ax_tree_id);
-  // If `manager` does not maintain a list of platform objects (such as
-  // `BrowserAccessibility`) corresponding to each `AXNode` in its managed tree,
-  // then we can't cast it to one that does, in this case a
-  // `BrowserAccessibilityManager`.
+  return FromAXTreeManager(AXTreeManager::FromID(ax_tree_id));
+}
+
+// static
+BrowserAccessibilityManager* BrowserAccessibilityManager::FromAXTreeManager(
+    AXTreeManager* manager) {
   if (!manager || !manager->is_platform_tree_manager()) {
     return nullptr;
   }
-  return static_cast<BrowserAccessibilityManager*>(manager);
+  return static_cast<AXPlatformTreeManager*>(manager)
+      ->AsBrowserAccessibilityManager();
+}
+
+// static
+const BrowserAccessibilityManager*
+BrowserAccessibilityManager::FromAXTreeManager(const AXTreeManager* manager) {
+  if (!manager || !manager->is_platform_tree_manager()) {
+    return nullptr;
+  }
+  return static_cast<const AXPlatformTreeManager*>(manager)
+      ->AsBrowserAccessibilityManager();
+}
+
+BrowserAccessibilityManager*
+BrowserAccessibilityManager::AsBrowserAccessibilityManager() {
+  return this;
+}
+
+const BrowserAccessibilityManager*
+BrowserAccessibilityManager::AsBrowserAccessibilityManager() const {
+  return this;
 }
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
@@ -354,15 +376,8 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
   // TODO(aleventhal) Should we just use |this| as the manager in most cases? It
   // looks like node->GetManager() may be slow because of AXTreeID usage.
   if (const AXTreeManager* manager = node->GetManager()) {
-    // If `manager` does not maintain a list of platform objects (such as
-    // `BrowserAccessibility`) corresponding to each `AXNode` in its managed
-    // tree, then we can't cast it to one that does, in this case a
-    // `BrowserAccessibilityManager`.
-    if (manager->is_platform_tree_manager()) {
-      return static_cast<const BrowserAccessibilityManager*>(manager)
-          ->GetFromID(node->id());
-    }
-    return nullptr;
+    const BrowserAccessibilityManager* bam = FromAXTreeManager(manager);
+    return bam ? bam->GetFromID(node->id()) : nullptr;
   }
   return GetFromID(node->id());
 }
@@ -393,14 +408,6 @@ BrowserAccessibilityManager::GetParentNodeFromParentTreeAsBrowserAccessibility()
   DCHECK(parent_manager) << "Impossible to have null parent_manager if we "
                             "already have a parent AXNode.";
 
-  // There is a chance that the parent manager is not a
-  // `BrowserAccessibilityManager`, like when the manager owns an
-  // `AXTree` with generated content, which is currently not a platform
-  // tree manager.
-  if (!is_platform_tree_manager()) {
-    return nullptr;
-  }
-
   // Return early when on the root frame if we're not yet supporting
   // accessibility tree for views (from the ViewsAX project). When the flag is
   // enabled, the manager on the root frame will be a
@@ -410,7 +417,10 @@ BrowserAccessibilityManager::GetParentNodeFromParentTreeAsBrowserAccessibility()
   }
 
   BrowserAccessibilityManager* parent_manager_wrapper =
-      static_cast<BrowserAccessibilityManager*>(parent_manager);
+      FromAXTreeManager(parent_manager);
+  if (!parent_manager_wrapper) {
+    return nullptr;
+  }
   BrowserAccessibility* parent_node =
       parent_manager_wrapper->GetFromAXNode(parent);
   CHECK_EQ(parent_node->manager(), parent_manager_wrapper,
@@ -1983,7 +1993,7 @@ BrowserAccessibilityManager::GetManagerForRootFrame() const {
     return const_cast<BrowserAccessibilityManager*>(this);
 
   BrowserAccessibilityManager* parent_manager =
-      static_cast<BrowserAccessibilityManager*>(GetParentManager());
+      FromAXTreeManager(GetParentManager());
   if (!parent_manager) {
     // This can occur when the child frame has an embedding token, but the
     // parent element (e.g. <iframe>) does not yet know about the child.

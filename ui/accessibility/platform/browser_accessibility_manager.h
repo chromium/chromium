@@ -127,6 +127,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
       AXPlatformTreeManagerDelegate* delegate);
 
   static BrowserAccessibilityManager* FromID(AXTreeID ax_tree_id);
+  static BrowserAccessibilityManager* FromAXTreeManager(AXTreeManager* manager);
+  static const BrowserAccessibilityManager* FromAXTreeManager(
+      const AXTreeManager* manager);
 
   BrowserAccessibilityManager(const BrowserAccessibilityManager&) = delete;
   BrowserAccessibilityManager& operator=(const BrowserAccessibilityManager&) =
@@ -158,6 +161,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
                                int action_request_id) {}
 
   // AXPlatformTreeManager overrides.
+  BrowserAccessibilityManager* AsBrowserAccessibilityManager() final;
+  const BrowserAccessibilityManager* AsBrowserAccessibilityManager()
+      const final;
   void FireGeneratedEvent(AXEventGenerator::Event event_type,
                           const AXNode* node) override;
 
