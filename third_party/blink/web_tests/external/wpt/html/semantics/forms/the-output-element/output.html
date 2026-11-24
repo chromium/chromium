@@ -43,4 +43,23 @@
     assert_equals(defaultValueOutput.value, "abc", "value should be 'abc'");
     assert_equals(defaultValueOutput.defaultValue, "abc", "defaultValue should be 'abc'");
   }, "output value and defaultValue");
+
+  test(function(){
+    var output = document.createElement("output");
+    output.setAttribute("for", " a  b ");
+    assert_equals(output.htmlFor, output.htmlFor, "htmlFor returns the same object");
+    assert_class_string(output.htmlFor, "DOMTokenList");
+    assert_equals(output.htmlFor.length, 2);
+    assert_equals(output.htmlFor[0], "a");
+    assert_equals(output.htmlFor[1], "b");
+    assert_equals(output.htmlFor.value, " a  b ", "value reflects the for attribute as is");
+
+    output.htmlFor.add("c");
+    assert_equals(output.getAttribute("for"), "a b c", "add() updates the for attribute");
+
+    output.htmlFor = "x y";
+    assert_equals(output.getAttribute("for"), "x y", "setting htmlFor sets the for attribute");
+    assert_equals(output.htmlFor.length, 2);
+    assert_equals(String(output.htmlFor), "x y");
+  }, "output htmlFor reflects the for attribute");
 </script>

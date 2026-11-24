@@ -533,8 +533,6 @@ fast/forms/label/label-click-by-script.html
 fast/forms/mailto/get-multiple-items.html
 fast/forms/number/number-change-event-by-readonly.html
 fast/forms/number/number-content-url-crash.html
-fast/forms/output/htmloutputelement-children-removed.html
-fast/forms/output/htmloutputelement-validity.html
 fast/forms/radio/input-radio-checked-tab.html
 fast/forms/radio/radio-cloneNode-checked.html
 fast/forms/range/range-input-dynamic-oninput.html

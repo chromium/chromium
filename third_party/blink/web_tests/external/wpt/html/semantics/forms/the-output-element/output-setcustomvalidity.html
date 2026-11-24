@@ -14,4 +14,12 @@ test(() => {
   assert_true(elem.validity.customError);
 }, "output setCustomValidity is correct")
 
+test(t => {
+  let elem = document.createElement("output");
+  elem.oninvalid = t.unreached_func();
+  elem.setCustomValidity("custom error");
+  assert_equals(elem.validationMessage, "");
+  assert_true(elem.checkValidity());
+}, "output setCustomValidity does not affect validationMessage and checkValidity()")
+
 </script>

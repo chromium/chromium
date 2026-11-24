@@ -34,3 +34,44 @@ test(() => {
   form.reset();
   assert_equal_values(output, "something", "after form.reset() again");
 }, "output and output.form.reset()");
+
+test(() => {
+  const output = document.createElement('output');
+  output.value = '<b>x</b>';
+  assert_values(output, '<b>x</b>', '', 'after setting value');
+  assert_equals(output.innerHTML, '&lt;b&gt;x&lt;/b&gt;');
+  assert_equals(output.childNodes.length, 1);
+}, 'output.value setter replaces children with a text node');
+
+test(() => {
+  const output = document.createElement('output');
+  output.innerHTML = '<b>x</b> y';
+  assert_equal_values(output, 'x y', 'after setting innerHTML');
+  const child = output.firstChild;
+  output.removeChild(child);
+  assert_equal_values(output, ' y', 'after removing a child');
+}, 'Child list mutations in default mode update output.value and .defaultValue');
+
+test(() => {
+  const output = document.createElement('output');
+  output.value = 'a';
+  output.defaultValue = 'd';
+  const child = output.appendChild(document.createElement('span'));
+  child.textContent = 'b';
+  assert_values(output, 'ab', 'd', 'after appending a child');
+  output.removeChild(child);
+  assert_values(output, 'a', 'd', 'after removing a child');
+  output.innerHTML = '<b>x</b> y';
+  assert_values(output, 'x y', 'd', 'after setting innerHTML');
+}, 'Child list mutations in value mode update output.value but not .defaultValue');
+
+test(() => {
+  const output = document.body.appendChild(document.createElement('output'));
+  output.innerHTML =
+      '<span class=output-child></span><span class=output-child></span>';
+  const list = document.getElementsByClassName('output-child');
+  assert_equals(list.length, 2);
+  output.firstChild.remove();
+  assert_equals(list.length, 1);
+  output.remove();
+}, 'Live collections are updated after removing a child of output');
