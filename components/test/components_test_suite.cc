@@ -29,6 +29,7 @@
 
 #if !BUILDFLAG(USE_BLINK)
 #include "components/test/ios_components_test_initializer.h"
+#include "ios/testing/screen_time_util.h"
 #else
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
@@ -54,6 +55,10 @@ class ComponentsTestSuite : public base::TestSuite {
  private:
   void Initialize() override {
     base::TestSuite::Initialize();
+
+#if !BUILDFLAG(USE_BLINK)
+    EnsureScreenTimeReady();
+#endif
 
     // These schemes need to be added globally to pass tests of
     // autocomplete_input_unittest.cc and content_settings_pattern*

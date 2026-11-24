@@ -12,7 +12,7 @@
 #import "base/no_destructor.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/with_feature_override.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
@@ -23,6 +23,7 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
@@ -378,25 +379,6 @@ TEST_F(FillJsTest, GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
         GetUniqueID(@"form", web::ContentWorld::kPageContentWorld);
     EXPECT_NSEQ(page_form_id, @"0");
   }
-}
-
-// Tests sanitizeValueForInputElement TS function.
-TEST_F(FillJsTest, SanitizeValueForInputElement) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAutofillSupportDateInput);
-  LoadHtml(@"<input id='input' type='date'/>");
-
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('sanitizeValueForInputElement')('2023-10-31', "
-      @"document.getElementById('input'));");
-  EXPECT_NSEQ(result, @"2023-10-31");
-
-  id result_invalid = ExecuteJavaScript(
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('sanitizeValueForInputElement')('not-a-date', "
-      @"document.getElementById('input'));");
-  EXPECT_NSEQ(result_invalid, @"");
 }
 
 // Tests stringify TS function.
@@ -757,5 +739,32 @@ TEST_P(FillContentEditableJsTest, FillContentEditableReplaceContent) {
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FillContentEditableJsTest);
+
+// Sets the feature before WebState setup initializes JavaScript placeholders.
+class FillJsDateInputTest : public base::test::WithFeatureOverride,
+                            public FillJsTest {
+ public:
+  FillJsDateInputTest()
+      : base::test::WithFeatureOverride(kAutofillSupportDateInput) {}
+};
+
+// Tests sanitizeValueForInputElement TS function.
+TEST_P(FillJsDateInputTest, SanitizeValueForInputElement) {
+  LoadHtml(@"<input id='input' type='date'/>");
+
+  id result = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('sanitizeValueForInputElement')('2023-10-31', "
+      @"document.getElementById('input'));");
+  EXPECT_NSEQ(result, @"2023-10-31");
+
+  id result_invalid = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('sanitizeValueForInputElement')('not-a-date', "
+      @"document.getElementById('input'));");
+  EXPECT_NSEQ(result_invalid, IsParamFeatureEnabled() ? @"" : @"not-a-date");
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FillJsDateInputTest);
 
 }  // namespace autofill
