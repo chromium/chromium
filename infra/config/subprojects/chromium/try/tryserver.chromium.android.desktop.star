@@ -269,6 +269,9 @@ try_.builder(
         ],
     ),
     ssd = True,
+    experiments = {
+        "chromium_rts.filter_file_analysis": 100,
+    },
 )
 
 try_.builder(
