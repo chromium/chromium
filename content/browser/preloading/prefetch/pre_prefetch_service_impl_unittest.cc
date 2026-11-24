@@ -457,4 +457,75 @@ TEST_F(PrePrefetchServiceImplTest,
       PrePrefetchStartResult::kStarted, 1);
 }
 
+// Test that shutting down a `BrowserContext` (via `NotifyWillBeDestroyed()` and
+// `ShutdownStoragePartitions()`, as in `~TestBrowserContext()`) while a
+// standalone `PrePrefetchService` and a pending UI-thread pre-calculated
+// headers task are active doesn't recreate `StoragePartitionImplMap` after
+// `ShutdownStoragePartitions()`.
+TEST_F(PrePrefetchServiceImplTest,
+       BrowserContextShutdownDoesNotRecreateStoragePartition) {
+  // Bind `PrePrefetchServiceCore` to the real `StoragePartition`'s
+  // `NetworkContext` so `ShutdownStoragePartitions()` disconnects the Mojo pipe
+  // and triggers `PostGetNewURLLoaderFactoryToUIThread()`.
+  SetTerminalPrefetchURLLoaderFactoryForTesting(nullptr);
+
+  const GURL prefetch_url("https://example.com/prefetch");
+  const GURL uncached_url("https://uncached.example.com/prefetch");
+  auto local_browser_context = std::make_unique<TestBrowserContext>();
+
+  std::unique_ptr<PrePrefetchService> standalone_service =
+      PrePrefetchService::Create(
+          local_browser_context.get(),
+          /*embedder_non_ui_thread_update_headers_callbacks=*/{},
+          url::Origin::Create(prefetch_url),
+          /*initial_javascript_enabled_hint=*/true,
+          /*initial_should_append_variations_header_hint=*/false);
+  ASSERT_NE(standalone_service, nullptr);
+
+  // Request `uncached_url` (not in the initial hints), which posts a task to
+  // the UI thread via
+  // `PrePrefetchServiceCore::PostPreCalculateHeadersToUIThread()`. Because
+  // `PostStartPrePrefetchRequestAndWaitForTesting()` blocks the UI thread via
+  // `base::WaitableEvent` without running UI-thread tasks, and nothing pumps
+  // the UI-thread task queue before `local_browser_context.reset()` below, that
+  // posted UI-thread task remains queued and is not executed until
+  // `~TestBrowserContext()`'s `RunAllTasksUntilIdle()` inside
+  // `local_browser_context.reset()`.
+  std::unique_ptr<PrePrefetchHandle> uncached_handle =
+      PostStartPrePrefetchRequestAndWaitForTesting(*standalone_service,
+                                                   uncached_url);
+  // Returns `nullptr` because the pre-calculated headers cache missed for
+  // `uncached_url` (`local_browser_context` has not started shutting down yet).
+  EXPECT_EQ(uncached_handle, nullptr);
+
+  // Queue a UI-thread task that runs during `~TestBrowserContext()`'s
+  // `RunAllTasksUntilIdle()` immediately after `NotifyWillBeDestroyed()` and
+  // `ShutdownStoragePartitions()`, while `BrowserContext`'s `WeakPtr` is still
+  // valid (before `~BrowserContext()`).
+  bool post_shutdown_check_ran = false;
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindLambdaForTesting(
+          [&, weak_browser_context = local_browser_context->GetWeakPtr()]() {
+            ASSERT_TRUE(weak_browser_context);
+            EXPECT_TRUE(weak_browser_context->ShutdownStarted());
+            EXPECT_EQ(BrowserContextImpl::From(weak_browser_context.get())
+                          ->storage_partition_map(),
+                      nullptr);
+            post_shutdown_check_ran = true;
+          }));
+
+  // `~TestBrowserContext()` runs `NotifyWillBeDestroyed()`,
+  // `ShutdownStoragePartitions()`, and `RunAllTasksUntilIdle()` (draining
+  // `PostPreCalculateHeadersToUIThread()`,
+  // `PostGetNewURLLoaderFactoryToUIThread()`, and the check above), followed by
+  // `~BrowserContextImpl()`'s `DCHECK(!storage_partition_map_)`.
+  local_browser_context.reset();
+  EXPECT_TRUE(post_shutdown_check_ran);
+
+  RunUntilIdle();
+  standalone_service.reset();
+  RunUntilIdle();
+}
+
 }  // namespace content

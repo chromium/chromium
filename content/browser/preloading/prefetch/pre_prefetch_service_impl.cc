@@ -218,7 +218,7 @@ class PrePrefetchServiceCore {
         base::BindOnce(
             [](base::WeakPtr<BrowserContext> browser_context) {
               CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-              return browser_context
+              return (browser_context && !browser_context->ShutdownStarted())
                          ? CreatePrePrefetchURLLoaderFactoryOnUIThread(
                                browser_context.get())
                          : mojo::PendingRemote<
@@ -258,7 +258,7 @@ class PrePrefetchServiceCore {
                PrePrefetchPreCalculatedHeadersKey key)
                 -> std::optional<network::HttpRequestHeadersUpdateParams> {
               CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-              return browser_context
+              return (browser_context && !browser_context->ShutdownStarted())
                          ? std::make_optional(
                                PreCalculatePrePrefetchHeadersOnUIThread(
                                    browser_context.get(), key))
