@@ -88,8 +88,10 @@ const char kLastInputMethod[] = "last_input_method";
 // Key of the PIN auto submit length.
 const char kPinAutosubmitLength[] = "pin_autosubmit_length";
 
-// Key for the PIN auto submit backfill needed indicator.
-const char kPinAutosubmitBackfillNeeded[] = "pin_autosubmit_backfill_needed";
+// Key for the obsolete PIN auto submit backfill needed indicator. The backfill
+// operation was removed in M160.
+const char kPinAutosubmitBackfillNeededObsolete[] =
+    "pin_autosubmit_backfill_needed";
 
 // Sync token for SAML password multi-device sync
 const char kPasswordSyncToken[] = "password_sync_token";
@@ -127,7 +129,6 @@ constexpr const char* kReservedKeys[] = {kCanonicalEmail,
                                          kAccountManager,
                                          kLastInputMethod,
                                          kPinAutosubmitLength,
-                                         kPinAutosubmitBackfillNeeded,
                                          kPasswordSyncToken,
                                          kOnboardingCompletedVersion,
                                          kPendingOnboardingScreen,
@@ -142,6 +143,7 @@ constexpr const char* kObsoleteKeys[] = {
     kTokenHandleRotatedObsolete,
     kObjGuidKeyObsolete,
     kIsEphemeralObsolete,
+    kPinAutosubmitBackfillNeededObsolete,
 };
 
 // Checks for platform-specific known users matching given |user_email|. If
@@ -652,20 +654,6 @@ void KnownUser::SetUserPinLength(const AccountId& account_id, int pin_length) {
 
 int KnownUser::GetUserPinLength(const AccountId& account_id) {
   return FindIntPath(account_id, kPinAutosubmitLength).value_or(0);
-}
-
-bool KnownUser::PinAutosubmitIsBackfillNeeded(const AccountId& account_id) {
-  // If the pref is not set, the pref needs to be backfilled.
-  return FindBoolPath(account_id, kPinAutosubmitBackfillNeeded).value_or(true);
-}
-
-void KnownUser::PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id) {
-  SetBooleanPref(account_id, kPinAutosubmitBackfillNeeded, false);
-}
-
-void KnownUser::PinAutosubmitSetBackfillNeededForTests(
-    const AccountId& account_id) {
-  SetBooleanPref(account_id, kPinAutosubmitBackfillNeeded, true);
 }
 
 void KnownUser::SetAuthFactorCache(const AccountId& account_id,

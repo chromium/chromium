@@ -9,11 +9,9 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "base/base64.h"
 #include "base/check_deref.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -39,8 +37,6 @@ namespace {
 
 constexpr int kSaltByteSize = 16;
 
-// PIN auto submit backfill only for 6 digits PINs.
-constexpr int kPinAutosubmitBackfillLength = 6;
 constexpr int kPinAutosubmitMinPinLength = 6;
 constexpr int kPinAutosubmitMaxPinLength = 12;
 
@@ -73,11 +69,6 @@ void PostResponse(AuthOperationCallback result,
 }
 
 PinBackend* g_instance = nullptr;
-
-// UMA Metrics
-void RecordUMAHistogram(PinBackend::BackfillEvent event) {
-  base::UmaHistogramEnumeration("Ash.Login.PinAutosubmit.Backfill", event);
-}
 
 // Returns true if the cryptohome backend should be used. Sometimes the prefs
 // backend should be used even when cryptohome is available, ie, when there is
@@ -550,9 +541,6 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
                                           size_t pin_length) {
   CHECK(local_state_);
   user_manager::KnownUser known_user(local_state_.get());
-  // A PIN is being set when the auto submit feature is present. This user
-  // does not need to be backfilled.
-  known_user.PinAutosubmitSetBackfillNotNeeded(account_id);
 
   const bool autosubmit_enabled =
       GetUserPrefService(account_id)
@@ -587,10 +575,6 @@ void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
 void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
     const AccountId& account_id,
     size_t pin_length) {
-  // Backfill the auto submit preference if the PIN that was authenticated was
-  // set before the auto submit feature existed.
-  PinAutosubmitBackfill(account_id, pin_length);
-
   const bool autosubmit_enabled =
       GetUserPrefService(account_id)
           ->GetBoolean(ash::prefs::kPinUnlockAutosubmitEnabled) &&
@@ -599,48 +583,6 @@ void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
   user_manager::KnownUser known_user(local_state_.get());
   if (autosubmit_enabled)
     known_user.SetUserPinLength(account_id, pin_length);
-}
-
-void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
-                                       size_t pin_length) {
-  CHECK(local_state_);
-  user_manager::KnownUser known_user(local_state_.get());
-  // Don't backfill if its not necessary & Prevent future backfill attempts.
-  if (!known_user.PinAutosubmitIsBackfillNeeded(account_id))
-    return;
-  known_user.PinAutosubmitSetBackfillNotNeeded(account_id);
-
-  // Dont backfill if there is a user value set for the pref.
-  if (GetUserPrefService(account_id)
-          ->GetUserPrefValue(ash::prefs::kPinUnlockAutosubmitEnabled) !=
-      nullptr) {
-    return;
-  }
-
-  // Track when this operation is being performed.
-  base::debug::DumpWithoutCrashing();
-
-  // Disabled if not allowed by policy. Since 'kPinUnlockAutosubmitEnabled'
-  // is enabled by default, it is only false when recommended/mandatory by
-  // policy.
-  if (!GetUserPrefService(account_id)
-           ->GetBoolean(ash::prefs::kPinUnlockAutosubmitEnabled)) {
-    RecordUMAHistogram(BackfillEvent::kDisabledDueToPolicy);
-    GetUserPrefService(account_id)
-        ->SetBoolean(ash::prefs::kPinUnlockAutosubmitEnabled, false);
-    return;
-  }
-
-  // Only enable auto submit for six digits PINs.
-  if (pin_length != kPinAutosubmitBackfillLength) {
-    RecordUMAHistogram(BackfillEvent::kDisabledDueToPinLength);
-    GetUserPrefService(account_id)
-        ->SetBoolean(ash::prefs::kPinUnlockAutosubmitEnabled, false);
-  } else {
-    RecordUMAHistogram(BackfillEvent::kEnabled);
-    GetUserPrefService(account_id)
-        ->SetBoolean(ash::prefs::kPinUnlockAutosubmitEnabled, true);
-  }
 }
 
 void PinBackend::OnAuthOperation(std::string auth_token,

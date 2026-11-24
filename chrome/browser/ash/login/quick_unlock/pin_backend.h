@@ -114,20 +114,6 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   // need for individual observers.
   int GetExposedPinLength(const AccountId& account_id);
 
-  // TODO(crbug.com/1104164) - Remove this once most users have their
-  // preferences backfilled.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. Must coincide with the enum
-  // PinAutosubmitBackfillEvent on enums.xml
-  enum class BackfillEvent {
-    // Successfully set the user preference on the server
-    kEnabled = 0,
-    // Possible errors to keep track of.
-    kDisabledDueToPolicy = 1,
-    kDisabledDueToPinLength = 2,
-    kMaxValue = kDisabledDueToPinLength,
-  };
-
  private:
   class CryptohomeBackendState {
    public:
@@ -211,13 +197,6 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   // through a confirmation dialog immediately.
   void UpdatePinAutosubmitOnSuccessfulTryAuth(const AccountId& account_id,
                                               size_t pin_length);
-
-  // PIN auto submit backfill operation for users with existing PINs.
-  // TODO(crbug.com/1104164) - Remove this once most users have their
-  // preferences backfilled.
-  // Backfill PIN auto submit preferences for users who already have a pin, but
-  // had it set up before the pin auto submit feature was released.
-  void PinAutosubmitBackfill(const AccountId& account_id, size_t pin_length);
 
   // Updates the user context stored in the storage indexed by the supplied
   // `auth_token`, and runs the supplied `callback` with true iff the `error`

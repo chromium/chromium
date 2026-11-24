@@ -238,14 +238,6 @@ class USER_MANAGER_EXPORT KnownUser final {
   // Returns the user's PIN length if available, otherwise 0.
   int GetUserPinLength(const AccountId& account_id);
 
-  // Whether the user needs to have their pin auto submit preferences
-  // backfilled.
-  // TODO(crbug.com/1104164) - Remove this once most users have their
-  // preferences backfilled.
-  bool PinAutosubmitIsBackfillNeeded(const AccountId& account_id);
-  void PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id);
-  void PinAutosubmitSetBackfillNeededForTests(const AccountId& account_id);
-
   base::DictValue GetAuthFactorCache(const AccountId& account_id);
   void SetAuthFactorCache(const AccountId& account_id,
                           const base::DictValue cache);

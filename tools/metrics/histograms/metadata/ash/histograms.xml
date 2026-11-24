@@ -4597,18 +4597,6 @@ chromium-metrics-reviews@google.com.
   <summary>What shelf buttons or trays are clicked in the OOBE.</summary>
 </histogram>
 
-<histogram name="Ash.Login.PinAutosubmit.Backfill"
-    enum="PinAutosubmitBackfillEvent" expires_after="2026-10-24">
-  <owner>emaamari@google.com</owner>
-  <owner>rrsilva@google.com</owner>
-  <owner>cros-lurs@google.com</owner>
-  <summary>
-    The result of the PIN auto submit 'Backfill' operation. Users updating to
-    M86 with an existing PIN will have their preference regarding auto submit
-    'backfilled' to either enabled or disabled.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Login.ShowGaiaSignin.PermanentlyUntrusted" enum="Boolean"
     expires_after="2027-04-01">
   <owner>longbowei@google.com</owner>

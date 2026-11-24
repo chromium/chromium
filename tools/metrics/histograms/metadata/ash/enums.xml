@@ -1856,16 +1856,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="7" label="User creates a google workspace file or webpage."/>
 </enum>
 
-<enum name="PinAutosubmitBackfillEvent">
-  <summary>
-    The event generated when backfilling the user preferences for PIN auto
-    submit.
-  </summary>
-  <int value="0" label="Backfilled to enabled"/>
-  <int value="1" label="Backfilled to disabled due to policy"/>
-  <int value="2" label="Backfilled to disabled due to PIN length."/>
-</enum>
-
 <enum name="PlaylistTypesSelectedDuringSessionType">
   <int value="0" label="None"/>
   <int value="1" label="YTM"/>

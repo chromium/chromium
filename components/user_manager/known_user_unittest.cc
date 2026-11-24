@@ -424,20 +424,6 @@ TEST_F(KnownUserTest, UserPinLength) {
   EXPECT_EQ(known_user.GetUserPinLength(kDefaultAccountId), 8);
 }
 
-TEST_F(KnownUserTest, PinAutosubmitBackfillNeeded) {
-  KnownUser known_user(local_state());
-  // If the pref is not set, returns true.
-  EXPECT_TRUE(known_user.PinAutosubmitIsBackfillNeeded(kDefaultAccountId));
-
-  known_user.PinAutosubmitSetBackfillNotNeeded(kDefaultAccountId);
-
-  EXPECT_FALSE(known_user.PinAutosubmitIsBackfillNeeded(kDefaultAccountId));
-
-  known_user.PinAutosubmitSetBackfillNeededForTests(kDefaultAccountId);
-
-  EXPECT_TRUE(known_user.PinAutosubmitIsBackfillNeeded(kDefaultAccountId));
-}
-
 TEST_F(KnownUserTest, PasswordSyncToken) {
   KnownUser known_user(local_state());
   EXPECT_FALSE(known_user.GetPasswordSyncToken(kDefaultAccountId));
