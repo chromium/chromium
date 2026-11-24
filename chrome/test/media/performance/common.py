@@ -23,7 +23,10 @@ import time
 from contextlib import AbstractContextManager
 
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import (
+    SessionNotCreatedException,
+    WebDriverException,
+)
 import urllib3
 
 # Imported first: puts build/util, fuchsia_web/av_testing, and
@@ -137,6 +140,7 @@ METRICS = [
 WEBDRIVER_ERRORS = (WebDriverException, urllib3.exceptions.HTTPError, OSError)
 
 _CONNECT_ATTEMPTS = 20
+_SESSION_CREATE_ATTEMPTS = 2
 
 # Framerate is now legacy data, but until our results are standardized we'll
 # maintain the data in case it's necessary to pass later.
@@ -169,18 +173,34 @@ class StartProcess(AbstractContextManager):
 def connect_to_remote_driver(chrome_options):
     """Starts a WebDriver session through the tunnel.
 
-    Retries while chromedriver and the tunnel come up.
+    Retries while chromedriver and the tunnel come up. Stops early if
+    chromedriver is already reachable and Chrome itself fails to launch.
 
     Raises:
         RuntimeError: No session could be started.
     """
     logging.info("Attempting connection to %s.", REMOTE_URL)
     last_error = None
+    session_failures = 0
     for _ in range(_CONNECT_ATTEMPTS):
         try:
             driver = webdriver.Remote(
                 command_executor=REMOTE_URL, options=chrome_options
             )
+        except SessionNotCreatedException as e:
+            last_error = e
+            session_failures += 1
+            logging.warning(
+                "Chromedriver reachable, but Chrome failed to start session "
+                "(%d/%d): %s",
+                session_failures,
+                _SESSION_CREATE_ATTEMPTS,
+                e,
+            )
+            if session_failures >= _SESSION_CREATE_ATTEMPTS:
+                break
+            time.sleep(2)
+            continue
         except WEBDRIVER_ERRORS as e:
             last_error = e
             logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
@@ -284,6 +304,13 @@ def teardown_test_environment(driver, tunnel_proc, args):
             # must not raise.
             except Exception as e:
                 logging.warning("Failed to stop Crossbench forwarding: %s", e)
+            if hasattr(tunnel_proc, 'sh'):
+                try:
+                    # Send SIGTERM so Chrome's StartupTracingController flushes
+                    # and renames its temporary startup trace file on exit.
+                    tunnel_proc.sh('pkill', '-TERM', 'chrome', check=False)
+                except Exception as e:
+                    logging.warning("Failed to stop Chrome on ChromeOS: %s", e)
 
     sender = _sender_for_cleanup(args)
     if sender:

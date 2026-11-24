@@ -372,7 +372,7 @@ class WaitForChromedriverTest(fakes.SenderTestCase):
         self.ssh.responses[senders.MacSender.STATUS_CMD] = completed(
             stdout='000'
         )
-        log_cmd = 'cat /tmp/chromedriver_console*.log 2>/dev/null || true'
+        log_cmd = 'tail -n 200 /tmp/chromedriver_*.log 2>/dev/null || true'
         self.ssh.responses[log_cmd] = completed(stdout='driver crashed')
         with self.assertLogs(level='WARNING') as logs:
             with self.assertRaises(RuntimeError):

@@ -238,7 +238,7 @@ class SshTransport(Transport):
         )
 
     def copy_from(self, remote_path, local_path, timeout=COPY_TIMEOUT_SECS):
-        subprocess.run(
+        res = subprocess.run(
             [
                 'scp',
                 '-i',
@@ -250,6 +250,21 @@ class SshTransport(Transport):
             check=False,
             timeout=timeout,
         )
+        if res.returncode != 0 and not os.path.exists(local_path):
+            self._copy_via_ssh_stream(remote_path, local_path, timeout)
+
+    def _copy_via_ssh_stream(self, remote_path, local_path, timeout):
+        """Streams `remote_path` over SSH when SFTP/scp is blocked by SELinux."""
+        with open(local_path, 'wb') as out_file:
+            res = subprocess.run(
+                self._ssh_argv(f"cat '{remote_path}'"),
+                stdout=out_file,
+                stderr=subprocess.PIPE,
+                check=False,
+                timeout=timeout,
+            )
+        if res.returncode != 0 and os.path.exists(local_path):
+            os.remove(local_path)
 
     def open_tunnel(self, local_port, remote_port):
         self.verify_connectivity()

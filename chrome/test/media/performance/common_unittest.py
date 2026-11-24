@@ -8,7 +8,10 @@ import subprocess
 import unittest
 from unittest import mock
 
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import (
+    SessionNotCreatedException,
+    WebDriverException,
+)
 import urllib3
 
 import perf_test_fakes as fakes
@@ -170,11 +173,14 @@ class CleanupBinariesTest(fakes.SenderTestCase):
 class DumpRemoteLogsTest(fakes.SenderTestCase):
     def test_uses_per_os_log_command(self):
         cases = {
-            'mac': 'cat /tmp/chromedriver_console*.log 2>/dev/null || true',
-            'cros': 'cat /usr/local/tmp/chromedriver_console*.log 2>/dev/null || true',
+            'mac': 'tail -n 200 /tmp/chromedriver_*.log 2>/dev/null || true',
+            'cros': (
+                'tail -n 200 /usr/local/tmp/chromedriver_*.log '
+                '2>/dev/null || true'
+            ),
             'win': 'powershell -Command "Get-Content -Path '
-            'C:/cft_temp/chromedriver-win*/chromedriver_console*.log '
-            '-ErrorAction SilentlyContinue"',
+            'C:/cft_temp/chromedriver-win*/chromedriver_*.log '
+            '-Tail 200 -ErrorAction SilentlyContinue"',
         }
         for sender_os, command in cases.items():
             with self.subTest(sender_os=sender_os):
@@ -229,6 +235,17 @@ class ConnectToRemoteDriverTest(unittest.TestCase):
                     common.connect_to_remote_driver('opts')
         self.assertIs(ctx.exception.__cause__, error)
 
+    def test_stops_early_on_session_not_created(self):
+        error = SessionNotCreatedException('DevToolsActivePort missing')
+        with mock.patch(
+            'selenium.webdriver.Remote', side_effect=error
+        ) as remote:
+            with self.assertLogs(level='INFO'):
+                with self.assertRaises(RuntimeError) as ctx:
+                    common.connect_to_remote_driver('opts')
+        self.assertEqual(remote.call_count, common._SESSION_CREATE_ATTEMPTS)
+        self.assertIs(ctx.exception.__cause__, error)
+
     def test_does_not_retry_unexpected_errors(self):
         with mock.patch(
             'selenium.webdriver.Remote', side_effect=TypeError('bug')
@@ -274,6 +291,47 @@ class CrosSetupTest(unittest.TestCase):
         cb_platform.app_version.return_value = 'Google Chrome dev'
         with self.assertRaisesRegex(RuntimeError, 'Google Chrome dev'):
             cros_setup.detect_milestone(cb_platform)
+
+    def test_prepare_crossbench_imports_polyfills_typing_override(self):
+        sentinel = object()
+        had_override = hasattr(cros_setup.typing, 'override')
+        orig_override = getattr(cros_setup.typing, 'override', None)
+        try:
+            if had_override:
+                delattr(cros_setup.typing, 'override')
+            with mock.patch.object(
+                cros_setup.typing_extensions,
+                'override',
+                sentinel,
+                create=True,
+            ):
+                cros_setup._prepare_crossbench_imports()
+                cros_setup._prepare_crossbench_imports()
+                self.assertIs(cros_setup.typing.override, sentinel)
+            finders = [
+                f
+                for f in cros_setup.sys.meta_path
+                if isinstance(f, cros_setup._MockFinder)
+            ]
+            self.assertEqual(len(finders), 1)
+        finally:
+            if had_override:
+                cros_setup.typing.override = orig_override
+            elif hasattr(cros_setup.typing, 'override'):
+                delattr(cros_setup.typing, 'override')
+
+    def test_crossbench_flags_uses_shared_tmp_log_and_respects_override(self):
+        default_flags = cros_setup._crossbench_flags(['--v=1'])
+        self.assertIn(
+            ('--log-file', '/var/log/chrome/chrome_debug.log'), default_flags
+        )
+        custom_flags = cros_setup._crossbench_flags(
+            ['--v=1', '--log-file=/var/log/chrome/chrome_debug_H264.log']
+        )
+        log_flags = [f for f in custom_flags if f[0] == '--log-file']
+        self.assertEqual(
+            log_flags, [('--log-file', '/var/log/chrome/chrome_debug_H264.log')]
+        )
 
 
 class MediaMetricsTest(unittest.TestCase):

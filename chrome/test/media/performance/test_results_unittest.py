@@ -364,6 +364,32 @@ class TestReporterTest(ReporterTestCase):
                     logs.output,
                 )
 
+    def test_rejected_results_keep_per_case_ids_and_are_logged(self):
+        resp = mock.MagicMock(status_code=400, text='bad test ID')
+        sink = FakeSink()
+        calls = []
+
+        def reject(url, data):  # pylint: disable=unused-argument
+            payload = json.loads(data)['testResults'][0]
+            calls.append(payload['testIdStructured']['caseNameComponents'])
+            raise requests.HTTPError('400 Bad Request', response=resp)
+
+        sink.session.post.side_effect = reject
+        with self.assertLogs(level='ERROR') as logs:
+            with self.make_reporter(sink) as reporter:
+                with reporter.case('H264/a.mp4'):
+                    pass
+                with reporter.case('VP8/b.mp4'):
+                    pass
+
+        self.assertEqual(calls, [['H264/a.mp4'], ['VP8/b.mp4']])
+        self.assertEqual(
+            sum('Failed to report' in line for line in logs.output), 2
+        )
+        self.assertEqual(
+            self.read_output()['num_failures_by_type'][Status.PASS], 2
+        )
+
     def test_json_write_errors_do_not_mask_the_failure(self):
         blocker = os.path.join(self.tmp.name, 'file')
         with open(blocker, 'w', encoding='utf-8'):

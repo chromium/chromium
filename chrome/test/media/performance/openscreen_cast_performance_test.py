@@ -92,12 +92,14 @@ data_sources: {{
 }}
 data_sources: {{
     config {{
+        name: "android.track_event"
+    }}
+}}
+data_sources: {{
+    config {{
         name: "track_event"
-        track_event_config {{
-            disabled_categories: "*"
-            enabled_categories: "openscreen"
-            enabled_categories: "cast.stream"
-            enabled_categories: "media"
+        chrome_config {{
+            trace_config: "{CHROME_RECEIVER_TRACE_CONFIG}"
         }}
     }}
 }}
@@ -152,6 +154,12 @@ class SenderSession(NamedTuple):
     trace_file_path: str
 
 
+def _sender_log_dir(sender):
+    """Returns the remote directory where Chrome writes traces and logs."""
+    raw_log_dir = getattr(sender, 'LOG_DIR', None)
+    return raw_log_dir if isinstance(raw_log_dir, str) else sender.TMP_DIR
+
+
 def setup_test_environment(
     args,
     chrome_version,
@@ -177,20 +185,20 @@ def setup_test_environment(
     sender.verify_connectivity()
     if chrome_options_list is None:
         chrome_options_list = CHROME_OPTIONS
+    log_dir = _sender_log_dir(sender)
 
     if args.sender_os == 'cros':
-        if chrome_options_list is None:
-            chrome_options_list = []
-        else:
-            chrome_options_list = list(chrome_options_list)
+        chrome_options_list = list(chrome_options_list)
         video_key = f"{codec_name}_{video_name}" if video_name else codec_name
-        trace_file_path = f'/tmp/{video_key}_sender.perfetto-trace'
+        trace_file_path = f'{log_dir}/{video_key}_sender.perfetto-trace'
+        log_file_path = f'{log_dir}/chrome_debug_{video_key}.log'
         chrome_options_list.extend(
             [
-                '--trace-startup',
+                f'--trace-startup={SENDER_TRACE_CATEGORIES}',
                 f'--trace-startup-file={trace_file_path}',
-                f'--trace-startup-categories={SENDER_TRACE_CATEGORIES}',
-                '--trace-startup-duration=45',
+                '--trace-startup-record-mode=record-continuously',
+                '--trace-startup-duration=55',
+                f'--log-file={log_file_path}',
             ]
         )
         driver, cb_platform, actual_version = common.setup_cros_environment(
@@ -210,11 +218,11 @@ def setup_test_environment(
 
     # Enable native Chrome tracing to file for the entire session.
     video_key = f"{codec_name}_{video_name}" if video_name else codec_name
-    trace_file_path = f'{sender.TMP_DIR}/{video_key}_sender.perfetto-trace'
-    chrome_options.add_argument('--trace-startup')
+    trace_file_path = f'{log_dir}/{video_key}_sender.perfetto-trace'
+    chrome_options.add_argument(f'--trace-startup={SENDER_TRACE_CATEGORIES}')
     chrome_options.add_argument(f'--trace-startup-file={trace_file_path}')
     chrome_options.add_argument(
-        f'--trace-startup-categories={SENDER_TRACE_CATEGORIES}'
+        '--trace-startup-record-mode=record-continuously'
     )
     chrome_options.add_argument('--trace-startup-duration=45')
 
@@ -222,7 +230,7 @@ def setup_test_environment(
         chrome_options.add_argument(option)
 
     # Dynamically set the --log-file path.
-    log_file_path = f'{sender.TMP_DIR}/chrome_debug_{video_key}.log'
+    log_file_path = f'{log_dir}/chrome_debug_{video_key}.log'
     chrome_options.add_argument(f'--log-file={log_file_path}')
 
     binary_path = sender.chrome_binary_path(remote_app_path)
@@ -632,19 +640,19 @@ def run_performance_test(
         # Collect the Sender Chrome Log
         try:
             logging.info("Collecting Sender Chrome Log...")
-            if args.sender_os == 'win':
-                # Use standard Windows path with forward slashes for scp.
-                log_file_path = (
-                    f'{common.WIN_REMOTE_TMP_DIR}/chrome_debug_{video_key}.log'
-                )
-            else:
-                log_file_path = f'/tmp/chrome_debug_{video_key}.log'
+            sender = common.make_sender(args)
+            log_dir = _sender_log_dir(sender)
+            log_file_path = f'{log_dir}/chrome_debug_{video_key}.log'
             sender_log_local_path = os.path.join(
                 common.TRACES_DIR, f"{video_key}_chrome_debug.log"
             )
-            common.make_sender(args).copy_from(
-                log_file_path, sender_log_local_path, timeout=30
-            )
+            try:
+                sender.copy_from(
+                    log_file_path, sender_log_local_path, timeout=30
+                )
+            finally:
+                # pylint: disable-next=protected-access
+                sender.run(sender._remove_file_command(log_file_path))
         except (
             common.RemoteDeviceError,
             subprocess.SubprocessError,
@@ -721,11 +729,16 @@ def collect_sender_trace(args, codec_name, video_name, trace_file_path):
             common.TRACES_DIR,
             f"{video_key}_sender.perfetto-trace",
         )
-        common.make_sender(args).copy_from(
-            trace_file_path,
-            sender_trace_local_path,
-            timeout=60,
-        )
+        sender = common.make_sender(args)
+        try:
+            sender.copy_from(
+                trace_file_path,
+                sender_trace_local_path,
+                timeout=60,
+            )
+        finally:
+            # pylint: disable-next=protected-access
+            sender.run(sender._remove_file_command(trace_file_path))
     except (
         common.RemoteDeviceError,
         subprocess.SubprocessError,

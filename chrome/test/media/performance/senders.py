@@ -137,6 +137,10 @@ class Sender(abc.ABC):
     DISPLAY_NAME = ''
     # Where Chrome for Testing is downloaded and unzipped.
     TMP_DIR = '/tmp'
+    # Where Chrome writes startup traces and debug logs. Defaults to TMP_DIR
+    # when None; ChromeOS overrides this with /var/log/chrome so the chronos
+    # browser process is permitted by SELinux to create and rename files.
+    LOG_DIR = None
     # Maps detected arch to Chrome for Testing platform name.
     CFT_PLATFORMS = {}
     # Chrome executable or app bundle inside the unzipped CfT directory.
@@ -535,7 +539,7 @@ class PosixSender(Sender):
 
     def _console_log_command(self):
         return (
-            f'cat {self.TMP_DIR}/chromedriver_console*.log 2>/dev/null || true'
+            f'tail -n 200 {self.TMP_DIR}/chromedriver_*.log 2>/dev/null || true'
         )
 
     def _downloads_cleanup_command(self):
@@ -656,6 +660,7 @@ class CrosSender(LinuxSender):
     OS_NAME = 'cros'
     DISPLAY_NAME = 'ChromeOS'
     TMP_DIR = '/usr/local/tmp'
+    LOG_DIR = '/var/log/chrome'
     UNAME = '/usr/bin/uname'
 
     def _detect_os_version(self, probes):
@@ -748,8 +753,8 @@ class WindowsSender(Sender):
     def _console_log_command(self):
         return (
             'powershell -Command "Get-Content -Path '
-            f'{self.TMP_DIR}/chromedriver-win*/chromedriver_console*.log '
-            '-ErrorAction SilentlyContinue"'
+            f'{self.TMP_DIR}/chromedriver-win*/chromedriver_*.log '
+            '-Tail 200 -ErrorAction SilentlyContinue"'
         )
 
     def _downloads_cleanup_command(self):

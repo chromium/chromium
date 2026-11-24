@@ -9,8 +9,10 @@ import logging
 import re
 import sys
 import time
+import typing
 from unittest.mock import MagicMock
 
+import typing_extensions
 from selenium.common.exceptions import WebDriverException
 
 import perf_config
@@ -63,7 +65,14 @@ class _MockFinder(importlib.abc.MetaPathFinder, importlib.abc.Loader):
 
 def _prepare_crossbench_imports():
     """Makes Crossbench importable without its optional dependencies."""
-    sys.meta_path.insert(0, _MockFinder(_MOCKED_PACKAGES))
+    # Chromium's root vpython.toml pins Python 3.11, while Crossbench imports
+    # PEP 698/695 helpers (such as `override`) directly from `typing`.
+    for attr in ('override', 'TypeAliasType'):
+        if not hasattr(typing, attr) and hasattr(typing_extensions, attr):
+            setattr(typing, attr, getattr(typing_extensions, attr))
+
+    if not any(isinstance(f, _MockFinder) for f in sys.meta_path):
+        sys.meta_path.insert(0, _MockFinder(_MOCKED_PACKAGES))
     try:
         # pylint: disable-next=import-outside-toplevel
         import google.protobuf.runtime_version
@@ -73,7 +82,8 @@ def _prepare_crossbench_imports():
         )
     except (ImportError, AttributeError):
         pass
-    sys.path.insert(0, perf_config.CROSSBENCH_ROOT)
+    if perf_config.CROSSBENCH_ROOT not in sys.path:
+        sys.path.insert(0, perf_config.CROSSBENCH_ROOT)
 
 
 def _selenium_driver(browser):
@@ -121,9 +131,12 @@ def install_chromedriver(sender, milestone):
 def _crossbench_flags(chrome_options_list):
     """Converts Chrome switches to Crossbench's (name, value) flag format."""
     flags = []
+    has_log_file = False
     for flag in chrome_options_list:
         if any(f in flag for f in _EXCLUDED_FLAGS):
             continue
+        if flag.startswith('--log-file'):
+            has_log_file = True
         if '=' in flag:
             flags.append(tuple(flag.split('=', 1)))
         else:
@@ -131,7 +144,10 @@ def _crossbench_flags(chrome_options_list):
 
     # Force the window to launch in a maximized state.
     flags.append(("--window-state", "maximized"))
-    flags.append(('--log-file', '/tmp/chrome_debug.log'))
+    if not has_log_file:
+        flags.append(
+            ('--log-file', f'{senders.CrosSender.LOG_DIR}/chrome_debug.log')
+        )
     return flags
 
 
@@ -169,6 +185,12 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     # Aggressively clear any leaked sessions.
     logging.info("Purging stale Chrome processes on device...")
     cb_platform.sh("pkill", "-9", "chrome", check=False)
+    # Chrome runs as `chronos` inside a private `/tmp` mount namespace and
+    # `cros_browser` SELinux domain: binaries live in `/usr/local/tmp` while
+    # browser startup traces and debug logs live in `/var/log/chrome`.
+    log_dir = getattr(sender, 'LOG_DIR', None) or sender.TMP_DIR
+    cb_platform.sh("mkdir", "-p", sender.TMP_DIR, log_dir, check=False)
+    cb_platform.sh("chmod", "1777", sender.TMP_DIR, log_dir, check=False)
     time.sleep(1)
 
     # Use the DUT's Chrome milestone to pick a matching chromedriver.
