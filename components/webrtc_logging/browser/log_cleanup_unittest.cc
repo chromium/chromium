@@ -459,6 +459,20 @@ TEST_F(WebRtcTextLogIndexCleanupTest, LeavesOversizedLogListUntouched) {
   EXPECT_EQ(oversized_contents, actual_contents);
 }
 
+TEST_F(WebRtcTextLogIndexCleanupTest, DeletingLogFileClearsItsLocalId) {
+  CreateLogListFileWithContents("100.2,report_id_2,local_id_2,101.2\n");
+  const base::FilePath log_file = dir_.GetPath().AppendASCII("local_id_2.gz");
+  ASSERT_TRUE(base::WriteFile(log_file, "log"));
+
+  // The file (modified now) is in the deletion range; the index line
+  // (timestamps 100.2 and 101.2) is not, so it stays with its ID cleared.
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()},
+                                   base::Time::FromSecondsSinceUnixEpoch(150));
+
+  EXPECT_FALSE(base::PathExists(log_file));
+  ExpectContents("100.2,report_id_2,,101.2\n");
+}
+
 #if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcTextLogIndexCleanupTest, LeavesUnreadableLogListUntouched) {
   if (geteuid() == 0) {
@@ -515,6 +529,38 @@ TEST_F(WebRtcTextLogIndexCleanupTest, IgnoresDirectoryAtLogListPath) {
   DeleteOldWebRtcLogFiles({dir_.GetPath()});
 
   EXPECT_TRUE(base::DirectoryExists(log_list_path_));
+}
+
+TEST_F(WebRtcTextLogIndexCleanupTest,
+       DoesNotFollowSymlinkEntryInsideLogDirectory) {
+  base::ScopedTempDir victim_dir;
+  ASSERT_TRUE(victim_dir.CreateUniqueTempDir());
+  const base::FilePath old_external_file =
+      victim_dir.GetPath().AppendASCII("old_external_file");
+  ASSERT_TRUE(base::WriteFile(old_external_file, "important external data"));
+  const base::Time old_time =
+      base::Time::Now() - kTimeToKeepLogs - base::Days(2);
+  ASSERT_TRUE(base::TouchFile(old_external_file, old_time, old_time));
+
+  const base::FilePath old_regular_file =
+      dir_.GetPath().AppendASCII("old_log.gz");
+  ASSERT_TRUE(base::WriteFile(old_regular_file, "old log data"));
+  ASSERT_TRUE(base::TouchFile(old_regular_file, old_time, old_time));
+
+  const base::FilePath symlink_entry =
+      dir_.GetPath().AppendASCII("symlink_log.gz");
+  ASSERT_TRUE(base::CreateSymbolicLink(old_external_file, symlink_entry));
+
+  // Use a recent delete_begin_time so the newly created symlink's own
+  // timestamp falls within the deletion window and it only survives because of
+  // the !S_ISREG check.
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()},
+                                   base::Time::Now() - base::Hours(1));
+
+  EXPECT_FALSE(base::PathExists(old_regular_file));
+  EXPECT_TRUE(base::PathExists(old_external_file));
+  // The symlink entry itself is skipped, not deleted.
+  EXPECT_TRUE(base::IsLink(symlink_entry));
 }
 
 TEST_F(WebRtcTextLogIndexCleanupTest, DoesNotFollowSymlinkForLogList) {

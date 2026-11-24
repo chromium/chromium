@@ -6,16 +6,32 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <vector>
 
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
+#else
+#include "base/files/file_enumerator.h"
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace webrtc_logging {
 
@@ -152,20 +168,70 @@ std::string RemoveObsoleteEntriesFromLogIndex(
   return new_log_index;
 }
 
+#if BUILDFLAG(IS_POSIX)
+struct DirCloser {
+  void operator()(DIR* dir) const {
+    if (dir) {
+      closedir(dir);
+    }
+  }
+};
+#endif  // BUILDFLAG(IS_POSIX)
+
+// TODO(crbug.com/40569303): Handle mismatch between timestamps of the .gz
+// file and the .meta file, as well as with the index.
+bool ShouldDeleteLogFile(base::Time last_modified,
+                         base::Time now,
+                         base::Time delete_begin_time) {
+  const base::TimeDelta file_age = now - last_modified;
+  return file_age > kTimeToKeepLogs ||
+         (!delete_begin_time.is_max() && last_modified > delete_begin_time);
+}
+
+// Removes the local ID derived from `log_file_name` from `log_list`.
+// The ID is guaranteed to be unique.
+void RemoveLocalIdFromLogList(const base::FilePath& log_file_name,
+                              std::string& log_list) {
+  std::string id = log_file_name.RemoveExtension().MaybeAsASCII();
+  size_t id_pos = log_list.find(id);
+  if (id_pos == std::string::npos) {
+    return;
+  }
+  log_list.erase(id_pos, id.size());
+}
+
 void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
                                       const base::Time& delete_begin_time) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
+#if BUILDFLAG(IS_POSIX)
+  // Open the directory once without following symlinks; log-file listing,
+  // checks, and deletes below are relative to this fd, so the directory can't
+  // be swapped for a symlink between the check and the deletes. Reading and
+  // writing `Log List` below still use path-based TextLogList helpers.
+  base::ScopedFD dir_fd(
+      HANDLE_EINTR(open(log_dir.value().c_str(),
+                        O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)));
+  if (!dir_fd.is_valid()) {
+    // This will happen if no logs have been stored or uploaded, or if
+    // `log_dir` is a symbolic link.
+    DVPLOG(3) << "Could not open directory: " << log_dir.value();
+    return;
+  }
+#else
   if (!base::PathExists(log_dir) || base::IsLink(log_dir)) {
     // This will happen if no logs have been stored or uploaded. A symlinked
     // log directory is never followed.
     DVLOG(3) << "Could not find directory: " << log_dir.value();
     return;
   }
+#endif  // BUILDFLAG(IS_POSIX)
 
   const base::Time now = base::Time::Now();
 
+  // TODO(crbug.com/590039856): Use fd-relative operations for reading and
+  // writing `Log List` on POSIX so swapping `log_dir` cannot redirect them.
   base::FilePath log_list_path =
       TextLogList::GetWebRtcLogListFileForDirectory(log_dir);
   std::string log_list;
@@ -186,6 +252,51 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
   }
 
   // Delete relevant logs files (and their associated entries in the index).
+#if BUILDFLAG(IS_POSIX)
+  // On success, fdopendir() takes ownership of the fd.
+  const int raw_dir_fd = dir_fd.release();
+  std::unique_ptr<DIR, DirCloser> dir(fdopendir(raw_dir_fd));
+  if (!dir) {
+    // Note: this also skips replacing a symlinked or FIFO index below; it is
+    // retried on the next cleanup.
+    DVPLOG(1) << "Could not open WebRTC log directory stream.";
+    IGNORE_EINTR(close(raw_dir_fd));
+    return;
+  }
+  const int dir_fd_for_at = dirfd(dir.get());
+
+  // Collect entries to delete before unlinking so we don't mutate the
+  // directory while readdir() is iterating.
+  const std::string log_list_name = log_list_path.BaseName().value();
+  std::vector<std::string> files_to_delete;
+  for (struct dirent* dent = readdir(dir.get()); dent != nullptr;
+       dent = readdir(dir.get())) {
+    std::string_view entry_name(dent->d_name);
+    if (entry_name == "." || entry_name == ".." ||
+        entry_name == log_list_name) {
+      continue;
+    }
+    // Only regular files are deleted; symlinks, FIFOs, and sockets are skipped.
+    struct stat st;
+    if (fstatat(dir_fd_for_at, dent->d_name, &st, AT_SYMLINK_NOFOLLOW) != 0 ||
+        !S_ISREG(st.st_mode)) {
+      continue;
+    }
+    const base::Time last_modified = base::Time::FromTimeT(st.st_mtime);
+    if (ShouldDeleteLogFile(last_modified, now, delete_begin_time)) {
+      files_to_delete.emplace_back(entry_name);
+    }
+  }
+
+  for (const std::string& entry_name : files_to_delete) {
+    if (unlinkat(dir_fd_for_at, entry_name.c_str(), 0) != 0 &&
+        errno != ENOENT) {
+      PLOG(WARNING) << "Could not delete WebRTC text log file (" << entry_name
+                    << ").";
+    }
+    RemoveLocalIdFromLogList(base::FilePath(entry_name), log_list);
+  }
+#else
   base::FileEnumerator log_files(log_dir, false, base::FileEnumerator::FILES);
   for (base::FilePath name = log_files.Next(); !name.empty();
        name = log_files.Next()) {
@@ -193,27 +304,16 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
       continue;
     }
     base::FileEnumerator::FileInfo file_info(log_files.GetInfo());
-    // TODO(crbug.com/40569303): Handle mismatch between timestamps of the .gz
-    // file and the .meta file, as well as with the index.
-    base::TimeDelta file_age = now - file_info.GetLastModifiedTime();
-    if (file_age > kTimeToKeepLogs ||
-        (!delete_begin_time.is_max() &&
-         file_info.GetLastModifiedTime() > delete_begin_time)) {
+    if (ShouldDeleteLogFile(file_info.GetLastModifiedTime(), now,
+                            delete_begin_time)) {
       if (!base::DeleteFile(name)) {
         LOG(WARNING) << "Could not delete WebRTC text log file ("
                      << file_info.GetName() << ").";
       }
-
-      // Remove the local ID from the log list file. The ID is guaranteed to be
-      // unique.
-      std::string id = file_info.GetName().RemoveExtension().MaybeAsASCII();
-      size_t id_pos = log_list.find(id);
-      if (id_pos == std::string::npos) {
-        continue;
-      }
-      log_list.erase(id_pos, id.size());
+      RemoveLocalIdFromLogList(file_info.GetName(), log_list);
     }
   }
+#endif  // BUILDFLAG(IS_POSIX)
 
   if (update_log_list) {
     log_list =
