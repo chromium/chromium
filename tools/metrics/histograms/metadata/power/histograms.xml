@@ -1678,13 +1678,16 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.PowerButtonPressed" units="units"
-    expires_after="2024-06-30">
+    expires_after="2027-11-23">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
     Indicates a press of the power button, recorded when PowerManagerClient
     receives a signal that the power button was pressed and notifies
     FingerprintPowerButtonRaceDetector.
+
+    Warning: this histogram was expired from 2024-06-30 to 2026-11-23; data may
+    be missing.
   </summary>
 </histogram>
 
