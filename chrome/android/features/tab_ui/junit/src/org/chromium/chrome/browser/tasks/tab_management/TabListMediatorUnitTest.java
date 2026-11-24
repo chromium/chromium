@@ -9343,6 +9343,7 @@ public class TabListMediatorUnitTest {
         FlatTabListDataProvider provider =
                 new FlatTabListDataProvider(
                         TabListDataProvider.createSingleModelListSupplier(mCurrentTabModelSupplier),
+                        /* highlightTabModelSupplier= */ null,
                         /* filter= */ null,
                         /* comparator= */ null,
                         /* supportsMultipleModels= */ false);

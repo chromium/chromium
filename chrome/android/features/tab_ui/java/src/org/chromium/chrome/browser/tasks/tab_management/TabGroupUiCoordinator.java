@@ -222,6 +222,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         new FlatTabListDataProvider(
                                 TabListDataProvider.createSingleModelListSupplier(
                                         currentTabModelSupplier),
+                                /* highlightTabModelSupplier= */ null,
                                 tab -> {
                                     Token id = mCurrentTabGroupId.get();
                                     return id != null && id.equals(tab.getTabGroupId());

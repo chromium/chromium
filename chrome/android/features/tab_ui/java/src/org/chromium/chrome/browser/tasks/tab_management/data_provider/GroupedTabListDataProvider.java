@@ -48,7 +48,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     public GroupedTabListDataProvider(
             NonNullObservableSupplier<List<TabModel>> tabModelListSupplier,
             boolean supportsGroupExpansion) {
-        super(tabModelListSupplier);
+        super(tabModelListSupplier, /* highlightTabModelSupplier= */ null);
         mSupportsGroupExpansion = supportsGroupExpansion;
         mRemovingTabGroupIds = new HashSet<>();
 

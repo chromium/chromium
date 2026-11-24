@@ -871,6 +871,7 @@ public class TabItemPickerCoordinator {
         }
         return new FlatTabListDataProvider(
                 TabListDataProvider.createSingleModelListSupplier(tabModelSupplier),
+                /* highlightTabModelSupplier= */ null,
                 tab -> mEligibleTabIds.contains(tab.getId()),
                 /* comparator= */ null,
                 /* supportsMultipleModels= */ false);

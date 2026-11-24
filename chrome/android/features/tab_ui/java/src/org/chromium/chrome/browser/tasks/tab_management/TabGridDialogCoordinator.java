@@ -403,6 +403,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         }
         return new FlatTabListDataProvider(
                 TabListDataProvider.createSingleModelListSupplier(mCurrentTabModelSupplier),
+                /* highlightTabModelSupplier= */ null,
                 tab -> {
                     Token id = mCurrentTabGroupId.get();
                     return id != null && id.equals(tab.getTabGroupId());
