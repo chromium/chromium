@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
@@ -181,10 +182,10 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
     }
     auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
         browser_view->GetLocationBar()->GetOmniboxPopupView());
-    if (!popup_view || !popup_view->presenter()) {
+    if (!popup_view || !popup_view->popup_host()) {
       return nullptr;
     }
-    return popup_view->presenter()->GetWebUIContent();
+    return popup_view->popup_host()->GetWebUIContent();
   }
 
   views::View* GetActiveAimPopupWebView() {
