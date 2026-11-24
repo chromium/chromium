@@ -60,13 +60,44 @@ void WriteScreenDPIInformationProto(SystemProfileProto::Hardware* hardware) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-ScreenInfoMetricsProvider::ScreenInfoMetricsProvider() {
+ScreenInfoMetricsProvider::ScreenInfoMetricsProvider() = default;
+
+ScreenInfoMetricsProvider::~ScreenInfoMetricsProvider() = default;
+
+void ScreenInfoMetricsProvider::ProvideSystemProfileMetricsFromCache(
+    const SystemProfileProto& cached_system_profile,
+    SystemProfileProto* system_profile_proto) {
+  const SystemProfileProto::Hardware& cached_hardware =
+      cached_system_profile.hardware();
+  if (cached_hardware.has_primary_screen_width()) {
+    system_profile_proto->mutable_hardware()->set_primary_screen_width(
+        cached_hardware.primary_screen_width());
+  }
+  if (cached_hardware.has_primary_screen_height()) {
+    system_profile_proto->mutable_hardware()->set_primary_screen_height(
+        cached_hardware.primary_screen_height());
+  }
+  if (cached_hardware.has_primary_screen_scale_factor()) {
+    system_profile_proto->mutable_hardware()->set_primary_screen_scale_factor(
+        cached_hardware.primary_screen_scale_factor());
+  }
+  if (cached_hardware.has_screen_count()) {
+    system_profile_proto->mutable_hardware()->set_screen_count(
+        cached_hardware.screen_count());
+  }
+#if BUILDFLAG(IS_WIN)
+  if (cached_hardware.has_max_dpi_x()) {
+    system_profile_proto->mutable_hardware()->set_max_dpi_x(
+        cached_hardware.max_dpi_x());
+  }
+  if (cached_hardware.has_max_dpi_y()) {
+    system_profile_proto->mutable_hardware()->set_max_dpi_y(
+        cached_hardware.max_dpi_y());
+  }
+#endif
 }
 
-ScreenInfoMetricsProvider::~ScreenInfoMetricsProvider() {
-}
-
-void ScreenInfoMetricsProvider::ProvideSystemProfileMetrics(
+void ScreenInfoMetricsProvider::ProvideSystemProfileMetricsNormal(
     SystemProfileProto* system_profile_proto) {
   // This may be called before the screen info has been initialized, such as
   // when the persistent system profile gets filled in initially.

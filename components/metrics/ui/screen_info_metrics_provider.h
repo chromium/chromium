@@ -7,13 +7,13 @@
 
 #include <optional>
 
-#include "components/metrics/metrics_provider.h"
+#include "components/metrics/cached_metrics_provider.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace metrics {
 
 // ScreenInfoMetricsProvider provides metrics related to screen info.
-class ScreenInfoMetricsProvider : public MetricsProvider {
+class ScreenInfoMetricsProvider : public CachedMetricsProvider {
  public:
   ScreenInfoMetricsProvider();
 
@@ -23,11 +23,14 @@ class ScreenInfoMetricsProvider : public MetricsProvider {
 
   ~ScreenInfoMetricsProvider() override;
 
-  // MetricsProvider:
-  void ProvideSystemProfileMetrics(
+ protected:
+  // CachedMetricsProvider:
+  void ProvideSystemProfileMetricsFromCache(
+      const SystemProfileProto& cached_system_profile,
+      SystemProfileProto* system_profile_proto) override;
+  void ProvideSystemProfileMetricsNormal(
       SystemProfileProto* system_profile_proto) override;
 
- protected:
   // Exposed for the sake of mocking in test code.
 
   // Returns the screen size for the primary monitor if available.
