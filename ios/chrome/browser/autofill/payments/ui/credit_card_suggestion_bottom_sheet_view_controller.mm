@@ -104,6 +104,8 @@ CGFloat const kTitleLogoHeight = 32;
       l10n_util::GetNSStringF(IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE,
                               FormatUrlForBottomSheetDisplay(_URL));
   self.customSpacing = kSpacing;
+  // Decrease the spacing between the list of cards and the "Continue" button.
+  self.addsContentViewBottomInset = NO;
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
