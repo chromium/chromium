@@ -24,6 +24,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -151,7 +152,7 @@ void BnplManager::OnUserDecisionToUseBnpl(
                       ongoing_flow_state_->final_checkout_amount,
                       /*amount_extraction_error=*/std::nullopt,
                       ongoing_flow_state_->enforced_issuer_order),
-                  ongoing_flow_state_->app_locale,
+                  std::string(ongoing_flow_state_->app_locale.tag_string()),
                   base::BindRepeating(&BnplManager::OnIssuerAccepted,
                                       weak_factory_.GetWeakPtr()),
                   base::BindOnce(&BnplManager::Reset,
@@ -166,7 +167,7 @@ void BnplManager::OnUserDecisionToUseBnpl(
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
   ongoing_flow_state_->final_checkout_amount = std::move(final_checkout_amount);
   ongoing_flow_state_->app_locale =
-      browser_autofill_manager_->client().GetAppLocale().tag_string();
+      browser_autofill_manager_->client().GetAppLocale();
   ongoing_flow_state_->billing_customer_number =
       GetBillingCustomerId(payments_autofill_client().GetPaymentsDataManager());
   ongoing_flow_state_->on_bnpl_vcn_fetched_callback =
@@ -188,7 +189,7 @@ void BnplManager::OnUserDecisionToUseBnpl(
               GetSortedBnplIssuerContext(
                   browser_autofill_manager_->client(),
                   ongoing_flow_state_->final_checkout_amount),
-              ongoing_flow_state_->app_locale,
+              std::string(ongoing_flow_state_->app_locale.tag_string()),
               base::BindRepeating(&BnplManager::OnIssuerAccepted,
                                   weak_factory_.GetWeakPtr()),
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
@@ -213,7 +214,8 @@ void BnplManager::OnUserDecisionToUseBnpl(
         }
         CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
             .ShowSelectBnplIssuerUi(
-                std::move(issuer_contexts), ongoing_flow_state_->app_locale,
+                std::move(issuer_contexts),
+                std::string(ongoing_flow_state_->app_locale.tag_string()),
                 base::BindRepeating(&BnplManager::OnIssuerAccepted,
                                     weak_factory_.GetWeakPtr()),
                 base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
@@ -474,7 +476,7 @@ void BnplManager::OnAmountExtractionReturned(
                       ongoing_flow_state_->enforced_issuer_order)
                 : std::vector<BnplIssuerContext>(),
             extracted_amount, is_amount_supported_by_any_issuer,
-            ongoing_flow_state_->app_locale,
+            std::string(ongoing_flow_state_->app_locale.tag_string()),
             base::BindOnce(&BnplManager::OnIssuerAccepted,
                            weak_factory_.GetWeakPtr()),
             base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
@@ -543,7 +545,7 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
               issuer_contexts,
               /*checkout_amount=*/std::nullopt,
               /*is_amount_supported_by_any_issuer=*/false,
-              ongoing_flow_state_->app_locale,
+              std::string(ongoing_flow_state_->app_locale.tag_string()),
               base::BindOnce(&BnplManager::OnIssuerAccepted,
                              weak_factory_.GetWeakPtr()),
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
@@ -620,7 +622,7 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
           payments_autofill_client().OnPurchaseAmountExtracted(
               issuer_contexts, ongoing_flow_state_->final_checkout_amount,
               is_amount_supported_by_any_issuer,
-              ongoing_flow_state_->app_locale,
+              std::string(ongoing_flow_state_->app_locale.tag_string()),
               base::BindOnce(&BnplManager::OnIssuerAccepted,
                              weak_factory_.GetWeakPtr()),
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
@@ -632,7 +634,7 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
           .UpdateBnplIssuerUi(
               issuer_contexts, ongoing_flow_state_->final_checkout_amount,
               is_amount_supported_by_any_issuer,
-              ongoing_flow_state_->app_locale,
+              std::string(ongoing_flow_state_->app_locale.tag_string()),
               base::BindOnce(&BnplManager::OnIssuerAccepted,
                              weak_factory_.GetWeakPtr()),
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));

@@ -17,6 +17,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -164,7 +165,7 @@ class BnplManager : public AutofillManager::Observer {
     int64_t billing_customer_number;
 
     // The user's current app locale.
-    std::string app_locale;
+    base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
 
     // Risk data contains the fingerprint data for the user and the device.
     std::string risk_data;

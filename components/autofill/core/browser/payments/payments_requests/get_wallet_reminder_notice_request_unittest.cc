@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,7 +36,7 @@ class GetWalletReminderNoticeRequestTest : public testing::Test {
  public:
   void SetUp() override {
     GetWalletReminderNoticeRequestDetails request_details;
-    request_details.app_locale = kAppLocale;
+    request_details.app_locale = base::i18n::GetKnownLanguageTag(kAppLocale);
     request_details.billable_service_number = kBillableServiceNumber;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_ = std::make_unique<GetWalletReminderNoticeRequest>(

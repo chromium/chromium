@@ -238,7 +238,8 @@ TEST_F(WalletReminderNoticeManagerTest,
 TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice_CreditCard) {
   EXPECT_CALL(*payments_network_interface_,
               GetWalletReminderNotice(
-                  FieldsAre(kAppLocale, kBillingCustomerNumber,
+                  FieldsAre(base::i18n::GetKnownLanguageTag(kAppLocale),
+                            kBillingCustomerNumber,
                             kUnmaskPaymentMethodBillableServiceNumber),
                   _));
 
@@ -250,9 +251,10 @@ TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice_CreditCard) {
 TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice_PublicPass) {
   EXPECT_CALL(
       *payments_network_interface_,
-      GetWalletReminderNotice(FieldsAre(kAppLocale, kBillingCustomerNumber,
-                                        kWalletPassBillableServiceNumber),
-                              _));
+      GetWalletReminderNotice(
+          FieldsAre(base::i18n::GetKnownLanguageTag(kAppLocale),
+                    kBillingCustomerNumber, kWalletPassBillableServiceNumber),
+          _));
 
   manager_->ShowWalletReminderNotice(
       RecordLegalReminderAcknowledgmentRequestDetails::FlowType::kWalletPass);
@@ -336,7 +338,8 @@ TEST_F(WalletReminderNoticeManagerTest,
                   &LegalMessageLine::text, Eq(u"Legal message line")))));
   EXPECT_CALL(*payments_network_interface_,
               RecordLegalReminderAcknowledgment(
-                  FieldsAre(kAppLocale, kBillingCustomerNumber,
+                  FieldsAre(base::i18n::GetKnownLanguageTag(kAppLocale),
+                            kBillingCustomerNumber,
                             kUnmaskPaymentMethodBillableServiceNumber,
                             kAcknowledgementToken,
                             RecordLegalReminderAcknowledgmentRequestDetails::
@@ -372,8 +375,9 @@ TEST_F(WalletReminderNoticeManagerTest,
   EXPECT_CALL(
       *payments_network_interface_,
       RecordLegalReminderAcknowledgment(
-          FieldsAre(kAppLocale, kBillingCustomerNumber,
-                    kWalletPassBillableServiceNumber, kAcknowledgementToken,
+          FieldsAre(base::i18n::GetKnownLanguageTag(kAppLocale),
+                    kBillingCustomerNumber, kWalletPassBillableServiceNumber,
+                    kAcknowledgementToken,
                     RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
                         kWalletPass),
           _));

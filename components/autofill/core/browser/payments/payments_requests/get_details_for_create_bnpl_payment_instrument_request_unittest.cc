@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request_test_api.h"
@@ -15,7 +16,7 @@
 namespace autofill::payments {
 namespace {
 
-constexpr char kAppLocale[] = "dummy_locale";
+constexpr char kAppLocale[] = "en-US";
 constexpr char kIssuerId[] = "affirm";
 constexpr int64_t kBillingCustomerNumber = 111222333;
 
@@ -28,7 +29,7 @@ class GetDetailsForCreateBnplPaymentInstrumentRequestTest
  public:
   void SetUp() override {
     GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details;
-    request_details.app_locale = kAppLocale;
+    request_details.app_locale = base::i18n::GetKnownLanguageTag(kAppLocale);
     request_details.client_behavior_signals = {
         ClientBehaviorConstants::kShowAccountEmailInLegalMessage};
     request_details.issuer_id = kIssuerId;

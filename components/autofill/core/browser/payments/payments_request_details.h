@@ -442,7 +442,7 @@ struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
   ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails();
 
   // `app_locale` is the Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // A vector of signals used to share client behavior with the Payments
@@ -467,7 +467,7 @@ struct CreateBnplPaymentInstrumentRequestDetails {
   ~CreateBnplPaymentInstrumentRequestDetails();
 
   // `app_locale` is the Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // The ID of the BNPL partner to be linked. i.e. Affirm
@@ -601,7 +601,7 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   };
 
   // `app_locale` is the Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // A vector of signals used to share client behavior with the Payments
@@ -662,7 +662,7 @@ struct UpdateBnplPaymentInstrumentRequestDetails {
   };
 
   // `app_locale` is the Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // The ID of the BNPL partner to be linked. i.e. Affirm
@@ -717,7 +717,7 @@ struct GetWalletReminderNoticeRequestDetails {
   ~GetWalletReminderNoticeRequestDetails();
 
   // `app_locale` is the Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // The billable service number defined to distinguish this request.
@@ -772,7 +772,7 @@ struct RecordLegalReminderAcknowledgmentRequestDetails {
   };
 
   // `app_locale` is the Chrome locale.
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
   // The billable service number defined to distinguish this request.

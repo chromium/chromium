@@ -2004,7 +2004,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
        GetDetailsForCreateBnplPaymentInstrument) {
   GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details;
-  request_details.app_locale = "en-US";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
   request_details.billing_customer_number = 555666777888;
   request_details.issuer_id = "Affirm";
   std::string context_token = "some_token";
@@ -2061,7 +2061,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
 TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
        GetDetailsForUpdateBnplPaymentInstrument) {
   GetDetailsForUpdateBnplPaymentInstrumentRequestDetails request_details;
-  request_details.app_locale = "en-US";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
   request_details.billing_customer_number = 555666777888;
   request_details.type =
       GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
@@ -2123,7 +2123,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
 TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
        CreateBnplPaymentInstrument_TestAllFlows) {
   CreateBnplPaymentInstrumentRequestDetails request_details;
-  request_details.app_locale = "en-US";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
   request_details.billing_customer_number = 555666777888;
   request_details.context_token = "context_token";
   request_details.risk_data = "wjhJLg";
@@ -2175,7 +2175,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
 TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
        UpdateBnplPaymentInstrument_TestAllFlows) {
   UpdateBnplPaymentInstrumentRequestDetails request_details;
-  request_details.app_locale = "en-US";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
   request_details.billing_customer_number = 555666777888;
   request_details.context_token = "context_token";
   request_details.risk_data = "wjhJLg";
@@ -2379,7 +2379,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
 TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
        GetWalletReminderNotice) {
   GetWalletReminderNoticeRequestDetails request_details;
-  request_details.app_locale = "en-US";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
   request_details.billing_customer_number = 555666777888;
   request_details.billable_service_number = 1234;
 
@@ -2444,7 +2444,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
 TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
        RecordLegalReminderAcknowledgment) {
   RecordLegalReminderAcknowledgmentRequestDetails request_details;
-  request_details.app_locale = "en-US";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
   request_details.billing_customer_number = 555666777888;
   request_details.billable_service_number = 1234;
   request_details.legal_message_token = "some_token";

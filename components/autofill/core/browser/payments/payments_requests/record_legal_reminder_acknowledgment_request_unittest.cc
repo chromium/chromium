@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -28,7 +29,7 @@ class RecordLegalReminderAcknowledgmentRequestTest : public testing::Test {
  public:
   void SetUp() override {
     RecordLegalReminderAcknowledgmentRequestDetails request_details;
-    request_details.app_locale = kAppLocale;
+    request_details.app_locale = base::i18n::GetKnownLanguageTag(kAppLocale);
     request_details.billable_service_number = kBillableServiceNumber;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.legal_message_token = kTrackedLegalMessageToken;
