@@ -12,7 +12,10 @@
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,8 +27,9 @@ namespace {
 base::DictValue CreateJsonWithFilter(
     const std::vector<std::string>& user_types) {
   base::ListValue filter;
-  for (const auto& user_type : user_types)
+  for (const auto& user_type : user_types) {
     filter.Append(base::Value(user_type));
+  }
   base::DictValue root;
   root.Set(kKeyUserType, std::move(filter));
   return root;
@@ -43,8 +47,8 @@ class UserTypeFilterTest : public testing::Test {
  protected:
   // Helper that creates simple test profile.
   std::unique_ptr<TestingProfile> CreateProfile() {
-    TestingProfile::Builder profile_builder;
-    return profile_builder.Build();
+    return IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment();
   }
 
   // Helper that creates simple test guest profile.
@@ -76,7 +80,8 @@ class UserTypeFilterTest : public testing::Test {
 
 TEST_F(UserTypeFilterTest, ChildUser) {
   const auto profile = CreateProfile();
-  profile->SetIsSupervisedProfile();
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      IdentityManagerFactory::GetForProfile(profile.get()));
   EXPECT_FALSE(Match(profile, CreateJsonWithFilter({kUserTypeUnmanaged})));
   EXPECT_TRUE(Match(profile, CreateJsonWithFilter({kUserTypeChild})));
   EXPECT_TRUE(Match(
@@ -132,7 +137,8 @@ TEST_F(UserTypeFilterTest, DefaultFilter) {
   // Guest user.
   EXPECT_TRUE(MatchDefault(CreateGuestProfile(), default_filter));
   // Child user.
-  profile->SetIsSupervisedProfile();
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      IdentityManagerFactory::GetForProfile(profile.get()));
   EXPECT_FALSE(MatchDefault(profile, default_filter));
   // Managed user.
   profile = CreateProfile();
