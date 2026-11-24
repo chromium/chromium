@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="CriticalActions.ConversationIdDeferredResolutionOutcome.{ActionSource}"
     enum="CriticalActionConversationIdDeferredResolutionOutcome"
-    expires_after="2027-01-01">
+    expires_after="2027-11-01">
   <owner>kutylbeky@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
