@@ -1074,8 +1074,6 @@ void FlexLayout::FilterZeroSizeChildreIfNeeded(
     ChildIndices& child_list,
     FlexLayoutData& data,
     ChildViewSpacing& child_spacing) const {
-  int flex_total = CalculateFlexTotal(data, child_list);
-
   // Collect views that have preferred size zero (and are therefore still not
   // visible) and see if we can allocate the additional required margins for
   // them. If we can, make them all visible. If not, none are visible.
@@ -1101,10 +1099,25 @@ void FlexLayout::FilterZeroSizeChildreIfNeeded(
   // there is not, none of them appear, so remove them and bail out.
   const int new_spacing = temp_spacing.GetTotalSpace();
   const int delta = new_spacing - old_spacing;
-  // We'll factor in |flex_total| so that each child view should be
-  // allocated at least 1dp of space. That doesn't mean the child's flex
-  // rule will allow it to take up that space (see note below).
-  if (delta + flex_total > to_allocate) {
+  // Reserve enough space so that each zero-size child view should be allocated
+  // at least 1dp of space. That doesn't mean the child's flex rule will allow
+  // it to take up that space (see note below). Dividing by the minimum weight
+  // among zero-size children ensures only relative weights matter and avoids
+  // other views (e.g. with the default weight of 1) forcing the threshold up.
+  const int min_zero_size_weight = std::accumulate(
+      zero_size_children.begin(), zero_size_children.end(),
+      data.child_data[zero_size_children.front()].flex.weight(),
+      [&data](int min_weight, size_t index) {
+        return std::min(min_weight, data.child_data[index].flex.weight());
+      });
+  CHECK_GT(min_zero_size_weight, 0);
+  const int min_required_space =
+      std::accumulate(child_list.begin(), child_list.end(), 0,
+                      [&data, min_zero_size_weight](int total, size_t index) {
+                        return total + data.child_data[index].flex.weight() /
+                                           min_zero_size_weight;
+                      });
+  if (delta + min_required_space > to_allocate) {
     absl::erase_if(child_list, [&child_spacing, &data](size_t index) {
       return !child_spacing.HasViewIndex(index) &&
              data.child_data[index].preferred_size.main() == 0;

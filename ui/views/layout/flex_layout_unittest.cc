@@ -1923,6 +1923,119 @@ TEST_F(FlexLayoutTest, Layout_Flex_TwoChildViews_FirstViewFillsAvailableSpace) {
   EXPECT_EQ(expected_bounds, GetChildBounds());
 }
 
+TEST_F(FlexLayoutTest, Layout_Flex_ZeroPreferredSize_WeightsExceedSpace) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetMainAxisAlignment(LayoutAlignment::kStart);
+  layout_->SetCrossAxisAlignment(LayoutAlignment::kStart);
+  View* child1 = AddChild(Size(0, 10));
+  View* child2 = AddChild(Size(10, 10));
+  View* child3 = AddChild(Size(0, 10));
+  child1->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kUnbounded)
+                          .WithWeight(1000));
+  child2->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kPreferred));
+  child3->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kUnbounded)
+                          .WithWeight(2000));
+
+  // The sum of the weights exceeds the available space.
+  host_->SetSize(Size(310, 10));
+  const std::vector<Rect> expected_bounds = {
+      {0, 0, 100, 10}, {100, 0, 10, 10}, {110, 0, 200, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+}
+
+TEST_F(FlexLayoutTest, Layout_Flex_ZeroPreferredSize_WeightsScaleInvariant) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetMainAxisAlignment(LayoutAlignment::kStart);
+  layout_->SetCrossAxisAlignment(LayoutAlignment::kStart);
+  View* child1 = AddChild(Size(0, 10));
+  View* child2 = AddChild(Size(0, 10));
+  View* child3 = AddChild(Size(0, 10));
+  const std::vector<Rect> expected_bounds = {
+      {0, 0, 5, 10}, {5, 0, 10, 10}, {15, 0, 15, 10}};
+
+  for (int scale : {1, 10, 100}) {
+    SCOPED_TRACE(testing::Message() << "scale: " << scale);
+    child1->SetProperty(views::kFlexBehaviorKey,
+                        FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                          MaximumFlexSizeRule::kUnbounded)
+                            .WithWeight(1 * scale));
+    child2->SetProperty(views::kFlexBehaviorKey,
+                        FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                          MaximumFlexSizeRule::kUnbounded)
+                            .WithWeight(2 * scale));
+    child3->SetProperty(views::kFlexBehaviorKey,
+                        FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                          MaximumFlexSizeRule::kUnbounded)
+                            .WithWeight(3 * scale));
+    host_->SetSize(Size(30, 10));
+    // Changing flex properties doesn't invalidate the layout.
+    host_->InvalidateLayout();
+    test::RunScheduledLayout(host_.get());
+    EXPECT_EQ(expected_bounds, GetChildBounds());
+  }
+}
+
+TEST_F(FlexLayoutTest, Layout_Flex_ZeroPreferredSize_SkewedWeights) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetMainAxisAlignment(LayoutAlignment::kStart);
+  layout_->SetCrossAxisAlignment(LayoutAlignment::kStart);
+  View* child1 = AddChild(Size(10, 10));
+  View* child2 = AddChild(Size(0, 10));
+  View* child3 = AddChild(Size(0, 10));
+  child1->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kPreferred));
+  child2->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kUnbounded)
+                          .WithWeight(1));
+  child2->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 5));
+  child3->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kUnbounded)
+                          .WithWeight(1000));
+
+  // 5px left after margins is not enough for child2 to get 1dp.
+  host_->SetSize(Size(25, 10));
+  std::vector<Rect> expected_bounds = {{0, 0, 10, 10}, {}, {}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  // child1's default weight of 1 also counts, so 1002px is needed.
+  host_->SetSize(Size(1022, 10));
+  test::RunScheduledLayout(host_.get());
+  expected_bounds = {{0, 0, 10, 10}, {15, 0, 1, 10}, {21, 0, 1001, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+}
+
+TEST_F(FlexLayoutTest, Layout_Flex_ZeroPreferredSize_CoprimeWeights) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetMainAxisAlignment(LayoutAlignment::kStart);
+  layout_->SetCrossAxisAlignment(LayoutAlignment::kStart);
+  View* child1 = AddChild(Size(0, 10));
+  View* child2 = AddChild(Size(0, 10));
+  child1->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kUnbounded)
+                          .WithWeight(1000));
+  child2->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                                        MaximumFlexSizeRule::kUnbounded)
+                          .WithWeight(1001));
+
+  // Large coprime weights (GCD == 1) should still be shown when there is
+  // enough space for each child to receive at least 1dp.
+  host_->SetSize(Size(201, 10));
+  const std::vector<Rect> expected_bounds = {{0, 0, 100, 10},
+                                             {100, 0, 101, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+}
+
 TEST_F(FlexLayoutTest, Layout_Flex_TwoChildViews_Priority) {
   layout_->SetOrientation(LayoutOrientation::kHorizontal);
   layout_->SetCollapseMargins(true);
