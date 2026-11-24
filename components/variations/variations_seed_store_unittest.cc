@@ -508,6 +508,38 @@ class SeedStoreGroupTestBase : public ::testing::Test {
 
   ~SeedStoreGroupTestBase() override = default;
 
+  void WriteRegularSeedToFile(std::string_view seed_data) {
+    ASSERT_TRUE(
+        base::WriteFile(temp_dir_.GetPath().Append(kSeedFilename), seed_data));
+  }
+
+  void WriteSafeSeedToFile(std::string_view seed_data) {
+    ASSERT_TRUE(base::WriteFile(temp_dir_.GetPath().Append(kSafeSeedFilename),
+                                seed_data));
+  }
+
+  void WriteTestRegularSeedToFile() {
+    WriteRegularSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
+        CreateTestStoredSeedInfo().SerializeAsString()));
+  }
+
+  void WriteTestSafeSeedToFile() {
+    WriteSafeSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
+        CreateTestStoredSeedInfo().SerializeAsString()));
+  }
+
+  StoredSeedInfo CreateTestStoredSeedInfo() {
+    StoredSeedInfo stored_seed_info;
+    stored_seed_info.set_data("seed data");
+    stored_seed_info.set_signature("a test signature, ignored.");
+    stored_seed_info.set_milestone(1);
+    stored_seed_info.set_seed_date(12345);
+    stored_seed_info.set_client_fetch_time(12345);
+    stored_seed_info.set_session_country_code("us");
+    stored_seed_info.set_permanent_country_code("us");
+    return stored_seed_info;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -1015,38 +1047,6 @@ class LoadSeedDataSeedFilesGroupBase : public SeedStoreGroupTestBase {
   explicit LoadSeedDataSeedFilesGroupBase(
       const SeedFieldsPrefs& seed_fields_prefs)
       : SeedStoreGroupTestBase(seed_fields_prefs, kSeedFilesGroup) {}
-
-  void WriteRegularSeedToFile(std::string_view seed_data) {
-    ASSERT_TRUE(
-        base::WriteFile(temp_dir_.GetPath().Append(kSeedFilename), seed_data));
-  }
-
-  void WriteSafeSeedToFile(std::string_view seed_data) {
-    ASSERT_TRUE(base::WriteFile(temp_dir_.GetPath().Append(kSafeSeedFilename),
-                                seed_data));
-  }
-
-  void WriteTestRegularSeedToFile() {
-    WriteRegularSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
-        CreateTestStoredSeedInfo().SerializeAsString()));
-  }
-
-  void WriteTestSafeSeedToFile() {
-    WriteSafeSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
-        CreateTestStoredSeedInfo().SerializeAsString()));
-  }
-
-  StoredSeedInfo CreateTestStoredSeedInfo() {
-    StoredSeedInfo stored_seed_info;
-    stored_seed_info.set_data("seed data");
-    stored_seed_info.set_signature("a test signature, ignored.");
-    stored_seed_info.set_milestone(1);
-    stored_seed_info.set_seed_date(12345);
-    stored_seed_info.set_client_fetch_time(12345);
-    stored_seed_info.set_session_country_code("us");
-    stored_seed_info.set_permanent_country_code("us");
-    return stored_seed_info;
-  }
 };
 
 class LoadSeedDataSeedFilesGroupTest : public LoadSeedDataSeedFilesGroupBase {
@@ -2557,61 +2557,74 @@ class LoadSafeSeedDataSeedFilesGroupTest
       : LoadSeedDataSeedFilesGroupBase(kSafeSeedFieldsPrefs) {}
 };
 
-TEST_F(LoadSafeSeedDataSeedFilesGroupTest, SafeSeedStartupReadTrialGroups) {
+// Keep each trial configuration in its own fixture. ScopedFeatureList only
+// fences ThreadPool tasks; this fixture also owns a dedicated writer thread.
+// Its feature list must outlive both the writer thread and the TaskEnvironment.
+class SafeSeedStartupReadTrialGroupsTest
+    : public LoadSafeSeedDataSeedFilesGroupTest,
+      public ::testing::WithParamInterface<
+          std::tuple<version_info::Channel, bool>> {};
+
+TEST_P(SafeSeedStartupReadTrialGroupsTest, SafeSeedStartupReadTrialGroups) {
+  const auto [channel, deferred] = GetParam();
+  SCOPED_TRACE(static_cast<int>(channel));
+  SCOPED_TRACE(deferred);
   WriteTestSafeSeedToFile();
-  for (auto channel :
-       {version_info::Channel::CANARY, version_info::Channel::DEV,
-        version_info::Channel::BETA}) {
-    for (bool deferred : {false, true}) {
-      SCOPED_TRACE(static_cast<int>(channel));
-      SCOPED_TRACE(deferred);
-      base::test::ScopedFeatureList scoped_trials;
-      scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
-      SetUpSeedFileTrial(kSeedFilesGroup);
-      MockEntropyProviders entropy(
-          MockEntropyProviders::Results{.low_entropy = deferred ? 0.51 : 0.49});
-      base::HistogramTester histograms;
+  MockEntropyProviders entropy(
+      MockEntropyProviders::Results{.low_entropy = deferred ? 0.51 : 0.49});
+  base::HistogramTester histograms;
 
-      VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(), channel,
-                                         &entropy);
-      const char* expected_group = deferred ? kSafeSeedStartupReadTreatmentGroup
-                                            : kSafeSeedStartupReadControlGroup;
-      // Both groups must be reported, even before a deferred reader is used.
-      std::vector<ActiveGroupId> active_groups;
-      GetFieldTrialActiveGroupIds(/*suffix=*/"", &active_groups);
-      EXPECT_TRUE(ContainsTrialAndGroupName(
-          active_groups, kSafeSeedStartupReadTrial, expected_group));
-      EXPECT_EQ(safe_store.GetSeedReaderWriterForTesting()
-                    ->stored_seed_data_for_testing()
-                    .has_value(),
-                !deferred);
-      histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe",
-                                  deferred ? 0 : 1);
+  VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(), channel,
+                                     &entropy);
+  const char* expected_group = deferred ? kSafeSeedStartupReadTreatmentGroup
+                                        : kSafeSeedStartupReadControlGroup;
+  // Both groups must be reported, even before a deferred reader is used.
+  std::vector<ActiveGroupId> active_groups;
+  GetFieldTrialActiveGroupIds(/*suffix=*/"", &active_groups);
+  EXPECT_TRUE(ContainsTrialAndGroupName(
+      active_groups, kSafeSeedStartupReadTrial, expected_group));
+  EXPECT_EQ(safe_store.GetSeedReaderWriterForTesting()
+                ->stored_seed_data_for_testing()
+                .has_value(),
+            !deferred);
+  histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe",
+                              deferred ? 0 : 1);
 
-      std::string seed_data;
-      std::string signature;
-      EXPECT_EQ(safe_store.ReadSeedData(&seed_data, &signature),
-                LoadSeedResult::kSuccess);
-      EXPECT_EQ(seed_data, "seed data");
-      histograms.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
-                                    LoadSeedResult::kSuccess, 1);
+  std::string seed_data;
+  std::string signature;
+  EXPECT_EQ(safe_store.ReadSeedData(&seed_data, &signature),
+            LoadSeedResult::kSuccess);
+  EXPECT_EQ(seed_data, "seed data");
+  histograms.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
+                                LoadSeedResult::kSuccess, 1);
 
-      // Creating another store reuses the assignment rather than rerandomizing.
-      MockEntropyProviders other_entropy(MockEntropyProviders::Results{
-          .low_entropy =
-              deferred ? kAlwaysUseFirstGroup : kAlwaysUseLastGroup});
-      VariationsSafeSeedStore other_store(&prefs_, temp_dir_.GetPath(), channel,
-                                          &other_entropy);
-      EXPECT_EQ(other_store.GetSeedReaderWriterForTesting()
-                    ->stored_seed_data_for_testing()
-                    .has_value(),
-                !deferred);
-    }
-  }
+  // Creating another store reuses the assignment rather than rerandomizing.
+  MockEntropyProviders other_entropy(MockEntropyProviders::Results{
+      .low_entropy = deferred ? kAlwaysUseFirstGroup : kAlwaysUseLastGroup});
+  VariationsSafeSeedStore other_store(&prefs_, temp_dir_.GetPath(), channel,
+                                      &other_entropy);
+  EXPECT_EQ(other_store.GetSeedReaderWriterForTesting()
+                ->stored_seed_data_for_testing()
+                .has_value(),
+            !deferred);
+}
 
-  // Safe can be constructed before Latest has set up the storage trial.
-  base::test::ScopedFeatureList scoped_trials;
-  scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeSeedStartupReadTrialGroupsTest,
+    ::testing::Combine(::testing::Values(version_info::Channel::CANARY,
+                                         version_info::Channel::DEV,
+                                         version_info::Channel::BETA),
+                       ::testing::Bool()));
+
+class SafeSeedStartupReadTrialSetupTest : public SeedStoreGroupTestBase {
+ public:
+  SafeSeedStartupReadTrialSetupTest()
+      : SeedStoreGroupTestBase(kSafeSeedFieldsPrefs, kNoGroup) {}
+};
+
+TEST_F(SafeSeedStartupReadTrialSetupTest, SetsUpStorageTrialBeforeLatest) {
+  EXPECT_FALSE(base::FieldTrialList::TrialExists(kSeedFileTrial));
   MockEntropyProviders entropy(
       MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
   VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(),
@@ -2621,65 +2634,82 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, SafeSeedStartupReadTrialGroups) {
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kSafeSeedStartupReadTrial));
 }
 
-TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
-       SafeSeedStartupReadTrialHonorsForcedGroups) {
+class SafeSeedStartupReadTrialForcedGroupTest
+    : public LoadSafeSeedDataSeedFilesGroupTest,
+      public ::testing::WithParamInterface<const char*> {};
+
+TEST_P(SafeSeedStartupReadTrialForcedGroupTest, HonorsForcedGroups) {
   WriteTestSafeSeedToFile();
-  for (const char* group :
-       {kSafeSeedStartupReadControlGroup, kSafeSeedStartupReadTreatmentGroup}) {
-    SCOPED_TRACE(group);
-    base::test::ScopedFeatureList scoped_trials;
-    scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
-    SetUpSeedFileTrial(kSeedFilesGroup);
-    ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
-        kSafeSeedStartupReadTrial, group));
-    MockEntropyProviders entropy(
-        MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
-    VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(),
-                                       version_info::Channel::DEV, &entropy);
-    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kSafeSeedStartupReadTrial));
-    EXPECT_EQ(safe_store.GetSeedReaderWriterForTesting()
-                  ->stored_seed_data_for_testing()
-                  .has_value(),
-              std::string_view(group) == kSafeSeedStartupReadControlGroup);
-  }
+  const char* group = GetParam();
+  SCOPED_TRACE(group);
+  ASSERT_TRUE(
+      base::FieldTrialList::CreateFieldTrial(kSafeSeedStartupReadTrial, group));
+  MockEntropyProviders entropy(
+      MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+  VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(),
+                                     version_info::Channel::DEV, &entropy);
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kSafeSeedStartupReadTrial));
+  EXPECT_EQ(safe_store.GetSeedReaderWriterForTesting()
+                ->stored_seed_data_for_testing()
+                .has_value(),
+            std::string_view(group) == kSafeSeedStartupReadControlGroup);
 }
 
-TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
-       SafeSeedStartupReadTrialExcludesIneligibleClients) {
-  WriteTestSafeSeedToFile();
-  struct TestCase {
-    version_info::Channel channel;
-    std::string_view storage_group;
-    bool has_directory = true;
-    bool has_entropy = true;
-  };
-  const TestCase cases[] = {
-      {version_info::Channel::DEV, kSeedFilesGroup, false},
-      {version_info::Channel::DEV, kSeedFilesGroup, true, false},
-      {version_info::Channel::STABLE, kSeedFilesGroup},
-      {version_info::Channel::UNKNOWN, kSeedFilesGroup},
-      {version_info::Channel::BETA, kDefaultGroup},
-      {version_info::Channel::DEV, kControlGroup},
-  };
-  for (const auto& test_case : cases) {
-    SCOPED_TRACE(static_cast<int>(test_case.channel));
-    SCOPED_TRACE(test_case.storage_group);
-    SCOPED_TRACE(test_case.has_directory);
-    SCOPED_TRACE(test_case.has_entropy);
-    base::test::ScopedFeatureList scoped_trials;
-    scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
-    SetUpSeedFileTrial(test_case.storage_group);
-    MockEntropyProviders entropy(
-        MockEntropyProviders::Results{.low_entropy = kAlwaysUseFirstGroup});
-    VariationsSafeSeedStore safe_store(
-        &prefs_,
-        test_case.has_directory ? temp_dir_.GetPath() : base::FilePath(),
-        test_case.channel, test_case.has_entropy ? &entropy : nullptr);
-    EXPECT_FALSE(base::FieldTrialList::TrialExists(kSafeSeedStartupReadTrial));
-    // Nonparticipants must be ready for synchronous metadata access.
-    safe_store.GetMilestone();
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeSeedStartupReadTrialForcedGroupTest,
+                         ::testing::Values(kSafeSeedStartupReadControlGroup,
+                                           kSafeSeedStartupReadTreatmentGroup));
+
+struct SafeSeedStartupReadTrialEligibilityParams {
+  version_info::Channel channel;
+  std::string_view storage_group;
+  bool has_directory = true;
+  bool has_entropy = true;
+};
+
+class SafeSeedStartupReadTrialEligibilityTest
+    : public SeedStoreGroupTestBase,
+      public ::testing::WithParamInterface<
+          SafeSeedStartupReadTrialEligibilityParams> {
+ public:
+  SafeSeedStartupReadTrialEligibilityTest()
+      : SeedStoreGroupTestBase(kSafeSeedFieldsPrefs, GetParam().storage_group) {
   }
+};
+
+TEST_P(SafeSeedStartupReadTrialEligibilityTest, ExcludesIneligibleClients) {
+  WriteTestSafeSeedToFile();
+  const auto& test_case = GetParam();
+  SCOPED_TRACE(static_cast<int>(test_case.channel));
+  SCOPED_TRACE(test_case.storage_group);
+  SCOPED_TRACE(test_case.has_directory);
+  SCOPED_TRACE(test_case.has_entropy);
+  MockEntropyProviders entropy(
+      MockEntropyProviders::Results{.low_entropy = kAlwaysUseFirstGroup});
+  VariationsSafeSeedStore safe_store(
+      &prefs_, test_case.has_directory ? temp_dir_.GetPath() : base::FilePath(),
+      test_case.channel, test_case.has_entropy ? &entropy : nullptr);
+  EXPECT_FALSE(base::FieldTrialList::TrialExists(kSafeSeedStartupReadTrial));
+  // Nonparticipants must be ready for synchronous metadata access.
+  safe_store.GetMilestone();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeSeedStartupReadTrialEligibilityTest,
+    ::testing::Values(
+        SafeSeedStartupReadTrialEligibilityParams{version_info::Channel::DEV,
+                                                  kSeedFilesGroup, false},
+        SafeSeedStartupReadTrialEligibilityParams{version_info::Channel::DEV,
+                                                  kSeedFilesGroup, true, false},
+        SafeSeedStartupReadTrialEligibilityParams{version_info::Channel::STABLE,
+                                                  kSeedFilesGroup},
+        SafeSeedStartupReadTrialEligibilityParams{
+            version_info::Channel::UNKNOWN, kSeedFilesGroup},
+        SafeSeedStartupReadTrialEligibilityParams{version_info::Channel::BETA,
+                                                  kDefaultGroup},
+        SafeSeedStartupReadTrialEligibilityParams{version_info::Channel::DEV,
+                                                  kControlGroup}));
 
 TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
        ClearSafeStateRunsQueuedReadersAgainstCurrentState) {
@@ -2732,99 +2762,105 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
   EXPECT_EQ(safe_store.GetLocale(), "new locale");
 }
 
-TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+struct InitialSeedImportDeferredSafeParams {
+  const char* group;
+  bool initialize_safe;
+};
+
+class InitialSeedImportDeferredSafeTest
+    : public LoadSafeSeedDataSeedFilesGroupTest,
+      public ::testing::WithParamInterface<
+          InitialSeedImportDeferredSafeParams> {};
+
+TEST_P(InitialSeedImportDeferredSafeTest,
        InitialSeedImportSkipsUninitializedSafeComparison) {
-  struct TestCase {
-    const char* group;
-    bool initialize_safe;
-  };
-  const TestCase cases[] = {
-      {kSafeSeedStartupReadControlGroup, false},
-      {kSafeSeedStartupReadTreatmentGroup, false},
-      {kSafeSeedStartupReadTreatmentGroup, true},
-  };
+  const auto& test_case = GetParam();
   const std::string seed_data = SerializeSeed(CreateTestSeed());
-  for (const auto& test_case : cases) {
-    SCOPED_TRACE(test_case.group);
-    SCOPED_TRACE(test_case.initialize_safe);
-    base::test::ScopedFeatureList scoped_trials;
-    scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
-    SetUpSeedFileTrial(kSeedFilesGroup);
-    ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
-        kSafeSeedStartupReadTrial, test_case.group));
-    StoredSeedInfo safe_info = CreateTestStoredSeedInfo();
-    safe_info.set_data(seed_data);
-    const std::string original_safe_file =
-        SeedReaderWriter::CompressForSeedFileForTesting(
-            safe_info.SerializeAsString());
-    WriteSafeSeedToFile(original_safe_file);
-    prefs_.SetString(prefs::kVariationsSafeSeedLocale, "original locale");
-    MockEntropyProviders entropy(
-        MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
-    base::HistogramTester histograms;
-    const bool expect_alias =
-        test_case.initialize_safe ||
-        std::string_view(test_case.group) == kSafeSeedStartupReadControlGroup;
-    {
-      auto safe_store = std::make_unique<VariationsSafeSeedStore>(
-          &prefs_, temp_dir_.GetPath(), version_info::Channel::DEV, &entropy);
-      if (test_case.initialize_safe) {
-        std::string data;
-        std::string signature;
-        ASSERT_EQ(safe_store->ReadSeedData(&data, &signature),
-                  LoadSeedResult::kSuccess);
-      }
-      auto initial_seed = std::make_unique<SeedResponse>();
-      initial_seed->data = seed_data;
-      initial_seed->signature = safe_info.signature();
-      initial_seed->country = "fr";
-      initial_seed->date = base::Time::Now();
-      initial_seed->is_gzip_compressed = false;
-      VariationsSeedStore seed_store(
-          &prefs_, std::move(initial_seed),
-          /*signature_verification_enabled_on_load=*/false,
-          /*signature_verification_enabled_on_receive=*/false,
-          std::move(safe_store), version_info::Channel::DEV,
-          temp_dir_.GetPath(), &entropy, /*use_first_run_prefs=*/false);
-
-      EXPECT_EQ(seed_store.GetSafeSeedReaderWriterForTesting()->IsInitialized(),
-                expect_alias);
-      EXPECT_EQ(
-          seed_store.GetSeedReaderWriterForTesting()
-              ->stored_seed_data_for_testing(),
-          expect_alias ? std::string(kIdenticalToSafeSeedSentinel) : seed_data);
-      VariationsSeed loaded;
-      std::string loaded_data;
+  SCOPED_TRACE(test_case.group);
+  SCOPED_TRACE(test_case.initialize_safe);
+  ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(kSafeSeedStartupReadTrial,
+                                                     test_case.group));
+  StoredSeedInfo safe_info = CreateTestStoredSeedInfo();
+  safe_info.set_data(seed_data);
+  const std::string original_safe_file =
+      SeedReaderWriter::CompressForSeedFileForTesting(
+          safe_info.SerializeAsString());
+  WriteSafeSeedToFile(original_safe_file);
+  prefs_.SetString(prefs::kVariationsSafeSeedLocale, "original locale");
+  MockEntropyProviders entropy(
+      MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+  base::HistogramTester histograms;
+  const bool expect_alias =
+      test_case.initialize_safe ||
+      std::string_view(test_case.group) == kSafeSeedStartupReadControlGroup;
+  {
+    auto safe_store = std::make_unique<VariationsSafeSeedStore>(
+        &prefs_, temp_dir_.GetPath(), version_info::Channel::DEV, &entropy);
+    if (test_case.initialize_safe) {
+      std::string data;
       std::string signature;
-      EXPECT_TRUE(seed_store.LoadSeedSync(&loaded, &loaded_data, &signature));
-      EXPECT_EQ(loaded_data, seed_data);
-      histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe",
-                                  expect_alias ? 1 : 0);
-      EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedLocale),
-                "original locale");
-      if (!expect_alias) {
-        std::string safe_file;
-        ASSERT_TRUE(base::ReadFileToString(
-            temp_dir_.GetPath().Append(kSafeSeedFilename), &safe_file));
-        EXPECT_EQ(safe_file, original_safe_file);
-      }
-
-      auto client_state = CreateTestClientFilterableState();
-      VariationsSeed loaded_safe;
-      EXPECT_TRUE(
-          seed_store.LoadSafeSeedSync(&loaded_safe, client_state.get()));
-      EXPECT_EQ(SerializeSeed(loaded_safe), seed_data);
-      EXPECT_EQ(client_state->locale, "original locale");
-      EXPECT_EQ(client_state->session_consistency_country, "us");
-      histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe", 1);
+      ASSERT_EQ(safe_store->ReadSeedData(&data, &signature),
+                LoadSeedResult::kSuccess);
     }
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::test::TestFuture<void> replies_processed;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, replies_processed.GetCallback());
-    ASSERT_TRUE(replies_processed.Wait());
+    auto initial_seed = std::make_unique<SeedResponse>();
+    initial_seed->data = seed_data;
+    initial_seed->signature = safe_info.signature();
+    initial_seed->country = "fr";
+    initial_seed->date = base::Time::Now();
+    initial_seed->is_gzip_compressed = false;
+    VariationsSeedStore seed_store(
+        &prefs_, std::move(initial_seed),
+        /*signature_verification_enabled_on_load=*/false,
+        /*signature_verification_enabled_on_receive=*/false,
+        std::move(safe_store), version_info::Channel::DEV, temp_dir_.GetPath(),
+        &entropy, /*use_first_run_prefs=*/false);
+
+    EXPECT_EQ(seed_store.GetSafeSeedReaderWriterForTesting()->IsInitialized(),
+              expect_alias);
+    EXPECT_EQ(
+        seed_store.GetSeedReaderWriterForTesting()
+            ->stored_seed_data_for_testing(),
+        expect_alias ? std::string(kIdenticalToSafeSeedSentinel) : seed_data);
+    VariationsSeed loaded;
+    std::string loaded_data;
+    std::string signature;
+    EXPECT_TRUE(seed_store.LoadSeedSync(&loaded, &loaded_data, &signature));
+    EXPECT_EQ(loaded_data, seed_data);
+    histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe",
+                                expect_alias ? 1 : 0);
+    EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedLocale),
+              "original locale");
+    if (!expect_alias) {
+      std::string safe_file;
+      ASSERT_TRUE(base::ReadFileToString(
+          temp_dir_.GetPath().Append(kSafeSeedFilename), &safe_file));
+      EXPECT_EQ(safe_file, original_safe_file);
+    }
+
+    auto client_state = CreateTestClientFilterableState();
+    VariationsSeed loaded_safe;
+    EXPECT_TRUE(seed_store.LoadSafeSeedSync(&loaded_safe, client_state.get()));
+    EXPECT_EQ(SerializeSeed(loaded_safe), seed_data);
+    EXPECT_EQ(client_state->locale, "original locale");
+    EXPECT_EQ(client_state->session_consistency_country, "us");
+    histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe", 1);
   }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::test::TestFuture<void> replies_processed;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, replies_processed.GetCallback());
+  ASSERT_TRUE(replies_processed.Wait());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InitialSeedImportDeferredSafeTest,
+                         ::testing::Values(
+                             InitialSeedImportDeferredSafeParams{
+                                 kSafeSeedStartupReadControlGroup, false},
+                             InitialSeedImportDeferredSafeParams{
+                                 kSafeSeedStartupReadTreatmentGroup, false},
+                             InitialSeedImportDeferredSafeParams{
+                                 kSafeSeedStartupReadTreatmentGroup, true}));
 
 TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_ValidSeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
