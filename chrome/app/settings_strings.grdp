@@ -1743,6 +1743,9 @@
     <message name="IDS_SETTINGS_RESET_PROMPT_TITLE" desc="Title for a prompt that gives an explanation of what would be resetted by 'Reset and clean up' section of Chrome Settings. " meaning="Chrome Cleanup feature. Try to use the same translation for 'Reset' in 'Reset and cleanup' string.">
       Reset settings?
     </message>
+    <message name="IDS_SETTINGS_RESET_DIALOG_LEARN_MORE" desc="Link text in the Reset settings dialog that opens a help article explaining how resetting settings to default works.">
+      Learn more about restoring settings to default
+    </message>
     <message name="IDS_SETTINGS_RESET_ALL_SETTINGS" desc="Text of the button on the General settings page that opens a dialog to reset browser settings back to their default values.">
       Reset all settings
     </message>

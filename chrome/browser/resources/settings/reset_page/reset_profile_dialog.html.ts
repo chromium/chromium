@@ -16,13 +16,20 @@ export function getHtml(this: SettingsResetProfileDialogElement) {
   <div id="dialog-body" slot="body">
     <span .innerHTML="${this.getExplanationText_()}"></span>
     <a href="$i18nRaw{resetPageLearnMoreUrl}"
-        aria-label="$i18n{resetLearnMoreAccessibilityText}" target="_blank">
-      $i18n{learnMore}
+        aria-label="$i18n{resetDialogLearnMoreAccessibilityText}"
+        target="_blank">
+      $i18n{resetDialogLearnMore}
     </a>
+    ${this.settingsRefresh2026Enabled_ ? html`
+      <cr-checkbox id="sendSettings" checked>
+        $i18nRaw{resetPageFeedback}
+      </cr-checkbox>
+    ` : ''}
   </div>
   <div slot="button-container">
     <div class="spinner" ?hidden="${!this.clearingInProgress_}"></div>
-    <cr-button class="cancel-button" @click="${this.onCancelClick_}" id="cancel"
+    <cr-button class="${this.getCancelButtonClass_()}"
+        @click="${this.onCancelClick_}" id="cancel"
         ?disabled="${this.clearingInProgress_}">
       $i18n{cancel}
     </cr-button>
@@ -31,11 +38,13 @@ export function getHtml(this: SettingsResetProfileDialogElement) {
       $i18n{resetDialogCommit}
     </cr-button>
   </div>
-  <div slot="footer">
-    <cr-checkbox id="sendSettings" checked>
-      $i18nRaw{resetPageFeedback}
-    </cr-checkbox>
-  </div>
+  ${!this.settingsRefresh2026Enabled_ ? html`
+    <div slot="footer">
+      <cr-checkbox id="sendSettings" checked>
+        $i18nRaw{resetPageFeedback}
+      </cr-checkbox>
+    </div>
+  ` : ''}
 </cr-dialog>
 <!--_html_template_end_-->`;
 }

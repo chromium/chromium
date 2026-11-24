@@ -18,3 +18,37 @@
   /* Add space for the link focus ring. See https://crbug.com/41428696. */
   padding-bottom: 2px;
 }
+
+:host-context([settings-refresh-2026]) {
+  cr-dialog {
+    --cr-dialog-body-padding-horizontal: 24px;
+    --cr-dialog-border-radius: 12px;
+    --cr-dialog-button-container-padding-bottom: 24px;
+    --cr-dialog-button-container-padding-horizontal: 24px;
+    --cr-dialog-button-container-padding-top: 24px;
+    --cr-dialog-title-font-size: 18px;
+    --cr-dialog-title-slot-padding-bottom: 16px;
+    --cr-dialog-title-slot-padding-end: 24px;
+    --cr-dialog-title-slot-padding-start: 24px;
+    --cr-dialog-title-slot-padding-top: 24px;
+    --cr-dialog-width: 435px;
+  }
+
+  cr-dialog::part(dialog) {
+    box-shadow: var(--cr-elevation-2);
+  }
+
+  div[slot='title'] {
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #dialog-body {
+    color: var(--cr-primary-text-color);
+  }
+
+  #sendSettings {
+    --cr-checkbox-label-padding-start: 16px;
+    margin-top: 16px;
+  }
+}

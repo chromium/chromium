@@ -19,6 +19,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -35,7 +36,6 @@ export interface SettingsResetProfileDialogElement {
     cancel: CrButtonElement,
     dialog: CrDialogElement,
     reset: CrButtonElement,
-    sendSettings: CrCheckboxElement,
   };
 }
 
@@ -71,6 +71,9 @@ export class SettingsResetProfileDialogElement extends
   private accessor triggeredResetToolName_: string = '';
   private accessor resetRequestOrigin_: string = '';
   protected accessor clearingInProgress_: boolean = false;
+
+  protected readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   private browserProxy_: ResetBrowserProxy =
       ResetBrowserProxyImpl.getInstance();
 
@@ -93,6 +96,14 @@ export class SettingsResetProfileDialogElement extends
     return this.i18nAdvanced('resetPageExplanationBulletPoints', {
       tags: ['LINE_BREAKS', 'LINE_BREAK'],
     });
+  }
+
+  protected getCancelButtonClass_(): string {
+    const classes = ['cancel-button'];
+    if (this.settingsRefresh2026Enabled_) {
+      classes.push('tonal-button');
+    }
+    return classes.join(' ');
   }
 
   protected getPageTitle_(): string {
@@ -138,9 +149,12 @@ export class SettingsResetProfileDialogElement extends
 
   protected onResetClick_() {
     this.clearingInProgress_ = true;
+    const sendSettings =
+        this.shadowRoot.querySelector<CrCheckboxElement>('#sendSettings');
+    assert(sendSettings);
     this.browserProxy_
         .performResetProfileSettings(
-            this.$.sendSettings.checked, this.resetRequestOrigin_)
+            sendSettings.checked, this.resetRequestOrigin_)
         .then(() => {
           this.clearingInProgress_ = false;
           if (this.$.dialog.open) {

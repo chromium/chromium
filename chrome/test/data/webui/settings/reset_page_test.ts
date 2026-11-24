@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {CrCheckboxElement, SettingsResetPageElement, SettingsResetProfileDialogElement} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, ResetBrowserProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -29,6 +29,7 @@ suite('DialogTests', function() {
 
   setup(function() {
     loadTimeData.overrideValues({settingsRefresh2026: ''});
+    resetRouterForTesting();
     resetPageBrowserProxy = new TestResetBrowserProxy();
     ResetBrowserProxyImpl.setInstance(resetPageBrowserProxy);
 
@@ -114,8 +115,10 @@ suite('DialogTests', function() {
     assertTrue(!!dialog);
 
     const checkbox = dialog.shadowRoot.querySelector<CrCheckboxElement>(
-        '[slot=footer] cr-checkbox')!;
+        '[slot=footer] cr-checkbox');
+    assertTrue(!!checkbox);
     assertTrue(checkbox.checked);
+    assertFalse(dialog.$.cancel.classList.contains('tonal-button'));
     const showReportedSettingsLink =
         dialog.shadowRoot.querySelector<HTMLElement>('[slot=footer] a');
     assertTrue(!!showReportedSettingsLink);
@@ -136,6 +139,37 @@ suite('DialogTests', function() {
     assertTrue(isVisible(spinner));
 
     resetPageBrowserProxy.resolvePerformResetProfileSettings();
+    await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
+  });
+
+  test('ResetProfileDialog_SettingsRefresh2026', async function() {
+    loadTimeData.overrideValues({
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    resetRouterForTesting();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    resetPage = document.createElement('settings-reset-page');
+    document.body.appendChild(resetPage);
+
+    resetPage.shadowRoot.querySelector<HTMLElement>('#resetProfile')!.click();
+    await microtasksFinished();
+
+    const dialog =
+        resetPage.shadowRoot.querySelector('settings-reset-profile-dialog');
+    assertTrue(!!dialog);
+    assertFalse(!!dialog.shadowRoot.querySelector('[slot=footer]'));
+    assertTrue(!!dialog.shadowRoot.querySelector(
+        '#dialog-body cr-checkbox#sendSettings'));
+    assertTrue(dialog.$.cancel.classList.contains('tonal-button'));
+
+    const showReportedSettingsLink =
+        dialog.shadowRoot.querySelector<HTMLElement>(
+            '#dialog-body cr-checkbox a');
+    assertTrue(!!showReportedSettingsLink);
+    showReportedSettingsLink.click();
+    await resetPageBrowserProxy.whenCalled('showReportedSettings');
+
+    dialog.$.reset.click();
     await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
   });
 

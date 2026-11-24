@@ -1289,6 +1289,16 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  html_source->AddLocalizedString("resetDialogLearnMore",
+                                  features::IsSettingsRefresh2026Enabled()
+                                      ? IDS_SETTINGS_RESET_DIALOG_LEARN_MORE
+                                      : IDS_LEARN_MORE);
+  html_source->AddLocalizedString(
+      "resetDialogLearnMoreAccessibilityText",
+      features::IsSettingsRefresh2026Enabled()
+          ? IDS_SETTINGS_RESET_DIALOG_LEARN_MORE
+          : IDS_SETTINGS_RESET_LEARN_MORE_ACCESSIBILITY_TEXT);
+
   html_source->AddBoolean(
       "showResetProfileBanner",
       ResetSettingsHandler::ShouldShowResetProfileBanner(profile));
