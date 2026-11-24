@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -15,15 +16,21 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_view_host.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/mock_tracker.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1946,4 +1953,101 @@ IN_PROC_BROWSER_TEST_F(
             SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
+}
+
+class ExtensionsMenuViewModelFeatureEngagementBrowserTest
+    : public ExtensionsMenuViewModelBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ExtensionsMenuViewModelBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&SetMockTrackerFactory));
+  }
+
+  feature_engagement::test::MockTracker* mock_tracker() {
+    return static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile()));
+  }
+
+ private:
+  static void SetMockTrackerFactory(content::BrowserContext* context) {
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateMockTracker));
+  }
+
+  static std::unique_ptr<KeyedService> CreateMockTracker(
+      content::BrowserContext* context) {
+    return std::make_unique<
+        testing::NiceMock<feature_engagement::test::MockTracker>>();
+  }
+
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+// Tests that updating an extension's site access from the Site Permissions page
+// records the Manage Site Access IPH "used" event so users who already manage
+// site access organically are not shown the IPH later.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelFeatureEngagementBrowserTest,
+                       UpdateSiteAccess_NotifiesManageSiteAccessIphUsed) {
+  scoped_refptr<const extensions::Extension> extension =
+      AddExtensionWithHostPermission("Extension", "<all_urls>");
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  NavigateTo("example.com");
+  content::WebContents* web_contents = GetActiveWebContents();
+  const url::Origin example_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const url::Origin mismatched_origin =
+      url::Origin::Create(GURL("https://other.example"));
+
+  // Mismatched origin is a no-op and must not record the used event.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(testing::Ne(
+                  feature_engagement::events::kExtensionsManageSiteAccessUsed)))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      *mock_tracker(),
+      NotifyEvent(feature_engagement::events::kExtensionsManageSiteAccessUsed))
+      .Times(0);
+#else
+  EXPECT_CALL(*mock_tracker(),
+              NotifyUsedEvent(testing::Not(testing::Ref(
+                  feature_engagement::kIPHExtensionsManageSiteAccessTutorial))))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_tracker(),
+              NotifyUsedEvent(testing::Ref(
+                  feature_engagement::kIPHExtensionsManageSiteAccessTutorial)))
+      .Times(0);
+#endif
+  menu_model()->UpdateSiteAccess(extension->id(), mismatched_origin,
+                                 PermissionsManager::UserSiteAccess::kOnSite);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+
+  // Valid same-origin update records the used event.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(testing::Ne(
+                  feature_engagement::events::kExtensionsManageSiteAccessUsed)))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      *mock_tracker(),
+      NotifyEvent(feature_engagement::events::kExtensionsManageSiteAccessUsed))
+      .Times(1);
+#else
+  EXPECT_CALL(*mock_tracker(),
+              NotifyUsedEvent(testing::Not(testing::Ref(
+                  feature_engagement::kIPHExtensionsManageSiteAccessTutorial))))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_tracker(),
+              NotifyUsedEvent(testing::Ref(
+                  feature_engagement::kIPHExtensionsManageSiteAccessTutorial)))
+      .Times(1);
+#endif
+  menu_model()->UpdateSiteAccess(extension->id(), example_origin,
+                                 PermissionsManager::UserSiteAccess::kOnSite);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }

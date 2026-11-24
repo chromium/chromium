@@ -404,6 +404,7 @@ const base::Feature* const kAllFeatures[] = {
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    &kIPHExtensionsManageSiteAccessTutorial,
     &kIPHExtensionsPinnedByDefaultFeature,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 

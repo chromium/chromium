@@ -80,6 +80,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.INSTANCE_SWITCHER,
     FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE,
+    FeatureConstants.IPH_EXTENSIONS_MANAGE_SITE_ACCESS_TUTORIAL,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE,
     FeatureConstants.IPH_EXTENSIONS_PINNED_BY_DEFAULT_FEATURE,
     FeatureConstants.IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS,
@@ -324,6 +325,12 @@ public @interface FeatureConstants {
      * their extensions in the app menu.
      */
     String IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE = "IPH_ExtensionsManageAppMenu";
+
+    /**
+     * An IPH feature that informs users how to manage site access for a newly installed extension
+     * whose permissions are withheld on click.
+     */
+    String IPH_EXTENSIONS_MANAGE_SITE_ACCESS_TUTORIAL = "IPH_ExtensionsManageSiteAccessTutorial";
 
     /**
      * An IPH feature that shows after the first extension is installed to inform users to manage

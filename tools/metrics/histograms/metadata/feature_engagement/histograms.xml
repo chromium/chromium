@@ -281,6 +281,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ExtensionsManageAppMenuFeature"
       summary="message shown informing users they can manage their extensions
                in the app menu."/>
+  <variant name="IPH_ExtensionsManageSiteAccessTutorial"
+      summary="educating users on how to manage site access for a newly
+               installed extension with withheld host permissions"/>
   <variant name="IPH_ExtensionsManageToolbar"
       summary="informing users they can manage their extensions in the
                toolbar"/>

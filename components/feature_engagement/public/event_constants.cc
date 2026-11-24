@@ -243,6 +243,8 @@ const char kAccountSwitchingPrimaryAccountChanged[] =
     "account_switching_primary_account_changed";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kExtensionsManageSiteAccessUsed[] =
+    "extensions_manage_site_access_tutorial_used";
 const char kPwaInstallMenuSelected[] = "pwa_install_menu_clicked";
 #endif  // BUILDFLAG(IS_ANDROID)
 

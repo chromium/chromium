@@ -371,6 +371,9 @@ BASE_FEATURE(kIPHBookmarkBarSimplifiedFeature,
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+BASE_FEATURE(kIPHExtensionsManageSiteAccessTutorial,
+             "IPH_ExtensionsManageSiteAccessTutorial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHExtensionsPinnedByDefaultFeature,
              "IPH_ExtensionsPinnedByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);

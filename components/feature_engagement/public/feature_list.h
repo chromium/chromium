@@ -675,6 +675,8 @@ DEFINE_VARIATION_PARAM(kIPHSearchPromotionFeature,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+DEFINE_VARIATION_PARAM(kIPHExtensionsManageSiteAccessTutorial,
+                       "IPH_ExtensionsManageSiteAccessTutorial");
 DEFINE_VARIATION_PARAM(kIPHExtensionsPinnedByDefaultFeature,
                        "IPH_ExtensionsPinnedByDefault");
 #endif
@@ -1027,6 +1029,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+        VARIATION_ENTRY(kIPHExtensionsManageSiteAccessTutorial),
         VARIATION_ENTRY(kIPHExtensionsPinnedByDefaultFeature),
 #endif
 

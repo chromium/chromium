@@ -12,11 +12,13 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -25,6 +27,9 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -519,6 +524,19 @@ void ExtensionsMenuViewModel::UpdateSiteAccess(
   SitePermissionsHelper permissions(profile);
   permissions.UpdateSiteAccess(*extension, web_contents, site_access,
                                target_origin);
+  if (target_origin.IsSameOriginWith(
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    if (feature_engagement::Tracker* const tracker =
+            feature_engagement::TrackerFactory::GetForBrowserContext(profile)) {
+#if BUILDFLAG(IS_ANDROID)
+      tracker->NotifyEvent(
+          feature_engagement::events::kExtensionsManageSiteAccessUsed);
+#else
+      tracker->NotifyUsedEvent(
+          feature_engagement::kIPHExtensionsManageSiteAccessTutorial);
+#endif
+    }
+  }
 }
 
 void ExtensionsMenuViewModel::AllowHostAccessRequest(

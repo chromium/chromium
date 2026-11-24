@@ -24,6 +24,10 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class TabListInterface;
 
+namespace extensions {
+class Extension;
+}  // namespace extensions
+
 // ViewModel for the ExtensionsToolbarDesktop. This class manages the business
 // logic for the order and state of extension actions in the toolbar. It serves
 // as the single source of truth for the ordering of the list of actions.
@@ -200,6 +204,11 @@ class ExtensionsToolbarViewModel
   // the button's tooltip.
   RequestAccessButtonParams GetRequestAccessButtonParams(
       content::WebContents* web_contents) const;
+
+  // Returns the extension eligible for the Manage Site Access IPH on
+  // `web_contents`, or nullptr if none is eligible.
+  const extensions::Extension* GetEligibleExtensionForManageSiteAccessIPH(
+      content::WebContents& web_contents) const;
 
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;

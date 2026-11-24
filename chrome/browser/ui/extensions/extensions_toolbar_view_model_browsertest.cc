@@ -7,7 +7,9 @@
 #include <optional>
 
 #include "base/auto_reset.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -18,17 +20,21 @@
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/crx_file/id_util.h"
+#include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/host_access_request_helper.h"
+#include "extensions/browser/install_flag.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -634,4 +640,171 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   EXPECT_EQ(toolbar_model()->GetButtonState(*web_contents),
             ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                 kAllExtensionsBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       GetEligibleExtensionForManageSiteAccessIPH_SiteStates) {
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Eligible Extension")
+          .SetManifestVersion(3)
+          .SetAction(extensions::ActionInfo::Type::kAction)
+          .AddHostPermission("http://example.com/*")
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+          .AddFlags(extensions::Extension::FROM_WEBSTORE |
+                    extensions::Extension::WITHHOLD_PERMISSIONS)
+          .Build();
+  extension_registrar()->OnExtensionInstalled(
+      extension.get(), syncer::StringOrdinal::CreateInitialOrdinal(),
+      extensions::kInstallFlagInstallImmediately);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Eligible on a matching site with withheld host permissions.
+  NavigateTo("example.com");
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            extension.get());
+
+  // Ineligible on a non-matching site.
+  NavigateTo("other.com");
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            nullptr);
+
+  // Ineligible on a restricted URL.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, GURL("chrome://extensions")));
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            nullptr);
+
+  // Navigate back to the matching site.
+  NavigateTo("example.com");
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            extension.get());
+
+  // Ineligible once the user grants site access.
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  {
+    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    extensions::ScriptingPermissionsModifier(profile(), extension)
+        .GrantHostPermission(web_contents->GetLastCommittedURL());
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            nullptr);
+
+  // Eligible again if access is revoked back to withheld.
+  {
+    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    extensions::ScriptingPermissionsModifier(profile(), extension)
+        .RemoveGrantedHostPermission(web_contents->GetLastCommittedURL());
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            extension.get());
+
+  // Ineligible when the user blocks all extensions on the site.
+  const url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  {
+    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserRestrictedSite(origin);
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsToolbarViewModelBrowserTest,
+    GetEligibleExtensionForManageSiteAccessIPH_InstallCriteria) {
+  auto install_extension =
+      [this](const std::string& name, int creation_flags,
+             extensions::mojom::ManifestLocation location =
+                 extensions::mojom::ManifestLocation::kInternal) {
+        scoped_refptr<const extensions::Extension> extension =
+            extensions::ExtensionBuilder(name)
+                .SetManifestVersion(3)
+                .SetAction(extensions::ActionInfo::Type::kAction)
+                .AddHostPermission("http://example.com/*")
+                .SetLocation(location)
+                .AddFlags(creation_flags)
+                .Build();
+        extension_registrar()->OnExtensionInstalled(
+            extension.get(), syncer::StringOrdinal::CreateInitialOrdinal(),
+            extensions::kInstallFlagInstallImmediately);
+        return extension;
+      };
+
+  // Off-store extension (not from Chrome Web Store).
+  install_extension("Offstore Extension",
+                    extensions::Extension::WITHHOLD_PERMISSIONS);
+  // Default-installed CWS extension.
+  install_extension("Default Extension",
+                    extensions::Extension::FROM_WEBSTORE |
+                        extensions::Extension::WAS_INSTALLED_BY_DEFAULT |
+                        extensions::Extension::WITHHOLD_PERMISSIONS);
+  // External (non-internal) CWS extension with withheld permissions.
+  install_extension("External Pref Extension",
+                    extensions::Extension::FROM_WEBSTORE |
+                        extensions::Extension::WITHHOLD_PERMISSIONS,
+                    extensions::mojom::ManifestLocation::kExternalPref);
+  // Policy-installed CWS extension.
+  install_extension(
+      "Policy Extension", extensions::Extension::FROM_WEBSTORE,
+      extensions::mojom::ManifestLocation::kExternalPolicyDownload);
+  // Granted at install, then manually withheld later.
+  scoped_refptr<const extensions::Extension> manually_withheld =
+      install_extension("Manually Withheld Extension",
+                        extensions::Extension::FROM_WEBSTORE);
+  {
+    extensions::PermissionsManagerWaiter waiter(
+        extensions::PermissionsManager::Get(profile()));
+    extensions::ScriptingPermissionsModifier(profile(), manually_withheld)
+        .SetWithholdHostPermissions(true);
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+  // Eligible at install, but installed more than 48 hours ago.
+  scoped_refptr<const extensions::Extension> expired_extension =
+      install_extension("Expired Extension",
+                        extensions::Extension::FROM_WEBSTORE |
+                            extensions::Extension::WITHHOLD_PERMISSIONS);
+  extensions::ExtensionPrefs::Get(profile())->UpdateExtensionPref(
+      expired_extension->id(), extensions::kPrefFirstInstallTime,
+      base::TimeToValue(base::Time::Now() - base::Hours(49)));
+
+  NavigateTo("example.com");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            nullptr);
+
+  // Installing an eligible extension within the 48h window makes it eligible,
+  // and when multiple are eligible, the most recently installed one is picked.
+  scoped_refptr<const extensions::Extension> older_eligible =
+      install_extension("Older Eligible Extension",
+                        extensions::Extension::FROM_WEBSTORE |
+                            extensions::Extension::WITHHOLD_PERMISSIONS);
+  extensions::ExtensionPrefs::Get(profile())->UpdateExtensionPref(
+      older_eligible->id(), extensions::kPrefFirstInstallTime,
+      base::TimeToValue(base::Time::Now() - base::Hours(10)));
+
+  scoped_refptr<const extensions::Extension> newer_eligible =
+      install_extension("Newer Eligible Extension",
+                        extensions::Extension::FROM_WEBSTORE |
+                            extensions::Extension::WITHHOLD_PERMISSIONS);
+  extensions::ExtensionPrefs::Get(profile())->UpdateExtensionPref(
+      newer_eligible->id(), extensions::kPrefFirstInstallTime,
+      base::TimeToValue(base::Time::Now() - base::Hours(1)));
+
+  EXPECT_EQ(toolbar_model()->GetEligibleExtensionForManageSiteAccessIPH(
+                *web_contents),
+            newer_eligible.get());
 }

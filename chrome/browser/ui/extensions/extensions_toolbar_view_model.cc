@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -17,12 +18,20 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -360,6 +369,120 @@ ExtensionsToolbarViewModel::GetRequestAccessButtonParams(
   params.tooltip_text = base::JoinString(tooltip_parts, u"\n");
 
   return params;
+}
+
+const extensions::Extension*
+ExtensionsToolbarViewModel::GetEligibleExtensionForManageSiteAccessIPH(
+    content::WebContents& web_contents) const {
+  if (!actions_model_ || !permissions_manager_observation_.IsObserving()) {
+    return nullptr;
+  }
+
+  if (browser_->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return nullptr;
+  }
+
+  Profile* const profile = browser_->GetProfile();
+  if (!profile || profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+
+  const GURL& url = web_contents.GetLastCommittedURL();
+  if (!url.is_valid() || actions_model_->IsRestrictedUrl(url)) {
+    return nullptr;
+  }
+
+  auto* const permissions_manager =
+      extensions::PermissionsManager::Get(profile);
+  if (!permissions_manager) {
+    return nullptr;
+  }
+
+  const url::Origin origin =
+      web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (permissions_manager->GetUserSiteSetting(origin) !=
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
+    return nullptr;
+  }
+
+  const auto* const extension_prefs = extensions::ExtensionPrefs::Get(profile);
+  const auto* const extension_registry =
+      extensions::ExtensionRegistry::Get(profile);
+  if (!extension_prefs || !extension_registry) {
+    return nullptr;
+  }
+
+  const extensions::ManagementPolicy* const management_policy =
+      extensions::ExtensionSystem::Get(profile)->management_policy();
+  const extensions::SitePermissionsHelper site_permissions_helper(profile);
+  const base::Time now = base::Time::Now();
+  constexpr base::TimeDelta kMaxTimeSinceInstall = base::Hours(48);
+
+  const extensions::Extension* best_extension = nullptr;
+  base::Time best_install_time;
+
+  for (const auto& action_id : GetAllActionIds()) {
+    const extensions::Extension* const extension =
+        extension_registry->enabled_extensions().GetByID(action_id);
+    if (!extension) {
+      continue;
+    }
+
+    // Must be installed from the Chrome Web Store by the user (not default,
+    // component, policy, or force-installed).
+    if (!extension->from_webstore() || extension->was_installed_by_default() ||
+        extension->location() !=
+            extensions::mojom::ManifestLocation::kInternal) {
+      continue;
+    }
+    if (!permissions_manager->CanAffectExtension(*extension) ||
+        (management_policy &&
+         management_policy->HasEnterpriseForcedAccess(*extension)) ||
+        extension->permissions_data()->IsPolicyBlockedHost(url)) {
+      continue;
+    }
+
+    // Must have been set to "Only when you click the extension" during install
+    // within the last 48 hours.
+    if (!extensions::WerePermissionsWithheldOnInstall(extension_prefs,
+                                                      extension->id())) {
+      continue;
+    }
+    const base::Time first_install_time =
+        extensions::GetFirstInstallTime(extension_prefs, extension->id());
+    if (first_install_time.is_null() ||
+        (now - first_install_time) > kMaxTimeSinceInstall) {
+      continue;
+    }
+
+    // Both `GetSiteAccess()` and `GetSiteInteraction()` are needed:
+    // - `GetSiteAccess()` checks persistent runtime-granted/withheld host
+    //   permissions at the origin level (confirming the extension's site access
+    //   setting is still "On click" rather than granted on this origin or all
+    //   sites).
+    // - `GetSiteInteraction()` checks effective access on this specific
+    //   `WebContents`/URL, excluding cases where one-time tab access was
+    //   already granted (e.g. clicking the extension on this tab), the site is
+    //   user-permitted, or only a different path on the same origin was
+    //   requested.
+    const extensions::PermissionsManager::ExtensionSiteAccess site_access =
+        permissions_manager->GetSiteAccess(*extension, url);
+    if (site_access.has_site_access || site_access.has_all_sites_access ||
+        !site_access.withheld_site_access) {
+      continue;
+    }
+    if (site_permissions_helper.GetSiteInteraction(*extension, &web_contents) !=
+        extensions::SitePermissionsHelper::SiteInteraction::kWithheld) {
+      continue;
+    }
+
+    if (!best_extension || first_install_time > best_install_time) {
+      best_extension = extension;
+      best_install_time = first_install_time;
+    }
+  }
+
+  return best_extension;
 }
 
 ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionForId(

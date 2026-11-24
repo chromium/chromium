@@ -475,6 +475,9 @@ extern const char kAccountSwitchingPrimaryAccountChanged[];
 
 // Android.
 #if BUILDFLAG(IS_ANDROID)
+// The user updated an extension's site access from the Extensions Menu's site
+// permissions page.
+extern const char kExtensionsManageSiteAccessUsed[];
 // The user has explicitly used the Install menu item under the App Menu.
 extern const char kPwaInstallMenuSelected[];
 #endif  // BUILDFLAG(IS_ANDROID)

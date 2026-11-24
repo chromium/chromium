@@ -466,6 +466,8 @@ should be able to be added at any place in this file.
       summary="For managing extensions in the app menu."/>
   <variant name="_ExtensionsManageAppMenuFeature"
       summary="For managing your extensions from the app menu feature."/>
+  <variant name="_ExtensionsManageSiteAccessTutorial"
+      summary="For the Extensions manage site access tutorial promo."/>
   <variant name="_ExtensionsManageToolbar"
       summary="For managing extensions in the toolbar."/>
   <variant name="_ExtensionsManageToolbarFeature"
