@@ -226,7 +226,7 @@ pub fn parse_pointer(data: &mut ParserData, may_be_null: bool) -> ParsingResult<
     if ptr_value == 0 && may_be_null {
         return Ok(ptr_value);
     }
-    if ptr_value < 8 || ptr_value % 8 != 0 {
+    if ptr_value < 8 || ptr_value % 8 != 0 || ptr_value > data.remaining_bytes() {
         return mk_err();
     }
     Ok(ptr_value)

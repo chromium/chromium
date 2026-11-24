@@ -497,6 +497,8 @@ fn test_unions() -> anyhow::Result<()> {
 
     validate_parsing_failure::<BaseUnion>("[u4]16 [u4]99 [u8]0")?;
     validate_parsing_failure::<BaseUnion>("[u4]16 [u4]6 [u8]0")?;
+    validate_parsing_failure::<BaseUnion>("[u4]16 [u4]5 [u8]0xFFFFFFFFFFFFFFF8")?;
+    validate_parsing_failure::<BaseUnion>("[u4]16 [u4]5 [u8]16")?;
 
     // NestedUnion
     validate_parsing(NestedUnion::n(99), "[u4]16 [u4]0 [u8]99")?;

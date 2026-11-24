@@ -34,9 +34,9 @@ pub enum ParsingErrorType {
     },
     /// Indicates that there was data left over after we finished parsing
     TooMuchData { remaining_bytes: usize },
-    /// Indicates a pointer that was either too small, too large to fit into a
-    /// usize, unexpectedly null, or not divisible by 8 (so the pointed-to data
-    /// wouldn't be aligned)
+    /// Indicates a pointer that was either too small, points past the end of
+    /// the remaining message buffer, was unexpectedly null, or was not
+    /// divisible by 8 (so the pointed-to data wouldn't be aligned)
     InvalidPointer { value: u64 },
     /// Indicates that a nested field wasn't at the pointed-to location
     WrongPointer { name: String, expected_offset: usize, actual_offset: usize },
@@ -185,7 +185,9 @@ impl std::fmt::Display for ParsingError {
                 write!(f, "There were {remaining_bytes} bytes remaining after parsing finished.")
             }
             ParsingErrorType::InvalidPointer { value } => {
-                if *value < 8 {
+                if *value == 0 {
+                    write!(f, "Pointer was unexpectedly null.")
+                } else if *value < 8 {
                     write!(f, "Pointer value {value} is less than its own size (8).")
                 } else if *value % 8 != 0 {
                     write!(
@@ -194,7 +196,7 @@ impl std::fmt::Display for ParsingError {
                          (because it is not divisible by 8)."
                     )
                 } else {
-                    write!(f, "Pointer value {value} doesn't fit into 64 bits.")
+                    write!(f, "Pointer value {value} points past the end of the message.")
                 }
             }
             ParsingErrorType::InvalidSize { value } => {
