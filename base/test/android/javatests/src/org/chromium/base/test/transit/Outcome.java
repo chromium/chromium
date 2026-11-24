@@ -34,6 +34,9 @@ import java.util.function.Supplier;
  * <p>The join works both ways: {@code trip.reach(outcome)} and {@code outcome.after(trip)} do the
  * same; pick the one that reads better at the call site.
  *
+ * <p>Either half also works alone: {@link TripBuilder#complete()} runs a Trigger with no state
+ * changes, and {@link #await()} waits for an Outcome with no Trigger.
+ *
  * <p>The factory method sets the result type R: the Station or the first ConditionalState entered,
  * or nothing. Chained calls add more state changes without changing it, except {@link
  * #returning(Supplier)}.
@@ -41,7 +44,8 @@ import java.util.function.Supplier;
  * <p>An Outcome holds NEW ConditionalStates, so it can only be reached once. Methods that offer an
  * Outcome should return a new one per call.
  *
- * @param <R> the type returned by {@link TripBuilder#reach(Outcome)} and {@link #after}.
+ * @param <R> the type returned by {@link TripBuilder#reach(Outcome)}, {@link #after} and {@link
+ *     #await()}.
  */
 @NullMarked
 @CheckReturnValue
@@ -67,6 +71,22 @@ public class Outcome<R extends @Nullable Object> {
     public static <StationT extends Station<?>> Outcome<StationT> enter(StationT station) {
         station.assertInPhase(Phase.NEW);
         return new Outcome<>(station, () -> station);
+    }
+
+    /**
+     * Hop on Public Transit at |station| in |activity|, without an origin Station. Returns
+     * |station|.
+     *
+     * <p>Usually reached with {@link #await()}, since code that hops on is outside Public Transit
+     * and has no Trigger to run.
+     *
+     * @see TripBuilder#hopOnToAnd(Activity, Station)
+     */
+    public static <StationT extends Station<?>> Outcome<StationT> hopOnAt(
+            Activity activity, StationT station) {
+        Outcome<StationT> outcome = enter(station);
+        outcome.mHopOnActivity = activity;
+        return outcome;
     }
 
     /**
@@ -174,6 +194,19 @@ public class Outcome<R extends @Nullable Object> {
     @CanIgnoreReturnValue
     public R after(TripBuilder trip) {
         return trip.reach(this);
+    }
+
+    /**
+     * Wait for this Outcome without running a Trigger.
+     *
+     * <p>For state changes caused by something already done, or that happen on their own, e.g. a
+     * page finishing loading.
+     *
+     * @return the result of this Outcome.
+     */
+    @CanIgnoreReturnValue
+    public R await() {
+        return Triggers.noopTo().reach(this);
     }
 
     /**

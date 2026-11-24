@@ -367,10 +367,8 @@ public class WebApkIntegrationTest {
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class, STARTUP_TIMEOUT);
             ChromeActivityTestRule.waitForActivityCompletelyLoaded(tabbedActivity);
             Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> tabbedActivity.getActivityTab());
-            WebPageStation.waitForWebPageLoad(
-                    Triggers.runOnUiThreadTo(() -> tab.loadUrl(new LoadUrlParams(pageUrl))),
-                    tab,
-                    pageUrl);
+            Triggers.runOnUiThreadTo(() -> tab.loadUrl(new LoadUrlParams(pageUrl)))
+                    .reach(WebPageStation.at(pageUrl).loadedIn(tab));
 
             HistogramWatcher installWatcher =
                     HistogramWatcher.newSingleRecordWatcher("WebApk.Install.InstallEvent", 3);

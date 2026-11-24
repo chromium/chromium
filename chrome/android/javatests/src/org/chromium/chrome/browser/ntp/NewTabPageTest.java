@@ -384,8 +384,7 @@ public class NewTabPageTest {
     public void testUrlFocusAnimationsDisabledOnLoad() {
         ensureTestServerStarted();
         Assert.assertFalse(getUrlFocusAnimationsDisabled());
-        WebPageStation.waitForWebPageLoad(
-                Triggers.runOnUiThreadTo(
+        Triggers.runOnUiThreadTo(
                         () -> {
                             int pageTransition =
                                     PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
@@ -394,9 +393,8 @@ public class NewTabPageTest {
                                             mTestServer.getURL(TEST_PAGE), pageTransition));
                             // It should be disabled as soon as a load URL is triggered.
                             Assert.assertTrue(getUrlFocusAnimationsDisabled());
-                        }),
-                mTab,
-                mTestServer.getURL(TEST_PAGE));
+                        })
+                .reach(WebPageStation.at(mTestServer.getURL(TEST_PAGE)).loadedIn(mTab));
         // Ensure it is still marked as disabled once the new page is fully loaded.
         Assert.assertTrue(getUrlFocusAnimationsDisabled());
     }

@@ -17,7 +17,7 @@ import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Triggers;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -171,21 +171,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return this;
         }
 
-        /**
-         * Expect to show |tab|, already selected, with |url| loaded or loading. For when there is
-         * no previous Station to init from.
-         */
-        public Builder<PageT> initForLoadingUrlOnTab(String url, Tab tab) {
-            if (mConfig.mIncognito == null) {
-                mConfig.withIncognito(tab.isIncognito());
-            }
-            withTabAlreadySelected(tab);
-            if (mConfig.mExpectedUrlSubstring == null) {
-                mConfig.withExpectedUrlSubstring(url);
-            }
-            return this;
-        }
-
         /** Expect to show a tab opened in the transition. */
         public Builder<PageT> initOpeningNewTab() {
             mConfig.withIsOpeningTabs(1);
@@ -244,6 +229,31 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 page.declareDefaultFacility(facility);
             }
             return page;
+        }
+
+        /**
+         * Outcome: hop on at the page |tab| shows, for code outside Public Transit. Reached right
+         * away if it already shows; use {@link #loadedIn} to wait for a new load. |tab| must be its
+         * Activity's current tab.
+         *
+         * <p>Typically awaited, e.g. {@code WebPageStation.at(url).shownIn(tab).await()}.
+         */
+        public Outcome<PageT> shownIn(Tab tab) {
+            if (mConfig.mIncognito == null) {
+                mConfig.withIncognito(tab.isIncognito());
+            }
+            withTabAlreadySelected(tab);
+            return Outcome.hopOnAt(getActivityOfTab(tab), build());
+        }
+
+        /**
+         * Like {@link #shownIn(Tab)}, but also waits for a load in |tab| to stop, so it works for
+         * loads started by the Trigger that keep the URL, such as reloads, same-URL navigations and
+         * back navigations restored from the back/forward cache.
+         */
+        public Outcome<PageT> loadedIn(Tab tab) {
+            return shownIn(tab)
+                    .andWaitFor(new PageLoadStoppedCondition(tab, /* expectedUrl= */ null));
         }
     }
 
@@ -352,29 +362,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
                 .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
-    }
-
-    /**
-     * Hops on at the page |tab| shows once a URL containing |url| is loaded. Passes right away if
-     * it already is; use {@link #waitForPageLoad} to wait for a new load. |tab| must be its
-     * Activity's current tab.
-     */
-    public static <PageT extends BasePageStation<?>> PageT waitForPage(
-            Tab tab, String url, Builder<PageT> builder) {
-        return Triggers.noopTo()
-                .hopOnTo(getActivityOfTab(tab), builder.initForLoadingUrlOnTab(url, tab).build());
-    }
-
-    /**
-     * Like {@link #waitForPage(Tab, String, Builder)}, but runs |trip|'s trigger and also waits for
-     * the load it starts in |tab| to stop, so it also works for reloads, same-URL navigations and
-     * back navigations restored from the back/forward cache.
-     */
-    public static <PageT extends BasePageStation<?>> PageT waitForPageLoad(
-            TripBuilder trip, Tab tab, String url, Builder<PageT> builder) {
-        return trip.withPossiblyAlreadyFulfilled()
-                .waitForAnd(new PageLoadStoppedCondition(tab, /* expectedUrl= */ null))
-                .hopOnTo(getActivityOfTab(tab), builder.initForLoadingUrlOnTab(url, tab).build());
     }
 
     private static Activity getActivityOfTab(Tab tab) {

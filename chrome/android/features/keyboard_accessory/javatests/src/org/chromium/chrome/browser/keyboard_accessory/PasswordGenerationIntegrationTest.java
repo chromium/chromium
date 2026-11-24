@@ -315,11 +315,11 @@ public class PasswordGenerationIntegrationTest {
 
     /** Submits the form by clicking |node| and waits for the done page to load. */
     private WebPageStation submitForm(String node) {
-        return WebPageStation.waitForWebPageLoad(
-                Triggers.runTo(
-                        () -> DOMUtils.clickNodeWithJavaScript(mHelper.getWebContents(), node)),
-                mActivityTestRule.getActivityTab(),
-                mTestServer.getURL(DONE_URL));
+        return Triggers.runTo(
+                        () -> DOMUtils.clickNodeWithJavaScript(mHelper.getWebContents(), node))
+                .reach(
+                        WebPageStation.at(mTestServer.getURL(DONE_URL))
+                                .loadedIn(mActivityTestRule.getActivityTab()));
     }
 
     private void assertPasswordTextEmpty(String passwordNode)

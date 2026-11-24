@@ -1363,11 +1363,9 @@ public class ContextMenuTest {
 
         if (needsSwitch) {
             // Switching the user agent reloads the same URL.
-            WebPageStation.waitForWebPageLoad(
-                    Triggers.runOnUiThreadTo(
-                            () -> TabUtils.switchUserAgent(tab, /* switchToDesktop= */ true)),
-                    tab,
-                    mTestUrl);
+            Triggers.runOnUiThreadTo(
+                            () -> TabUtils.switchUserAgent(tab, /* switchToDesktop= */ true))
+                    .reach(WebPageStation.at(mTestUrl).loadedIn(tab));
         } else {
             ChromeTabUtils.waitForInteractable(tab);
         }

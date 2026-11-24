@@ -192,7 +192,7 @@ public class WarmupManagerTest {
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(url), type, parent, index);
                         });
-        WebPageStation.waitForWebPage(tab, url);
+        WebPageStation.at(url).shownIn(tab).await();
         return tab;
     }
 

@@ -423,15 +423,13 @@ public class TabTest {
         }
 
         WebPageStation bgPage =
-                WebPageStation.waitForWebPageLoad(
-                        Triggers.runOnUiThreadTo(
+                Triggers.runOnUiThreadTo(
                                 () -> {
                                     TabModel model =
                                             mActivityTestRule.getActivity().getCurrentTabModel();
                                     TabModelUtils.setIndex(model, model.indexOf(bgTab));
-                                }),
-                        bgTab,
-                        secondUrl);
+                                })
+                        .reach(WebPageStation.at(secondUrl).loadedIn(bgTab));
         assertNotNull(bgTab.getView());
 
         ThreadUtils.runOnUiThreadBlocking(

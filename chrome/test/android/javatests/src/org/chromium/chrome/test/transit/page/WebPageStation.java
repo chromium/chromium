@@ -58,14 +58,12 @@ public class WebPageStation extends CtaPageStation implements WebContentsElement
         return new Builder<>(WebPageStation::new);
     }
 
-    /** {@link #waitForPage(Tab, String, Builder)} for a web page. */
-    public static WebPageStation waitForWebPage(Tab tab, String url) {
-        return waitForPage(tab, url, newBuilder());
-    }
-
-    /** {@link #waitForPageLoad(TripBuilder, Tab, String, Builder)} for a web page. */
-    public static WebPageStation waitForWebPageLoad(TripBuilder trip, Tab tab, String url) {
-        return waitForPageLoad(trip, tab, url, newBuilder());
+    /**
+     * Builder for a web page at |url|. Matched as a substring, so a path is enough, e.g. when the
+     * test server port may vary.
+     */
+    public static Builder<WebPageStation> at(String url) {
+        return newBuilder().withExpectedUrlSubstring(url);
     }
 
     /** Condition to check the page url does not match any of the prohibited urls. */

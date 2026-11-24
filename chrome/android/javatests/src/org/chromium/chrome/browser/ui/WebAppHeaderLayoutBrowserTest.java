@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayoutCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
-import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.webapps.WebappsUtils;
@@ -184,8 +183,11 @@ public class WebAppHeaderLayoutBrowserTest {
         verifyBackButtonEnabled(true);
 
         // Click back and verify that previous page is shown that is in scope of the web app.
-        BasePageStation.waitForPageLoad(
-                clickHeaderBackButtonTo(), tab, mTestPage, CctPageStation.newBuilder());
+        clickHeaderBackButtonTo()
+                .reach(
+                        CctPageStation.newBuilder()
+                                .withExpectedUrlSubstring(mTestPage)
+                                .loadedIn(tab));
         verifyBrowserControlsVisibility(false);
         verifyBackButtonEnabled(false);
     }
@@ -244,8 +246,11 @@ public class WebAppHeaderLayoutBrowserTest {
         assertTrue(ThreadUtils.runOnUiThreadBlocking(tab::canGoBack));
 
         // |inScopePage2| contains |mTestPage|, so also wait for the back navigation to load.
-        BasePageStation.waitForPageLoad(
-                clickHeaderBackButtonTo(), tab, mTestPage, CctPageStation.newBuilder());
+        clickHeaderBackButtonTo()
+                .reach(
+                        CctPageStation.newBuilder()
+                                .withExpectedUrlSubstring(mTestPage)
+                                .loadedIn(tab));
         verifyBackButtonEnabled(false);
         assertFalse(ThreadUtils.runOnUiThreadBlocking(tab::canGoBack));
     }

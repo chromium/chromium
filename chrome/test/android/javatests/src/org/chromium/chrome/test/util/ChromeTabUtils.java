@@ -147,10 +147,10 @@ public class ChromeTabUtils {
      * @param secondsToWait The number of seconds to wait for the page to be loaded.
      * @deprecated Prefer Station transitions. From a Station, use {@code
      *     loadWebPageProgrammatically()} or {@code runTo(trigger).arriveAt(WebPageStation...)}.
-     *     From a test without a Station, use {@code WebPageStation.waitForWebPage()} or {@code
-     *     WebPageStation.waitForWebPageLoad()}, or {@code BasePageStation.waitForPage()} or {@code
-     *     BasePageStation.waitForPageLoad()} with another builder, e.g. for CCTs. Kept for callers
-     *     that cannot hop on, such as ChromeActivityTestRule, newTabFromMenu and webapps.
+     *     From a test without a Station, await {@code WebPageStation.at(url).shownIn(tab)} or reach
+     *     {@code WebPageStation.at(url).loadedIn(tab)} from a Trigger, or use another builder, e.g.
+     *     for CCTs. Kept for callers that cannot hop on, such as ChromeActivityTestRule,
+     *     newTabFromMenu and webapps.
      */
     @Deprecated
     public static void waitForTabPageLoaded(
