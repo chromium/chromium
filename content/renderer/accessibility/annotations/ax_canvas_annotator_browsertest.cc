@@ -148,6 +148,12 @@ class AXCanvasAnnotatorTest : public RenderAccessibilityImplTest {
   ~AXCanvasAnnotatorTest() override = default;
 
  protected:
+  virtual ui::AXMode InitialAXMode() const {
+    ui::AXMode mode = ui::kAXModeComplete;
+    mode.set_mode(ui::AXMode::kScreenReader, true);
+    return mode;
+  }
+
   void SetUp() override {
     RenderAccessibilityImplTest::SetUp();
     base::DiscardableMemoryAllocator::SetInstance(
@@ -156,14 +162,13 @@ class AXCanvasAnnotatorTest : public RenderAccessibilityImplTest {
         screen_ai::mojom::ScreenAIAnnotator::Name_,
         base::BindRepeating(&FakeScreenAIAnnotator::BindReceiver,
                             base::Unretained(&fake_annotator_)));
-    ui::AXMode mode = ui::kAXModeComplete;
-    mode.set_mode(ui::AXMode::kScreenReader, true);
-    SetMode(mode);
+    SetMode(InitialAXMode());
   }
 
   void TearDown() override {
     GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         screen_ai::mojom::ScreenAIAnnotator::Name_, {});
+    fake_annotator_.DisconnectAll();
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
     RenderAccessibilityImplTest::TearDown();
   }
@@ -199,6 +204,33 @@ class AXCanvasAnnotatorTest : public RenderAccessibilityImplTest {
     SendPendingAccessibilityEvents();
   }
 
+  void LoadCanvasPage(
+      const char* body_html =
+          R"(<canvas id="c" width="100" height="100"></canvas>)") {
+    std::string html = base::StringPrintf("<body>%s</body>", body_html);
+    LoadHTMLAndRefreshAccessibilityTree(html.c_str());
+  }
+
+  // Draws `color`, advances past Blink's OCR debounce delay, waits for the
+  // resulting Mojo OCR request, and returns its 0-based callback index.
+  size_t DrawAndWaitForOcrRequest(SkColor color) {
+    const size_t request_index = fake_annotator_.call_count();
+    DrawSolidBitmap(color);
+    AdvancePastOcrDelayAndSerialize();
+    fake_annotator_.WaitForCalls(request_index + 1);
+    return request_index;
+  }
+
+  // Runs a complete draw -> OCR request -> Mojo response -> AX flush cycle and
+  // returns the latest serialized kCanvasAnnotation value.
+  std::string AnnotateCanvasWithOcr(SkColor color,
+                                    const std::string& ocr_text) {
+    const size_t request_index = DrawAndWaitForOcrRequest(color);
+    fake_annotator_.RunCallback(request_index, {ocr_text});
+    SendPendingAccessibilityEvents();
+    return GetLatestCanvasAnnotation();
+  }
+
   std::string GetLatestCanvasAnnotation() {
     const auto& updates = GetHandledAccUpdates();
     for (const auto& update : base::Reversed(updates)) {
@@ -218,21 +250,14 @@ class AXCanvasAnnotatorTest : public RenderAccessibilityImplTest {
 };
 
 TEST_F(AXCanvasAnnotatorTest, SkipsDuplicateOcrWhenPixelsAreUnchanged) {
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
-    <body>
-      <canvas id="c" width="100" height="100"></canvas>
-    </body>
-  )HTML");
+  LoadCanvasPage();
 
-  DrawSolidBitmap(SK_ColorRED);
-  AdvancePastOcrDelayAndSerialize();
-
-  fake_annotator_.WaitForCalls(1);
+  const size_t first_req = DrawAndWaitForOcrRequest(SK_ColorRED);
   EXPECT_EQ(fake_annotator_.call_count(), 1u);
   EXPECT_EQ(fake_annotator_.client_type(),
             screen_ai::mojom::OcrClientType::kCanvas);
 
-  fake_annotator_.RunCallback(0, {"First frame"});
+  fake_annotator_.RunCallback(first_req, {"First frame"});
   SendPendingAccessibilityEvents();
   EXPECT_EQ(GetLatestCanvasAnnotation(), "First frame");
 
@@ -244,26 +269,15 @@ TEST_F(AXCanvasAnnotatorTest, SkipsDuplicateOcrWhenPixelsAreUnchanged) {
   EXPECT_EQ(GetLatestCanvasAnnotation(), "First frame");
 
   // Drawing distinct pixels must dispatch a new OCR request.
-  DrawSolidBitmap(SK_ColorGREEN);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(2);
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorGREEN, "Second frame"),
+            "Second frame");
   EXPECT_EQ(fake_annotator_.call_count(), 2u);
-
-  fake_annotator_.RunCallback(1, {"Second frame"});
-  SendPendingAccessibilityEvents();
-  EXPECT_EQ(GetLatestCanvasAnnotation(), "Second frame");
 }
 
 TEST_F(AXCanvasAnnotatorTest, WaitsForPendingOcrBeforeDispatchingNextFrame) {
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
-    <body>
-      <canvas id="c" width="100" height="100"></canvas>
-    </body>
-  )HTML");
+  LoadCanvasPage();
 
-  DrawSolidBitmap(SK_ColorRED);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(1);
+  const size_t first_req = DrawAndWaitForOcrRequest(SK_ColorRED);
   EXPECT_EQ(fake_annotator_.call_count(), 1u);
 
   // Mutating the canvas while the first OCR request is still in flight must
@@ -275,7 +289,7 @@ TEST_F(AXCanvasAnnotatorTest, WaitsForPendingOcrBeforeDispatchingNextFrame) {
 
   // Completing the first request triggers immediate re-serialization, which
   // now dispatches OCR for the updated frame.
-  fake_annotator_.RunCallback(0, {"First"});
+  fake_annotator_.RunCallback(first_req, {"First"});
   SendPendingAccessibilityEvents();
   fake_annotator_.WaitForCalls(2);
   EXPECT_EQ(fake_annotator_.call_count(), 2u);
@@ -289,28 +303,16 @@ TEST_F(AXCanvasAnnotatorTest,
        EmptyCanvasWhilePendingIsNotOverriddenByLateCallback) {
   // Set explicit CSS size so collapsing `c.width = 0` below keeps the canvas
   // >= 10x10 CSS px and unignored in the AX tree.
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
-    <body>
-      <canvas id="c" width="100" height="100"
-              style="width: 100px; height: 100px;"></canvas>
-    </body>
-  )HTML");
+  LoadCanvasPage(R"(<canvas id="c" width="100" height="100" )"
+                 R"(style="width: 100px; height: 100px;"></canvas>)");
 
-  // Establish an initial cached annotation.
-  DrawSolidBitmap(SK_ColorRED);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(1);
-  fake_annotator_.RunCallback(0, {"Initial"});
-  SendPendingAccessibilityEvents();
-  EXPECT_EQ(GetLatestCanvasAnnotation(), "Initial");
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorRED, "Initial"), "Initial");
 
   // Start a second OCR request and keep it in flight.
-  DrawSolidBitmap(SK_ColorGREEN);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(2);
+  const size_t pending_req = DrawAndWaitForOcrRequest(SK_ColorGREEN);
   EXPECT_EQ(fake_annotator_.call_count(), 2u);
 
-  // Trigger another OCR request and collapse the backing buffer to 0 width
+  // Queue another OCR request and collapse the backing buffer to 0 width
   // (keeping CSS layout size 100x100 so the canvas stays in the AX tree) while
   // request #2 is still pending.
   DrawSolidBitmap(SK_ColorBLUE);
@@ -323,9 +325,9 @@ TEST_F(AXCanvasAnnotatorTest,
   EXPECT_EQ(GetLatestCanvasAnnotation(), "Initial");
 
   // When the in-flight request completes, its follow-up serialization evaluates
-  // the now-empty canvas and clears the annotation instead of leaving stale
-  // callback text on the node.
-  fake_annotator_.RunCallback(1, {"Stale"});
+  // the now-empty canvas in RefreshCanvasAnnotation() and evicts the cached
+  // annotation instead of leaving stale callback text exposed.
+  fake_annotator_.RunCallback(pending_req, {"Stale"});
   SendPendingAccessibilityEvents();
   EXPECT_EQ(fake_annotator_.call_count(), 2u);
   EXPECT_TRUE(GetLatestCanvasAnnotation().empty());
@@ -335,77 +337,218 @@ TEST_F(AXCanvasAnnotatorTest,
   ExecuteJavaScriptForTests(
       "setTimeout(() => { document.getElementById('c').width = 100; }, 0);");
   task_environment_.FastForwardBy(base::Milliseconds(10));
-  DrawSolidBitmap(SK_ColorRED);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(3);
-  fake_annotator_.RunCallback(2, {"Restored"});
-  SendPendingAccessibilityEvents();
-  EXPECT_EQ(GetLatestCanvasAnnotation(), "Restored");
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorRED, "Restored"), "Restored");
 }
 
 TEST_F(AXCanvasAnnotatorTest, CancelsPendingOcrOnNavigation) {
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
-    <body>
-      <canvas id="c" width="100" height="100"></canvas>
-    </body>
-  )HTML");
+  LoadCanvasPage();
+  const size_t pending_req = DrawAndWaitForOcrRequest(SK_ColorRED);
 
-  DrawSolidBitmap(SK_ColorRED);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(1);
-
-  // Navigating commits a new provisional load, which calls CancelAnnotations()
-  // (resetting `annotator_remote_` so the in-flight Mojo reply is dropped) and
-  // clears `canvas_annotations_` when the new document is annotated.
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
-    <body>
-      <canvas id="c" width="100" height="100"></canvas>
-    </body>
-  )HTML");
+  // Navigating creates a new main document, calling DidCreateNewDocument() on
+  // AXCanvasAnnotator so `annotator_remote_` and `canvas_annotations_` are
+  // reset.
+  LoadCanvasPage();
   ClearHandledUpdates();
 
-  fake_annotator_.RunCallback(0, {"Late navigation text"});
+  fake_annotator_.RunCallback(pending_req, {"Late navigation text"});
   SendPendingAccessibilityEvents();
   EXPECT_TRUE(GetHandledAccUpdates().empty());
+
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorGREEN, "New page"), "New page");
+}
+
+TEST_F(AXCanvasAnnotatorTest,
+       DetachedCanvasCallbackClearsPendingStateAndAllowsRetry) {
+  LoadCanvasPage();
+  const size_t stale_req = DrawAndWaitForOcrRequest(SK_ColorRED);
+
+  // Remove the canvas from the DOM while OCR is in flight so its AXObject is
+  // detached without disconnecting `annotator_remote_`. Deliver the Mojo
+  // callback before flushing layout/AX so OnCanvasAnnotated() exercises
+  // UpdateAXForAllDocuments() and live detach cleanup.
+  ExecuteJavaScriptForTests(
+      "window.savedCanvas = document.getElementById('c');"
+      "window.savedCanvas.remove();");
+
+  // Delivering the OCR callback while detached must erase the entry by `ax_id`
+  // rather than leaving `is_pending` wedged due to WebAXObject::AxID()
+  // returning -1.
+  fake_annotator_.RunCallback(stale_req, {"Stale detached text"});
+  SendPendingAccessibilityEvents();
+
+  // Re-inserting the same canvas element recreates its AXObject with the same
+  // DOMNodeId; OCR must run cleanly without being blocked by stale pending or
+  // hash state.
+  ExecuteJavaScriptForTests("document.body.appendChild(window.savedCanvas);");
+  SendPendingAccessibilityEvents();
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorRED, "Restored after reattach"),
+            "Restored after reattach");
+}
+
+TEST_F(AXCanvasAnnotatorTest, SerializedDetachWhilePendingDropsLateCallback) {
+  LoadCanvasPage();
+  const size_t stale_req = DrawAndWaitForOcrRequest(SK_ColorGREEN);
+
+  // Serializing a DOM removal prunes the detached pending entry on the update,
+  // so re-inserting the canvas before the pre-detach reply arrives ignores the
+  // stale callback and allows a fresh OCR pass.
+  ExecuteJavaScriptForTests(
+      "window.savedCanvas = document.getElementById('c');"
+      "window.savedCanvas.remove();");
+  SendPendingAccessibilityEvents();
+
+  ClearHandledUpdates();
+  ExecuteJavaScriptForTests("document.body.appendChild(window.savedCanvas);");
+  SendPendingAccessibilityEvents();
+
+  fake_annotator_.RunCallback(stale_req, {"Stale pre-detach"});
+  SendPendingAccessibilityEvents();
+  EXPECT_TRUE(GetLatestCanvasAnnotation().empty());
+
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorBLUE, "Fresh post-reattach"),
+            "Fresh post-reattach");
+}
+
+TEST_F(AXCanvasAnnotatorTest,
+       PreservesCachedAnnotationAcrossDisplayNoneAndVisible) {
+  LoadCanvasPage();
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorRED, "Cached chart"), "Cached chart");
+  EXPECT_EQ(fake_annotator_.call_count(), 1u);
+
+  // Hiding the canvas via `display: none` makes its node-backed AXObject
+  // ignored without notifying Blink's HTMLCanvasAccessibilityManager; cached
+  // OCR text must be preserved so static canvases keep their annotation when
+  // shown again.
+  ExecuteJavaScriptForTests(
+      "document.getElementById('c').style.display = 'none';");
+  SendPendingAccessibilityEvents();
+
+  ClearHandledUpdates();
+  ExecuteJavaScriptForTests(
+      "document.getElementById('c').style.display = 'block';");
+  SendPendingAccessibilityEvents();
+
+  EXPECT_EQ(GetLatestCanvasAnnotation(), "Cached chart");
+  EXPECT_EQ(fake_annotator_.call_count(), 1u);
+}
+
+TEST_F(AXCanvasAnnotatorTest, LateCallbackAfterAXObjectRecreationIsApplied) {
+  LoadCanvasPage();
+  const size_t pending_req = DrawAndWaitForOcrRequest(SK_ColorGREEN);
+
+  // Changing `display` forces a layout reattach, detaching the previous
+  // AXObject and recreating a new AXObject with the same DOMNodeId-backed
+  // `ax_id`.
+  ExecuteJavaScriptForTests(
+      "document.getElementById('c').style.display = 'block';");
+  SendPendingAccessibilityEvents();
+
+  // The reply must update the recreated live AXObject rather than being
+  // dropped.
+  ClearHandledUpdates();
+  fake_annotator_.RunCallback(pending_req, {"Fresh"});
+  SendPendingAccessibilityEvents();
+  EXPECT_EQ(GetLatestCanvasAnnotation(), "Fresh");
 }
 
 TEST_F(AXCanvasAnnotatorTest, DisconnectPreservesCachedAnnotationAndRetries) {
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
-    <body>
-      <canvas id="c" width="100" height="100"></canvas>
-    </body>
-  )HTML");
-
-  DrawSolidBitmap(SK_ColorRED);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(1);
-  fake_annotator_.RunCallback(0, {"Cached"});
-  SendPendingAccessibilityEvents();
-  EXPECT_EQ(GetLatestCanvasAnnotation(), "Cached");
+  LoadCanvasPage();
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorRED, "Cached"), "Cached");
   EXPECT_EQ(fake_annotator_.bind_count(), 1u);
 
   // Dispatch a second request, then disconnect the Mojo pipe while it is in
   // flight.
-  DrawSolidBitmap(SK_ColorGREEN);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(2);
+  DrawAndWaitForOcrRequest(SK_ColorGREEN);
   fake_annotator_.DisconnectAll();
   SendPendingAccessibilityEvents();
-
-  // The previously cached annotation must remain intact across the disconnect.
   EXPECT_EQ(GetLatestCanvasAnnotation(), "Cached");
 
   // Re-triggering OCR on the exact same green pixels must reconnect and
   // re-dispatch because OnOcrDisconnected() reset `is_pending` and
   // `last_bitmap_hash`.
-  DrawSolidBitmap(SK_ColorGREEN);
-  AdvancePastOcrDelayAndSerialize();
-  fake_annotator_.WaitForCalls(3);
+  EXPECT_EQ(AnnotateCanvasWithOcr(SK_ColorGREEN, "Reconnected"), "Reconnected");
   EXPECT_EQ(fake_annotator_.bind_count(), 2u);
+}
 
-  fake_annotator_.RunCallback(2, {"Reconnected"});
+TEST_F(AXCanvasAnnotatorTest, CallbackWithDirtyLayoutUpdatesWithoutCrashing) {
+  LoadCanvasPage(R"(<div id="spacer" style="height: 20px;"></div>)"
+                 R"(<canvas id="c" width="100" height="100"></canvas>)");
+
+  const size_t pending_req = DrawAndWaitForOcrRequest(SK_ColorRED);
+
+  // Dirty style and layout without flushing accessibility events before the
+  // asynchronous Mojo OCR reply arrives; OnCanvasAnnotated() must bring the
+  // document to kLayoutClean before calling MarkWebAXObjectDirty(), and skip
+  // empty OCR line entries when joining lines.
+  ExecuteJavaScriptForTests(
+      "document.getElementById('spacer').style.height = '80px';"
+      "document.body.style.paddingTop = '12px';");
+  fake_annotator_.RunCallback(pending_req,
+                              {"", "First line", "", "Second line", ""});
   SendPendingAccessibilityEvents();
-  EXPECT_EQ(GetLatestCanvasAnnotation(), "Reconnected");
+
+  EXPECT_EQ(GetLatestCanvasAnnotation(), "First line\nSecond line");
+}
+
+class AXCanvasAnnotatorLazyModeTest : public AXCanvasAnnotatorTest {
+ protected:
+  ui::AXMode InitialAXMode() const override { return ui::kAXModeComplete; }
+};
+
+TEST_F(AXCanvasAnnotatorLazyModeTest,
+       LazilyCreatesAnnotatorOnScreenReaderModeAndReusesCache) {
+  LoadCanvasPage();
+  DrawSolidBitmap(SK_ColorRED);
+  AdvancePastOcrDelayAndSerialize();
+
+  // Without kScreenReader, AXCanvasAnnotator is not created and no OCR pipe is
+  // bound.
+  EXPECT_EQ(fake_annotator_.bind_count(), 0u);
+  EXPECT_EQ(fake_annotator_.call_count(), 0u);
+  EXPECT_TRUE(GetLatestCanvasAnnotation().empty());
+
+  // Enabling kScreenReader lazily creates AXCanvasAnnotator in `ax_annotators_`
+  // and processes the pending HasRequestedOCR() state without navigating.
+  ui::AXMode screen_reader_mode = ui::kAXModeComplete;
+  screen_reader_mode.set_mode(ui::AXMode::kScreenReader, true);
+  SetMode(screen_reader_mode);
+  SendPendingAccessibilityEvents();
+  fake_annotator_.WaitForCalls(1);
+  fake_annotator_.RunCallback(0, {"Lazy OCR"});
+  SendPendingAccessibilityEvents();
+  EXPECT_EQ(GetLatestCanvasAnnotation(), "Lazy OCR");
+
+  // Turning kScreenReader off and back on within the same document preserves
+  // the completed cached annotation without re-running OCR.
+  SetMode(ui::kAXModeComplete);
+  SendPendingAccessibilityEvents();
+  ClearHandledUpdates();
+  SetMode(screen_reader_mode);
+  SendPendingAccessibilityEvents();
+  EXPECT_EQ(GetLatestCanvasAnnotation(), "Lazy OCR");
+  EXPECT_EQ(fake_annotator_.call_count(), 1u);
+}
+
+class AXCanvasAnnotatorOcrDisabledTest : public AXCanvasAnnotatorTest {
+ public:
+  AXCanvasAnnotatorOcrDisabledTest() {
+    override_feature_list_.InitAndDisableFeature(
+        ax::mojom::features::kScreenAIOCREnabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList override_feature_list_;
+};
+
+TEST_F(AXCanvasAnnotatorOcrDisabledTest,
+       SkipsOcrWhenScreenAiOcrFeatureIsDisabled) {
+  LoadCanvasPage();
+  DrawSolidBitmap(SK_ColorRED);
+  AdvancePastOcrDelayAndSerialize();
+
+  EXPECT_EQ(fake_annotator_.bind_count(), 0u);
+  EXPECT_EQ(fake_annotator_.call_count(), 0u);
+  EXPECT_TRUE(GetLatestCanvasAnnotation().empty());
 }
 
 }  // namespace content

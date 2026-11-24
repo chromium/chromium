@@ -122,6 +122,7 @@ void RenderAccessibilityImpl::DidCreateNewDocument() {
   const WebDocument& document = GetMainDocument();
   DCHECK(!document.IsNull());
   ax_context_ = std::make_unique<WebAXContext>(document, accessibility_mode_);
+  ax_annotators_manager_->DidCreateNewDocument();
 
   // Set reset token which will be returned to browser in the next IPC, so that
   // RenderFrameHostImpl can discard stale data, when the token does not match

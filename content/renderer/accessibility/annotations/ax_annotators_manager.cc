@@ -29,8 +29,6 @@ AXAnnotatorsManager::AXAnnotatorsManager(
   ax_annotators_.emplace_back(
       std::make_unique<AXImageAnnotator>(render_accessibility_));
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  ax_annotators_.emplace_back(
-      std::make_unique<AXCanvasAnnotator>(render_accessibility_));
   if (features::IsMainNodeAnnotationsEnabled()) {
     ax_annotators_.emplace_back(
         std::make_unique<AXMainNodeAnnotator>(render_accessibility_));
@@ -48,8 +46,26 @@ void AXAnnotatorsManager::Annotate(const blink::WebDocument& document,
   }
 }
 
+void AXAnnotatorsManager::DidCreateNewDocument() {
+  for (const auto& annotator : ax_annotators_) {
+    annotator->DidCreateNewDocument();
+  }
+}
+
 void AXAnnotatorsManager::AccessibilityModeChanged(ui::AXMode old_mode,
                                                    ui::AXMode new_mode) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Defer creating AXCanvasAnnotator until screen reader mode is enabled.
+  if (!did_create_canvas_annotator_ &&
+      new_mode.has_mode(AXCanvasAnnotator::kEnableAXMode) &&
+      features::IsScreenAIOCREnabled() &&
+      features::GetCanvasAccessibilityMode() ==
+          features::CanvasAccessibilityMode::kAdvanced) {
+    did_create_canvas_annotator_ = true;
+    ax_annotators_.emplace_back(
+        std::make_unique<AXCanvasAnnotator>(render_accessibility_));
+  }
+#endif
   for (const auto& annotator : ax_annotators_) {
     uint32_t flag = annotator->GetAXModeToEnableAnnotations();
     if (!old_mode.has_mode(flag) && new_mode.has_mode(flag)) {
@@ -97,6 +113,9 @@ void AXAnnotatorsManager::AddAnnotatorForTesting(
 }
 
 void AXAnnotatorsManager::ClearAnnotatorsForTesting() {
+  // Prevent AccessibilityModeChanged() from lazily adding AXCanvasAnnotator
+  // after tests clear annotators.
+  did_create_canvas_annotator_ = true;
   ax_annotators_.clear();
 }
 

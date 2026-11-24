@@ -28,6 +28,10 @@ class CONTENT_EXPORT AXAnnotator {
                         ui::AXTreeUpdate* update,
                         bool load_complete) = 0;
 
+  // Resets any per-document annotation state when a new main document is
+  // installed.
+  virtual void DidCreateNewDocument() {}
+
   // Enables the annotations feature. In many cases, sets up the mojo pipe
   // to the service which will perform the annotations.
   virtual void EnableAnnotations() = 0;

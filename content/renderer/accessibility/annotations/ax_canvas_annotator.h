@@ -17,12 +17,14 @@
 #include "content/renderer/accessibility/annotations/ax_annotator.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
-#include "third_party/blink/public/web/web_document.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
 
+class WebAXContext;
 class WebAXObject;
+class WebDocument;
 
 }  // namespace blink
 
@@ -36,6 +38,8 @@ class RenderAccessibilityImpl;
 // RenderAccessibility that owns it to update the relevant canvas annotations.
 class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator {
  public:
+  static constexpr uint32_t kEnableAXMode = ui::AXMode::kScreenReader;
+
   // `render_accessibility` is the owner of this class and should outlive it.
   explicit AXCanvasAnnotator(
       RenderAccessibilityImpl* const render_accessibility);
@@ -47,6 +51,7 @@ class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator {
   void Annotate(const blink::WebDocument& document,
                 ui::AXTreeUpdate* update,
                 bool load_complete) override;
+  void DidCreateNewDocument() override;
   void EnableAnnotations() override;
   void CancelAnnotations() override;
   uint32_t GetAXModeToEnableAnnotations() override;
@@ -62,10 +67,22 @@ class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator {
     std::optional<size_t> last_bitmap_hash;
   };
 
-  void AddCanvasAnnotationForNode(blink::WebAXObject& src, ui::AXNodeData& dst);
+  void AddCanvasAnnotationForNode(const blink::WebAXObject& src,
+                                  ui::AXNodeData& dst);
 
-  void RefreshCanvasAnnotation(blink::WebAXObject& src);
+  // Evaluates `src` and dispatches an OCR request if needed, or updates the
+  // cached state accordingly.
+  void RefreshCanvasAnnotation(const blink::WebAXObject& src, int ax_id);
 
+  // Clears Blink's OCR request flag on `src` and removes any cached or pending
+  // annotation for `ax_id`.
+  void EvictCanvasAnnotation(const blink::WebAXObject& src, int ax_id);
+
+  // Clears Blink's OCR request flag on `src` while retaining the existing
+  // cached annotation.
+  void KeepCachedCanvasAnnotation(const blink::WebAXObject& src);
+
+  // Stores the completed OCR `text` in `info` and clears its pending state.
   void SetCanvasAnnotation(CanvasAnnotationInfo& info, std::string text);
 
   // Connects to the OCR service if not already connected.
@@ -77,26 +94,37 @@ class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator {
 
   // Gets called when a canvas gets annotated by the canvas annotation service.
   void OnCanvasAnnotated(
-      const blink::WebAXObject& canvas,
+      int ax_id,
       screen_ai::mojom::VisualAnnotationPtr visual_annotation);
+
+  // Applies or evicts the completed OCR result once layout and AX state are
+  // clean.
+  void ApplyCanvasAnnotation(
+      int ax_id,
+      blink::WebAXContext& ax_context,
+      const screen_ai::mojom::VisualAnnotation& visual_annotation);
+
+  // Returns the pending annotation entry for `ax_id`, or nullptr if no OCR
+  // request is pending for `ax_id`.
+  CanvasAnnotationInfo* FindPendingAnnotation(int ax_id);
+
+  // Marks `canvas` dirty and schedules immediate AX serialization if `canvas`
+  // is still attached and included in the tree.
+  void MarkCanvasDirty(const blink::WebAXObject& canvas,
+                       blink::WebAXContext& ax_context);
 
   void PruneStaleAnnotations(const blink::WebDocument& document);
 
-  // Weak, owns us.
+  // Non-owning reference to the owner of this annotator.
   const raw_ref<RenderAccessibilityImpl> render_accessibility_;
 
   // A reference to the OCR service.
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> annotator_remote_;
 
-  // Keeps track of the automatic annotations for each canvas.
-  // The key is retrieved using WebAXObject::AxID().
+  // Keeps track of the automatic annotations for each canvas, keyed by
+  // AXNodeData::id so entries can still be looked up and erased after an
+  // AXObject is detached.
   std::unordered_map<int, CanvasAnnotationInfo> canvas_annotations_;
-
-  // Document to which the current annotations belong.
-  blink::WebDocument current_document_;
-
-  // Number of tree updates processed since the last pruning.
-  int updates_since_last_pruning_ = 0;
 
   bool annotations_enabled_ = false;
 

@@ -128,9 +128,36 @@ class CanvasAccessibilityBrowserTest
       NOTREACHED();
 #endif
     }
+
+    ui::AXMode mode = ui::kAXModeComplete;
+    mode.set_mode(ui::AXMode::kScreenReader, true);
+    scoped_accessibility_mode_ =
+        std::make_unique<content::ScopedAccessibilityModeOverride>(
+            web_contents(), mode);
+  }
+
+  void TearDownOnMainThread() override {
+    scoped_accessibility_mode_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  bool ShouldExpectOcrAnnotation() const {
+    return GetCanvasAccessibilityMode() ==
+               features::CanvasAccessibilityMode::kAdvanced &&
+           IsOcrLibraryAvailable();
+  }
+
+  void NavigateAndWaitForLoaded(const GURL& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::TitleWatcher title_watcher(web_contents(), u"loaded");
+    ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"loaded");
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::ScopedAccessibilityModeOverride>
       scoped_accessibility_mode_;
@@ -138,185 +165,87 @@ class CanvasAccessibilityBrowserTest
 
 IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
                        FillTextCanvasAnnotation) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kScreenReader, true);
-  scoped_accessibility_mode_ =
-      std::make_unique<content::ScopedAccessibilityModeOverride>(web_contents,
-                                                                 mode);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/accessibility/canvas_filltext.html")));
 
-  bool expect_filltext_annotation =
-      (GetCanvasAccessibilityMode() !=
-       features::CanvasAccessibilityMode::kDisabled);
-
-  if (expect_filltext_annotation) {
-    content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
+  if (GetCanvasAccessibilityMode() !=
+      features::CanvasAccessibilityMode::kDisabled) {
+    content::WaitForAccessibilityTreeToContainNodeWithName(web_contents(),
                                                            "Hello Canvas");
   } else {
-    EXPECT_TRUE(GetCanvasAnnotation(web_contents).empty());
+    EXPECT_TRUE(GetCanvasAnnotation(web_contents()).empty());
   }
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest, BitmapCanvasAnnotation) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForLoaded(
+      embedded_test_server()->GetURL("/accessibility/canvas_bitmap.html"));
 
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kScreenReader, true);
-  scoped_accessibility_mode_ =
-      std::make_unique<content::ScopedAccessibilityModeOverride>(web_contents,
-                                                                 mode);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/accessibility/canvas_bitmap.html")));
-
-  content::TitleWatcher title_watcher(web_contents, u"loaded");
-  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"loaded");
-
-  bool expect_ocr_annotation = (GetCanvasAccessibilityMode() ==
-                                features::CanvasAccessibilityMode::kAdvanced) &&
-                               IsOcrLibraryAvailable();
-
-  if (expect_ocr_annotation) {
-    EXPECT_EQ(WaitForCanvasAnnotation(web_contents), "ABC\nDEF\nGHI\nJKL");
+  if (ShouldExpectOcrAnnotation()) {
+    EXPECT_EQ(WaitForCanvasAnnotation(web_contents()), "ABC\nDEF\nGHI\nJKL");
   } else {
-    EXPECT_TRUE(GetCanvasAnnotation(web_contents).empty());
+    EXPECT_TRUE(GetCanvasAnnotation(web_contents()).empty());
   }
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
                        BitmapCanvasAnnotation_ImageUpdate) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForLoaded(embedded_test_server()->GetURL(
+      "/accessibility/canvas_bitmap_update.html"));
 
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kScreenReader, true);
-  scoped_accessibility_mode_ =
-      std::make_unique<content::ScopedAccessibilityModeOverride>(web_contents,
-                                                                 mode);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/accessibility/canvas_bitmap_update.html")));
-
-  content::TitleWatcher title_watcher(web_contents, u"loaded");
-  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"loaded");
-
-  bool expect_ocr_annotation = (GetCanvasAccessibilityMode() ==
-                                features::CanvasAccessibilityMode::kAdvanced) &&
-                               IsOcrLibraryAvailable();
-
-  if (!expect_ocr_annotation) {
-    EXPECT_TRUE(GetCanvasAnnotation(web_contents).empty());
+  if (!ShouldExpectOcrAnnotation()) {
+    EXPECT_TRUE(GetCanvasAnnotation(web_contents()).empty());
     return;
   }
 
-  EXPECT_EQ(WaitForCanvasAnnotation(web_contents), "ABC\nDEF\nGHI\nJKL");
+  EXPECT_EQ(WaitForCanvasAnnotation(web_contents()), "ABC\nDEF\nGHI\nJKL");
 
-  content::TitleWatcher update_title_watcher(web_contents, u"updated");
-  ASSERT_TRUE(content::ExecJs(web_contents, "changeImage();"));
+  content::TitleWatcher update_title_watcher(web_contents(), u"updated");
+  ASSERT_TRUE(content::ExecJs(web_contents(), "changeImage();"));
   ASSERT_EQ(update_title_watcher.WaitAndGetTitle(), u"updated");
 
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return GetCanvasAnnotation(web_contents) == "A"; }));
+      [&]() { return GetCanvasAnnotation(web_contents()) == "A"; }));
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
                        BitmapCanvasAnnotation_NonN32) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForLoaded(
+      embedded_test_server()->GetURL("/accessibility/canvas_float16.html"));
 
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kScreenReader, true);
-  scoped_accessibility_mode_ =
-      std::make_unique<content::ScopedAccessibilityModeOverride>(web_contents,
-                                                                 mode);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/accessibility/canvas_float16.html")));
-
-  content::TitleWatcher title_watcher(web_contents, u"loaded");
-  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"loaded");
-
-  bool expect_ocr_annotation = (GetCanvasAccessibilityMode() ==
-                                features::CanvasAccessibilityMode::kAdvanced) &&
-                               IsOcrLibraryAvailable();
-
-  if (expect_ocr_annotation) {
-    EXPECT_EQ(WaitForCanvasAnnotation(web_contents), "ABC\nDEF\nGHI\nJKL");
+  if (ShouldExpectOcrAnnotation()) {
+    EXPECT_EQ(WaitForCanvasAnnotation(web_contents()), "ABC\nDEF\nGHI\nJKL");
   } else {
-    EXPECT_TRUE(GetCanvasAnnotation(web_contents).empty());
+    EXPECT_TRUE(GetCanvasAnnotation(web_contents()).empty());
   }
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
                        BitmapCanvasAnnotation_Large) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForLoaded(
+      embedded_test_server()->GetURL("/accessibility/canvas_large.html"));
 
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kScreenReader, true);
-  scoped_accessibility_mode_ =
-      std::make_unique<content::ScopedAccessibilityModeOverride>(web_contents,
-                                                                 mode);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/accessibility/canvas_large.html")));
-
-  content::TitleWatcher title_watcher(web_contents, u"loaded");
-  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"loaded");
-
-  bool expect_ocr_annotation = (GetCanvasAccessibilityMode() ==
-                                features::CanvasAccessibilityMode::kAdvanced) &&
-                               IsOcrLibraryAvailable();
-
-  if (expect_ocr_annotation) {
-    EXPECT_EQ(WaitForCanvasAnnotation(web_contents), "ABC\nDEF\nGHI\nJKL");
+  if (ShouldExpectOcrAnnotation()) {
+    EXPECT_EQ(WaitForCanvasAnnotation(web_contents()), "ABC\nDEF\nGHI\nJKL");
   } else {
-    EXPECT_TRUE(GetCanvasAnnotation(web_contents).empty());
+    EXPECT_TRUE(GetCanvasAnnotation(web_contents()).empty());
   }
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
                        BitmapCanvasAnnotation_CrossOrigin) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForLoaded(embedded_test_server()->GetURL(
+      "a.com", "/accessibility/canvas_cross_origin.html"));
 
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kScreenReader, true);
-  scoped_accessibility_mode_ =
-      std::make_unique<content::ScopedAccessibilityModeOverride>(web_contents,
-                                                                 mode);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "a.com", "/accessibility/canvas_cross_origin.html")));
-
-  content::TitleWatcher title_watcher(web_contents, u"loaded");
-  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"loaded");
-
-  const bool expect_ocr_annotation =
-      (GetCanvasAccessibilityMode() ==
-       features::CanvasAccessibilityMode::kAdvanced) &&
-      IsOcrLibraryAvailable();
-
-  if (expect_ocr_annotation) {
+  if (ShouldExpectOcrAnnotation()) {
     // Wait for the same-origin sentinel canvas drawn after cross_origin_canvas
     // to finish OCR, then verify cross_origin_canvas was not annotated.
     std::string same_origin_annotation;
     std::string cross_origin_annotation;
     ASSERT_TRUE(base::test::RunUntil([&]() {
       ui::AXTreeUpdate tree_update =
-          content::GetAccessibilityTreeSnapshot(web_contents);
+          content::GetAccessibilityTreeSnapshot(web_contents());
       const ui::AXNodeData* same_node =
           FindNodeByHtmlId(tree_update, "same_origin_canvas");
       const ui::AXNodeData* cross_node =
@@ -334,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
     EXPECT_TRUE(cross_origin_annotation.empty());
   } else {
     ui::AXTreeUpdate tree_update =
-        content::GetAccessibilityTreeSnapshot(web_contents);
+        content::GetAccessibilityTreeSnapshot(web_contents());
     for (const char* id : {"cross_origin_canvas", "same_origin_canvas"}) {
       if (const ui::AXNodeData* node = FindNodeByHtmlId(tree_update, id)) {
         EXPECT_TRUE(node->GetStringAttribute(

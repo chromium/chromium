@@ -35,6 +35,9 @@ class CONTENT_EXPORT AXAnnotatorsManager {
                 ui::AXTreeUpdate* update,
                 bool load_complete);
 
+  // Notifies annotators when a new main document is installed.
+  void DidCreateNewDocument();
+
   // Cancel any in-progress annotations.
   void CancelAnnotations();
 
@@ -54,6 +57,10 @@ class CONTENT_EXPORT AXAnnotatorsManager {
  private:
   // The RenderAccessibilityManager that owns us.
   raw_ptr<RenderAccessibilityImpl> render_accessibility_;
+
+  // Whether AXCanvasAnnotator has already been added to `ax_annotators_` (or
+  // suppressed by ClearAnnotatorsForTesting()).
+  bool did_create_canvas_annotator_ = false;
 
   std::vector<std::unique_ptr<AXAnnotator>> ax_annotators_;
 };
