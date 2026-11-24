@@ -39,19 +39,19 @@ NSString* const kMatchingLanguagesKey = @"MatchingLanguages";
 
   NSArray* matchingLocales =
       base::apple::ObjCCastStrict<NSArray>(dict[kMatchingLocalesKey]);
-  for (id machingLocale : matchingLocales) {
-    DCHECK([machingLocale isKindOfClass:[NSString class]]);
+  for (id matchingLocale : matchingLocales) {
+    DCHECK([matchingLocale isKindOfClass:[NSString class]]);
   }
 
-  NSArray* machingLanguages =
+  NSArray* matchingLanguages =
       base::apple::ObjCCastStrict<NSArray>(dict[kMatchingLanguagesKey]);
-  for (id machingLanguage : machingLanguages) {
-    DCHECK([machingLanguage isKindOfClass:[NSString class]]);
+  for (id matchingLanguage : matchingLanguages) {
+    DCHECK([matchingLanguage isKindOfClass:[NSString class]]);
   }
 
   return [self initWithMatchedLocale:matchedLocale
                      matchingLocales:matchingLocales
-                   matchingLanguages:machingLanguages];
+                   matchingLanguages:matchingLanguages];
 }
 
 @end

@@ -111,9 +111,9 @@ TEST_F(SpeechInputLocaleConfigImplTest, RegionalLanguageVariantsMapping) {
   EXPECT_EQ(kEnglishUS, GetMatchingLocaleForCode("en-FR"));
   EXPECT_EQ(kEnglishUS, GetMatchingLocaleForCode("en-CA"));
   // Chinese UI defaults to zh-CN unless there is a closer match.
-  const std::string kChinesCN("zh-Hans-CN");
-  EXPECT_EQ(kChinesCN, GetMatchingLocaleForCode("zh-CN"));
-  EXPECT_EQ(kChinesCN, GetMatchingLocaleForCode("zh-US"));
+  const std::string kChineseCN("zh-Hans-CN");
+  EXPECT_EQ(kChineseCN, GetMatchingLocaleForCode("zh-CN"));
+  EXPECT_EQ(kChineseCN, GetMatchingLocaleForCode("zh-US"));
   EXPECT_EQ(std::string("zh-Hans-HK"), GetMatchingLocaleForCode("zh-HK"));
   EXPECT_EQ(std::string("zh-Hant-TW"), GetMatchingLocaleForCode("zh-TW"));
   // Arabic UI defaults to Arabic U.A.E.
