@@ -2847,6 +2847,31 @@ suite('ShortcutsReorder', () => {
     await microtasksFinished();
     assertTooltipHidden(tooltip);
   });
+
+  test(
+      'clicking reorder tooltip hides it without exiting reorder mode',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        await setUpTest({shortcutsReorderEnabled: true});
+        await addTiles(2);
+        const container = $$<HTMLElement>(mostVisited, '#container');
+        const tile = queryTiles()[0]!;
+        const tooltip = $$<CrTooltipElement>(mostVisited, '#reorderTooltip');
+
+        // Enter reorder mode.
+        tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+        await microtasksFinished();
+        $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+        await new Promise(requestAnimationFrame);
+        await microtasksFinished();
+        assertTooltipShown(tooltip);
+
+        // Clicking the tooltip hides it while keeping reorder mode active.
+        tooltip.click();
+        await microtasksFinished();
+        assertTooltipHidden(tooltip);
+        assertEquals('application', container.getAttribute('role'));
+      });
 });
 
 suite('ShortcutsAutoRemovalToast', () => {

@@ -1403,9 +1403,15 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
 
+    const path = e.composedPath();
+    if (this.reorderTooltip_ && path.includes(this.reorderTooltip_)) {
+      this.reorderTooltip_.hide();
+      return;
+    }
+
     this.reorderTooltip_?.hide();
 
-    if (!e.composedPath().includes(this.$.container)) {
+    if (!path.includes(this.$.container)) {
       await this.exitReorderMode_();
     }
   }
