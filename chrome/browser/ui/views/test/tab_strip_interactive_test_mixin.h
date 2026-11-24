@@ -69,6 +69,9 @@ class TabStripInteractiveTestMixin : public T {
             if (auto* tab_strip = old_region_view->tab_strip()) {
               tab_strip->StopAnimating();
             }
+            if (views::Widget* widget = old_region_view->GetWidget()) {
+              widget->LayoutRootViewIfNecessary();
+            }
           }
         }));
   }
