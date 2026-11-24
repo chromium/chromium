@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
@@ -135,7 +134,7 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
     if (!has_report_id_) {
       // Linux will not prefix the buffer with a report ID if report IDs are not
       // used by the device. Prefix the buffer with 0.
-      (base::PostIncrementSpan(data))[0] = 0;
+      data.take_first<1>()[0] = 0;
       length--;
     }
 

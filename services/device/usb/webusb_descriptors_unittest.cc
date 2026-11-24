@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "services/device/usb/mock_usb_device_handle.h"
@@ -206,13 +205,7 @@ TEST_F(WebUsbDescriptorsTest, UrlDescriptor) {
 
 TEST_F(WebUsbDescriptorsTest, EntireUrlDescriptor) {
   GURL url;
-  ASSERT_TRUE(ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(kExampleUrlDescriptor255.data(),
-                           base::span(kExampleUrlDescriptor255)
-                               .subspan(base::SpanificationSizeofForStdArray(
-                                   kExampleUrlDescriptor255))
-                               .data()),
-      &url));
+  ASSERT_TRUE(ParseWebUsbUrlDescriptor(kExampleUrlDescriptor255, &url));
   EXPECT_EQ(GURL("chrome-extension://extensionid/example.html"), url);
 }
 
