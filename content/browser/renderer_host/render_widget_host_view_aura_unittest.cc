@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -6344,6 +6345,9 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
                                LPARAM l_param,
                                bool* handled) override {
     handle_pointer_count_++;
+    if (on_handle_pointer_) {
+      on_handle_pointer_.Run(message);
+    }
     return S_OK;
   }
 
@@ -6393,6 +6397,7 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
   void ApplyPanGestureScrollEnd(bool tranisitioning_to_pinch) override {}
 
   uint32_t handle_pointer_count_ = 0;
+  base::RepeatingCallback<void(unsigned int message)> on_handle_pointer_;
 };
 
 // On Windows, a native HWND (Chrome_RenderWidgetHostHWND) forwards mouse events
@@ -6524,6 +6529,47 @@ TEST_F(RenderWidgetHostViewAuraTest,
                                               0);
   legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUP, pointer_id_a, 0);
   EXPECT_EQ(3, new_event_target.handle_pointer_count_);
+}
+
+// Ensures that if the view is hidden synchronously while handling
+// WM_POINTERDOWN, the rest of the pointer sequence is still routed to the
+// pre-hide WindowEventTarget and cleaned up on WM_POINTERUP.
+TEST_F(RenderWidgetHostViewAuraTest,
+       LegacyRenderWidgetHostHWNDHiddenDuringPointerDown) {
+  MockWindowEventTarget event_target;
+  auto prop_window_target = std::make_unique<ui::ViewProp>(
+      parent_view_->GetHostWindowHWND(),
+      ui::WindowEventTarget::kWin32InputEventTarget,
+      static_cast<ui::WindowEventTarget*>(&event_target));
+
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  event_target.on_handle_pointer_ =
+      base::BindLambdaForTesting([&](unsigned int message) {
+        if (message == WM_POINTERDOWN) {
+          view_->Hide();
+        }
+      });
+
+  const uint32_t pointer_id = 1;
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERDOWN, pointer_id, 0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUP, pointer_id, 0);
+  EXPECT_EQ(2u, event_target.handle_pointer_count_);
+
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERDOWN, pointer_id, 0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUP, pointer_id, 0);
+  EXPECT_EQ(4u, event_target.handle_pointer_count_);
+
+  // Once all pointers are up, hiding the view should not reroute subsequent
+  // pointer events to the pre-hide parent.
+  event_target.on_handle_pointer_.Reset();
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  view_->Hide();
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id, 0);
+  EXPECT_EQ(4u, event_target.handle_pointer_count_);
 }
 #endif
 

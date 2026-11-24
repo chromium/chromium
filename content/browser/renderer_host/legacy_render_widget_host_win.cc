@@ -613,6 +613,16 @@ LRESULT LegacyRenderWidgetHostHWND::OnPointer(UINT message,
     return 0;
   }
 
+  if (message == WM_POINTERDOWN) {
+    // We should never be adding to the down pointers set if we are hidden.
+    CHECK(!parent_before_hide_);
+    // Record the down pointer before dispatching: HandlePointerMessage() can
+    // hide this window synchronously, and UpdateParent() only stores
+    // `parent_before_hide_` for pointers already in
+    // `down_pointers_before_hide_`.
+    down_pointers_before_hide_.insert(pointer_id);
+  }
+
   bool msg_handled = false;
   base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
       msg_handler_weak_factory_.GetWeakPtr());
@@ -625,11 +635,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnPointer(UINT message,
 
   SetMsgHandled(msg_handled);
 
-  if (message == WM_POINTERDOWN) {
-    // We should never be adding to the down pointers set if we are hidden.
-    CHECK(!parent_before_hide_);
-    down_pointers_before_hide_.insert(pointer_id);
-  } else if (message == WM_POINTERUP) {
+  if (message == WM_POINTERUP) {
     down_pointers_before_hide_.erase(pointer_id);
   }
 

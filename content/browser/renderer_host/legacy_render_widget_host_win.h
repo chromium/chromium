@@ -36,6 +36,8 @@ class DirectManipulationHelper;
 class RenderWidgetHostViewAura;
 FORWARD_DECLARE_TEST(RenderWidgetHostViewAuraTest,
                      LegacyRenderWidgetHostHWNDPointerEventsWhileHidden);
+FORWARD_DECLARE_TEST(RenderWidgetHostViewAuraTest,
+                     LegacyRenderWidgetHostHWNDHiddenDuringPointerDown);
 
 // Reasons for the existence of this class outlined below:
 // 1. Some screen readers expect every tab / every unique web content container
@@ -131,6 +133,8 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   friend class DirectManipulationBrowserTestBase;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
                            LegacyRenderWidgetHostHWNDPointerEventsWhileHidden);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
+                           LegacyRenderWidgetHostHWNDHiddenDuringPointerDown);
 
   explicit LegacyRenderWidgetHostHWND(RenderWidgetHostViewAura* host);
   ~LegacyRenderWidgetHostHWND() override;
