@@ -1736,6 +1736,15 @@ const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay{
     base::Hours(1),
 };
 
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX))
+// When enabled, renderer processes load chrome_renderer.dll (on Windows) or
+// launch the separate chrome_renderer executable (on Linux, which currently
+// requires --no-zygote; see crbug.com/552312254) instead of the main browser
+// binary.
+BASE_FEATURE(kSeparateRendererBinary, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // When enabled, an extension service worker's render process is given
 // foreground priority while the worker is STARTING. Extension service workers
 // are often started headlessly (e.g. to register webRequest listeners) with no

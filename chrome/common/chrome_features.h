@@ -1185,6 +1185,12 @@ extern const base::FeatureParam<base::TimeDelta> kSCTLogExpectedIngestionDelay;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay;
 
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX))
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kSeparateRendererBinary);
+#endif
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kServiceWorkerForegroundOnExtensionStartup);
 

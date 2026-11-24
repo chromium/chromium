@@ -1402,23 +1402,58 @@ void MaybeAppendSecureOriginsAllowlistSwitch(base::CommandLine* cmdline) {
   }
 }
 
-#if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) && \
-    !defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY) || \
+    (!defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER))
 // Returns true if the current process was launched from `chrome.exe`.
 bool IsLaunchedFromChromeExe() {
   base::FilePath exe_path;
   return base::PathService::Get(base::FILE_EXE, &exe_path) &&
          exe_path.BaseName().value() == chrome::kBrowserProcessExecutableName;
 }
+#endif
 
+// Selects the renderer module for `process` (recording any staged dynamic
+// patch on `ChildModuleManager` once per launch) and appends the switches
+// instructing `chrome.exe` which renderer DLL to load. `process` may be null.
+void SelectAndAppendRendererModuleSwitches(
+    base::CommandLine& command_line,
+    content::RenderProcessHost* process) {
+  if (process) {
+    if (child_module::ChildModuleManager* child_module_manager =
+            g_browser_process->GetFeatures()->child_module_manager()) {
+      if (base::optional_ref<const child_module::ChildModuleManager::Module>
+              module = child_module_manager->SelectModuleForProcess(
+                  process->GetID())) {
+        command_line.AppendSwitchASCII(switches::kChildModuleVersion,
+                                       module->version.GetString());
+        // The renderer cannot compute the user path component identifying the
+        // directory that holds the patch, so provide it.
+        command_line.AppendSwitchPath(
+            switches::kChildModuleUserPathComponent,
+            child_module::GetUserPathComponentFromRendererBinaryPath(
+                module->renderer_binary_path));
+        return;
+      }
+    }
+  }
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+  if (IsLaunchedFromChromeExe() &&
+      base::FeatureList::IsEnabled(features::kSeparateRendererBinary)) {
+    command_line.AppendSwitch(switches::kSeparateRendererBinary);
+  }
+#endif
+}
+
+#if !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
 // Returns the full path to `module_name` in the current module's directory
 // (which is the versioned sub-directory for proper installs, or the executable
 // directory for dev builds). The identified file is not guaranteed to exist.
 base::FilePath GetModulePath(std::wstring_view module_name) {
   return base::PathService::CheckedGet(base::DIR_MODULE).Append(module_name);
 }
-#endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) &&
-        // !defined(ADDRESS_SANITIZER)
+#endif  // !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_WIN)
 
 void MaybeAddCondition(
     std::unique_ptr<content::CommitDeferringCondition> maybe_condition,
@@ -3166,23 +3201,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-    if (process) {
-      if (child_module::ChildModuleManager* child_module_manager =
-              g_browser_process->GetFeatures()->child_module_manager()) {
-        if (base::optional_ref<const child_module::ChildModuleManager::Module>
-                module = child_module_manager->SelectModuleForProcess(
-                    process->GetID())) {
-          command_line->AppendSwitchASCII(switches::kChildModuleVersion,
-                                          module->version.GetString());
-          // The renderer cannot compute the user path component identifying the
-          // directory that holds the patch, so provide it.
-          command_line->AppendSwitchPath(
-              switches::kChildModuleUserPathComponent,
-              child_module::GetUserPathComponentFromRendererBinaryPath(
-                  module->renderer_binary_path));
-        }
-      }
-    }
+    SelectAndAppendRendererModuleSwitches(*command_line, process);
 #endif
 
     MaybeCopyDisableWebRtcEncryptionSwitch(command_line, browser_command_line,
@@ -5654,14 +5673,15 @@ ChromeContentBrowserClient::GetRendererSandboxPolicyExtension(
   }
 
 #if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
-  return RendererSandboxPolicyExtension{
-      .extra_dll = GetModulePath(chrome::kRendererDll),
-  };
-#else
+  if (base::FeatureList::IsEnabled(features::kSeparateRendererBinary)) {
+    return RendererSandboxPolicyExtension{
+        .extra_dll = GetModulePath(chrome::kRendererDll),
+    };
+  }
+#endif
   return RendererSandboxPolicyExtension{
       .extra_dll = GetModulePath(chrome::kBrowserResourcesDll),
   };
-#endif
 #endif  // defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
 }
 
@@ -9231,11 +9251,13 @@ base::FilePath ChromeContentBrowserClient::GetChildProcessPath(
       }
     }
 #if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
-    CHECK(no_zygote)
-        << "--no-zygote is required when running separate renderer binary";
-    base::FilePath child_path;
-    if (base::PathService::Get(base::DIR_EXE, &child_path)) {
-      return child_path.Append(chrome::kRendererProcessExecutableName);
+    if (base::FeatureList::IsEnabled(features::kSeparateRendererBinary)) {
+      CHECK(no_zygote)
+          << "--no-zygote is required when running separate renderer binary";
+      base::FilePath child_path;
+      if (base::PathService::Get(base::DIR_EXE, &child_path)) {
+        return child_path.Append(chrome::kRendererProcessExecutableName);
+      }
     }
 #endif  // BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
   }
