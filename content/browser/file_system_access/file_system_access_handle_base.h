@@ -179,6 +179,9 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
  protected:
   virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
 
+  // Returns the handle type (`kFile` or `kDirectory`) represented by `this`.
+  virtual HandleType GetHandleType() const = 0;
+
   // Checks whether the handle represents a non-sandboxed file system path
   // bound to a third-party execution context. Sandboxed file systems (OPFS)
   // are partitioned by storage key and exempt from third-party restrictions.
@@ -260,6 +263,15 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>> locks,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           callback);
+  // Invoked after confirming that the source entry at `url()` still exists and
+  // matches `GetHandleType()` while holding exclusive move `locks`.
+  void DidConfirmSourceExistsForMove(
+      storage::FileSystemURL destination_url,
+      bool has_overwrite_permission,
+      bool has_transient_user_activation,
+      std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>> locks,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      base::File::Error result);
   // Only called if the move operation is not allowed to overwrite the target.
   void ConfirmMoveWillNotOverwriteDestination(
       const storage::FileSystemURL& destination_url,

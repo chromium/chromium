@@ -377,9 +377,7 @@ FileSystemAccessHandleBase::GetRenamePermission(
   SharedHandleState destination_shared_handle_state =
       manager()->GetSharedHandleStateForNonSandboxedPath(
           content::PathInfo(destination_url.virtual_path(), new_entry_name),
-          context().storage_key,
-          // TODO(crbug.com/40198034): Support directory moves.
-          FileSystemAccessPermissionContext::HandleType::kFile,
+          context().storage_key, GetHandleType(),
           // TODO(crbug.com/545006893): Rename queries write_grant and should
           // use AccessTrigger::kProgrammaticWrite rather than
           // kProgrammaticRead. This CL is a pure refactoring so we avoid making
@@ -643,9 +641,7 @@ void FileSystemAccessHandleBase::DidTakeMoveLocks(
   // Request a sensitive entry access check which will decide if the destination
   // path should be allowed or blocked, and may spawn a confirmation UI.
   RunWithSensitiveEntryAccess(
-      destination_url, /*display_name=*/"",
-      // TODO(crbug.com/40198034): Update once moving directory is supported.
-      HandleType::kFile,
+      destination_url, /*display_name=*/"", GetHandleType(),
       // TODO(crbug.com/545006893): Move currently passes kSave because the
       // move operation will save the file, but it can spawn unexpected
       // interactive UI dialogs when blocked. Revisit transitioning this to a
@@ -672,6 +668,36 @@ void FileSystemAccessHandleBase::DidVerifySensitiveEntryAccessForMove(
     std::vector<scoped_refptr<LockHandle>> locks,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Confirm that the source entry still exists and matches this handle's type
+  // while the exclusive lock on `url()` is held.
+  auto exists_operation =
+      GetHandleType() == HandleType::kDirectory
+          ? &storage::FileSystemOperationRunner::DirectoryExists
+          : &storage::FileSystemOperationRunner::FileExists;
+  manager()->DoFileSystemOperation(
+      FROM_HERE, exists_operation,
+      base::BindOnce(&FileSystemAccessHandleBase::DidConfirmSourceExistsForMove,
+                     AsWeakPtr(), std::move(destination_url),
+                     has_overwrite_permission, has_transient_user_activation,
+                     std::move(locks), std::move(callback)),
+      url());
+}
+
+void FileSystemAccessHandleBase::DidConfirmSourceExistsForMove(
+    storage::FileSystemURL destination_url,
+    bool has_overwrite_permission,
+    bool has_transient_user_activation,
+    std::vector<scoped_refptr<LockHandle>> locks,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+    base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (result != base::File::FILE_OK) {
+    locks.clear();
+    std::move(callback).Run(file_system_access_error::FromFileError(result));
+    return;
+  }
 
   // Only allow overwriting moves if we have write access to the destination or
   // the parent directory write permission.
@@ -704,6 +730,7 @@ void FileSystemAccessHandleBase::ConfirmMoveWillNotOverwriteDestination(
       result == base::File::FILE_ERROR_NOT_EMPTY ||
       result == base::File::FILE_ERROR_NOT_A_FILE ||
       result == base::File::FILE_ERROR_INVALID_OPERATION) {
+    locks.clear();
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kInvalidModificationError));
     return;
