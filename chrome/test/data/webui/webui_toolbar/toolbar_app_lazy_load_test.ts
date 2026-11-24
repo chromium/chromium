@@ -11,7 +11,7 @@ import type {TrackedElementIdentifier} from 'chrome://resources/mojo/ui/webui/re
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, createDefaultLocationBarState, IconTable, IconType, PageActionAnimationStyle, PageActionId, PinnedToolbarAction, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, createDefaultLocationBarState, IconTable, IconType, PageActionAnimationStyle, PageActionId, PinnedToolbarAction, PinnedToolbarActionEngagedIndicatorStyle, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {ToolbarStateListener} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarBrowserProxy as BaseTestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
@@ -245,6 +245,8 @@ suite('ToolbarAppLazyLoadTest', () => {
         highlighted: false,
         enabled: true,
         activated: false,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         tooltip: 'DevTools',
         accessibilityText: 'DevTools',
         elementId: 'devtools',

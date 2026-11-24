@@ -13,7 +13,7 @@ export {IconType} from '/shared/icon_handle.mojom-webui.js';
 export {IconTable} from '/shared/icon_table.js';
 export {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHandler} from '/shared/toolbar_button.js';
 export type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
-export {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, ContentSettingImageType, ContextMenuType, DownloadProgressRingStatus, FocusRequestTarget, LhsChipIdentifier, OmniboxTextColor, PageActionAnimationStyle, PageActionId, PageActionTrigger, PermissionAction, PermissionChipTheme, PermissionPromptStyle, PinnedToolbarAction, SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+export {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, ContentSettingImageType, ContextMenuType, DownloadProgressRingStatus, FocusRequestTarget, LhsChipIdentifier, OmniboxTextColor, PageActionAnimationStyle, PageActionId, PageActionTrigger, PermissionAction, PermissionChipTheme, PermissionPromptStyle, PinnedToolbarAction, PinnedToolbarActionEngagedIndicatorStyle, SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 export type {GlicButtonState, LocationBarState, OmniboxAction, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 export {ToolbarAppElement} from './app.js';
 export type {BackForwardButtonElement} from './back_forward_button.js';

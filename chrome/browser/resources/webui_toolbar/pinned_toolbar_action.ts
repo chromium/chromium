@@ -11,7 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getContextMenuPosition, getContextMenuSourceType} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
-import {ContextMenuType, DownloadProgressRingStatus, PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {ContextMenuType, DownloadProgressRingStatus, PinnedToolbarAction, PinnedToolbarActionEngagedIndicatorStyle} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -27,6 +27,7 @@ const initialState: PinnedToolbarActionState = {
   highlighted: false,
   enabled: true,
   activated: false,
+  engagedIndicatorStyle: PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
   tooltip: '',
   accessibilityText: '',
   elementId: null,
@@ -155,6 +156,19 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   protected isDormant_(): boolean {
     return this.state.progressRing?.status ===
         DownloadProgressRingStatus.kDormant;
+  }
+
+  protected showUnderlineIndicator_(): boolean {
+    return this.state.activated &&
+        this.state.engagedIndicatorStyle ===
+        PinnedToolbarActionEngagedIndicatorStyle.kUnderline;
+  }
+
+  protected showCircleHighlight_(): boolean {
+    return this.state.activated &&
+        this.state.engagedIndicatorStyle ===
+        PinnedToolbarActionEngagedIndicatorStyle.kCircleHighlight &&
+        !this.state.highlighted && !this.trackedHighlighted;
   }
 
   /**

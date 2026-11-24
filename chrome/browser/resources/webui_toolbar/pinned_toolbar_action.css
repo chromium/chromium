@@ -16,11 +16,24 @@
   app-region: no-drag;
 }
 
-/* Engaged actions paint their icon in the engaged color, as native
- * PinnedActionToolbarButton does. */
+/* Engaged actions with the underline indicator style paint their icon in the
+ * engaged color, as native PinnedActionToolbarButton::GetForegroundColor()
+ * does. */
 toolbar-chip-button[is-activated] {
   --toolbar-chip-fg-color: var(--color-toolbar-action-item-engaged,
       var(--google-blue-600));
+}
+
+/* Engaged actions with the circle highlight indicator style show a circular
+ * background highlight when not highlighted (is-menu-open), as native
+ * PinnedActionToolbarButton::UpdateStatusIndicator() does. While an IPH is
+ * anchored to the button, help_bubble_anchor.css suppresses this background on
+ * .iph-visual-target with transparent !important so the IPH attention pulse on
+ * ::before replaces it, and the icon uses the feature promo highlight color
+ * below (since [is-activated] is only set for the underline indicator style,
+ * matching native PinnedActionToolbarButton::UpdateIcon()). */
+toolbar-chip-button[has-circle-highlight] {
+  --toolbar-chip-bg-color: var(--color-avatar-button-highlight-default);
 }
 
 /* Like native toolbar buttons, use the inactive icon color while disabled or
@@ -35,7 +48,8 @@ toolbar-chip-button[disabled]:not(.help-anchor-highlight),
 
 /* While an IPH is anchored to the button, paint the icon in the feature promo
  * highlight color, matching native ToolbarButton::GetForegroundColor(). Engaged
- * buttons keep the engaged color, as native PinnedActionToolbarButton does. */
+ * buttons with the underline indicator style keep the engaged color, as native
+ * PinnedActionToolbarButton::UpdateIcon() does. */
 toolbar-chip-button.help-anchor-highlight:not([is-activated]) {
   --toolbar-chip-fg-color: var(--color-toolbar-feature-promo-highlight);
 }
