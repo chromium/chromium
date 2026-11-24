@@ -883,6 +883,16 @@ void CreditCardSaveManager::InitVirtualCardEnroll(
 
   if (auto* virtual_card_enrollment_manager =
           payments_autofill_client().GetVirtualCardEnrollmentManager()) {
+    // `card_unmasked_from_cache` is left unset as it only applies to
+    // downstream enrollment.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillFixVcnStrikeDatabaseFallback) &&
+        !virtual_card_enrollment_manager->ShouldOfferVirtualCardEnrollment(
+            credit_card, /*card_instrument_id=*/credit_card.instrument_id(),
+            /*card_unmasked_from_cache=*/std::nullopt,
+            VirtualCardEnrollmentSource::kUpstream)) {
+      return;
+    }
     virtual_card_enrollment_manager->InitVirtualCardEnroll(
         credit_card, VirtualCardEnrollmentSource::kUpstream,
         base::BindOnce(

@@ -65,10 +65,12 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager_test_api.h"
 #include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/cardholder_name_fix_flow_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -7487,6 +7489,143 @@ TEST_F(CreditCardSaveManagerTest, InitVirtualCardEnroll) {
   credit_card_save_manager().InitVirtualCardEnroll(
       test::GetCreditCard(),
       std::move(get_details_for_enrollment_response_details));
+}
+
+// Test fixture for verifying that upstream virtual card enrollment respects the
+// virtual card enrollment strike database. The test parameter controls whether
+// `kAutofillFixVcnStrikeDatabaseFallback` is enabled.
+class CreditCardSaveManagerVcnStrikeDatabaseFallbackTest
+    : public CreditCardSaveManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CreditCardSaveManagerVcnStrikeDatabaseFallbackTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillFixVcnStrikeDatabaseFallback, IsFixEnabled());
+  }
+
+  bool IsFixEnabled() const { return GetParam(); }
+
+ protected:
+  MockVirtualCardEnrollmentManager& virtual_card_enrollment_manager() {
+    return *static_cast<MockVirtualCardEnrollmentManager*>(
+        payments_autofill_client().GetVirtualCardEnrollmentManager());
+  }
+
+  void AddVirtualCardEnrollmentStrikes(int num_strikes) {
+    for (int i = 0; i < num_strikes; ++i) {
+      virtual_card_enrollment_manager()
+          .AddStrikeToBlockOfferingVirtualCardEnrollment(
+              base::NumberToString(kInstrumentId));
+    }
+  }
+
+  int GetVirtualCardEnrollmentMaxStrikesLimit() {
+    return test_api(virtual_card_enrollment_manager())
+        .GetVirtualCardEnrollmentStrikeDatabase()
+        ->GetMaxStrikesLimit();
+  }
+
+  // Simulates a successful card upload where the card is eligible for virtual
+  // card enrollment, followed by the save card confirmation closing, which
+  // triggers `CreditCardSaveManager::InitVirtualCardEnroll()`.
+  void UploadEligibleCardAndCloseConfirmation() {
+    payments::GetDetailsForEnrollmentResponseDetails
+        get_details_for_enrollment_response_details;
+    get_details_for_enrollment_response_details.vcn_context_token =
+        "test_context_token";
+    payments::UploadCardResponseDetails upload_card_response_details;
+    upload_card_response_details.instrument_id = kInstrumentId;
+    upload_card_response_details.virtual_card_enrollment_state =
+        CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
+    upload_card_response_details.get_details_for_enrollment_response_details =
+        get_details_for_enrollment_response_details;
+
+    credit_card_save_manager().set_upload_request_card(test::GetCreditCard());
+    credit_card_save_manager().OnDidUploadCard(
+        payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+        upload_card_response_details);
+
+    // `InitVirtualCardEnroll()` is passed as a closure to the save card
+    // confirmation, which runs it once closed. Since there is no actual
+    // confirmation, call it directly.
+    credit_card_save_manager().InitVirtualCardEnroll(
+        credit_card_save_manager().upload_request()->card,
+        std::move(get_details_for_enrollment_response_details));
+  }
+
+  static constexpr int64_t kInstrumentId = 123456789;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardSaveManagerVcnStrikeDatabaseFallbackTest,
+                         testing::Bool());
+
+// Tests that upstream virtual card enrollment is started for an eligible card
+// with no strikes, regardless of whether the fix is enabled.
+TEST_P(CreditCardSaveManagerVcnStrikeDatabaseFallbackTest,
+       NoStrikes_InitsEnrollment) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(payments_autofill_client(), HideSaveCardPrompt);
+  EXPECT_CALL(virtual_card_enrollment_manager(),
+              InitVirtualCardEnroll(
+                  testing::Property(&CreditCard::instrument_id, kInstrumentId),
+                  VirtualCardEnrollmentSource::kUpstream, _, _, _, _));
+
+  UploadEligibleCardAndCloseConfirmation();
+  histogram_tester.ExpectTotalCount(
+      "Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.StrikeDatabase."
+      "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
+      0);
+}
+
+// Tests that upstream virtual card enrollment is not started for a card that
+// has reached the max strike limit, only if the fix is enabled, and that the
+// metrics are logged under the upstream source.
+TEST_P(CreditCardSaveManagerVcnStrikeDatabaseFallbackTest,
+       MaxStrikesReached_DoesNotInitEnrollmentOnlyIfFixEnabled) {
+  AddVirtualCardEnrollmentStrikes(GetVirtualCardEnrollmentMaxStrikesLimit());
+  base::HistogramTester histogram_tester;
+
+  // The save card prompt is hidden regardless of whether enrollment is
+  // offered.
+  EXPECT_CALL(payments_autofill_client(), HideSaveCardPrompt);
+  EXPECT_CALL(virtual_card_enrollment_manager(), InitVirtualCardEnroll)
+      .Times(IsFixEnabled() ? 0 : 1);
+
+  UploadEligibleCardAndCloseConfirmation();
+  const int expected_count = IsFixEnabled() ? 1 : 0;
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes",
+      VirtualCardEnrollmentSource::kUpstream, expected_count);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.MaxStrikesLimitReached",
+      VirtualCardEnrollmentSource::kUpstream, expected_count);
+}
+
+// Tests that upstream virtual card enrollment is not started for a card whose
+// required delay since the last strike has not passed, only if the fix is
+// enabled, and that the metric is logged under the upstream source.
+TEST_P(CreditCardSaveManagerVcnStrikeDatabaseFallbackTest,
+       RequiredDelayNotPassed_DoesNotInitEnrollmentOnlyIfFixEnabled) {
+  AddVirtualCardEnrollmentStrikes(1);
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(payments_autofill_client(), HideSaveCardPrompt);
+  EXPECT_CALL(virtual_card_enrollment_manager(), InitVirtualCardEnroll)
+      .Times(IsFixEnabled() ? 0 : 1);
+
+  UploadEligibleCardAndCloseConfirmation();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase."
+      "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
+      VirtualCardEnrollmentSource::kUpstream, IsFixEnabled() ? 1 : 0);
 }
 
 // Tests that if server card upload fails, we fallback to a local card save.

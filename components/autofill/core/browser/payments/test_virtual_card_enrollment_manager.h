@@ -70,7 +70,7 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
   bool AutofillClientIsPresent() { return autofill_client_ != nullptr; }
 
   // VirtualCardEnrollmentManager:
-  bool ShouldBlockVirtualCardEnrollment(
+  bool EnrollmentBlockedByStrikeDatabase(
       const std::string& instrument_id,
       VirtualCardEnrollmentSource virtual_card_enrollment_source)
       const override;

@@ -410,7 +410,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
   if (virtual_card_enrollment_manager &&
       virtual_card_enrollment_manager->ShouldOfferVirtualCardEnrollment(
           *extracted_credit_card, context.fetched_card_instrument_id,
-          context.card_was_fetched_from_cache)) {
+          context.card_was_fetched_from_cache,
+          VirtualCardEnrollmentSource::kDownstream)) {
     if (is_wallet_reminder_notice_eligible) {
       autofill_metrics::LogWalletReminderNoticeShowResult(
           autofill_metrics::WalletReminderNoticeShowResult::

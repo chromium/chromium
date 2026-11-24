@@ -13,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -45,6 +46,8 @@
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager_test_api.h"
+#include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -2743,6 +2746,132 @@ TEST_F(CreditCardAccessManagerTest,
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
   CreditCardAccessManagerTestBase::FetchCreditCard(&card);
+}
+
+// Test fixture for verifying that the virtual card enrollment preflight call
+// respects the virtual card enrollment strike database. The test parameter
+// controls whether `kAutofillFixVcnStrikeDatabaseFallback` is enabled.
+class CreditCardAccessManagerVcnStrikeDatabaseFallbackTest
+    : public CreditCardAccessManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CreditCardAccessManagerVcnStrikeDatabaseFallbackTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillFixVcnStrikeDatabaseFallback, IsFixEnabled());
+  }
+
+  bool IsFixEnabled() const { return GetParam(); }
+
+ protected:
+  void SetUp() override {
+    CreditCardAccessManagerTest::SetUp();
+    autofill_client()
+        .GetPaymentsAutofillClient()
+        ->set_virtual_card_enrollment_manager(
+            std::make_unique<MockVirtualCardEnrollmentManager>(
+                &personal_data().payments_data_manager(),
+                static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
+                    autofill_client()
+                        .GetPaymentsAutofillClient()
+                        ->GetMultipleRequestPaymentsNetworkInterface()),
+                &autofill_client()));
+    card_ = test::GetMaskedServerCard();
+    card_.set_virtual_card_enrollment_state(
+        CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
+    personal_data().test_payments_data_manager().AddServerCreditCard(card_);
+  }
+
+  MockVirtualCardEnrollmentManager& virtual_card_enrollment_manager() {
+    return *static_cast<MockVirtualCardEnrollmentManager*>(
+        autofill_client()
+            .GetPaymentsAutofillClient()
+            ->GetVirtualCardEnrollmentManager());
+  }
+
+  void AddVirtualCardEnrollmentStrikes(int num_strikes) {
+    for (int i = 0; i < num_strikes; ++i) {
+      virtual_card_enrollment_manager()
+          .AddStrikeToBlockOfferingVirtualCardEnrollment(
+              base::NumberToString(card_.instrument_id()));
+    }
+  }
+
+  int GetVirtualCardEnrollmentMaxStrikesLimit() {
+    return test_api(virtual_card_enrollment_manager())
+        .GetVirtualCardEnrollmentStrikeDatabase()
+        ->GetMaxStrikesLimit();
+  }
+
+  void FetchCard() {
+    PrepareToFetchCreditCardAndWaitForCallbacks();
+    CreditCardAccessManagerTestBase::FetchCreditCard(&card_);
+  }
+
+  CreditCard card_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardAccessManagerVcnStrikeDatabaseFallbackTest,
+                         testing::Bool());
+
+// Tests that the preflight call is invoked for an eligible card with no
+// strikes, regardless of whether the fix is enabled.
+TEST_P(CreditCardAccessManagerVcnStrikeDatabaseFallbackTest,
+       NoStrikes_InvokesPreflightCall) {
+  EXPECT_CALL(virtual_card_enrollment_manager(),
+              InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
+                                    _, _, _, _));
+
+  FetchCard();
+}
+
+// Tests that the preflight call is not invoked for a card that has reached the
+// max strike limit, only if the fix is enabled.
+TEST_P(CreditCardAccessManagerVcnStrikeDatabaseFallbackTest,
+       MaxStrikesReached_DoesNotInvokePreflightCallOnlyIfFixEnabled) {
+  AddVirtualCardEnrollmentStrikes(GetVirtualCardEnrollmentMaxStrikesLimit());
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(virtual_card_enrollment_manager(), InitVirtualCardEnroll)
+      .Times(IsFixEnabled() ? 0 : 1);
+
+  FetchCard();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes",
+      VirtualCardEnrollmentSource::kDownstream, IsFixEnabled() ? 1 : 0);
+}
+
+// Tests that the preflight call is not invoked for a card whose required delay
+// since the last strike has not passed, only if the fix is enabled.
+TEST_P(CreditCardAccessManagerVcnStrikeDatabaseFallbackTest,
+       RequiredDelayNotPassed_DoesNotInvokePreflightCallOnlyIfFixEnabled) {
+  AddVirtualCardEnrollmentStrikes(1);
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(virtual_card_enrollment_manager(), InitVirtualCardEnroll)
+      .Times(IsFixEnabled() ? 0 : 1);
+
+  FetchCard();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StrikeDatabase."
+      "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
+      VirtualCardEnrollmentSource::kDownstream, IsFixEnabled() ? 1 : 0);
+}
+
+// Tests that the preflight call is not invoked for a card that is not eligible
+// for virtual card enrollment, regardless of whether the fix is enabled.
+TEST_P(CreditCardAccessManagerVcnStrikeDatabaseFallbackTest,
+       CardNotEligible_DoesNotInvokePreflightCall) {
+  card_.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible);
+
+  EXPECT_CALL(virtual_card_enrollment_manager(), InitVirtualCardEnroll)
+      .Times(0);
+
+  FetchCard();
 }
 
 class CreditCardAccessManagerOpaqueTokenTest

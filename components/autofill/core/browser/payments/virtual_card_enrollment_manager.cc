@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strike_database/strike_database.h"
 #include "components/strike_database/strike_database_base.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -84,15 +86,24 @@ VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 
 bool VirtualCardEnrollmentManager::ShouldOfferVirtualCardEnrollment(
     const CreditCard& credit_card,
-    std::optional<int64_t> fetched_card_instrument_id,
-    std::optional<bool> card_unmasked_from_cache) {
+    std::optional<int64_t> card_instrument_id,
+    std::optional<bool> card_unmasked_from_cache,
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) {
   if (credit_card.virtual_card_enrollment_state() !=
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
     return false;
   }
 
-  if (!fetched_card_instrument_id.has_value() ||
-      credit_card.instrument_id() != fetched_card_instrument_id.value()) {
+  if (!card_instrument_id.has_value() ||
+      credit_card.instrument_id() != card_instrument_id.value()) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillFixVcnStrikeDatabaseFallback) &&
+      EnrollmentBlockedByStrikeDatabase(
+          base::NumberToString(credit_card.instrument_id()),
+          virtual_card_enrollment_source)) {
     return false;
   }
 
@@ -140,8 +151,9 @@ void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
   // Reset ongoing enrollment if there is any.
   Reset();
 
-  // If at strike limit, exit enrollment flow.
-  if (ShouldBlockVirtualCardEnrollment(
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillFixVcnStrikeDatabaseFallback) &&
+      EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(credit_card.instrument_id()),
           virtual_card_enrollment_source)) {
     return;
@@ -241,7 +253,7 @@ void VirtualCardEnrollmentManager::Unenroll(
                      VirtualCardEnrollmentRequestType::kUnenroll));
 }
 
-bool VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
+bool VirtualCardEnrollmentManager::EnrollmentBlockedByStrikeDatabase(
     const std::string& instrument_id,
     VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
   if (virtual_card_enrollment_source ==

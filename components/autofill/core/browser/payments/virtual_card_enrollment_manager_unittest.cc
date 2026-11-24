@@ -511,11 +511,11 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
   base::HistogramTester histogram_tester;
   SetUpStrikeDatabaseTest();
   EXPECT_FALSE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kUpstream));
   EXPECT_FALSE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kDownstream));
 
@@ -561,11 +561,11 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
   }
 
   EXPECT_TRUE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kUpstream));
   EXPECT_TRUE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kDownstream));
 }
@@ -627,7 +627,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
 
   // Make sure enrollment is not blocked through settings page.
   EXPECT_FALSE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kSettingsPage));
 }
@@ -707,7 +707,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
       "Autofill.StrikeDatabase.NthStrikeAdded.VirtualCardEnrollment",
       /*sample=*/1, /*count=*/1);
   EXPECT_TRUE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kDownstream));
 
@@ -716,13 +716,13 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
   task_environment_.FastForwardBy(
       base::Days(kEnrollmentEnforcedDelayInDays - 1));
   EXPECT_TRUE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kDownstream));
 
   // Makes sure that enrollment offer for another card is not blocked.
   EXPECT_FALSE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(55667788),
           VirtualCardEnrollmentSource::kDownstream));
 
@@ -730,7 +730,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
   // be blocked.
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_FALSE(
-      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+      virtual_card_enrollment_manager_->EnrollmentBlockedByStrikeDatabase(
           base::NumberToString(card_->instrument_id()),
           VirtualCardEnrollmentSource::kDownstream));
   histogram_tester.ExpectBucketCount(
@@ -983,7 +983,8 @@ TEST_P(DownstreamLatencyMetricsTest, LatencySinceDownstream) {
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
   virtual_card_enrollment_manager_->ShouldOfferVirtualCardEnrollment(
-      card, card.instrument_id(), card_unmasked_from_cache());
+      card, card.instrument_id(), card_unmasked_from_cache(),
+      VirtualCardEnrollmentSource::kDownstream);
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
       card, VirtualCardEnrollmentSource::kDownstream,
       /*virtual_card_enrollment_fields_loaded_callback=*/base::DoNothing());
@@ -1109,6 +1110,153 @@ TEST_P(DownstreamEnrollmentEarlyPreflightCallCallbackParamTest,
             payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
             response);
   }
+}
+
+// Test fixture for verifying that `ShouldOfferVirtualCardEnrollment()` and
+// `InitVirtualCardEnroll()` respect the virtual card enrollment strike
+// database. The first test parameter controls whether
+// `kAutofillFixVcnStrikeDatabaseFallback` is enabled, and the second is the
+// enrollment source.
+class VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest
+    : public VirtualCardEnrollmentManagerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, VirtualCardEnrollmentSource>> {
+ public:
+  VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillFixVcnStrikeDatabaseFallback, IsFixEnabled());
+  }
+
+  bool IsFixEnabled() const { return std::get<0>(GetParam()); }
+  VirtualCardEnrollmentSource source() const { return std::get<1>(GetParam()); }
+
+  void SetUp() override {
+    VirtualCardEnrollmentManagerTest::SetUp();
+    card_->set_virtual_card_enrollment_state(
+        CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
+  }
+
+  void AddStrikes(int num_strikes) {
+    for (int i = 0; i < num_strikes; ++i) {
+      virtual_card_enrollment_manager_
+          ->AddStrikeToBlockOfferingVirtualCardEnrollment(
+              base::NumberToString(card_->instrument_id()));
+    }
+  }
+
+  int GetMaxStrikesLimit() {
+    return test_api(*virtual_card_enrollment_manager_)
+        .GetVirtualCardEnrollmentStrikeDatabase()
+        ->GetMaxStrikesLimit();
+  }
+
+  bool ShouldOfferVirtualCardEnrollment() {
+    return virtual_card_enrollment_manager_->ShouldOfferVirtualCardEnrollment(
+        *card_, card_->instrument_id(), /*card_unmasked_from_cache=*/false,
+        source());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    VirtualCardEnrollmentManagerTest,
+    VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(VirtualCardEnrollmentSource::kDownstream,
+                          VirtualCardEnrollmentSource::kUpstream)));
+
+// Tests that virtual card enrollment is offered when the card has no strikes,
+// regardless of whether the fix is enabled.
+TEST_P(VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest,
+       NoStrikes_OffersEnrollment) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_TRUE(ShouldOfferVirtualCardEnrollment());
+  histogram_tester.ExpectTotalCount(
+      "Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.StrikeDatabase."
+      "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
+      0);
+}
+
+// Tests that virtual card enrollment is not offered when the card has reached
+// the max strike limit, only if the fix is enabled, and that the metrics are
+// logged under the provided source.
+TEST_P(VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest,
+       MaxStrikesReached_BlocksEnrollmentOnlyIfFixEnabled) {
+  AddStrikes(GetMaxStrikesLimit());
+  base::HistogramTester histogram_tester;
+
+  EXPECT_NE(IsFixEnabled(), ShouldOfferVirtualCardEnrollment());
+  const int expected_count = IsFixEnabled() ? 1 : 0;
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes",
+      source(), expected_count);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.MaxStrikesLimitReached", source(),
+      expected_count);
+}
+
+// Tests that virtual card enrollment is not offered when the required delay
+// since the last strike has not passed, only if the fix is enabled, and that
+// the metric is logged under the provided source.
+TEST_P(VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest,
+       RequiredDelayNotPassed_BlocksEnrollmentOnlyIfFixEnabled) {
+  AddStrikes(1);
+  base::HistogramTester histogram_tester;
+
+  EXPECT_NE(IsFixEnabled(), ShouldOfferVirtualCardEnrollment());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase."
+      "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
+      source(), IsFixEnabled() ? 1 : 0);
+
+  // Once the required delay has passed, enrollment should be offered again.
+  task_environment_.FastForwardBy(base::Days(kEnrollmentEnforcedDelayInDays));
+  EXPECT_TRUE(ShouldOfferVirtualCardEnrollment());
+}
+
+// Tests that a card that is not eligible for enrollment is never offered
+// enrollment, and that the strike database does not affect this.
+TEST_P(VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest,
+       NotEligible_DoesNotOfferEnrollment) {
+  card_->set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  AddStrikes(GetMaxStrikesLimit());
+  base::HistogramTester histogram_tester;
+
+  EXPECT_FALSE(ShouldOfferVirtualCardEnrollment());
+  histogram_tester.ExpectTotalCount(
+      "Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes",
+      0);
+}
+
+// Tests that `InitVirtualCardEnroll()` only checks the strike database if the
+// fix is disabled. When the fix is enabled, callers are responsible for
+// checking the strike database via `ShouldOfferVirtualCardEnrollment()` before
+// calling `InitVirtualCardEnroll()`.
+TEST_P(VirtualCardEnrollmentManagerStrikeDatabaseFallbackTest,
+       InitVirtualCardEnroll_StrikeCheckSkippedOnlyIfFixEnabled) {
+  AddStrikes(1);
+  base::HistogramTester histogram_tester;
+
+  virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+      *card_, source(), base::DoNothing(), std::nullopt, user_prefs(),
+      base::DoNothing());
+
+  // Risk data is only loaded if the enrollment flow was not blocked.
+  EXPECT_EQ(IsFixEnabled(), virtual_card_enrollment_manager_
+                                ->GetVirtualCardEnrollmentProcessState()
+                                ->risk_data.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase."
+      "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
+      source(), IsFixEnabled() ? 0 : 1);
 }
 
 }  // namespace autofill

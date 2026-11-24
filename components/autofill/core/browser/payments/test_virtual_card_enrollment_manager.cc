@@ -21,13 +21,13 @@ TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager(
 
 TestVirtualCardEnrollmentManager::~TestVirtualCardEnrollmentManager() = default;
 
-bool TestVirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
+bool TestVirtualCardEnrollmentManager::EnrollmentBlockedByStrikeDatabase(
     const std::string& instrument_id,
     VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
   if (ignore_strike_database_) {
     return false;
   }
-  return VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
+  return VirtualCardEnrollmentManager::EnrollmentBlockedByStrikeDatabase(
       instrument_id, virtual_card_enrollment_source);
 }
 

@@ -128,15 +128,18 @@ class VirtualCardEnrollmentManager {
   using VirtualCardEnrollmentUpdateResponseCallback = base::OnceCallback<void(
       payments::PaymentsAutofillClient::PaymentsRpcResult result)>;
 
-  // `fetched_card_instrument_id` refers to the instrument id of the
+  // `card_instrument_id` refers to the instrument id of the
   // most recently unmasked credit card. It should match `credit_card` to offer
   // virtual card enrollment. `card_unmasked_from_cache` indicates whether the
   // most recently unmasked card is retrieved from in-memory cache (or from the
-  // payments server).
+  // payments server). `virtual_card_enrollment_source` is the flow that is
+  // attempting to offer enrollment, and is used for logging metrics.
+  // TODO(crbug.com/587402006): Remove the `card_instrument_id` parameter.
   bool ShouldOfferVirtualCardEnrollment(
       const CreditCard& credit_card,
-      std::optional<int64_t> fetched_card_instrument_id,
-      std::optional<bool> card_unmasked_from_cache);
+      std::optional<int64_t> card_instrument_id,
+      std::optional<bool> card_unmasked_from_cache,
+      VirtualCardEnrollmentSource virtual_card_enrollment_source);
 
   // Starting point for the VCN enroll flow. The fields in `credit_card` will
   // be used throughout the flow, such as for request fields as well as credit
@@ -190,7 +193,7 @@ class VirtualCardEnrollmentManager {
   // reached the limit of strikes or if the required delay time since last
   // strike has not passed yet. Does nothing if the strike database is not
   // available.
-  virtual bool ShouldBlockVirtualCardEnrollment(
+  virtual bool EnrollmentBlockedByStrikeDatabase(
       const std::string& instrument_id,
       VirtualCardEnrollmentSource virtual_card_enrollment_source) const;
 
