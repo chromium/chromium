@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
@@ -14,6 +15,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -464,18 +467,14 @@ std::u16string KioskExternalUpdater::GetUpdateReportMessage() const {
   CHECK(!IsExternalUpdatePending(), base::NotFatalUntil::M160);
   int updated = 0;
   int failed = 0;
-  std::u16string updated_apps;
+  std::vector<std::u16string> updated_apps;
   std::u16string failed_apps;
   for (const auto& it : external_updates_) {
     const ExternalUpdate& update = it.second;
     std::u16string app_name = base::UTF8ToUTF16(update.app_name);
     if (update.update_status == UpdateStatus::kSuccess) {
       ++updated;
-      if (updated_apps.empty()) {
-        updated_apps = app_name;
-      } else {
-        updated_apps += u", " + app_name;
-      }
+      updated_apps.push_back(std::move(app_name));
     } else {  // UpdateStatus::kFailed
       ++failed;
       if (failed_apps.empty()) {
@@ -491,7 +490,9 @@ std::u16string KioskExternalUpdater::GetUpdateReportMessage() const {
           IDS_KIOSK_EXTERNAL_UPDATE_COMPLETE);
   if (updated) {
     std::u16string success_app_msg = l10n_util::GetStringFUTF16(
-        IDS_KIOSK_EXTERNAL_UPDATE_SUCCESSFUL_UPDATED_APPS, updated_apps);
+        IDS_KIOSK_EXTERNAL_UPDATE_SUCCESSFUL_UPDATED_APPS,
+        base::i18n::IcuBridge::GetInstance().list_formatter()->FormatNarrowList(
+            updated_apps));
     message += u"\n" + success_app_msg;
   }
 
