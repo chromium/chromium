@@ -540,6 +540,49 @@ TEST_F(X11WindowOzoneTest, ShowMapsWindowWithoutExplicitSync) {
       base::test::RunUntil([&]() { return !x11_window->IsMapPending(); }));
 }
 
+// Verifies that once a window with a window manager frame is mapped, moves
+// requested by other clients (e.g. `xdotool windowmove`) position the frame,
+// while moves requested by Chrome position the client window
+// (https://crbug.com/338741570).
+TEST_F(X11WindowOzoneTest, MoveWithWindowManagerFrame) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  gfx::AcceleratedWidget widget;
+  EXPECT_CALL(delegate, OnAcceleratedWidgetAvailable(_))
+      .WillOnce(StoreWidget(&widget));
+  X11Window window(&delegate);
+  window.Initialize(
+      PlatformWindowInitProperties(gfx::Rect(100, 100, 300, 200)));
+  window.SetUseNativeFrame(true);
+  window.Show(/*inactive=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !window.IsMapPending(); }));
+  auto* connection = x11::Connection::Get();
+  connection->Sync();
+  connection->DispatchAll();
+  const gfx::Rect bounds = window.GetBoundsInPixels();
+  const gfx::Vector2d frame_offset =
+      bounds.origin() - window.GetOuterBounds().origin();
+  if (frame_offset.IsZero()) {
+    GTEST_SKIP() << "The window manager does not provide a frame.";
+  }
+  // StaticGravity places the client window, not the frame, at the requested
+  // position. The window manager may ignore the position (Openbox does while
+  // windows of parallel test processes are there), so don't expect it.
+  EXPECT_NE(window.GetOuterBounds().origin(), gfx::Point(100, 100));
+
+  // Move the window like another X client would.
+  connection->ConfigureWindow(
+      {.window = static_cast<x11::Window>(widget), .x = 0, .y = 0});
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return window.GetBoundsInPixels().origin() != bounds.origin(); }));
+  EXPECT_EQ(window.GetBoundsInPixels().origin(), gfx::Point() + frame_offset);
+
+  constexpr gfx::Point kOrigin(150, 120);
+  window.SetBoundsInPixels(gfx::Rect(kOrigin, bounds.size()));
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !window.IsWmSyncActiveForTest(); }));
+  EXPECT_EQ(window.GetBoundsInPixels().origin(), kOrigin);
+}
+
 namespace {
 
 constexpr int kTouchDeviceId = 0;

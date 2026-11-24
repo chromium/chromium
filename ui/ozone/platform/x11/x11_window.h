@@ -212,6 +212,9 @@ class X11Window : public PlatformWindow,
 
   void UpdateDecorationInsets();
 
+  // Sets the win_gravity in WM_NORMAL_HINTS and updates `static_gravity_`.
+  void SetWinGravity(uint32_t gravity);
+
   // PlatformEventDispatcher:
   bool CanDispatchEvent(const PlatformEvent& event) override;
   uint32_t DispatchEvent(const PlatformEvent& event) override;
@@ -559,6 +562,9 @@ class X11Window : public PlatformWindow,
 
   // The size of the window manager provided borders (if any).
   gfx::Insets native_window_frame_borders_in_pixels_;
+
+  // True if WM_NORMAL_HINTS has StaticGravity.
+  bool static_gravity_ = false;
 
   // The client-side decoration insets last set in _GTK_FRAME_EXTENTS, or
   // nullopt if they have not been set yet (before the window is mapped).

@@ -628,8 +628,16 @@ void X11Window::SetBoundsInPixels(const gfx::Rect& bounds) {
   }
 
   if (origin_changed) {
-    req.x = new_bounds_in_pixels.x();
-    req.y = new_bounds_in_pixels.y();
+    // With NorthWestGravity, the window manager places the frame at the
+    // requested position, so offset by the frame extents. Without a native
+    // frame, _NET_FRAME_EXTENTS may be stale (Mutter keeps the old value).
+    gfx::Point origin = new_bounds_in_pixels.origin();
+    if (window_mapped_in_server_ && use_native_frame_ && !static_gravity_) {
+      origin.Offset(-native_window_frame_borders_in_pixels_.left(),
+                    -native_window_frame_borders_in_pixels_.top());
+    }
+    req.x = origin.x();
+    req.y = origin.y();
   }
 
   if (origin_changed || size_changed) {
@@ -1449,6 +1457,9 @@ void X11Window::OnFrameTypeChanged() {
   // the visible window. Window managers that honor _GTK_FRAME_EXTENTS (e.g.
   // Mutter) would otherwise keep the old frame rectangle and add the new
   // shadow insets around it. See https://crbug.com/394152435.
+  // _NET_FRAME_EXTENTS is stale until the window manager handles the frame
+  // change, so use StaticGravity until OnWmSynced().
+  SetWinGravity(x11::WIN_GRAVITY_HINT_STATIC_GRAVITY);
   gfx::Rect bounds = GetBoundsInPixels();
   bounds.Inset(*old_insets_px);
   bounds.Inset(-*decoration_insets_in_pixels_);
@@ -2229,11 +2240,13 @@ void X11Window::Map(bool inactive) {
   const gfx::Rect bounds = GetBoundsInPixels();
   size_hints.x = bounds.x();
   size_hints.y = bounds.y();
-  // Set STATIC_GRAVITY so that the window position is not affected by the
-  // frame width when running with window manager.
+  // Set STATIC_GRAVITY so that the initial window position is not affected by
+  // the frame width when running with window manager. It is reset to
+  // NorthWestGravity in OnWindowMapped().
   size_hints.flags |= x11::SIZE_HINT_P_WIN_GRAVITY;
   size_hints.win_gravity = x11::WIN_GRAVITY_HINT_STATIC_GRAVITY;
   connection_->SetWmNormalHints(xwindow_, size_hints);
+  static_gravity_ = true;
 
   ignore_keyboard_input_ = inactive;
   auto wm_user_time_ms = ignore_keyboard_input_
@@ -2726,6 +2739,10 @@ void X11Window::OnMapPending() {
 void X11Window::OnWindowMapped() {
   window_mapped_in_server_ = true;
   map_pending_ = false;
+  // Use NorthWestGravity, like most X11 clients, so that moves requested by
+  // other clients (e.g. xdotool) position the frame rather than the client
+  // window. See https://crbug.com/338741570.
+  SetWinGravity(x11::WIN_GRAVITY_HINT_NORTHWEST_GRAVITY);
   // Some WMs only respect maximize hints after the window has been mapped.
   // Check whether we need to re-do a maximization.
   if (should_maximize_after_map_) {
@@ -2970,7 +2987,19 @@ void X11Window::SetBoundsWithWmSync(const gfx::Rect& bounds_px) {
 
 void X11Window::OnWmSynced() {
   bounds_wm_sync_.reset();
+  if (static_gravity_ && window_mapped_in_server_) {
+    SetWinGravity(x11::WIN_GRAVITY_HINT_NORTHWEST_GRAVITY);
+  }
   OnBoundsChanged(last_set_bounds_px_, GetBoundsInPixels());
+}
+
+void X11Window::SetWinGravity(uint32_t gravity) {
+  x11::SizeHints size_hints = {};
+  connection_->GetWmNormalHints(xwindow_, &size_hints);
+  size_hints.flags |= x11::SIZE_HINT_P_WIN_GRAVITY;
+  size_hints.win_gravity = gravity;
+  connection_->SetWmNormalHints(xwindow_, size_hints);
+  static_gravity_ = gravity == x11::WIN_GRAVITY_HINT_STATIC_GRAVITY;
 }
 
 void X11Window::OnBoundsChanged(const std::optional<gfx::Rect>& old_bounds_px,
