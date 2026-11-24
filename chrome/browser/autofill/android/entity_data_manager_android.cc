@@ -17,6 +17,7 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/autofill/android/details_for_upsert_pass_android.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/autofill/wallet_pass_access_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/account_settings/account_setting_service.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -383,7 +386,9 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
                              {},
                              /*only_disambiguating_types=*/
                              false, /*obfuscate_sensitive_types=*/true,
-                             g_browser_process->GetApplicationLocale());
+                             g_browser_process->GetFeatures()
+                                 ->application_locale_storage()
+                                 ->GetTag());
     CHECK_EQ(entities_of_type.size(), labels.size());
 
     for (const auto [entity, label] :

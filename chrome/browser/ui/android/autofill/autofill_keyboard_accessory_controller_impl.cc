@@ -17,6 +17,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -281,8 +282,9 @@ struct AutofillAiSuggestionDetailsText {
   std::u16string primary_button_text;
 };
 
-std::u16string GetAutofillAiSuggestionTitle(const EntityInstance& entity,
-                                            std::string_view app_locale) {
+std::u16string GetAutofillAiSuggestionTitle(
+    const EntityInstance& entity,
+    const base::i18n::LanguageTag& app_locale) {
   const std::vector<EntityLabel> labels =
       GetLabelsForEntities({&entity},
                            /*attribute_types_to_ignore=*/{},
@@ -306,7 +308,7 @@ std::u16string GetAutofillAiSuggestionTitle(const EntityInstance& entity,
 [[nodiscard]] AutofillAiSuggestionDetailsText
 GetAutofillAiSuggestionDetailsText(
     const EntityInstance& entity,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>&
         sources) {
   CHECK(!sources.empty());
@@ -950,8 +952,8 @@ bool AutofillKeyboardAccessoryControllerImpl::ShowAutofillAiSuggestionDetails(
     std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>
         sources(payload.sources.begin(), payload.sources.begin() + count);
     AutofillAiSuggestionDetailsText details_text =
-        GetAutofillAiSuggestionDetailsText(
-            *entity, client->GetAppLocale().tag_string(), sources);
+        GetAutofillAiSuggestionDetailsText(*entity, client->GetAppLocale(),
+                                           sources);
     view_->ShowAutofillAiSuggestionDetails(
         details_text.title, details_text.body, details_text.confirm_button_text,
         details_text.primary_button_text, std::move(sources),

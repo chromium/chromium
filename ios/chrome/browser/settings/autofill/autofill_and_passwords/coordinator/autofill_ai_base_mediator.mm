@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/containers/span.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
@@ -195,15 +196,10 @@
   NSMutableArray<TableViewItem*>* items =
       [[NSMutableArray alloc] initWithCapacity:filteredEntities.size()];
 
-  std::string_view locale = GetApplicationContext()
-                                ->GetApplicationLocaleStorage()
-                                ->GetTag()
-                                .tag_string();
-
   std::vector<autofill::EntityLabel> labels = autofill::GetLabelsForEntities(
       filteredEntities, /*attribute_types_to_ignore=*/{},
       /*only_disambiguating_types=*/true, /*obfuscate_sensitive_types=*/true,
-      locale);
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
 
   for (size_t i = 0; i < filteredEntities.size(); ++i) {
     TableViewItem* item = [self itemForEntityInstance:*filteredEntities[i]

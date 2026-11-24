@@ -33,10 +33,12 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/common/extensions/api/autofill_private.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -1427,7 +1429,10 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   std::vector<autofill_private::EntityInstanceWithLabels> result =
       autofill_ai_util::EntityInstancesToPrivateApiEntityInstancesWithLabels(
           autofill::GetEntityInstancesForSettings(edm->GetEntityInstances()),
-          obfuscate_sensitive_types, g_browser_process->GetApplicationLocale());
+          obfuscate_sensitive_types,
+          g_browser_process->GetFeatures()
+              ->application_locale_storage()
+              ->GetTag());
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
 }

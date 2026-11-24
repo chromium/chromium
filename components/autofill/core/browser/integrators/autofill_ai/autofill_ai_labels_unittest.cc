@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -34,7 +35,8 @@ class AutofillAiLabelsTest : public testing::Test {
       DenseSet<AttributeTypeName> attribute_type_names_to_ignore,
       bool only_disambiguating_types,
       bool obfuscate_sensitive_types = false,
-      const std::string& app_locale = "en-US") {
+      const base::i18n::LanguageTag& app_locale =
+          base::i18n::GetKnownLanguageTag("en-US")) {
     DenseSet<AttributeType> attribute_types_to_ignore(
         attribute_type_names_to_ignore,
         [](AttributeTypeName name) { return AttributeType(name); });
@@ -163,16 +165,18 @@ TEST_F(AutofillAiLabelsTest, FlightDepartureDate_IsLocaleDependent) {
   EXPECT_THAT(GetLabels({&flight_1, &flight_2}, {},
                         /*only_disambiguating_types=*/true),
               ElementsAre(u"Jan 1", u"Jan 2"));
-  EXPECT_THAT(GetLabels({&flight_1, &flight_2}, {},
-                        /*only_disambiguating_types=*/true,
-                        /*obfuscate_sensitive_types=*/false,
-                        /*app_locale=*/"de-DE"),
-              ElementsAre(u"1. Jan.", u"2. Jan."));
-  EXPECT_THAT(GetLabels({&flight_1, &flight_2}, {},
-                        /*only_disambiguating_types=*/true,
-                        /*obfuscate_sensitive_types=*/false,
-                        /*app_locale=*/"pl-PL"),
-              ElementsAre(u"1 sty", u"2 sty"));
+  EXPECT_THAT(
+      GetLabels({&flight_1, &flight_2}, {},
+                /*only_disambiguating_types=*/true,
+                /*obfuscate_sensitive_types=*/false,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("de-DE")),
+      ElementsAre(u"1. Jan.", u"2. Jan."));
+  EXPECT_THAT(
+      GetLabels({&flight_1, &flight_2}, {},
+                /*only_disambiguating_types=*/true,
+                /*obfuscate_sensitive_types=*/false,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("pl-PL")),
+      ElementsAre(u"1 sty", u"2 sty"));
 }
 
 TEST_F(AutofillAiLabelsTest, ObfuscateSensitiveTypes) {
@@ -234,18 +238,20 @@ TEST_F(AutofillAiLabelsTest, NormalizationUsesAppLocale) {
                                       .state = u""});
 
   // In "de-DE", they are normalized to the same.
-  EXPECT_THAT(GetLabels({&vehicle_1, &vehicle_2}, {kVehicleModel},
-                        /*only_disambiguating_types=*/true,
-                        /*obfuscate_sensitive_types=*/false,
-                        /*app_locale=*/"de-DE"),
-              ElementsAre(u"John Doe", u"Jane Doe"));
+  EXPECT_THAT(
+      GetLabels({&vehicle_1, &vehicle_2}, {kVehicleModel},
+                /*only_disambiguating_types=*/true,
+                /*obfuscate_sensitive_types=*/false,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("de-DE")),
+      ElementsAre(u"John Doe", u"Jane Doe"));
 
   // In "en-US", they are normalized differently.
-  EXPECT_THAT(GetLabels({&vehicle_1, &vehicle_2}, {kVehicleModel},
-                        /*only_disambiguating_types=*/true,
-                        /*obfuscate_sensitive_types=*/false,
-                        /*app_locale=*/"en-US"),
-              ElementsAre(u"Müller", u"Mueller"));
+  EXPECT_THAT(
+      GetLabels({&vehicle_1, &vehicle_2}, {kVehicleModel},
+                /*only_disambiguating_types=*/true,
+                /*obfuscate_sensitive_types=*/false,
+                /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US")),
+      ElementsAre(u"Müller", u"Mueller"));
 }
 
 class AutofillAiLabelsParamTest

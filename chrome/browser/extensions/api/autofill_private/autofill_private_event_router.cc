@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -22,10 +23,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_util.h"
@@ -164,7 +167,9 @@ void AutofillPrivateEventRouter::OnEntityInstancesChanged() {
                               entity_data_manager_observer_.GetSource()
                                   ->GetEntityInstances()),
                           obfuscate_sensitive_types,
-                          g_browser_process->GetApplicationLocale())));
+                          g_browser_process->GetFeatures()
+                              ->application_locale_storage()
+                              ->GetTag())));
 
   auto extension_event = std::make_unique<Event>(
       events::AUTOFILL_PRIVATE_ON_ENTITY_INSTANCES_CHANGED,

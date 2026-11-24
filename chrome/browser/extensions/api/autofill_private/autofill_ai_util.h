@@ -16,6 +16,10 @@ namespace autofill {
 class EntityInstance;
 }  // namespace autofill
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace extensions::autofill_ai_util {
 
 // Converts an `autofill::AttributeType::DataType` enum entry to an
@@ -51,7 +55,7 @@ std::vector<api::autofill_private::EntityInstanceWithLabels>
 EntityInstancesToPrivateApiEntityInstancesWithLabels(
     base::span<const autofill::EntityInstance> entity_instances,
     bool obfuscate_sensitive_types,
-    std::string_view app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
     autofill::EntityType entity_type,

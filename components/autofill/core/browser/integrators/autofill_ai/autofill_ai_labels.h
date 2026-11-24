@@ -13,6 +13,10 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class EntityInstance;
@@ -60,7 +64,7 @@ std::vector<EntityLabel> GetLabelsForEntities(
     DenseSet<AttributeType> attribute_types_to_ignore,
     bool only_disambiguating_types,
     bool obfuscate_sensitive_types,
-    std::string_view app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 }  // namespace autofill
 
