@@ -5,13 +5,23 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_uninstall(bidi_session, extension_data):
-    # Use "path" as it is supported more widely.
-    web_extension = await bidi_session.web_extension.install(
-        extension_data={
-            "type": "path",
-            "path": extension_data["path"],
-        }
-    )
+    # Prefer "base64" so remote browsers (e.g. Android) do not depend on a
+    # host filesystem path, falling back to "path" when "base64" is
+    # unsupported.
+    try:
+        web_extension = await bidi_session.web_extension.install(
+            extension_data={
+                "type": "base64",
+                "value": extension_data["base64"],
+            }
+        )
+    except error.UnsupportedOperationException:
+        web_extension = await bidi_session.web_extension.install(
+            extension_data={
+                "type": "path",
+                "path": extension_data["path"],
+            }
+        )
     await bidi_session.web_extension.uninstall(
         extension=web_extension
     )
