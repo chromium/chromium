@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/ui/gradient_activity_indicator_view.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_configuration.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
@@ -394,6 +395,101 @@ TEST_F(IntelligenceHeaderViewTest, CondensedDensityReducesFittingHeight) {
           .height;
 
   EXPECT_LT(condensed_height, regular_height);
+}
+
+// Tests that `applyConfiguration:` updates all header fields atomically, reuses
+// matching accessory buttons in place, and removes accessories when set to
+// `nil`.
+TEST_F(IntelligenceHeaderViewTest,
+       ApplyConfigurationUpdatesFieldsAndReusesButtons) {
+  UIImage* custom_icon = SymbolWithPointSize(SymbolPlus, kIconPointSize);
+  IntelligenceHeaderItem* primary_v1 =
+      [IntelligenceHeaderItem callToActionWithIdentifier:kCallToActionButtonId
+                                                   title:kCallToActionTitle
+                                 accessibilityIdentifier:kCallToActionButtonId];
+  IntelligenceHeaderItem* secondary_v1 =
+      CreateIconItem(SymbolClock, kHistoryTitle, kHistoryButtonId);
+
+  IntelligenceHeaderConfiguration* config_v1 =
+      [[IntelligenceHeaderConfiguration alloc]
+          initWithLeadingIcon:custom_icon
+                        title:kTestTitle
+                     subtitle:kTestSubtitle
+                     activity:IntelligenceHeaderActivity::kActive
+                      density:IntelligenceHeaderDensity::kCondensed
+                  primaryItem:primary_v1
+               secondaryItems:@[ secondary_v1 ]];
+  [header_view_ applyConfiguration:config_v1];
+
+  EXPECT_NSEQ(header_view_.leadingIcon, custom_icon);
+  EXPECT_NSEQ(header_view_.title, kTestTitle);
+  EXPECT_NSEQ(header_view_.subtitle, kTestSubtitle);
+  EXPECT_EQ(header_view_.activity, IntelligenceHeaderActivity::kActive);
+  EXPECT_EQ(header_view_.density, IntelligenceHeaderDensity::kCondensed);
+  EXPECT_EQ(header_view_.primaryItem, primary_v1);
+  EXPECT_NSEQ(header_view_.secondaryItems, @[ secondary_v1 ]);
+
+  GradientActivityIndicatorView* indicator =
+      FindViewByClass<GradientActivityIndicatorView>(header_view_);
+  ASSERT_NE(indicator, nil);
+  EXPECT_FALSE(indicator.hidden);
+
+  UIButton* primary_button =
+      FindViewById<UIButton>(header_view_, kCallToActionButtonId);
+  UIButton* secondary_button =
+      FindViewById<UIButton>(header_view_, kHistoryButtonId);
+  ASSERT_NE(primary_button, nil);
+  ASSERT_NE(secondary_button, nil);
+
+  IntelligenceHeaderItem* primary_v2 = [IntelligenceHeaderItem
+      callToActionWithIdentifier:kCallToActionButtonId
+                           title:kUpdatedCallToActionTitle
+         accessibilityIdentifier:kCallToActionButtonId];
+  IntelligenceHeaderItem* secondary_v2 = [IntelligenceHeaderItem
+           itemWithIdentifier:kHistoryButtonId
+                         icon:SymbolWithPointSize(SymbolPlus, kIconPointSize)
+                        title:kResumeTitle
+      accessibilityIdentifier:kHistoryButtonId];
+
+  IntelligenceHeaderConfiguration* config_v2 =
+      [[IntelligenceHeaderConfiguration alloc]
+          initWithLeadingIcon:nil
+                        title:kResumeTitle
+                     subtitle:nil
+                     activity:IntelligenceHeaderActivity::kIdle
+                      density:IntelligenceHeaderDensity::kRegular
+                  primaryItem:primary_v2
+               secondaryItems:@[ secondary_v2 ]];
+  [header_view_ applyConfiguration:config_v2];
+
+  EXPECT_EQ(header_view_.leadingIcon, nil);
+  EXPECT_NSEQ(header_view_.title, kResumeTitle);
+  EXPECT_EQ(header_view_.subtitle, nil);
+  EXPECT_EQ(header_view_.activity, IntelligenceHeaderActivity::kIdle);
+  EXPECT_EQ(header_view_.density, IntelligenceHeaderDensity::kRegular);
+  EXPECT_TRUE(indicator.hidden);
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kCallToActionButtonId),
+            primary_button);
+  EXPECT_NSEQ(primary_button.configuration.title, kUpdatedCallToActionTitle);
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kHistoryButtonId),
+            secondary_button);
+  EXPECT_NSEQ(secondary_button.accessibilityLabel, kResumeTitle);
+
+  IntelligenceHeaderConfiguration* config_v3 =
+      [[IntelligenceHeaderConfiguration alloc]
+          initWithLeadingIcon:nil
+                        title:nil
+                     subtitle:nil
+                     activity:IntelligenceHeaderActivity::kIdle
+                      density:IntelligenceHeaderDensity::kRegular
+                  primaryItem:nil
+               secondaryItems:nil];
+  [header_view_ applyConfiguration:config_v3];
+
+  EXPECT_EQ(header_view_.primaryItem, nil);
+  EXPECT_EQ(header_view_.secondaryItems, nil);
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kCallToActionButtonId), nil);
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kHistoryButtonId), nil);
 }
 
 }  // namespace

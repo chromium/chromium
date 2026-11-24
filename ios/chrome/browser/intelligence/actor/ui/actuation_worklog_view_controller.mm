@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_configuration.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -105,7 +106,7 @@ using intelligence::actor::kSpacingLarge;
     return;
   }
   _displayMode = displayMode;
-  [self updateHeaderContent];
+  [self updateHeader];
   [self updateVisibility];
 }
 
@@ -138,7 +139,7 @@ using intelligence::actor::kSpacingLarge;
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   [self setupSubviews];
   [self setupConstraints];
-  [self updateHeaderContent];
+  [self updateHeader];
   [self updateVisibility];
   [self updateIntervention];
 }
@@ -151,8 +152,7 @@ using intelligence::actor::kSpacingLarge;
   }
   _actuationActive = active;
   _fullView.actuating = active;
-  _headerView.activity = active ? IntelligenceHeaderActivity::kActive
-                                : IntelligenceHeaderActivity::kIdle;
+  [self updateHeader];
   [self updateVisibility];
 }
 
@@ -161,12 +161,12 @@ using intelligence::actor::kSpacingLarge;
     return;
   }
   _headerPrimaryAction = action;
-  _headerView.primaryItem = [self createPrimaryItem];
+  [self updateHeader];
 }
 
 - (void)setHeaderContentVariants:(ActuationHeaderContentVariants*)variants {
   _headerContentVariants = variants;
-  [self updateHeaderContent];
+  [self updateHeader];
 }
 
 - (void)updateWorklogWithItem:(ActuationWorklogItem*)item
@@ -201,9 +201,8 @@ using intelligence::actor::kSpacingLarge;
 
 - (void)reset {
   _headerContentVariants = nil;
-  [_headerView reset];
   _headerPrimaryAction = ActuationHeaderPrimaryAction::kStop;
-  _headerView.primaryItem = [self createPrimaryItem];
+  [self updateHeader];
   [_compactView reset];
   [_fullView reset];
   [_scrollView setContentOffset:CGPointZero animated:NO];
@@ -281,9 +280,6 @@ using intelligence::actor::kSpacingLarge;
   _headerView = [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.accessibilityIdentifier = kActuationHeaderAccessibilityIdentifier;
   _headerView.delegate = self;
-  _headerView.activity = _actuationActive ? IntelligenceHeaderActivity::kActive
-                                          : IntelligenceHeaderActivity::kIdle;
-  _headerView.primaryItem = [self createPrimaryItem];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_headerView];
 
@@ -339,13 +335,31 @@ using intelligence::actor::kSpacingLarge;
   ]];
 }
 
-// Updates `_headerView` content and density for `_displayMode`.
-- (void)updateHeaderContent {
+// Applies the current header configuration for `displayMode` to `_headerView`.
+- (void)updateHeader {
+  if (!_headerView) {
+    return;
+  }
+  [_headerView applyConfiguration:
+                   [self headerConfigurationForDisplayMode:self.displayMode]];
+}
+
+// Builds the header configuration for `mode`.
+- (IntelligenceHeaderConfiguration*)headerConfigurationForDisplayMode:
+    (ActuationWorklogDisplayMode)mode {
   ActuationHeaderContent* content =
-      [_headerContentVariants contentForDisplayMode:_displayMode];
-  _headerView.title = content.title;
-  _headerView.subtitle = content.subtitle;
-  _headerView.density = HeaderDensityForDisplayMode(_displayMode);
+      [_headerContentVariants contentForDisplayMode:mode];
+  IntelligenceHeaderActivity activity =
+      _actuationActive ? IntelligenceHeaderActivity::kActive
+                       : IntelligenceHeaderActivity::kIdle;
+  return [[IntelligenceHeaderConfiguration alloc]
+      initWithLeadingIcon:nil
+                    title:content.title
+                 subtitle:content.subtitle
+                 activity:activity
+                  density:HeaderDensityForDisplayMode(mode)
+              primaryItem:[self createPrimaryItem]
+           secondaryItems:nil];
 }
 
 // Updates visibility of the view and its subviews for `_displayMode`.
@@ -383,16 +397,13 @@ using intelligence::actor::kSpacingLarge;
     _sizingHeaderView =
         [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   }
-  ActuationHeaderContent* content =
-      [_headerContentVariants contentForDisplayMode:mode];
-  BOOL minimized = mode == ActuationWorklogDisplayModeMinimized;
-  _sizingHeaderView.title =
-      minimized ? kHeaderSizingPlaceholderText : content.title;
-  _sizingHeaderView.subtitle =
-      minimized ? kHeaderSizingPlaceholderText : content.subtitle;
-  _sizingHeaderView.density = HeaderDensityForDisplayMode(mode);
-  _sizingHeaderView.primaryItem = _headerView.primaryItem;
-  _sizingHeaderView.secondaryItems = _headerView.secondaryItems;
+  [_sizingHeaderView
+      applyConfiguration:[self headerConfigurationForDisplayMode:mode]];
+  _sizingHeaderView.activity = IntelligenceHeaderActivity::kIdle;
+  if (mode == ActuationWorklogDisplayModeMinimized) {
+    _sizingHeaderView.title = kHeaderSizingPlaceholderText;
+    _sizingHeaderView.subtitle = kHeaderSizingPlaceholderText;
+  }
   return [self fittingHeightForView:_sizingHeaderView
                         targetWidth:self.view.bounds.size.width];
 }

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/intelligence/ui/gradient_activity_indicator_view.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
@@ -240,6 +241,17 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
     [self setupConstraints];
   }
   return self;
+}
+
+- (void)applyConfiguration:(IntelligenceHeaderConfiguration*)configuration {
+  CHECK(configuration);
+  self.leadingIcon = configuration.leadingIcon;
+  self.title = configuration.title;
+  self.subtitle = configuration.subtitle;
+  self.activity = configuration.activity;
+  self.density = configuration.density;
+  self.primaryItem = configuration.primaryItem;
+  self.secondaryItems = configuration.secondaryItems;
 }
 
 - (void)reset {

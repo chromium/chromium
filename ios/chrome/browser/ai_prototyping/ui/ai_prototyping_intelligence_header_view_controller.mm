@@ -6,6 +6,7 @@
 
 #import <iterator>
 
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_configuration.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -223,11 +224,6 @@ IntelligenceHeaderItem* CallToActionItem(NSString* identifier,
 
 // Pushes the current control values to `_headerView`.
 - (void)updateHeader {
-  _headerView.title = _titleField.text;
-  _headerView.subtitle = _subtitleField.text;
-  _headerView.activity = _loadingSwitch.on ? IntelligenceHeaderActivity::kActive
-                                           : IntelligenceHeaderActivity::kIdle;
-
   NSUInteger count = static_cast<NSUInteger>(_secondaryCountStepper.value);
   _secondaryCountLabel.text =
       [NSString stringWithFormat:@"Secondary items: %@", @(count)];
@@ -259,8 +255,18 @@ IntelligenceHeaderItem* CallToActionItem(NSString* identifier,
                                          @(callToActionCount)];
     [items addObject:CallToActionItem(identifier, title)];
   }
-  _headerView.secondaryItems = items;
-  _headerView.primaryItem = [self selectedPrimaryItem];
+  IntelligenceHeaderActivity activity =
+      _loadingSwitch.on ? IntelligenceHeaderActivity::kActive
+                        : IntelligenceHeaderActivity::kIdle;
+  [_headerView applyConfiguration:
+                   [[IntelligenceHeaderConfiguration alloc]
+                       initWithLeadingIcon:nil
+                                     title:_titleField.text
+                                  subtitle:_subtitleField.text
+                                  activity:activity
+                                   density:IntelligenceHeaderDensity::kRegular
+                               primaryItem:[self selectedPrimaryItem]
+                            secondaryItems:items]];
 }
 
 // Returns the primary item matching `_primarySegment`, or nil for none.

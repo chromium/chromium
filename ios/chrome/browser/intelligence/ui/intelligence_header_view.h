@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_configuration.h"
+
 @class IntelligenceHeaderItem;
 @class IntelligenceHeaderView;
 
@@ -19,23 +21,6 @@
     didTriggerItemWithIdentifier:(NSString*)identifier;
 
 @end
-
-// Activity state of an `IntelligenceHeaderView`, controlling the indicator
-// around the leading icon.
-enum class IntelligenceHeaderActivity {
-  // Static leading icon without an activity ring.
-  kIdle,
-  // Animated gradient ring around the leading icon.
-  kActive,
-};
-
-// Vertical padding density of an `IntelligenceHeaderView`.
-enum class IntelligenceHeaderDensity {
-  // Standard padding.
-  kRegular,
-  // Reduced padding, for space-constrained presentations.
-  kCondensed,
-};
 
 // Reusable intelligence header view displaying a leading icon (with an optional
 // animated gradient ring), a title/subtitle stack, and trailing accessory
@@ -94,6 +79,11 @@ enum class IntelligenceHeaderDensity {
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+// Applies `configuration` atomically (`configuration` must be non-nil). Prefer
+// this for full state updates; the property setters are convenience helpers for
+// single-field tweaks.
+- (void)applyConfiguration:(IntelligenceHeaderConfiguration*)configuration;
 
 // Resets the header state, clearing all content and accessory properties.
 - (void)reset;

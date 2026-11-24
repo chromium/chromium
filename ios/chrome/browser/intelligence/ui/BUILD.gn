@@ -11,6 +11,8 @@ source_set("ui") {
   sources = [
     "gradient_activity_indicator_view.h",
     "gradient_activity_indicator_view.mm",
+    "intelligence_header_configuration.h",
+    "intelligence_header_configuration.mm",
     "intelligence_header_item.h",
     "intelligence_header_item.mm",
     "intelligence_header_view.h",
