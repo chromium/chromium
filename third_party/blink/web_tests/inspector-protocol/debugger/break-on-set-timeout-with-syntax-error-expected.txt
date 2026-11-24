@@ -1,0 +1,8 @@
+Tests that scheduled pause is cleared after processing event with empty handler.
+Exception thrown: SyntaxError
+Paused count before executeSomeCode: 0
+Paused reason: other
+executeSomeCode at :6:6
+(anonymous) at :0:0
+Total paused count: 1
+
