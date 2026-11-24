@@ -126,8 +126,14 @@ class TestingOmniboxView : public OmniboxViewViews {
     return is_full_webui_omnibox_ && is_full_webui_omnibox_ready_;
   }
 
+  const std::u16string& additional_text() const { return additional_text_; }
+
   // OmniboxViewViews:
   void OnThemeChanged() override;
+  void SetAdditionalText(const std::u16string& additional_text) override {
+    additional_text_ = additional_text;
+    OmniboxViewViews::SetAdditionalText(additional_text);
+  }
 
   using OmniboxView::OnInlineAutocompleteTextMaybeChanged;
 
@@ -173,6 +179,9 @@ class TestingOmniboxView : public OmniboxViewViews {
 
   bool is_full_webui_omnibox_ = false;
   bool is_full_webui_omnibox_ready_ = false;
+
+  // The latest text passed to `SetAdditionalText()`.
+  std::u16string additional_text_;
 };
 
 TestingOmniboxView::TestingOmniboxView(bool popup_window_mode,
@@ -349,6 +358,28 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
                                   int event_flags = ui::EF_LEFT_MOUSE_BUTTON) {
     return ui::MouseEvent(type, point, point, ui::EventTimeForNow(),
                           event_flags, event_flags);
+  }
+
+  // Simulates typing `user_text` and getting a default match that shows
+  // `additional_text`, e.g. '123 - abc.com/123' for a rich autocompletion
+  // match, or '123[ 456] - abc.com/123' with `inline_autocompletion`.
+  void ShowAdditionalText(const std::u16string& user_text,
+                          const std::u16string& additional_text,
+                          const std::u16string& inline_autocompletion = u"") {
+    omnibox_view()->SetUserText(user_text);
+    AutocompleteMatch match;
+    match.fill_into_edit = u"abc.com/123";
+    match.additional_text = additional_text;
+    match.inline_autocompletion = inline_autocompletion;
+    omnibox_view()->model()->OnPopupDataChanged(
+        std::u16string(), /*is_temporary_text=*/false, inline_autocompletion,
+        std::u16string(), std::u16string(), KeywordState::kNone,
+        additional_text, match);
+  }
+
+  void PressKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
+    ui::KeyEvent event(ui::EventType::kKeyPressed, key_code, flags);
+    omnibox_textfield()->OnKeyEvent(&event);
   }
 
  protected:
@@ -1015,6 +1046,118 @@ TEST_F(OmniboxViewViewsTest, OnInlineAutocompleteTextMaybeChanged) {
   EXPECT_EQ(u"gmail.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{9, 4}}));
+}
+
+TEST_F(OmniboxViewViewsTest, RightAcceptsAdditionalText) {
+  // In LTR text, Left moves the caret, so it shouldn't accept the additional
+  // text.
+  ShowAdditionalText(u"123", u"abc.com/123");
+  ASSERT_EQ(base::i18n::LEFT_TO_RIGHT, omnibox_view()->GetTextDirection());
+  PressKey(ui::VKEY_LEFT);
+  EXPECT_EQ(u"123", omnibox_view()->GetText());
+  EXPECT_EQ(Range(2), omnibox_view()->GetSelectedRange());
+
+  ShowAdditionalText(u"123", u"abc.com/123");
+  ASSERT_EQ(u"123", omnibox_view()->GetText());
+  ASSERT_EQ(u"abc.com/123", omnibox_view()->additional_text());
+
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(u"abc.com/123", omnibox_view()->GetText());
+  EXPECT_EQ(Range(11), omnibox_view()->GetSelectedRange());
+  EXPECT_EQ(u"", omnibox_view()->additional_text());
+  EXPECT_EQ(u"abc.com/123", omnibox_view()->model()->user_text());
+  EXPECT_FALSE(omnibox_view()->model()->has_temporary_text());
+}
+
+TEST_F(OmniboxViewViewsTest, EndAcceptsAdditionalText) {
+  ShowAdditionalText(u"123", u"abc.com/123");
+  ASSERT_EQ(u"123", omnibox_view()->GetText());
+  omnibox_view()->CheckUpdatePopupCallInfo(1, u"123", Range(3));
+
+  PressKey(ui::VKEY_END);
+  EXPECT_EQ(u"abc.com/123", omnibox_view()->GetText());
+  EXPECT_EQ(Range(11), omnibox_view()->GetSelectedRange());
+  EXPECT_EQ(u"", omnibox_view()->additional_text());
+  EXPECT_EQ(u"abc.com/123", omnibox_view()->model()->user_text());
+  // Accepting the additional text doesn't update the popup.
+  omnibox_view()->CheckUpdatePopupCallInfo(1, u"123", Range(3));
+}
+
+TEST_F(OmniboxViewViewsTest, RightAndEndIgnoreAdditionalTextUnlessCaretAtEnd) {
+  // Caret isn't at the end: Right and End move it.
+  ShowAdditionalText(u"123", u"abc.com/123");
+  omnibox_textfield()->SetSelectedRange(Range(1));
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(u"123", omnibox_view()->GetText());
+  EXPECT_EQ(Range(2), omnibox_view()->GetSelectedRange());
+  PressKey(ui::VKEY_END);
+  EXPECT_EQ(u"123", omnibox_view()->GetText());
+  EXPECT_EQ(Range(3), omnibox_view()->GetSelectedRange());
+
+  // Text is selected: Right and End collapse the selection.
+  ShowAdditionalText(u"123", u"abc.com/123");
+  omnibox_view()->SelectAll(false);
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(u"123", omnibox_view()->GetText());
+  EXPECT_EQ(Range(3), omnibox_view()->GetSelectedRange());
+
+  ShowAdditionalText(u"123", u"abc.com/123");
+  omnibox_view()->SelectAll(false);
+  PressKey(ui::VKEY_END);
+  EXPECT_EQ(u"123", omnibox_view()->GetText());
+  EXPECT_EQ(Range(3), omnibox_view()->GetSelectedRange());
+}
+
+TEST_F(OmniboxViewViewsTest, RightAndEndWithModifiersIgnoreAdditionalText) {
+  for (ui::KeyboardCode key_code : {ui::VKEY_RIGHT, ui::VKEY_END}) {
+    for (int flags : {ui::EF_SHIFT_DOWN, ui::EF_CONTROL_DOWN, ui::EF_ALT_DOWN,
+                      ui::EF_COMMAND_DOWN}) {
+      SCOPED_TRACE(testing::Message()
+                   << "key_code: " << key_code << ", flags: " << flags);
+      ShowAdditionalText(u"123", u"abc.com/123");
+      PressKey(key_code, flags);
+      EXPECT_EQ(u"123", omnibox_view()->GetText());
+      EXPECT_EQ(u"123", omnibox_view()->model()->user_text());
+    }
+  }
+}
+
+TEST_F(OmniboxViewViewsTest,
+       RightAcceptsInlineAutocompletionNotAdditionalText) {
+  // '123[ 456] - abc.com/123'
+  ShowAdditionalText(u"123", u"abc.com/123", u" 456");
+  ASSERT_EQ(u"123 456", omnibox_view()->GetText());
+
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(u"123 456", omnibox_view()->GetText());
+  EXPECT_EQ(Range(7), omnibox_view()->GetSelectedRange());
+  EXPECT_EQ(u"123 456", omnibox_view()->model()->user_text());
+}
+
+TEST_F(OmniboxViewViewsTest, RightAndEndWithoutAdditionalText) {
+  ShowAdditionalText(u"123", u"");
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(u"123", omnibox_view()->GetText());
+  PressKey(ui::VKEY_END);
+  EXPECT_EQ(u"123", omnibox_view()->GetText());
+  EXPECT_EQ(u"123", omnibox_view()->model()->user_text());
+}
+
+// In RTL text, End and Left (which would do nothing at the end) should accept
+// the additional text, but Right (which moves the caret) shouldn't.
+TEST_F(OmniboxViewViewsTest, EndAndLeftAcceptAdditionalTextInRtlText) {
+  ShowAdditionalText(u"\u05e9\u05dc\u05d5\u05dd", u"abc.com/123");
+  ASSERT_EQ(base::i18n::RIGHT_TO_LEFT, omnibox_view()->GetTextDirection());
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(u"\u05e9\u05dc\u05d5\u05dd", omnibox_view()->GetText());
+
+  ShowAdditionalText(u"\u05e9\u05dc\u05d5\u05dd", u"abc.com/123");
+  PressKey(ui::VKEY_LEFT);
+  EXPECT_EQ(u"abc.com/123", omnibox_view()->GetText());
+
+  ShowAdditionalText(u"\u05e9\u05dc\u05d5\u05dd", u"abc.com/123");
+  PressKey(ui::VKEY_END);
+  EXPECT_EQ(u"abc.com/123", omnibox_view()->GetText());
 }
 
 TEST_F(OmniboxViewViewsTest, OverflowingAutocompleteText) {

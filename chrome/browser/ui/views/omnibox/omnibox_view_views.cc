@@ -2371,6 +2371,23 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       controller()->edit_model()->ClearKeyword();
       return true;
 
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+    case ui::VKEY_END: {
+      // With the caret at the end, End and the arrow toward the end (Right in
+      // LTR text, Left in RTL text) should accept the additional text.
+      const bool is_rtl = GetTextDirection() == base::i18n::RIGHT_TO_LEFT;
+      const ui::KeyboardCode key_code = event.key_code();
+      const bool moves_to_end =
+          key_code == ui::VKEY_END ||
+          key_code == (is_rtl ? ui::VKEY_LEFT : ui::VKEY_RIGHT);
+      if (moves_to_end && !shift && !control && !alt && !command &&
+          controller()->edit_model()->AcceptAdditionalText()) {
+        return true;
+      }
+      break;
+    }
+
     case ui::VKEY_HOME:
       // The Home key indicates that the user wants to move the cursor to the
       // beginning of the full URL, so it should always trigger an unelide.

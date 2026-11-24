@@ -1298,6 +1298,34 @@ void OmniboxEditModel::ClearAdditionalText() {
   }
 }
 
+bool OmniboxEditModel::AcceptAdditionalText() {
+  if (!view_) {
+    return false;
+  }
+
+  // If moving the cursor within the text or accepting inline autocompletion,
+  // then don't also accept additional text.
+  const gfx::Range selection = view_->GetSelectionBounds();
+  if (has_temporary_text_ || !inline_autocompletion_.empty() ||
+      !selection.is_empty() || selection.end() != user_text_.size() ||
+      current_match_.additional_text.empty() ||
+      current_match_.fill_into_edit.empty()) {
+    return false;
+  }
+
+  // Stop running autocompletion to avoid updating the matches.
+  controller_->StopAutocomplete(/*clear_result=*/false);
+  // Replace the omnibox text with the `fill_into_edit`. That's similar to the
+  // `additional_text`, but it's unelided and consistent with arrowing through
+  // matches.
+  const std::u16string text = current_match_.fill_into_edit;
+  InternalSetUserText(text);
+  view_->SetWindowTextAndCaretPos(text, text.size(), /*update_popup=*/false,
+                                  /*notify_text_changed=*/true);
+  // Don't rerun autocompletion, so the matches don't change.
+  return true;
+}
+
 void OmniboxEditModel::OnSetFocus(bool control_down) {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::OnSetFocus");
   metrics_tracker_.FocusChanged(true);

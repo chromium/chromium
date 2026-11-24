@@ -398,6 +398,14 @@ class OmniboxEditModel {
   // Clears additional text.
   void ClearAdditionalText();
 
+  // When the omnibox shows user text without inline autocompletion or
+  // temporary text, moving the caret beyond the text end will accept additional
+  // text if available. E.g. '123| - abc.com/123' would replace the omnibox text
+  // with the match's `fill_into_edit` as user text and return true. Doesn't
+  // rerun autocomplete, so the popup and its selection don't change. Otherwise,
+  // returns false and does nothing.
+  bool AcceptAdditionalText();
+
   // Called when the view is gaining focus.  |control_down| is whether the
   // control key is down (at the time we're gaining focus).
   void OnSetFocus(bool control_down);

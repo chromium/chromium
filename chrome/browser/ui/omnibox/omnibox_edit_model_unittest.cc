@@ -288,6 +288,66 @@ TEST_F(OmniboxEditModelTest, InlineAutocompleteText) {
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
 }
 
+// Verifies that `AcceptAdditionalText()` does nothing unless the default match
+// is shown as additional text without inline autocompletion, with the caret at
+// the end and nothing selected.
+TEST_F(OmniboxEditModelTest, AcceptAdditionalTextDoesNothing) {
+  model()->OnSetFocus(false);
+  view()->SetUserText(u"123");
+  AutocompleteMatch match;
+  match.fill_into_edit = u"abc.com/123";
+
+  // No additional text.
+  model()->OnPopupDataChanged(std::u16string(), /*is_temporary_text=*/false,
+                              std::u16string(), std::u16string(),
+                              std::u16string(), KeywordState::kNone,
+                              std::u16string(), match);
+  EXPECT_FALSE(model()->AcceptAdditionalText());
+  EXPECT_EQ(u"123", view()->GetText());
+  EXPECT_EQ(u"123", model()->user_text());
+
+  // Additional text, but the caret isn't at the end.
+  match.additional_text = u"abc.com/123";
+  model()->OnPopupDataChanged(std::u16string(), /*is_temporary_text=*/false,
+                              std::u16string(), std::u16string(),
+                              std::u16string(), KeywordState::kNone,
+                              match.additional_text, match);
+  view()->SetSelectionBounds(gfx::Range(1));
+  EXPECT_FALSE(model()->AcceptAdditionalText());
+  EXPECT_EQ(u"123", view()->GetText());
+  EXPECT_EQ(u"123", model()->user_text());
+
+  // Additional text, but text is selected.
+  view()->SetSelectionBounds(gfx::Range(0, 3));
+  EXPECT_FALSE(model()->AcceptAdditionalText());
+  EXPECT_EQ(u"123", view()->GetText());
+  EXPECT_EQ(u"123", model()->user_text());
+  view()->SetSelectionBounds(gfx::Range(3));
+
+  // Additional text with inline autocompletion, e.g. when the input is a prefix
+  // of the match's title: '123[ 456] - abc.com/123'. The inline
+  // autocompletion can be accepted instead.
+  match.inline_autocompletion = u" 456";
+  model()->OnPopupDataChanged(std::u16string(), /*is_temporary_text=*/false,
+                              match.inline_autocompletion, std::u16string(),
+                              std::u16string(), KeywordState::kNone,
+                              match.additional_text, match);
+  ASSERT_EQ(u"123 456", view()->GetText());
+  EXPECT_FALSE(model()->AcceptAdditionalText());
+  EXPECT_EQ(u"123 456", view()->GetText());
+  EXPECT_EQ(u"123", model()->user_text());
+
+  // Temporary text, e.g. when the user arrows to a match with additional text.
+  match.inline_autocompletion.clear();
+  model()->OnPopupDataChanged(match.fill_into_edit, /*is_temporary_text=*/true,
+                              std::u16string(), std::u16string(),
+                              std::u16string(), KeywordState::kNone,
+                              std::u16string(), match);
+  ASSERT_TRUE(model()->has_temporary_text());
+  EXPECT_FALSE(model()->AcceptAdditionalText());
+  EXPECT_EQ(u"123", model()->user_text());
+}
+
 TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
   location_bar_model()->set_url_for_display(u"example.com");
@@ -1686,6 +1746,69 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
             model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
+}
+
+// Verifies that `AcceptAdditionalText()` replaces the text with the default
+// match's `fill_into_edit` when it's shown as additional text without inline
+// autocompletion, e.g. '123 - abc.com/123', without rerunning autocomplete or
+// changing the popup.
+TEST_F(OmniboxEditModelPopupTest, AcceptAdditionalText) {
+  model()->OnSetFocus(false);
+  view_->SetUserText(u"123");
+  model()->StartAutocomplete(false);
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kInteraction);
+
+  AutocompleteMatch match(
+      controller()->autocomplete_controller()->search_provider(), 1000, false,
+      omnibox::AutocompleteMatchType::kHistoryUrl);
+  match.destination_url = GURL("https://abc.com/123");
+  match.fill_into_edit = u"abc.com/123";
+  match.additional_text = u"abc.com/123";
+  match.allowed_to_be_default_match = true;
+  AutocompleteMatch other_match(
+      controller()->autocomplete_controller()->search_provider(), 900, false,
+      omnibox::AutocompleteMatchType::kHistoryUrl);
+  other_match.destination_url = GURL("https://123.com/");
+  other_match.fill_into_edit = u"123.com";
+  AutocompleteResult* result = &AutocompleteControllerPublishedResult();
+  result->Reset();
+  result->AppendMatches({match, other_match});
+  model()->OnPopupResultChanged();
+  model()->OnPopupDataChanged(std::u16string(), /*is_temporary_text=*/false,
+                              std::u16string(), u"abc.com", std::u16string(),
+                              KeywordState::kHint, match.additional_text,
+                              match);
+  ASSERT_EQ(u"123", view_->GetText());
+  ASSERT_TRUE(controller()->IsPopupOpen());
+  ASSERT_EQ(Selection(0), model()->GetPopupSelection());
+
+  EXPECT_TRUE(model()->AcceptAdditionalText());
+  EXPECT_EQ(u"abc.com/123", view_->GetText());
+  EXPECT_EQ(gfx::Range(11), view_->GetSelectionBounds());
+  EXPECT_EQ(u"abc.com/123", model()->user_text());
+  EXPECT_TRUE(model()->user_input_in_progress());
+  EXPECT_FALSE(model()->has_temporary_text());
+
+  // Autocomplete isn't rerun, so the popup, its selection, and the keyword
+  // hint don't change.
+  EXPECT_EQ(u"123", AutocompleteControllerInput().text());
+  EXPECT_EQ(u"123", model()->GetInputForTesting().text());
+  EXPECT_TRUE(controller()->IsPopupOpen());
+  ASSERT_EQ(2u, result->size());
+  EXPECT_EQ(match.destination_url, result->match_at(0)->destination_url);
+  EXPECT_EQ(other_match.destination_url, result->match_at(1)->destination_url);
+  EXPECT_EQ(Selection(0), model()->GetPopupSelection());
+  EXPECT_TRUE(model()->is_keyword_hint());
+  EXPECT_EQ(u"abc.com", model()->keyword());
+
+  // Enter opens the default match.
+  EXPECT_CALL(*client(), OnAutocompleteAccept(
+                             match.destination_url, _,
+                             ui::mojom::WindowOpenDisposition::kCurrentTab, _,
+                             _, _, _, _, _, _, _))
+      .Times(1);
+  model()->OpenCurrentSelection();
 }
 
 // Makes sure focus resets to the default match when results changes.
