@@ -273,6 +273,11 @@ void AutofillBottomSheetTabHelper::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+base::WeakPtr<AutofillBottomSheetTabHelper>
+AutofillBottomSheetTabHelper::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void AutofillBottomSheetTabHelper::OnFormMessageReceived(
     const web::ScriptMessage& message) {
   autofill::FormActivityParams params;
