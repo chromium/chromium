@@ -733,6 +733,9 @@ void ArcSessionManager::OnProvisioningFinished(
     }
 
     prefs->ClearPref(prefs::kArcProvisioningInitiatedFromOobe);
+    // Flush immediately so `arc.signedin` is persisted without waiting for
+    // ImportantFileWriter's 10s timer if the session ends shortly after opt-in.
+    prefs->CommitPendingWrite();
 
     for (auto& observer : observer_list_) {
       observer.OnArcInitialStart();
@@ -765,6 +768,9 @@ void ArcSessionManager::OnProvisioningFinished(
   if (result.stop_reason()) {
     if (prefs->HasPrefPath(prefs::kArcSignedIn)) {
       prefs->SetBoolean(prefs::kArcSignedIn, false);
+      // Flush immediately so the cleared `arc.signedin` state survives an
+      // abrupt session termination.
+      prefs->CommitPendingWrite();
     }
     VLOG(1) << "ARC stopped unexpectedly";
     ShutdownSession();
@@ -1749,13 +1755,16 @@ void ArcSessionManager::StopArc() {
   // |reenable_arc_| may be set in |StopAndEnableArc| in case enterprise
   // management state is lost.
   if (!reenable_arc_ && state_ != State::STOPPED) {
-    profile_->GetPrefs()->SetBoolean(prefs::kArcSignedIn, false);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcPaiStarted, false);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, false);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcFastAppReinstallStarted, false);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcProvisioningInitiatedFromOobe,
-                                     false);
-    profile_->GetPrefs()->ClearPref(prefs::kArcIsManaged);
+    PrefService* const prefs = profile_->GetPrefs();
+    prefs->SetBoolean(prefs::kArcSignedIn, false);
+    prefs->SetBoolean(prefs::kArcPaiStarted, false);
+    prefs->SetBoolean(prefs::kArcTermsAccepted, false);
+    prefs->SetBoolean(prefs::kArcFastAppReinstallStarted, false);
+    prefs->SetBoolean(prefs::kArcProvisioningInitiatedFromOobe, false);
+    prefs->ClearPref(prefs::kArcIsManaged);
+    // Flush immediately so cleared provisioning prefs survive an abrupt session
+    // shutdown.
+    prefs->CommitPendingWrite();
   }
 
   ShutdownSession();

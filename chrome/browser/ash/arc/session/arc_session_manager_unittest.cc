@@ -86,6 +86,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/prefs/testing_pref_store.h"
 #include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
@@ -1034,8 +1035,38 @@ TEST_F(ArcSessionManagerTest, Provisioning_Success) {
       ArcProvisioningResult(std::move(result)));
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kArcSignedIn));
+  EXPECT_TRUE(
+      profile()->GetTestingPrefService()->user_prefs_store()->committed());
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
   EXPECT_TRUE(arc_session_manager()->IsPlaystoreLaunchRequestedForTesting());
+}
+
+TEST_F(ArcSessionManagerTest,
+       Provisioning_UnexpectedStopCommitsClearedArcSignedIn) {
+  session_manager::SessionManager::Get()
+      ->HandleUserSessionStartUpTaskCompleted();
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+  ASSERT_FALSE(
+      profile()->GetTestingPrefService()->user_prefs_store()->committed());
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize(
+      ConsentAuditorFactory::GetForProfile(profile()));
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  arc_session_manager()->OnProvisioningFinished(
+      ArcProvisioningResult(ArcStopReason::CRASH));
+
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
+  EXPECT_TRUE(
+      profile()->GetTestingPrefService()->user_prefs_store()->committed());
+
+  arc_session_manager()->Shutdown();
 }
 
 TEST_F(ArcSessionManagerTest, Provisioning_SigninErrorMetric) {
@@ -1484,6 +1515,8 @@ TEST_F(ArcSessionManagerTest, ClearArcSignedIn) {
   PrefService* const prefs = profile()->GetPrefs();
   ASSERT_TRUE(prefs);
   EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
+  EXPECT_TRUE(
+      profile()->GetTestingPrefService()->user_prefs_store()->committed());
   EXPECT_FALSE(
       arc_session_manager()->GetArcSessionRunnerForTesting()->arc_signed_in());
   EXPECT_FALSE(arc_session_manager()->skipped_terms_of_service_negotiation());
