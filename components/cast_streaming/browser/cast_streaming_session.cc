@@ -17,6 +17,7 @@
 #include "components/cast_streaming/browser/frame/stream_consumer.h"
 #include "components/cast_streaming/browser/receiver_config_conversions.h"
 #include "components/cast_streaming/common/public/features.h"
+#include "components/openscreen_platform/event_trace_logging_platform.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
@@ -105,6 +106,12 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
       weak_factory_(this) {
   CHECK(task_runner, base::NotFatalUntil::M163);
   CHECK(client_, base::NotFatalUntil::M163);
+
+  // Open Screen drops its trace events unless a TraceLoggingPlatform is set
+  // for the process. Create the process-wide platform before the receiver
+  // session so that receiver events, including per-frame flows, reach Chrome
+  // tracing whenever the "openscreen" category is recorded.
+  openscreen_platform::EventTraceLoggingPlatform::GetInstance();
 
   cast_message_port_converter_ = CastMessagePortConverter::Create(
       std::move(message_port_provider),

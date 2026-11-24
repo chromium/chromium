@@ -10,9 +10,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
+#include "components/openscreen_platform/event_trace_logging_platform.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/platform/base/trace_logging_activation.h"
 
 namespace cast_streaming {
 
@@ -89,6 +93,28 @@ TEST_F(CastStreamingSessionTest, TestTeardownCrash) {
   // which will call EndSession, which will delete session_, causing
   // use-after-free!
   task_environment_.FastForwardBy(base::Seconds(16));
+}
+
+TEST_F(CastStreamingSessionTest,
+       RegistersOpenScreenTracingWhenCategoryEnabled) {
+  base::test::TracingEnvironment tracing_environment;
+  base::test::TestTraceProcessor trace_processor;
+  trace_processor.StartTrace(
+      openscreen_platform::kOpenscreenTraceLoggingCategory);
+
+  StartSession();
+  {
+    const openscreen::CurrentTracingDestination destination;
+    EXPECT_EQ(destination ? destination.operator->() : nullptr,
+              &openscreen_platform::EventTraceLoggingPlatform::GetInstance());
+  }
+
+  const absl::Status status = trace_processor.StopAndParseTrace();
+  EXPECT_TRUE(status.ok()) << status.message();
+  {
+    const openscreen::CurrentTracingDestination destination;
+    EXPECT_EQ(destination ? destination.operator->() : nullptr, nullptr);
+  }
 }
 
 }  // namespace cast_streaming

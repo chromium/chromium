@@ -107,8 +107,10 @@ source_set("unit_tests") {
       "//components/cast/message_port",
       "//components/cast/message_port:test_message_port_receiver",
       "//components/cast_streaming/common:conversions",
+      "//components/openscreen_platform",
       "//testing/gtest",
       "//third_party/openscreen/src/cast/common:public",
+      "//third_party/openscreen/src/platform:base",
     ]
   }
 }
