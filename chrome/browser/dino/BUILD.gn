@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 source_set("dino") {
-  public = [ "dino_metrics.h" ]
-  sources = [ "dino_metrics.cc" ]
+  public = [
+    "dino_features.h",
+    "dino_metrics.h",
+  ]
+  sources = [
+    "dino_features.cc",
+    "dino_metrics.cc",
+  ]
   public_deps = [
     "//base",
     "//ui/base",
@@ -33,7 +39,10 @@ source_set("dino") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "dino_metrics_unittest.cc" ]
+  sources = [
+    "dino_features_unittest.cc",
+    "dino_metrics_unittest.cc",
+  ]
   deps = [
     ":dino",
     "//base/test:test_support",
