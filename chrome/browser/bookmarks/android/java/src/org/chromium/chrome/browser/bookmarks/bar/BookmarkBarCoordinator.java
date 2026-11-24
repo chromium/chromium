@@ -573,10 +573,10 @@ public class BookmarkBarCoordinator
             int oldTop,
             int oldRight,
             int oldBottom) {
-        // This layout change listener is used on |mView|, which is the entire Bookmarks Bar. The
-        // View's width/height are thus the width/height of the entire scene layer, and its padding
-        // defines the offset of the snapshot within the SceneLayer of the tightly bound
-        // |mViewResourceFrameLayout|.
+        // This layout change listener is used on |mContentContainer|, the content container
+        // excluding the hairline. Its width/height define the scene layer dimensions (excluding
+        // the hairline), and its padding defines the offset of the snapshot within the SceneLayer
+        // of the tightly bound |mViewResourceFrameLayout|.
         final int oldHeight = oldBottom - oldTop;
         final int newHeight = bottom - top;
 

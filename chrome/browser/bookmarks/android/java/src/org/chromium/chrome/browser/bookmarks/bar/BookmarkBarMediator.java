@@ -486,9 +486,9 @@ class BookmarkBarMediator
     }
 
     private void onOverflowButtonClick() {
-        // Open the manager iff the active profile and model are unchanged to prevent accidentally
-        // opening the manager for the wrong profile/model. We will only record the click event if
-        // this guard passes, so the data shows only actions that resulted in a change.
+        // Open the overflow popup iff the active profile and model are unchanged to prevent
+        // accidentally opening the popup for the wrong profile/model. We will only record the click
+        // event if this guard passes, so the data shows only actions that resulted in a change.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profile, model) -> {
                     // Get an ordered list of all the children (both folders and web pages) of the
@@ -514,7 +514,7 @@ class BookmarkBarMediator
                     if (anchorView == null) return;
 
                     // Show the popup with the filtered model. Notice that when we call
-                    // mContextMenuCoordinator.showContextMenu inside #onBookmarkItemClick, we are
+                    // mPopupCoordinator.showFolderItemsPopup inside #onBookmarkItemClick, we are
                     // calling it for one specific folder in the bookmarks bar, whereas here it is
                     // for all the hidden items in the entire bookmarks bar ("desktopFolder").
                     BookmarkBarUtils.recordClick(BookmarkBarClickType.OVERFLOW_MENU);
@@ -1323,10 +1323,9 @@ class BookmarkBarMediator
     }
 
     /**
-     * Called by the Coordinator when the theme changes or when the tabs are switched. This method
-     * is responsible for updating the theme for all bookmark bar components. The flow is:
-     * Mediator#onThemeChanged -> Mediator#onProfileChange ->
-     * BookmarkBarItemsProvider#onBookmarkItemAdded -> Mediator#onBookmarkItemAdded
+     * Called by the Coordinator when the theme changes or when the tabs are switched. Updates the
+     * cached theme resources, All Bookmarks and overflow buttons, and existing {@code mItemsModel}
+     * entries in place.
      *
      * @param isIncognito Whether the current theme is incognito.
      * @param brandedColorScheme The brandedColorScheme, which accounts for incognito.
