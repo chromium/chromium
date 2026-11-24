@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import type {CrA11yAnnouncerMessagesSentEvent, HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, CrRouter} from 'chrome://history/history.js';
-import {CriticalActionType, OpenConversationResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {BrowserProxyImpl, CriticalActionType, CrRouter, OpenConversationResult} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';

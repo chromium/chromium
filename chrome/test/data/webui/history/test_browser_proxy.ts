@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import type {BrowserProxy, HistoryIdentityState} from 'chrome://history/history.js';
-import {HistorySignInState, SyncState} from 'chrome://history/history.js';
-import {OpenConversationResult, PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {HistoryPageCallbackRouter, HistoryPageHandlerRemote, HistorySignInState, OpenConversationResult, SyncState} from 'chrome://history/history.js';
 import type {AccessPoint, Device, PageRemote, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -14,8 +13,8 @@ import {createHistoryInfo} from './test_util.js';
 
 export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
     BrowserProxy {
-  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
-  callbackRouter: PageCallbackRouter;
+  handler: TestMock<HistoryPageHandlerRemote>&HistoryPageHandlerRemote;
+  callbackRouter: HistoryPageCallbackRouter;
   pageRemote: PageRemote;
   histogramMap: {[key: string]: {[key: string]: number}} = {};
   actionMap: {[key: string]: number} = {};
@@ -35,8 +34,8 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
       'startTurnOnSyncFlow',
     ]);
 
-    this.handler = TestMock.fromClass(PageHandlerRemote);
-    this.callbackRouter = new PageCallbackRouter();
+    this.handler = TestMock.fromClass(HistoryPageHandlerRemote);
+    this.callbackRouter = new HistoryPageCallbackRouter();
     this.pageRemote = this.callbackRouter.$.bindNewPipeAndPassRemote();
 
     this.initialIdentityState_ = {

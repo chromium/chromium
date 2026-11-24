@@ -6,7 +6,7 @@ import './app.js';
 
 export {browserProxyFactory as foreignSessionBrowserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 export type {ForeignSession, ForeignSessionTab, ForeignSessionWindow} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
-export {CriticalActionType} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+export {AccessPoint, CriticalActionType, OpenConversationResult, PageCallbackRouter as HistoryPageCallbackRouter, PageHandlerRemote as HistoryPageHandlerRemote, TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 export type {CriticalAction, HistoryEntry, QueryResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 export {browserProxyFactory as historyClustersBrowserProxyFactory, ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 export type {MetricsProxy} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';

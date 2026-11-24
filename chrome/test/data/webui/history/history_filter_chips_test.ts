@@ -4,9 +4,8 @@
 
 import 'chrome://history/history.js';
 
-import {BrowserProxyImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl, TimePeriodOptionId} from 'chrome://history/history.js';
 import type {HistoryFilterChipsElement} from 'chrome://history/history.js';
-import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';

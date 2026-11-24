@@ -7,10 +7,10 @@ import {SingleTabMenuItemAction, SingleTabType} from 'chrome://resources/cr_comp
 import type {ComposeboxAimButtonElement} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxSubmitElement} from 'chrome://resources/cr_components/composebox/composebox_submit.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {addTab, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, setupComposeboxTest} from './test_support.js';
