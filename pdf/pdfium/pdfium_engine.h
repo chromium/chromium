@@ -134,6 +134,9 @@ void InitializeSDK(bool enable_v8,
                    bool enable_xfa,
                    bool use_skia,
                    FontMappingMode font_mapping_mode);
+// Do one time initialization of the SDK for testing, without V8, system font
+// mappers, or unsupported feature handlers.
+void InitializeSDKForTesting(bool use_skia, const char** user_font_paths);
 // Tells the SDK that we're shutting down.
 void ShutdownSDK();
 

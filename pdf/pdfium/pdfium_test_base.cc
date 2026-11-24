@@ -14,13 +14,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "pdf/loader/url_loader.h"
-#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -62,7 +60,7 @@ void PDFiumTestBase::SetUp() {
 }
 
 void PDFiumTestBase::TearDown() {
-  FPDF_DestroyLibrary();
+  ShutdownSDK();
   base::DiscardableMemoryAllocator::SetInstance(nullptr);
 }
 
@@ -152,22 +150,7 @@ void PDFiumTestBase::InitializePDFiumSDK() {
   font_paths_.push_back(nullptr);
 #endif
 
-  FPDF_LIBRARY_CONFIG config;
-  config.version = 6;
-  config.m_pUserFontPaths = font_paths_.data();
-  config.m_pIsolate = nullptr;
-  config.m_v8EmbedderSlot = 0;
-  config.m_pPlatform = nullptr;
-  config.m_RendererType =
-      GetParam() ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
-  config.m_FontLibraryType =
-      base::FeatureList::IsEnabled(features::kPdfEnableFontations)
-          ? FPDF_FONTBACKENDTYPE_FONTATIONS
-          : FPDF_FONTBACKENDTYPE_FREETYPE;
-  config.m_BrotliEnabled =
-      base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
-
-  FPDF_InitLibraryWithConfig(&config);
+  InitializeSDKForTesting(/*use_skia=*/GetParam(), font_paths_.data());
 }
 
 const PDFiumPage& PDFiumTestBase::GetPDFiumPage(const PDFiumEngine& engine,

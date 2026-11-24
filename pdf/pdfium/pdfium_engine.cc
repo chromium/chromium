@@ -990,6 +990,48 @@ std::vector<PDFiumRange> MergePageRanges(
   return merged;
 }
 
+void InitLibraryWithConfig(bool use_skia,
+                           const char** user_font_paths,
+                           void* isolate,
+                           unsigned int v8_embedder_slot,
+                           void* platform) {
+  FPDF_LIBRARY_CONFIG config;
+  config.version = 6;
+  config.m_pUserFontPaths = user_font_paths;
+  config.m_pIsolate = isolate;
+  config.m_pPlatform = platform;
+  config.m_v8EmbedderSlot = v8_embedder_slot;
+
+#if defined(PDF_USE_AGG) && defined(PDF_USE_SKIA)
+  config.m_RendererType =
+      use_skia ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
+#elif defined(PDF_USE_SKIA)
+  config.m_RendererType = FPDF_RENDERERTYPE_SKIA;
+#elif defined(PDF_USE_AGG)
+  config.m_RendererType = FPDF_RENDERERTYPE_AGG;
+#else
+#error "Neither AGG nor Skia enabled"
+#endif
+
+#if defined(PDF_ENABLE_FONTATIONS) && defined(PDF_ENABLE_FREETYPE)
+  config.m_FontLibraryType =
+      base::FeatureList::IsEnabled(features::kPdfEnableFontations)
+          ? FPDF_FONTBACKENDTYPE_FONTATIONS
+          : FPDF_FONTBACKENDTYPE_FREETYPE;
+#elif defined(PDF_ENABLE_FONTATIONS)
+  config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FONTATIONS;
+#elif defined(PDF_ENABLE_FREETYPE)
+  config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
+#else
+#error "Neither FreeType nor Fontations enabled"
+#endif
+
+  config.m_BrotliEnabled =
+      base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
+
+  FPDF_InitLibraryWithConfig(&config);
+}
+
 }  // namespace
 
 void InitializeSDK(bool enable_v8,
@@ -998,33 +1040,21 @@ void InitializeSDK(bool enable_v8,
                    FontMappingMode font_mapping_mode) {
   CHECK(enable_v8 || !enable_xfa);
 
-  FPDF_LIBRARY_CONFIG config;
-  config.version = 6;
-  config.m_pUserFontPaths = nullptr;
-  config.m_pIsolate = nullptr;
-  config.m_pPlatform = nullptr;
-  config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
-  config.m_RendererType =
-      use_skia ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
-  config.m_FontLibraryType =
-      base::FeatureList::IsEnabled(features::kPdfEnableFontations)
-          ? FPDF_FONTBACKENDTYPE_FONTATIONS
-          : FPDF_FONTBACKENDTYPE_FREETYPE;
-  config.m_BrotliEnabled =
-      base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
-
+  void* isolate = nullptr;
+  void* platform = nullptr;
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {
     SetUpV8();
-    config.m_pIsolate = g_isolate_holder->isolate();
+    isolate = g_isolate_holder->isolate();
     // NOTE: static_cast<> prior to assigning to (void*) is safer since it
     // will manipulate the pointer value should gin::V8Platform someday have
     // multiple base classes.
-    config.m_pPlatform = static_cast<v8::Platform*>(gin::V8Platform::Get());
+    platform = static_cast<v8::Platform*>(gin::V8Platform::Get());
   }
 #endif  // defined(PDF_ENABLE_V8)
 
-  FPDF_InitLibraryWithConfig(&config);
+  InitLibraryWithConfig(use_skia, /*user_font_paths=*/nullptr, isolate,
+                        gin::kEmbedderPDFium, platform);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   g_font_mapping_mode = font_mapping_mode;
@@ -1039,6 +1069,11 @@ void InitializeSDK(bool enable_v8,
 #endif
 
   InitializeUnsupportedFeaturesHandler();
+}
+
+void InitializeSDKForTesting(bool use_skia, const char** user_font_paths) {
+  InitLibraryWithConfig(use_skia, user_font_paths, /*isolate=*/nullptr,
+                        /*v8_embedder_slot=*/0, /*platform=*/nullptr);
 }
 
 void ShutdownSDK() {
