@@ -20,6 +20,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/guest_source.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -379,8 +380,15 @@ IN_PROC_BROWSER_TEST_F(
     )js"));
 }
 
+// TODO(crbug.com/589944155): flaky on Mac CI/CQ
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CachesV8BytecodeAcrossGuestLoads \
+  DISABLED_CachesV8BytecodeAcrossGuestLoads
+#else
+#define MAYBE_CachesV8BytecodeAcrossGuestLoads CachesV8BytecodeAcrossGuestLoads
+#endif
 IN_PROC_BROWSER_TEST_F(GlicApiBundleV8CodeCacheBrowserTest,
-                       CachesV8BytecodeAcrossGuestLoads) {
+                       MAYBE_CachesV8BytecodeAcrossGuestLoads) {
   coordinator().GetWebContentsWarmingPoolForTesting().Shutdown();
 
   // Load 1: Cold cache -> records hot timestamp for `chrome__glic_api.js`.
