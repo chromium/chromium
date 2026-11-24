@@ -136,13 +136,9 @@ class WaylandFrameManager {
   void ReleaseVideoCapture();
 
   void OnWindowSuspensionChanged();
-
-  bool is_frame_callback_occluded() const { return frame_callback_occluded_; }
-
   void FrameCallbackTimeout();
 
   static base::TimeDelta GetPresentationFlushTimerDurationForTesting();
-  static base::TimeDelta GetFrameCallbackOcclusionTimeoutForTesting();
 
   // Whether a frame is waiting to be committed, typically for the previous
   // frame's wl_frame_callback.
@@ -209,13 +205,7 @@ class WaylandFrameManager {
   static void OnFrameDone(void* data, wl_callback* callback, uint32_t time);
 
   void HandleFrameCallback(wl_callback* callback);
-  // Drops the in-flight frame callback and clears the occlusion state.
   void ResetFrameCallback();
-  // Like ResetFrameCallback() but keeps the occlusion state.
-  void ClearFrameCallback();
-  void MaybeStartFrameCallbackOcclusionTimer();
-  void FrameCallbackOcclusionTimeout();
-  void SetFrameCallbackOccluded(bool occluded);
 
   // wp_presentation_feedback_listener callbacks:
   static void OnSyncOutput(
@@ -295,10 +285,6 @@ class WaylandFrameManager {
   uint32_t frame_callback_frame_id_ = 0;
 
   base::OneShotTimer frame_callback_timer_;
-  base::OneShotTimer frame_callback_occlusion_timer_;
-  // True once the in-flight frame callback went unanswered for
-  // kFrameCallbackOcclusionTimeout. Cleared with the callback.
-  bool frame_callback_occluded_ = false;
 
   int video_capture_count_ = 0;
 

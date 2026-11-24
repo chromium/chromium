@@ -91,7 +91,6 @@ class WaylandToplevelWindow : public WaylandWindow,
                     PlatformWindowDelegate::State* state) override;
   bool IsActive() const override;
   bool IsSuspended() const override;
-  void OnFrameCallbackOcclusionChanged() override;
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
 
@@ -278,8 +277,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Try to announce the appmenu associated with this toplevel, if there's any.
   void TryAnnounceAppmenu();
 
-  void MaybeUpdateOcclusionState();
-
   std::unique_ptr<XdgToplevel> xdg_toplevel_;
 
   // True if it's maximized before requesting the window state change from the
@@ -318,8 +315,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool is_active_ = false;
   bool is_xdg_active_ = false;
   bool is_suspended_ = false;
-  PlatformWindowOcclusionState occlusion_state_ =
-      PlatformWindowOcclusionState::kUnknown;
 
   // Authoritative active subsurface bubble in this toplevel's window tree.
   // Cleared when the toplevel loses OS activation.

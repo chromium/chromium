@@ -14,10 +14,6 @@ BASE_FEATURE(kWaylandOverlayDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 // enabled.
 BASE_FEATURE(kWaylandFractionalScaleV1, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Reports PlatformWindowOcclusionState changes for Wayland toplevel windows
-// based on xdg_toplevel::suspended and unanswered wl_surface.frame callbacks.
-BASE_FEATURE(kWaylandWindowOcclusion, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether support for the xdg-toplevel-drag protocol should be
 // enabled. On Lacros it will then be used even if the Exo-only extended-drag
 // protocol is supported.
@@ -69,10 +65,6 @@ bool IsWaylandOverlayDelegationEnabled() {
 
 bool IsWaylandFractionalScaleV1Enabled() {
   return base::FeatureList::IsEnabled(kWaylandFractionalScaleV1);
-}
-
-bool IsWaylandWindowOcclusionEnabled() {
-  return base::FeatureList::IsEnabled(kWaylandWindowOcclusion);
 }
 
 bool IsWaylandXdgToplevelDragEnabled() {

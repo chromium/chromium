@@ -172,25 +172,6 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     frame_manager_->RecordFrame(std::move(frame));
   }
 
-  // Like RecordFrame(), but goes through the window's own frame manager,
-  // whose occlusion state the window reports to its delegate.
-  void CommitWindowShmFrame() {
-    const uint32_t id = buffer_id_++;
-    buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
-                                              id);
-    ASSERT_TRUE(base::test::RunUntil([&] {
-      return connection_->buffer_manager_host()->EnsureBufferHandle(
-          window_->root_surface(), id);
-    }));
-
-    wl::WaylandOverlayConfig config;
-    config.buffer_id = id;
-    config.bounds_rect = {0, 0, kWidth, kHeight};
-    std::vector<wl::WaylandOverlayConfig> overlays;
-    overlays.push_back(std::move(config));
-    window_->CommitOverlays(id, gfx::FrameData(), overlays);
-  }
-
   void TestSurfaceCommits(bool expect_surface_commits) {
     // Setup wl_buffers.
     InitBufferManager();
@@ -1051,64 +1032,6 @@ TEST_F(WaylandFrameManagerTest,
     Mock::VerifyAndClearExpectations(&mock_surface_gpu);
   }
   PostToServerAndWait([] {});
-}
-
-TEST_F(WaylandFrameManagerTest,
-       FrameCallbackTimeoutMarksWindowOccludedUntilCallbackArrives) {
-  base::test::ScopedFeatureList scoped_feature_list{kWaylandWindowOcclusion};
-  InitBufferManager();
-
-  CommitWindowShmFrame();
-
-  const base::TimeDelta timeout =
-      WaylandFrameManager::GetFrameCallbackOcclusionTimeoutForTesting();
-  EXPECT_CALL(delegate_, OnOcclusionStateChanged(_)).Times(0);
-  task_environment_.FastForwardBy(timeout - base::Milliseconds(1));
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  EXPECT_CALL(delegate_,
-              OnOcclusionStateChanged(PlatformWindowOcclusionState::kOccluded))
-      .Times(1);
-  task_environment_.FastForwardBy(base::Milliseconds(1));
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  EXPECT_CALL(delegate_,
-              OnOcclusionStateChanged(PlatformWindowOcclusionState::kVisible))
-      .Times(1);
-  SendFrameCallback();
-  Mock::VerifyAndClearExpectations(&delegate_);
-}
-
-TEST_F(WaylandFrameManagerTest,
-       UnsuspendRestoresVisibilityAfterFrameCallbackTimeout) {
-  base::test::ScopedFeatureList scoped_feature_list{kWaylandWindowOcclusion};
-  InitBufferManager();
-
-  CommitWindowShmFrame();
-  EXPECT_CALL(delegate_,
-              OnOcclusionStateChanged(PlatformWindowOcclusionState::kOccluded))
-      .Times(1);
-  task_environment_.FastForwardBy(
-      WaylandFrameManager::GetFrameCallbackOcclusionTimeoutForTesting());
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // Entering xdg_toplevel::suspended while already occluded via frame callback
-  // timeout stays occluded, and leaving suspended restores visibility
-  // immediately without waiting for another frame callback.
-  EXPECT_CALL(delegate_, OnOcclusionStateChanged(_)).Times(0);
-  WaylandWindow::WindowStates states;
-  states.is_suspended = true;
-  window_->HandleToplevelConfigure(kWidth, kHeight, states);
-  window_->HandleSurfaceConfigure(2);
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  EXPECT_CALL(delegate_,
-              OnOcclusionStateChanged(PlatformWindowOcclusionState::kVisible))
-      .Times(1);
-  states.is_suspended = false;
-  window_->HandleToplevelConfigure(kWidth, kHeight, states);
-  window_->HandleSurfaceConfigure(3);
-  Mock::VerifyAndClearExpectations(&delegate_);
 }
 
 }  // namespace ui
