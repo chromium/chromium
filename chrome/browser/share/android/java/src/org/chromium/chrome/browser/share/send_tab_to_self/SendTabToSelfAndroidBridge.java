@@ -740,7 +740,11 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfAndroidBridgeJni.get().removeDeviceInfoObserver(observerPtr);
     }
 
-    /** Interface to be notified when the SendTabToSelfModel becomes ready. */
+    /**
+     * Interface to be notified when the SendTabToSelfModel becomes ready. Implementations must not
+     * synchronously modify the model inside {@link #onModelReady()} (e.g. via {@link
+     * #sendTabsToDevice}), as the native ObserverList disallows re-entrant iteration.
+     */
     @FunctionalInterface
     public interface SendTabToSelfModelObserver {
         @CalledByNative

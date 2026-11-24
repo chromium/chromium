@@ -280,7 +280,13 @@ public class OtherDevicesShortcutController implements Destroyable {
 
         @Override
         public void onModelReady() {
-            run();
+            if (mHasRun) return;
+            mHasRun = true;
+            SendTabToSelfAndroidBridge.removeModelObserver(mObserverPtr);
+            // Post a task rather than running synchronously: SendTabToSelfModel::observers_
+            // disallows re-entrant iteration, and mCallback calls SendEntry() which notifies
+            // OnEntryAddedLocally().
+            PostTask.postTask(TaskTraits.UI_DEFAULT, mCallback);
         }
 
         @Override
