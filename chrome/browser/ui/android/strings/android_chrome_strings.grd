@@ -3808,8 +3808,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_FRE_PERSONALIZED_SUBTITLE" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account, explaining that signing in provides access to bookmarks, passwords, and more on all devices. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Sign in to get your bookmarks, passwords, and more on all your devices.
       </message>
-      <message name="IDS_SIGNIN_FRE_SAFETY_TITLE" desc="This string is the title of a promotion about signing in to Chrome with the user's Google Account, welcoming the user to Google Chrome and highlighting Chrome's safety. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
-        Welcome to Google Chrome, the world’s safest browser
+      <message name="IDS_SIGNIN_FRE_SAFETY_TITLE" desc="This string is the title of a promotion about signing in to Chrome with the user's Google Account, highlighting Chrome's safety so users can browse confidently. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
+        Built for safety so you can browse confidently
       </message>
       <message name="IDS_SIGNIN_FRE_SAFETY_SUBTITLE" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account, explaining that signing in provides access to data across devices and personalizes the experience. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Sign in to get your data across your devices and personalize your experience.
@@ -3817,8 +3817,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_FRE_SEAMLESSNESS_TITLE" desc="This string is the title of a promotion about signing in to Chrome with the user's Google Account, emphasizing seamless continuity across devices. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Pick up where you left off
       </message>
-      <message name="IDS_SIGNIN_FRE_SEAMLESSNESS_SUBTITLE" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account, explaining that signing in provides access to bookmarks, passwords, and Autofill information across all devices. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
-        Sign in to get your bookmarks, passwords, and Autofill information across all your devices.
+      <message name="IDS_SIGNIN_FRE_SEAMLESSNESS_SUBTITLE" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account, explaining that signing in provides access to bookmarks, passwords, Autofill information, and more across all devices. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
+        Sign in to get your bookmarks, passwords, Autofill information, and more across all your devices.
       </message>
       <message name="IDS_SIGNED_IN_FRE_TITLE" desc="Title welcoming signed-in user to Chrome.">
         Welcome back, <ph name="USER_NAME">%s<ex>Alice</ex></ph>!
