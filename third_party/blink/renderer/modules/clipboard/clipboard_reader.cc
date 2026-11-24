@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -34,8 +35,8 @@ namespace {  // anonymous namespace for ClipboardReader's derived classes.
 class ClipboardPngReader final : public ClipboardReader {
  public:
   explicit ClipboardPngReader(SystemClipboard* system_clipboard,
-                              ClipboardReaderResultHandler* result_handler)
-      : ClipboardReader(system_clipboard, result_handler) {}
+                              ClipboardItem* clipboard_item)
+      : ClipboardReader(system_clipboard, clipboard_item) {}
   ~ClipboardPngReader() override = default;
 
   ClipboardPngReader(const ClipboardPngReader&) = delete;
@@ -56,7 +57,7 @@ class ClipboardPngReader final : public ClipboardReader {
     Blob* blob = Blob::Create(data, ui::kMimeTypePng);
     base::UmaHistogramBoolean("Blink.Clipboard.Reader.ProcessedDataNull",
                               !data.size());
-    result_handler_->OnRead(blob, ui::kMimeTypePng);
+    clipboard_item_->OnRead(blob, ui::kMimeTypePng);
   }
 
   void NextRead(Vector<uint8_t> utf8_bytes) override { NOTREACHED(); }
@@ -66,8 +67,8 @@ class ClipboardPngReader final : public ClipboardReader {
 class ClipboardTextReader final : public ClipboardReader {
  public:
   explicit ClipboardTextReader(SystemClipboard* system_clipboard,
-                               ClipboardReaderResultHandler* result_handler)
-      : ClipboardReader(system_clipboard, result_handler) {}
+                               ClipboardItem* clipboard_item)
+      : ClipboardReader(system_clipboard, clipboard_item) {}
   ~ClipboardTextReader() override = default;
 
   ClipboardTextReader(const ClipboardTextReader&) = delete;
@@ -121,7 +122,7 @@ class ClipboardTextReader final : public ClipboardReader {
   void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = Blob::Create(utf8_bytes, ui::kMimeTypePlainText);
-    result_handler_->OnRead(blob, ui::kMimeTypePlainText);
+    clipboard_item_->OnRead(blob, ui::kMimeTypePlainText);
   }
 };
 
@@ -129,16 +130,16 @@ class ClipboardTextReader final : public ClipboardReader {
 class ClipboardHtmlReader final : public ClipboardReader {
  public:
   explicit ClipboardHtmlReader(SystemClipboard* system_clipboard,
-                               ClipboardReaderResultHandler* result_handler,
+                               ClipboardItem* clipboard_item,
                                bool sanitize_html)
-      : ClipboardReader(system_clipboard, result_handler),
+      : ClipboardReader(system_clipboard, clipboard_item),
         sanitize_html_(sanitize_html) {}
   ~ClipboardHtmlReader() override = default;
 
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (ExecutionContext* context = result_handler_->GetExecutionContext()) {
+    if (ExecutionContext* context = clipboard_item_->GetExecutionContext()) {
       context->CountUse(sanitize_html_
                             ? WebFeature::kHtmlClipboardApiRead
                             : WebFeature::kHtmlClipboardApiUnsanitizedRead);
@@ -157,7 +158,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DCHECK_LE(fragment_end, html_string.length());
     DCHECK_LE(fragment_start, fragment_end);
 
-    LocalFrame* frame = result_handler_->GetLocalFrame();
+    LocalFrame* frame = clipboard_item_->GetLocalFrame();
     if (!frame || html_string.empty()) {
       NextRead(Vector<uint8_t>());
       return;
@@ -207,7 +208,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
   void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = Blob::Create(utf8_bytes, ui::kMimeTypeHtml);
-    result_handler_->OnRead(blob, ui::kMimeTypeHtml);
+    clipboard_item_->OnRead(blob, ui::kMimeTypeHtml);
   }
 
   bool sanitize_html_ = true;
@@ -217,8 +218,8 @@ class ClipboardHtmlReader final : public ClipboardReader {
 class ClipboardSvgReader final : public ClipboardReader {
  public:
   ClipboardSvgReader(SystemClipboard* system_clipboard,
-                     ClipboardReaderResultHandler* result_handler)
-      : ClipboardReader(system_clipboard, result_handler) {}
+                     ClipboardItem* clipboard_item)
+      : ClipboardReader(system_clipboard, clipboard_item) {}
   ~ClipboardSvgReader() override = default;
 
   // This must be called on the main thread because XML DOM nodes can
@@ -226,7 +227,7 @@ class ClipboardSvgReader final : public ClipboardReader {
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (ExecutionContext* context = result_handler_->GetExecutionContext()) {
+    if (ExecutionContext* context = clipboard_item_->GetExecutionContext()) {
       context->CountUse(WebFeature::kClipboardSvgRead);
     }
     system_clipboard()->ReadSvg(
@@ -237,7 +238,7 @@ class ClipboardSvgReader final : public ClipboardReader {
   void OnRead(const String& svg_string) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    LocalFrame* frame = result_handler_->GetLocalFrame();
+    LocalFrame* frame = clipboard_item_->GetLocalFrame();
     if (!frame) {
       NextRead(Vector<uint8_t>());
       return;
@@ -290,7 +291,7 @@ class ClipboardSvgReader final : public ClipboardReader {
     if (utf8_bytes.size()) {
       blob = Blob::Create(utf8_bytes, ui::kMimeTypeSvg);
     }
-    result_handler_->OnRead(blob, ui::kMimeTypeSvg);
+    clipboard_item_->OnRead(blob, ui::kMimeTypeSvg);
   }
 };
 
@@ -298,18 +299,17 @@ class ClipboardSvgReader final : public ClipboardReader {
 // custom MIME type content.
 class ClipboardCustomFormatReader final : public ClipboardReader {
  public:
-  explicit ClipboardCustomFormatReader(
-      SystemClipboard* system_clipboard,
-      ClipboardReaderResultHandler* result_handler,
-      const String& mime_type)
-      : ClipboardReader(system_clipboard, result_handler),
+  explicit ClipboardCustomFormatReader(SystemClipboard* system_clipboard,
+                                       ClipboardItem* clipboard_item,
+                                       const String& mime_type)
+      : ClipboardReader(system_clipboard, clipboard_item),
         mime_type_(mime_type) {}
   ~ClipboardCustomFormatReader() override = default;
 
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (ExecutionContext* context = result_handler_->GetExecutionContext()) {
+    if (ExecutionContext* context = clipboard_item_->GetExecutionContext()) {
       context->CountUse(WebFeature::kClipboardCustomFormatRead);
     }
     system_clipboard()->ReadUnsanitizedCustomFormat(
@@ -319,7 +319,7 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 
   void OnCustomFormatRead(mojo_base::BigBuffer data) {
     Blob* blob = Blob::Create(data, mime_type_);
-    result_handler_->OnRead(blob, mime_type_);
+    clipboard_item_->OnRead(blob, mime_type_);
   }
 
  private:
@@ -333,12 +333,11 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 // ClipboardReader functions.
 
 // static
-ClipboardReader* ClipboardReader::Create(
-    ExecutionContext* execution_context,
-    SystemClipboard* system_clipboard,
-    const String& mime_type,
-    ClipboardReaderResultHandler* result_handler,
-    bool sanitize_html) {
+ClipboardReader* ClipboardReader::Create(ExecutionContext* execution_context,
+                                         SystemClipboard* system_clipboard,
+                                         const String& mime_type,
+                                         ClipboardItem* clipboard_item,
+                                         bool sanitize_html) {
   CHECK(ClipboardItem::supports(execution_context, mime_type));
   // If this is a web custom format then read the unsanitized version.
   if (!Clipboard::ParseWebCustomFormat(mime_type).empty()) {
@@ -346,27 +345,27 @@ ClipboardReader* ClipboardReader::Create(
     // These MIME types are found in the web custom format map written by
     // native applications.
     return MakeGarbageCollected<ClipboardCustomFormatReader>(
-        system_clipboard, result_handler, mime_type);
+        system_clipboard, clipboard_item, mime_type);
   }
 
   if (mime_type == ui::kMimeTypePng) {
     return MakeGarbageCollected<ClipboardPngReader>(system_clipboard,
-                                                    result_handler);
+                                                    clipboard_item);
   }
 
   if (mime_type == ui::kMimeTypePlainText) {
     return MakeGarbageCollected<ClipboardTextReader>(system_clipboard,
-                                                     result_handler);
+                                                     clipboard_item);
   }
 
   if (mime_type == ui::kMimeTypeHtml) {
     return MakeGarbageCollected<ClipboardHtmlReader>(
-        system_clipboard, result_handler, sanitize_html);
+        system_clipboard, clipboard_item, sanitize_html);
   }
 
   if (mime_type == ui::kMimeTypeSvg) {
     return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard,
-                                                    result_handler);
+                                                    clipboard_item);
   }
 
   NOTREACHED()
@@ -374,18 +373,18 @@ ClipboardReader* ClipboardReader::Create(
 }
 
 ClipboardReader::ClipboardReader(SystemClipboard* system_clipboard,
-                                 ClipboardReaderResultHandler* result_handler)
+                                 ClipboardItem* clipboard_item)
     : clipboard_task_runner_(
-          result_handler->GetExecutionContext()->GetTaskRunner(
+          clipboard_item->GetExecutionContext()->GetTaskRunner(
               TaskType::kUserInteraction)),
-      result_handler_(result_handler),
+      clipboard_item_(clipboard_item),
       system_clipboard_(system_clipboard) {}
 
 ClipboardReader::~ClipboardReader() = default;
 
 void ClipboardReader::Trace(Visitor* visitor) const {
   visitor->Trace(system_clipboard_);
-  visitor->Trace(result_handler_);
+  visitor->Trace(clipboard_item_);
 }
 
 }  // namespace blink

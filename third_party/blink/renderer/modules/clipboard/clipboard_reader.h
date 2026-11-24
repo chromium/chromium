@@ -12,17 +12,9 @@
 
 namespace blink {
 
+class ClipboardItem;
 class ExecutionContext;
-class LocalFrame;
 class SystemClipboard;
-
-class ClipboardReaderResultHandler : public GarbageCollectedMixin {
- public:
-  virtual void OnRead(Blob* blob, const String& mime_type) = 0;
-  virtual ExecutionContext* GetExecutionContext() const = 0;
-  virtual LocalFrame* GetLocalFrame() const = 0;
-  void Trace(Visitor* visitor) const override {}
-};
 
 // Interface for reading an individual Clipboard API format from the sanitized
 // System Clipboard as a Blob.
@@ -35,8 +27,8 @@ class ClipboardReaderResultHandler : public GarbageCollectedMixin {
 //     Blink's HTML encoder can only be used on the main thread.
 // (3) Writing - the encoded contents to a Blob.
 //
-// ClipboardReader takes as input a ClipboardReaderResultHandler, from which it
-// can obtain context/frame access, and to which it provides a Blob containing
+// ClipboardReader takes a ClipboardItem, which provides context/frame access
+// and receives a Blob containing
 // an encoded SystemClipboard-originated clipboard payload. All System
 // Clipboard operations should be called from the main thread.
 //
@@ -46,14 +38,14 @@ class ClipboardReaderResultHandler : public GarbageCollectedMixin {
 // (2) Encode the payload on a background thread (if possible) by implementing
 //     a static EncodeOnBackgroundThread() function. This function is called by
 //     Read() via worker_pool::PostTask().
-// (3) Create a Blob and send it to the result handler by implementing
+// (3) Create a Blob and send it to the ClipboardItem by implementing
 //     ClipboardReader::NextRead().
 class ClipboardReader : public GarbageCollected<ClipboardReader> {
  public:
   static ClipboardReader* Create(ExecutionContext* execution_context,
                                  SystemClipboard* system_clipboard,
                                  const String& mime_type,
-                                 ClipboardReaderResultHandler* result_handler,
+                                 ClipboardItem* clipboard_item,
                                  bool sanitize_html);
   virtual ~ClipboardReader();
 
@@ -67,14 +59,14 @@ class ClipboardReader : public GarbageCollected<ClipboardReader> {
   const scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner_;
 
   ClipboardReader(SystemClipboard* system_clipboard,
-                  ClipboardReaderResultHandler* result_handler);
-  // Send a Blob holding `utf8_bytes` to the owning result handler.
+                  ClipboardItem* clipboard_item);
+  // Send a Blob holding `utf8_bytes` to the owning ClipboardItem.
   // An empty `utf8_bytes` indicates that the encoding step failed.
   virtual void NextRead(Vector<uint8_t> utf8_bytes) = 0;
 
   SystemClipboard* system_clipboard() { return system_clipboard_.Get(); }
-  // The result handler receives Blob output and context access for readers.
-  Member<ClipboardReaderResultHandler> result_handler_;
+  // The ClipboardItem receives Blob output and provides context access.
+  Member<ClipboardItem> clipboard_item_;
 
   // Every subclass method that runs on the main thread should
   // DCHECK_CALLED_ON_VALID_SEQUENCE with this checker.

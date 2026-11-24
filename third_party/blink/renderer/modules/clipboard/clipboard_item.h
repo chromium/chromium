@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -25,8 +24,10 @@
 namespace blink {
 
 class Blob;
-class ScriptState;
 class ExecutionContext;
+class LocalFrame;
+class ScriptState;
+class SystemClipboard;
 template <typename IDLType>
 class ScriptPromiseResolver;
 
@@ -35,8 +36,7 @@ class ScriptPromiseResolver;
 // https://w3c.github.io/clipboard-apis/#clipboard-item-interface
 class MODULES_EXPORT ClipboardItem final
     : public ScriptWrappable,
-      public ExecutionContextLifecycleObserver,
-      public ClipboardReaderResultHandler {
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -103,11 +103,8 @@ class MODULES_EXPORT ClipboardItem final
   // ScriptWrappable
   void Trace(Visitor*) const override;
 
-  void OnRead(Blob* blob, const String& mime_type) override;
-  ExecutionContext* GetExecutionContext() const override {
-    return ExecutionContextLifecycleObserver::GetExecutionContext();
-  }
-  LocalFrame* GetLocalFrame() const override;
+  void OnRead(Blob* blob, const String& mime_type);
+  LocalFrame* GetLocalFrame() const;
   SystemClipboard* GetSystemClipboard() const;
 
  private:
