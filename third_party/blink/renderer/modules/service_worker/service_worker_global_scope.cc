@@ -2820,9 +2820,8 @@ bool ServiceWorkerGlobalScope::RaceNetworkRequestInfo::IsValid() const {
 
 void ServiceWorkerGlobalScope::RaceNetworkRequestInfo::HandleDisconnected() {
   is_disconnected_ = true;
-  if (url_loader_factory_remote_.is_bound()) {
-    url_loader_factory_remote_.reset();
-  }
+  pending_url_loader_factory_.reset();
+  url_loader_factory_remote_.reset();
 }
 
 std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
@@ -2927,11 +2926,16 @@ void ServiceWorkerGlobalScope::RemoveItemFromRaceNetworkRequests(
   // If `fetch_event_id` is still present in `fetch_event_ids_to_token_map_`,
   // `FindRaceNetworkRequestURLLoaderFactory` was never called for this fetch
   // event (i.e. `fetch(event.request)` was not initiated). Clean up the unused
-  // `kNotInitiated` entry to prevent memory leaks.
+  // `kNotInitiated` entry to prevent memory leaks, and explicitly reset its
+  // Mojo remote so the browser sees disconnection immediately without waiting
+  // for Oilpan GC.
   if (const String token_to_remove =
           fetch_event_ids_to_token_map_.Take(fetch_event_id);
       !token_to_remove.empty()) {
-    race_network_requests_.erase(token_to_remove);
+    if (RaceNetworkRequestInfo* info =
+            race_network_requests_.Take(token_to_remove)) {
+      info->HandleDisconnected();
+    }
     race_network_request_loader_states_.erase(token_to_remove);
   }
 }

@@ -5,6 +5,7 @@
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,7 +16,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -214,5 +217,61 @@ TEST_F(ForwardedRaceNetworkRequestURLLoaderFactoryTest,
       std::move(fallback_client), net::MutableNetworkTrafficAnnotationTag());
   factory_remote.FlushForTesting();
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+}
+
+TEST_F(ForwardedRaceNetworkRequestURLLoaderFactoryTest,
+       DisconnectBeforeFuseClosesClientImmediately) {
+  base::test::ScopedFeatureList feature_list(
+      kServiceWorkerRaceNetworkRequestCloseUnconsumedClientPipe);
+  mojo::Remote<network::mojom::URLLoaderClient> client_remote;
+  ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory factory(
+      client_remote.BindNewPipeAndPassReceiver(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      /*is_main_resource=*/true);
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
+  factory.Clone(factory_remote.BindNewPipeAndPassReceiver());
+
+  // Dropping the factory remote without calling `CreateLoaderAndStart` closes
+  // `client_receiver_` immediately so the browser aborts any unconsumed stream.
+  factory_remote.reset();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !client_remote.is_connected(); }));
+}
+
+TEST_F(ForwardedRaceNetworkRequestURLLoaderFactoryTest,
+       DisconnectAfterFuseLeavesFusedClientConnected) {
+  base::test::ScopedFeatureList feature_list(
+      kServiceWorkerRaceNetworkRequestCloseUnconsumedClientPipe);
+  mojo::Remote<network::mojom::URLLoaderClient> client_remote;
+  ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory factory(
+      client_remote.BindNewPipeAndPassReceiver(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      /*is_main_resource=*/true);
+
+  MockURLLoader mock_loader(factory.InitURLLoaderNewPipeAndPassReceiver());
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
+  factory.Clone(factory_remote.BindNewPipeAndPassReceiver());
+
+  network::ResourceRequest request;
+  request.url = GURL("https://example.com/navigation");
+
+  mojo::Remote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient fused_client;
+  factory_remote->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0, 0, request,
+      fused_client.CreateRemote(), net::MutableNetworkTrafficAnnotationTag());
+  factory_remote.FlushForTesting();
+
+  // Dropping the factory remote after `CreateLoaderAndStart` fused the pipes
+  // must not disturb the fused client channel.
+  factory_remote.reset();
+  client_remote->OnReceiveResponse(network::CreateURLResponseHead(net::HTTP_OK),
+                                   mojo::ScopedDataPipeConsumerHandle(),
+                                   std::nullopt);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return fused_client.has_received_response(); }));
+  EXPECT_TRUE(client_remote.is_connected());
 }
 }  // namespace content

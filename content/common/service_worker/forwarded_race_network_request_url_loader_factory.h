@@ -5,6 +5,7 @@
 #ifndef CONTENT_COMMON_SERVICE_WORKER_FORWARDED_RACE_NETWORK_REQUEST_URL_LOADER_FACTORY_H_
 #define CONTENT_COMMON_SERVICE_WORKER_FORWARDED_RACE_NETWORK_REQUEST_URL_LOADER_FACTORY_H_
 
+#include "base/feature_list.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,6 +16,9 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kServiceWorkerRaceNetworkRequestCloseUnconsumedClientPipe);
+
 // A URLLoaderFactory for BestEffortServiceWorker (crbug.com/1420517).
 // RaceNetworkRequest is initiated outside of ServiceWorker, but the response
 // will be reused as a corresponding fetch event result in ServiceWorker in
@@ -65,6 +69,8 @@ class CONTENT_EXPORT ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory
   mojo::PendingRemote<network::mojom::URLLoader> TakeURLLoader();
 
  private:
+  void OnDisconnect();
+
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_{this};
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client_receiver_;
   mojo::PendingRemote<network::mojom::URLLoader> loader_;

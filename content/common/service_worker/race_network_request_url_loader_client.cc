@@ -653,6 +653,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
   }
 
   CHECK(read_buffer_manager_.has_value());
+  if (!write_buffer_manager_for_race_network_request_.IsWatching() &&
+      !write_buffer_manager_for_fetch_handler_.IsWatching()) {
+    TransitionState(State::kAborted);
+    Abort();
+    return;
+  }
   if (read_buffer_manager_->BytesRemaining() > 0) {
     write_buffer_manager_for_race_network_request_.ArmOrNotify();
     write_buffer_manager_for_fetch_handler_.ArmOrNotify();
@@ -720,8 +726,15 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
       case MOJO_RESULT_OK:
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
-        TransitionState(State::kAborted);
-        Abort();
+        // The fetch-handler consumer pipe is closed (for example, the fetch
+        // handler finished without calling `fetch(event.request)`). End the
+        // active write on the navigation pipe, stop writing to the
+        // fetch-handler pipe, and continue transferring data to navigation.
+        write_buffer_manager_for_race_network_request_.EndWriteData(0);
+        write_buffer_manager_for_fetch_handler_.CancelWatching();
+        write_buffer_manager_for_fetch_handler_.ResetProducer();
+        clone_response_for_fetch_handler_cancelled_ = true;
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
         return;
       case MOJO_RESULT_SHOULD_WAIT:
         // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
@@ -792,6 +805,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     num_bytes_to_consume =
         write_buffer_manager_for_fetch_handler_.CopyAndCompleteWriteData(
             read_buffer);
+  } else {
+    TransitionState(State::kAborted);
+    Abort();
+    return;
   }
   CompleteReadData(num_bytes_to_consume);
 }
@@ -1015,6 +1032,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CancelWriteData(
   // handle |body_|. Even though one data pipe is canceled, the data transfer
   // process to the other data pipe has to be continued.
   if (read_buffer_manager_.has_value() && read_buffer_manager_->IsWatching()) {
+    if (!write_buffer_manager_for_race_network_request_.IsWatching() &&
+        !write_buffer_manager_for_fetch_handler_.IsWatching()) {
+      TransitionState(State::kAborted);
+      Abort();
+      return;
+    }
     read_buffer_manager_->ArmOrNotify();
   }
 }

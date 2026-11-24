@@ -7,12 +7,19 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
+
+// Closes unconsumed `client_receiver_` pipes when the renderer's
+// `URLLoaderFactory` remote disconnects on FetchEvent completion.
+// TODO(https://crbug.com/548916010): Remove once rolled out.
+BASE_FEATURE(kServiceWorkerRaceNetworkRequestCloseUnconsumedClientPipe,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 // Kill switch for multiple CreateLoaderAndStart calls.
@@ -148,6 +155,20 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
 void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
   receiver_.Bind(std::move(receiver));
+  if (base::FeatureList::IsEnabled(
+          kServiceWorkerRaceNetworkRequestCloseUnconsumedClientPipe)) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::OnDisconnect,
+        base::Unretained(this)));
+  }
+}
+
+void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::OnDisconnect() {
+  // If the fetch handler finished without calling `fetch(event.request)`
+  // (`CreateLoaderAndStart` never fused `client_receiver_`), close
+  // `client_receiver_` so `ServiceWorkerRaceNetworkRequestURLLoaderClient`
+  // sees peer disconnection and aborts any unread fetch-handler data pipe.
+  client_receiver_.reset();
 }
 
 mojo::PendingReceiver<network::mojom::URLLoader>
