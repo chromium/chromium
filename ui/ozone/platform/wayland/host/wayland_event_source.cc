@@ -765,6 +765,9 @@ void WaylandEventSource::OnTouchReleaseInternal(PointerId id) {
   TouchPoint* touch_point = it->second.get();
   HandleTouchFocusChange(touch_point->window, false, id);
   touch_points_.erase(it);
+  if (touch_points_.empty()) {
+    ResetTouchCursorPosition();
+  }
 }
 
 void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
@@ -775,18 +778,23 @@ void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
     auto* located_event = event->AsLocatedEvent();
     SetRootLocation(located_event);
     auto* cursor_position = connection_->wayland_cursor_position();
-    // TODO(crbug.com/40934709): Touch event should not update the cursor
-    // position.
-    if (cursor_position) {
+    // Touch cancel events carry no meaningful location.
+    if (cursor_position && event->type() != EventType::kTouchCancelled) {
       auto* root_window = static_cast<WaylandWindow*>(GetRootTarget(target));
       // GetBoundsInDIP's origin is in UI DIP coordinates, cursor position
       // tracker stores Wayland DIP coordinates, so it must be ui-scaled.
       auto root_origin_wl_dip =
           gfx::ScaleToRoundedPoint(root_window->GetBoundsInDIP().origin(),
                                    root_window->applied_state().ui_scale);
-      cursor_position->OnCursorPositionChanged(
-          located_event->root_location() +
-          root_origin_wl_dip.OffsetFromOrigin());
+      const gfx::Point location = located_event->root_location() +
+                                  root_origin_wl_dip.OffsetFromOrigin();
+      // Touch only overrides the cursor position while a touch point is down,
+      // see OnTouchReleased().
+      if (event->IsTouchEvent()) {
+        cursor_position->OnTouchPositionChanged(location);
+      } else {
+        cursor_position->OnCursorPositionChanged(location);
+      }
     }
   }
   DispatchEvent(event);
@@ -865,6 +873,13 @@ void WaylandEventSource::CancelActiveTouches(base::TimeTicks timestamp) {
     }
   }
   touch_points_.clear();
+  ResetTouchCursorPosition();
+}
+
+void WaylandEventSource::ResetTouchCursorPosition() {
+  if (auto* cursor_position = connection_->wayland_cursor_position()) {
+    cursor_position->OnTouchReleased();
+  }
 }
 
 void WaylandEventSource::OnTouchFrame() {
@@ -1069,6 +1084,9 @@ void WaylandEventSource::OnWindowRemoved(WaylandWindow* window) {
   base::EraseIf(touch_points_, [window](const auto& point) {
     return point.second->window == window;
   });
+  if (touch_points_.empty()) {
+    ResetTouchCursorPosition();
+  }
 }
 
 void WaylandEventSource::HandleTouchFocusChange(WaylandWindow* window,

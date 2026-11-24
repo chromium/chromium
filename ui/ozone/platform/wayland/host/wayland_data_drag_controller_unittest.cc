@@ -1960,8 +1960,8 @@ TEST_P(WaylandDataDragControllerTest,
     auto* cursor_position = connection()->wayland_cursor_position();
     ASSERT_TRUE(cursor_position);
 
-    // Forcibly update the cursor position before sending drag motion event.
-    cursor_position->OnCursorPositionChanged(gfx::Point(1, 2));
+    // Forcibly update the touch position before sending drag motion event.
+    cursor_position->OnTouchPositionChanged(gfx::Point(1, 2));
 
     // Send a drag motion and see if cursor position is updated.
     SendDndMotion(gfx::Point(10, 11));

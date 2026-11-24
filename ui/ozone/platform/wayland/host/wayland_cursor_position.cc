@@ -17,13 +17,23 @@ void WaylandCursorPosition::OnCursorPositionChanged(
   cursor_surface_point_ = cursor_position;
 }
 
+void WaylandCursorPosition::OnTouchPositionChanged(
+    const gfx::Point& touch_position) {
+  touch_surface_point_ = touch_position;
+}
+
+void WaylandCursorPosition::OnTouchReleased() {
+  touch_surface_point_.reset();
+}
+
 gfx::Point WaylandCursorPosition::GetCursorSurfacePoint() const {
-  return cursor_surface_point_;
+  return touch_surface_point_.value_or(cursor_surface_point_);
 }
 
 void WaylandCursorPosition::DumpState(std::ostream& out) const {
-  out << "WaylandCursorPositoin: cursor_surface_point:"
-      << cursor_surface_point_.ToString();
+  out << "WaylandCursorPosition: cursor_surface_point:"
+      << cursor_surface_point_.ToString() << " touch_surface_point:"
+      << (touch_surface_point_ ? touch_surface_point_->ToString() : "none");
 }
 
 }  // namespace ui

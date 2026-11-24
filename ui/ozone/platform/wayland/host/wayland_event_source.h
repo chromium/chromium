@@ -251,6 +251,9 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Wrap up method to support async touch release processing.
   void OnTouchReleaseInternal(PointerId id);
+  // Makes the cursor position fall back to the last pointer location once no
+  // touch point is down.
+  void ResetTouchCursorPosition();
 
   // Ensure a valid instance of the PointerScrollData class member.
   void EnsurePointerScrollData(const std::optional<base::TimeTicks>& timestamp);

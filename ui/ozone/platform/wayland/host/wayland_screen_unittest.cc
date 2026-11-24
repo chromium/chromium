@@ -29,6 +29,7 @@
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
+#include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -1011,6 +1012,49 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   });
 
   EXPECT_EQ(gfx::Point(1912, 1071), platform_screen_->GetCursorScreenPoint());
+}
+
+// Touch must only override the cursor screen point while the touch point is
+// down. Regression test for https://crbug.com/40934709.
+TEST_P(WaylandScreenTest, GetCursorScreenPointWithTouch) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(
+        server->seat()->resource(),
+        WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+  ASSERT_TRUE(connection_->seat()->touch());
+
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    wl::MockPointer* pointer = server->seat()->pointer();
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    wl_pointer_send_enter(pointer->resource(), server->GetNextSerial(),
+                          surface->resource(), 0, 0);
+    wl_pointer_send_motion(pointer->resource(), server->GetNextTime(),
+                           wl_fixed_from_int(10), wl_fixed_from_int(20));
+    wl_pointer_send_frame(pointer->resource());
+  });
+  EXPECT_EQ(gfx::Point(10, 20), platform_screen_->GetCursorScreenPoint());
+
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    wl_touch_send_down(server->seat()->touch()->resource(),
+                       server->GetNextSerial(), server->GetNextTime(),
+                       surface->resource(), /*id=*/0, wl_fixed_from_int(50),
+                       wl_fixed_from_int(60));
+    wl_touch_send_frame(server->seat()->touch()->resource());
+  });
+  // The touch point is reported while it is down.
+  EXPECT_EQ(gfx::Point(50, 60), platform_screen_->GetCursorScreenPoint());
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_touch_send_up(server->seat()->touch()->resource(),
+                     server->GetNextSerial(), server->GetNextTime(), /*id=*/0);
+    wl_touch_send_frame(server->seat()->touch()->resource());
+  });
+  // Once released, the last pointer location is reported again.
+  EXPECT_EQ(gfx::Point(10, 20), platform_screen_->GetCursorScreenPoint());
 }
 
 class WaylandScreenTestNoFractionalScale : public WaylandScreenTest {
