@@ -15119,7 +15119,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "OrganizerPanel"
+                        "OrganizerPanel",
+                        "OrganizerPanelForeignTabs"
                     ]
                 }
             ]
@@ -20970,7 +20971,7 @@
                         "x_min_tabs_for_promo": "10"
                     },
                     "enable_features": [
-                        "IPHVerticalTabstripTutorialFeature"
+                        "IPH_VerticalTabstripTutorialFeature"
                     ]
                 }
             ]
