@@ -115,6 +115,21 @@
   max-width: 150px;
 }
 
+:host([is-android]) .chip-title {
+  font-size: 14px;
+}
+
+:host([is-android][small-chips-enabled]) .action-chip .chip-title {
+  font-weight: 500;
+  /* Trim half-leading so the capital height is centered with the icon
+   * regardless of font metric rounding on Android. Clip horizontally for
+   * ellipsis while keeping vertical overflow visible so descenders are not
+   * clipped. */
+  overflow-x: clip;
+  overflow-y: visible;
+  text-box: trim-both cap alphabetic;
+}
+
 :host([uncapped-width-enabled]) .action-chip,
 :host([uncapped-width-enabled]) .action-chip .chip-title {
   max-width: unset;

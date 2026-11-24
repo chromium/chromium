@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import './icons.html.js';
 
+import {getLoadTimeBoolean} from 'chrome://resources/cr_components/composebox/common.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -94,6 +95,11 @@ export class ActionChipsElement extends ActionChipsElementBase {
         type: Boolean,
         reflect: true,
       },
+      isAndroid_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-android',
+      },
       smallChipsEnabled_: {
         type: Boolean,
         reflect: true,
@@ -114,6 +120,8 @@ export class ActionChipsElement extends ActionChipsElementBase {
       loadTimeData.getBoolean('ntpNextShowDismissalUIEnabled');
   protected accessor disablementContextMenuEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextDisablementContextMenuEnabled');
+  protected accessor isAndroid_: boolean =
+      getLoadTimeBoolean('isAndroid', false);
   protected accessor smallChipsEnabled_: boolean =
       loadTimeData.getBoolean('ntpSmallActionChipsEnabled');
   protected accessor uncappedWidthEnabled_: boolean =

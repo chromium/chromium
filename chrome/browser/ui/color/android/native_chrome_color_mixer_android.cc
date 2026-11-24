@@ -34,4 +34,10 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                 : ui::kColorSysSurfaceContainerLowest};
   mixer[kColorHistoryPageSelectionToolbarBackground] = {
       dark_mode ? ui::kColorSysSurface : ui::kColorSysSurfaceContainerHigh};
+
+  // New Tab Page action chips colors. `kColorNewTabPageActionChipTextBody`
+  // drives both the chip subtitle and the chip icon fill color.
+  mixer[kColorNewTabPageActionChipBackground] = {ui::kColorSysSurfaceContainer};
+  mixer[kColorNewTabPageActionChipTextTitle] = {ui::kColorSysOnSurface};
+  mixer[kColorNewTabPageActionChipTextBody] = {ui::kColorSysOnSurface};
 }
