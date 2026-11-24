@@ -4120,6 +4120,11 @@
     "expiry_milestone": 175
   },
   {
+    "name": "enable-gemini-live-in-bottom-sheet",
+    "owners": [ "gayane@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-gesture-user-education-back-swipe",
     "owners": [
       "jtanaristy@google.com"
