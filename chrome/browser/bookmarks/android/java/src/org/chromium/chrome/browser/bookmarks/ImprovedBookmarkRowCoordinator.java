@@ -42,7 +42,8 @@ public class ImprovedBookmarkRowCoordinator {
      * @param bookmarkImageFetcher Fetches images for bookmarks.
      * @param bookmarkModel The bookmark model used to query bookmark properties.
      * @param bookmarkUiPrefs Tracks the user's preferences about the bookmark manager.
-     * @param shoppingService The bookmark model used to query bookmark properties.
+     * @param shoppingService The shopping service used to query commerce and price-tracking
+     *     properties.
      */
     public ImprovedBookmarkRowCoordinator(
             Context context,
@@ -230,7 +231,7 @@ public class ImprovedBookmarkRowCoordinator {
 
     /**
      * Returns whether images should be shown for a given bookmark, which is true if the user has
-     * selected the visual display preference and the bookmark is synced with google.
+     * selected the visual display preference.
      */
     boolean shouldShowImagesForBookmark(
             BookmarkItem item, @BookmarkRowDisplayPref int displayPref) {
@@ -238,8 +239,8 @@ public class ImprovedBookmarkRowCoordinator {
     }
 
     /**
-     * Returns whether images should be shown for a given folder, which is true if the user has
-     * selected the visual display preference and the folder is synced with google.
+     * Returns whether images should be shown for a given folder, excluding the root, desktop,
+     * mobile, other, and top-level folders.
      */
     boolean shouldShowImagesForFolder(BookmarkId folder) {
         BookmarkId rootNodeId = mBookmarkModel.getRootFolderId();

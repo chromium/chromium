@@ -74,7 +74,6 @@ class ReadingListSectionHeader {
 
     /** Sorts the given {@code listItems} to show unread items ahead of read items. */
     private static void sort(List<BookmarkListEntry> listItems, int readingListStartIndex) {
-        // TODO(crbug.com/40156540): Sort items by creation time possibly.
         Collections.sort(
                 listItems.subList(readingListStartIndex, listItems.size()),
                 (lhs, rhs) -> {

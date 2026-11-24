@@ -11,7 +11,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/** Responsible for hosting properties of the improved bookmark row. */
+/** Responsible for hosting properties of {@link ShoppingAccessoryView}. */
 @NullMarked
 class ShoppingAccessoryViewProperties {
     /** Encapsulates price info on a product. */
