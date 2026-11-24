@@ -8,14 +8,14 @@ found in the LICENSE file.
 <!-- A single download row in the download toolbar button tray: file-type icon and the file name
      with a status description below it, above a progress bar shown while the download is in
      progress. Clicking the row opens the download, as on desktop. -->
-<LinearLayout
+<org.chromium.chrome.browser.download.tray.DownloadTrayItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/download_tray_item_min_height"
     android:paddingStart="@dimen/download_tray_item_padding_horizontal"
-    android:paddingEnd="@dimen/download_tray_item_padding_horizontal"
+    android:paddingEnd="@dimen/download_tray_header_padding_end"
     android:paddingTop="@dimen/download_tray_item_padding_vertical"
     android:paddingBottom="@dimen/download_tray_item_padding_vertical"
     android:orientation="vertical"
@@ -28,6 +28,7 @@ found in the LICENSE file.
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
@@ -45,6 +46,7 @@ found in the LICENSE file.
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginEnd="@dimen/download_tray_item_content_margin_end"
             android:orientation="vertical">
 
             <TextView
@@ -63,6 +65,33 @@ found in the LICENSE file.
                 android:ellipsize="end"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
         </LinearLayout>
+
+        <!-- Shown by DownloadTrayItemView while hovered, focused, or without a precision
+             pointer. -->
+        <LinearLayout
+            android:id="@+id/download_tray_item_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <!-- Icons and content descriptions are set when bound. -->
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/download_tray_item_primary_action"
+                android:layout_width="@dimen/min_touch_target_size"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="center"
+                app:tint="@color/default_icon_color_tint_list" />
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/download_tray_item_secondary_action"
+                android:layout_width="@dimen/min_touch_target_size"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="center"
+                app:tint="@color/default_icon_color_tint_list" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- The description already says how far along the download is. -->
@@ -72,8 +101,9 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="@dimen/download_tray_progress_height"
         android:layout_marginTop="@dimen/download_tray_progress_spacing"
+        android:layout_marginEnd="@dimen/download_tray_item_content_margin_end"
         android:max="100"
         android:progressBackgroundTint="@color/progress_bar_bg_color_list"
         android:importantForAccessibility="no"
         android:visibility="gone" />
-</LinearLayout>
+</org.chromium.chrome.browser.download.tray.DownloadTrayItemView>

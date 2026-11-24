@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.tray;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.download.DownloadIconUtils;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
+import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -83,6 +85,10 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     private final Runnable mOnActioned;
     private final DownloadTrayDelegate mDelegate;
     private final PopupController mPopupController;
+    private final ActionButton mPauseAction;
+    private final ActionButton mResumeAction;
+    private final ActionButton mRetryAction;
+    private final ActionButton mCancelAction;
 
     /**
      * Downloads this window saw complete that the user hasn't acted on, as desktop's {@code
@@ -141,6 +147,26 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         mOnActioned = onActioned;
         mDelegate = delegate;
         mPopupController = popupController;
+        mPauseAction =
+                new ActionButton(
+                        R.drawable.ic_pause_white_24dp,
+                        R.string.download_notification_pause_button,
+                        mModel::pauseDownload);
+        mResumeAction =
+                new ActionButton(
+                        R.drawable.ic_play_arrow_white_24dp,
+                        R.string.download_notification_resume_button,
+                        mModel::resumeDownload);
+        mRetryAction =
+                new ActionButton(
+                        R.drawable.ic_refresh_24dp,
+                        R.string.download_notification_resume_button,
+                        mModel::resumeDownload);
+        mCancelAction =
+                new ActionButton(
+                        R.drawable.material_ic_close_24dp,
+                        R.string.download_notification_cancel_button,
+                        mModel::cancelDownload);
         mModel.addObserver(this);
     }
 
@@ -212,7 +238,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         if (shownRow != null) {
             if (shouldKeepShownRow(item)) {
                 // A shown row follows its download, e.g. as it progresses, ends or is renamed.
-                updateRow(shownRow.model, item);
+                updateRow(shownRow.model, item, previous);
             } else {
                 // E.g. cancelled or flagged as dangerous, as if removed.
                 removeShownRow(id);
@@ -437,26 +463,62 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     }
 
     private PropertyModel createItemModel(OfflineItem item) {
-        PropertyModel row = new PropertyModel(DownloadTrayItemProperties.ALL_KEYS);
-        updateRow(row, item);
+        PropertyModel row =
+                new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
+                        .with(DownloadTrayItemProperties.ITEM_ID, assertNonNull(item.id))
+                        .build();
+        updateRow(row, item, /* previous= */ null);
         return row;
     }
 
     /** Fills {@code row} from {@code item}, e.g. as it progresses, ends or is renamed. */
-    private void updateRow(PropertyModel row, OfflineItem item) {
+    private void updateRow(PropertyModel row, OfflineItem item, @Nullable OfflineItem previous) {
         boolean isActive = DownloadStateModel.isActive(item);
         row.set(DownloadTrayItemProperties.ICON, getIcon(item));
         row.set(DownloadTrayItemProperties.TITLE, item.title);
         row.set(
                 DownloadTrayItemProperties.DESCRIPTION,
                 isActive ? getInProgressDescription(item) : getEndedDescription(item));
-        row.set(DownloadTrayItemProperties.IS_IN_PROGRESS, isActive);
         row.set(DownloadTrayItemProperties.PROGRESS, getProgress(item));
+        // State-dependent properties don't change on progress ticks; previous is non-null only for
+        // downloads that were active (which have nothing to open), so ended rows always refresh
+        // fully, including ON_OPEN.
+        if (previous != null && item.state == previous.state) return;
+        row.set(DownloadTrayItemProperties.IS_IN_PROGRESS, isActive);
         row.set(DownloadTrayItemProperties.IS_PAUSED, item.state == OfflineItemState.PAUSED);
         // Only a completed download has a file to open; one in progress or interrupted doesn't.
         row.set(
                 DownloadTrayItemProperties.ON_OPEN,
                 item.state == OfflineItemState.COMPLETE ? _ -> onOpen(item) : null);
+        row.set(DownloadTrayItemProperties.PRIMARY_ACTION, getPrimaryAction(item));
+        row.set(DownloadTrayItemProperties.SECONDARY_ACTION, getSecondaryAction(item));
+    }
+
+    /**
+     * Returns the row's primary action, or null for a completed download. As on the Downloads page
+     * ({@code InProgressViewHolder}), a pending download pauses and an interrupted one resumes.
+     */
+    private @Nullable ActionButton getPrimaryAction(OfflineItem item) {
+        if (item.state == OfflineItemState.IN_PROGRESS || item.state == OfflineItemState.PENDING) {
+            return mPauseAction;
+        }
+        if (item.state == OfflineItemState.PAUSED) {
+            return mResumeAction;
+        }
+        if (item.state == OfflineItemState.INTERRUPTED) {
+            return mRetryAction;
+        }
+        // OfflineItemState.COMPLETE (or any other ended state): no actions.
+        return null;
+    }
+
+    /** Returns the row's secondary action (cancel), or null for a completed download. */
+    private @Nullable ActionButton getSecondaryAction(OfflineItem item) {
+        if (DownloadStateModel.isActive(item) || item.state == OfflineItemState.INTERRUPTED) {
+            return mCancelAction;
+        }
+        // OfflineItemState.COMPLETE (or any other ended state): no actions.
+        return null;
     }
 
     /**

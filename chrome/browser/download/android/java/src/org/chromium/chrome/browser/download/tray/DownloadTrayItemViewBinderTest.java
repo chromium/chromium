@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.download.tray;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -16,6 +18,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,11 +34,20 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.LegacyHelpers;
+import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link DownloadTrayItemViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -43,6 +55,8 @@ public class DownloadTrayItemViewBinderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private View.OnClickListener mOnOpen;
+    @Mock private Callback<ContentId> mOnPrimaryAction;
+    @Mock private Callback<ContentId> mOnSecondaryAction;
 
     private View mView;
 
@@ -157,5 +171,134 @@ public class DownloadTrayItemViewBinderTest {
         assertEquals(60, progress.getProgress());
         model.set(DownloadTrayItemProperties.IS_IN_PROGRESS, false);
         assertEquals(View.GONE, progress.getVisibility());
+    }
+
+    /** Returns the label of the row's accessibility action {@code actionId}, or null if none. */
+    private String getAccessibilityActionLabel(int actionId) {
+        AccessibilityNodeInfoCompat rowInfo =
+                AccessibilityNodeInfoCompat.wrap(mView.createAccessibilityNodeInfo());
+        return rowInfo.getActionList().stream()
+                .filter(action -> action.getId() == actionId)
+                .map(action -> String.valueOf(action.getLabel()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Test
+    public void testBind_actionButtonsAreAlsoRowAccessibilityActions() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        // In a window, after another focusable view, for focus to behave as in the tray.
+        Activity activity = (Activity) mView.getContext();
+        FrameLayout root = new FrameLayout(activity);
+        View firstView = new View(activity);
+        firstView.setFocusable(true);
+        root.addView(firstView);
+        root.addView(mView);
+        activity.setContentView(root);
+        ContentId itemId = LegacyHelpers.buildLegacyContentId(/* isOfflinePage= */ false, "a");
+        ActionButton pauseAction =
+                new ActionButton(
+                        R.drawable.ic_pause_white_24dp,
+                        R.string.download_notification_pause_button,
+                        mOnPrimaryAction);
+        ActionButton cancelAction =
+                new ActionButton(
+                        R.drawable.material_ic_close_24dp,
+                        R.string.download_notification_cancel_button,
+                        mOnSecondaryAction);
+        PropertyModel model =
+                new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
+                        .with(DownloadTrayItemProperties.ITEM_ID, itemId)
+                        .with(DownloadTrayItemProperties.ON_OPEN, null)
+                        .with(DownloadTrayItemProperties.PRIMARY_ACTION, pauseAction)
+                        .with(DownloadTrayItemProperties.SECONDARY_ACTION, cancelAction)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mView, DownloadTrayItemViewBinder::bind);
+        ImageView primary = mView.findViewById(R.id.download_tray_item_primary_action);
+        ImageView secondary = mView.findViewById(R.id.download_tray_item_secondary_action);
+        String pause = activity.getString(R.string.download_notification_pause_button);
+        String cancel = activity.getString(R.string.download_notification_cancel_button);
+
+        // Each action has its button and, for screen readers, which can't reach a hidden button,
+        // an accessibility action on the row.
+        assertEquals(
+                R.drawable.ic_pause_white_24dp,
+                shadowOf(primary.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.material_ic_close_24dp,
+                shadowOf(secondary.getDrawable()).getCreatedFromResId());
+        assertEquals(pause, primary.getContentDescription().toString());
+        assertEquals(cancel, secondary.getContentDescription().toString());
+        assertEquals(pause, getAccessibilityActionLabel(primary.getId()));
+        assertEquals(cancel, getAccessibilityActionLabel(secondary.getId()));
+        primary.performClick();
+        verify(mOnPrimaryAction).onResult(itemId);
+        assertTrue(mView.performAccessibilityAction(primary.getId(), null));
+        verify(mOnPrimaryAction, times(2)).onResult(itemId);
+        secondary.performClick();
+        verify(mOnSecondaryAction).onResult(itemId);
+        assertTrue(mView.performAccessibilityAction(secondary.getId(), null));
+        verify(mOnSecondaryAction, times(2)).onResult(itemId);
+
+        // Though it has nothing to open, the row takes keyboard focus, which shows its buttons.
+        assertFalse(mView.isClickable());
+        assertTrue(mView.requestFocus());
+        View actions = mView.findViewById(R.id.download_tray_item_actions);
+        assertEquals(View.VISIBLE, actions.getVisibility());
+        assertTrue(primary.requestFocus());
+
+        // An action that goes takes its button and accessibility action with it, and focus on
+        // the button moves to the row rather than jump to the first view.
+        model.set(DownloadTrayItemProperties.PRIMARY_ACTION, null);
+        assertEquals(View.GONE, primary.getVisibility());
+        assertNull(getAccessibilityActionLabel(primary.getId()));
+        assertTrue(mView.isFocused());
+        assertTrue(mView.isFocusable());
+
+        // Without its last action the row no longer takes focus. Reused, it shows the button
+        // again.
+        model.set(DownloadTrayItemProperties.SECONDARY_ACTION, null);
+        assertFalse(mView.isFocusable());
+        model.set(DownloadTrayItemProperties.PRIMARY_ACTION, pauseAction);
+        assertEquals(View.VISIBLE, primary.getVisibility());
+    }
+
+    @Test
+    public void testActionButton_equalValuesDoNotRebind() {
+        ContentId itemId = LegacyHelpers.buildLegacyContentId(/* isOfflinePage= */ false, "a");
+        ActionButton pauseAction =
+                new ActionButton(
+                        R.drawable.ic_pause_white_24dp,
+                        R.string.download_notification_pause_button,
+                        mOnPrimaryAction);
+        ActionButton equalPauseAction =
+                new ActionButton(
+                        R.drawable.ic_pause_white_24dp,
+                        R.string.download_notification_pause_button,
+                        mOnPrimaryAction);
+        assertEquals(pauseAction, equalPauseAction);
+        assertEquals(pauseAction.hashCode(), equalPauseAction.hashCode());
+        assertNotEquals(
+                pauseAction,
+                new ActionButton(
+                        R.drawable.ic_play_arrow_white_24dp,
+                        R.string.download_notification_resume_button,
+                        mOnPrimaryAction));
+        assertNotEquals(
+                pauseAction,
+                new ActionButton(
+                        R.drawable.ic_pause_white_24dp,
+                        R.string.download_notification_pause_button,
+                        mOnSecondaryAction));
+
+        PropertyModel model =
+                new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
+                        .with(DownloadTrayItemProperties.ITEM_ID, itemId)
+                        .with(DownloadTrayItemProperties.PRIMARY_ACTION, pauseAction)
+                        .build();
+        List<PropertyKey> changedKeys = new ArrayList<>();
+        model.addObserver((_, key) -> changedKeys.add(key));
+        model.set(DownloadTrayItemProperties.PRIMARY_ACTION, equalPauseAction);
+        assertTrue(changedKeys.isEmpty());
     }
 }

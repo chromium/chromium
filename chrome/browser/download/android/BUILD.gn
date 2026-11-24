@@ -98,6 +98,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayDelegate.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemProperties.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemView.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMediator.java",
   ]
@@ -210,6 +211,7 @@ robolectric_library("junit_tests") {
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialogUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewBinderTest.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewTest.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMediatorTest.java",
   ]
 

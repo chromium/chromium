@@ -20,6 +20,9 @@ found in the LICENSE file.
     <dimen name="download_tray_item_min_height">64dp</dimen>
     <dimen name="download_tray_item_icon_size">36dp</dimen>
     <dimen name="download_tray_item_icon_margin_end">16dp</dimen>
+    <!-- Row uses download_tray_header_padding_end (4dp) so 48dp Cancel aligns under tray Close;
+         text and progress bar add 12dp more to end 16dp from the tray's edge. -->
+    <dimen name="download_tray_item_content_margin_end">12dp</dimen>
     <dimen name="download_tray_item_padding_horizontal">16dp</dimen>
     <dimen name="download_tray_item_padding_vertical">8dp</dimen>
     <dimen name="download_tray_progress_height">4dp</dimen>

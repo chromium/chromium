@@ -8,9 +8,12 @@ import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperti
 import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ICON;
 import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.IS_IN_PROGRESS;
 import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.IS_PAUSED;
+import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ITEM_ID;
 import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ON_OPEN;
+import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.PRIMARY_ACTION;
 import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.PROGRESS;
 import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.PROGRESS_INDETERMINATE;
+import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.SECONDARY_ACTION;
 import static org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.TITLE;
 
 import android.content.Context;
@@ -20,13 +23,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -48,10 +54,8 @@ class DownloadTrayItemViewBinder {
         } else if (key == ON_OPEN) {
             View.@Nullable OnClickListener onOpen = model.get(ON_OPEN);
             view.setOnClickListener(onOpen);
-            // A row with nothing to open, e.g. a download in progress, takes no keyboard focus;
-            // screen readers still read it as one item.
             view.setClickable(onOpen != null);
-            view.setFocusable(onOpen != null);
+            updateHasActionsAndFocusability(model, view);
             // Clicking the row opens the download, so announce "double-tap to open" rather than
             // the generic "double-tap to activate". A row with nothing to open has no click action.
             ViewCompat.replaceAccessibilityAction(
@@ -82,6 +86,62 @@ class DownloadTrayItemViewBinder {
             ProgressBar progress = view.findViewById(R.id.download_tray_item_progress);
             progress.setProgressTintList(tint);
             progress.setIndeterminateTintList(tint);
+        } else if (key == PRIMARY_ACTION) {
+            bindActionButton(
+                    model, view, R.id.download_tray_item_primary_action, model.get(PRIMARY_ACTION));
+            updateHasActionsAndFocusability(model, view);
+        } else if (key == SECONDARY_ACTION) {
+            bindActionButton(
+                    model,
+                    view,
+                    R.id.download_tray_item_secondary_action,
+                    model.get(SECONDARY_ACTION));
+            updateHasActionsAndFocusability(model, view);
         }
+    }
+
+    /**
+     * Binds {@code action} to its button and, as the button only shows while the row is hovered or
+     * focused, to an accessibility action on the row for screen readers.
+     */
+    private static void bindActionButton(
+            PropertyModel model, View row, @IdRes int buttonId, @Nullable ActionButton action) {
+        ImageView button = row.findViewById(buttonId);
+        AccessibilityActionCompat a11yAction =
+                new AccessibilityActionCompat(buttonId, /* label= */ null);
+        if (action == null) {
+            // Keyboard focus on the button moves to the row rather than jump to the tray's top.
+            if (button.isFocused()) {
+                row.requestFocus();
+            }
+            button.setVisibility(View.GONE);
+            ViewCompat.replaceAccessibilityAction(
+                    row, a11yAction, /* label= */ null, /* command= */ null);
+        } else {
+            ContentId itemId = model.get(ITEM_ID);
+            String label = row.getContext().getString(action.mDescriptionRes);
+            button.setVisibility(View.VISIBLE);
+            button.setImageResource(action.mIconRes);
+            button.setContentDescription(label);
+            button.setOnClickListener(_ -> action.mOnClick.onResult(itemId));
+            ViewCompat.replaceAccessibilityAction(
+                    row,
+                    a11yAction,
+                    label,
+                    (_, _) -> {
+                        action.mOnClick.onResult(itemId);
+                        return true;
+                    });
+        }
+    }
+
+    /** Tells the row whether it has action buttons, and sets whether it takes keyboard focus. */
+    private static void updateHasActionsAndFocusability(PropertyModel model, View row) {
+        boolean hasActions =
+                model.get(PRIMARY_ACTION) != null || model.get(SECONDARY_ACTION) != null;
+        ((DownloadTrayItemView) row).setHasActions(hasActions);
+        // A row with nothing to open and no actions takes no keyboard focus; screen readers still
+        // read it as one item.
+        row.setFocusable(model.get(ON_OPEN) != null || hasActions);
     }
 }

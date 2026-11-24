@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.download.tray;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,6 +42,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -49,6 +52,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -171,6 +175,12 @@ public class DownloadTrayMediatorTest {
             titles.add(row.model.get(DownloadTrayItemProperties.TITLE));
         }
         return titles;
+    }
+
+    private static void assertButton(ActionButton button, int iconRes, int labelRes) {
+        assertNotNull(button);
+        assertEquals(iconRes, button.mIconRes);
+        assertEquals(labelRes, button.mDescriptionRes);
     }
 
     @Test
@@ -597,13 +607,21 @@ public class DownloadTrayMediatorTest {
         assertFalse(row.get(DownloadTrayItemProperties.IS_PAUSED));
         assertNull(row.get(DownloadTrayItemProperties.ON_OPEN)); // Nothing to open yet.
 
+        List<PropertyKey> changedKeys = new ArrayList<>();
+        row.addObserver((_, key) -> changedKeys.add(key));
+
         // The row follows the download while the tray is open. Without a time left, as on the
-        // Downloads page, only the sizes show.
+        // Downloads page, only the sizes show. Progress ticks only notify changed properties.
         item = createItem("a", OfflineItemState.IN_PROGRESS);
         item.receivedBytes = 3_440_000;
         mModel.onItemUpdated(item, /* updateDelta= */ null);
         assertEquals("3.44 MB / 4.30 MB", row.get(DownloadTrayItemProperties.DESCRIPTION));
         assertEquals(80, row.get(DownloadTrayItemProperties.PROGRESS));
+        assertEquals(
+                List.of(
+                        DownloadTrayItemProperties.DESCRIPTION,
+                        DownloadTrayItemProperties.PROGRESS),
+                changedKeys);
 
         // Fractional percentages round to the nearest integer (3.60 / 4.30 is ~83.7%).
         item = createItem("a", OfflineItemState.IN_PROGRESS);
@@ -823,5 +841,93 @@ public class DownloadTrayMediatorTest {
 
         assertEquals(
                 "1.50 MB • Done", captureShownRow().get(DownloadTrayItemProperties.DESCRIPTION));
+    }
+
+    @Test
+    public void testFullTray_rowsOfferTheActionsForTheirState() {
+        OfflineItem runningItem = createItem("running", OfflineItemState.IN_PROGRESS);
+        mGetAllItemsCallbackCaptor
+                .getValue()
+                .onResult(
+                        new ArrayList<>(
+                                List.of(
+                                        runningItem,
+                                        createItem("pending", OfflineItemState.PENDING),
+                                        createItem("paused", OfflineItemState.PAUSED),
+                                        createItem("interrupted", OfflineItemState.INTERRUPTED),
+                                        createItem("complete", OfflineItemState.COMPLETE))));
+        mMediator.toggleFullTray();
+        ModelList rows = captureFullTrayRows();
+        // Downloading rows come first, then paused ones, then ended ones, each newest first.
+        PropertyModel pending = rows.get(0).model;
+        PropertyModel running = rows.get(1).model;
+        PropertyModel paused = rows.get(2).model;
+        PropertyModel complete = rows.get(3).model;
+        PropertyModel interrupted = rows.get(4).model;
+        int resume = R.string.download_notification_resume_button;
+
+        // Downloading, or waiting to: Pause and Cancel.
+        for (PropertyModel row : List.of(running, pending)) {
+            assertButton(
+                    row.get(DownloadTrayItemProperties.PRIMARY_ACTION),
+                    R.drawable.ic_pause_white_24dp,
+                    R.string.download_notification_pause_button);
+            assertButton(
+                    row.get(DownloadTrayItemProperties.SECONDARY_ACTION),
+                    R.drawable.material_ic_close_24dp,
+                    R.string.download_notification_cancel_button);
+        }
+        // Rows share action button instances so PropertyModel equality avoids rebinding.
+        assertSame(
+                running.get(DownloadTrayItemProperties.PRIMARY_ACTION),
+                pending.get(DownloadTrayItemProperties.PRIMARY_ACTION));
+        assertSame(
+                running.get(DownloadTrayItemProperties.SECONDARY_ACTION),
+                paused.get(DownloadTrayItemProperties.SECONDARY_ACTION));
+        ContentId runningId = running.get(DownloadTrayItemProperties.ITEM_ID);
+        assertEquals(id("running"), runningId);
+        running.get(DownloadTrayItemProperties.PRIMARY_ACTION).mOnClick.onResult(runningId);
+        verify(mProvider).pauseDownload(id("running"));
+        running.get(DownloadTrayItemProperties.SECONDARY_ACTION).mOnClick.onResult(runningId);
+        verify(mProvider).cancelDownload(id("running"));
+
+        // Paused: Resume and Cancel.
+        ActionButton resumeButton = paused.get(DownloadTrayItemProperties.PRIMARY_ACTION);
+        assertButton(resumeButton, R.drawable.ic_play_arrow_white_24dp, resume);
+        resumeButton.mOnClick.onResult(paused.get(DownloadTrayItemProperties.ITEM_ID));
+        verify(mProvider).resumeDownload(id("paused"));
+        assertNotNull(paused.get(DownloadTrayItemProperties.SECONDARY_ACTION));
+
+        // Interrupted: Retry, which resumes as on the Downloads page, and Cancel.
+        ActionButton retryButton = interrupted.get(DownloadTrayItemProperties.PRIMARY_ACTION);
+        assertButton(retryButton, R.drawable.ic_refresh_24dp, resume);
+        retryButton.mOnClick.onResult(interrupted.get(DownloadTrayItemProperties.ITEM_ID));
+        verify(mProvider).resumeDownload(id("interrupted"));
+        interrupted
+                .get(DownloadTrayItemProperties.SECONDARY_ACTION)
+                .mOnClick
+                .onResult(interrupted.get(DownloadTrayItemProperties.ITEM_ID));
+        verify(mProvider).cancelDownload(id("interrupted"));
+
+        // Completed: none. And an action neither closes the tray nor counts as acting on a
+        // download.
+        assertNull(complete.get(DownloadTrayItemProperties.PRIMARY_ACTION));
+        assertNull(complete.get(DownloadTrayItemProperties.SECONDARY_ACTION));
+        verify(mOnActioned, never()).run();
+        verify(mPopupController, never()).dismiss();
+
+        // A row's actions follow its download, here as it is paused and then completes.
+        runningItem = runningItem.clone();
+        runningItem.state = OfflineItemState.PAUSED;
+        mModel.onItemUpdated(runningItem, /* updateDelta= */ null);
+        assertButton(
+                running.get(DownloadTrayItemProperties.PRIMARY_ACTION),
+                R.drawable.ic_play_arrow_white_24dp,
+                resume);
+        runningItem = runningItem.clone();
+        runningItem.state = OfflineItemState.COMPLETE;
+        mModel.onItemUpdated(runningItem, /* updateDelta= */ null);
+        assertNull(running.get(DownloadTrayItemProperties.PRIMARY_ACTION));
+        assertNull(running.get(DownloadTrayItemProperties.SECONDARY_ACTION));
     }
 }

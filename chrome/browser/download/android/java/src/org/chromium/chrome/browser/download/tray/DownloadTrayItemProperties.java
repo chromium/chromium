@@ -6,12 +6,20 @@ package org.chromium.chrome.browser.download.tray;
 
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.util.Objects;
 
 /**
  * Properties of a single download row in the download toolbar button tray. Shared by the completion
@@ -19,11 +27,44 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  */
 @NullMarked
 class DownloadTrayItemProperties {
+    /** A row action button's icon, accessibility label and callback. */
+    static final class ActionButton {
+        final @DrawableRes int mIconRes;
+        final @StringRes int mDescriptionRes;
+        final Callback<ContentId> mOnClick;
+
+        ActionButton(
+                @DrawableRes int iconRes,
+                @StringRes int descriptionRes,
+                Callback<ContentId> onClick) {
+            mIconRes = iconRes;
+            mDescriptionRes = descriptionRes;
+            mOnClick = onClick;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof ActionButton other)) return false;
+            return mIconRes == other.mIconRes
+                    && mDescriptionRes == other.mDescriptionRes
+                    && Objects.equals(mOnClick, other.mOnClick);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mIconRes, mDescriptionRes, mOnClick);
+        }
+    }
+
     /** The view type of the rows in the download tray list, which all share one layout. */
     static final int ROW_TYPE = 0;
 
     /** The {@link #PROGRESS} of a download whose size, and so how far along it is, is unknown. */
     static final int PROGRESS_INDETERMINATE = -1;
+
+    /** The download's identifier, passed to row action callbacks. */
+    static final ReadableObjectPropertyKey<ContentId> ITEM_ID = new ReadableObjectPropertyKey<>();
 
     /** The file-type icon drawable resource. */
     static final WritableIntPropertyKey ICON = new WritableIntPropertyKey();
@@ -51,8 +92,25 @@ class DownloadTrayItemProperties {
     /** Whether the download is paused. */
     static final WritableBooleanPropertyKey IS_PAUSED = new WritableBooleanPropertyKey();
 
+    /** The primary action button (pause, resume or retry), or null if the row has none. */
+    static final WritableObjectPropertyKey<@Nullable ActionButton> PRIMARY_ACTION =
+            new WritableObjectPropertyKey<>();
+
+    /** The secondary action button (cancel), or null if the row has none. */
+    static final WritableObjectPropertyKey<@Nullable ActionButton> SECONDARY_ACTION =
+            new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
-        ICON, TITLE, DESCRIPTION, ON_OPEN, IS_IN_PROGRESS, PROGRESS, IS_PAUSED
+        ITEM_ID,
+        ICON,
+        TITLE,
+        DESCRIPTION,
+        ON_OPEN,
+        IS_IN_PROGRESS,
+        PROGRESS,
+        IS_PAUSED,
+        PRIMARY_ACTION,
+        SECONDARY_ACTION,
     };
 
     private DownloadTrayItemProperties() {}

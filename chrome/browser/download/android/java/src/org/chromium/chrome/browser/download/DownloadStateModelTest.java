@@ -317,4 +317,16 @@ public class DownloadStateModelTest {
                 DownloadStateModel.isVisibleInWindow(
                         unknownProfile, /* isIncognitoSelected= */ true));
     }
+
+    @Test
+    public void testDownloadActions_forwardToProvider() {
+        ContentId itemId = id("a");
+        mModel.pauseDownload(itemId);
+        mModel.resumeDownload(itemId);
+        mModel.cancelDownload(itemId);
+
+        verify(mProvider).pauseDownload(itemId);
+        verify(mProvider).resumeDownload(itemId);
+        verify(mProvider).cancelDownload(itemId);
+    }
 }

@@ -33,8 +33,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Observes an {@link OfflineContentProvider} once and caches the download items that the download
- * toolbar UI cares about, so several consumers can share one observer and one item cache. The
- * Android analogue of desktop's {@code DownloadBubbleUpdateService}.
+ * toolbar UI cares about, so several consumers can share one observer and one item cache, and
+ * forwards download actions (pause, resume, cancel) back to the provider. The Android analogue of
+ * desktop's {@code DownloadBubbleUpdateService}.
  *
  * <p>Only trackable items are reported: transient items (e.g. Background Fetch jobs, which only
  * surface as notifications) and suggested items (e.g. prefetched content) are ignored, as in {@code
@@ -158,6 +159,21 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
             recent.subList(MAX_RECENT_ITEMS, recent.size()).clear();
         }
         return recent;
+    }
+
+    /** Pauses an active download. */
+    public void pauseDownload(ContentId id) {
+        mProvider.pauseDownload(id);
+    }
+
+    /** Resumes a paused download or retries an interrupted one. */
+    public void resumeDownload(ContentId id) {
+        mProvider.resumeDownload(id);
+    }
+
+    /** Cancels an active or interrupted download. */
+    public void cancelDownload(ContentId id) {
+        mProvider.cancelDownload(id);
     }
 
     /** Stops observing the provider and drops all cached items. */
