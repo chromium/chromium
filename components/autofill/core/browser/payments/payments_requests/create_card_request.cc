@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -58,9 +59,9 @@ std::string CreateCardRequest::GetRequestContentType() {
 std::string CreateCardRequest::GetRequestContent() {
   base::DictValue request_dict;
 
-  const std::string& app_locale = request_details_.app_locale;
+  const base::i18n::LanguageTag& app_locale = request_details_.app_locale;
   base::DictValue context;
-  context.Set("language_code", app_locale);
+  context.Set("language_code", app_locale.tag_string());
   context.Set("billable_service", kUploadPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
     context.Set("customer_context",
@@ -88,10 +89,10 @@ std::string CreateCardRequest::GetRequestContent() {
     card_info.Set("cvc", "__param:s7e_13_cvc");
   }
   int value = 0;
-  const std::u16string exp_month =
-      request_details_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
-  const std::u16string exp_year =
-      request_details_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
+  const std::u16string exp_month = request_details_.card.GetInfo(
+      CREDIT_CARD_EXP_MONTH, app_locale.tag_string());
+  const std::u16string exp_year = request_details_.card.GetInfo(
+      CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale.tag_string());
   if (base::StringToInt(exp_month, &value)) {
     card_info.Set("expiration_month", value);
   }
@@ -122,8 +123,8 @@ std::string CreateCardRequest::GetRequestContent() {
   }
   request_dict.Set("card_info", std::move(card_info));
 
-  const std::u16string pan =
-      request_details_.card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
+  const std::u16string pan = request_details_.card.GetInfo(
+      CREDIT_CARD_NUMBER, app_locale.tag_string());
   std::string json_request = base::WriteJson(request_dict).value_or("");
   std::string request_content;
   if (request_details_.cvc.empty()) {

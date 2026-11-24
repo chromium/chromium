@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
@@ -63,7 +64,7 @@ std::unique_ptr<UploadCardRequest> CreateUploadCardRequest(
 
   request_details.context_token = u"context token";
   request_details.risk_data = "some risk data";
-  request_details.app_locale = "language-LOCALE";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
   request_details.profiles = BuildTestProfiles();
 
   return std::make_unique<UploadCardRequest>(

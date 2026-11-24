@@ -1831,7 +1831,7 @@ void CreditCardSaveManager::SendUploadCardRequest() {
   if (observer_for_testing_) {
     observer_for_testing_->OnSentUploadCardRequest();
   }
-  upload_request_.app_locale = client_->GetAppLocale().tag_string();
+  upload_request_.app_locale = client_->GetAppLocale();
   upload_request_.billing_customer_number =
       payments::GetBillingCustomerId(payments_data_manager());
 

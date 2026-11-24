@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/i18n/language_tag.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -366,7 +367,7 @@ struct UploadCardRequestDetails {
   std::vector<AutofillProfile> profiles;
   std::u16string context_token;
   std::string risk_data;
-  std::string app_locale;
+  base::i18n::LanguageTag app_locale = base::i18n::GetKnownLanguageTag("und");
   std::vector<ClientBehaviorConstants> client_behavior_signals;
   UploadCardSource upload_card_source = UploadCardSource::kUnknown;
 };

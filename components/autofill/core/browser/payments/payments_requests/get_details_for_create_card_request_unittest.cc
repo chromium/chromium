@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/values_test_util.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -17,14 +18,14 @@ namespace autofill::payments {
 namespace {
 
 constexpr char kUniqueCountryCode[] = "US";
-constexpr char kAppLocale[] = "en";
 constexpr int64_t kBillingCustomerNumber = 111122223333;
 
 std::unique_ptr<GetDetailsForCreateCardRequest> CreateRequest() {
   std::vector<ClientBehaviorConstants> client_behavior_signals{
       ClientBehaviorConstants::kOfferingToSaveCvc};
   return std::make_unique<GetDetailsForCreateCardRequest>(
-      kUniqueCountryCode, client_behavior_signals, kAppLocale,
+      kUniqueCountryCode, client_behavior_signals,
+      base::i18n::GetKnownLanguageTag("en"),
       /*callback=*/base::DoNothing(), kUploadPaymentMethodBillableServiceNumber,
       kBillingCustomerNumber, UploadCardSource::kUpstreamSaveAndFill);
 }

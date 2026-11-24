@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -130,7 +131,7 @@ base::DictValue PaymentsRequest::BuildChromeUserContext(
 
 base::DictValue PaymentsRequest::BuildAddressDictionary(
     const AutofillProfile& profile,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     bool include_non_location_data) {
   base::DictValue postal_address;
 
@@ -174,15 +175,15 @@ base::DictValue PaymentsRequest::BuildAddressDictionary(
 
 base::DictValue PaymentsRequest::BuildCreditCardDictionary(
     const CreditCard& credit_card,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::string& pan_field_name) {
   base::DictValue card;
   card.Set("unique_id", credit_card.guid());
 
   const std::u16string exp_month =
-      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
-  const std::u16string exp_year =
-      credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
+      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale.tag_string());
+  const std::u16string exp_year = credit_card.GetInfo(
+      CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale.tag_string());
   int value = 0;
   if (base::StringToInt(exp_month, &value))
     card.Set("expiration_month", value);
@@ -199,22 +200,24 @@ base::DictValue PaymentsRequest::BuildCreditCardDictionary(
 }
 
 // static
-void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
-                                             const FieldType& type,
-                                             const std::string& app_locale,
-                                             base::ListValue& list) {
-  std::u16string value = profile.GetInfo(type, app_locale);
+void PaymentsRequest::AppendStringIfNotEmpty(
+    const AutofillProfile& profile,
+    const FieldType& type,
+    const base::i18n::LanguageTag& app_locale,
+    base::ListValue& list) {
+  std::u16string value = profile.GetInfo(type, app_locale.tag_string());
   if (!value.empty())
     list.Append(value);
 }
 
 // static
-void PaymentsRequest::SetStringIfNotEmpty(const FormGroup& form_group,
-                                          const FieldType& type,
-                                          const std::string& app_locale,
-                                          const std::string& path,
-                                          base::DictValue& dictionary) {
-  std::u16string value = form_group.GetInfo(type, app_locale);
+void PaymentsRequest::SetStringIfNotEmpty(
+    const FormGroup& form_group,
+    const FieldType& type,
+    const base::i18n::LanguageTag& app_locale,
+    const std::string& path,
+    base::DictValue& dictionary) {
+  std::u16string value = form_group.GetInfo(type, app_locale.tag_string());
   if (!value.empty())
     dictionary.Set(path, std::move(value));
 }

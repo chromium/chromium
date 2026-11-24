@@ -376,7 +376,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     request_details.card = test::GetCreditCard();
     request_details.context_token = u"context token";
     request_details.risk_data = "some risk data";
-    request_details.app_locale = "language-LOCALE";
+    request_details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
     request_details.profiles = BuildTestProfiles();
     payments_network_interface_->UploadCard(
         request_details,

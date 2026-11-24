@@ -86,8 +86,7 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
     // min address is not possible). The final parameter directs
     // BuildAddressDictionary to omit names and phone numbers, which aren't
     // useful for these purposes.
-    addresses.Append(BuildAddressDictionary(
-        profile, std::string(app_locale_.tag_string()), false));
+    addresses.Append(BuildAddressDictionary(profile, app_locale_, false));
   }
   request_dict.Set("address", std::move(addresses));
 

@@ -22,6 +22,10 @@
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill::payments {
 
 // Billable service number is defined in Payments server to distinguish
@@ -113,27 +117,29 @@ class PaymentsRequest {
   // expected by Payments RPCs, containing each of the fields in |profile|,
   // formatted according to |app_locale|. If |include_non_location_data| is
   // false, the name and phone number in |profile| are not included.
-  base::DictValue BuildAddressDictionary(const AutofillProfile& profile,
-                                         const std::string& app_locale,
-                                         bool include_non_location_data);
+  base::DictValue BuildAddressDictionary(
+      const AutofillProfile& profile,
+      const base::i18n::LanguageTag& app_locale,
+      bool include_non_location_data);
 
   // Shared helper function that returns a dictionary of the credit card with
   // the structure expected by Payments RPCs, containing expiration month,
   // expiration year and cardholder name (if any) fields in |credit_card|,
   // formatted according to |app_locale|. |pan_field_name| is the field name for
   // the encrypted pan. We use each credit card's guid as the unique id.
-  base::DictValue BuildCreditCardDictionary(const CreditCard& credit_card,
-                                            const std::string& app_locale,
-                                            const std::string& pan_field_name);
+  base::DictValue BuildCreditCardDictionary(
+      const CreditCard& credit_card,
+      const base::i18n::LanguageTag& app_locale,
+      const std::string& pan_field_name);
 
   // Shared helper functions for string operations.
   static void AppendStringIfNotEmpty(const AutofillProfile& profile,
                                      const FieldType& type,
-                                     const std::string& app_locale,
+                                     const base::i18n::LanguageTag& app_locale,
                                      base::ListValue& list);
   static void SetStringIfNotEmpty(const FormGroup& form_group,
                                   const FieldType& type,
-                                  const std::string& app_locale,
+                                  const base::i18n::LanguageTag& app_locale,
                                   const std::string& path,
                                   base::DictValue& dictionary);
 

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -31,7 +32,7 @@ const char kGetDetailsForCreateCardRequestPath[] =
 GetDetailsForCreateCardRequest::GetDetailsForCreateCardRequest(
     const std::string& unique_country_code,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string&,
                             std::unique_ptr<base::DictValue>,
@@ -60,7 +61,7 @@ std::string GetDetailsForCreateCardRequest::GetRequestContentType() {
 std::string GetDetailsForCreateCardRequest::GetRequestContent() {
   base::DictValue request_dict;
   base::DictValue context;
-  context.Set("language_code", app_locale_);
+  context.Set("language_code", app_locale_.tag_string());
   context.Set("billable_service", billable_service_number_);
   if (billing_customer_number_ != 0) {
     context.Set("customer_context",

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/values_test_util.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -56,7 +57,7 @@ class CreateCardTest : public MultipleRequestPaymentsNetworkInterfaceTest {
     UploadCardRequestDetails details;
     details.upload_card_source = UploadCardSource::kUpstreamSaveAndFill;
     details.client_behavior_signals = {};
-    details.app_locale = "language-LOCALE";
+    details.app_locale = base::i18n::GetKnownLanguageTag("en-US");
     details.billing_customer_number = 111222333444L;
     details.profiles = {test::GetFullProfile(AddressCountryCode("US"))};
 
@@ -75,7 +76,7 @@ class CreateCardTest : public MultipleRequestPaymentsNetworkInterfaceTest {
         ClientBehaviorConstants::kOfferingToSaveCvc};
     request_details.context_token = u"some context token";
     request_details.risk_data = "some risk data";
-    request_details.app_locale = "en";
+    request_details.app_locale = base::i18n::GetKnownLanguageTag("en");
     request_details.profiles.emplace_back(
         test::GetFullProfile(AddressCountryCode("US")));
     request_details.upload_card_source = UploadCardSource::kUpstreamSaveAndFill;

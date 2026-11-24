@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
@@ -71,9 +72,9 @@ std::string UploadCardRequest::GetRequestContent() {
   request_dict.Set("risk_data_encoded",
                    BuildRiskDictionary(request_details_.risk_data));
 
-  const std::string& app_locale = request_details_.app_locale;
+  const base::i18n::LanguageTag& app_locale = request_details_.app_locale;
   base::DictValue context;
-  context.Set("language_code", app_locale);
+  context.Set("language_code", app_locale.tag_string());
   context.Set("billable_service", kUploadPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
     context.Set("customer_context",
@@ -98,10 +99,10 @@ std::string UploadCardRequest::GetRequestContent() {
   request_dict.Set("context_token", request_details_.context_token);
 
   int value = 0;
-  const std::u16string exp_month =
-      request_details_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
-  const std::u16string exp_year =
-      request_details_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
+  const std::u16string exp_month = request_details_.card.GetInfo(
+      CREDIT_CARD_EXP_MONTH, app_locale.tag_string());
+  const std::u16string exp_year = request_details_.card.GetInfo(
+      CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale.tag_string());
   if (base::StringToInt(exp_month, &value))
     request_dict.Set("expiration_month", value);
   if (base::StringToInt(exp_year, &value))
@@ -111,8 +112,8 @@ std::string UploadCardRequest::GetRequestContent() {
     request_dict.Set("nickname", request_details_.card.nickname());
   }
 
-  const std::u16string pan =
-      request_details_.card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
+  const std::u16string pan = request_details_.card.GetInfo(
+      CREDIT_CARD_NUMBER, app_locale.tag_string());
   std::string json_request = base::WriteJson(request_dict).value_or("");
   std::string request_content;
   if (request_details_.cvc.empty()) {

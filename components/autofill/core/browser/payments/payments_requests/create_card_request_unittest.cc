@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/create_card_request.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,7 +59,7 @@ std::unique_ptr<CreateCardRequest> BuildCreateCardRequest(
       ClientBehaviorConstants::kOfferingToSaveCvc};
   request_details.context_token = u"some context token";
   request_details.risk_data = "some risk data";
-  request_details.app_locale = "en";
+  request_details.app_locale = base::i18n::GetKnownLanguageTag("en");
   if (option.include_address) {
     request_details.profiles.emplace_back(
         test::GetFullProfile(AddressCountryCode("US")));
