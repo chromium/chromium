@@ -465,6 +465,14 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   }
 
   if (!local_cache_entry) {
+    // If someone else decoded this image while `lock_` was released, use their
+    // decode rather than marking the entry as failed. A failed entry is never
+    // locked again, but its memory would still be handed out for draws. As
+    // below, the memory has to be locked because we hold a ref on the entry.
+    if (entry->memory) {
+      DCHECK(entry->is_locked);
+      return TaskProcessingResult::kLockOnly;
+    }
     entry->decode_failed = true;
     return TaskProcessingResult::kCancelled;
   }

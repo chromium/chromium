@@ -5,27 +5,41 @@
 #include "cc/tiles/software_image_decode_cache.h"
 
 #include <algorithm>
+#include <atomic>
+#include <cstdint>
+#include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "cc/base/features.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer.h"
+#include "cc/raster/playback_image_provider.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_tile_task_runner.h"
@@ -33,11 +47,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
@@ -2723,6 +2740,251 @@ TEST_F(SoftwareImageDecodeCacheTest,
   controller.FlushDecodeTasksForTesting();
   EXPECT_TRUE(callback_called);
   controller.SetImageDecodeCache(nullptr);
+}
+
+// Lets a test make two decodes of the same image race. The first GetPixels()
+// call blocks until AllowFirstDecodeToFail() is called, and then fails. All
+// other calls succeed right away.
+class FirstDecodeFailsPaintImageGenerator : public FakePaintImageGenerator {
+ public:
+  static constexpr SkColor kDecodedColor = SK_ColorBLUE;
+
+  explicit FirstDecodeFailsPaintImageGenerator(const SkImageInfo& info)
+      : FakePaintImageGenerator(info) {}
+
+  bool GetPixels(SkPixmap dst_pixmap,
+                 size_t frame_index,
+                 PaintImage::GeneratorClientId client_id,
+                 uint64_t lazy_pixel_ref) override {
+    if (num_decodes_.fetch_add(1) == 0) {
+      base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync;
+      first_decode_started_.Signal();
+      allow_first_decode_to_fail_.Wait();
+      return false;
+    }
+    return dst_pixmap.erase(kDecodedColor);
+  }
+
+  void WaitUntilFirstDecodeStarted() {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync;
+    first_decode_started_.Wait();
+  }
+  void AllowFirstDecodeToFail() { allow_first_decode_to_fail_.Signal(); }
+
+ private:
+  ~FirstDecodeFailsPaintImageGenerator() override = default;
+
+  std::atomic<int> num_decodes_{0};
+  base::WaitableEvent first_decode_started_;
+  base::WaitableEvent allow_first_decode_to_fail_;
+};
+
+// Discardable memory that, like the real thing, keeps its contents while it is
+// unlocked, until it is purged. Lock() fails once the memory has been purged.
+// PurgeUnlockedMemory() frees the contents of all unlocked memory, like the
+// browser does when it enforces its discardable memory limit, or the renderer
+// does on its scheduled purge. The allocator replaces the process-wide
+// instance for as long as it is alive.
+class PurgeableDiscardableMemoryAllocator
+    : public base::DiscardableMemoryAllocator {
+ public:
+  PurgeableDiscardableMemoryAllocator()
+      : previous_allocator_(base::DiscardableMemoryAllocator::GetInstance()) {
+    base::DiscardableMemoryAllocator::SetInstance(nullptr);
+    base::DiscardableMemoryAllocator::SetInstance(this);
+  }
+  ~PurgeableDiscardableMemoryAllocator() override {
+    base::DiscardableMemoryAllocator::SetInstance(nullptr);
+    base::DiscardableMemoryAllocator::SetInstance(previous_allocator_);
+  }
+
+  // base::DiscardableMemoryAllocator:
+  std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
+      base::ByteSize size) override {
+    base::AutoLock hold(lock_);
+    const int id = next_id_++;
+    allocations_[id].data = base::HeapArray<uint8_t>::Uninit(
+        base::checked_cast<size_t>(size.InBytes()));
+    return std::make_unique<Memory>(*this, id);
+  }
+  base::ByteSize GetAllocatedSize() const override { return base::ByteSize(0); }
+  void ReleaseFreeMemory() override {}
+
+  void PurgeUnlockedMemory() {
+    base::AutoLock hold(lock_);
+    for (auto& [id, allocation] : allocations_) {
+      if (!allocation.locked) {
+        allocation.data = base::HeapArray<uint8_t>();
+      }
+    }
+  }
+
+  // Returns whether the pixels of `image` are in locked memory from this
+  // allocator.
+  bool IsBackedByLockedMemory(const SkImage* image) {
+    SkPixmap pixmap;
+    if (!image || !image->peekPixels(&pixmap)) {
+      return false;
+    }
+    const auto address = reinterpret_cast<uintptr_t>(pixmap.addr());
+    base::AutoLock hold(lock_);
+    for (const auto& [id, allocation] : allocations_) {
+      const auto begin = reinterpret_cast<uintptr_t>(allocation.data.data());
+      if (allocation.locked && address >= begin &&
+          address < begin + allocation.data.size()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ private:
+  struct Allocation {
+    // Empty once purged.
+    base::HeapArray<uint8_t> data;
+    bool locked = true;
+  };
+
+  class Memory : public base::DiscardableMemory {
+   public:
+    Memory(PurgeableDiscardableMemoryAllocator& allocator, int id)
+        : allocator_(allocator), id_(id) {}
+    ~Memory() override { allocator_->FreeMemory(id_); }
+
+    // base::DiscardableMemory:
+    bool Lock() override { return allocator_->LockMemory(id_); }
+    void Unlock() override { allocator_->UnlockMemory(id_); }
+    void* data() const override { return allocator_->GetMemoryData(id_); }
+    void DiscardForTesting() override { allocator_->DiscardMemory(id_); }
+    base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
+        const char* name,
+        base::trace_event::ProcessMemoryDump* pmd) const override {
+      return nullptr;
+    }
+
+   private:
+    const raw_ref<PurgeableDiscardableMemoryAllocator> allocator_;
+    const int id_;
+  };
+
+  Allocation& GetAllocation(int id) EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    auto it = allocations_.find(id);
+    CHECK(it != allocations_.end());
+    return it->second;
+  }
+  bool LockMemory(int id) {
+    base::AutoLock hold(lock_);
+    Allocation& allocation = GetAllocation(id);
+    CHECK(!allocation.locked);
+    if (allocation.data.empty()) {
+      return false;
+    }
+    allocation.locked = true;
+    return true;
+  }
+  void UnlockMemory(int id) {
+    base::AutoLock hold(lock_);
+    Allocation& allocation = GetAllocation(id);
+    CHECK(allocation.locked);
+    allocation.locked = false;
+  }
+  void* GetMemoryData(int id) {
+    base::AutoLock hold(lock_);
+    Allocation& allocation = GetAllocation(id);
+    CHECK(allocation.locked);
+    return allocation.data.data();
+  }
+  void DiscardMemory(int id) {
+    base::AutoLock hold(lock_);
+    Allocation& allocation = GetAllocation(id);
+    CHECK(!allocation.locked);
+    allocation.data = base::HeapArray<uint8_t>();
+  }
+  void FreeMemory(int id) {
+    base::AutoLock hold(lock_);
+    allocations_.erase(id);
+  }
+
+  const raw_ptr<base::DiscardableMemoryAllocator> previous_allocator_;
+  base::Lock lock_;
+  int next_id_ GUARDED_BY(lock_) = 0;
+  std::map<int, Allocation> allocations_ GUARDED_BY(lock_);
+};
+
+// DecodeImageIfNecessary() decodes with `lock_` released, so two threads can
+// decode the same image at the same time. If the first decode to finish
+// succeeds, its memory moves into the cache entry. If the other decode then
+// fails, that must not mark the entry as failed: a failed entry is never locked
+// again, but GetDecodedImageForDraw() keeps handing out an SkImage over its
+// memory, which can be purged once the entry is unlocked.
+TEST_F(SoftwareImageDecodeCacheTest,
+       FailedDecodeAfterConcurrentSuccessfulDecode) {
+  PurgeableDiscardableMemoryAllocator allocator;
+  TestSoftwareImageDecodeCache cache;
+
+  constexpr int kSize = 100;
+  auto generator = sk_make_sp<FirstDecodeFailsPaintImageGenerator>(
+      SkImageInfo::MakeN32Premul(kSize, kSize, DefaultSkColorSpace()));
+  PaintImage paint_image = PaintImageBuilder::WithDefault()
+                               .set_id(PaintImage::GetNextId())
+                               .set_paint_image_generator(generator)
+                               .TakePaintImage();
+  // Not scaled, so the image is decoded at its original size.
+  DrawImage draw_image(paint_image, false, SkIRect::MakeWH(kSize, kSize),
+                       PaintFlags::FilterQuality::kLow,
+                       CreateMatrix(SkSize::Make(1.f, 1.f), true),
+                       PaintImage::kDefaultFrameIndex,
+                       DefaultTargetColorParams());
+
+  // Thread B starts decoding the image, and blocks in the generator.
+  base::Thread thread_b("ThreadB");
+  ASSERT_TRUE(thread_b.Start());
+  thread_b.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        DecodedDrawImage decoded_image =
+            cache.GetDecodedImageForDraw(draw_image);
+        cache.DrawWithImageFinished(draw_image, decoded_image);
+      }));
+  generator->WaitUntilFirstDecodeStarted();
+
+  // Thread A (this thread) decodes the same image. Its decode succeeds and
+  // fills the cache entry.
+  DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
+  EXPECT_TRUE(allocator.IsBackedByLockedMemory(decoded_image.image().get()));
+
+  // Then thread B's decode fails. That must not affect thread A's image.
+  generator->AllowFirstDecodeToFail();
+  thread_b.Stop();
+  EXPECT_TRUE(allocator.IsBackedByLockedMemory(decoded_image.image().get()));
+
+  // Thread A drops the last ref, which unlocks the entry. Its memory can now
+  // be purged.
+  cache.DrawWithImageFinished(draw_image, decoded_image);
+  allocator.PurgeUnlockedMemory();
+
+  // The next draw must get an image in memory that the cache has locked, not
+  // one over the purged memory.
+  decoded_image = cache.GetDecodedImageForDraw(draw_image);
+  EXPECT_TRUE(allocator.IsBackedByLockedMemory(decoded_image.image().get()));
+  cache.DrawWithImageFinished(draw_image, decoded_image);
+
+  // Raster the image the way a raster task does. This reads the pixels that
+  // the cache hands out.
+  PaintOpBuffer buffer;
+  buffer.push<DrawImageRectOp>(paint_image, SkRect::MakeWH(kSize, kSize),
+                               SkRect::MakeWH(kSize, kSize),
+                               SkCanvas::kStrict_SrcRectConstraint);
+  std::optional<PlaybackImageProvider::Settings> settings;
+  settings.emplace();
+  PlaybackImageProvider image_provider(&cache, DefaultTargetColorParams(),
+                                       std::move(settings));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kSize, kSize);
+  bitmap.eraseColor(SK_ColorWHITE);
+  SkCanvas canvas(bitmap);
+  buffer.Playback(&canvas, PlaybackParams(&image_provider));
+  EXPECT_EQ(FirstDecodeFailsPaintImageGenerator::kDecodedColor,
+            bitmap.getColor(kSize / 2, kSize / 2));
 }
 
 }  // namespace
