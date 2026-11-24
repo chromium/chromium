@@ -17,16 +17,26 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/fcm/engine/checkin_info.h"
+#include "components/fcm/engine/chrome_build_info.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_registration_manager.h"
 #include "google_apis/gcm/engine/gcm_store.h"
+#include "google_apis/gcm/engine/gservices_settings.h"
 #include "google_apis/gcm/engine/registration_request.h"
 
 namespace base {
 class Clock;
+class SequencedTaskRunner;
 }  // namespace base
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace gcm {
+
+class GCMStatsRecorder;
 
 // `GCMRegistrationManager` implementation that caches and persists registration
 // and Instance ID data in `GCMStore`.
@@ -38,14 +48,26 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
       base::OnceCallback<void(const std::string& registration_id,
                               GCMClient::Result result)>;
 
-  // `gcm_store` and `clock` must outlive this instance.
-  GCMRegistrationManagerImpl(GCMStore& gcm_store, base::Clock& clock);
+  // `gcm_store`, `clock`, and `recorder` must outlive this instance.
+  GCMRegistrationManagerImpl(
+      GCMStore& gcm_store,
+      base::Clock& clock,
+      fcm::ChromeBuildInfo chrome_build_info,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      GCMStatsRecorder& recorder);
 
   GCMRegistrationManagerImpl(const GCMRegistrationManagerImpl&) = delete;
   GCMRegistrationManagerImpl& operator=(const GCMRegistrationManagerImpl&) =
       delete;
 
   ~GCMRegistrationManagerImpl() override;
+
+  // Updates the device check-in credentials used for registration requests.
+  void SetDeviceCheckinInfo(const fcm::CheckinInfo& device_checkin_info);
+
+  // Updates the G-services settings used to look up the registration URL.
+  void SetGServicesSettings(const GServicesSettings& gservices_settings);
 
   // Populates cached registration and Instance ID data from `load_result`.
   void OnRegistrationDataLoaded(const GCMStore::LoadResult& load_result);
@@ -61,19 +83,35 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   std::optional<std::string> GetCachedRegistrationId(
       scoped_refptr<RegistrationInfo> registration_info) const;
 
-  // TODO(b/545115204): Make private once request creation
-  // (`StartRegistrationRequest`) is migrated from `GCMClientImpl`.
+  // TODO(b/545115204): Make private once `Register()` is migrated from
+  // `GCMClientImpl`.
+  // Starts a registration request for `registration_info` and tracks it as
+  // pending, invoking `callback` upon completion.
+  void StartRegistrationRequest(
+      scoped_refptr<RegistrationInfo> registration_info,
+      const std::string& category,
+      const std::string& subtype,
+      std::unique_ptr<RegistrationRequest::CustomRequestHandler>
+          request_handler,
+      const std::string& source_to_record,
+      RegisterCallback callback);
+
   // Tracks an in-flight `request` for `registration_info`.
   void AddPendingRegistrationRequest(
       scoped_refptr<RegistrationInfo> registration_info,
       std::unique_ptr<RegistrationRequest> request);
 
   // Completes a pending registration request, updating the cache and persistent
-  // store on success and invoking `callback` with the result.
+  // store on success and invoking `callback` upon completion.
   void OnRegisterCompleted(scoped_refptr<RegistrationInfo> registration_info,
                            RegisterCallback callback,
                            RegistrationRequest::Status status,
                            const std::string& registration_id);
+
+  // TODO(b/545115204): Move to the anonymous namespace once `DeleteToken()` is
+  // migrated from `GCMClientImpl`.
+  static int ConstructGCMVersion(const std::string& chrome_version);
+  static bool InstanceIDUsesSubtypeForAppId(const std::string& app_id);
 
   // Returns a `WeakPtr` invalidated by `CancelPendingRequests()`.
   base::WeakPtr<GCMRegistrationManagerImpl> GetPendingRequestWeakPtr() {
@@ -81,6 +119,8 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   }
 
   // GCMRegistrationManager implementation:
+  void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                GetTokenCallback callback) override;
   bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
                             const std::string& registration_id) override;
   std::vector<std::string> GetRegisteredAppIds() const override;
@@ -118,6 +158,13 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
 
   const raw_ref<GCMStore> gcm_store_;
   const raw_ref<base::Clock> clock_;
+  const fcm::ChromeBuildInfo chrome_build_info_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  const raw_ref<GCMStatsRecorder> recorder_;
+
+  fcm::CheckinInfo device_checkin_info_;
+  GServicesSettings gservices_settings_;
 
   // Cached registration info.
   RegistrationInfoMap registrations_;

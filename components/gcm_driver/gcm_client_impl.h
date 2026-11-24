@@ -32,7 +32,6 @@
 #include "google_apis/gcm/engine/gcm_store.h"
 #include "google_apis/gcm/engine/gservices_settings.h"
 #include "google_apis/gcm/engine/mcs_client.h"
-#include "google_apis/gcm/engine/registration_request.h"
 #include "google_apis/gcm/engine/unregistration_request.h"
 #include "google_apis/gcm/protocol/android_checkin.pb.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
@@ -216,18 +215,6 @@ class GCMClientImpl : public GCMClient,
   // Callback for resetting the GCM store. The store will be reloaded.
   void ResetStoreCallback(bool success);
 
-  // Starts a registration request for `registration_info` and tracks it as
-  // pending, invoking `callback` upon completion.
-  void StartRegistrationRequest(
-      scoped_refptr<RegistrationInfo> registration_info,
-      const std::string& category,
-      const std::string& subtype,
-      std::unique_ptr<RegistrationRequest::CustomRequestHandler>
-          request_handler,
-      const std::string& source_to_record,
-      base::OnceCallback<void(const std::string& registration_id,
-                              Result result)> callback);
-
   // Notifies observers that a legacy GCM registration request has finished.
   void OnRegisterFinished(
       scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
@@ -302,7 +289,7 @@ class GCMClientImpl : public GCMClient,
   std::unique_ptr<GCMStore> gcm_store_;
 
   // Manages registrations and Instance ID data. Must be declared after
-  // `gcm_store_` so `gcm_store_` outlives it.
+  // `gcm_store_`, `clock_`, and `recorder_` so they outlive it.
   // TODO(b/545115204): Move ownership to `GCMDriverDesktop::IOWorker`.
   std::unique_ptr<GCMRegistrationManagerImpl> registration_manager_;
 

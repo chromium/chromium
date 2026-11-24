@@ -10,18 +10,32 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/crx_file/id_util.h"
+#include "components/fcm/base/fcm_backoff_policy.h"
+#include "components/fcm/engine/checkin_info.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/gcm_store.h"
+#include "google_apis/gcm/engine/gservices_settings.h"
+#include "google_apis/gcm/engine/instance_id_get_token_request_handler.h"
+#include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace gcm {
 
 namespace {
+
+// Maximum number of retry attempts for a failed registration or token request.
+constexpr int kMaxRegistrationRetries = 5;
 
 // Client-side cache freshness threshold after which a cached registration/token
 // is treated as stale and re-validated with the server on the next
@@ -57,12 +71,34 @@ std::optional<std::pair<std::string, std::string>> DeserializeInstanceIDData(
 
 }  // namespace
 
-GCMRegistrationManagerImpl::GCMRegistrationManagerImpl(GCMStore& gcm_store,
-                                                       base::Clock& clock)
-    : gcm_store_(gcm_store), clock_(clock) {}
+GCMRegistrationManagerImpl::GCMRegistrationManagerImpl(
+    GCMStore& gcm_store,
+    base::Clock& clock,
+    fcm::ChromeBuildInfo chrome_build_info,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    GCMStatsRecorder& recorder)
+    : gcm_store_(gcm_store),
+      clock_(clock),
+      chrome_build_info_(std::move(chrome_build_info)),
+      url_loader_factory_(std::move(url_loader_factory)),
+      io_task_runner_(std::move(io_task_runner)),
+      recorder_(recorder) {}
 
 GCMRegistrationManagerImpl::~GCMRegistrationManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void GCMRegistrationManagerImpl::SetDeviceCheckinInfo(
+    const fcm::CheckinInfo& device_checkin_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  device_checkin_info_ = device_checkin_info;
+}
+
+void GCMRegistrationManagerImpl::SetGServicesSettings(
+    const GServicesSettings& gservices_settings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  gservices_settings_ = gservices_settings;
 }
 
 void GCMRegistrationManagerImpl::OnRegistrationDataLoaded(
@@ -138,6 +174,32 @@ std::optional<std::string> GCMRegistrationManagerImpl::GetCachedRegistrationId(
   return registrations_iter->second;
 }
 
+void GCMRegistrationManagerImpl::StartRegistrationRequest(
+    scoped_refptr<RegistrationInfo> registration_info,
+    const std::string& category,
+    const std::string& subtype,
+    std::unique_ptr<RegistrationRequest::CustomRequestHandler> request_handler,
+    const std::string& source_to_record,
+    RegisterCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RegistrationRequest::RequestInfo request_info(
+      device_checkin_info_.android_id(), device_checkin_info_.secret(),
+      category, subtype);
+
+  auto registration_request = std::make_unique<RegistrationRequest>(
+      gservices_settings_.GetRegistrationURL(), request_info,
+      std::move(request_handler), fcm::GetBackoffPolicy(),
+      base::BindOnce(&GCMRegistrationManagerImpl::OnRegisterCompleted,
+                     pending_requests_weak_ptr_factory_.GetWeakPtr(),
+                     registration_info, std::move(callback)),
+      kMaxRegistrationRetries, url_loader_factory_, io_task_runner_,
+      &recorder_.get(), source_to_record);
+  registration_request->Start();
+  AddPendingRegistrationRequest(std::move(registration_info),
+                                std::move(registration_request));
+}
+
 void GCMRegistrationManagerImpl::AddPendingRegistrationRequest(
     scoped_refptr<RegistrationInfo> registration_info,
     std::unique_ptr<RegistrationRequest> request) {
@@ -186,6 +248,71 @@ void GCMRegistrationManagerImpl::OnRegisterCompleted(
 
   std::move(callback).Run(
       result == GCMClient::SUCCESS ? registration_id : std::string(), result);
+}
+
+// static
+int GCMRegistrationManagerImpl::ConstructGCMVersion(
+    const std::string& chrome_version) {
+  // Major Chrome version is passed as GCM version.
+  std::optional<std::pair<std::string_view, std::string_view>> parts =
+      base::SplitStringOnce(chrome_version, '.');
+  if (!parts) {
+    NOTREACHED();
+  }
+
+  int gcm_version = 0;
+  base::StringToInt(parts->first, &gcm_version);
+  return gcm_version;
+}
+
+// static
+bool GCMRegistrationManagerImpl::InstanceIDUsesSubtypeForAppId(
+    const std::string& app_id) {
+  // Always use subtypes with Instance ID, except for Chrome Apps/Extensions.
+  return !crx_file::id_util::IdIsValid(app_id);
+}
+
+void GCMRegistrationManagerImpl::GetToken(
+    scoped_refptr<InstanceIDTokenInfo> token_info,
+    GetTokenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/589587357): Upgrade readiness `DCHECK`s to `CHECK`s once
+  // `GCMDriverDesktop::OnStoreReset()` re-gates `delayed_task_controller_`.
+  DCHECK(device_checkin_info_.IsValid());
+  CHECK(token_info);
+  CHECK(callback);
+
+  // Registrations should never pass as an app_id the special category used
+  // internally when registering with a subtype. See security note in
+  // GCMClientImpl::HandleIncomingMessage.
+  CHECK_NE(token_info->app_id,
+           chrome_build_info_.product_category_for_subtypes);
+
+  if (std::optional<std::string> cached_token =
+          GetCachedRegistrationId(token_info)) {
+    std::move(callback).Run(*cached_token, GCMClient::SUCCESS);
+    return;
+  }
+
+  auto instance_id_iter = instance_id_data_.find(token_info->app_id);
+  CHECK(instance_id_iter != instance_id_data_.end());
+
+  auto request_handler = std::make_unique<InstanceIDGetTokenRequestHandler>(
+      instance_id_iter->second.first, token_info->authorized_entity,
+      token_info->scope, ConstructGCMVersion(chrome_build_info_.version),
+      token_info->time_to_live);
+  std::string source_to_record =
+      token_info->authorized_entity + "/" + token_info->scope;
+
+  bool use_subtype = InstanceIDUsesSubtypeForAppId(token_info->app_id);
+  std::string category = use_subtype
+                             ? chrome_build_info_.product_category_for_subtypes
+                             : token_info->app_id;
+  std::string subtype = use_subtype ? token_info->app_id : std::string();
+
+  StartRegistrationRequest(std::move(token_info), category, subtype,
+                           std::move(request_handler), source_to_record,
+                           std::move(callback));
 }
 
 bool GCMRegistrationManagerImpl::ValidateRegistration(

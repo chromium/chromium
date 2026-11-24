@@ -10,12 +10,23 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/fcm/engine/checkin_info.h"
+#include "components/fcm/engine/chrome_build_info.h"
+#include "components/fcm/engine/fcm_stats_recorder_impl.h"
 #include "components/gcm_driver/registration_info.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/fake_gcm_store.h"
+#include "google_apis/gcm/engine/gservices_settings.h"
+#include "google_apis/gcm/engine/registration_request.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,19 +34,38 @@ namespace gcm {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
+constexpr uint64_t kDeviceAndroidId = 54321;
+constexpr uint64_t kDeviceSecurityToken = 12345;
+constexpr char kChromeVersion[] = "45.0.0.1";
+constexpr char kProductCategoryForSubtypes[] = "com.chrome.macosx";
+// Valid 32-character [a-p] Chrome extension ID (passes
+// `crx_file::id_util::IdIsValid()`, which skips subtypes for Instance ID).
+constexpr char kExtensionAppId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kTestAppId[] = "test_app_id";
 constexpr char kTestAppId2[] = "test_app_id_2";
 constexpr char kDeprecatedAppId[] = "com.google.android.gms";
 constexpr char kSenderId[] = "sender_1";
 constexpr char kSenderId2[] = "sender_2";
+constexpr char kScope[] = "GCM";
 constexpr char kRegistrationId[] = "reg_id_1";
 constexpr char kInstanceId[] = "iid_1";
 constexpr char kExtraData[] = "extra_1";
+constexpr char kRegisterUrl[] =
+    "https://android.clients.google.com/c2dm/register3";
+
+fcm::ChromeBuildInfo CreateChromeBuildInfo() {
+  fcm::ChromeBuildInfo info;
+  info.version = kChromeVersion;
+  info.product_category_for_subtypes = kProductCategoryForSubtypes;
+  return info;
+}
 
 scoped_refptr<GCMRegistrationInfo> CreateGCMRegistrationInfo(
     const std::string& app_id,
@@ -46,20 +76,48 @@ scoped_refptr<GCMRegistrationInfo> CreateGCMRegistrationInfo(
   return info;
 }
 
+scoped_refptr<InstanceIDTokenInfo> CreateInstanceIDTokenInfo(
+    const std::string& app_id,
+    const std::string& authorized_entity,
+    const std::string& scope) {
+  auto info = base::MakeRefCounted<InstanceIDTokenInfo>();
+  info->app_id = app_id;
+  info->authorized_entity = authorized_entity;
+  info->scope = scope;
+  return info;
+}
+
 class GCMRegistrationManagerImplTest : public testing::Test {
  public:
-  GCMRegistrationManagerImplTest() { clock_.SetNow(base::Time::Now()); }
+  GCMRegistrationManagerImplTest() {
+    clock_.SetNow(base::Time::Now());
+    registration_manager_.SetDeviceCheckinInfo(
+        fcm::CheckinInfo(kDeviceAndroidId, kDeviceSecurityToken));
+  }
 
   FakeGCMStore& gcm_store() { return gcm_store_; }
   base::SimpleTestClock& clock() { return clock_; }
+  network::TestURLLoaderFactory& url_loader_factory() {
+    return test_url_loader_factory_;
+  }
   GCMRegistrationManagerImpl& registration_manager() {
     return registration_manager_;
   }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   FakeGCMStore gcm_store_;
   base::SimpleTestClock clock_;
-  GCMRegistrationManagerImpl registration_manager_{gcm_store_, clock_};
+  fcm::FcmStatsRecorderImpl recorder_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  GCMRegistrationManagerImpl registration_manager_{
+      gcm_store_,
+      clock_,
+      CreateChromeBuildInfo(),
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      recorder_};
 };
 
 TEST_F(GCMRegistrationManagerImplTest, AddAndGetInstanceIDData) {
@@ -349,6 +407,122 @@ TEST_F(GCMRegistrationManagerImplTest, OnRegisterCompletedUntrackedRequest) {
   EXPECT_EQ(result, GCMClient::UNKNOWN_ERROR);
   EXPECT_THAT(registration_manager().GetRegisteredAppIds(), IsEmpty());
   EXPECT_THAT(gcm_store().registrations(), IsEmpty());
+}
+
+TEST_F(GCMRegistrationManagerImplTest, GetToken) {
+  registration_manager().AddInstanceIDData(kTestAppId, kInstanceId, kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId, kScope);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().GetToken(token_info, future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=token_1"));
+
+  const auto& [token, result] = future.Get();
+  EXPECT_EQ(token, "token_1");
+  EXPECT_EQ(result, GCMClient::SUCCESS);
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(token_info, "token_1"));
+  EXPECT_THAT(
+      gcm_store().registrations(),
+      UnorderedElementsAre(Pair(token_info->GetSerializedKey(),
+                                token_info->GetSerializedValue("token_1"))));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, GetTokenFromCache) {
+  registration_manager().AddInstanceIDData(kTestAppId, kInstanceId, kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId, kScope);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().GetToken(token_info, future.GetCallback());
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=token_1"));
+  const auto& [initial_token, initial_result] = future.Get();
+  ASSERT_EQ(initial_result, GCMClient::SUCCESS);
+
+  // Subsequent `GetToken()` while fresh returns the cached token without a
+  // network request.
+  base::test::TestFuture<const std::string&, GCMClient::Result> cached_future;
+  registration_manager().GetToken(token_info, cached_future.GetCallback());
+  EXPECT_EQ(0, url_loader_factory().NumPending());
+  const auto& [cached_token, cached_result] = cached_future.Get();
+  EXPECT_EQ(cached_token, "token_1");
+  EXPECT_EQ(cached_result, GCMClient::SUCCESS);
+}
+
+TEST_F(GCMRegistrationManagerImplTest, GetTokenUsesSubtypeForNonExtensionApp) {
+  registration_manager().AddInstanceIDData(kTestAppId, kInstanceId, kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId, kScope);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().GetToken(token_info, future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  std::string upload_body = network::GetUploadData(
+      url_loader_factory().GetPendingRequest(0)->request);
+  EXPECT_THAT(upload_body,
+              HasSubstr(base::StrCat({"app=", kProductCategoryForSubtypes})));
+  EXPECT_THAT(upload_body, HasSubstr(base::StrCat({"X-subtype=", kTestAppId})));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=token_subtype"));
+
+  const auto& [token, result] = future.Get();
+  EXPECT_EQ(token, "token_subtype");
+  EXPECT_EQ(result, GCMClient::SUCCESS);
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(token_info, "token_subtype"));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, GetTokenOmitsSubtypeForExtensionApp) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().GetToken(token_info, future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  std::string upload_body = network::GetUploadData(
+      url_loader_factory().GetPendingRequest(0)->request);
+  EXPECT_THAT(upload_body, HasSubstr(base::StrCat({"app=", kExtensionAppId})));
+  EXPECT_THAT(upload_body, Not(HasSubstr("X-subtype=")));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=token_ext"));
+
+  const auto& [token, result] = future.Get();
+  EXPECT_EQ(token, "token_ext");
+  EXPECT_EQ(result, GCMClient::SUCCESS);
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(token_info, "token_ext"));
+}
+
+TEST_F(GCMRegistrationManagerImplTest,
+       GetTokenUsesRegistrationUrlFromGServicesSettings) {
+  constexpr char kCustomRegisterUrl[] = "http://alternative.url/registration";
+  GCMStore::LoadResult load_result;
+  load_result.gservices_settings["gcm_registration_url"] = kCustomRegisterUrl;
+  load_result.gservices_digest =
+      GServicesSettings::CalculateDigest(load_result.gservices_settings);
+  GServicesSettings gservices_settings;
+  gservices_settings.UpdateFromLoadResult(load_result);
+  registration_manager().SetGServicesSettings(gservices_settings);
+
+  registration_manager().AddInstanceIDData(kTestAppId, kInstanceId, kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId, kScope);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().GetToken(token_info, future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCustomRegisterUrl, "token=token_custom"));
+
+  const auto& [token, result] = future.Get();
+  EXPECT_EQ(token, "token_custom");
+  EXPECT_EQ(result, GCMClient::SUCCESS);
 }
 
 }  // namespace

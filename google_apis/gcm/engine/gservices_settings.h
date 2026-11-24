@@ -30,8 +30,8 @@ class GCM_EXPORT GServicesSettings {
 
   GServicesSettings();
 
-  GServicesSettings(const GServicesSettings&) = delete;
-  GServicesSettings& operator=(const GServicesSettings&) = delete;
+  GServicesSettings(const GServicesSettings&);
+  GServicesSettings& operator=(const GServicesSettings&);
 
   ~GServicesSettings();
 

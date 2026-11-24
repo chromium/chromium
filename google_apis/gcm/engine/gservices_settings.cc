@@ -199,8 +199,12 @@ GServicesSettings::GServicesSettings() {
   digest_ = CalculateDigest(settings_);
 }
 
-GServicesSettings::~GServicesSettings() {
-}
+GServicesSettings::GServicesSettings(const GServicesSettings&) = default;
+
+GServicesSettings& GServicesSettings::operator=(const GServicesSettings&) =
+    default;
+
+GServicesSettings::~GServicesSettings() = default;
 
 bool GServicesSettings::UpdateFromCheckinResponse(
     const checkin_proto::AndroidCheckinResponse& checkin_response) {

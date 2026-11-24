@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/registration_info.h"
 
 namespace gcm {
@@ -17,7 +19,15 @@ namespace gcm {
 // Manages GCM app registrations and Instance ID data on the IO thread.
 class GCMRegistrationManager {
  public:
+  using GetTokenCallback = base::OnceCallback<void(const std::string& token,
+                                                   GCMClient::Result result)>;
+
   virtual ~GCMRegistrationManager() = default;
+
+  // Obtains an Instance ID token for `token_info`, invoking `callback`
+  // synchronously (on a cache hit) or asynchronously.
+  virtual void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                        GetTokenCallback callback) = 0;
 
   // Validates that cached registration info matches `registration_info` and
   // `registration_id`.
