@@ -45,6 +45,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.BookmarkTestRule;
@@ -65,7 +67,10 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
             ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                     SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule();
+    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    private final AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
 
@@ -73,10 +78,12 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     // BookmarkTestRule should be initialized after and destroyed before the
     // SyncTestRule.
     @Rule
-    public final RuleChain chain = RuleChain.outerRule(mSyncTestRule).around(mBookmarkTestRule);
+    public final RuleChain chain =
+            RuleChain.outerRule(mSyncTestRule).around(mCtaTestRule).around(mBookmarkTestRule);
 
     @Before
     public void setUp() throws Exception {
+        mCtaTestRule.startOnBlankPage();
         setPrefSigninPromoDeclinedBookmarksForTests(false);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -84,7 +91,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                     BookmarkModel bookmarkModel =
                             BookmarkModel.getForProfile(
                                     Profile.fromWebContents(
-                                            mSyncTestRule
+                                            mCtaTestRule
                                                     .getActivity()
                                                     .getActivityTab()
                                                     .getWebContents()));
@@ -104,13 +111,13 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @Test
     @MediumTest
     public void testPromoNotShownAfterBeingDismissed() {
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mCtaTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
         onActiveViewId(R.id.signin_promo_dismiss_button).perform(click());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
 
         closeBookmarkManager();
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mCtaTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
     }
 
@@ -123,13 +130,13 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
 
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mCtaTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
         onActiveViewId(R.id.signin_promo_dismiss_button).perform(click());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
 
         closeBookmarkManager();
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mCtaTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
         histogramWatcher.assertExpected();
     }
@@ -139,7 +146,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     public void testPromoNotExistWhenImpressionLimitReached() {
         ChromeSharedPreferences.getInstance()
                 .writeInt(mBookmarkPromoShowCountPreferenceName, MAX_IMPRESSIONS_BOOKMARKS);
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mCtaTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
     }
 
@@ -154,7 +161,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SyncPromo.Shown.Count.Bookmarks");
 
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mCtaTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
 
         // If a profile update happens while the promo in bookmarks is being shown, these will be
@@ -169,9 +176,9 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     }
 
     private void closeBookmarkManager() {
-        if (mSyncTestRule.getActivity().isTablet()) {
+        if (mCtaTestRule.getActivity().isTablet()) {
             ChromeTabbedActivity chromeTabbedActivity =
-                    (ChromeTabbedActivity) mSyncTestRule.getActivity();
+                    (ChromeTabbedActivity) mCtaTestRule.getActivity();
             ChromeTriggers.closeCurrentTabTo(chromeTabbedActivity)
                     .waitFor(new TabClosingCondition(chromeTabbedActivity::getCurrentTabModel));
             // Open a new tab so chrome://bookmarks can be re-loaded within the same test.

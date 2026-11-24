@@ -136,6 +136,8 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
@@ -182,7 +184,10 @@ public class MainSettingsFragmentTest {
 
     private final HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule();
+    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    private final AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private final SettingsTestRule<MainSettings> mSettingsTestRule =
             new SettingsTestRule<>(MainSettings.class);
@@ -193,7 +198,10 @@ public class MainSettingsFragmentTest {
 
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSyncTestRule).around(mHomepageTestRule).around(mSettingsTestRule);
+            RuleChain.outerRule(mSyncTestRule)
+                    .around(mCtaTestRule)
+                    .around(mHomepageTestRule)
+                    .around(mSettingsTestRule);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -222,6 +230,7 @@ public class MainSettingsFragmentTest {
 
     @Before
     public void setup() {
+        mCtaTestRule.startOnBlankPage();
         // ObservableSupplier needs a Looper.
         if (Looper.myLooper() == null) {
             Looper.prepare();
