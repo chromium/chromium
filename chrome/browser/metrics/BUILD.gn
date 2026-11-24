@@ -356,9 +356,6 @@ source_set("impl") {
       "//chrome/browser/prefs/android:jni_cc",
       "//chrome/browser/ui/browser_window",
     ]
-    if (current_cpu == "arm") {
-      deps += [ "//third_party/cpu_features:ndk_compat" ]
-    }
   }
 
   if (!is_android) {

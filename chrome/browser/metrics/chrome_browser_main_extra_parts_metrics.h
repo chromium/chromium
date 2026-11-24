@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
@@ -33,11 +32,6 @@ class ProcessMonitor;
 #if BUILDFLAG(IS_LINUX)
 class PressureMetricsReporter;
 #endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_ANDROID)
-bool IsBundleForMixedDeviceAccordingToVersionCode(
-    const std::string& version_code);
-#endif
 
 namespace web_app {
 class SamplingMetricsProvider;
