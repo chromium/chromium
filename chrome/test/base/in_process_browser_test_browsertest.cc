@@ -12,10 +12,15 @@
 
 #include "base/compiler_specific.h"
 #include "base/path_service.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
@@ -120,6 +125,42 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTestExternalConnectionFail,
 // prior to test execution so tasks posted by tests are never deferred.
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, AfterStartupTaskUtils) {
   EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+}
+
+IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
+                       CreateBrowserWindowForTestingRecordsTestCreationSource) {
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/false));
+
+  ASSERT_TRUE(new_browser);
+  ASSERT_NE(new_browser, browser());
+  EXPECT_EQ(new_browser->GetProfile(), browser()->GetProfile());
+  EXPECT_EQ(BrowserWindowInterface::TYPE_NORMAL, new_browser->GetType());
+  auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(waap::NewWindowCreationSource::kTest,
+            manager->GetCreationSourceForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InProcessBrowserTest,
+    CreateBrowserWindowForTestingAsyncRecordsTestCreationSource) {
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/false),
+      future.GetCallback());
+  BrowserWindowInterface* new_browser = future.Get();
+
+  ASSERT_TRUE(new_browser);
+  ASSERT_NE(new_browser, browser());
+  EXPECT_EQ(new_browser->GetProfile(), browser()->GetProfile());
+  EXPECT_EQ(BrowserWindowInterface::TYPE_NORMAL, new_browser->GetType());
+  auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(waap::NewWindowCreationSource::kTest,
+            manager->GetCreationSourceForTesting());
 }
 
 // On Mac this crashes inside cc::SingleThreadProxy::SetNeedsCommit. See

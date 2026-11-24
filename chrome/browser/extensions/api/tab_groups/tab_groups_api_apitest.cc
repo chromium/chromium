@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/common/extensions/api/tab_groups.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -132,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupEventsAcrossProfiles) {
   BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
       type, *incognito_profile, /*from_user_gesture=*/false);
   base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  chrome_test_utils::CreateBrowserWindowForTesting(std::move(create_params),
+                                                   future.GetCallback());
   BrowserWindowInterface* incognito_browser = future.Get();
 
   // Get the tab list for the incognito window.

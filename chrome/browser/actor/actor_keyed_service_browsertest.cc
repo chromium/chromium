@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   const int profile2_tab_count_before = browser2->GetTabStripModel()->count();
@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();

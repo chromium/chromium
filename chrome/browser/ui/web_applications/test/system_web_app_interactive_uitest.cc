@@ -102,7 +102,7 @@ class SystemWebAppLinkCaptureBrowserTest
 
  protected:
   BrowserWindowInterface* CreateIncognitoBrowser() {
-    BrowserWindowInterface* incognito = CreateBrowserWindow(
+    BrowserWindowInterface* incognito = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                       /*create_if_needed=*/true),
                                   /*from_user_gesture=*/true));

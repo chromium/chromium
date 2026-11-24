@@ -2461,7 +2461,8 @@ IN_PROC_BROWSER_TEST_F(StartFullscreenInteractiveTest,
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kFullscreen;
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* new_browser =
+      CreateBrowserWindowForTesting(std::move(params));
 
   // Show the browser and wait for it to become fully initialized.
   AddBlankTabAndShow(new_browser);

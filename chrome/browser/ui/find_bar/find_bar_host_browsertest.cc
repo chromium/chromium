@@ -1663,7 +1663,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoIncognitoPrepopulate) {
   // Open a new incognito window and navigate to the same page.
   Profile* incognito_profile =
       browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(incognito_profile,
                                 /*from_user_gesture=*/true));
   chrome::AddSelectedTabWithURL(incognito_browser, url,

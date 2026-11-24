@@ -1083,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, FiltersForWindow) {
 
   // Create a new browser window.
   BrowserWindowInterface* new_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
+      CreateBrowserWindowForTesting(BrowserWindowCreateParams(
           *browser()->GetProfile(), /*from_user_gesture=*/false));
   ASSERT_TRUE(new_browser);
 

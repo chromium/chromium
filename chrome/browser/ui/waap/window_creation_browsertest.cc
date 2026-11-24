@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/waap/window_creation.h"
 
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -29,6 +30,25 @@ IN_PROC_BROWSER_TEST_F(WaapWindowCreationBrowserTest,
   auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
   ASSERT_TRUE(manager);
   EXPECT_EQ(NewWindowCreationSource::kNewEmptyWindow,
+            manager->GetCreationSourceForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(WaapWindowCreationBrowserTest,
+                       CreateBrowserWindowAsyncAndRecordCreationSource) {
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindowAndRecordCreationSource(
+      BrowserWindowCreateParams(*browser()->GetProfile(),
+                                /*from_user_gesture=*/false),
+      NewWindowCreationSource::kTest, future.GetCallback());
+  BrowserWindowInterface* new_browser = future.Get();
+
+  ASSERT_TRUE(new_browser);
+  ASSERT_NE(new_browser, browser());
+  EXPECT_EQ(new_browser->GetProfile(), browser()->GetProfile());
+  EXPECT_EQ(BrowserWindowInterface::TYPE_NORMAL, new_browser->GetType());
+  auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(NewWindowCreationSource::kTest,
             manager->GetCreationSourceForTesting());
 }
 

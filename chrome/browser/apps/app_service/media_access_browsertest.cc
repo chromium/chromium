@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 
 IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
                        RequestAccessingForChromeInNewBrowsers) {
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   ASSERT_TRUE(browser1);

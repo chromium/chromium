@@ -168,7 +168,7 @@ class VideoConferenceIntegrationTest
     ASSERT_TRUE(embedded_test_server()->Start());
 
     if (is_incognito_mode_) {
-      browser_ = CreateBrowserWindow(BrowserWindowCreateParams(
+      browser_ = CreateBrowserWindowForTesting(BrowserWindowCreateParams(
           browser()->GetProfile()->GetPrimaryOTRProfile(
               /*create_if_needed=*/true),
           /*from_user_gesture=*/true));

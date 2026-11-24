@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, OpenerMovedToAnotherWindow) {
   std::unique_ptr<content::WebContents> detached =
       browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
           opener_index);
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   new_browser->GetTabStripModel()->InsertWebContentsAt(0, std::move(detached),

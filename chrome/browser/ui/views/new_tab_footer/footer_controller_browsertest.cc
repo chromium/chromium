@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_P(FooterControllerRestoreTest,
                        RestoreActiveTabToNewWindow) {
   auto extension = LoadNtpExtension();
 
-  BrowserWindowInterface* restored_browser = CreateBrowserWindow(
+  BrowserWindowInterface* restored_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(*profile(), /*from_user_gesture=*/true));
   new_tab_footer::NewTabFooterController::From(restored_browser)
       ->SkipErrorPageCheckForTesting(true);

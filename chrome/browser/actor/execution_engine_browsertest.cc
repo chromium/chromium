@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineCrossProfileBrowserTest,
   Profile& profile2 = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();

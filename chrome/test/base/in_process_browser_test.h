@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -74,6 +75,7 @@ class ScopedLaunchBrowserForTesting;
 }  // namespace ash::full_restore
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+struct BrowserWindowCreateParams;
 class PrefService;
 class Profile;
 class TabListInterface;
@@ -184,6 +186,19 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // differentiate between different PRE tests in browser test constructors
   // and setup functions.
   static size_t GetTestPreCount();
+
+  // Creates a new browser window for testing using `create_params` without
+  // showing it or adding tabs, recording `waap::NewWindowCreationSource::kTest`
+  // so metrics checks treat this as a test-created window.
+  static BrowserWindowInterface* CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams create_params);
+
+  // Asynchronous overload of `CreateBrowserWindowForTesting()`. Invokes
+  // `callback` with the fully initialized `BrowserWindowInterface` (or null on
+  // failure) after recording `waap::NewWindowCreationSource::kTest`.
+  static void CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams create_params,
+      base::OnceCallback<void(BrowserWindowInterface*)> callback);
 
   // Returns the browser created by BrowserMain(). If no browser is created in
   // BrowserMain(), this will return nullptr unless another browser instance is

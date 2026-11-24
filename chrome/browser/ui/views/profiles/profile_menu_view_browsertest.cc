@@ -1706,7 +1706,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_MultipleProfiles,
   CreateAdditionalProfile();
   // Open a browser for another profile, and a second browser for the current
   // profile, so the kExitProfileButton is shown.
-  CreateBrowserWindow(
+  CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(other_profile, /*from_user_gesture=*/true));
   SetTargetBrowser(CreateBrowser(browser()->GetProfile()));
   RunTest();
@@ -2581,7 +2581,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   MockHatsService* other_profile_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           other_profile, base::BindRepeating(&BuildMockHatsService)));
-  CreateBrowserWindow(
+  CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(other_profile, /*from_user_gesture=*/true));
 
   // The survey should be launched for the other profile after switching.
@@ -2711,7 +2711,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
 
   // Set up another profile.
   Profile* other_profile = CreateAdditionalProfile();
-  CreateBrowserWindow(
+  CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(other_profile, /*from_user_gesture=*/true));
 
   // Attempt to select every actionable item in the menu.

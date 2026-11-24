@@ -1526,7 +1526,7 @@ IN_PROC_BROWSER_TEST_P(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   // Spawn a regular browser window and verify it gets closed because it's not
   // authorized.
   BrowserWindowInterface* const unauthorized_regular_browser =
-      CreateBrowserWindow(
+      CreateBrowserWindowForTesting(
           BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
                                     profile(), /*from_user_gesture=*/true));
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -373,9 +374,15 @@ bool IsSidePanelEnabled() {
 
 BrowserWindowInterface* CreateBrowserWindow(Profile* profile) {
   base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(
+#if !BUILDFLAG(IS_ANDROID)
+  InProcessBrowserTest::CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(*profile, /*from_user_gesture=*/false),
       future.GetCallback());
+#else
+  ::CreateBrowserWindow(
+      BrowserWindowCreateParams(*profile, /*from_user_gesture=*/false),
+      future.GetCallback());
+#endif  // !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* window = future.Get();
   CHECK(window);
   return window;

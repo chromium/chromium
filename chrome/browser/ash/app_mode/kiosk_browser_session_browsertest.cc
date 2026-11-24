@@ -58,7 +58,8 @@ enum class KioskType { kChromeApp = 0, kWebApp = 1, kIwa = 2 };
 
 BrowserWindowInterface* CreateBrowserWithParams(
     BrowserWindowCreateParams params) {
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser =
+      InProcessBrowserTest::CreateBrowserWindowForTesting(std::move(params));
   if (browser->GetType() != BrowserWindowInterface::Type::TYPE_FLOATING) {
     ash::BrowserController::GetInstance()->GetDelegate(browser)->AddTab(
         GURL(url::kAboutBlankURL), /*index=*/std::nullopt,

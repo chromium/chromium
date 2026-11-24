@@ -85,7 +85,11 @@ enum class NewWindowCreationSource {
   // `chrome.runtime.openOptionsPage()`, `OpenTabHelper`, or
   // `ChromeExtensionHostDelegate`.
   kExtension = 9,
-  kMaxValue = kExtension,
+  // Created by test helpers (e.g. `InProcessBrowserTest::AddBlankTabAndShow()`,
+  // `CreateBrowser()`, `CreateIncognitoBrowser()`, `CreateGuestBrowser()`, or
+  // `SyncTest`). Not recorded to `InitialWebUI.NewWindow.*` histograms.
+  kTest = 10,
+  kMaxValue = kTest,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:CreationSource)
 

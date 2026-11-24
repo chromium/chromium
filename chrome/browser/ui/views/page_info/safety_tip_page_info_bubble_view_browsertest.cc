@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // Ensure normal sites with low engagement are not blocked in incognito.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnLowEngagementIncognito) {
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // Ensure blocked sites with high engagement are not blocked in incognito.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnHighEngagementIncognito) {
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DISABLED_ShowOnBlockIncognito) {
   auto kNavigatedUrl = GetURL("accounts-google.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));

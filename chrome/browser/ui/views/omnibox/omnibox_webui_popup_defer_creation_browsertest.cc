@@ -180,7 +180,7 @@ class OmniboxWebUIPopupCreateOnFocusBrowserTest
 // it doesn't create the content. Focusing its omnibox does.
 IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupCreateOnFocusBrowserTest,
                        CreatesContentOnFocus) {
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   chrome::AddSelectedTabWithURL(new_browser, GURL("data:text/html,page"),
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupCreateOnFocusBrowserTest,
 // creating the content.
 IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupCreateOnFocusBrowserTest,
                        DefersEarlyFocusUntilWindowPresentation) {
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   chrome::AddSelectedTabWithURL(new_browser, GURL("data:text/html,page"),
@@ -257,7 +257,7 @@ class OmniboxWebUIPopupCreateOnFocusWebUILocationBarBrowserTest
 IN_PROC_BROWSER_TEST_F(
     OmniboxWebUIPopupCreateOnFocusWebUILocationBarBrowserTest,
     CreatesContentOnFocusWithin) {
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   chrome::AddSelectedTabWithURL(new_browser, GURL("data:text/html,page"),

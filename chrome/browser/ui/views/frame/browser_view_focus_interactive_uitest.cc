@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
   // of Activate() is not well defined and can vary by window manager.
 #if BUILDFLAG(IS_WIN)
   // Open a new browser window.
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   ASSERT_TRUE(browser2);

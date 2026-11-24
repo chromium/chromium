@@ -50,8 +50,8 @@ content::WebContents* OpenUrlInBrowser(GURL page_url) {
       BrowserWindowInterface::Type::TYPE_NORMAL,
       /*profile=*/&ash::kiosk::test::CurrentProfile(),
       /*from_user_gesture=*/true);
-  BrowserWindowInterface& new_browser =
-      CHECK_DEREF(CreateBrowserWindow(std::move(params)));
+  BrowserWindowInterface& new_browser = CHECK_DEREF(
+      InProcessBrowserTest::CreateBrowserWindowForTesting(std::move(params)));
   new_browser.GetWindow()->Show();
   ui_test_utils::NavigateToURLWithDisposition(
       &new_browser, page_url,

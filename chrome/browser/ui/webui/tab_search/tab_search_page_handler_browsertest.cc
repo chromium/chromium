@@ -349,7 +349,8 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
       Profile* profile,
       BrowserWindowInterface::Type type) {
     BrowserWindowCreateParams params(type, profile, /*from_user_gesture=*/true);
-    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+    BrowserWindowInterface* browser =
+        CreateBrowserWindowForTesting(std::move(params));
     browser->GetWindow()->Show();
     BrowserUiController::From(browser)->set_update_ui_immediately_for_testing();
     return browser;

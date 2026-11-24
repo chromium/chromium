@@ -124,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, NewWindowSize) {
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   Profile* profile = browser()->GetProfile();
   BrowserWindowCreateParams params(profile, /*from_user_gesture=*/true);
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowForTesting(std::move(params));
   browser2->GetWindow()->Show();
 
   // The first window saves its placement on losing the active state, then the

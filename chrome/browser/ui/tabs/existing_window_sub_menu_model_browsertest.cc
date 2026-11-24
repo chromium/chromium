@@ -53,8 +53,9 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
         popup ? BrowserWindowInterface::TYPE_POPUP
               : BrowserWindowInterface::TYPE_NORMAL;
 
-    BrowserWindowInterface* browser = CreateBrowserWindow(
-        BrowserWindowCreateParams(type, profile, /*from_user_gesture=*/true));
+    BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
+        BrowserWindowCreateParams(type, profile,
+                                  /*from_user_gesture=*/true));
     ActivateBrowser(browser);
     // Self deleting.
     return browser;
@@ -65,7 +66,8 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
                                      browser()->GetProfile(),
                                      /*from_user_gesture=*/true);
     params.initial_workspace = desk_index;
-    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+    BrowserWindowInterface* browser =
+        CreateBrowserWindowForTesting(std::move(params));
     ActivateBrowser(browser);
     return browser;
   }

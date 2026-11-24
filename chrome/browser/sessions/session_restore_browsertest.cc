@@ -4217,7 +4217,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
   params.omit_from_session_restore = true;
-  BrowserWindowInterface* browser3 = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser3 =
+      CreateBrowserWindowForTesting(std::move(params));
   content::WebContents* tab = chrome::AddSelectedTabWithURL(
       browser3, GURL(GetUrl3()), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   content::TestNavigationObserver observer(tab);

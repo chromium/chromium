@@ -59,7 +59,8 @@ class ChromeTabStripDelegateBrowserTest
       std::optional<size_t> active_url_index) {
     BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                      profile(), /*from_user_gesture=*/false);
-    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+    BrowserWindowInterface* browser =
+        CreateBrowserWindowForTesting(std::move(params));
     // Create a new tab and make sure the urls have loaded.
     for (const auto& url : urls) {
       // content::TestNavigationObserver navigation_observer(urls[i]);

@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   BrowserWindowCreateParams browser_params(new_profile,
                                            /*from_user_gesture=*/true);
   BrowserWindowInterface* new_browser =
-      CreateBrowserWindow(std::move(browser_params));
+      CreateBrowserWindowForTesting(std::move(browser_params));
   new_browser->GetWindow()->Show();
 
   // Create a bubble using the temporary profile, but not attached to its view

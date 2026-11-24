@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, MAYBE_FilteredEvents) {
       " \"minWidth\": 200, \"minHeight\": 200,"
       " \"maxWidth\": 400, \"maxHeight\": 400}}");
 
-  BrowserWindowInterface* browser_window = CreateBrowserWindow(
+  BrowserWindowInterface* browser_window = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   AddBlankTabAndShow(browser_window);
 

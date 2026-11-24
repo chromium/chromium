@@ -192,8 +192,8 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest, OsIntegrationRemoved) {
   Profile& profile_to_delete = profiles::testing::CreateProfileSync(
       profile_manager, profile_path_to_delete);
 #endif
-  CreateBrowserWindow(BrowserWindowCreateParams(&profile_to_delete,
-                                                /*from_user_gesture=*/true));
+  CreateBrowserWindowForTesting(BrowserWindowCreateParams(
+      &profile_to_delete, /*from_user_gesture=*/true));
   const webapps::AppId app_id =
       InstallAppToProfile(&profile_to_delete, app_url);
   auto* provider = WebAppProvider::GetForTest(&profile_to_delete);
@@ -264,8 +264,8 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
   Profile& profile_to_delete = profiles::testing::CreateProfileSync(
       profile_manager, profile_path_to_delete);
 #endif
-  CreateBrowserWindow(BrowserWindowCreateParams(&profile_to_delete,
-                                                /*from_user_gesture=*/true));
+  CreateBrowserWindowForTesting(BrowserWindowCreateParams(
+      &profile_to_delete, /*from_user_gesture=*/true));
   const webapps::AppId app_id =
       InstallAppToProfile(&profile_to_delete, app_url);
   auto* provider = WebAppProvider::GetForTest(&profile_to_delete);

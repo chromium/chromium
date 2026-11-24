@@ -492,7 +492,7 @@ class IncognitoClearBrowsingDataDialogWebUIAvatarOverflowTest
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogWebUIAvatarOverflowTest,
                        ShowBeforeAvatarButtonReady) {
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));

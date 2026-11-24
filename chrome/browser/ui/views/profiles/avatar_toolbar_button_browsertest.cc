@@ -1871,7 +1871,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, SigninBrowser) {
   // Create a portal signin browser which will not be the Incognito browser.
   Profile::OTRProfileID profile_id(
       Profile::OTRProfileID::CreateUniqueForCaptivePortal());
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetOffTheRecordProfile(
                                     profile_id,
                                     /*create_if_needed=*/true),

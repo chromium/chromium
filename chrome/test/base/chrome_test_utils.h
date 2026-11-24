@@ -5,11 +5,14 @@
 #ifndef CHROME_TEST_BASE_CHROME_TEST_UTILS_H_
 #define CHROME_TEST_BASE_CHROME_TEST_UTILS_H_
 
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
+struct BrowserWindowCreateParams;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -56,6 +59,21 @@ Profile* GetProfile(const PlatformBrowserTest* browser_test);
 // to specify the expected commit URL for URLs causing redirects.
 [[nodiscard]] bool NavigateToURL(content::WebContents* web_contents,
                                  const GURL& url);
+
+// Creates a new browser window for testing using `create_params` without
+// showing it or adding tabs. On non-Android platforms, records
+// `waap::NewWindowCreationSource::kTest` so metrics checks treat this as a
+// test-created window.
+BrowserWindowInterface* CreateBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params);
+
+// Asynchronous overload of `CreateBrowserWindowForTesting()`. Invokes
+// `callback` with the fully initialized `BrowserWindowInterface` (or null on
+// failure) after recording `waap::NewWindowCreationSource::kTest` on
+// non-Android platforms.
+void CreateBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params,
+    base::OnceCallback<void(BrowserWindowInterface*)> callback);
 
 }  // namespace chrome_test_utils
 

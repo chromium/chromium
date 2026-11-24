@@ -1704,7 +1704,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
       /*from_user_gesture=*/true));
   for (auto& param : params) {
     param.initial_show_state = ui::mojom::WindowShowState::kMaximized;
-    AddBlankTabAndShow(CreateBrowserWindow(std::move(param)));
+    AddBlankTabAndShow(CreateBrowserWindowForTesting(std::move(param)));
   }
 }
 
@@ -1731,7 +1731,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
       /*from_user_gesture=*/true));
   for (auto& param : params) {
     param.initial_show_state = ui::mojom::WindowShowState::kMinimized;
-    AddBlankTabAndShow(CreateBrowserWindow(std::move(param)),
+    AddBlankTabAndShow(CreateBrowserWindowForTesting(std::move(param)),
                        /*wait_for_activation=*/false);
   }
 }
@@ -1790,7 +1790,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableMenuItemsWhenIncognitoIsForced) {
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_NEW_INCOGNITO_WINDOW));
 
   // Create an Incognito browser.
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));
@@ -1826,7 +1826,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_OPTIONS));
 
   // Create a new browser.
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   CommandUpdater* new_command_updater =
@@ -3501,7 +3501,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, ClosedBrowsersShouldNotShow) {
   // Create a new browser but do not show it yet.
-  BrowserWindowInterface* const new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* const new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(GetProfile(), /*from_user_gesture=*/true));
   ui::BaseWindow* const new_window = new_browser->GetWindow();
   EXPECT_FALSE(new_window->IsVisible());

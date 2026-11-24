@@ -3459,7 +3459,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   params.initial_bounds = work_area;
   params.initial_show_state = ui::mojom::WindowShowState::kMaximized;
   BrowserWindowInterface* maximized_browser =
-      CreateBrowserWindow(std::move(params));
+      CreateBrowserWindowForTesting(std::move(params));
   AddBlankTabAndShow(maximized_browser);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return maximized_browser->GetWindow()->GetNativeWindow()->IsVisible();
@@ -5835,7 +5835,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/false);
   params.initial_show_state = ui::mojom::WindowShowState::kMaximized;
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser =
+      CreateBrowserWindowForTesting(std::move(params));
   AddBlankTabAndShow(browser);
   AddTabsAndResetBrowser(browser, 1);
 
@@ -6488,7 +6489,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
                                    /*from_user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params.initial_bounds = work_area;
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowForTesting(std::move(params));
   AddBlankTabAndShow(browser2);
 
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);

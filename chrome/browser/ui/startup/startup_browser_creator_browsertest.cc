@@ -1522,7 +1522,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   SessionStartupPref::SetStartupPref(&profile, startup_pref);
 
   // Open |t3_url| in a tab.
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile,
                                 /*from_user_gesture=*/true));
   TabStripModel* tab_strip_model = new_browser->GetTabStripModel();
@@ -1684,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
       &profile2, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Open some urls with the browsers, and close them.
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
@@ -1692,7 +1692,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
       browser1, embedded_test_server()->GetURL("/empty.html")));
   CloseBrowserSynchronously(browser1);
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile2,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
@@ -1820,7 +1820,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   SessionStartupPref::SetStartupPref(&profile_urls, pref_urls);
 
   // Open a page with profile_last.
-  BrowserWindowInterface* browser_last = CreateBrowserWindow(
+  BrowserWindowInterface* browser_last = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
                                 &profile_last, /*from_user_gesture=*/true));
   chrome::NewTab(browser_last, NewTabTypes::kNoUserAction);
@@ -1929,14 +1929,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
       &profile2, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Open a page with profile1 and profile2.
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/empty.html")));
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile2,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
@@ -2292,7 +2292,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorHeadlessActivationTokenTest,
   SessionStartupPref::SetStartupPref(
       &profile1, SessionStartupPref(SessionStartupPref::LAST));
 
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
@@ -2343,7 +2343,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorHeadlessActivationTokenTest,
   SessionStartupPref::SetStartupPref(
       &profile2, SessionStartupPref(SessionStartupPref::DEFAULT));
 
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
@@ -2805,14 +2805,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   DisableWhatsNewPage();
 
   // Open some urls with the browsers, and close them.
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/title1.html")));
 
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile2,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
@@ -3098,7 +3098,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   // Open some urls with the browsers, and close them.
   SessionServiceFactory::GetForProfileForSessionRestore(&profile1);
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
                                 /*from_user_gesture=*/true));
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);

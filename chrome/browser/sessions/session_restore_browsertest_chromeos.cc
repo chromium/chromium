@@ -90,7 +90,8 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
 
   BrowserWindowInterface* CreateBrowserWithParams(
       BrowserWindowCreateParams params) {
-    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+    BrowserWindowInterface* browser =
+        CreateBrowserWindowForTesting(std::move(params));
     AddBlankTabAndShow(browser);
     return browser;
   }

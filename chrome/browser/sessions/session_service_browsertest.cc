@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, EmptyWindowSaved) {
   base::HistogramTester histogram_tester;
-  BrowserWindowInterface* empty_browser = CreateBrowserWindow(
+  BrowserWindowInterface* empty_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(), true));
 
   ASSERT_EQ(0, empty_browser->GetTabStripModel()->count());
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
   BrowserWindowCreateParams untracked_params(profile, true);
   untracked_params.omit_from_session_restore = true;
   BrowserWindowInterface* untracked_browser =
-      CreateBrowserWindow(std::move(untracked_params));
+      CreateBrowserWindowForTesting(std::move(untracked_params));
   CloseBrowserSynchronously(untracked_browser);
   histogram_tester.ExpectTotalCount(kHistogram, 3);
 
@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
   BrowserWindowCreateParams omit_params(browser()->GetProfile(), true);
   omit_params.omit_from_session_restore = true;
   BrowserWindowInterface* omit_browser =
-      CreateBrowserWindow(std::move(omit_params));
+      CreateBrowserWindowForTesting(std::move(omit_params));
   std::ignore =
       AddTabAtIndexToBrowser(omit_browser, -1, GURL("data:text/html,omit1"),
                              ui::PAGE_TRANSITION_TYPED);

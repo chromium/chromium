@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -22,6 +24,26 @@ BrowserWindowInterface* CreateBrowserWindowAndRecordCreationSource(
     manager->SetWindowCreationInfo(creation_source, now);
   }
   return browser_window;
+}
+
+void CreateBrowserWindowAndRecordCreationSource(
+    BrowserWindowCreateParams create_params,
+    NewWindowCreationSource creation_source,
+    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  CreateBrowserWindow(
+      std::move(create_params),
+      base::BindOnce(
+          [](NewWindowCreationSource source, base::TimeTicks creation_time,
+             base::OnceCallback<void(BrowserWindowInterface*)> cb,
+             BrowserWindowInterface* browser_window) {
+            if (auto* manager =
+                    InitialWebUIWindowMetricsManager::From(browser_window)) {
+              manager->SetWindowCreationInfo(source, creation_time);
+            }
+            std::move(cb).Run(browser_window);
+          },
+          creation_source, now, std::move(callback)));
 }
 
 }  // namespace waap

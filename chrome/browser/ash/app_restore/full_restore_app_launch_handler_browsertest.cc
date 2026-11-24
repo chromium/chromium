@@ -782,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        PRE_FullRestoreOverridesSessionRestoreTest) {
   // Create a browser and create a tab for it. Its bounds should not equal
   // |kCurrentBounds|.
-  BrowserWindowInterface* browser = CreateBrowserWindow(
+  BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   PrefService* local_state = g_browser_process->local_state();
   static_cast<PrefRegistrySimple*>(local_state->DeprecatedGetPrefRegistry())
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   const gfx::Rect expected_bounds(10, 10, 500, 300);
   const GURL expected_url("https://example.org");
 
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, profile(),
                                 /*from_user_gesture=*/false));
 
@@ -997,7 +997,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
                                                 /*from_user_gesture=*/true);
   non_restored_params.initial_workspace = "2";
   BrowserWindowInterface* non_restored_browser =
-      CreateBrowserWindow(std::move(non_restored_params));
+      CreateBrowserWindowForTesting(std::move(non_restored_params));
   AddBlankTabAndShow(non_restored_browser);
   aura::Window* non_restored_window =
       non_restored_browser->GetWindow()->GetNativeWindow();

@@ -205,7 +205,7 @@ ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(bool as_popup) {
       as_popup ? CreateBrowserWindow(BrowserWindowCreateParams(
                      BrowserWindowInterface::TYPE_POPUP, GetProfile(),
                      /*from_user_gesture=*/true))
-               : CreateBrowserWindow(BrowserWindowCreateParams(
+               : CreateBrowserWindowForTesting(BrowserWindowCreateParams(
                      GetProfile(), /*from_user_gesture=*/true));
   AddBlankTabAndShow(new_browser);
   return new_browser;

@@ -38,6 +38,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(CreationSource) -->
 
+<!-- Note: kUnknown and kTest are not recorded as histogram variants. -->
+
 <variants name="CreationSource">
   <variant name=".AllSources" summary="Aggregated across all sources"/>
   <variant name=".DragToNewWindow"

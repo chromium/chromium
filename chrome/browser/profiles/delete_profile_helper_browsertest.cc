@@ -77,8 +77,9 @@ IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, KeepAlive) {
                   .GetProfileAttributesWithPath(profile_path_to_delete));
   // Set the profile as last-used, so that the callback of
   // `MaybeScheduleProfileForDeletion()` is called.
-  CreateBrowserWindow(BrowserWindowCreateParams(&profile_to_delete,
-                                                /*from_user_gesture=*/true));
+  CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(&profile_to_delete,
+                                /*from_user_gesture=*/true));
   profiles::SetLastUsedProfile(profile_path_to_delete.BaseName());
   // Schedule profile deletion.
   base::RunLoop loop;

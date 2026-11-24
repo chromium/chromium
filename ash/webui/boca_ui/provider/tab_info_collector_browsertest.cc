@@ -56,7 +56,8 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
   BrowserWindowInterface* CreateBrowser(const std::vector<GURL>& urls) {
     BrowserWindowCreateParams params(ProfileManager::GetActiveUserProfile(),
                                      /*from_user_gesture=*/false);
-    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+    BrowserWindowInterface* browser =
+        CreateBrowserWindowForTesting(std::move(params));
     // Create a new tab and make sure the urls have loaded.
     for (const auto& url : urls) {
       ui_test_utils::NavigateToURLWithDisposition(

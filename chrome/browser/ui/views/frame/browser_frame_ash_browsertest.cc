@@ -56,7 +56,8 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   BrowserWindowCreateParams params = create_params();
   params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params.initial_bounds = original_bounds;
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser =
+      CreateBrowserWindowForTesting(std::move(params));
   browser->GetWindow()->Show();
 
   // The bounds passed via |initial_bounds| should be respected regardless of
@@ -70,7 +71,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   BrowserWindowCreateParams params2 = create_params();
   params2.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params2.initial_bounds = gfx::Rect();
-  browser = CreateBrowserWindow(std::move(params2));
+  browser = CreateBrowserWindowForTesting(std::move(params2));
   browser->GetWindow()->Show();
 
   // For tabbed browser window, it will be centered to work area by auto window

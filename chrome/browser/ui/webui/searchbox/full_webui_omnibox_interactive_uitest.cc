@@ -9668,7 +9668,7 @@ class FullWebUIOmniboxWelcomeDialogInteractiveTest
         g_browser_process->profile_manager();
     Profile& profile = profiles::testing::CreateProfileSync(
         profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-    BrowserWindowInterface* const new_browser = CreateBrowserWindow(
+    BrowserWindowInterface* const new_browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
     chrome::AddTabAt(new_browser, GURL(chrome::kChromeUINewTabURL),
                      /*index=*/-1, /*foreground=*/true);

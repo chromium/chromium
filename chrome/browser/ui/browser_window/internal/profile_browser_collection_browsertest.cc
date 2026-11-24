@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/test/browser_event_waiter.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +85,7 @@ class ProfileBrowserCollectionTest
     {
       BrowserEventWaiter browser_created_waiter(
           BrowserEventWaiter::Event::CREATED);
-      browser = CreateBrowserWindow(
+      browser = chrome_test_utils::CreateBrowserWindowForTesting(
           BrowserWindowCreateParams(*profile, /*from_user_gesture=*/true));
     }
 #if !BUILDFLAG(IS_ANDROID)

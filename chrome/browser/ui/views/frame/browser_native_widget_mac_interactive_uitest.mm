@@ -755,7 +755,7 @@ class BrowserNativeWidgetMacDeferInputContextTestBase
   // shown.
   BrowserWindowInterface* CreateUnshownBrowser(
       const GURL& url = GURL(url::kAboutBlankURL)) {
-    BrowserWindowInterface* new_browser = CreateBrowserWindow(
+    BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(browser()->GetProfile(),
                                   /*from_user_gesture=*/true));
     chrome::AddSelectedTabWithURL(new_browser, url,

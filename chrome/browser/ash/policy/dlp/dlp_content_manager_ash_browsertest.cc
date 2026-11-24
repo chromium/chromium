@@ -449,9 +449,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser1->tab_strip_model()->GetActiveWebContents();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
@@ -503,9 +503,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, VideoCaptureReported) {
       browser1->tab_strip_model()->GetActiveWebContents();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
@@ -559,9 +559,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser1->tab_strip_model()->GetActiveWebContents();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
@@ -614,9 +614,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser1->tab_strip_model()->GetActiveWebContents();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
@@ -672,9 +672,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser1->tab_strip_model()->GetActiveWebContents();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
@@ -747,9 +747,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser1->tab_strip_model()->GetActiveWebContents();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
@@ -1689,9 +1689,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   aura::Window* browser1_window = browser()->GetWindow()->GetNativeWindow();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
   content::WebContents* web_contents2 =
@@ -1746,9 +1746,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   aura::Window* browser1_window = browser()->GetWindow()->GetNativeWindow();
 
   // Open second browser window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
   content::WebContents* web_contents2 =

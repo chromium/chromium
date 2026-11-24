@@ -85,7 +85,7 @@ class BrowserViewExclusiveAccessContextShutdownTest
 
 IN_PROC_BROWSER_TEST_P(BrowserViewExclusiveAccessContextShutdownTest,
                        CloseWindowWithBubble) {
-  BrowserWindowInterface* window = CreateBrowserWindow(
+  BrowserWindowInterface* window = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(GetProfile(), /*from_user_gesture=*/true));
   chrome::AddTabAt(window, GURL("about:blank"), -1, true);
   window->GetWindow()->Show();

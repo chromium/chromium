@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_P(OnTaskSessionManagerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_1, GURL(kTestUrl1)));
 
   // Open second browser window.
-  BrowserWindowInterface* const browser_2 = CreateBrowserWindow(
+  BrowserWindowInterface* const browser_2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   chrome::NewTab(browser_2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_2, GURL(kTestUrl2)));

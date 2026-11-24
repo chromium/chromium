@@ -976,3 +976,37 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
   tester.ExpectUniqueSample(
       base::StrCat({kPaintedWithin10SecondsHistogram, Suffix()}), false, 1);
 }
+
+TEST_F(InitialWebUIWindowMetricsManagerTest,
+       TestCreationSourceSkipsNewWindowMetrics) {
+  InitialWebUIWindowMetricsManager::ResetForTesting();
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  base::HistogramTester tester;
+
+  {
+    InitialWebUIWindowMetricsManager manager(&browser_window_);
+    manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kTest,
+                                  start_time);
+    manager.SkipStartupForTesting();
+
+    manager.OnBrowserWindowShowRequested(start_time + base::Milliseconds(10));
+    manager.OnBrowserWindowFirstPresentation(start_time +
+                                             base::Milliseconds(30));
+    manager.OnReloadButtonFirstPaint(start_time + base::Milliseconds(50),
+                                     /*is_startup=*/false);
+    manager.OnReloadButtonFirstContentfulPaint(
+        start_time + base::Milliseconds(60), /*is_startup=*/false);
+  }
+
+  // Also verify `ClosedBeforeFirstPaint` is skipped when closed unpainted.
+  {
+    InitialWebUIWindowMetricsManager manager(&browser_window_);
+    manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kTest,
+                                  start_time);
+    manager.SkipStartupForTesting();
+    manager.OnBrowserWindowShowRequested(start_time + base::Milliseconds(10));
+  }
+
+  EXPECT_TRUE(
+      tester.GetTotalCountsForPrefix("InitialWebUI.NewWindow.").empty());
+}

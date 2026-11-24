@@ -50,7 +50,7 @@ BrowserWindowInterface* InProcessBrowserTest::CreateBrowser(Profile* profile) {
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    BrowserWindowInterface* browser = CreateBrowserWindow(
+    BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
     AddBlankTabAndShow(browser);
     return browser;
@@ -68,7 +68,7 @@ BrowserWindowInterface* InProcessBrowserTest::CreateIncognitoBrowser(
 
     // Create a new browser with using the incognito profile.
     BrowserWindowInterface* incognito =
-        CreateBrowserWindow(BrowserWindowCreateParams(
+        CreateBrowserWindowForTesting(BrowserWindowCreateParams(
             profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
             /*from_user_gesture=*/true));
     AddBlankTabAndShow(incognito);
@@ -81,7 +81,7 @@ BrowserWindowInterface* InProcessBrowserTest::CreateBrowserForPopup(
   // Making a browser window can cause AppKit to throw objects into the
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
-    BrowserWindowInterface* browser = CreateBrowserWindow(
+    BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(BrowserWindowInterface::TYPE_POPUP, profile,
                                   /*from_user_gesture=*/true));
     AddBlankTabAndShow(browser);
@@ -96,7 +96,7 @@ BrowserWindowInterface* InProcessBrowserTest::CreateBrowserForApp(
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
     BrowserWindowInterface* browser =
-        CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+        CreateBrowserWindowForTesting(BrowserWindowCreateParams::CreateForApp(
             app_name,
             /*trusted_source=*/false, gfx::Rect(), profile,
             /*from_user_gesture=*/true));

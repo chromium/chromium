@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
       /*create_if_needed=*/true);
   ASSERT_NE(otr_profile, nullptr);
 
-  BrowserWindowInterface* otr_browser = CreateBrowserWindow(
+  BrowserWindowInterface* otr_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(otr_profile, /*from_user_gesture=*/true));
   EXPECT_EQ(global_collection->GetSize(), initial_size + 1);
 

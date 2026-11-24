@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -404,8 +405,8 @@ AccountId CreateDeviceLocalAccountId(std::string_view account_id,
 BrowserWindowInterface& CreateRegularBrowser(Profile& profile,
                                              const GURL& url) {
   BrowserWindowCreateParams params(&profile, /*from_user_gesture=*/true);
-  BrowserWindowInterface& browser =
-      CHECK_DEREF(CreateBrowserWindow(std::move(params)));
+  BrowserWindowInterface& browser = CHECK_DEREF(
+      InProcessBrowserTest::CreateBrowserWindowForTesting(std::move(params)));
   browser.GetWindow()->Show();
 
   AddWebContentsToBrowser(browser, profile);

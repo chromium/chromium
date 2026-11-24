@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeResizesWindow) {
 IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeEarlyResizesWindow) {
   // 1) Create a new browser window and add a default tab
   BrowserWindowInterface* new_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
+      CreateBrowserWindowForTesting(BrowserWindowCreateParams(
           BrowserWindowInterface::Type::TYPE_NORMAL, browser()->GetProfile(),
           /*from_user_gesture=*/true));
   chrome::AddTabAt(new_browser, GURL(), -1, true);
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
                        ActiveTabHasNonZeroSizeOnWindowCreation) {
   // Create a new browser window with a tab.
   BrowserWindowInterface* new_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
+      CreateBrowserWindowForTesting(BrowserWindowCreateParams(
           BrowserWindowInterface::Type::TYPE_NORMAL, browser()->GetProfile(),
           /*from_user_gesture=*/true));
   chrome::AddTabAt(new_browser, GURL(), -1, true);

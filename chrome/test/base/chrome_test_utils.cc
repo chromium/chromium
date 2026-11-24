@@ -4,7 +4,11 @@
 
 #include "chrome/test/base/chrome_test_utils.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
@@ -80,6 +84,27 @@ bool NavigateToURL(content::WebContents* web_contents, const GURL& url) {
   // Wait for load to stop.
   observer.Wait();
   return observer.last_navigation_succeeded();
+}
+
+BrowserWindowInterface* CreateBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params) {
+#if !BUILDFLAG(IS_ANDROID)
+  return InProcessBrowserTest::CreateBrowserWindowForTesting(
+      std::move(create_params));
+#else
+  return CreateBrowserWindow(std::move(create_params));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void CreateBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params,
+    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  InProcessBrowserTest::CreateBrowserWindowForTesting(std::move(create_params),
+                                                      std::move(callback));
+#else
+  CreateBrowserWindow(std::move(create_params), std::move(callback));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace chrome_test_utils

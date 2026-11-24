@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, CollectSigninStatus) {
 
 IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, FailInIncognitoMode) {
   // Create incognito browser for testing.
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));
@@ -199,7 +199,7 @@ class SigninDataCollectorIsolatedModeBrowserTestAsh
 IN_PROC_BROWSER_TEST_F(SigninDataCollectorIsolatedModeBrowserTestAsh,
                        FailInIsolatedMode) {
   // Create isolated mode browser for testing.
-  BrowserWindowInterface* isolated_browser = CreateBrowserWindow(
+  BrowserWindowInterface* isolated_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));

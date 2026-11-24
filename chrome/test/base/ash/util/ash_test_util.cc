@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/launch_result.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -136,7 +137,8 @@ BrowserWindowInterface* CreateBrowser(Profile* profile,
                                       std::optional<size_t> active_url_index) {
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL, profile,
                                    /*from_user_gesture=*/false);
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser =
+      InProcessBrowserTest::CreateBrowserWindowForTesting(std::move(params));
   // Create a new tab and make sure the urls have loaded.
   for (size_t i = 0; i < urls.size(); i++) {
     content::TestNavigationObserver navigation_observer(urls[i]);

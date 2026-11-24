@@ -367,7 +367,7 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 
     // Create browser and add tab.
-    BrowserWindowInterface* guest_browser = CreateBrowserWindow(
+    BrowserWindowInterface* guest_browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(guest_profile_otr,
                                   /*from_user_gesture=*/true));
     AddBlankTabAndShow(guest_browser);
@@ -376,7 +376,7 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
   }
 
   BrowserWindowInterface* CreateManagedIncognitoBrowser() {
-    BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+    BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                       /*create_if_needed=*/true),
                                   /*from_user_gesture=*/true));

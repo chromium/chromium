@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupNoDeferCreationBrowserTest,
                        CreatesContentWithPresenterWithoutDeferCreation) {
   ASSERT_FALSE(
       base::FeatureList::IsEnabled(omnibox::kOmniboxAimPopupDeferCreation));
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   OmniboxPopupAimPresenter* presenter =
@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationBrowserTest,
 // content is created only after the window presents its first frame.
 IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationBrowserTest,
                        NewWindowCreatesContentAfterFirstPresentation) {
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+  BrowserWindowInterface* new_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   BrowserView* browser_view =

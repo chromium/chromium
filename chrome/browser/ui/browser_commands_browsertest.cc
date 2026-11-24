@@ -529,9 +529,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToExistingWindow) {
                                      tab_groups::TabGroupColorId::kBlue));
 
   // Prepare the target browser (existing window).
-  BrowserWindowInterface* target_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   ASSERT_TRUE(target_browser);
   AddTabs(target_browser, 1);
 
@@ -584,9 +584,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   ASSERT_EQ(4, browser()->tab_strip_model()->count());
 
   // Target browser: 0(active)
-  BrowserWindowInterface* target_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -612,9 +612,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   ASSERT_EQ(4, browser()->tab_strip_model()->count());
 
   // Target browser: 0(active)
-  BrowserWindowInterface* target_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -646,9 +646,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                     u"Test Group", tab_groups::TabGroupColorId::kGrey));
 
   // Target browser: 0(active)
-  BrowserWindowInterface* target_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -678,9 +678,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
           split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Target browser: 0(active)
-  BrowserWindowInterface* target_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* target_browser = CreateBrowserWindowForTesting(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 

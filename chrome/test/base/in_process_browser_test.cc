@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -72,6 +73,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -747,6 +751,22 @@ size_t InProcessBrowserTest::GetTestPreCount() {
   return count;
 }
 
+// static
+BrowserWindowInterface* InProcessBrowserTest::CreateBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params) {
+  return waap::CreateBrowserWindowAndRecordCreationSource(
+      std::move(create_params), waap::NewWindowCreationSource::kTest);
+}
+
+// static
+void InProcessBrowserTest::CreateBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params,
+    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
+  waap::CreateBrowserWindowAndRecordCreationSource(
+      std::move(create_params), waap::NewWindowCreationSource::kTest,
+      std::move(callback));
+}
+
 void InProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
   BrowserTestBase::CreatedBrowserMainParts(parts);
@@ -913,7 +933,7 @@ BrowserWindowInterface* InProcessBrowserTest::OpenURLOffTheRecord(
 // Creates a browser with a single tab (about:blank), waits for the tab to
 // finish loading and shows the browser.
 BrowserWindowInterface* InProcessBrowserTest::CreateBrowser(Profile* profile) {
-  BrowserWindowInterface* browser = CreateBrowserWindow(
+  BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
   AddBlankTabAndShow(browser);
   return browser;
@@ -926,17 +946,17 @@ BrowserWindowInterface* InProcessBrowserTest::CreateIncognitoBrowser(
     profile = browser()->GetProfile();
   }
   // Create a new browser with using the incognito profile.
-  BrowserWindowInterface* incognito = CreateBrowserWindow(
-      BrowserWindowCreateParams(profile->GetPrimaryOTRProfile(
-                                    /*create_if_needed=*/true),
-                                /*from_user_gesture=*/true));
+  BrowserWindowInterface* incognito =
+      CreateBrowserWindowForTesting(BrowserWindowCreateParams(
+          profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+          /*from_user_gesture=*/true));
   AddBlankTabAndShow(incognito);
   return incognito;
 }
 
 BrowserWindowInterface* InProcessBrowserTest::CreateBrowserForPopup(
     Profile* profile) {
-  BrowserWindowInterface* browser = CreateBrowserWindow(
+  BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(BrowserWindowInterface::TYPE_POPUP, profile,
                                 /*from_user_gesture=*/true));
   AddBlankTabAndShow(browser);
@@ -947,7 +967,7 @@ BrowserWindowInterface* InProcessBrowserTest::CreateBrowserForApp(
     const std::string& app_name,
     Profile* profile) {
   BrowserWindowInterface* browser =
-      CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+      CreateBrowserWindowForTesting(BrowserWindowCreateParams::CreateForApp(
           app_name, /*trusted_source=*/false, gfx::Rect(), profile,
           /*user_gesture=*/true));
   AddBlankTabAndShow(browser);
@@ -967,7 +987,7 @@ BrowserWindowInterface* InProcessBrowserTest::CreateGuestBrowser() {
       guest_profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Create browser and add tab.
-  BrowserWindowInterface* browser = CreateBrowserWindow(
+  BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(guest_profile_otr,
                                 /*from_user_gesture=*/true));
   AddBlankTabAndShow(browser);
@@ -977,6 +997,14 @@ BrowserWindowInterface* InProcessBrowserTest::CreateGuestBrowser() {
 
 void InProcessBrowserTest::AddBlankTabAndShow(BrowserWindowInterface* browser,
                                               bool wait_for_activation) {
+  // Fallback for tests that call `CreateBrowserWindow()` directly before
+  // showing the window via `AddBlankTabAndShow()`.
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser);
+      manager && manager->GetCreationSourceForTesting() ==
+                     waap::NewWindowCreationSource::kUnknown) {
+    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kTest,
+                                   base::TimeTicks::Now());
+  }
   content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(
       browser, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   content::TestNavigationObserver observer(blank_tab);

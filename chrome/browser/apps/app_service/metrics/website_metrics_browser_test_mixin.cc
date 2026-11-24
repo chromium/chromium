@@ -77,7 +77,7 @@ BrowserWindowInterface* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
   // Create a new browser instance. The subsequent `BrowserWindow` that was
   // created as part of this instantiation will own the browser instance.
   BrowserWindowInterface* const browser =
-      CreateBrowserWindow(std::move(params));
+      InProcessBrowserTest::CreateBrowserWindowForTesting(std::move(params));
   browser->GetWindow()->Show();
   auto* const window = browser->GetWindow()->GetNativeWindow();
   wm::GetActivationClient(window->GetRootWindow())->ActivateWindow(window);

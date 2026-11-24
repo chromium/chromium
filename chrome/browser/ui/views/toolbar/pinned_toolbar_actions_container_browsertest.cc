@@ -168,7 +168,8 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
   BrowserWindowInterface* CreateBrowser() {
     BrowserWindowCreateParams params(browser()->GetProfile(),
                                      /*from_user_gesture=*/true);
-    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+    BrowserWindowInterface* browser =
+        CreateBrowserWindowForTesting(std::move(params));
     browser->GetWindow()->Show();
     return browser;
   }
@@ -244,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanNotBeCalledFromIncognitoWindow) {
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));

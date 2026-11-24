@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), browser1);
 
   // Create a second browser window.
-  BrowserWindowInterface* const browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* const browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   ASSERT_NE(browser2, nullptr);

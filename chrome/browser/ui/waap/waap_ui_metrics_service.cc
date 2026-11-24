@@ -52,6 +52,7 @@ std::string_view CreationSourceToString(waap::NewWindowCreationSource source) {
     case waap::NewWindowCreationSource::kExtension:
       return ".Extension";
     case waap::NewWindowCreationSource::kUnknown:
+    case waap::NewWindowCreationSource::kTest:
       NOTREACHED();
   }
   NOTREACHED();
@@ -178,6 +179,12 @@ void RecordNewWindowPaintMetric(std::string_view paint_metric_base,
                                 bool with_existing_window,
                                 base::TimeTicks start_time,
                                 base::TimeTicks paint_time) {
+  if (start_time.is_null() || paint_time.is_null() ||
+      source == waap::NewWindowCreationSource::kUnknown ||
+      source == waap::NewWindowCreationSource::kTest) {
+    return;
+  }
+
   const std::string_view with_existing_window_str =
       ExistingWindowToString(with_existing_window);
 
@@ -335,11 +342,6 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowFirstPresentation(
     bool with_existing_window,
     base::TimeTicks start_time,
     base::TimeTicks paint_time) {
-  if (start_time.is_null() || paint_time.is_null() ||
-      source == waap::NewWindowCreationSource::kUnknown) {
-    return;
-  }
-
   RecordNewWindowPaintMetric("BrowserWindow.FirstPaint.FromConstructor3",
                              source, with_existing_window, start_time,
                              paint_time);
@@ -350,11 +352,6 @@ void WaapUIMetricsService::OnNewWindowReloadButtonFirstPaint(
     bool with_existing_window,
     base::TimeTicks start_time,
     base::TimeTicks paint_time) {
-  if (start_time.is_null() || paint_time.is_null() ||
-      source == waap::NewWindowCreationSource::kUnknown) {
-    return;
-  }
-
   RecordNewWindowPaintMetric("ReloadButton.FirstPaint.FromConstructor3", source,
                              with_existing_window, start_time, paint_time);
 }
@@ -364,11 +361,6 @@ void WaapUIMetricsService::OnNewWindowReloadButtonFirstContentfulPaint(
     bool with_existing_window,
     base::TimeTicks start_time,
     base::TimeTicks paint_time) {
-  if (start_time.is_null() || paint_time.is_null() ||
-      source == waap::NewWindowCreationSource::kUnknown) {
-    return;
-  }
-
   RecordNewWindowPaintMetric(
       "ReloadButton.FirstContentfulPaint.FromConstructor3", source,
       with_existing_window, start_time, paint_time);

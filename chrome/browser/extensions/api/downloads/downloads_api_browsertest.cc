@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
@@ -536,7 +537,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
       // NOTE: CreateBrowserWindow() is async and takes a callback, so use a
       // future to retrieve the value.
       base::test::TestFuture<BrowserWindowInterface*> future;
-      CreateBrowserWindow(std::move(params), future.GetCallback());
+      chrome_test_utils::CreateBrowserWindowForTesting(std::move(params),
+                                                       future.GetCallback());
       incognito_browser_ = future.Get();
       CHECK(incognito_browser_);
       // Disable file chooser for incognito profile.

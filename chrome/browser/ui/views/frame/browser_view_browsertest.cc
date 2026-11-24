@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, NewWindowInitializationIsolation) {
                                    browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
   BrowserWindowInterface* new_normal_browser =
-      CreateBrowserWindow(std::move(params));
+      CreateBrowserWindowForTesting(std::move(params));
   new_normal_browser->GetWindow()->Show();
 
   BrowserView* new_normal_view =
@@ -498,7 +498,7 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
 // Additionally when one of the tabs is destroyed NotifyNavigationStateChanged()
 // is invoked on the other.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
 // Same as CloseWithTabs, but activates the first tab, which is the first tab
 // BrowserView will destroy.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, UpdateActiveBrowser) {
 #endif
   // Create browser2 without showing it first, so browser() remains the active
   // window.
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
@@ -2470,7 +2470,7 @@ class TabAddingWidgetObserver : public views::WidgetObserver {
 // Regression test for crbug.com/456102314 crash in
 // ContentsWebView::CloneWebContentsLayer during synchronous widget destruction.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWidgetWithTabsNoCrash) {
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
@@ -2505,7 +2505,7 @@ class BrowserViewDeferLayoutTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest, DeferLayoutWhileInvisible) {
   // Create a new browser window without showing it.
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
@@ -2552,7 +2552,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest, DeferLayoutWhileInvisible) {
 
 IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
                        NoDeferLayoutOnSizeChangeWhileInvisible) {
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+  BrowserWindowInterface* browser2 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
@@ -2635,7 +2635,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
   params.in_tab_dragging = true;
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowForTesting(std::move(params));
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
   views::Widget* widget2 = browser_view2->GetWidget();
   ASSERT_FALSE(widget2->IsVisible());

@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_P(OnTaskLockedSessionWindowTrackerBrowserTest,
   size_t original_browser_count =
       GlobalBrowserCollection::GetInstance()->GetSize();
   const base::WeakPtr<BrowserWindowInterface> browser_weak_ptr =
-      CreateBrowserWindow(
+      CreateBrowserWindowForTesting(
           BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true))
           ->GetWeakPtr();
   content::RunAllTasksUntilIdle();

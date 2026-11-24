@@ -2133,7 +2133,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   // Create a new browser - without activating it - and load an "app" into it.
   BrowserWindowCreateParams params(profile(), /*from_user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kInactive;
-  BrowserWindowInterface* browser2 = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowForTesting(std::move(params));
   SetRefocusURL(shortcut_id, GURL("https://www.example.com/path/*"));
   std::string url = "https://www.example.com/path/bla";
   ui_test_utils::NavigateToURLWithDisposition(
@@ -3239,7 +3240,7 @@ class V1App {
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                        BrowserMenuGeneration) {
   EXPECT_EQ(0U, GlobalBrowserCollection::GetInstance()->GetSize());
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
 
@@ -3699,7 +3700,7 @@ class ShelfMultiProfileBrowserTest : public MixinBasedInProcessBrowserTest {
       Profile* profile,
       const std::string& title,
       const std::string& url) {
-    BrowserWindowInterface* browser = CreateBrowserWindow(
+    BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(profile, /*from_user_gesture=*/false));
     chrome::AddTabAt(browser, GURL(url), 0, /*foreground=*/true);
     browser->GetWindow()->Show();
@@ -3870,7 +3871,7 @@ IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
   item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
 
   // Check that the menu is empty before the browser window is shown.
-  BrowserWindowInterface* browser0 = CreateBrowserWindow(
+  BrowserWindowInterface* browser0 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile0(), /*from_user_gesture=*/true));
   chrome::NewTab(browser0, NewTabTypes::kNoUserAction);
   CheckAppMenu(controller_, item_browser, {});

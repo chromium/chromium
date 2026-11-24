@@ -210,7 +210,7 @@ bool BrowserNavigatorTest::OpenPOSTURLInNewForegroundTabAndGetTitle(
 BrowserWindowInterface* BrowserNavigatorTest::CreateEmptyBrowserForType(
     BrowserWindowInterface::Type type,
     Profile* profile) {
-  BrowserWindowInterface* browser = CreateBrowserWindow(
+  BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(type, profile, /*from_user_gesture=*/true));
   chrome::AddTabAt(browser, GURL(), -1, true);
   return browser;

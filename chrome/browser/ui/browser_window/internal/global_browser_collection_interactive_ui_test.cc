@@ -78,7 +78,7 @@ class GlobalBrowserCollectionTest : public TestBase {
     {
       BrowserEventWaiter browser_created_waiter(
           BrowserEventWaiter::Event::CREATED);
-      browser = CreateBrowserWindow(
+      browser = chrome_test_utils::CreateBrowserWindowForTesting(
           BrowserWindowCreateParams(*profile, /*from_user_gesture=*/true));
     }
 

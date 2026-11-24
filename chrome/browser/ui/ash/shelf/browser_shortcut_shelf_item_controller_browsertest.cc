@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   EXPECT_EQ(u"about:blank", items[0].title);
 
   // Browsers are not listed in the menu if their windows have not been shown.
-  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+  BrowserWindowInterface* browser1 = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(browser()->GetProfile(),
                                 /*from_user_gesture=*/true));
   EXPECT_FALSE(browser1->GetWindow()->IsVisible());

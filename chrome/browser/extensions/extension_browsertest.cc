@@ -912,7 +912,8 @@ BrowserWindowInterface* ExtensionBrowserTest::CreateBrowserWindowWithType(
     create_params.app_name = "app_name";
   }
   base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  chrome_test_utils::CreateBrowserWindowForTesting(std::move(create_params),
+                                                   future.GetCallback());
   return future.Get();
 }
 
@@ -923,7 +924,8 @@ BrowserWindowInterface* ExtensionBrowserTest::CreateIncognitoBrowserWindow() {
   BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
       type, *incognito_profile, /*from_user_gesture=*/false);
   base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  chrome_test_utils::CreateBrowserWindowForTesting(std::move(create_params),
+                                                   future.GetCallback());
   return future.Get();
 }
 

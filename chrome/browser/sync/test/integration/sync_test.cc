@@ -595,7 +595,7 @@ BrowserWindowInterface* SyncTest::GetBrowser(int profile_index,
 
 BrowserWindowInterface* SyncTest::AddBrowser(int profile_index) {
   Profile* profile = GetProfile(profile_index);
-  BrowserWindowInterface* browser = CreateBrowserWindow(
+  BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
   clients_[profile_index].browsers.push_back(browser);
 
@@ -723,7 +723,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   // This is needed for performance reasons, mostly to reduce flakiness due to
   // test timeouts during initialization and teardown.
   if (index == 0) {
-    BrowserWindowInterface* browser = CreateBrowserWindow(
+    BrowserWindowInterface* browser = CreateBrowserWindowForTesting(
         BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
     clients_[index].browsers.push_back(browser);
 

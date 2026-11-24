@@ -49,9 +49,10 @@ class ActorTabManagementToolBrowserTest : public ActorToolsTest {
     Profile* incognito_profile =
         GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     TestFuture<BrowserWindowInterface*> future;
-    CreateBrowserWindow(BrowserWindowCreateParams(*incognito_profile,
-                                                  /*from_user_gesture=*/true),
-                        future.GetCallback());
+    CreateBrowserWindowForTesting(
+        BrowserWindowCreateParams(*incognito_profile,
+                                  /*from_user_gesture=*/true),
+        future.GetCallback());
     BrowserWindowInterface* incognito_browser = future.Get();
     CHECK(incognito_browser);
     TabListInterface* incognito_tab_list =

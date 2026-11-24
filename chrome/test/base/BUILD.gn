@@ -105,10 +105,14 @@ source_set("chrome_test_utils") {
   ]
   public_deps = [
     ":chrome_test_path_utils",
+    "//base",
     "//components/tabs:public",
     "//content/public/browser",
   ]
-  deps = [ "//content/test:test_support" ]
+  deps = [
+    "//chrome/browser/ui/browser_window:create_browser_window",
+    "//content/test:test_support",
+  ]
   if (is_android) {
     # TODO(crbug.com/353332589): Remove once android_browser_test.cc no longer
     # includes chrome_test_utils.h, or the android_browser_test functions it
@@ -910,6 +914,9 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/tabs:tab",
       "//chrome/browser/ui/views/toolbar:test_support",
+      "//chrome/browser/ui/waap:waap_utils",
+      "//chrome/browser/ui/waap:window_creation",
+      "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/common",
       "//chrome/renderer",
@@ -1354,12 +1361,16 @@ if (!is_android) {
       ":web_ui_mocha_browser_test",
       ":web_ui_test_support",
       "//base",
+      "//base/test:test_support",
       "//chrome/browser:after_startup_task_utils",
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/waap:waap_utils",
+      "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/common",
       "//content/public/browser",
       "//content/test:test_support",

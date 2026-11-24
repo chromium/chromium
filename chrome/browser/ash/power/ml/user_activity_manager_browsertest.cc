@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(UserActivityManagerBrowserTest, Incognito) {
 }
 
 IN_PROC_BROWSER_TEST_F(UserActivityManagerBrowserTest, NoOpenTabs) {
-  BrowserWindowInterface* const empty_browser = CreateBrowserWindow(
+  BrowserWindowInterface* const empty_browser = CreateBrowserWindowForTesting(
       BrowserWindowCreateParams(GetProfile(),
                                 /*from_user_gesture=*/false));
   empty_browser->GetWindow()->Show();

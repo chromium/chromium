@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WAAP_WINDOW_CREATION_H_
 #define CHROME_BROWSER_UI_WAAP_WINDOW_CREATION_H_
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 
@@ -18,6 +19,15 @@ namespace waap {
 BrowserWindowInterface* CreateBrowserWindowAndRecordCreationSource(
     BrowserWindowCreateParams create_params,
     NewWindowCreationSource creation_source);
+
+// Asynchronous overload of `CreateBrowserWindowAndRecordCreationSource()` that
+// forwards `create_params` to the callback-based `CreateBrowserWindow()`,
+// records `creation_source` and the pre-creation timestamp on the window's
+// `InitialWebUIWindowMetricsManager` (if present), and invokes `callback`.
+void CreateBrowserWindowAndRecordCreationSource(
+    BrowserWindowCreateParams create_params,
+    NewWindowCreationSource creation_source,
+    base::OnceCallback<void(BrowserWindowInterface*)> callback);
 
 }  // namespace waap
 
