@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SessionHeader;
@@ -50,7 +52,12 @@ import java.util.Map;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Manages sign-in state, which is global.")
 public class OpenTabsTest {
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String OPEN_TABS_TYPE = "Sessions";
 
@@ -95,6 +102,7 @@ public class OpenTabsTest {
 
     @Before
     public void setUp() throws Exception {
+        mCtaTestRule.startOnBlankPage();
         mSyncTestRule.setUpAccountAndEnableHistorySync();
         mClientName = getClientName();
         mSessionTagCounter = 0;
@@ -106,7 +114,7 @@ public class OpenTabsTest {
     @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testUploadOpenTab() {
-        mSyncTestRule.loadUrl(URL);
+        mCtaTestRule.loadUrl(URL);
         waitForLocalTabsForClient(mClientName, URL);
         waitForServerTabs(URL);
     }
@@ -117,9 +125,9 @@ public class OpenTabsTest {
     @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testUploadMultipleOpenTabs() {
-        mSyncTestRule.loadUrl(URL);
-        mSyncTestRule.loadUrlInNewTab(URL2);
-        mSyncTestRule.loadUrlInNewTab(URL3);
+        mCtaTestRule.loadUrl(URL);
+        mCtaTestRule.loadUrlInNewTab(URL2);
+        mCtaTestRule.loadUrlInNewTab(URL3);
         waitForLocalTabsForClient(mClientName, URL, URL2, URL3);
         waitForServerTabs(URL, URL2, URL3);
     }
@@ -130,16 +138,16 @@ public class OpenTabsTest {
     @CommandLineFlags.Add({"sync-short-nudge-delay-for-test"})
     @Feature({"Sync"})
     public void testUploadAndCloseOpenTab() {
-        mSyncTestRule.loadUrl(URL);
+        mCtaTestRule.loadUrl(URL);
         // Can't have zero tabs, so we have to open two to test closing one.
-        mSyncTestRule.loadUrlInNewTab(URL2);
+        mCtaTestRule.loadUrlInNewTab(URL2);
         waitForLocalTabsForClient(mClientName, URL, URL2);
         waitForServerTabs(URL, URL2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model =
-                            mSyncTestRule.getActivity().getTabModelSelector().getCurrentModel();
+                            mCtaTestRule.getActivity().getTabModelSelector().getCurrentModel();
                     Tab tab = TabModelUtils.getCurrentTab(model);
                     Assert.assertNotNull(tab);
                     model.getTabRemover()

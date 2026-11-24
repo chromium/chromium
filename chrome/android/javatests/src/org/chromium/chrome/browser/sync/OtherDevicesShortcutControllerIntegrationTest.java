@@ -43,7 +43,9 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfShareTargetActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -75,7 +77,12 @@ import java.util.stream.Collectors;
 @MinAndroidSdkLevel(VERSION_CODES.R)
 @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS)
 public class OtherDevicesShortcutControllerIntegrationTest {
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String REMOTE_GUID = "remote_guid_12345";
     private static final String REMOTE_NAME = "Remote Laptop";
@@ -84,6 +91,7 @@ public class OtherDevicesShortcutControllerIntegrationTest {
 
     @Before
     public void setUp() {
+        mCtaTestRule.startOnBlankPage();
         mSyncTestRule.setUpAccountAndEnableHistorySync();
         mShortcutManager =
                 ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
@@ -419,14 +427,14 @@ public class OtherDevicesShortcutControllerIntegrationTest {
                 () -> {
                     Tab tab =
                             ThreadUtils.runOnUiThreadBlocking(
-                                    () -> mSyncTestRule.getActivity().getActivityTab());
+                                    () -> mCtaTestRule.getActivity().getActivityTab());
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     String url = ChromeTabUtils.getUrlStringOnUiThread(tab);
                     Criteria.checkThat(url, Matchers.is(expectedUrl));
                 });
 
         // Clean up: close the created "Recent Tabs" tab.
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
         ChromeTriggers.closeCurrentTabTo(activity)
                 .waitFor(new TabClosingCondition(activity::getCurrentTabModel));
     }

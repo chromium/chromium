@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.PageTransition;
@@ -35,12 +37,18 @@ import org.chromium.ui.base.PageTransition;
 // ignore the Sync setting we are verifying.
 
 public class UkmTest {
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String DEBUG_PAGE = "chrome://ukm/";
 
     @Before
     public void setUp() {
+        mCtaTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> UmaSessionStats.initMetricsAndCrashReportingForTesting());
     }
@@ -52,7 +60,7 @@ public class UkmTest {
     }
 
     public void enableUkmUi(Tab normalTab) throws Exception {
-        mSyncTestRule.loadUrlInTab(
+        mCtaTestRule.loadUrlInTab(
                 "chrome://chrome-urls/",
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 normalTab);
@@ -66,7 +74,7 @@ public class UkmTest {
     }
 
     public String getElementContent(Tab normalTab, String elementId) throws Exception {
-        mSyncTestRule.loadUrlInTab(
+        mCtaTestRule.loadUrlInTab(
                 DEBUG_PAGE, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, normalTab);
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 normalTab.getWebContents(),
@@ -99,7 +107,7 @@ public class UkmTest {
                     Assert.assertFalse("Advanced reporting enabled:", advancedReportingEnabled);
                 });
 
-        Tab normalTab = mSyncTestRule.getActivityTab();
+        Tab normalTab = mCtaTestRule.getActivityTab();
         enableUkmUi(normalTab);
         Assert.assertFalse("UKM Enabled:", isUkmEnabled(normalTab));
     }
@@ -113,7 +121,7 @@ public class UkmTest {
 
         // Sign in and set up sync and MSBB.
         mSyncTestRule.setUpAccountAndEnableHistorySync();
-        Tab normalTab = mSyncTestRule.getActivityTab();
+        Tab normalTab = mCtaTestRule.getActivityTab();
         enableUkmUi(normalTab);
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
 
@@ -142,7 +150,7 @@ public class UkmTest {
 
         // Sign in and set up sync.
         mSyncTestRule.setUpAccountAndEnableHistorySync();
-        Tab normalTab = mSyncTestRule.getActivityTab();
+        Tab normalTab = mCtaTestRule.getActivityTab();
         enableUkmUi(normalTab);
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
 

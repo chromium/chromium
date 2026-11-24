@@ -26,6 +26,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ExplicitPassphrasePlatformClient;
 import org.chromium.components.sync.SyncService;
@@ -45,12 +47,18 @@ import org.chromium.components.sync.SyncService;
 public class ExplicitPassphrasePlatformClientTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public final SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule(order = 0)
+    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock ExplicitPassphrasePlatformClient mExplicitPassphrasePlatformClient;
 
     @Before
     public void setUp() {
+        mCtaTestRule.startOnBlankPage();
         ServiceLoaderUtil.setInstanceForTesting(
                 ExplicitPassphrasePlatformClient.class, mExplicitPassphrasePlatformClient);
     }
