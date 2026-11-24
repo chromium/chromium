@@ -522,17 +522,9 @@ void BaseRenderingContext2D::CreateSharedImagePool(
 
   std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
   if (!is_accelerated_) {
-    // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
-    // image usage flag here since mailbox will be used for CPU writes by
-    // the client. But doing that stops us from using CompoundImagebacking
-    // as many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
-    // TODO(https://crbug.com/40280504): Add that usage flag back here once
-    // the issue is resolved.
     buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-    if (base::FeatureList::IsEnabled(kAppendCpuUsages)) {
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CPU_READ |
-                                  gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
-    }
+    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CPU_READ |
+                                gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
   }
 
   gpu::ImageInfo image_info(size, format, shared_image_usage_flags,

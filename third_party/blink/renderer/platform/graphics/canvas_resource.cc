@@ -43,8 +43,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kAppendCpuUsages, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, unused resources (ready to be recycled) are reclaimed after a
 // delay.
 BASE_FEATURE(kCanvas2DReclaimUnusedResources,
