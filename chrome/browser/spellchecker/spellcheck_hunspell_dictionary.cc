@@ -304,6 +304,7 @@ void SpellcheckHunspellDictionary::DownloadDictionary(GURL url) {
             "The spell checking language identifier. No user identifier is "
             "sent."
           destination: GOOGLE_OWNED_SERVICE
+          static_content: true
         }
         policy {
           cookies_allowed: NO
