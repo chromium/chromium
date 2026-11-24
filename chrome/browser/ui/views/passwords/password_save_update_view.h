@@ -78,10 +78,12 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   views::MdTextButton* GetCancelButtonForTesting() const;
 
  private:
+  // Resource IDs for the strings shown when password saving is blocked by a
+  // recoverable store error.
   struct ErrorResolutionUiStrings {
-    int subtitle_message_id;
-    int footer_text_message_id;
-    int footer_link_message_id;
+    int subtitle_message_id = 0;
+    int footer_text_message_id = 0;
+    int footer_link_message_id = 0;
   };
 
   ~PasswordSaveUpdateView() override;
@@ -105,7 +107,9 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   void AddedToWidget() override;
 
   bool IsSaveBubbleDropdownExperimentEnabled() const;
-  bool IsErrorResolutionEnabled() const;
+  // Returns the UI strings for the in-context error resolution prompt when
+  // saving is blocked by a recoverable store error whose feature is enabled,
+  // or `std::nullopt` otherwise.
   std::optional<ErrorResolutionUiStrings> GetErrorResolutionUiStrings() const;
   void UpdateUsernameAndPasswordInModel();
   void UpdateBubbleUIElements();

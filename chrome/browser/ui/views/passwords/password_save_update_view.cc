@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
@@ -498,16 +499,8 @@ bool PasswordSaveUpdateView::IsSaveBubbleDropdownExperimentEnabled() const {
              features::kPasswordSaveUpdateDropdownMenuExperiment);
 }
 
-bool PasswordSaveUpdateView::IsErrorResolutionEnabled() const {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordSaveInContextErrorResolution);
-}
-
 std::optional<PasswordSaveUpdateView::ErrorResolutionUiStrings>
 PasswordSaveUpdateView::GetErrorResolutionUiStrings() const {
-  if (!IsErrorResolutionEnabled()) {
-    return std::nullopt;
-  }
   const std::optional<password_manager::ActionableError> error =
       controller_.GetRecoverableErrorBlockingSaving();
   if (!error.has_value()) {
@@ -515,6 +508,16 @@ PasswordSaveUpdateView::GetErrorResolutionUiStrings() const {
   }
   switch (*error) {
     case password_manager::ActionableError::kTrustedVaultKeyNeeded:
+    case password_manager::ActionableError::kNeedsPassphrase: {
+      const base::Feature& required_feature =
+          *error == password_manager::ActionableError::kTrustedVaultKeyNeeded
+              ? password_manager::features::
+                    kPasswordSaveInContextErrorResolution
+              : password_manager::features::
+                    kPasswordSaveInContextPassphraseErrorResolution;
+      if (!base::FeatureList::IsEnabled(required_feature)) {
+        return std::nullopt;
+      }
       return ErrorResolutionUiStrings{
           .subtitle_message_id =
               IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR,
@@ -523,12 +526,12 @@ PasswordSaveUpdateView::GetErrorResolutionUiStrings() const {
           .footer_link_message_id =
               IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
       };
+    }
     case password_manager::ActionableError::kNoError:
     case password_manager::ActionableError::kInactionable:
     case password_manager::ActionableError::kInactionableTemporaryError:
     case password_manager::ActionableError::kSignInNeeded:
     case password_manager::ActionableError::kKeychainError:
-    case password_manager::ActionableError::kNeedsPassphrase:
       return std::nullopt;
   }
 }

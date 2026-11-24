@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -24,15 +25,20 @@
 #include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/navigation_simulator.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
@@ -644,6 +650,50 @@ TEST_P(PasswordSaveUpdateViewTest, TrustedVaultErrorUiState) {
   ASSERT_TRUE(view()->GetFootnoteViewForTesting());
 }
 
+TEST_P(PasswordSaveUpdateViewTest,
+       PassphraseErrorDisabledWhenOnlyTrustedVaultFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kPasswordSaveInContextErrorResolution},
+      /*disabled_features=*/
+      {password_manager::features::
+           kPasswordSaveInContextPassphraseErrorResolution});
+  SimulateSignIn();
+  ON_CALL(*model_delegate_mock(), GetRecoverableErrorBlockingSaving)
+      .WillByDefault(
+          Return(password_manager::ActionableError::kNeedsPassphrase));
+
+  CreateViewAndShow();
+
+  EXPECT_EQ(view()->GetSubtitle(), std::u16string());
+  views::MdTextButton* ok_button = view()->GetOkButtonForTesting();
+  ASSERT_TRUE(ok_button);
+  EXPECT_EQ(ok_button->GetText(), SaveButtonCaption());
+}
+
+TEST_P(PasswordSaveUpdateViewTest,
+       TrustedVaultErrorDisabledWhenOnlyPassphraseFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::
+           kPasswordSaveInContextPassphraseErrorResolution},
+      /*disabled_features=*/{
+          password_manager::features::kPasswordSaveInContextErrorResolution});
+  SimulateSignIn();
+  ON_CALL(*model_delegate_mock(), GetRecoverableErrorBlockingSaving)
+      .WillByDefault(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+  CreateViewAndShow();
+
+  EXPECT_EQ(view()->GetSubtitle(), std::u16string());
+  views::MdTextButton* ok_button = view()->GetOkButtonForTesting();
+  ASSERT_TRUE(ok_button);
+  EXPECT_EQ(ok_button->GetText(), SaveButtonCaption());
+}
+
 // These tests are parameterized to run in the original two-button layout,
 // and the newer three-button variant. Three-button is now the default, but
 // the original version still runs for a small percentage of users, so maintain
@@ -659,5 +709,128 @@ INSTANTIATE_TEST_SUITE_P(
           return "TwoButton";
         case PasswordSaveUpdateViewTestVariant::kThreeButton:
           return "ThreeButton";
+      }
+    });
+
+enum class PasswordSaveUpdateViewPassphraseTestVariant {
+  kTwoButton,
+  kThreeButton,
+  kDropdownExperiment,
+};
+
+class PasswordSaveUpdateViewPassphraseErrorTest
+    : public PasswordSaveUpdateViewFixtureBase,
+      public testing::WithParamInterface<
+          PasswordSaveUpdateViewPassphraseTestVariant> {
+ public:
+  PasswordSaveUpdateViewPassphraseErrorTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        password_manager::features::
+            kPasswordSaveInContextPassphraseErrorResolution};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        password_manager::features::kPasswordSaveInContextErrorResolution};
+    switch (GetParam()) {
+      case PasswordSaveUpdateViewPassphraseTestVariant::kTwoButton:
+        disabled_features.push_back(features::kThreeButtonPasswordSaveDialog);
+        disabled_features.push_back(
+            features::kPasswordSaveUpdateDropdownMenuExperiment);
+        break;
+      case PasswordSaveUpdateViewPassphraseTestVariant::kThreeButton:
+        enabled_features.push_back(features::kThreeButtonPasswordSaveDialog);
+        disabled_features.push_back(
+            features::kPasswordSaveUpdateDropdownMenuExperiment);
+        break;
+      case PasswordSaveUpdateViewPassphraseTestVariant::kDropdownExperiment:
+        enabled_features.push_back(
+            features::kPasswordSaveUpdateDropdownMenuExperiment);
+        disabled_features.push_back(features::kThreeButtonPasswordSaveDialog);
+        break;
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile()), "test@email.com",
+        signin::ConsentLevel::kSignin);
+    ON_CALL(*model_delegate_mock(), GetRecoverableErrorBlockingSaving)
+        .WillByDefault(
+            Return(password_manager::ActionableError::kNeedsPassphrase));
+  }
+
+  ~PasswordSaveUpdateViewPassphraseErrorTest() override = default;
+
+ protected:
+  void ExpectErrorResolutionUiState() {
+    EXPECT_EQ(view()->GetSubtitle(),
+              l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR));
+    views::MdTextButton* ok_button = view()->GetOkButtonForTesting();
+    ASSERT_TRUE(ok_button);
+    EXPECT_EQ(ok_button->GetText(), l10n_util::GetStringUTF16(IDS_CONTINUE));
+    views::StyledLabel* footer_label = views::AsViewClass<views::StyledLabel>(
+        view()->GetFootnoteViewForTesting());
+    ASSERT_TRUE(footer_label);
+    EXPECT_EQ(
+        footer_label->GetText(),
+        l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_BUBBLES_FOOTER_TRUSTED_VAULT_ERROR,
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
+            u"test@email.com"));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(PasswordSaveUpdateViewPassphraseErrorTest, PassphraseErrorUiState) {
+  CreateViewAndShow();
+  ExpectErrorResolutionUiState();
+}
+
+TEST_P(PasswordSaveUpdateViewPassphraseErrorTest,
+       PassphraseErrorUpdateUiState) {
+  ON_CALL(*model_delegate_mock(), GetState)
+      .WillByDefault(
+          Return(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE));
+
+  CreateViewAndShow();
+  ExpectErrorResolutionUiState();
+}
+
+TEST_P(PasswordSaveUpdateViewPassphraseErrorTest,
+       PassphraseErrorAcceptTriggersErrorResolution) {
+  pending_password_.username_value = u"user";
+  pending_password_.password_value =
+      password_manager::PasswordString(u"password");
+
+  CreateViewAndShow();
+
+  testing::InSequence sequence;
+  EXPECT_CALL(*model_delegate_mock(), SavePasswordAfterErrorResolution(
+                                          pending_password_.username_value,
+                                          pending_password_.password_value));
+  EXPECT_CALL(*model_delegate_mock(),
+              StartErrorResolutionFlow(
+                  password_manager::ActionableError::kNeedsPassphrase));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      view()->GetOkButtonForTesting());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordSaveUpdateViewPassphraseErrorTest,
+    testing::Values(
+        PasswordSaveUpdateViewPassphraseTestVariant::kTwoButton,
+        PasswordSaveUpdateViewPassphraseTestVariant::kThreeButton,
+        PasswordSaveUpdateViewPassphraseTestVariant::kDropdownExperiment),
+    [](const testing::TestParamInfo<
+        PasswordSaveUpdateViewPassphraseTestVariant>& info) {
+      switch (info.param) {
+        case PasswordSaveUpdateViewPassphraseTestVariant::kTwoButton:
+          return "TwoButton";
+        case PasswordSaveUpdateViewPassphraseTestVariant::kThreeButton:
+          return "ThreeButton";
+        case PasswordSaveUpdateViewPassphraseTestVariant::kDropdownExperiment:
+          return "DropdownExperiment";
       }
     });

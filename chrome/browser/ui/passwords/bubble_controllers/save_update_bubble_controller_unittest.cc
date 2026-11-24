@@ -950,3 +950,37 @@ TEST_F(SaveUpdateBubbleControllerTest,
       static_cast<int>(password_manager::metrics_util::CLICKED_RESOLVE_ERROR),
       1);
 }
+
+TEST_F(SaveUpdateBubbleControllerTest,
+       OnErrorResolutionClicked_PassphraseError) {
+  PretendPasswordWaiting();
+  testing::InSequence sequence;
+  EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
+                               pending_password().username_value,
+                               pending_password().password_value));
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
+      .WillOnce(Return(password_manager::ActionableError::kNeedsPassphrase));
+  EXPECT_CALL(*delegate(),
+              StartErrorResolutionFlow(
+                  password_manager::ActionableError::kNeedsPassphrase));
+  controller()->OnErrorResolutionClicked();
+}
+
+TEST_F(SaveUpdateBubbleControllerTest,
+       LogSaveUIDismissalReasonWhenBlockedByPassphraseError) {
+  base::HistogramTester histogram_tester;
+  PretendPasswordWaiting();
+  EXPECT_CALL(*delegate(), GetRecoverableErrorBlockingSaving())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kNeedsPassphrase));
+  EXPECT_CALL(*mock_smart_bubble_stats_store(), AddSiteStats).Times(0);
+  EXPECT_CALL(*delegate(), OnNoInteraction()).Times(0);
+
+  controller()->OnErrorResolutionClicked();
+  DestroyModelAndVerifyControllerExpectations();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.PassphraseRequiredError",
+      static_cast<int>(password_manager::metrics_util::CLICKED_RESOLVE_ERROR),
+      1);
+}

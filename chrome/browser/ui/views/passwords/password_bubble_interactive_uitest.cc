@@ -4,10 +4,15 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -24,14 +29,20 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
+#include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -47,28 +58,50 @@
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/affiliations/core/browser/match_type.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/form_saver_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/sync/test/test_sync_user_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -81,8 +114,12 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_client_view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 using base::Bucket;
 using net::test_server::BasicHttpResponse;
@@ -1783,3 +1820,344 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          kThreeButtonSaveDialog,
                                          kDropdownMenuExperiment),
                          GetPasswordBubbleSaveUiInteractiveUiTestName);
+
+namespace {
+
+constexpr char kSyncPassphrase[] = "correct-passphrase";
+constexpr char16_t kSyncPassphrase16[] = u"correct-passphrase";
+constexpr char kBubbleOkButtonName[] = "PasswordBubbleOkButton";
+constexpr char kPassphraseTextfieldName[] = "SyncPassphraseTextfield";
+
+}  // namespace
+
+// Interactive UI test fixture covering in-context custom passphrase error
+// recovery from the password save and update bubbles through
+// `SyncPassphraseDialog` to automatic credential saving.
+class PasswordBubblePassphraseErrorRecoveryInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTestBase {
+ public:
+  PasswordBubblePassphraseErrorRecoveryInteractiveUiTest() {
+    InitializeFeatures(
+        /*enabled_features=*/
+        {{password_manager::features::
+              kPasswordSaveInContextPassphraseErrorResolution,
+          {}}},
+        /*disabled_features=*/
+        {password_manager::features::kPasswordSaveInContextErrorResolution});
+  }
+
+  ~PasswordBubblePassphraseErrorRecoveryInteractiveUiTest() override = default;
+
+ protected:
+  syncer::TestSyncService* GetSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+  }
+
+  password_manager::TestPasswordStore* GetProfilePasswordStore() {
+    return static_cast<password_manager::TestPasswordStore*>(
+        ProfilePasswordStoreFactory::GetForProfile(
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS)
+            .get());
+  }
+
+  // Configures a signed-in account-storage user whose `SyncService` and
+  // password stores require a custom passphrase.
+  void SetUpPassphraseErrorState() {
+    ConfigurePasswordSync(SyncConfiguration::kAccountStorageOnly);
+    GetSyncService()->GetUserSettings()->SetPassphraseRequired(kSyncPassphrase);
+    GetProfilePasswordStore()->SetError(
+        password_manager::ActionableError::kNeedsPassphrase);
+    GetAccountPasswordStore()->SetError(
+        password_manager::ActionableError::kNeedsPassphrase);
+    GetProfilePasswordStore()->NotifyAboutError();
+    GetAccountPasswordStore()->NotifyAboutError();
+    PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
+  }
+
+  // Builds a `PasswordFormManager` wired to the active tab's
+  // `ChromePasswordManagerClient` and both `TestPasswordStore`s so store
+  // routing, `IdentityManager`, and `SyncService` match production behavior.
+  std::unique_ptr<password_manager::PasswordFormManager>
+  CreateFormManagerWithTabClient(
+      const std::vector<PasswordForm>& existing_matches,
+      std::u16string_view submitted_password) {
+    content::WebContents* web_contents =
+        browser()->GetTabStripModel()->GetActiveWebContents();
+    ChromePasswordManagerClient* client =
+        ChromePasswordManagerClient::FromWebContents(web_contents);
+    CHECK(client);
+    password_manager::ContentPasswordManagerDriver* driver =
+        password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+            web_contents->GetPrimaryMainFrame());
+    CHECK(driver);
+
+    autofill::FormData observed_form;
+    observed_form.set_url(test_form()->url);
+    observed_form.set_action(test_form()->url);
+    observed_form.set_renderer_id(autofill::FormRendererId(1));
+
+    autofill::FormFieldData username_field;
+    username_field.set_name(u"username");
+    username_field.set_id_attribute(u"username");
+    username_field.set_name_attribute(u"username");
+    username_field.set_form_control_type(autofill::FormControlType::kInputText);
+    username_field.set_renderer_id(autofill::FieldRendererId(1));
+    test_api(observed_form).Append(username_field);
+
+    autofill::FormFieldData password_field;
+    password_field.set_name(u"password");
+    password_field.set_id_attribute(u"password");
+    password_field.set_name_attribute(u"password");
+    password_field.set_form_control_type(
+        autofill::FormControlType::kInputPassword);
+    password_field.set_renderer_id(autofill::FieldRendererId(2));
+    test_api(observed_form).Append(password_field);
+
+    fetcher_.Fetch();
+    auto form_manager = std::make_unique<password_manager::PasswordFormManager>(
+        client, driver->AsWeakPtr(), observed_form, &fetcher_,
+        std::make_unique<password_manager::PasswordSaveManagerImpl>(
+            std::make_unique<password_manager::FormSaverImpl>(
+                GetProfilePasswordStore()),
+            std::make_unique<password_manager::FormSaverImpl>(
+                GetAccountPasswordStore())),
+        /*metrics_recorder=*/nullptr);
+
+    fetcher_.SetNonFederated(existing_matches);
+    fetcher_.SetBestMatches(existing_matches);
+    fetcher_.NotifyFetchCompleted();
+
+    autofill::FormData submitted_form = observed_form;
+    test_api(submitted_form).field(0).set_value(test_form()->username_value);
+    test_api(submitted_form)
+        .field(1)
+        .set_value(std::u16string(submitted_password));
+    CHECK(form_manager->ProvisionallySave(
+        submitted_form, driver,
+        base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
+                       password_manager::PossibleUsernameData>(
+            /*max_size=*/2)));
+    return form_manager;
+  }
+
+  // Simulates `PasswordStoreBuiltInBackend` clearing `kNeedsPassphrase` once
+  // `SyncPassphraseDialog` has decrypted `TestSyncService`.
+  void NotifyStoresPassphraseErrorResolved() {
+    ASSERT_FALSE(GetSyncService()->GetUserSettings()->IsPassphraseRequired());
+    GetProfilePasswordStore()->SetError(
+        password_manager::ActionableError::kNoError);
+    GetAccountPasswordStore()->SetError(
+        password_manager::ActionableError::kNoError);
+    GetProfilePasswordStore()->NotifyAboutError();
+    GetAccountPasswordStore()->NotifyAboutError();
+    PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
+  }
+
+  MultiStep NameBubbleOkButton() {
+    return Steps(NameViewRelative(
+        PasswordSaveUpdateView::kPasswordBubbleElementId, kBubbleOkButtonName,
+        [](views::View* bubble_frame) -> views::View* {
+          auto* save_update_view = views::AsViewClass<PasswordSaveUpdateView>(
+              PasswordBubbleViewBase::manage_password_bubble());
+          CHECK(save_update_view);
+          CHECK_EQ(bubble_frame->GetWidget(), save_update_view->GetWidget());
+          return save_update_view->GetOkButtonForTesting();
+        }));
+  }
+
+  MultiStep EnterPassphraseText(std::u16string_view text) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWaitForPassphraseTextEvent);
+    return Steps(EnterText(kPassphraseTextfieldName, std::u16string(text)),
+                 WaitForViewPropertyCallback(
+                     kPassphraseTextfieldName, &views::Textfield::GetText,
+                     &views::Textfield::AddTextChangedCallback, text,
+                     kWaitForPassphraseTextEvent));
+  }
+
+  MultiStep VerifyPassphraseErrorBubbleUi() {
+    return Steps(Do([this]() {
+      auto* save_update_view = views::AsViewClass<PasswordSaveUpdateView>(
+          PasswordBubbleViewBase::manage_password_bubble());
+      ASSERT_TRUE(save_update_view);
+      EXPECT_EQ(save_update_view->GetSubtitle(),
+                l10n_util::GetStringUTF16(
+                    IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR));
+      views::MdTextButton* ok_button =
+          save_update_view->GetOkButtonForTesting();
+      ASSERT_TRUE(ok_button);
+      EXPECT_EQ(ok_button->GetText(), l10n_util::GetStringUTF16(IDS_CONTINUE));
+      views::StyledLabel* footer_label = views::AsViewClass<views::StyledLabel>(
+          save_update_view->GetFootnoteViewForTesting());
+      ASSERT_TRUE(footer_label);
+      const std::string primary_email =
+          IdentityManagerFactory::GetForProfile(browser()->GetProfile())
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email;
+      ASSERT_FALSE(primary_email.empty());
+      EXPECT_EQ(
+          footer_label->GetText(),
+          l10n_util::GetStringFUTF16(
+              IDS_PASSWORD_BUBBLES_FOOTER_TRUSTED_VAULT_ERROR,
+              l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
+              base::UTF8ToUTF16(primary_email)));
+    }));
+  }
+
+  MultiStep ClickContinueToPassphraseDialog() {
+    return Steps(NameBubbleOkButton(), PressButton(kBubbleOkButtonName),
+                 WaitForHide(PasswordSaveUpdateView::kPasswordBubbleElementId),
+                 WaitForShow(kSyncPassphraseOkButtonFieldId));
+  }
+
+  MultiStep SubmitPassphrase(std::u16string_view passphrase) {
+    return Steps(NameDescendantViewByType<views::Textfield>(
+                     kSyncPassphrasePasswordFieldId, kPassphraseTextfieldName),
+                 EnterPassphraseText(passphrase),
+                 WaitForViewProperty(kSyncPassphraseOkButtonFieldId,
+                                     views::View, Enabled, true),
+                 PressButton(kSyncPassphraseOkButtonFieldId));
+  }
+
+ private:
+  password_manager::FakeFormFetcher fetcher_;
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordBubblePassphraseErrorRecoveryInteractiveUiTest,
+                       SavePasswordRecoveredAfterPassphraseEntryWithRetry) {
+  SetUpPassphraseErrorState();
+  GetController()->OnPasswordSubmitted(CreateFormManagerWithTabClient(
+      /*existing_matches=*/{}, u"new_password"));
+
+  RunTestSequence(
+      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      CheckResult([this]() { return GetController()->GetState(); },
+                  password_manager::ui::PENDING_PASSWORD_STATE),
+      VerifyPassphraseErrorBubbleUi(), ClickContinueToPassphraseDialog(),
+      CheckHistogramUniqueSample(
+          "PasswordManager.SaveUIDismissalReason.PassphraseRequiredError",
+          password_manager::metrics_util::CLICKED_RESOLVE_ERROR, 1),
+      WaitForViewProperty(kSyncPassphraseOkButtonFieldId, views::View, Enabled,
+                          false));
+
+  PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
+  EXPECT_TRUE(
+      password_manager::GetAllLoginsSync(GetProfilePasswordStore()).empty());
+  EXPECT_TRUE(
+      password_manager::GetAllLoginsSync(GetAccountPasswordStore()).empty());
+
+  // Submit a wrong passphrase first: the dialog stays open, clears the input,
+  // and does not save the password yet.
+  constexpr char16_t kWrongSyncPassphrase16[] = u"wrong-passphrase";
+  RunTestSequence(SubmitPassphrase(kWrongSyncPassphrase16),
+                  WaitForViewProperty(kPassphraseTextfieldName,
+                                      views::Textfield, Text, std::u16string()),
+                  WaitForViewProperty(kSyncPassphraseOkButtonFieldId,
+                                      views::View, Enabled, false),
+                  EnsurePresent(kSyncPassphrasePasswordFieldId));
+
+  EXPECT_TRUE(GetSyncService()->GetUserSettings()->IsPassphraseRequired());
+  PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
+  EXPECT_TRUE(
+      password_manager::GetAllLoginsSync(GetAccountPasswordStore()).empty());
+
+  // Submit the valid passphrase: `SyncPassphraseDialog` closes and clearing
+  // the store error automatically saves the pending password.
+  RunTestSequence(SubmitPassphrase(kSyncPassphrase16),
+                  WaitForHide(kSyncPassphraseOkButtonFieldId));
+
+  NotifyStoresPassphraseErrorResolved();
+  const password_manager::TestPasswordStore::PasswordMap account_logins =
+      password_manager::GetAllLoginsSync(GetAccountPasswordStore());
+  const auto realm_it = account_logins.find(test_form()->signon_realm);
+  ASSERT_NE(realm_it, account_logins.end());
+  ASSERT_EQ(realm_it->second.size(), 1u);
+  EXPECT_EQ(realm_it->second[0].username_value, test_form()->username_value);
+  EXPECT_EQ(realm_it->second[0].password_value.value(), u"new_password");
+  EXPECT_TRUE(
+      password_manager::GetAllLoginsSync(GetProfilePasswordStore()).empty());
+  EXPECT_EQ(GetController()->GetState(), password_manager::ui::MANAGE_STATE);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubblePassphraseErrorRecoveryInteractiveUiTest,
+                       CancelingPassphraseDialogDoesNotSavePendingPassword) {
+  SetUpPassphraseErrorState();
+  GetController()->OnPasswordSubmitted(CreateFormManagerWithTabClient(
+      /*existing_matches=*/{}, u"new_password"));
+
+  constexpr char kPassphraseCancelButtonName[] = "SyncPassphraseCancelButton";
+  RunTestSequence(WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
+                  ClickContinueToPassphraseDialog(),
+                  NameViewRelative(kSyncPassphraseOkButtonFieldId,
+                                   kPassphraseCancelButtonName,
+                                   [](views::View* ok_button) -> views::View* {
+                                     return ok_button->GetWidget()
+                                         ->widget_delegate()
+                                         ->AsDialogDelegate()
+                                         ->GetCancelButton();
+                                   }),
+                  PressButton(kPassphraseCancelButtonName),
+                  WaitForHide(kSyncPassphraseOkButtonFieldId));
+
+  EXPECT_TRUE(GetSyncService()->GetUserSettings()->IsPassphraseRequired());
+  PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
+  EXPECT_TRUE(
+      password_manager::GetAllLoginsSync(GetProfilePasswordStore()).empty());
+  EXPECT_TRUE(
+      password_manager::GetAllLoginsSync(GetAccountPasswordStore()).empty());
+  EXPECT_EQ(GetController()->GetState(),
+            password_manager::ui::PENDING_PASSWORD_STATE);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubblePassphraseErrorRecoveryInteractiveUiTest,
+                       UpdatePasswordRecoveredAfterPassphraseEntry) {
+  PasswordForm existing_form = *test_form();
+  existing_form.password_value = PasswordString(u"old_password");
+  existing_form.scheme = PasswordForm::Scheme::kHtml;
+  existing_form.in_store =
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
+  GetProfilePasswordStore()->AddLogin(
+      password_manager::FromPasswordForm(existing_form));
+  GetAccountPasswordStore()->AddLogin(
+      password_manager::FromPasswordForm(existing_form));
+  PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
+
+  SetUpPassphraseErrorState();
+  std::unique_ptr<password_manager::PasswordFormManager> form_manager =
+      CreateFormManagerWithTabClient({existing_form}, u"new_password");
+  ASSERT_TRUE(form_manager->IsPasswordUpdate());
+  GetController()->OnUpdatePasswordSubmitted(std::move(form_manager));
+
+  RunTestSequence(
+      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      CheckResult([this]() { return GetController()->GetState(); },
+                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE),
+      VerifyPassphraseErrorBubbleUi(), ClickContinueToPassphraseDialog());
+
+  PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
+  {
+    const password_manager::TestPasswordStore::PasswordMap account_logins =
+        password_manager::GetAllLoginsSync(GetAccountPasswordStore());
+    const auto realm_it = account_logins.find(test_form()->signon_realm);
+    ASSERT_NE(realm_it, account_logins.end());
+    ASSERT_EQ(realm_it->second.size(), 1u);
+    EXPECT_EQ(realm_it->second[0].password_value.value(), u"old_password");
+  }
+
+  RunTestSequence(SubmitPassphrase(kSyncPassphrase16),
+                  WaitForHide(kSyncPassphraseOkButtonFieldId));
+
+  NotifyStoresPassphraseErrorResolved();
+  for (password_manager::TestPasswordStore* store :
+       {GetProfilePasswordStore(), GetAccountPasswordStore()}) {
+    const password_manager::TestPasswordStore::PasswordMap logins =
+        password_manager::GetAllLoginsSync(store);
+    const auto realm_it = logins.find(test_form()->signon_realm);
+    ASSERT_NE(realm_it, logins.end());
+    ASSERT_EQ(realm_it->second.size(), 1u);
+    EXPECT_EQ(realm_it->second[0].username_value, test_form()->username_value);
+    EXPECT_EQ(realm_it->second[0].password_value.value(), u"new_password");
+  }
+  EXPECT_EQ(GetController()->GetState(), password_manager::ui::MANAGE_STATE);
+}
