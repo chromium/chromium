@@ -32,6 +32,10 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/linear_gradient.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace cc {
@@ -945,7 +949,8 @@ class OcclusionTrackerTestFilters : public OcclusionTrackerTest {
 
     TestOcclusionTrackerWithClip occlusion(gfx::Rect(0, 0, 1000, 1000));
 
-    // Rounded corners won't contribute to occlusion.
+    // The rounded corner bounds do not intersect the layer, so it won't
+    // contribute to occlusion.
     ASSERT_NO_FATAL_FAILURE(this->EnterLayer(rounded_corner_layer, &occlusion));
     EXPECT_TRUE(occlusion.occlusion_from_outside_target().IsEmpty());
     EXPECT_TRUE(occlusion.occlusion_from_inside_target().IsEmpty());
@@ -1005,6 +1010,100 @@ class OcclusionTrackerTestFilters : public OcclusionTrackerTest {
 };
 
 ALL_OCCLUSIONTRACKER_TEST(OcclusionTrackerTestFilters)
+
+// Returns `rect` with a different radius for each corner. The larger y radius
+// is 40.5 for the top corners and 50.5 for the bottom corners.
+gfx::RRectF CreateRRectWithDistinctRadii(const gfx::RectF& rect) {
+  return gfx::RRectF(rect, /*upper_left_x=*/10.f, /*upper_left_y=*/20.f,
+                     /*upper_right_x=*/30.f, /*upper_right_y=*/40.5f,
+                     /*lower_right_x=*/15.f, /*lower_right_y=*/25.f,
+                     /*lower_left_x=*/35.f, /*lower_left_y=*/50.5f);
+}
+
+// A layer clipped by rounded corners occludes the rows between the top and
+// bottom corners (letterbox). A layer with a gradient mask does not occlude.
+class OcclusionTrackerTestMaskFilterOnLayer : public OcclusionTrackerTest {
+ protected:
+  using OcclusionTrackerTest::OcclusionTrackerTest;
+
+  void RunMyTest() override {
+    TestContentLayerImpl* root = CreateRoot(gfx::Size(1000, 1000));
+    TestContentLayerImpl* rounded_layer =
+        CreateDrawingLayer(root, identity_matrix, gfx::PointF(30.f, 30.f),
+                           gfx::Size(500, 300), true);
+    TestContentLayerImpl* gradient_layer =
+        CreateDrawingLayer(root, identity_matrix, gfx::PointF(30.f, 400.f),
+                           gfx::Size(500, 300), true);
+
+    // The mask filter info of a layer is in the space of its render target.
+    CreateEffectNode(rounded_layer).mask_filter_info = gfx::MaskFilterInfo(
+        CreateRRectWithDistinctRadii({30.f, 30.f, 500.f, 300.f}));
+    gfx::LinearGradient gradient_mask;
+    gradient_mask.AddStep(/*fraction=*/0.f, /*alpha=*/0);
+    gradient_mask.AddStep(/*fraction=*/1.f, /*alpha=*/255);
+    CreateEffectNode(gradient_layer).mask_filter_info = gfx::MaskFilterInfo(
+        gfx::RRectF(gfx::RectF(30.f, 400.f, 500.f, 300.f)), gradient_mask);
+    CalcDrawEtc();
+
+    TestOcclusionTrackerWithClip occlusion(gfx::Rect(0, 0, 1000, 1000));
+    ASSERT_NO_FATAL_FAILURE(VisitLayer(gradient_layer, &occlusion));
+    EXPECT_TRUE(occlusion.occlusion_from_inside_target().IsEmpty());
+
+    // The rows between the corners (70.5 to 279.5) are shrunk by a pixel at the
+    // top and bottom, and then rounded inwards.
+    ASSERT_NO_FATAL_FAILURE(VisitLayer(rounded_layer, &occlusion));
+    EXPECT_EQ(gfx::Rect(30, 72, 500, 206).ToString(),
+              occlusion.occlusion_from_inside_target().ToString());
+  }
+};
+
+ALL_OCCLUSIONTRACKER_TEST(OcclusionTrackerTestMaskFilterOnLayer)
+
+// The occlusion that a render surface contributes to its target is clipped by
+// the rounded corners of the surface, and dropped if it has a gradient mask.
+class OcclusionTrackerTestMaskFilterOnSurface : public OcclusionTrackerTest {
+ protected:
+  using OcclusionTrackerTest::OcclusionTrackerTest;
+
+  void RunMyTest() override {
+    TestContentLayerImpl* root = CreateRoot(gfx::Size(1000, 1000));
+    TestContentLayerImpl* rounded_surface =
+        CreateDrawingSurface(root, identity_matrix, gfx::PointF(30.f, 30.f),
+                             gfx::Size(500, 300), true);
+    TestContentLayerImpl* gradient_surface =
+        CreateDrawingSurface(root, identity_matrix, gfx::PointF(30.f, 400.f),
+                             gfx::Size(500, 300), true);
+
+    // The mask filter info of a surface is in the space of the surface.
+    GetEffectNode(rounded_surface)->mask_filter_info = gfx::MaskFilterInfo(
+        CreateRRectWithDistinctRadii({0.f, 0.f, 500.f, 300.f}));
+    gfx::LinearGradient gradient_mask;
+    gradient_mask.AddStep(/*fraction=*/0.f, /*alpha=*/0);
+    gradient_mask.AddStep(/*fraction=*/1.f, /*alpha=*/255);
+    GetEffectNode(gradient_surface)->mask_filter_info = gfx::MaskFilterInfo(
+        gfx::RRectF(gfx::RectF(0.f, 0.f, 500.f, 300.f)), gradient_mask);
+    CalcDrawEtc();
+
+    TestOcclusionTrackerWithClip occlusion(gfx::Rect(0, 0, 1000, 1000));
+    ASSERT_NO_FATAL_FAILURE(VisitLayer(gradient_surface, &occlusion));
+    ASSERT_NO_FATAL_FAILURE(
+        VisitContributingSurface(gradient_surface, &occlusion));
+    EXPECT_TRUE(occlusion.occlusion_from_inside_target().IsEmpty());
+
+    // Inside the surface the layer is not clipped by the rounded corners.
+    ASSERT_NO_FATAL_FAILURE(VisitLayer(rounded_surface, &occlusion));
+    EXPECT_EQ(gfx::Rect(0, 0, 500, 300).ToString(),
+              occlusion.occlusion_from_inside_target().ToString());
+    // The rows between the corners (70.5 to 279.5) are shrunk by a pixel at the
+    // top and bottom, and then rounded inwards.
+    ASSERT_NO_FATAL_FAILURE(
+        VisitContributingSurface(rounded_surface, &occlusion));
+    EXPECT_EQ(gfx::Rect(30, 72, 500, 206).ToString(),
+              occlusion.occlusion_from_inside_target().ToString());
+  }
+};
+
+ALL_OCCLUSIONTRACKER_TEST(OcclusionTrackerTestMaskFilterOnSurface)
 
 class OcclusionTrackerTestFiltersRenderSurfaceOcclusion
     : public OcclusionTrackerTest {

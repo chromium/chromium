@@ -15,10 +15,44 @@
 #include "cc/layers/render_surface_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace cc {
+
+namespace {
+
+// Returns the part of `rect` that is not clipped by the rounded corners of
+// `mask_filter_info`. Occlusion is tracked as a single rect, so `rect` is
+// trimmed to the rows between the top and bottom corners (letterbox).
+gfx::Rect ClipRectWithRoundedCornersToEnclosedRect(
+    const gfx::Rect& rect,
+    const gfx::MaskFilterInfo& mask_filter_info) {
+  if (mask_filter_info.IsEmpty()) {
+    return rect;
+  }
+  using Corner = gfx::RRectF::Corner;
+  const gfx::RRectF& rrect = mask_filter_info.rounded_corner_bounds();
+  const float top = std::max(rrect.GetCornerRadii(Corner::kUpperLeft).y(),
+                             rrect.GetCornerRadii(Corner::kUpperRight).y());
+  const float bottom = std::max(rrect.GetCornerRadii(Corner::kLowerLeft).y(),
+                                rrect.GetCornerRadii(Corner::kLowerRight).y());
+  // Workaround: shrink the letterbox by one more pixel at the top and bottom
+  // to avoid visual differences caused by rendering characteristics. E.g. the
+  // rounded corners of a layer are anti-aliased differently when the layer is
+  // only partially drawn.
+  constexpr float kMargin = 1.f;
+  gfx::RectF letterbox = rrect.rect();
+  letterbox.Inset(
+      gfx::InsetsF().set_top(top + kMargin).set_bottom(bottom + kMargin));
+  return gfx::IntersectRects(rect, gfx::ToEnclosedRect(letterbox));
+}
+
+}  // namespace
 
 OcclusionTracker::OcclusionTracker(const gfx::Rect& screen_space_clip_rect,
                                    const EffectTree* effect_tree)
@@ -220,6 +254,7 @@ void OcclusionTracker::FinishedRenderTarget(
       !IsOccludingBlendMode(finished_target_surface->BlendMode()) ||
       target_is_only_for_copy_request_or_force_render_surface ||
       finished_target_surface->Filters().HasFilterThatAffectsOpacity() ||
+      finished_target_surface->mask_filter_info().HasGradientMask() ||
       finished_target_surface->OwningEffectNode()
           ->view_transition_element_resource_id.IsValid()) {
     stack_.back().occlusion_from_outside_target.Clear();
@@ -306,6 +341,12 @@ void OcclusionTracker::LeaveToRenderTarget(
           stack_[last_index].occlusion_from_inside_target,
           old_surface->is_clipped(), old_surface->clip_rect(),
           old_surface->draw_transform());
+  // The surface is clipped by its rounded corners, which are in the space of
+  // the new target, when it is drawn into the new target.
+  old_occlusion_from_inside_target_in_new_target =
+      ClipRectWithRoundedCornersToEnclosedRect(
+          old_occlusion_from_inside_target_in_new_target.bounds(),
+          old_surface->mask_filter_info());
 
   SimpleEnclosedRegion old_occlusion_from_outside_target_in_new_target =
       TransformSurfaceOpaqueRegion(
@@ -367,8 +408,13 @@ void OcclusionTracker::MarkOccludedBehindLayer(const LayerImpl* layer) {
   if (layer->Is3dSorted())
     return;
 
-  if (!layer->draw_properties().mask_filter_info.IsEmpty())
+  // A gradient mask makes the layer translucent. Rounded corners are handled
+  // below by trimming the clip rect.
+  const gfx::MaskFilterInfo& mask_filter_info =
+      layer->draw_properties().mask_filter_info;
+  if (mask_filter_info.HasGradientMask()) {
     return;
+  }
 
   SimpleEnclosedRegion opaque_layer_region = layer->VisibleOpaqueRegion();
   if (opaque_layer_region.IsEmpty())
@@ -400,6 +446,10 @@ void OcclusionTracker::MarkOccludedBehindLayer(const LayerImpl* layer) {
   } else {
     clip_rect_in_target.Intersect(layer->render_target()->content_rect());
   }
+  // The mask filter info is in the space of the render target.
+  clip_rect_in_target =
+      ClipRectWithRoundedCornersToEnclosedRect(
+          clip_rect_in_target, mask_filter_info);
 
   for (size_t i = 0; i < opaque_layer_region.GetRegionComplexity(); ++i) {
     gfx::Rect transformed_rect =
