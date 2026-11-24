@@ -144,29 +144,6 @@ KeyedServiceTemplatedFactory<ServiceType>::GetServiceForContext(void* context,
       return nullptr;
     }
 
-#if BUILDFLAG(KEYED_SERVICE_HAS_REENTRANT_GET_SERVICE_FOR_CONTEXT_CALLS)
-    // For platforms that are known to have faulty re-entrant calls, return
-    // null when they are detected (the service is being created, so there
-    // is no service to return).
-    if (info.stage == MappingStage::kCreatingService) {
-      return nullptr;
-    }
-#else
-    // Detect and warn about re-entrant calls to GetServiceForContext(...) from
-    // the implementation of BuildServiceInstanceFor(...) or in the registered
-    // TestingFactory as they are supposed to create the service (thus it does
-    // not make sense for them to access the service they are creating).
-    CHECK(info.stage != MappingStage::kCreatingService,
-          base::NotFatalUntil::M165)
-        << "Reentrant call to GetServiceForContext(...) in the factory for "
-        << name();
-    // Remove this early return when the CHECK(..., base::NotFatalUntil::M165)
-    // is converted to CHECK(...). Until then it is required to return early.
-    if (info.stage == MappingStage::kCreatingService) {
-      return nullptr;
-    }
-#endif
-
 #if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_INITIALIZATION)
     // Only allowed to create KeyedService if the context is fully initialized
     // or if the factory overrides ServiceIsRequiredForContextInitialization().
@@ -176,11 +153,8 @@ KeyedServiceTemplatedFactory<ServiceType>::GetServiceForContext(void* context,
     CHECK_LT(info.stage, MappingStage::kServiceAssociated);
 #endif
 
-    // Record that the service is being created (used to detect re-entrant
-    // calls on platform with tight initialization).
-    info.stage = MappingStage::kCreatingService;
-
     // Create new object, using the testing factory if set.
+    info.stage = MappingStage::kServiceAssociated;
     if (info.testing_factory) {
       info.service = std::move(info.testing_factory).Run(context);
     } else if (info.is_testing_context && ServiceIsNULLWhileTesting()) {
@@ -189,9 +163,6 @@ KeyedServiceTemplatedFactory<ServiceType>::GetServiceForContext(void* context,
     } else {
       info.service = BuildServiceInstanceFor(context);
     }
-
-    // Record that the service has been associated and cached.
-    info.stage = MappingStage::kServiceAssociated;
   }
 
   CHECK_GE(info.stage, MappingStage::kServiceAssociated);

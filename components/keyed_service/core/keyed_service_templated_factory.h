@@ -135,18 +135,6 @@ class KEYED_SERVICE_EXPORT KeyedServiceTemplatedFactory
     // before any service is associated.
     kContextInitialized,
 
-    // The context is being associated with a service.
-    //
-    // Transition to this state when calling the `BuildServiceInstanceFor(...)`
-    // method or the registered `TestingFactory` (if any) and then transition
-    // to kServiceAssociated when assigning the service.
-    //
-    // Used to prevent re-entrant calls to GetServiceForContext(...) from the
-    // `BuildServiceInstanceFor(...)` method or the registered `TestingFactory`
-    // as they are supposed to create the service instance and should not try
-    // to access the service they are creating.
-    kCreatingService,
-
     // The context is associated with a service (possibly null).
     //
     // Transition to kServiceShutdown as part of the first stage of the two

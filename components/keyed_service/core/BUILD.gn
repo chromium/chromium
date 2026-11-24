@@ -91,14 +91,6 @@ buildflag_header("features") {
   # and `Disassociate` methods.
   has_deprecated_associate_api = use_blink
 
-  # If this flag is set to `true`, then `KeyedServiceTemplatedFactory` will
-  # detect and fail hard if a recursive call to GetServiceForContext(...)
-  # is detected.
-  #
-  # TODO(crbug.com/587837744): remove this flag when set to `false` for all
-  # embedders. This will requires fixing all factories and tests.
-  has_reentrant_get_service_for_context_calls = use_blink
-
   # has_tight_context_initialization requires has_tight_factory_registration
   # to be true and has_deprecated_associate_api to be false. Assert this.
   assert(
@@ -112,8 +104,6 @@ buildflag_header("features") {
     "KEYED_SERVICE_HAS_TIGHT_REGISTRATION=$has_tight_factory_registration",
     "KEYED_SERVICE_HAS_TIGHT_INITIALIZATION=$has_tight_context_initialization",
     "KEYED_SERVICE_HAS_DEPRECATED_ASSOCIATE_API=$has_deprecated_associate_api",
-    "KEYED_SERVICE_HAS_REENTRANT_GET_SERVICE_FOR_CONTEXT_CALLS=" +
-        "$has_reentrant_get_service_for_context_calls",
   ]
 }
 
@@ -126,7 +116,6 @@ source_set("unit_tests") {
   deps = [
     ":core",
     "//base",
-    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/re2",
   ]
