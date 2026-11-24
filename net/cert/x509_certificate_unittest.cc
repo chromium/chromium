@@ -20,7 +20,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
@@ -500,6 +502,20 @@ TEST(X509CertificateTest, SerialNumber37BytesLong) {
       0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14,
       0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e,
       0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25};
+  EXPECT_EQ(cert->serial_number(), expected_serial);
+}
+
+TEST(X509CertificateTest, SerialNumberNotMinimal) {
+  base::FilePath certs_dir =
+      GetTestNetDataDirectory().AppendASCII("parse_certificate_unittest");
+  EXPECT_FALSE(ImportCertFromFile(certs_dir, "serial_not_minimal.pem"));
+
+  base::test::ScopedFeatureList feature_list(
+      features::kAllowInvalidCertificateSerialNumbers);
+  scoped_refptr<X509Certificate> cert =
+      ImportCertFromFile(certs_dir, "serial_not_minimal.pem");
+  ASSERT_TRUE(cert);
+  static const uint8_t expected_serial[2] = {0x00, 0x01};
   EXPECT_EQ(cert->serial_number(), expected_serial);
 }
 

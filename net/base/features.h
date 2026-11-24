@@ -1246,6 +1246,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kValidateNegotiateCnameAllowlist);
 // succeeds on the current network.
 NET_EXPORT BASE_DECLARE_FEATURE(kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork);
 
+// If enabled, certificate parsing accepts serial numbers that are not valid DER
+// INTEGERs (e.g. empty or non-minimally encoded). This is disabled by default
+// and is available as an emergency restore switch.
+// TODO(crbug.com/533048005): Remove this flag once rejecting invalid serial
+// numbers has safely shipped to stable.
+NET_EXPORT BASE_DECLARE_FEATURE(kAllowInvalidCertificateSerialNumbers);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

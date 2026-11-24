@@ -1272,4 +1272,7 @@ BASE_FEATURE(kValidateNegotiateCnameAllowlist,
 BASE_FEATURE(kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAllowInvalidCertificateSerialNumbers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

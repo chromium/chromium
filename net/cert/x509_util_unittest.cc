@@ -15,10 +15,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/sign.h"
+#include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
@@ -1014,7 +1016,7 @@ TEST(X509UtilTest, CreateParsedCertificateHistograms) {
   const struct {
     std::vector<uint8_t> serial;
     SerialNumberType expected_type;
-  } kTests[] = {
+  } kValidTests[] = {
       // Positive serial numbers.
       {{0x01}, SerialNumberType::kPositive},
       {{0x7f}, SerialNumberType::kPositive},
@@ -1029,19 +1031,11 @@ TEST(X509UtilTest, CreateParsedCertificateHistograms) {
       {{0xff}, SerialNumberType::kNegative},
       {{0x80, 0x01}, SerialNumberType::kNegative},
       {{0xff, 0x7f}, SerialNumberType::kNegative},
-
-      // Invalid (empty or non-minimally encoded) serial numbers.
-      {{}, SerialNumberType::kInvalid},
-      {{0x00, 0x00}, SerialNumberType::kInvalid},
-      {{0x00, 0x01}, SerialNumberType::kInvalid},
-      {{0x00, 0x7f}, SerialNumberType::kInvalid},
-      {{0xff, 0x80}, SerialNumberType::kInvalid},
-      {{0xff, 0xff}, SerialNumberType::kInvalid},
   };
 
   std::unique_ptr<CertBuilder> builder =
       std::move(CertBuilder::CreateSimpleChain(1)[0]);
-  for (const auto& test : kTests) {
+  for (const auto& test : kValidTests) {
     base::HistogramTester histogram_tester;
     builder->SetSerialNumber(test.serial);
 
@@ -1053,6 +1047,39 @@ TEST(X509UtilTest, CreateParsedCertificateHistograms) {
                                         test.serial.size(), 1);
     histogram_tester.ExpectUniqueSample("Net.Certificate.SerialNumberType",
                                         test.expected_type, 1);
+  }
+
+  // Invalid (empty or non-minimally encoded) serial numbers are rejected by
+  // default, and accepted when `kAllowInvalidCertificateSerialNumbers` is
+  // enabled.
+  const std::vector<uint8_t> kInvalidSerials[] = {
+      {}, {0x00, 0x00}, {0x00, 0x01}, {0x00, 0x7f}, {0xff, 0x80}, {0xff, 0xff},
+  };
+  for (const auto& serial : kInvalidSerials) {
+    base::HistogramTester histogram_tester;
+    builder->SetSerialNumber(serial);
+
+    EXPECT_FALSE(CreateParsedCertificate(builder->DupCertBuffer(), nullptr));
+    histogram_tester.ExpectTotalCount("Net.Certificate.SerialNumberLength", 0);
+    histogram_tester.ExpectTotalCount("Net.Certificate.SerialNumberType", 0);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list(
+        features::kAllowInvalidCertificateSerialNumbers);
+    for (const auto& serial : kInvalidSerials) {
+      base::HistogramTester histogram_tester;
+      builder->SetSerialNumber(serial);
+
+      std::shared_ptr<const bssl::ParsedCertificate> cert =
+          CreateParsedCertificate(builder->DupCertBuffer(), nullptr);
+      ASSERT_TRUE(cert);
+
+      histogram_tester.ExpectUniqueSample("Net.Certificate.SerialNumberLength",
+                                          serial.size(), 1);
+      histogram_tester.ExpectUniqueSample("Net.Certificate.SerialNumberType",
+                                          SerialNumberType::kInvalid, 1);
+    }
   }
 
   // Failed parses should not record histograms.

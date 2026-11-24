@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,6 +30,7 @@
 #include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/sign.h"
+#include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
@@ -534,14 +536,8 @@ bool CreateCertBuffersFromPKCS7Bytes(
 
 bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
   bssl::ParseCertificateOptions options;
-  // It is sadly common for certificates to have serial numbers over 20 bytes,
-  // especially if the CA counted bytes before the leading zero byte is added
-  // in the INTEGER encoding.
-  //
-  // TODO(crbug.com/533048005): This option also allows non-integers, which is
-  // more problematic and less necessary. Remove this option once BoringSSL
-  // separates the two.
-  options.allow_invalid_serial_numbers = true;
+  options.allow_invalid_serial_numbers = base::FeatureList::IsEnabled(
+      features::kAllowInvalidCertificateSerialNumbers);
   return options;
 }
 
