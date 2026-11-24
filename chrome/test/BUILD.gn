@@ -624,7 +624,10 @@ source_set("platform_browser_tests") {
   }
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//chrome/browser/safe_browsing:platform_browser_tests" ]
+    deps += [
+      "//chrome/browser/safe_browsing:platform_browser_tests",
+      "//chrome/browser/ui/webui/reset_password:platform_browser_tests",
+    ]
   }
 
   if (enable_devtools_frontend) {

@@ -181,12 +181,11 @@ source_set("configs") {
     ]
   }
 
-  if (safe_browsing_mode == 1) {
-    deps += [ "//chrome/browser/ui/webui/reset_password" ]
-  }
-
   if (safe_browsing_mode != 0) {
-    deps += [ "//chrome/browser/ui/webui/safe_browsing" ]
+    deps += [
+      "//chrome/browser/ui/webui/reset_password",
+      "//chrome/browser/ui/webui/safe_browsing",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {

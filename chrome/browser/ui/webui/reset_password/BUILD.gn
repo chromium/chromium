@@ -10,7 +10,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
-if (safe_browsing_mode == 1) {
+if (safe_browsing_mode != 0) {
   source_set("reset_password") {
     sources = [ "reset_password_ui.cc" ]
     public = [ "reset_password_ui.h" ]
@@ -36,6 +36,27 @@ if (safe_browsing_mode == 1) {
       "//mojo/public/cpp/bindings",
       "//ui/base",
       "//ui/webui",
+    ]
+  }
+
+  source_set("platform_browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "reset_password_ui_browsertest.cc" ]
+
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/test/base:chrome_test_utils",
+      "//chrome/test/base:platform_browser_test",
+      "//components/prefs",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//url",
     ]
   }
 }

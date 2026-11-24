@@ -234,7 +234,7 @@ group("resources") {
     public_deps += [ "watermark:resources" ]
   }
 
-  if (safe_browsing_mode == 1) {
+  if (safe_browsing_mode != 0) {
     public_deps += [ "reset_password:resources" ]
   }
 }

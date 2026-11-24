@@ -213,10 +213,6 @@
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
@@ -232,6 +228,7 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
 #include "chrome/browser/ui/webui/safe_browsing/chrome_safe_browsing_ui.h"
 #endif
 
@@ -493,10 +490,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<InlineLoginUIConfig>());
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  map.AddWebUIConfig(std::make_unique<ResetPasswordUIConfig>());
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   map.AddWebUIConfig(std::make_unique<DefaultBrowserModalUIConfig>());
   map.AddWebUIConfig(std::make_unique<ManagedUserProfileNoticeUIConfig>());
@@ -508,6 +501,7 @@ void RegisterChromeWebUIConfigs() {
 #endif  //  !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  map.AddWebUIConfig(std::make_unique<ResetPasswordUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<safe_browsing::ChromeSafeBrowsingUIConfig>());
 #endif

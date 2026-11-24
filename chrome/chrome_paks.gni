@@ -658,7 +658,7 @@ template("chrome_extra_paks") {
       deps += [ "//chrome/browser/resources/default_browser/visual_guided_setter:resources" ]
     }
 
-    if (safe_browsing_mode == 1) {
+    if (safe_browsing_mode != 0) {
       sources += [ "$root_gen_dir/chrome/reset_password_resources.pak" ]
       deps += [ "//chrome/browser/resources/reset_password:resources" ]
     }

@@ -2206,7 +2206,7 @@ source_set("core") {
     deps += [ "//chrome/browser/chrome_for_testing:browser" ]
   }
 
-  if (safe_browsing_mode == 1) {
+  if (safe_browsing_mode != 0) {
     deps += [ "//chrome/browser/ui/webui/reset_password" ]
   }
 
