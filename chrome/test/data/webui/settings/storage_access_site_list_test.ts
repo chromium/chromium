@@ -4,23 +4,19 @@
 
 /** @fileoverview Suite of tests for storage-access-site-list. */
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
 import type {StorageAccessSiteException, StorageAccessSiteListElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertTrue, assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
-import {createStorageAccessSiteException, createStorageAccessEmbeddingException} from './test_util.js';
-// clang-format on
+import {createStorageAccessEmbeddingException, createStorageAccessSiteException} from './test_util.js';
 
 /**
- * Origin used in |exceptionStorageAccessOrigin| and
- * |exceptionStorageAccessOriginWithIncognito|.
+ * Origin used in |exceptionsStorageAccessOriginBlock|.
  */
 const origin = 'https://example.com';
 
@@ -30,7 +26,7 @@ const origin = 'https://example.com';
 const categoryHeader = 'category header';
 
 /**
- * An example of an array of a |StorageAccessSiteException|s of type
+ * An example of an array of |StorageAccessSiteException|s of type
  * |ContentSetting.BLOCK|.
  */
 const exceptionsStorageAccessOriginBlock: StorageAccessSiteException[] = [
@@ -76,24 +72,23 @@ suite('StorageAccessSiteList', function() {
 
   /**
    * Configures the test element for a particular category.
-   * @param exceptions The |StorageAccessSiteException| to use.
-   * @param categorySubtype Category (e.g. allow, block) to show exceptions for.
    */
   async function setUpEntry(
       exceptions: StorageAccessSiteException[],
-      categorySubtype: ContentSetting): Promise<void> {
+      categorySubtype: ContentSetting) {
     browserProxy.setStorageAccessExceptionList(exceptions);
     testElement.categoryHeader = categoryHeader;
     testElement.categorySubtype = categorySubtype;
-    await browserProxy.whenCalled('getStorageAccessExceptionList');
-    return flushTasks();
+    const subtype =
+        await browserProxy.whenCalled('getStorageAccessExceptionList');
+    await microtasksFinished();
+    assertEquals(categorySubtype, subtype);
   }
 
   test('category header', async function() {
     await setUpEntry(exceptionsStorageAccessOriginBlock, ContentSetting.BLOCK);
 
     // Validate that the StorageAccess origin is displayed on the top level row.
-    assertTrue(!!testElement.shadowRoot);
     const headerRow =
         testElement.shadowRoot.querySelector('.cr-row .cr-secondary-text');
     assertTrue(!!headerRow);
@@ -105,18 +100,12 @@ suite('StorageAccessSiteList', function() {
 
     const entries = testElement.$.listContainer.querySelectorAll(
         'storage-access-site-list-entry');
-    assertTrue(!!entries);
     assertEquals(exceptionsStorageAccessOriginBlock.length, entries.length);
 
-    const firstEntry = entries[0];
-    assertTrue(!!firstEntry);
-    const secondEntry = entries[1];
-    assertTrue(!!secondEntry);
-
-    // Check if `StorageAccessSiteListEntry`s were build with the correct
+    // Check if `StorageAccessSiteListEntry`s were built with the correct
     // params.
-    assertEquals(exceptionsStorageAccessOriginBlock[0], firstEntry.model);
-    assertEquals(exceptionsStorageAccessOriginBlock[1], secondEntry.model);
+    assertEquals(exceptionsStorageAccessOriginBlock[0], entries[0]!.model);
+    assertEquals(exceptionsStorageAccessOriginBlock[1], entries[1]!.model);
   });
 
   test('storage access site list empty', async function() {
@@ -124,15 +113,11 @@ suite('StorageAccessSiteList', function() {
 
     const entries = testElement.$.listContainer.querySelectorAll(
         'storage-access-site-list-entry');
-    assertTrue(!!entries);
     assertEquals(0, entries.length);
 
     const noSitesAddedString = loadTimeData.getString('noSitesAdded');
-    assertTrue(!!testElement.shadowRoot);
-
     const listItems =
         testElement.shadowRoot.querySelectorAll<HTMLElement>('.list-item');
-    assertTrue(!!listItems);
     const noSitesAddedElement = listItems[0];
 
     assertTrue(!!noSitesAddedElement);
@@ -146,18 +131,12 @@ suite('StorageAccessSiteList', function() {
 
     const entries = testElement.$.listContainer.querySelectorAll(
         'storage-access-site-list-entry');
-    assertTrue(!!entries);
     assertEquals(exceptionsStorageAccessOriginBlock.length, entries.length);
 
-    const firstEntry = entries[0];
-    assertTrue(!!firstEntry);
-    const secondEntry = entries[1];
-    assertTrue(!!secondEntry);
-
-    // Check if `StorageAccessSiteListEntry`s were build with the correct
+    // Check if `StorageAccessSiteListEntry`s were built with the correct
     // params.
-    assertEquals(exceptionsStorageAccessOriginBlock[0], firstEntry.model);
-    assertEquals(exceptionsStorageAccessOriginBlock[1], secondEntry.model);
+    assertEquals(exceptionsStorageAccessOriginBlock[0], entries[0]!.model);
+    assertEquals(exceptionsStorageAccessOriginBlock[1], entries[1]!.model);
   });
 
   test(
@@ -169,20 +148,14 @@ suite('StorageAccessSiteList', function() {
 
         const entries = testElement.$.listContainer.querySelectorAll(
             'storage-access-site-list-entry');
-        assertTrue(!!entries);
         assertEquals(2, entries.length);
 
-        const firstEntry = entries[0];
-        assertTrue(!!firstEntry);
-        const secondEntry = entries[1];
-        assertTrue(!!secondEntry);
-
-        // Check if `StorageAccessSiteListEntry`s were build with the correct
+        // Check if `StorageAccessSiteListEntry`s were built with the correct
         // params.
         assertDeepEquals(
-            exceptionsStorageAccessOriginBlock[0], firstEntry.model);
+            exceptionsStorageAccessOriginBlock[0], entries[0]!.model);
         assertDeepEquals(
-            exceptionsStorageAccessOriginBlock[1], secondEntry.model);
+            exceptionsStorageAccessOriginBlock[1], entries[1]!.model);
       });
 
   test(
@@ -192,17 +165,13 @@ suite('StorageAccessSiteList', function() {
         await setUpEntry(
             exceptionsStorageAccessOriginBlock, ContentSetting.BLOCK);
 
-
         const entries = testElement.$.listContainer.querySelectorAll(
             'storage-access-site-list-entry');
-        assertTrue(!!entries);
         assertEquals(1, entries.length);
 
-        const entry = entries[0];
-        assertTrue(!!entry);
-
         // Only the second embedding matches the filter.
-        assertDeepEquals(exceptionsStorageAccessOriginBlock[1], entry.model);
+        assertDeepEquals(
+            exceptionsStorageAccessOriginBlock[1], entries[0]!.model);
       });
 
   test(
@@ -214,15 +183,11 @@ suite('StorageAccessSiteList', function() {
 
         const entries = testElement.$.listContainer.querySelectorAll(
             'storage-access-site-list-entry');
-        assertTrue(!!entries);
         assertEquals(0, entries.length);
 
         const noSearchResults = loadTimeData.getString('searchNoResults');
-        assertTrue(!!testElement.shadowRoot);
-
         const listItems =
             testElement.shadowRoot.querySelectorAll<HTMLElement>('.list-item');
-        assertTrue(!!listItems);
         const noSearchResultsElement = listItems[1];
 
         assertTrue(!!noSearchResultsElement);

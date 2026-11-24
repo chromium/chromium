@@ -8,21 +8,32 @@
  * access permissions group with the same type of permission (e.g. allow,
  * block).
  */
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './storage_access_site_list_entry.js';
-import '../settings_shared.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
 import type {ContentSetting} from './constants.js';
 import {ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
-import {ListPropertyUpdateMixin} from './list_property_update_mixin.js';
 import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {getTemplate} from './storage_access_site_list.html.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
+import {getHtml} from './storage_access_site_list.html.js';
+
+function getFilteredEmbeddingExceptions(
+    exceptions: StorageAccessEmbeddingException[],
+    searchFilter: string): StorageAccessEmbeddingException[] {
+  type SearchablePropertyEmbedding = 'embeddingDisplayName'|'embeddingOrigin';
+  const propNamesEmbedding: SearchablePropertyEmbedding[] =
+      ['embeddingDisplayName', 'embeddingOrigin'];
+
+  return exceptions.filter(
+      embedding => propNamesEmbedding.some(
+          propName =>
+              embedding[propName].toLowerCase().includes(searchFilter)));
+}
 
 export interface StorageAccessSiteListElement {
   $: {
@@ -30,8 +41,8 @@ export interface StorageAccessSiteListElement {
   };
 }
 
-const StorageAccessSiteListElementBase = ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement)));
+const StorageAccessSiteListElementBase =
+    SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class StorageAccessSiteListElement extends
     StorageAccessSiteListElementBase {
@@ -39,27 +50,26 @@ export class StorageAccessSiteListElement extends
     return 'storage-access-site-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getSettingsSharedCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Header shown for the |categorySubtype|.
        */
-      categoryHeader: String,
+      categoryHeader: {type: String},
 
       /**
        * Array of group of storage access site exceptions of |categorySubtype|
        * to display in the widget.
        */
-      storageAccessExceptions_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+      storageAccessExceptions_: {type: Array},
 
       /**
        * The type of category this widget is displaying data for. Normally
@@ -67,27 +77,17 @@ export class StorageAccessSiteListElement extends
        * blocked respectively from Storage Access while embedded on another
        * site.
        */
-      categorySubtype: {
-        type: String,
-        value: INVALID_CATEGORY_SUBTYPE,
-      },
+      categorySubtype: {type: String},
 
-      searchFilter: {
-        type: String,
-        observer: 'getFilteredExceptions_',
-      },
+      searchFilter: {type: String},
     };
   }
 
-  static get observers() {
-    return ['populateList_(categorySubtype, storageAccessExceptions_)'];
-  }
-
-  declare categorySubtype: ContentSetting;
-  declare categoryHeader: string;
-  declare searchFilter: string;
-
-  declare private storageAccessExceptions_: StorageAccessSiteException[];
+  accessor categoryHeader: string = '';
+  private accessor storageAccessExceptions_: StorageAccessSiteException[] = [];
+  accessor categorySubtype: ContentSetting|typeof INVALID_CATEGORY_SUBTYPE =
+      INVALID_CATEGORY_SUBTYPE;
+  accessor searchFilter: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -105,24 +105,32 @@ export class StorageAccessSiteListElement extends
     this.browserProxy.updateIncognitoStatus();
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('categorySubtype')) {
+      this.populateList_();
+    }
+  }
+
   /**
    * Populates the StorageAccessSiteList for display.
    */
   private async populateList_() {
-    if (this.categorySubtype === undefined) {
+    if (!this.categorySubtype) {
       return;
     }
 
-    const exceptionList = await this.browserProxy.getStorageAccessExceptionList(
-        this.categorySubtype);
-    this.updateList('storageAccessExceptions_', x => x.origin, exceptionList);
+    this.storageAccessExceptions_ =
+        await this.browserProxy.getStorageAccessExceptionList(
+            this.categorySubtype);
   }
 
   /**
    * Whether there are any results to show to the user according with the
    * |searchFilter|.
    */
-  private showNoSearchResults_(): boolean {
+  protected shouldShowNoSearchResults_(): boolean {
     return this.storageAccessExceptions_.length > 0 &&
         this.getFilteredExceptions_().length === 0;
   }
@@ -130,7 +138,7 @@ export class StorageAccessSiteListElement extends
   /**
    * Whether there are any storage access site exceptions of |categorySubtype|.
    */
-  private hasExceptions_(): boolean {
+  protected hasExceptions_(): boolean {
     return this.storageAccessExceptions_.length > 0;
   }
 
@@ -142,7 +150,7 @@ export class StorageAccessSiteListElement extends
    * |displayName| don't match, it looks for matches in |embeddingDisplayName|,
    * and |embeddingOrigin|.
    */
-  private getFilteredExceptions_(): StorageAccessSiteException[] {
+  protected getFilteredExceptions_(): StorageAccessSiteException[] {
     if (!this.searchFilter) {
       return this.storageAccessExceptions_.slice();
     }
@@ -155,24 +163,9 @@ export class StorageAccessSiteListElement extends
     return this.storageAccessExceptions_.filter(
         site => propNames.some(propName => {
           return site[propName].toLowerCase().includes(searchFilter) ||
-              this.getFilteredEmbeddingExceptions_(
-                      site.exceptions, searchFilter)
+              getFilteredEmbeddingExceptions(site.exceptions, searchFilter)
                   .length;
         }));
-  }
-
-  private getFilteredEmbeddingExceptions_(
-      exceptions: StorageAccessEmbeddingException[],
-      searchFilter: string): StorageAccessEmbeddingException[] {
-    type SearchablePropertyEmbedding = 'embeddingDisplayName'|'embeddingOrigin';
-    const propNamesEmbedding: SearchablePropertyEmbedding[] =
-        ['embeddingDisplayName', 'embeddingOrigin'];
-
-    return exceptions.filter(
-        embedding => propNamesEmbedding.some(
-            propNamesEmbedding =>
-                embedding[propNamesEmbedding].toLowerCase().includes(
-                    searchFilter)));
   }
 }
 
