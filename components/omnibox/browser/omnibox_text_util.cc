@@ -148,6 +148,25 @@ std::u16string FormatAdditionalText(std::u16string_view text) {
                                     std::u16string(), adjusted_text);
 }
 
+GURL GetUrlForCopyOfUnmodifiedText(
+    const GURL& navigation_entry_url,
+    const GURL& contextual_tasks_inner_frame_url) {
+  GURL url = navigation_entry_url;
+
+  // Don't let users copy Reader Mode page URLs.
+  // We display the original article's URL in the omnibox, so users will
+  // expect that to be what is copied to the clipboard.
+  if (web_distiller::url_utils::IsDistilledPage(url)) {
+    url = web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
+  }
+  // Don't let users copy Contextual Task URLs. We should let them copy the
+  // inner frame URL instead.
+  if (!contextual_tasks_inner_frame_url.is_empty()) {
+    url = contextual_tasks_inner_frame_url;
+  }
+  return url;
+}
+
 void AdjustTextForCopy(
     int sel_min,
     std::u16string* text,
@@ -176,22 +195,9 @@ void AdjustTextForCopy(
   // text (whether it's in the elided or unelided form), copy the omnibox
   // contents as a hyperlink to the current page.
   if (!has_user_modified_text) {
-    *url_from_text = navigation_entry_url;
+    *url_from_text = GetUrlForCopyOfUnmodifiedText(
+        navigation_entry_url, contextual_tasks_inner_frame_url);
     *write_url = true;
-
-    // Don't let users copy Reader Mode page URLs.
-    // We display the original article's URL in the omnibox, so users will
-    // expect that to be what is copied to the clipboard.
-    if (web_distiller::url_utils::IsDistilledPage(*url_from_text)) {
-      *url_from_text = web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
-          *url_from_text);
-    }
-    // Don't let users copy Contextual Task URLs. We should let them copy the
-    // inner frame URL instead.
-    if (!contextual_tasks_inner_frame_url.is_empty()) {
-      *url_from_text = contextual_tasks_inner_frame_url;
-    }
-
     *text = base::UTF8ToUTF16(url_from_text->spec());
     return;
   }

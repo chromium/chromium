@@ -38,6 +38,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -152,6 +153,8 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
         EXPECT_TRUE(state->url_emphasis);
         EXPECT_TRUE(state->unelided_url_emphasis);
         EXPECT_TRUE(state->prefers_url_input);
+        // The handler has no `OmniboxController` to get the page's URL from.
+        EXPECT_TRUE(state->drag_url.is_empty());
       });
   handler_->SetInputState(test_text, test_selection,
                           /*user_input_in_progress=*/true, full_url,
@@ -871,6 +874,61 @@ TEST_F(OmniboxPopupHandlerTest, SetInputStatePopulatesCurrentMatch) {
   EXPECT_FALSE(captured_state->current_match->suggest_template->primary_text
                    ->text.empty());
   EXPECT_FALSE(captured_state->current_match->icon_path.empty());
+}
+
+// `OmniboxInputState.drag_url` is the URL of the page, which the texts that
+// the omnibox shows for the page can differ from, e.g. they omit "http://".
+TEST_F(OmniboxPopupHandlerTest, SetInputStateDragUrl) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto* client = static_cast<TestOmniboxClient*>(omnibox_controller->client());
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  auto handler = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  auto set_input_state_and_take_drag_url =
+      [&](const std::string& permanent_display_text) {
+        GURL drag_url;
+        EXPECT_CALL(local_page, SetInputState(testing::_))
+            .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
+              drag_url = state->drag_url;
+            });
+        handler->SetInputState(permanent_display_text, gfx::Range(0, 0),
+                               /*user_input_in_progress=*/false,
+                               /*full_url=*/permanent_display_text,
+                               /*is_focused=*/true, permanent_display_text,
+                               /*show_full_url=*/false,
+                               omnibox_popup::mojom::MatchesUpdate::kDefault,
+                               /*keyword_model=*/nullptr,
+                               /*is_tab_switch=*/false);
+        local_page.FlushForTesting();
+        return drag_url;
+      };
+
+  const GURL url("http://www.example.com/path");
+  client->location_bar_model()->set_url(url);
+  EXPECT_EQ(set_input_state_and_take_drag_url("example.com/path"), url);
+
+  // Without permanent text, e.g. on the New Tab Page, there is no URL to drag.
+  EXPECT_TRUE(set_input_state_and_take_drag_url("").is_empty());
+
+  // The browser blocks a URL that the page's process may not request, e.g. a
+  // view-source: URL, in a drag from the page, so there is no URL to drag.
+  client->location_bar_model()->set_url(
+      GURL("view-source:http://www.example.com/path"));
+  EXPECT_TRUE(
+      set_input_state_and_take_drag_url("view-source:www.example.com/path")
+          .is_empty());
+
+  // Like a copy, a drag has the URL of the inner frame of a contextual tasks
+  // page rather than the URL of the page.
+  const GURL inner_frame_url("https://www.google.com/search?q=hello&udm=50");
+  client->location_bar_model()->set_url(url);
+  ON_CALL(*client, GetContextualTasksInnerFrameURL())
+      .WillByDefault(testing::Return(inner_frame_url));
+  EXPECT_EQ(set_input_state_and_take_drag_url("google.com/search?q=hello"),
+            inner_frame_url);
 }
 
 }  // namespace

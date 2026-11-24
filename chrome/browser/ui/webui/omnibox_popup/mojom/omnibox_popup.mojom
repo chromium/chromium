@@ -7,6 +7,7 @@ module omnibox_popup.mojom;
 import "components/omnibox/browser/searchbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
+import "url/mojom/url.mojom";
 
 // How the WebUI omnibox should update its autocomplete matches for a new
 // `OmniboxInputState`.
@@ -62,6 +63,12 @@ struct OmniboxInputState {
   // Whether the input expects URLs rather than search queries. See
   // `OmniboxViewViews::GetPreferredTextInputType()`.
   bool prefers_url_input;
+  // The URL to drag, in place of the text, when all of the unedited permanent
+  // text is dragged out of the Omnibox, whether it shows
+  // `permanent_display_text` or `full_url`. Both of those are formatted for
+  // display, e.g. they omit "http://", so they can differ from the URL. Empty
+  // if there is no such URL, or the page may not drag it.
+  url.mojom.Url drag_url;
 };
 
 // Browser-side handler for the Omnibox Popup.

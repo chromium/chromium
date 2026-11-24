@@ -358,3 +358,23 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopyReaderMode) {
   EXPECT_EQ(article_url, url);
   EXPECT_TRUE(write_url);
 }
+
+// Tests the URL that a copy of all of the unmodified omnibox text writes.
+TEST_F(OmniboxTextUtilTest, GetUrlForCopyOfUnmodifiedText) {
+  const GURL page_url("http://www.example.com/path");
+  EXPECT_EQ(page_url, omnibox::GetUrlForCopyOfUnmodifiedText(page_url, GURL()));
+
+  // The original article's URL for a Reader Mode page.
+  const GURL article_url("https://www.example.com/article.html");
+  const GURL distiller_url =
+      web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+          web_distiller::kWebDistillerScheme, article_url, "title");
+  EXPECT_EQ(article_url,
+            omnibox::GetUrlForCopyOfUnmodifiedText(distiller_url, GURL()));
+
+  // The inner frame's URL for a contextual tasks page.
+  const GURL inner_frame_url(
+      "https://www.google.com/search?q=hello+world&udm=50");
+  EXPECT_EQ(inner_frame_url,
+            omnibox::GetUrlForCopyOfUnmodifiedText(page_url, inner_frame_url));
+}

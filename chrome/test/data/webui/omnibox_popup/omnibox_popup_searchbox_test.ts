@@ -76,6 +76,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     unelidedUrlEmphasis: null,
     currentMatch: null,
     prefersUrlInput: true,
+    dragUrl: '',
     ...overrides,
   };
 }
@@ -7272,6 +7273,16 @@ suite('OmniboxPopupSearchboxTest', function() {
          'drop', {clientX: Math.round((endX + rect.right) / 2), ...init});
    }
 
+   // Drops `data`, which maps the types of a drag from outside the input to
+   // their data, on the input.
+   function dropFromOutside(data: Record<string, string>): DragEvent {
+     const dataTransfer = new DataTransfer();
+     for (const [type, value] of Object.entries(data)) {
+       dataTransfer.setData(type, value);
+     }
+     return dispatchDragEvent('drop', {dataTransfer});
+   }
+
    async function undo() {
      input.dispatchEvent(new InputEvent('beforeinput', {
        inputType: 'historyUndo',
@@ -7323,6 +7334,86 @@ suite('OmniboxPopupSearchboxTest', function() {
      assertEquals('helloworld', input.value);
      assertEquals(0, input.selectionStart);
      assertEquals(5, input.selectionEnd);
+   });
+
+   // Like the native omnibox, dragging all of the page's URL drags the URL
+   // itself rather than the text shown for it, here for an HTTP page: neither
+   // the elided text nor the unelided "full" URL has the URL's scheme.
+   test('DragStartOfAllOfUrlDragsPageUrl', async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: 'example.com/path',
+       permanentDisplayText: 'example.com/path',
+       fullUrl: 'www.example.com/path',
+       dragUrl: 'http://www.example.com/path',
+       isFocused: true,
+       selection: {start: 0, end: 16},
+     }));
+     await microtasksFinished();
+     assertEquals('example.com/path', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(16, input.selectionEnd);
+
+     // The elided URL.
+     let dataTransfer = dispatchDragEvent('dragstart').dataTransfer!;
+     assertEquals(
+         'http://www.example.com/path', dataTransfer.getData('text/plain'));
+     assertEquals(
+         'http://www.example.com/path', dataTransfer.getData('text/uri-list'));
+     dispatchDragEvent('dragend');
+
+     // The unelided URL.
+     callbackRouter.setFocus(
+         true, /*queryZps=*/ false, /*selectAll=*/ true,
+         /*showFullUrl=*/ true);
+     await microtasksFinished();
+     assertEquals('www.example.com/path', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(20, input.selectionEnd);
+     dataTransfer = dispatchDragEvent('dragstart').dataTransfer!;
+     assertEquals(
+         'http://www.example.com/path', dataTransfer.getData('text/plain'));
+     assertEquals(
+         'http://www.example.com/path', dataTransfer.getData('text/uri-list'));
+   });
+
+   // Dragging anything but all of the page's unedited URL drags the selected
+   // text, which Blink writes to the drag.
+   //
+   // This intentionally differs from the native omnibox for "example.com" and
+   // for the user's text below. The native omnibox classifies selected text
+   // that starts at the start of the input and, if it's an http(s) URL on the
+   // page's host, drags that URL, e.g. "https://example.com/", which the drop
+   // target can also link to (see `OmniboxEditModel::AdjustTextForCopy()`).
+   // The page doesn't, since the classifier is in the browser and the drag
+   // data has to be written during `dragstart`.
+   // TODO(crbug.com/586657837): Drag the URL for such text too, but without an
+   // IPC on every selection change.
+   test('DragStartOfOtherTextDragsText', async () => {
+     async function assertDragsText(state: Partial<OmniboxInputState>) {
+       callbackRouter.setInputState(createDefaultOmniboxInputState({
+         text: 'example.com/path',
+         permanentDisplayText: 'example.com/path',
+         fullUrl: 'https://example.com/path',
+         dragUrl: 'https://example.com/path',
+         isFocused: true,
+         selection: {start: 0, end: 16},
+         ...state,
+       }));
+       await microtasksFinished();
+       const dataTransfer = dispatchDragEvent('dragstart').dataTransfer!;
+       assertEquals('', dataTransfer.getData('text/plain'));
+       assertEquals('', dataTransfer.getData('text/uri-list'));
+       dispatchDragEvent('dragend');
+     }
+
+     // Part of the URL.
+     await assertDragsText({selection: {start: 0, end: 11}});
+     // The user's own text, even if it's the same as the URL's.
+     await assertDragsText({userInputInProgress: true});
+     // Other text, e.g. of a match.
+     await assertDragsText({text: 'example.org/path'});
+     // No URL to drag.
+     await assertDragsText({dragUrl: ''});
    });
 
    test('DropOnSelfMovesText', async () => {
@@ -7406,17 +7497,172 @@ suite('OmniboxPopupSearchboxTest', function() {
      assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
    });
 
-   test('LeavesDropOfOtherTextToBlink', async () => {
-     // A drop of text dragged from elsewhere, or a drop after the drag of the
-     // input's text ended.
-     const otherDrop = dropPastEnd();
-     dispatchDragEvent('dragstart');
-     dispatchDragEvent('dragend');
-     const lateDrop = dropPastEnd();
+   // Like the native omnibox, a drop of a link dragged from outside the input
+   // replaces all of the text with the link's URL, rather than inserting it at
+   // the drop point, and selects it.
+   test('DropOfUrlFromOutsideReplacesText', async () => {
+     const drop = dropFromOutside({
+       'text/uri-list': 'https://example.com/a',
+       'text/plain': 'A link',
+     });
      await microtasksFinished();
 
-     assertFalse(otherDrop.defaultPrevented);
-     assertFalse(lateDrop.defaultPrevented);
+     assertTrue(drop.defaultPrevented);
+     assertEquals('https://example.com/a', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(21, input.selectionEnd);
+     // The URL is user input. Inline autocompletion is prevented, since it
+     // would replace the selection.
+     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+     const [, , queryText, preventInlineAutocomplete] =
+         testProxy.handler.getArgs('queryAutocomplete')[0];
+     assertEquals('https://example.com/a', queryText);
+     assertTrue(preventInlineAutocomplete);
+
+     // The drop is a single edit.
+     await undo();
+     assertEquals('helloworld', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(5, input.selectionEnd);
+     await redo();
+     assertEquals('https://example.com/a', input.value);
+   });
+
+   test('DropOfUrlsFromOutsideDropsFirstUrl', async () => {
+     const drop = dropFromOutside({
+       'text/uri-list': '# A comment\r\nhttps://a.test/\r\nhttps://b.test/',
+     });
+     await microtasksFinished();
+
+     assertTrue(drop.defaultPrevented);
+     assertEquals('https://a.test/', input.value);
+   });
+
+   // Like the native omnibox, dropped text has its whitespace collapsed, and
+   // then any "javascript:" scheme stripped, like pasted text.
+   test('DropOfTextFromOutsideIsSanitized', async () => {
+     const testCases: Array<{text: string, expected: string}> = [
+       {text: 'foo bar', expected: 'foo bar'},
+       // Leading and trailing whitespace is removed. Other whitespace is
+       // removed if it has a line break, and reduced to a space otherwise.
+       {text: ' \t foo \u3000 bar \n', expected: 'foo bar'},
+       {text: 'foo \r\n bar', expected: 'foobar'},
+       {text: 'javascript:alert(1)', expected: 'alert(1)'},
+       {text: ' JavaScript: javascript:alert(2)', expected: 'alert(2)'},
+       // A scheme that only forms once a line break is removed.
+       {text: 'java\r\nscript:alert(3)', expected: 'alert(3)'},
+       // U+0085 is whitespace too, although `\s` doesn't match it.
+       {text: '\u0085javascript:alert(4)', expected: 'alert(4)'},
+       // Not a scheme.
+       {text: 'java script:alert(5)', expected: 'java script:alert(5)'},
+     ];
+
+     for (const {text, expected} of testCases) {
+       const drop = dropFromOutside({'text/plain': text});
+       await microtasksFinished();
+
+       assertTrue(drop.defaultPrevented, text);
+       assertEquals(expected, input.value, text);
+       assertEquals(0, input.selectionStart, text);
+       assertEquals(expected.length, input.selectionEnd, text);
+     }
+   });
+
+   // The browser passes a placeholder for a dragged URL that this page may not
+   // request, e.g. a "javascript:" URL. The text of the drag, which for a link
+   // is its URL, is dropped instead.
+   test('DropOfBlockedUrlFromOutsideDropsText', async () => {
+     const drop = dropFromOutside({
+       'text/uri-list': 'about:blank#blocked',
+       'text/plain': 'javascript:alert(1)',
+     });
+     await microtasksFinished();
+
+     assertTrue(drop.defaultPrevented);
+     assertEquals('alert(1)', input.value);
+   });
+
+   // Like `OmniboxEditModel::SetUserText()` for a drop on the native omnibox.
+   test('DropFromOutsideLeavesKeywordMode', async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: 'query',
+       isFocused: true,
+       userInputInProgress: true,
+       selection: {start: 5, end: 5},
+       keywordModel: {
+         type: KeywordType.kInKeyword,
+         keyword: 'youtube.com',
+         displayText: 'Search YouTube',
+         iconPath: '',
+         placeholder: '',
+       },
+     }));
+     await microtasksFinished();
+     assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+     testProxy.handler.reset();
+
+     dropFromOutside({'text/plain': 'dropped'});
+     await microtasksFinished();
+
+     assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+     assertEquals('dropped', input.value);
+     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+     const queryArgs = testProxy.handler.getArgs('queryAutocomplete')[0];
+     assertEquals('dropped', queryArgs[2]);
+     // No keyword.
+     assertEquals('', queryArgs[7]);
+   });
+
+   test('DropFromOutsideThatLeavesNoTextClearsInput', async () => {
+     const drop = dropFromOutside({'text/plain': ' javascript: '});
+     await microtasksFinished();
+
+     assertTrue(drop.defaultPrevented);
+     assertEquals('', input.value);
+     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+     assertEquals(1, handler.getCallCount('onInputCleared'));
+
+     await undo();
+     assertEquals('helloworld', input.value);
+   });
+
+   // Like the native omnibox, a drop focuses the omnibox, e.g. when text is
+   // dragged from the page while the input shows an unfocused draft.
+   test('DropFromOutsideFocusesInput', async () => {
+     input.blur();
+     await microtasksFinished();
+     assertEquals(null, searchbox.shadowRoot.activeElement);
+
+     dropFromOutside({'text/plain': 'dropped'});
+     await microtasksFinished();
+
+     assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+     assertEquals('dropped', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(7, input.selectionEnd);
+   });
+
+   // Once the drag of the input's own text has ended, a drop is one from
+   // outside again, which replaces the text rather than moving it.
+   test('DropAfterOwnDragEndedIsFromOutside', async () => {
+     dispatchDragEvent('dragstart');
+     dispatchDragEvent('dragend');
+     const drop = dropFromOutside({'text/plain': 'dropped'});
+     await microtasksFinished();
+
+     assertTrue(drop.defaultPrevented);
+     assertEquals('dropped', input.value);
+   });
+
+   // A drop that has neither a URL nor text, e.g. of files, is left to Blink,
+   // which inserts no text for it.
+   test('LeavesDropWithoutUrlOrTextToBlink', async () => {
+     const dataTransfer = new DataTransfer();
+     dataTransfer.items.add(new File(['content'], 'file.txt'));
+     const drop = dispatchDragEvent('drop', {dataTransfer});
+     await microtasksFinished();
+
+     assertFalse(drop.defaultPrevented);
      assertEquals('helloworld', input.value);
      assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
    });

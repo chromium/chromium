@@ -47,6 +47,18 @@ std::u16string SanitizeTextForPaste(const std::u16string& text);
 // locale's preferred direction. Returns an empty string if `text` is empty.
 std::u16string FormatAdditionalText(std::u16string_view text);
 
+// Returns the URL that `AdjustTextForCopy()` writes for all of the omnibox's
+// text when the user hasn't modified it, whether that text is elided or not.
+// That's `navigation_entry_url`, the URL of the current page, except that it's
+// the original article's URL for a Reader Mode page, and
+// `contextual_tasks_inner_frame_url` if that isn't empty.
+//
+// Unlike `AdjustTextForCopy()`, this needs no `AutocompleteClassifier`, so
+// getting this URL doesn't create one.
+GURL GetUrlForCopyOfUnmodifiedText(
+    const GURL& navigation_entry_url,
+    const GURL& contextual_tasks_inner_frame_url);
+
 // Adjusts the copied text before writing it to the clipboard. If the copied
 // text is a URL with the scheme elided, this method reattaches the scheme.
 //

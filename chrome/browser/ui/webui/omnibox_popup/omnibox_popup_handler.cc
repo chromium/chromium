@@ -31,14 +31,20 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_logging_utils.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/suggest_template_info_mojo_utils.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_type.h"
@@ -47,6 +53,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -330,6 +337,7 @@ void OmniboxPopupHandler::SetInputState(
     input_method_observation_.Observe(input_method);
   }
   state->prefers_url_input = PrefersUrlInput(input_method);
+  state->drag_url = GetDragUrl(permanent_display_text);
   // Extract active tab ID if in a Chrome browser window context.
   if (controller_ && controller_->client()->IsChromeOmniboxClient()) {
     auto* chrome_client =
@@ -605,4 +613,35 @@ searchbox::mojom::UrlEmphasisPtr OmniboxPopupHandler::ComputeUrlEmphasis(
       base::UTF8ToUTF16(text), text_is_url,
       /*include_security_style=*/!is_user_input,
       controller_ ? controller_->client() : nullptr);
+}
+
+GURL OmniboxPopupHandler::GetDragUrl(
+    const std::string& permanent_display_text) const {
+  if (!controller_ || !web_contents_ || permanent_display_text.empty()) {
+    return GURL();
+  }
+
+  // The URL that `OmniboxViewViews::OnWriteDragData()` writes for a selection
+  // of all of the unedited permanent text, whichever text the omnibox shows
+  // right now. This doesn't call `OmniboxEditModel::AdjustTextForCopy()` for
+  // it, since that requests the `AutocompleteClassifier`, which creates it if
+  // it doesn't exist yet, and this runs for every input state.
+  OmniboxClient* const client = controller_->client();
+  const GURL url = omnibox::GetUrlForCopyOfUnmodifiedText(
+      client->GetNavigationEntryURL(),
+      client->GetContextualTasksInnerFrameURL());
+  if (!url.is_valid()) {
+    return GURL();
+  }
+
+  // The page writes the URL to the drag. In a drag, the browser replaces a URL
+  // that the page's process may not request, e.g. a view-source: URL, with
+  // `content::kBlockedURL` (see `RenderWidgetHostImpl::StartDragging()`).
+  // Leave such a URL out, so that the page drags its text instead.
+  if (!content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
+          web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+          url)) {
+    return GURL();
+  }
+  return url;
 }

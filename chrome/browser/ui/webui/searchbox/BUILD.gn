@@ -392,6 +392,7 @@ if (enable_webui_ntp && !is_android) {
     }
     if (use_aura) {
       deps += [
+        "//chrome/test/base:drag_and_drop_test_utils",
         "//ui/aura",
         "//ui/aura:test_support",
       ]

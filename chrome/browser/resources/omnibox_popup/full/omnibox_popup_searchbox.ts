@@ -18,7 +18,7 @@ import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_m
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {ControlKeyState, SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {selectionIsNativelySupported, selectionsEqual} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
-import {afterNextPaint, markOnce, sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
+import {afterNextPaint, markOnce, sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -71,6 +71,54 @@ function isNtpUrl(url: string): boolean {
  * Matches Blink's native drag threshold.
  */
 const DRAG_THRESHOLD_PX = 3;
+
+/**
+ * The URL that the browser passes to a page in place of a dragged URL that the
+ * page may not request, e.g. a "javascript:" URL. See `content::kBlockedURL`.
+ */
+const BLOCKED_URL = 'about:blank#blocked';
+
+/**
+ * Sequences of whitespace as `base::IsUnicodeWhitespace()` defines it. Unlike
+ * `\s`, that includes U+0085 and excludes U+FEFF.
+ */
+const WHITESPACE_SEQUENCES =
+    /[\t-\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+/g;
+
+/**
+ * Like `base::CollapseWhitespace(text, true)`, removes leading and trailing
+ * whitespace and whitespace sequences that contain a line break, and reduces
+ * every other whitespace sequence to a single space.
+ */
+function collapseWhitespace(text: string): string {
+  return text.replace(WHITESPACE_SEQUENCES, (sequence, offset: number) => {
+    const isAtEdge = offset === 0 || offset + sequence.length === text.length;
+    return isAtEdge || /[\n\r]/.test(sequence) ? '' : ' ';
+  });
+}
+
+/**
+ * Returns the text that a drop of `dataTransfer`, dragged from outside the
+ * input, sets in the input, or null if the drag has neither a URL nor text
+ * (e.g. files). Like `OmniboxViewViews::PerformDrop()`, that's the first URL
+ * of the drag, or else its text with its whitespace collapsed, in both cases
+ * without any "javascript:" scheme, so that it can't be run from the omnibox.
+ */
+function getTextToDrop(dataTransfer: DataTransfer|null): string|null {
+  if (!dataTransfer) {
+    return null;
+  }
+  // The first URL of 'text/uri-list'. For a URL that the browser blocked, use
+  // the text of the drag, which for a link is its URL.
+  const url = dataTransfer.getData('URL');
+  if (url && url !== BLOCKED_URL) {
+    return stripJavascriptSchemas(url);
+  }
+  // The whitespace is collapsed first, since removing a line break can form a
+  // "javascript:" scheme.
+  const text = dataTransfer.getData('text/plain');
+  return text ? stripJavascriptSchemas(collapseWhitespace(text)) : null;
+}
 
 export interface AimButtonConfig {
   text: string;
@@ -363,6 +411,10 @@ export class OmniboxPopupSearchboxElement extends
   private lastSelectedMatch_: AutocompleteMatch|null = null;
   private accessor fullUrl_: string = '';
   private accessor permanentDisplayText_: string = '';
+  // The URL to drag when all of the unedited permanent text is dragged out of
+  // the input, or empty if there is none. Unlike `fullUrl_`, which is formatted
+  // for display, e.g. without "http://", this is the URL of the page itself.
+  private dragUrl_: string = '';
   protected accessor aimButtonIconOnly_: boolean = false;
   // Set by the browser, like the Views omnibox's text input type.
   protected accessor textInputType_: 'url'|'search' = 'search';
@@ -1138,9 +1190,18 @@ export class OmniboxPopupSearchboxElement extends
       text: input.value,
       selection: {start: Math.min(start, end), end: Math.max(start, end)},
     };
-    // Like the native omnibox, allow both copying and moving the text.
     if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'copyMove';
+      // Like `OmniboxViewViews::OnWriteDragData()`, if all of the unedited
+      // text is selected, drag the URL of the page rather than the text shown
+      // for it, which may be elided.
+      const url = this.isPermanentTextAllSelected_() ? this.dragUrl_ : '';
+      if (url) {
+        e.dataTransfer.setData('text/plain', url);
+        e.dataTransfer.setData('text/uri-list', url);
+      }
+      // Like the native omnibox, allow both copying and moving the text, and
+      // also linking to a URL.
+      e.dataTransfer.effectAllowed = url ? 'all' : 'copyMove';
     }
     // Like `OmniboxViewViews::OnMouseDragged()`, close the dropdown, since the
     // user may want to drop the text on something that it covers.
@@ -1156,12 +1217,17 @@ export class OmniboxPopupSearchboxElement extends
    * `views::Textfield::DropDraggedText()`: moves the text to where it's
    * dropped, or copies it there if the copy modifier is held, as a single
    * undoable edit, and puts the caret after the dropped text rather than
-   * selecting it. Blink handles other drops.
+   * selecting it. Drops of anything else are handled by
+   * `onDropFromOutside_()`.
    */
   private onInputDrop_(e: DragEvent) {
     const drag = this.textDrag_;
+    if (!drag) {
+      this.onDropFromOutside_(e);
+      return;
+    }
     const input = this.getInputElement().inputElement;
-    if (!drag || input.value !== drag.text) {
+    if (input.value !== drag.text) {
       return;
     }
     const caretPosition = document.caretPositionFromPoint(
@@ -1175,8 +1241,7 @@ export class OmniboxPopupSearchboxElement extends
     const {start, end} = drag.selection;
     const draggedText = drag.text.substring(start, end);
     let position = caretPosition.offset;
-    // Like Blink, which handles drops of other text, use the platform's copy
-    // modifier.
+    // Like Blink, use the platform's copy modifier.
     const isCopy = isMac ? e.altKey : e.ctrlKey;
     if (!isCopy) {
       // Account for the removal of the dragged text before the drop position.
@@ -1219,6 +1284,57 @@ export class OmniboxPopupSearchboxElement extends
           newValue, /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ false);
     } else {
       this.clearAutocompleteMatches();
+    }
+  }
+
+  /**
+   * Handles a drop of a URL or text dragged from outside the input, e.g. a
+   * link of the page, like `OmniboxViewViews::PerformDrop()`: rather than
+   * inserting it where it's dropped, replaces all of the input's text with it
+   * (see `getTextToDrop()`) as user input, selects it and focuses the input.
+   * Leaves a drop of anything else to Blink, which inserts no text for it.
+   */
+  private onDropFromOutside_(e: DragEvent) {
+    const text = getTextToDrop(e.dataTransfer);
+    if (text === null) {
+      return;
+    }
+    e.preventDefault();
+
+    // Like `OmniboxEditModel::SetUserText()`, leave keyword mode.
+    this.keywordModeManager.exit();
+
+    // Record the drop as a single edit, which undo reverts to the text and
+    // selection from before it.
+    const input = this.getInputElement().inputElement;
+    this.syncTextfieldModelWithInput_(input.value);
+    this.textfieldModel_.selectRange(
+        {start: input.selectionStart ?? 0, end: input.selectionEnd ?? 0});
+    this.textfieldModel_.replaceAllText(text);
+    const selection = {start: 0, end: text.length};
+    this.textfieldModel_.selectRange(selection);
+    this.lastInputText_ = text;
+    this.lastInputSelection_ = selection;
+    this.updateEditHistoryState_();
+
+    this.userInputInProgress_ = true;
+    this.hasUserInput_ = !!text.trim();
+    this.getInputElement().setInput({text, inline: ''});
+    this.$.input.focus();
+    this.getInputElement().select();
+    this.updateAimButtonCollapse_();
+
+    if (!this.isInputCleared_(text)) {
+      // The query also sets the text in the browser. So, unlike
+      // `OmniboxViewViews::PerformDrop()`, which only starts autocomplete if
+      // the omnibox has focus, this also queries if the input wasn't focused.
+      // All of the text is selected, which inline autocompletion would
+      // replace with a selection of the autocompleted text.
+      this.queryAutocomplete(
+          text, /*preventInlineAutocomplete=*/ true, /*isOnFocus=*/ false);
+    } else {
+      this.clearAutocompleteMatches();
+      this.popupPageHandler_.onInputCleared(this.currentSequenceNum_);
     }
   }
 
@@ -1490,6 +1606,20 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   /**
+   * Returns whether the input shows the unedited permanent text, either elided
+   * (`permanentDisplayText_`) or not (`fullUrl_`), and all of it is selected.
+   * Like `OmniboxEditModel::AdjustTextForCopy()`, this compares the text, since
+   * an unedited input can also show other text, e.g. of a selected match.
+   */
+  private isPermanentTextAllSelected_(): boolean {
+    const input = this.getInputElement().inputElement;
+    return !this.userInputInProgress_ && !!input.value &&
+        (input.value === this.permanentDisplayText_ ||
+         input.value === this.fullUrl_) &&
+        input.selectionStart === 0 && input.selectionEnd === input.value.length;
+  }
+
+  /**
    * Unelides the URL, keeping the caret (or selection) on the same characters
    * by shifting it past the prefix (e.g. "https://www.") that was elided. Does
    * nothing if all the text is selected. Compare
@@ -1691,6 +1821,7 @@ export class OmniboxPopupSearchboxElement extends
     this.tabId_ = state.tabId;
     this.fullUrl_ = state.fullUrl;
     this.permanentDisplayText_ = state.permanentDisplayText;
+    this.dragUrl_ = state.dragUrl;
     this.textInputType_ = state.prefersUrlInput ? 'url' : 'search';
     this.isComposing_ = false;
     const keywordChanged =
