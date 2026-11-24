@@ -596,7 +596,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1651609627703324721">Bu tab qulaqlıq üçün VR kontenti göstərir</translation>
 <translation id="1652281434788353738">Düşündürücü</translation>
 <translation id="1652862280638399816">MacOS Keychain ilə Parol Menecerindən istifadə üçün Chromium-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
-<translation id="165391572855525850">giriş məlumatları, giriş, giriş açarı, kilid, kassa, açarlar</translation>
 <translation id="165448107578581061">Gemini tapşırığınız üzərində işləyir...</translation>
 <translation id="1654580009054503925">Sorğular göstərməsinə icazə verilməyib</translation>
 <translation id="1656528038316521561">Arxa fonun qeyri-şəffaflığı</translation>
@@ -5710,7 +5709,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7285008278689343502">Grand Teton Milli Parkı</translation>
 <translation id="7286867818472074330">Giriş açarı seçin</translation>
 <translation id="7287949630503871403">Tətbiqdə saxlanılan data</translation>
-<translation id="7288054329308394475">silmək, sil, təhlükəsizlik, məxfilik, təmizləmə, yaddaş, sıfırlama, keş, kukilər, yavaş, sürət</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974"><ph name="INDEX" /> indeksli son <ph name="SUBJECT" /> AI teması</translation>
 <translation id="7289049772085228972">Chrome-un ən güclü təhlükəsizlik sistemi tətbiq edilir</translation>
@@ -6715,7 +6713,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8403807918453631441">Parollarınızı yadda saxladıqda <ph name="BRAND" /> onları yoxlaya bilər</translation>
 <translation id="8405118833120731611">{0,plural, =1{Bu profili bağlayın}other{Bu profili bağlayın (# pəncərə)}}</translation>
 <translation id="8407199357649073301">Giriş Səviyyəsi:</translation>
-<translation id="8407985628044864418">sürət, RAM, gecikmə, donma, çökmə, resurs, istifadə, batareya, optimizator, yavaşlama</translation>
 <translation id="8410079205308393430">Təkliflər göstərilsin</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> və daha <ph name="COUNT" /> üçün icazə verilib</translation>
 <translation id="8413795581997394485">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Sayta daxil olduqda Chrome IP ünvanını gizlədən məxfilik serveri vasitəsilə URL-in qarışıq bir hissəsini Google-a göndərir. Sayt şübhəli nəsə edərsə, tam URL və kiçik səhifə kontenti nümunələri də göndərilir.</translation>

@@ -595,7 +595,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1651609627703324721">Thẻ này đang trình bày nội dung Thực tế ảo đến một tai nghe.</translation>
 <translation id="1652281434788353738">Trầm tư</translation>
 <translation id="1652862280638399816">Để sử dụng Trình quản lý mật khẩu cùng với macOS Keychain, hãy chạy lại Chromium và cho phép truy cập Keychain. Các thẻ sẽ mở lại sau khi bạn chạy lại Chrome.</translation>
-<translation id="165391572855525850">thông tin đăng nhập, mật khẩu, quản lý mật khẩu, khoá truy cập, lưu mật khẩu, tự điền mật khẩu, xoá mật khẩu</translation>
 <translation id="165448107578581061">Gemini đang xử lý yêu cầu của bạn...</translation>
 <translation id="1654580009054503925">Không được phép hiện yêu cầu</translation>
 <translation id="1656528038316521561">Độ mờ của nền</translation>
@@ -5719,7 +5718,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7285008278689343502">Vườn quốc gia Grand Teton</translation>
 <translation id="7286867818472074330">Chọn khoá truy cập</translation>
 <translation id="7287949630503871403">Dữ liệu lưu trữ trong ứng dụng</translation>
-<translation id="7288054329308394475">xoá dữ liệu, loại bỏ dữ liệu, bảo mật dữ liệu, quyền riêng tư đối với dữ liệu, dọn dẹp dữ liệu, bộ nhớ duyệt web, đặt lại, xoá bộ nhớ đệm, xoá cache, xoá cookie, duyệt web chậm, tăng tốc độ duyệt web</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Giao diện AI tạo gần đây <ph name="INDEX" /> về <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Bạn đang dùng chế độ bảo mật mạnh nhất của Chrome</translation>
@@ -6723,7 +6721,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8403807918453631441"><ph name="BRAND" /> có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó</translation>
 <translation id="8405118833120731611">{0,plural, =1{Đóng hồ sơ này}one{Close this profile (# windows)}other{Đóng hồ sơ này (# cửa sổ)}}</translation>
 <translation id="8407199357649073301">Cấp độ nhật ký:</translation>
-<translation id="8407985628044864418">tốc độ, RAM, độ trễ, máy đơ, khắc phục sự cố, quản lý tài nguyên, quản lý hiệu suất, pin, trình tối ưu hoá, chạy chậm</translation>
 <translation id="8410079205308393430">Hiện gợi ý</translation>
 <translation id="8412136526970428322">Đã cho phép <ph name="PERMISSION" /> và <ph name="COUNT" /> quyền khác</translation>
 <translation id="8413795581997394485">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Khi bạn truy cập vào một trang web, Chrome sẽ gửi cho Google một phần URL đã làm rối mã nguồn thông qua một máy chủ đảm bảo quyền riêng tư giúp ẩn địa chỉ IP của bạn. Nếu một trang web có hành vi đáng ngờ, thì Chrome cũng sẽ gửi URL đầy đủ và các đoạn nội dung trên trang cho Google.</translation>

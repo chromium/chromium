@@ -594,7 +594,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1651609627703324721">Ta karta prezentuje treści VR na goglach</translation>
 <translation id="1652281434788353738">Refleksyjny</translation>
 <translation id="1652862280638399816">Aby używać Menedżera haseł z pękiem kluczy macOS, uruchom ponownie Chromium i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
-<translation id="165391572855525850">dane logowania, logowanie, klucz dostępu, blokada, sejf, klucze</translation>
 <translation id="165448107578581061">Gemini pracuje nad Twoim zadaniem…</translation>
 <translation id="1654580009054503925">Nie zezwolono na wyświetlanie żądań</translation>
 <translation id="1656528038316521561">Przezroczystość tła</translation>
@@ -5691,7 +5690,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7285008278689343502">Park Narodowy Grand Teton</translation>
 <translation id="7286867818472074330">Wybierz klucz dostępu</translation>
 <translation id="7287949630503871403">Dane zapisane w aplikacji</translation>
-<translation id="7288054329308394475">usuń, usuwanie, bezpieczeństwo, prywatność, czyszczenie, pamięć, resetowanie, pamięć podręczna, pliki cookie, wolno, szybkość</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Ostatni motyw AI: <ph name="INDEX" />, temat: <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Korzystasz z najlepszych zabezpieczeń Chrome</translation>
@@ -6695,7 +6693,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8403807918453631441"><ph name="BRAND" /> będzie mógł sprawdzać Twoje hasła, gdy je zapiszesz</translation>
 <translation id="8405118833120731611">{0,plural, =1{Zamknij ten profil}few{Zamknij ten profil (# okna)}many{Zamknij ten profil (# okien)}other{Zamknij ten profil (# okna)}}</translation>
 <translation id="8407199357649073301">Poziom rejestrowania:</translation>
-<translation id="8407985628044864418">szybkość, RAM, opóźnienie, zawieszenie, awaria, zasób, wykorzystanie, bateria, optymalizator, wolno</translation>
 <translation id="8410079205308393430">Pokaż sugestie</translation>
 <translation id="8412136526970428322">Przyznano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Chroni przed stronami, pobieranymi plikami i rozszerzeniami, o których wiadomo, że są niebezpieczne. Gdy wchodzisz na stronę, Chrome wysyła zaciemniony fragment adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona robi coś podejrzanego, wysyłane są też pełne adresy URL i fragmenty zawartości strony.</translation>

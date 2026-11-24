@@ -594,7 +594,6 @@
 <translation id="1651609627703324721">‏یہ ٹیب ایک ہیڈ سیٹ پر VR مواد پیش کر رہا ہے</translation>
 <translation id="1652281434788353738">فکر انگیز</translation>
 <translation id="1652862280638399816">‏macOS Keychain کے ساتھ پاس ورڈ مینیجر کا استعمال کرنے کے لیے، Chromium کو بند کر کے دوبارہ چلائیں اور Keychain تک رسائی کی اجازت دیں۔ بند کر کے دوبارہ چلانے کے بعد، آپ کے ٹیبز دوبارہ کھل جائیں گے۔</translation>
-<translation id="165391572855525850">اسناد، سائن ان، پاس کی، لاک، والٹ، کلیدیں</translation>
 <translation id="165448107578581061">‏‫Gemini آپ کے ٹاسک پر کام کر رہا ہے...</translation>
 <translation id="1654580009054503925">درخواستیں دکھانے کی اجازت نہیں ہے</translation>
 <translation id="1656528038316521561">پس منظر کا دھندلا پن</translation>
@@ -5697,7 +5696,6 @@
 <translation id="7285008278689343502">گرینڈ ٹیٹن نیشنل پارک</translation>
 <translation id="7286867818472074330">پاس کی کو منتخب کریں</translation>
 <translation id="7287949630503871403">ایپ میں اسٹور کردہ ڈیٹا</translation>
-<translation id="7288054329308394475">حذف کریں، ہٹائیں، سیکیورٹی، رازداری، صفائی، اسٹوریج، ری سیٹ، کیش، کوکیز، سست، رفتار</translation>
 <translation id="7288676996127329262">‎<ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">‏<ph name="SUBJECT" /> کی حالیہ AI تھیم <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">‏آپ کے پاس Chrome کی مضبوط ترین سیکیورٹی ہے</translation>
@@ -6701,7 +6699,6 @@
 <translation id="8403807918453631441">جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو <ph name="BRAND" /> انہیں چیک کر سکتا ہے</translation>
 <translation id="8405118833120731611">{0,plural, =1{اس پروفائل کو بند کریں}other{اس پروفائل کو بند کریں (# ونڈوز)}}</translation>
 <translation id="8407199357649073301">لاگ کی سطح:</translation>
-<translation id="8407985628044864418">‏رفتار، RAM، وقفہ، منجمد، کریش، وسیلہ، استعمال، بیٹری، آپٹیمائزر، سست</translation>
 <translation id="8410079205308393430">تجاویز دکھائیں</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کی اجازت دی گئی</translation>
 <translation id="8413795581997394485">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chrome رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>

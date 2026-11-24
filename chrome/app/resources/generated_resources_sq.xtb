@@ -594,7 +594,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1651609627703324721">Kjo skedë po prezanton përmbajtje VR te një pajisje VR</translation>
 <translation id="1652281434788353738">E mirëmenduar</translation>
 <translation id="1652862280638399816">Për të përdorur "Menaxherin e fjalëkalimeve" me macOS Keychain, rihap Chromium dhe lejo qasjen për Keychain. Skedat e tua do të hapen përsëri pas rihapjes.</translation>
-<translation id="165391572855525850">kredencialet, identifikimi, çelësi i kalimit, kyçja, kasaforta, çelësat</translation>
 <translation id="165448107578581061">Gemini po punon për detyrën tënde...</translation>
 <translation id="1654580009054503925">Nuk lejohet të shfaqë kërkesat</translation>
 <translation id="1656528038316521561">Niveli i transparencës së sfondit</translation>
@@ -1381,6 +1380,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2519517390894391510">Emri i profilit të certifikatës</translation>
 <translation id="2520644704042891903">Po pret për folenë e lirë...</translation>
 <translation id="2522757085249311407">Lejo që pajisjet me Bluetooth në afërsi të zbulojnë dhe të lidhen me këtë pajisje.</translation>
+<translation id="2523048609826818526">Shkrimi për qëllime të përgjithshme</translation>
 <translation id="2523184218357549926">Dërgon te Google URL-të e faqeve që ti viziton</translation>
 <translation id="252513908494776481">Pyet për këtë skedë</translation>
 <translation id="2525746158911982776">Përditësimi dështoi sepse sistemi nuk ka hapësirë ruajtëse të mjaftueshme.</translation>
@@ -5698,7 +5698,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7285008278689343502">Parku kombëtar Grand Teton</translation>
 <translation id="7286867818472074330">Zgjidh çelësin e kalimit</translation>
 <translation id="7287949630503871403">Të dhënat e ruajtura në aplikacion</translation>
-<translation id="7288054329308394475">fshi, hiq, siguria, privatësia, pastrimi, hapësira ruajtëse, rivendos, memoria specifike, kukit, i ngadaltë, shpejtësia</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Tema e fundit me IA <ph name="INDEX" /> nga "<ph name="SUBJECT" />"</translation>
 <translation id="7289049772085228972">Ti ke sigurinë më të fortë të Chrome</translation>
@@ -6702,7 +6701,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8403807918453631441"><ph name="BRAND" /> mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="8405118833120731611">{0,plural, =1{Mbylle këtë profil}other{Mbylle këtë profil (# dritare)}}</translation>
 <translation id="8407199357649073301">Niveli i identifikimit:</translation>
-<translation id="8407985628044864418">shpejtësia, RAM, vonesa, ngrirja, ndërprerja aksidentale, burimi, përdorimi, bateria, optimizuesi, i ngadaltë</translation>
 <translation id="8410079205308393430">Shfaq sugjerimet</translation>
 <translation id="8412136526970428322">Të lejuara: <ph name="PERMISSION" /> dhe <ph name="COUNT" /> të tjera</translation>
 <translation id="8413795581997394485">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Kur ti viziton një sajt, Chrome dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>

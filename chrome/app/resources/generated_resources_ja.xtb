@@ -594,7 +594,6 @@
 <translation id="1651609627703324721">このタブはヘッドセットに VR コンテンツを配信しています</translation>
 <translation id="1652281434788353738">思慮深い</translation>
 <translation id="1652862280638399816">macOS キーチェーンでパスワード マネージャーを使用するには、Chromium を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
-<translation id="165391572855525850">認証情報, ログイン, パスキー, ロック, 保管, 鍵</translation>
 <translation id="165448107578581061">Gemini がタスクを処理しています...</translation>
 <translation id="1654580009054503925">リクエストの表示を許可しないウェブサイト</translation>
 <translation id="1656528038316521561">背景の不透明度</translation>
@@ -5696,7 +5695,6 @@
 <translation id="7285008278689343502">グランドティトン国立公園</translation>
 <translation id="7286867818472074330">パスキーを選択</translation>
 <translation id="7287949630503871403">アプリに保存されたデータ</translation>
-<translation id="7288054329308394475">削除, 削除する, セキュリティ, プライバシー, クリーンアップ, ストレージ, リセット, キャッシュ, Cookie, 遅い, 速度</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">最近の AI テーマ <ph name="INDEX" />/<ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Chrome の最高強度のセキュリティで保護されています</translation>
@@ -6700,7 +6698,6 @@
 <translation id="8403807918453631441">パスワードを保存すると、<ph name="BRAND" /> で確認できるようになります</translation>
 <translation id="8405118833120731611">{0,plural, =1{このプロフィールを閉じる}other{このプロフィールを閉じる（# 個のウィンドウ）}}</translation>
 <translation id="8407199357649073301">ログレベル:</translation>
-<translation id="8407985628044864418">速度, RAM, ラグ, フリーズ, クラッシュ, リソース, 使用量, バッテリー, オプティマイザー, 遅い</translation>
 <translation id="8410079205308393430">候補を表示する</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件を許可しました</translation>
 <translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>

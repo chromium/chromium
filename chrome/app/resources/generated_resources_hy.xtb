@@ -594,7 +594,6 @@
 <translation id="1651609627703324721">Այս ներդիրը VR բովանդակություն է հեռարձակում ակնոցին</translation>
 <translation id="1652281434788353738">Մտածկոտ</translation>
 <translation id="1652862280638399816">Google գաղտնաբառերի կառավարիչը macOS Keychain-ի միջոցով օգտագործելու համար վերագործարկեք Chromium-ը և թույլատրեք Keychain-ի օգտագործումը։ Ձեր ներդիրները կբացվեն վերագործարկումից հետո։</translation>
-<translation id="165391572855525850">մուտքի տվյալներ, մուտք, մուտքի բանալի, կողպեք, vault, բանալիներ</translation>
 <translation id="165448107578581061">Gemini-ը կատարում է ձեր առաջադրանքը…</translation>
 <translation id="1654580009054503925">Կայքերին չի թույլատրվում հարցումներ ցուցադրել</translation>
 <translation id="1656528038316521561">Ֆոնի թափանցիկությունը</translation>
@@ -847,6 +846,7 @@
 <translation id="1921544956190977703">Chrome-ի ամենահուսալի անվտանգության համակարգը պաշտպանում է ձեզ վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> կետ/դյույմ</translation>
 <translation id="1921600948984918136">«<ph name="NAME" />» ընդլայնումը պահվում է միայն այս սարքում։ Պահեք այն ձեր հաշվում՝ մյուս սարքերում օգտագործելու համար։</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Բացել հավելվածով</translation>
 <translation id="1925017091976104802">Սեղմեք <ph name="MODIFIER_KEY_DESCRIPTION" />՝ տեղադրելու համար</translation>
 <translation id="1925021887439448749">Մուտքագրեք այլ հասցե</translation>
@@ -1392,6 +1392,7 @@
 <translation id="2528487766183344810">Սպասառուի հավաստագիրն արտահանելու համար ապակողպեք <ph name="TOKEN_NAME" />ը։</translation>
 <translation id="2532198298278778531">Ապահով DNS սերվերի կառավարում ChromeOS Flex-ի կարգավորումներում</translation>
 <translation id="253434972992662860">&amp;Դադարեցնել</translation>
+<translation id="2534439599863644240">Հաջորդական միացք</translation>
 <translation id="253498598929009420">Կայքը կկարողանա տեսնել ձեր էկրանի բովանդակությունը</translation>
 <translation id="253557089021624350">Keepalive կապակցումների քանակը</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> կայքը կարող է դիտել և փոփոխել հետևյալ ֆայլերն ու պանակները</translation>
@@ -5718,7 +5719,6 @@
 <translation id="7285008278689343502">Գրանդ Տետոն ազգային պարկ</translation>
 <translation id="7286867818472074330">Ընտրել մուտքի բանալի</translation>
 <translation id="7287949630503871403">Հավելվածի տվյալների չափը՝</translation>
-<translation id="7288054329308394475">ջնջել, հեռացնել, անվտանգություն, գաղտնիություն, մաքրում, պահոց, զրոյացում, քեշ, քուքիներ, դանդաղ, արագություն</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> կետ/դյույմ</translation>
 <translation id="7288761372977133974">Արհեստական բանականության վերջերս ստեղծած թեմա <ph name="INDEX" /> (<ph name="SUBJECT" />)</translation>
 <translation id="7289049772085228972">Ձեզ պաշտպանում է Chrome-ի ամենահուսալի անվտանգության համակարգը</translation>
@@ -6725,7 +6725,6 @@
 <translation id="8403807918453631441">«<ph name="BRAND" />» գործառույթը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք</translation>
 <translation id="8405118833120731611">{0,plural, =1{Փակել այս պրոֆիլը}one{Փակել այս պրոֆիլը (# պատուհան)}other{Փակել այս պրոֆիլը (# պատուհան)}}</translation>
 <translation id="8407199357649073301">Գրառման մակարդակը՝</translation>
-<translation id="8407985628044864418">արագություն, RAM, ուշացում, սառեցում, խափանում, ռեսուրս, օգտագործում, մարտկոց, օպտիմիզատոր, դանդաղ</translation>
 <translation id="8410079205308393430">Ցուցադրել առաջարկները</translation>
 <translation id="8412136526970428322">Տրված թույլտվություններ՝ <ph name="PERMISSION" /> ու ևս <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Պաշտպանում է վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Երբ այցելում եք որևէ կայք, Chrome-ն ուղարկում է URL-ի քողարկված մասը Google-ին գաղտնիության սերվերի միջոցով, որը թաքցնում է ձեր IP հասցեն։ Եթե կայքը կասկածելի է թվում, Chrome-ը նաև ուղարկում է էջի բովանդակության ամբողջական URL-ները և հատվածները։</translation>

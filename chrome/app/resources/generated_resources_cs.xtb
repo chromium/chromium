@@ -594,7 +594,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1651609627703324721">Tato karta odesílá VR obsah do náhlavní soupravy</translation>
 <translation id="1652281434788353738">Hloubavá</translation>
 <translation id="1652862280638399816">Pokud Správce hesel Google chcete používat s Klíčenkou systému macOS, restartujte Chromium a povolte přístup ke Klíčence. Karty se po opětovném spuštění znovu otevřou.</translation>
-<translation id="165391572855525850">identifikační údaje, přihlášení, přístupový klíč, zámek, trezor, klíče</translation>
 <translation id="165448107578581061">Gemini na vašem úkolu pracuje…</translation>
 <translation id="1654580009054503925">Není povoleno zobrazovat žádosti</translation>
 <translation id="1656528038316521561">Neprůhlednost pozadí</translation>
@@ -5698,7 +5697,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7285008278689343502">Národní park Grand Teton</translation>
 <translation id="7286867818472074330">Vybrat přístupový klíč</translation>
 <translation id="7287949630503871403">Data uložená v aplikaci</translation>
-<translation id="7288054329308394475">smazat, odstranit, zabezpečení, ochrana soukromí, vyčištění, úložiště, resetovat, mezipaměť, soubory cookie, pomalé, rychlost</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Nedávný motiv vygenerovaný umělou inteligencí <ph name="INDEX" /> na téma <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Máte nejsilnější zabezpečení Chromu</translation>
@@ -6702,7 +6700,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8403807918453631441"><ph name="BRAND" /> může hesla zkontrolovat, pouze když si je uložíte</translation>
 <translation id="8405118833120731611">{0,plural, =1{Zavřít tento profil}few{Zavřít tento profil (# okna)}many{Zavřít tento profil (# okna)}other{Zavřít tento profil (# oken)}}</translation>
 <translation id="8407199357649073301">Úroveň protokolu:</translation>
-<translation id="8407985628044864418">rychlost, RAM, prodleva, zamrznutí, pád, zdroj, využití, baterie, optimalizátor, pomalé</translation>
 <translation id="8410079205308393430">Zobrazovat návrhy</translation>
 <translation id="8412136526970428322">Povoleno oprávnění <ph name="PERMISSION" /> a další (<ph name="COUNT" />)</translation>
 <translation id="8413795581997394485">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Když navštívíte nějaký web, Chrome odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud web provede něco podezřelého, odešlou se také úplné adresy URL a části obsahu stránky.</translation>

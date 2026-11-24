@@ -583,6 +583,7 @@
 <translation id="1988881251331415125">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行连接诊断工具<ph name="END_LINK" />。</translation>
 <translation id="1991370806334788445">请尝试允许使用第三方 Cookie。虽然这会降低浏览保护力度，但更有助于确保网站功能按预期正常运行。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1995173078718234136">正在扫描内容...</translation>
 <translation id="1996557034791506430">移除权限？</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 想在您的本地计算机上永久存储大量数据</translation>
 <translation id="1997774360448418989">纸（轻质纸）</translation>
@@ -3330,6 +3331,7 @@
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />加入了“<ph name="GROUP_NAME" />”标签页分组</translation>
 <translation id="6521745193039995384">无效</translation>
 <translation id="6524830701589638230">“管理无障碍设置”按钮，激活它即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
+<translation id="652643331002043144">此网站似乎与其他涉嫌钓鱼式攻击、恶意软件和欺诈的网站十分相似。</translation>
 <translation id="6529173248185917884">第 7 卷</translation>
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
 <translation id="6532101170117367231">保存到 Google 云端硬盘</translation>

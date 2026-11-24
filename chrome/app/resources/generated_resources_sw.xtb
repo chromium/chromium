@@ -595,7 +595,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1651609627703324721">Kichupo hiki kinawasilisha maudhui ya VR kwenye kifaa cha kutazama uhalisia pepe</translation>
 <translation id="1652281434788353738">Bunifu</translation>
 <translation id="1652862280638399816">Ili utumie Kidhibiti cha Manenosiri na MacOS Keychain, fungua tena Chromium na uruhusu ufikiaji wa Keychain. Vichupo vyako vitafunguka upya ukishafungua tena.</translation>
-<translation id="165391572855525850">vitambulisho, kuingia katika akaunti, ufunguo wa siri, kufunga, hifadhi, funguo</translation>
 <translation id="165448107578581061">Gemini inashughulikia jukumu lako...</translation>
 <translation id="1654580009054503925">Hakiruhusiwi kuonyesha maombi</translation>
 <translation id="1656528038316521561">Nuru ya mandharinyuma</translation>
@@ -5712,7 +5711,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7285008278689343502">Mbuga ya Wanyama ya Grand Teton</translation>
 <translation id="7286867818472074330">Chagua ufunguo wa siri</translation>
 <translation id="7287949630503871403">Data iliyohifadhiwa kwenye programu</translation>
-<translation id="7288054329308394475">futa, ondoa, usalama, faragha, safisha, nafasi ya hifadhi, weka upya, akiba, vidakuzi, polepole, kasi</translation>
 <translation id="7288676996127329262">Dpi <ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /></translation>
 <translation id="7288761372977133974">Mandhari ya hivi majuzi yaliyotayarishwa kwa AI ya <ph name="INDEX" /> kwenye <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Una ulinzi thabiti wa Chrome</translation>
@@ -6716,7 +6714,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8403807918453631441"><ph name="BRAND" /> kinaweza kukagua manenosiri yako ukiyahifadhi</translation>
 <translation id="8405118833120731611">{0,plural, =1{Funga wasifu huu}other{Funga wasifu huu (madirisha #)}}</translation>
 <translation id="8407199357649073301">Kiwango cha Kumbukumbu:</translation>
-<translation id="8407985628044864418">kasi, RAM, kuchelewa, fanya safu zisisonge, kuacha kufanya kazi, nyenzo, matumizi, betri, kiboreshaji, polepole</translation>
 <translation id="8410079205308393430">Onyesha mapendekezo</translation>
 <translation id="8412136526970428322">Umeruhusu <ph name="PERMISSION" /> na zingine <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari. Unapotembelea tovuti, Chrome hutuma kwenda Google msimbo uliofumbwa wa sehemu ya URL kupitia seva ya faragha inayoficha anwani yako ya IP. Iwapo tovuti itafanya kitu cha kutiliwa shaka, URL kamili na sehemu za maudhui ya ukurasa pia zitatumwa.</translation>

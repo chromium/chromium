@@ -386,6 +386,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="250020030759455918">Poderás ver o teu estado de inicio de sesión de <ph name="SITE_NAME" />, os teus datos de navegación e os datos do sitio en Chrome</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# descarga en curso}many{# downloads in progress}other{# descargas en curso}}</translation>
 <translation id="2510106555128151389">Instalando <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Buscar opcións de compra</translation>
 <translation id="2513403576141822879">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Sincronización e servizos de Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3740290940447881599">Faino só se sabes de certo que o sitio é de confianza</translation>
 <translation id="3740525748616366977">A busca por voz non está dispoñible neste dispositivo</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
+<translation id="3751708358601675711">Editar o seguimento de prezos</translation>
 <translation id="3756823472711156529">Restaurar grupo</translation>
 <translation id="3759306015475526475">Xestionar a configuración dos datos de uso e dos erros</translation>
 <translation id="3763110477555836428">Cando pagues con esta tarxeta, introducirase un número de tarxeta virtual para protexer os teus datos reais. Xestiona esta opción en Google Wallet. <ph name="BEGIN_LINK1" />Consulta máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>

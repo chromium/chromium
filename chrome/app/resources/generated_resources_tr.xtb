@@ -594,7 +594,6 @@
 <translation id="1651609627703324721">Bu sekme bir başlığa VR içeriği sunuyor</translation>
 <translation id="1652281434788353738">Düşünceli</translation>
 <translation id="1652862280638399816">Şifre Yöneticisi'ni macOS Anahtar Zinciri ile kullanmak için Chromium'u yeniden başlatıp Anahtar Zinciri'ne erişim izni verin. Chromium yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
-<translation id="165391572855525850">kimlik bilgileri, oturum açma, geçiş anahtarı, kilit, kasa, anahtar</translation>
 <translation id="165448107578581061">Gemini, göreviniz üzerinde çalışıyor...</translation>
 <translation id="1654580009054503925">İstek göstermesine izin verilmeyen siteler</translation>
 <translation id="1656528038316521561">Arka plan opaklığı</translation>
@@ -5700,7 +5699,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7285008278689343502">Grand Teton Ulusal Parkı</translation>
 <translation id="7286867818472074330">Geçiş anahtarı seç</translation>
 <translation id="7287949630503871403">Uygulamada depolanan veriler</translation>
-<translation id="7288054329308394475">sil, kaldır, güvenlik, gizlilik, temizle, depolama, sıfırla, önbellek, çerezler, yavaş, hız</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Son <ph name="SUBJECT" /> yapay zeka temasından <ph name="INDEX" />.</translation>
 <translation id="7289049772085228972">Chrome'un en güçlü güvenlik avantajına sahipsiniz</translation>
@@ -6704,7 +6702,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8403807918453631441"><ph name="BRAND" />, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="8405118833120731611">{0,plural, =1{Bu profili kapat}other{Bu profili kapat (# pencere)}}</translation>
 <translation id="8407199357649073301">Günlük Düzeyi:</translation>
-<translation id="8407985628044864418">hız, RAM, gecikme, donma, kilitlenme, kaynak, kullanım, pil, optimize edici, yavaş</translation>
 <translation id="8410079205308393430">Önerileri göster</translation>
 <translation id="8412136526970428322">İzin verildi: <ph name="PERMISSION" /> ve <ph name="COUNT" /> daha</translation>
 <translation id="8413795581997394485">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir siteyi ziyaret ettiğinizde Chrome, IP adresinizi gizleyen bir gizlilik sunucusu aracılığıyla URL'nin kodu karartılmış bir kısmını Google'a gönderir. Site şüpheli bir işlem gerçekleştirirse tam URL'ler ve sayfa içeriğinin bir kısmı da gönderilir.</translation>

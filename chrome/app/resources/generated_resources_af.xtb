@@ -595,7 +595,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1651609627703324721">Hierdie oortjie bied VR-inhoud vir ’n kopstuk aan</translation>
 <translation id="1652281434788353738">Diepsinnig</translation>
 <translation id="1652862280638399816">Herbegin Chromium en laat Keychain-toegang toe om Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
-<translation id="165391572855525850">eiebewyse, aanmelding, toegangsleutel, slot, kluis, sleutels</translation>
 <translation id="165448107578581061">Gemini werk tans aan jou taak …</translation>
 <translation id="1654580009054503925">Nie toegelaat om versoeke te wys nie</translation>
 <translation id="1656528038316521561">Agtergrondondeursigtigheid</translation>
@@ -5715,7 +5714,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7285008278689343502">Grand Teton Nasionale Park</translation>
 <translation id="7286867818472074330">Kies toegangsleutel</translation>
 <translation id="7287949630503871403">Data geberg in app</translation>
-<translation id="7288054329308394475">delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed (vee uit, verwyder, sekuriteit, privaatheid, opruim, berging, stel terug, kas, webkoekies, stadig, spoed)</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Onlangse KI-tema <ph name="INDEX" /> van <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Jy het Chrome se sterkste sekuriteit</translation>
@@ -6719,7 +6717,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8403807918453631441"><ph name="BRAND" /> kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
 <translation id="8405118833120731611">{0,plural, =1{Maak hierdie profiel toe}other{Maak hierdie profiel (# vensters) toe}}</translation>
 <translation id="8407199357649073301">Loglêervlak:</translation>
-<translation id="8407985628044864418">spoed, RAM, vertraging, vries, omval, hulpbron, gebruik, battery, optimeerder, stadig</translation>
 <translation id="8410079205308393430">Wys voorstelle</translation>
 <translation id="8412136526970428322">Het <ph name="PERMISSION" /> en nog <ph name="COUNT" /> toegelaat</translation>
 <translation id="8413795581997394485">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. Wanneer jy ’n werf besoek, stuur Chrome ’n verdoeselde gedeelte van die URL na Google deur ’n privaatheidbediener wat jou IP-adres versteek. As ’n webwerf iets verdag doen, word volledige URL’e en stukkies van die bladsyinhoud ook gestuur.</translation>

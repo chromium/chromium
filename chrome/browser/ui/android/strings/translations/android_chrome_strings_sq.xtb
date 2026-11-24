@@ -386,6 +386,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="250020030759455918">Do të shikosh statusin e identifikimit për <ph name="SITE_NAME" />, të dhënat e shfletimit dhe të dhënat e sajtit në Chrome</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# shkarkim në vazhdim}other{# shkarkime në vazhdim}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> po instalohet...</translation>
 <translation id="2512234228327349533">Kërko për opsionet për blerjen</translation>
 <translation id="2513403576141822879">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Sinkronizimi dhe shërbimet e Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3740290940447881599">Sigurohu që i beson këtij sajti</translation>
 <translation id="3740525748616366977">Kërkimi zanor nuk mund të përdoret në këtë pajisje</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
+<translation id="3751708358601675711">Modifiko monitorimin e çmimeve</translation>
 <translation id="3756823472711156529">Restauro grupin</translation>
 <translation id="3759306015475526475">Menaxho cilësimet e të dhënave të përdorimit dhe të ndërprerjeve aksidentale</translation>
 <translation id="3763110477555836428">Një numër karte virtuale do të plotësohet kur të përfundosh blerjen me këtë kartë për të mbrojtur detajet e tua aktuale. Menaxho te "Portofoli i Google". <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>

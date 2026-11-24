@@ -81,6 +81,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1688214853608504530">Kur shkruan në shiritin e adresave ose kutinë e kërkimit, Chrome i dërgon ato që ti shkruan te veglat e kërkimit, IA-së dhe agjentit të organizatës sate për të marrë sugjerime.</translation>
 <translation id="1698376642261615901">Google Chrome është një shfletues uebi që ekzekuton faqe uebi dhe aplikacione me një shpejtësi jashtëzakonisht të lartë. Është i shpejtë, i qëndrueshëm dhe i lehtë në përdorim. Shfleto në ueb në mënyrë më të sigurt, me mbrojtje të integruar në Google Chrome kundër mashtrimeve dhe softuerëve keqdashës.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome do të hapet përsëri për një orë}other{Chrome do të hapet përsëri për # orë}}</translation>
+<translation id="1713866023633141719">IA-ja në pajisje është gati</translation>
 <translation id="1722488837206509557">Kjo do të të lejojë që të zgjedhësh nga pajisjet e disponueshme dhe të shfaqësh përmbajtjet në to.</translation>
 <translation id="1724094881572874997">Për të siguruar punën tënde në Chrome, organizata jote do të mund të shikojë ose të menaxhojë informacione të caktuara kur je identifikuar në Chrome.</translation>
 <translation id="1769661297620183092">Mund të rihapësh panelin e "Kërko në Google" për të bërë pyetje ndërkohë që shfleton</translation>
@@ -155,6 +156,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2513154137948333830">Nevojitet rindezja: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">organizata jote</translation>
 <translation id="2521391734665471391">Mbyll "Modalitetin e IA-së" të "Kërko në Google"</translation>
+<translation id="2523048609826818526">Shkrimi për qëllime të përgjithshme</translation>
 <translation id="2523492931736391680">Puna jote e sigurt në Chrome</translation>
 <translation id="2534365042754120737">Për të mbrojtur të dhënat e tua, lejo që Chrome të heqë lejet nga sajtet që nuk i ke vizituar së fundi. Kjo nuk i ndalon njoftimet.</translation>
 <translation id="2556847002339236023">Organizata jote e mbyll Chrome kur ai nuk përdoret për <ph name="TIMEOUT_DURATION" />. Të dhënat e shfletimit u fshinë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.</translation>
@@ -253,6 +255,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3373752068427117404">Disa veçori dhe shtesa të Chrome vijnë me shkurtore. Mund të zgjedhësh që t'i aktivizosh përsëri.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome do të hapet përsëri tani}=1{Chrome do të hapet përsëri për 1 sekondë}other{Chrome do të hapet përsëri për # sekonda}}</translation>
 <translation id="3380249972812870825">Për të hapur Gemini në Chrome, shtyp <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome shtoi IA-në që ekzekutohet në pajisjen tënde. Sajtet dhe Chrome mund ta përdorin atë për veçori të tilla si:</translation>
 <translation id="3396977131400919238">Ndodhi një gabim në sistemin operativ gjatë instalimit. Shkarko përsëri Google Chrome.</translation>
 <translation id="3428747202529429621">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="3438681572027105609">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
@@ -301,6 +304,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3973161977468201858">Google Chrome dëshiron të fshijë të dhënat e tua të "Menaxherit të fjalëkalimeve të Google". Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="3984557288004650913">Nga butoni "'Kërko në Google' në Chrome" në shiritin e veglave, mund të rihapësh "Kërko në Google" në Chrome për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="399788104667917863">Gozhdo te shiriti i veglave</translation>
+<translation id="4000385468528550798">IA-ja në pajisje u përditësua</translation>
 <translation id="400161754580828648">Për të ndarë ekranin, lejo regjistrimin e ekranit për Chrome te "Cilësimet e sistemit".</translation>
 <translation id="4012899077942246412">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chrome. Për ta ndryshuar këtë, shko te "Llogaria jote në Chrome".</translation>
 <translation id="4022972681110646219">Përkthe ekranin</translation>
@@ -560,6 +564,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6632012506031284914">për të kërkuar me Chrome.</translation>
 <translation id="6634299872736643004">Ndryshimet në këtë cilësim do të zbatohen pasi Chrome të riniset.</translation>
 <translation id="6644846457769259194">Po përditëson pajisjen (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">IA-ja në pajisje është e përditësuar</translation>
 <translation id="6660596345553328257">Do të identifikohesh në Chrome?</translation>
 <translation id="6664219008737641504">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="SETTINGS_LINK" /> të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
@@ -601,6 +606,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7024536598735240744">Gabim shpaketimi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
 <translation id="7026856149118332950">Kliko te <ph name="BEGIN_BOLD" />Po<ph name="END_BOLD" /> në njoftimin e Windows për të gozhduar Chrome te shiriti i detyrave për qasje të shpejtë.</translation>
+<translation id="7033785662379319359">Një version i ri më kompakt i IA-së në pajisje është gati për t'u përdorur për detyra si përmbledhjet, korrigjimi e të tjera</translation>
 <translation id="7047386856539490735">A janë të dobishme këto rezultate?</translation>
 <translation id="7051685429025310665">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Bëje Chrome tëndin</translation>

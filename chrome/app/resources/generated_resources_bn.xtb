@@ -595,7 +595,6 @@
 <translation id="1651609627703324721">হেডসেটে এই ট্যাব ভিআর (VR) কন্টেন্ট দেখাচ্ছে</translation>
 <translation id="1652281434788353738">থটফুল</translation>
 <translation id="1652862280638399816">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chromium আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
-<translation id="165391572855525850">ক্রেডেনশিয়াল, সাইন-ইন, পাসকী, লক, ভল্ট, কী</translation>
 <translation id="165448107578581061">Gemini আপনার টাস্কে কাজ করছে...</translation>
 <translation id="1654580009054503925">অনুরোধ দেখানোর অনুমতি নেই</translation>
 <translation id="1656528038316521561">ব্যাকগ্রাউন্ডের অস্বচ্ছতা</translation>
@@ -5718,7 +5717,6 @@
 <translation id="7285008278689343502">গ্র্যান্ড টেটন ন্যাশনাল পার্ক</translation>
 <translation id="7286867818472074330">'পাসকী' বেছে নিন</translation>
 <translation id="7287949630503871403">অ্যাপে সেভ থাকা ডেটা</translation>
-<translation id="7288054329308394475">মুছুন, সরান, নিরাপত্তা, গোপনীয়তা, ক্লিন-আপ, স্টোরেজ, রিসেট করুন, ক্যাশে, কুকি, স্লো, স্পিড</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974"><ph name="SUBJECT" />-এর <ph name="INDEX" />টি সাম্প্রতিক AI থিম</translation>
 <translation id="7289049772085228972">আপনি Chrome-এর সবথেকে শক্তিশালী সুরক্ষা ব্যবস্থা ব্যবহার করছেন</translation>
@@ -6722,7 +6720,6 @@
 <translation id="8403807918453631441">আপনি পাসওয়ার্ড সেভ করলে <ph name="BRAND" /> সেটি চেক করতে পারবে</translation>
 <translation id="8405118833120731611">{0,plural, =1{এই প্রোফাইল বন্ধ করুন}one{এই প্রোফাইল বন্ধ করুন (#টি উইন্ডো)}other{এই প্রোফাইল বন্ধ করুন (#টি উইন্ডো)}}</translation>
 <translation id="8407199357649073301">লগ লেভেল:</translation>
-<translation id="8407985628044864418">স্পিড, RAM, ল্যাগ, ফ্রিজ, ক্র্যাশ, রিসোর্স, ব্যবহার, ব্যাটারি, অপ্টিমাইজার, স্লো</translation>
 <translation id="8410079205308393430">সাজেশন দেখুন</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> এবং আরও <ph name="COUNT" />টি অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8413795581997394485">এই মোড বিপজ্জনক হতে পারে এমন সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত রাখে। আপনি কোনও সাইট দেখলে, Chrome সেই সাইটের URL-এর অস্পষ্ট অংশ গোপনীয়তা সার্ভারের মাধ্যমে Google-এ পাঠায়। এই সার্ভার আপনার IP অ্যাড্রেস লুকিয়ে রাখে। সাইটে সন্দেহজনক কিছু পাওয়া গেলে, সম্পূর্ণ URL ও পৃষ্ঠার কন্টেন্টের কিছু অংশও পাঠানো হয়।</translation>

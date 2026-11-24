@@ -594,7 +594,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1651609627703324721">Esta pestana está mostrando contido de RV nun visor</translation>
 <translation id="1652281434788353738">Melancólico</translation>
 <translation id="1652862280638399816">Para poder usar o xestor de contrasinais con MacOS Keychain, reinicia Chromium e dálle acceso a Keychain. Despois do reinicio volverán abrirse as pestanas.</translation>
-<translation id="165391572855525850">credenciais, inicio de sesión, iniciar sesión, clave de acceso, bloqueo, bloquear, caixa forte, claves</translation>
 <translation id="165448107578581061">Gemini está traballando na túa tarefa...</translation>
 <translation id="1654580009054503925">Non se permite mostrar solicitudes</translation>
 <translation id="1656528038316521561">Opacidade do fondo</translation>
@@ -1381,6 +1380,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2519517390894391510">Nome do perfil do certificado</translation>
 <translation id="2520644704042891903">Esperando polo socket dispoñible...</translation>
 <translation id="2522757085249311407">Permitir que os dispositivos Bluetooth próximos detecten este aparello e se conecten a el.</translation>
+<translation id="2523048609826818526">Escritura de uso xeral</translation>
 <translation id="2523184218357549926">Envía a Google os URL das páxinas que visitas</translation>
 <translation id="252513908494776481">Fai preguntas sobre esta pestana</translation>
 <translation id="2525746158911982776">Produciuse un erro na actualización porque o sistema non ten suficiente espazo de almacenamento.</translation>
@@ -5699,7 +5699,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7285008278689343502">Parque Nacional Grand Teton</translation>
 <translation id="7286867818472074330">Seleccionar clave de acceso</translation>
 <translation id="7287949630503871403">Datos almacenados na aplicación</translation>
-<translation id="7288054329308394475">eliminar, quitar, seguranza, privacidade, limpeza, almacenamento, restablecer, memoria caché, cookies, lento, velocidade</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> ppp</translation>
 <translation id="7288761372977133974">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Contas coa máxima seguranza de Chrome</translation>
@@ -6703,7 +6702,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8403807918453631441"><ph name="BRAND" /> poderá comprobar os teus contrasinais cando os gardes</translation>
 <translation id="8405118833120731611">{0,plural, =1{Pechar este perfil}many{Close this profile (# windows)}other{Pechar este perfil (# ventás)}}</translation>
 <translation id="8407199357649073301">Nivel de rexistro:</translation>
-<translation id="8407985628044864418">velocidade, RAM, atraso, conxelación, fallo, recurso, uso, batería, optimizador, lento</translation>
 <translation id="8410079205308393430">Mostrar suxestións</translation>
 <translation id="8412136526970428322">Permitíronse os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
 <translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>

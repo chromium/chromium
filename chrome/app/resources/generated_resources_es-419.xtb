@@ -594,7 +594,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1651609627703324721">Esta pestaña muestra contenido de RV en un visor</translation>
 <translation id="1652281434788353738">Pensativo</translation>
 <translation id="1652862280638399816">Para usar el Administrador de contraseñas con el llavero de macOS, reinicia Chromium y permite el acceso al llavero. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
-<translation id="165391572855525850">credenciales, acceso, llave de acceso, bloqueo, vault, claves</translation>
 <translation id="165448107578581061">Gemini está trabajando en tu tarea…</translation>
 <translation id="1654580009054503925">No puede mostrar solicitudes</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
@@ -5702,7 +5701,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7285008278689343502">Parque nacional Grand Teton</translation>
 <translation id="7286867818472074330">Seleccionar llave de acceso</translation>
 <translation id="7287949630503871403">Datos almacenados en la app</translation>
-<translation id="7288054329308394475">borrar, eliminar, limpieza, limpiar, datos, navegación, historial, cookies, caché, almacenamiento, privacidad, seguridad, restablecer, lento, rendimiento</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> ppp</translation>
 <translation id="7288761372977133974">Tema reciente de IA <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Tienes la seguridad más sólida de Chrome</translation>
@@ -6706,7 +6704,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8403807918453631441"><ph name="BRAND" /> puede revisar tus contraseñas cuando las guardas</translation>
 <translation id="8405118833120731611">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
-<translation id="8407985628044864418">velocidad, RAM, retraso, congelamiento, falla, recurso, uso, batería, optimizador, lento, optimizaciones, memoria, potencia, energía</translation>
 <translation id="8410079205308393430">Mostrar sugerencias</translation>
 <translation id="8412136526970428322">Permisos habilitados: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
 <translation id="8413795581997394485">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio realiza alguna acción sospechosa, también se envían las URLs completas y partes del contenido de la página.</translation>

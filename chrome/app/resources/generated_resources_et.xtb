@@ -595,7 +595,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1651609627703324721">Sellel vahelehel esitletakse peakomplektile VR-sisu</translation>
 <translation id="1652281434788353738">Hooliv</translation>
 <translation id="1652862280638399816">Paroolihalduri kasutamiseks koos macOS Keychainiga taaskäivitage Chromium ja lubage juurdepääs Keychainile. Teie vahelehed avanevad pärast taaskäivitamist uuesti.</translation>
-<translation id="165391572855525850">mandaadid, sisselogimine, pääsuvõti, lukk, hoidla, võtmed</translation>
 <translation id="165448107578581061">Gemini töötab teie ülesande kallal…</translation>
 <translation id="1654580009054503925">Pole lubatud taotlusi kuvada</translation>
 <translation id="1656528038316521561">Tausta läbipaistvus</translation>
@@ -5706,7 +5705,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7285008278689343502">Grand Tetoni rahvuspark</translation>
 <translation id="7286867818472074330">Pääsuvõtme valimine</translation>
 <translation id="7287949630503871403">Rakendusse talletatud andmed</translation>
-<translation id="7288054329308394475">kustuta, eemalda, turvalisus, privaatsus, puhastamine, salvestusruum, lähtesta, vahemälu, küpsisefailid, aeglane, kiirus</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> punkti tolli kohta</translation>
 <translation id="7288761372977133974">Hiljutine AI loodud teema <ph name="INDEX" /> otsingu <ph name="SUBJECT" /> kohta</translation>
 <translation id="7289049772085228972">Teil on Chrome'i tugevaim kaitse</translation>
@@ -6710,7 +6708,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8403807918453631441"><ph name="BRAND" /> saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="8405118833120731611">{0,plural, =1{Sule see profiil}other{Sule see profiil (# akent)}}</translation>
 <translation id="8407199357649073301">Logimistase:</translation>
-<translation id="8407985628044864418">kiirus, RAM, viivitus, hangumine, kokkujooksmine, ressurss, kasutus, aku, optimeerija, aeglane</translation>
 <translation id="8410079205308393430">Kuva soovitused</translation>
 <translation id="8412136526970428322">Lubatud on <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui külastate saiti, saadab Chrome privaatsusserveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>

@@ -595,7 +595,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1651609627703324721">Ez a lap VR-tartalmat jelenít meg egy headseten</translation>
 <translation id="1652281434788353738">Elmélyült</translation>
 <translation id="1652862280638399816">Ha a Jelszókezelőt a macOS Keychain szolgáltatásával szeretné használni, indítsa újra a Chromiumot, és engedélyezze a Keychain-hozzáférést. Megnyitott lapjai az újraindítás után újra meg fognak nyílni.</translation>
-<translation id="165391572855525850">hitelesítési adatok, bejelentkezés, azonosítókulcs, zárolás, széf, kulcsok</translation>
 <translation id="165448107578581061">A Gemini dolgozik a feladaton…</translation>
 <translation id="1654580009054503925">Nem jeleníthet meg kérelmeket</translation>
 <translation id="1656528038316521561">Háttér átlátszatlansága</translation>
@@ -5713,7 +5712,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7285008278689343502">Grand Teton Nemzeti Park</translation>
 <translation id="7286867818472074330">Azonosítókulcs kiválasztása</translation>
 <translation id="7287949630503871403">Az alkalmazásban tárolt adatok</translation>
-<translation id="7288054329308394475">törlés, eltávolítás, biztonság, adatvédelem, tisztítás, tárhely, visszaállítás, gyorsítótár, cookie-k, lassú, sebesség</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> × <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974"><ph name="INDEX" />. új AI-téma: <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">A Chrome a legerősebb védelmet biztosítja</translation>
@@ -6717,7 +6715,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8403807918453631441">A <ph name="BRAND" /> képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="8405118833120731611">{0,plural, =1{A profil bezárása}other{A profil bezárása (# ablak)}}</translation>
 <translation id="8407199357649073301">Naplózási szint:</translation>
-<translation id="8407985628044864418">sebesség, RAM, késés, lefagyás, összeomlás, erőforrás, használat, akkumulátor, optimalizáló, lassú</translation>
 <translation id="8410079205308393430">Javaslatok megjelenítése</translation>
 <translation id="8412136526970428322">Engedélyezve: <ph name="PERMISSION" /> és további <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Amikor Ön felkeresi valamelyik webhelyet, a Chrome az URL obfuszkált részét egy olyan adatvédelmi szerveren keresztül küldi el a Google-nak, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>

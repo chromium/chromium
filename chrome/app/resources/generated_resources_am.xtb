@@ -594,7 +594,6 @@
 <translation id="1651609627703324721">ይህ ትር የምናባዊ እውነታ ይዘትን ወደ የጆሮ ማዳመጫ በማቅረብ ላይ ነው</translation>
 <translation id="1652281434788353738">አስተዋይ</translation>
 <translation id="1652862280638399816">የሚስጥር ቁልፍ አስተዳዳሪን ከ macOS Keychain ጋር ለመጠቀም Chromium ን እንደገና ያስጀምሩ እና የ Keychain መዳረሻን ይፍቀዱ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
-<translation id="165391572855525850">የመግቢያ ማስረጃዎች፣ በመለያ መግባት፣ የይለፍ ቁልፍ፣ መቆለፊያ፣ ቮልት፣ ቁልፎች</translation>
 <translation id="165448107578581061">Gemini በተግባርዎ ላይ እየሠራ ነው...</translation>
 <translation id="1654580009054503925">ጥያቄዎችን ለማሳየት አልተፈቀደም</translation>
 <translation id="1656528038316521561">የበስተጀርባ ብርሃን-ከልነት</translation>
@@ -5710,7 +5709,6 @@
 <translation id="7285008278689343502">ግራንድ ቴቶን ብሔራዊ ፓርክ</translation>
 <translation id="7286867818472074330">የይለፍ ቁልፍ ምረጥ</translation>
 <translation id="7287949630503871403">በመተግበሪያ ውስጥ የተከማቸ ውሂብ</translation>
-<translation id="7288054329308394475">ሰርዝ፣ አስወግድ፣ ደኅንነት፣ ግላዊነት፣ ማጽዳት፣ ማከማቻ፣ ዳግም አስጀምር፣ መሸጎጫ፣ ኩኪዎች ቀርፋፋ፣ ፍጥነት</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">የቅርብ ጊዜ የ<ph name="SUBJECT" /> ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">የChrome ከሁሉም የበለጠ ጠንካራ ደህንነት አለዎት</translation>
@@ -6719,7 +6717,6 @@ nil</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው ሊፈትሻቸው ይችላል</translation>
 <translation id="8405118833120731611">{0,plural, =1{ይህን መገለጫ ዝጋ}one{ይህን መገለጫ ዝጋ (# መስኮት)}other{ይህን መገለጫ ዝጋ (# መስኮቶች)}}</translation>
 <translation id="8407199357649073301">የምዝግብ ማስታወሻ ደረጃ፦</translation>
-<translation id="8407985628044864418">ፍጥነት፣ ራም፣ መዘግየት፣ ማቀዝቀዝ፣ ብልሽት፣ ንብረት፣ አጠቃቀም፣ ባትሪ፣ አመቻች፣ ቀርፋፋ</translation>
 <translation id="8410079205308393430">የአስተያየት ጥቆማዎችን አሳይ</translation>
 <translation id="8412136526970428322">የተፈቀዱ <ph name="PERMISSION" /> እና <ph name="COUNT" /> ተጨማሪ</translation>
 <translation id="8413795581997394485">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። ጣቢያን ጉብኝት በሚያደርጉበት ጊዜ፣ Chrome የአይ ፒ አድራሻዎን በሚደብቅ የግላዊነት አገልጋይ በኩል የተደበቀውን የዩአርኤል ክፍል ወደ Google ይልካል። ጣቢያ አጠራጣሪ ነገር ካደረገ፣ እንዲሁም የገፅ ይዘት ሙሉ ዩአርኤሎች እና ቢቶች ይላካሉ</translation>

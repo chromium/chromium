@@ -594,7 +594,6 @@
 <translation id="1651609627703324721">這個分頁正在對頭戴式裝置展示 VR 內容</translation>
 <translation id="1652281434788353738">沉思</translation>
 <translation id="1652862280638399816">如要搭配 macOS 鑰匙圈使用密碼管理工具，請重新啟動 Chromium 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
-<translation id="165391572855525850">憑證, 登入, 密碼金鑰, 鎖定, 保管箱, 金鑰</translation>
 <translation id="165448107578581061">Gemini 正在處理你的工作...</translation>
 <translation id="1654580009054503925">不允許顯示要求</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
@@ -5691,7 +5690,6 @@
 <translation id="7285008278689343502">大提頓國家公園</translation>
 <translation id="7286867818472074330">選取密碼金鑰</translation>
 <translation id="7287949630503871403">儲存在應用程式中的資料量</translation>
-<translation id="7288054329308394475">刪除, 移除, 安全性, 隱私權, 清理, 儲存空間, 重設, 快取, Cookie, 緩慢, 速度</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">最近的<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">目前採用 Chrome 最強大的安全防護機制</translation>
@@ -6695,7 +6693,6 @@
 <translation id="8403807918453631441"><ph name="BRAND" />可以檢查你儲存的密碼</translation>
 <translation id="8405118833120731611">{0,plural, =1{關閉這個設定檔}other{關閉這個設定檔 (# 個視窗)}}</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
-<translation id="8407985628044864418">速度, RAM, 延遲, 畫面凍結, 當機, 資源, 用量, 電池, 最佳化工具, 緩慢</translation>
 <translation id="8410079205308393430">顯示建議</translation>
 <translation id="8412136526970428322">已允許：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
 <translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>

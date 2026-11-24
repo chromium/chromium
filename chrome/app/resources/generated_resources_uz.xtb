@@ -597,7 +597,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1651609627703324721">Bu varaq garnituraga VR kontent namoyish qilmoqda</translation>
 <translation id="1652281434788353738">Mazmunli</translation>
 <translation id="1652862280638399816">MacOS Keychain bilan Parol menejeridan foydalanish uchun Chromium brauzerini qayta ishga tushiring va Keychainʼdan foydalanish ruxsatini bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
-<translation id="165391572855525850">hisob maʼlumotlari, kirish, kirish kaliti, qulf, ombor, kalitlar</translation>
 <translation id="165448107578581061">Gemini vazifangiz ustida ishlamoqda...</translation>
 <translation id="1654580009054503925">Soʻrovlar chiqarishga ruxsat berilmagan</translation>
 <translation id="1656528038316521561">Orqa fon shaffofligi</translation>
@@ -5736,7 +5735,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7285008278689343502">Grand-Titon milliy bogʻi</translation>
 <translation id="7286867818472074330">Kalitni tanlash</translation>
 <translation id="7287949630503871403">Ilovadagi maʼlumotlar hajmi</translation>
-<translation id="7288054329308394475">oʻchirish, olib tashlash, xavfsizlik, maxfiylik, tozalash, xotira, asliga qaytarish, kesh, cookie, sekin, tezlik</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Oxirgi AI mavzusi: <ph name="INDEX" />/<ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Chrome mustahkam himoyaga ega.</translation>
@@ -6744,7 +6742,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8403807918453631441"><ph name="BRAND" /> faqat saqlangan parollaringizni tekshira oladi</translation>
 <translation id="8405118833120731611">{0,plural, =1{Bu profilni yopish}other{Bu profilni yopish (# ta oyna)}}</translation>
 <translation id="8407199357649073301">Jurnalga yozish darajasi:</translation>
-<translation id="8407985628044864418">tezlik, RAM, kechikish, qotib qolish, ishdan chiqish, resurslar, sarf, batareya, optimizator, sekin</translation>
 <translation id="8410079205308393430">Variantlar taklif qilish</translation>
 <translation id="8412136526970428322">Ruxsat berildi: <ph name="PERMISSION" /> va yana <ph name="COUNT" /> ta</translation>
 <translation id="8413795581997394485">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Sayt ochilganda Chrome himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali Googlega yuboradi. Saytda shubhali harakatlar aniqlansa, toʻliq URL manzillar va sahifa kontentidan parcha ham yuboriladi.</translation>

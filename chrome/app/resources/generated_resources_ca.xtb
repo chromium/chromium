@@ -594,7 +594,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1651609627703324721">Aquesta pestanya està mostrant contingut de realitat virtual en un visor</translation>
 <translation id="1652281434788353738">Atent</translation>
 <translation id="1652862280638399816">Per utilitzar el gestor de contrasenyes amb el clauer de macOS, reinicia Chromium i permet l'accés al clauer. Les pestanyes es tornaran a obrir després de reiniciar.</translation>
-<translation id="165391572855525850">credencials, inici de sessió, clau d'accés, bloqueig, caixa forta, claus</translation>
 <translation id="165448107578581061">Gemini està treballant en la teva tasca...</translation>
 <translation id="1654580009054503925">Sense permís per mostrar sol·licituds</translation>
 <translation id="1656528038316521561">Opacitat del fons</translation>
@@ -5698,7 +5697,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7285008278689343502">Parc nacional de Grand Teton</translation>
 <translation id="7286867818472074330">Selecciona la clau d'accés</translation>
 <translation id="7287949630503871403">Dades emmagatzemades a l'aplicació</translation>
-<translation id="7288054329308394475">suprimir, eliminar, seguretat, privadesa, neteja, emmagatzematge, restablir, memòria cau, galetes, lent, velocitat</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> ppp</translation>
 <translation id="7288761372977133974">Tema d'IA recent <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Tens la seguretat més efectiva de Chrome</translation>
@@ -6702,7 +6700,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8403807918453631441"><ph name="BRAND" /> pot comprovar les teves contrasenyes quan les deses</translation>
 <translation id="8405118833120731611">{0,plural, =1{Tanca aquest perfil}other{Tanca aquest perfil (# finestres)}}</translation>
 <translation id="8407199357649073301">Nivell de registre:</translation>
-<translation id="8407985628044864418">velocitat, RAM, retard, bloqueig, fallada, recurs, ús, bateria, optimitzador, lent</translation>
 <translation id="8410079205308393430">Mostra els suggeriments</translation>
 <translation id="8412136526970428322">Permisos concedits: <ph name="PERMISSION" /> i <ph name="COUNT" /> més</translation>
 <translation id="8413795581997394485">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Quan visites un lloc web, Chrome envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa res sospitós, també s'envien URL complets i fragments de contingut de la pàgina.</translation>

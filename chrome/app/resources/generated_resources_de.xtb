@@ -590,7 +590,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1651609627703324721">Auf diesem Tab werden VR-Inhalte für ein Headset dargestellt</translation>
 <translation id="1652281434788353738">Nachdenklich</translation>
 <translation id="1652862280638399816">Wenn du den Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chromium neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
-<translation id="165391572855525850">Anmeldedaten, Anmeldung, Passkey, Sperre, Vault, Tresor, Schlüssel</translation>
 <translation id="165448107578581061">Gemini arbeitet an deiner Aufgabe…</translation>
 <translation id="1654580009054503925">Dürfen keine Anfragen anzeigen</translation>
 <translation id="1656528038316521561">Deckkraft des Hintergrunds</translation>
@@ -5659,7 +5658,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7285008278689343502">Grand-Teton-Nationalpark</translation>
 <translation id="7286867818472074330">Passkey auswählen</translation>
 <translation id="7287949630503871403">In App gespeicherte Daten</translation>
-<translation id="7288054329308394475">löschen, entfernen, Sicherheit, Datenschutz, Bereinigung, Speicher, zurücksetzen, Reset, Cache, Cookies, langsam, Geschwindigkeit, Speed</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Aktuelles KI-Design <ph name="INDEX" /> von <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Du nutzt den umfangreichen Schutz von Chrome</translation>
@@ -6658,7 +6656,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8403807918453631441"><ph name="BRAND" /> kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="8405118833120731611">{0,plural, =1{Dieses Profil schließen}other{Dieses Profil schließen (# Fenster)}}</translation>
 <translation id="8407199357649073301">Protokollebene:</translation>
-<translation id="8407985628044864418">geschwindigkeit, ram, arbeitsspeicher, verzögerung, lag, einfrieren, freeze, absturz, ressource, nutzung, auslastung, akku, optimierung, langsam</translation>
 <translation id="8410079205308393430">Vorschläge anzeigen</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere zugelassen</translation>
 <translation id="8413795581997394485">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn du eine Website besuchst, sendet Chrome einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>

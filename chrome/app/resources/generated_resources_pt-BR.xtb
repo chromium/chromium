@@ -595,7 +595,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1651609627703324721">Esta guia está apresentando conteúdo de RV para um headset</translation>
 <translation id="1652281434788353738">Pensativo</translation>
 <translation id="1652862280638399816">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chromium e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
-<translation id="165391572855525850">credenciais, login, chave de acesso, bloqueio, cofre, chaves</translation>
 <translation id="165448107578581061">O Gemini está trabalhando na sua tarefa…</translation>
 <translation id="1654580009054503925">A exibição de solicitações está bloqueada</translation>
 <translation id="1656528038316521561">Opacidade do plano de fundo</translation>
@@ -5718,7 +5717,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7285008278689343502">Parque Nacional de Grand Teton</translation>
 <translation id="7286867818472074330">Selecionar chave de acesso</translation>
 <translation id="7287949630503871403">Dados armazenados no app</translation>
-<translation id="7288054329308394475">excluir, remover, segurança, privacidade, limpeza, armazenamento, redefinir, cache, cookies, lento, velocidade</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Tema recente de IA <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Você tem o nível mais alto de segurança do Chrome</translation>
@@ -6722,7 +6720,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8403807918453631441"><ph name="BRAND" /> pode verificar suas senhas quando elas são salvas</translation>
 <translation id="8405118833120731611">{0,plural, =1{Fechar este perfil}one{Fechar este perfil (# janela)}other{Fechar este perfil (# janelas)}}</translation>
 <translation id="8407199357649073301">Nível de registro:</translation>
-<translation id="8407985628044864418">velocidade, RAM, atraso, congelamento, falha, recurso, uso, bateria, otimizador, lento</translation>
 <translation id="8410079205308393430">Mostrar sugestões</translation>
 <translation id="8412136526970428322">Permitidos: <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Protege contra extensões, sites e downloads perigosos. Quando você acessa um site, o Chrome envia ao Google apenas uma parte ofuscada do URL por um servidor de privacidade que oculta seu endereço IP. Se um site fizer algo suspeito, o URL completo e partes do conteúdo da página também serão enviados.</translation>

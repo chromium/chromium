@@ -595,7 +595,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1651609627703324721">Denne fane viser VR-indhold til et headset</translation>
 <translation id="1652281434788353738">Eftertænksom</translation>
 <translation id="1652862280638399816">Hvis du vil bruge Adgangs­kode­admin­istrator sammen med macOS-nøgleringen, skal du genstarte Chromium og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
-<translation id="165391572855525850">loginoplysninger, login, adgangsnøgle, lås, vault, nøgler</translation>
 <translation id="165448107578581061">Gemini arbejder på din opgave…</translation>
 <translation id="1654580009054503925">Har ikke tilladelse til at vise anmodninger</translation>
 <translation id="1656528038316521561">Baggrundens gennemsigtighed</translation>
@@ -5718,7 +5717,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7285008278689343502">Grand Teton National Park</translation>
 <translation id="7286867818472074330">Vælg adgangsnøgle</translation>
 <translation id="7287949630503871403">Data gemt i appen</translation>
-<translation id="7288054329308394475">slet, fjern, sikkerhed, privatliv, oprydning, lagerplads, nulstil, cache, cookies, langsom, hastighed</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Seneste AI-tema <ph name="INDEX" /> af <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Du har Chromes stærkeste beskyttelse</translation>
@@ -6722,7 +6720,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8403807918453631441"><ph name="BRAND" /> kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="8405118833120731611">{0,plural, =1{Luk denne profil}one{Luk denne profil (# vindue)}other{Luk denne profil (# vinduer)}}</translation>
 <translation id="8407199357649073301">Logfilsniveau:</translation>
-<translation id="8407985628044864418">hastighed, RAM, forsinkelse, frys, nedbrud, ressource, brug, batteri, optimering, langsom</translation>
 <translation id="8410079205308393430">Vis forslag</translation>
 <translation id="8412136526970428322">Adgangen til <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere blev tilladt</translation>
 <translation id="8413795581997394485">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Når du besøger et website, sender Chrome en sløret del af webadressen til Google via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>

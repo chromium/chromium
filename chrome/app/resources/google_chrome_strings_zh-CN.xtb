@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>
 <translation id="1698376642261615901">Google Chrome 浏览器是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Google Chrome 浏览器内置的恶意软件和网上诱骗防护功能可让您更安全地浏览网页。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 将在 1 小时后重新启动}other{Chrome 将在 # 小时后重新启动}}</translation>
+<translation id="1713866023633141719">设备端 AI 已准备就绪</translation>
 <translation id="1722488837206509557">这样，您就可以从可用设备中选择并在这些设备上显示内容。</translation>
 <translation id="1724094881572874997">为了保障您在 Chrome 上的工作安全，当您登录 Chrome 后，您的组织将能够查看或管理某些信息。</translation>
 <translation id="1769661297620183092">您可以重新打开 Google 搜索面板，以便在浏览时随时提问</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">需要重新启动：<ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">您的组织</translation>
 <translation id="2521391734665471391">关闭 Google 搜索 AI 模式</translation>
+<translation id="2523048609826818526">通用写作</translation>
 <translation id="2523492931736391680">保障您在 Chrome 上的工作安全</translation>
 <translation id="2534365042754120737">为保护您的数据，对于您近期未访问的网站，请允许 Chrome 移除网站权限。此操作不会停用通知功能。</translation>
 <translation id="2556847002339236023">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。浏览数据已被删除，其中可能包括历史记录、自动填充和下载内容。</translation>
@@ -249,6 +251,7 @@
 <translation id="3373752068427117404">某些 Chrome 功能和扩展程序附带快捷字词。您可以选择重新开启它们。</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 将立即重新启动}=1{Chrome 将在 1 秒后重新启动}other{Chrome 将在 # 秒后重新启动}}</translation>
 <translation id="3380249972812870825">如需打开 Chrome 中的 Gemini，请按 <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome 添加了可在设备上运行的 AI。网站和 Chrome 可将其用于以下功能：</translation>
 <translation id="3396977131400919238">安装过程中出现操作系统错误。请重新下载 Google Chrome。</translation>
 <translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3438681572027105609">如需将密码等信息同步到您的所有设备上，请登录 Chrome</translation>
@@ -298,6 +301,7 @@
 <translation id="3973161977468201858">Google Chrome 想要删除您的 Google 密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="3984557288004650913">点击工具栏上的“Chrome 中的 Google 搜索”按钮，即可重新打开 Chrome 中的 Google 搜索，以便在浏览时随时提问</translation>
 <translation id="399788104667917863">固定到工具栏</translation>
+<translation id="4000385468528550798">设备端 AI 已更新</translation>
 <translation id="400161754580828648">若要共享屏幕，请在“系统设置”中为 Chrome 启用屏幕录制功能。</translation>
 <translation id="4012899077942246412">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息。如需更改此设置，请前往“设置 Chrome 账号”。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
@@ -553,6 +557,7 @@
 <translation id="6632012506031284914">即可使用 Chrome 搜索。</translation>
 <translation id="6634299872736643004">对此设置的更改将在 Chrome 重启后生效。</translation>
 <translation id="6644846457769259194">正在更新您的设备 (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">设备端 AI 已是最新版本</translation>
 <translation id="6660596345553328257">登录 Chrome？</translation>
 <translation id="6664219008737641504">如果您忘记了口令或想更改此设置，请<ph name="SETTINGS_LINK" />您账号中的 Chrome 数据</translation>
 <translation id="6676384891291319759">访问互联网</translation>
@@ -594,6 +599,7 @@
 <translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025800014283535195">您可在此处切换 Chrome 个人资料</translation>
 <translation id="7026856149118332950">点击 Windows 通知中的<ph name="BEGIN_BOLD" />是<ph name="END_BOLD" />，将 Chrome 固定到任务栏，以便快速访问。</translation>
+<translation id="7033785662379319359">全新、更精简的设备端 AI 版本已准备就绪，可用于处理摘要、校对等任务</translation>
 <translation id="7047386856539490735">这些结果有用吗？</translation>
 <translation id="7051685429025310665">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
 <translation id="7059914902409643750">定制您的专属 Chrome</translation>

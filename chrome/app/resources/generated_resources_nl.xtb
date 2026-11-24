@@ -594,7 +594,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1651609627703324721">Dit tabblad presenteert VR-content aan een headset</translation>
 <translation id="1652281434788353738">Bedachtzaam</translation>
 <translation id="1652862280638399816">Als je Wachtwoordmanager wilt gebruiken met macOS-sleutelhanger, herstart je Chromium en sta je sleutelhangertoegang toe. Je tabbladen worden opnieuw geopend na de herstart.</translation>
-<translation id="165391572855525850">inloggegevens, inloggen, toegangssleutel, vergrendeling, kluis, sleutels</translation>
 <translation id="165448107578581061">Gemini werkt aan je taak...</translation>
 <translation id="1654580009054503925">Geen toestemming om verzoeken te tonen</translation>
 <translation id="1656528038316521561">Ondoorzichtigheid van achtergrond</translation>
@@ -5694,7 +5693,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7285008278689343502">Grand Teton National Park</translation>
 <translation id="7286867818472074330">Toegangssleutel selecteren</translation>
 <translation id="7287949630503871403">Gegevens opgeslagen in app</translation>
-<translation id="7288054329308394475">verwijderen, weghalen, beveiliging, privacy, opschonen, opslag, resetten, cache, cookies, langzaam, snelheid</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Recent AI-thema <ph name="INDEX" /> van <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Je hebt de krachtigste beveiliging van Chrome</translation>
@@ -6698,7 +6696,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8403807918453631441"><ph name="BRAND" /> kan je wachtwoorden checken als je ze opslaat</translation>
 <translation id="8405118833120731611">{0,plural, =1{Dit profiel sluiten}other{Dit profiel sluiten (# vensters)}}</translation>
 <translation id="8407199357649073301">Logniveau:</translation>
-<translation id="8407985628044864418">snelheid, RAM, vertraging, lag, vastlopen, bevriezen, bevroren, vastgelopen, crash, bron, resource, gebruik, batterij, optimalisatie, langzaam, traag</translation>
 <translation id="8410079205308393430">Suggesties tonen</translation>
 <translation id="8412136526970428322">Recht voor <ph name="PERMISSION" /> en <ph name="COUNT" /> andere toegestaan</translation>
 <translation id="8413795581997394485">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als je een site bezoekt, stuurt Chrome een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Doet een site iets verdachts, dan worden ook volledige URL's en delen van de paginacontent verstuurd.</translation>

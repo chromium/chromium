@@ -595,7 +595,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1651609627703324721">Ova kartica prikazuje VR sadržaj u virtuelnim naočalama</translation>
 <translation id="1652281434788353738">Zamišljeno</translation>
 <translation id="1652862280638399816">Da koristite Upravitelj lozinki s macOS Keychainom, ponovo pokrenite Chromium i dozvolite pristup Keychainu. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
-<translation id="165391572855525850">akreditiv, prijava, pristupni ključ, zaključavanje, trezor, ključevi</translation>
 <translation id="165448107578581061">Gemini radi na zadatku…</translation>
 <translation id="1654580009054503925">Nije dozvoljeno prikazivanje zahtjeva</translation>
 <translation id="1656528038316521561">Neprozirnost pozadine</translation>
@@ -5716,7 +5715,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7285008278689343502">Nacionalni park Grand Teton</translation>
 <translation id="7286867818472074330">Odaberite pristupni ključ</translation>
 <translation id="7287949630503871403">Podaci koji su pohranjeni u aplikaciji</translation>
-<translation id="7288054329308394475">brisanje, uklanjanje, sigurnost, privatnost, čišćenje, pohrana, vraćanje na zadano, keš memorija, kolačići, sporo, brzina</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974"><ph name="INDEX" />. nedavna AI tema; predmet: <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Imate najveći stepen zaštite u Chromeu</translation>
@@ -6720,7 +6718,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8403807918453631441"><ph name="BRAND" /> može provjeravati vaše lozinke kada ih sačuvate</translation>
 <translation id="8405118833120731611">{0,plural, =1{Zatvori profil}one{Zatvori profil (# prozor)}few{Zatvori profil (# prozora)}other{Zatvori profil (# prozora)}}</translation>
 <translation id="8407199357649073301">Nivo zapisa:</translation>
-<translation id="8407985628044864418">brzina, RAM, kašnjenje, zamrzavanje, pad, resurs, korištenje, baterija, optimizator, sporo</translation>
 <translation id="8410079205308393430">Prikaži prijedloge</translation>
 <translation id="8412136526970428322">Dozvoljeno: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Štiti od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasni. Kada posjetite neku web lokaciju, Chrome šalje prikriveni dio URL-a Googleu putem servera za privatnost koji sakriva vašu IP adresu. Ako web lokacija učini nešto sumnjivo, šalju se i puni URL-ovi i dijelovi sadržaja stranice.</translation>

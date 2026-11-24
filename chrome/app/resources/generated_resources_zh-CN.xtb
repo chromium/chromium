@@ -594,7 +594,6 @@
 <translation id="1651609627703324721">此标签页正在向头戴设备显示 VR 内容</translation>
 <translation id="1652281434788353738">沉思</translation>
 <translation id="1652862280638399816">若要将密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chromium 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
-<translation id="165391572855525850">凭证, 登录, 通行密钥, 锁定, 保险柜, 密钥, credentials, sign-in, passkey, lock, vault, keys</translation>
 <translation id="165448107578581061">Gemini 正在处理您的任务…</translation>
 <translation id="1654580009054503925">不得显示请求</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
@@ -1381,6 +1380,7 @@
 <translation id="2519517390894391510">证书名称</translation>
 <translation id="2520644704042891903">正在等待可用的套接字…</translation>
 <translation id="2522757085249311407">允许附近的蓝牙设备发现并连接到此设备。</translation>
+<translation id="2523048609826818526">通用写作</translation>
 <translation id="2523184218357549926">将您访问的网页网址发送给 Google</translation>
 <translation id="252513908494776481">询问关于此标签页的问题</translation>
 <translation id="2525746158911982776">系统存储空间不足导致更新失败。</translation>
@@ -5693,7 +5693,6 @@
 <translation id="7285008278689343502">大提顿国家公园</translation>
 <translation id="7286867818472074330">选择通行密钥</translation>
 <translation id="7287949630503871403">应用中存储的数据量</translation>
-<translation id="7288054329308394475">删除, 移除, 安全, 隐私, 清理, 存储空间, 重置, 缓存, cookie, 缓慢, 速度, delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">近期创建的<ph name="SUBJECT" /> AI 主题 <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">您已获享 Chrome 的最强安全保护</translation>
@@ -6697,7 +6696,6 @@
 <translation id="8403807918453631441">您需要先保存密码，然后才能使用 <ph name="BRAND" />的密码检查功能</translation>
 <translation id="8405118833120731611">{0,plural, =1{关闭此个人资料}other{关闭此个人资料（# 个窗口）}}</translation>
 <translation id="8407199357649073301">日志级别：</translation>
-<translation id="8407985628044864418">速度, RAM, 延迟, 冻结, 崩溃, 资源, 利用率, 电池, 优化工具, 缓慢, speed, RAM, lag, freeze, crash, resource, usage, battery, optimizer, slow</translation>
 <translation id="8410079205308393430">显示建议</translation>
 <translation id="8412136526970428322">授予了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>

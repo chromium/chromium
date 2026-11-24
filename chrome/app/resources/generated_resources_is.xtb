@@ -595,7 +595,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1651609627703324721">Þessi flipi sýnir sýndarveruleikaefni í höfuðtólum</translation>
 <translation id="1652281434788353738">Hugulsamt</translation>
 <translation id="1652862280638399816">Til að nota Aðgangsorðastjórnun með macOS Keychain skaltu endurræsa Chromium og veita Keychain aðgang. Fliparnir þínir opnast aftur eftir endurræsingu.</translation>
-<translation id="165391572855525850">skilríki, innskráning, aðgangslykill, læsing, geymsla, lyklar</translation>
 <translation id="165448107578581061">Gemini er að vinna í verkefninu þínu...</translation>
 <translation id="1654580009054503925">Má ekki sýna beiðnir</translation>
 <translation id="1656528038316521561">Gagnsæi bakgrunns</translation>
@@ -5716,7 +5715,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7285008278689343502">Grand Teton-þjóðgarðurinn</translation>
 <translation id="7286867818472074330">Velja aðgangslykil</translation>
 <translation id="7287949630503871403">Gögn geymd í forriti</translation>
-<translation id="7288054329308394475">eyða, fjarlægja, öryggi, persónuvernd, hreinsa, geymslurými, endurstilla, skyndiminni, fótspor, hægt, hraði</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Nýlegt gervigreindarþema <ph name="INDEX" /> af <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Þú ert með hámarksöryggi Chrome</translation>
@@ -6720,7 +6718,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8403807918453631441"><ph name="BRAND" /> getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="8405118833120731611">{0,plural, =1{Loka þessum prófíl}one{Loka þessum prófíl (# gluggi)}other{Loka þessum prófíl (# gluggar)}}</translation>
 <translation id="8407199357649073301">Skráningarstig:</translation>
-<translation id="8407985628044864418">hraði, vinnsluminni, töf, frjósa, hrynja, tilföng, notkun, rafhlaða, fínstilling, hægt</translation>
 <translation id="8410079205308393430">Sýna tillögur</translation>
 <translation id="8412136526970428322">Leyfði <ph name="PERMISSION" /> og <ph name="COUNT" /> í viðbót</translation>
 <translation id="8413795581997394485">Verndar gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Þegar þú opnar vefsvæði sendir Chrome ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði gerir eitthvað grunsamlegt eru heilar vefslóðir og efnisbútar af síðu einnig sendir.</translation>

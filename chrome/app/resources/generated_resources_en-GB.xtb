@@ -595,7 +595,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1651609627703324721">This tab is presenting VR content to a headset</translation>
 <translation id="1652281434788353738">Thoughtful</translation>
 <translation id="1652862280638399816">To use Password Manager with macOS Keychain, relaunch Chromium and allow Keychain access. Your tabs will reopen after relaunching.</translation>
-<translation id="165391572855525850">credentials, sign-in, passkey, lock, vault, keys</translation>
 <translation id="165448107578581061">Gemini is working on your task…</translation>
 <translation id="1654580009054503925">Not allowed to show requests</translation>
 <translation id="1656528038316521561">Background opacity</translation>
@@ -5715,7 +5714,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7285008278689343502">Grand Teton National Park</translation>
 <translation id="7286867818472074330">Select passkey</translation>
 <translation id="7287949630503871403">Data stored in app</translation>
-<translation id="7288054329308394475">delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Recent AI theme <ph name="INDEX" /> of <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">You have Chrome's strongest security</translation>
@@ -6719,7 +6717,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8403807918453631441"><ph name="BRAND" /> can check your passwords when you save them</translation>
 <translation id="8405118833120731611">{0,plural, =1{Close this profile}other{Close this profile (# windows)}}</translation>
 <translation id="8407199357649073301">Log level:</translation>
-<translation id="8407985628044864418">speed, RAM, lag, freeze, crash, resource, usage, battery, optimiser, slow</translation>
 <translation id="8410079205308393430">Show suggestions</translation>
 <translation id="8412136526970428322">Allowed <ph name="PERMISSION" /> and <ph name="COUNT" /> more</translation>
 <translation id="8413795581997394485">Protects against sites, downloads and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>

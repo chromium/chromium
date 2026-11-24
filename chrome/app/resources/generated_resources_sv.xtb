@@ -597,7 +597,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1651609627703324721">På den här fliken visas VR-innehåll för en kikare</translation>
 <translation id="1652281434788353738">Tankeväckande</translation>
 <translation id="1652862280638399816">Om du vill använda Lösenordshantering med en macOS-nyckelring ska du starta om Chromium och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
-<translation id="165391572855525850">användaruppgifter, inloggning, nyckel, lås, valv, nycklar</translation>
 <translation id="165448107578581061">Gemini arbetar med din uppgift …</translation>
 <translation id="1654580009054503925">Får inte visa begäranden</translation>
 <translation id="1656528038316521561">Bakgrundens genomskinlighet</translation>
@@ -5725,7 +5724,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7285008278689343502">Grand Teton nationalpark</translation>
 <translation id="7286867818472074330">Välj nyckel</translation>
 <translation id="7287949630503871403">Data som lagras i appen</translation>
-<translation id="7288054329308394475">radera, ta bort, säkerhet, integritet, rensa, lagringsutrymme, återställa, cacheminne, cookies, långsam, hastighet</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Senaste AI-tema <ph name="INDEX" /> på <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Du har det bästa skyddet i Chrome</translation>
@@ -6730,7 +6728,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8403807918453631441"><ph name="BRAND" /> kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="8405118833120731611">{0,plural, =1{Stäng den här profilen}other{Stäng den här profilen (# fönster)}}</translation>
 <translation id="8407199357649073301">Loggnivå:</translation>
-<translation id="8407985628044864418">hastighet, RAM, fördröjning, låsning, krasch, resurs, användning, batteri, optimerare, långsam</translation>
 <translation id="8410079205308393430">Visa förslag</translation>
 <translation id="8412136526970428322">Behörighet till <ph name="PERMISSION" /> och <ph name="COUNT" /> till har tillåtits</translation>
 <translation id="8413795581997394485">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. När du besöker en webbplats skickas en obfuskerad del av webbadressen till Google via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>

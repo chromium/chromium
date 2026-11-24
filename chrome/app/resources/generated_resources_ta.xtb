@@ -595,7 +595,6 @@
 <translation id="1651609627703324721">இந்தப் பக்கம், VR உள்ளடக்கத்தை ஒரு ஹெட்செட் உடன் பகிர்கிறது</translation>
 <translation id="1652281434788353738">ஆழ்ந்த சிந்தனை</translation>
 <translation id="1652862280638399816">macOS Keychain உடன் Password Managerரைப் பயன்படுத்த, Chromiumமை மீண்டும் தொடங்கி Keychain அணுகலை வழங்கவும். மீண்டும் தொடங்கியதும் உங்கள் உலாவிப் பக்கங்கள் மீண்டும் திறக்கும்.</translation>
-<translation id="165391572855525850">credentials, sign-in, passkey, lock, vault, keys</translation>
 <translation id="165448107578581061">உங்கள் பணி தொடர்பாக Gemini செயல்படுகிறது...</translation>
 <translation id="1654580009054503925">கோரிக்கைகளைக் காட்ட அனுமதிக்கப்படவில்லை</translation>
 <translation id="1656528038316521561">பின்னணி ஒளிபுகாத்தன்மை</translation>
@@ -5716,7 +5715,6 @@
 <translation id="7285008278689343502">கிராண்ட் டெடான் தேசியப் பூங்கா</translation>
 <translation id="7286867818472074330">கடவுச்சாவியைத் தேர்ந்தெடு</translation>
 <translation id="7287949630503871403">ஆப்ஸில் சேமிக்கப்பட்ட தரவு</translation>
-<translation id="7288054329308394475">delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974"><ph name="SUBJECT" /> இன் சமீபத்திய <ph name="INDEX" />வது AI தீம்</translation>
 <translation id="7289049772085228972">Chromeமின் வலிமையான பாதுகாப்பைப் பெறுகிறீர்கள்</translation>
@@ -6720,7 +6718,6 @@
 <translation id="8403807918453631441">நீங்கள் கடவுச்சொற்களைச் சேமித்ததும் அவற்றை <ph name="BRAND" /> ஆல் சரிபார்க்க முடியும்</translation>
 <translation id="8405118833120731611">{0,plural, =1{இந்தச் சுயவிவரத்தை மூடு}other{இந்தச் சுயவிவரத்தை மூடு (# சாளரங்கள்)}}</translation>
 <translation id="8407199357649073301">பதிவு நிலை:</translation>
-<translation id="8407985628044864418">வேகம், RAM, தாமதம், வரிசைகளை நிலையாக்கு, சிதைவு, ரிசோர்ஸ், உபயோகம், பேட்டரி, நேரத்தைக் காப்பவர், வேகம் குறைவு</translation>
 <translation id="8410079205308393430">பரிந்துரைகளைக் காட்டு</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />, மேலும் <ph name="COUNT" /> அனுமதிகள் வழங்கப்பட்டுள்ளன</translation>
 <translation id="8413795581997394485">ஆபத்தானவை என அறியப்படுகின்ற இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிராக நிலையான பாதுகாப்பை வழங்கும். ஒரு தளத்தை நீங்கள் பார்வையிடும்போது உங்கள் IP முகவரியை மறைக்கும் தனிப்பட்ட சேவையகம் வழியாக URLலின் கடிமான பகுதியை Chrome உலாவி Googleளுக்கு அனுப்பும். சந்தேகத்திற்குரிய வகையில் தளத்தில் ஏதேனும் நிகழ்ந்தால் முழு URLகளும் பக்க உள்ளடக்கத்தின் சிறிய பகுதிகளும் அனுப்பப்படும்.</translation>

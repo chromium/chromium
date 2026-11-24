@@ -595,7 +595,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1651609627703324721">Tab ini menyajikan konten VR ke headset</translation>
 <translation id="1652281434788353738">Bijaksana</translation>
 <translation id="1652862280638399816">Untuk menggunakan Pengelola Sandi dengan Rantai Kunci macOS, luncurkan kembali Chromium dan izinkan akses Rantai Kunci. Tab Anda akan dibuka lagi setelah peluncuran kembali.</translation>
-<translation id="165391572855525850">kredensial, login, kunci sandi, kunci, vault, kunci</translation>
 <translation id="165448107578581061">Gemini sedang mengerjakan tugas Anda...</translation>
 <translation id="1654580009054503925">Tidak diizinkan menampilkan permintaan</translation>
 <translation id="1656528038316521561">Opasitas latar belakang</translation>
@@ -5714,7 +5713,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7285008278689343502">Taman Nasional Grand Teton</translation>
 <translation id="7286867818472074330">Pilih kunci sandi</translation>
 <translation id="7287949630503871403">Data yang disimpan di aplikasi</translation>
-<translation id="7288054329308394475">hapus, hilangkan, keamanan, privasi, pembersihan, penyimpanan, reset, cache, cookie, lambat, kecepatan</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">Tema AI terbaru <ph name="INDEX" /> dari <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Anda memiliki keamanan terkuat Chrome</translation>
@@ -6718,7 +6716,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8403807918453631441"><ph name="BRAND" /> dapat memeriksa sandi saat Anda menyimpannya</translation>
 <translation id="8405118833120731611">{0,plural, =1{Tutup profil ini}other{Tutup profil ini (# jendela)}}</translation>
 <translation id="8407199357649073301">Tingkat Log:</translation>
-<translation id="8407985628044864418">kecepatan, RAM, lag, macet, error, resource, penggunaan, baterai, pengoptimal, lambat</translation>
 <translation id="8410079205308393430">Tampilkan saran</translation>
 <translation id="8412136526970428322">Mengizinkan <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
 <translation id="8413795581997394485">Melindungi dari situs, download, dan ekstensi yang diketahui berbahaya. Saat Anda membuka situs, Chrome mengirimkan bagian URL yang disamarkan ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs melakukan hal yang mencurigakan, URL lengkap dan bit konten halaman juga akan dikirim.</translation>

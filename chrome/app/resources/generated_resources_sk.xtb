@@ -594,7 +594,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1651609627703324721">Táto karta prezentuje obsah VR do náhlavnej súpravy</translation>
 <translation id="1652281434788353738">Hĺbavá</translation>
 <translation id="1652862280638399816">Ak chcete používať Správcu hesiel s Kľúčenkou systému macOS, znova spustite Chromium a povoľte prístup ku Kľúčenke. Po opätovnom spustení sa karty znova otvoria.</translation>
-<translation id="165391572855525850">prihlasovacie údaje, prihlásenie, prístupový kľúč, zámka, trezor, kľúče</translation>
 <translation id="165448107578581061">Gemini pracuje na vašej úlohe…</translation>
 <translation id="1654580009054503925">Nemôže zobrazovať žiadosti</translation>
 <translation id="1656528038316521561">Nepriehľadnosť pozadia</translation>
@@ -5703,7 +5702,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7285008278689343502">Národný park Grand Teton</translation>
 <translation id="7286867818472074330">Vybrať prístupový kľúč</translation>
 <translation id="7287949630503871403">Údaje uložené v aplikácii</translation>
-<translation id="7288054329308394475">odstrániť, vymazať, zabezpečenie, ochrana súkromia, upratovanie, priestor, resetovať, vyrovnávacia pamäť, súbory cookie, pomalý, rýchlosť</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974"><ph name="INDEX" />. nedávny motív vytvorený umelou inteligenciou z <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Máte najúčinnejšie zabezpečenie Chromu</translation>
@@ -6707,7 +6705,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8403807918453631441"><ph name="BRAND" /> bude môcť skontrolovať heslá, keď ich uložíte</translation>
 <translation id="8405118833120731611">{0,plural, =1{Zavrieť tento profil}few{Zavrieť tento profil (# okná)}many{Close this profile (# windows)}other{Zavrieť tento profil (# okien)}}</translation>
 <translation id="8407199357649073301">Úroveň denníka:</translation>
-<translation id="8407985628044864418">rýchlosť, RAM, oneskorenie, zamrznutie, pád, zdroj, použitie, batéria, optimalizátor, pomalé</translation>
 <translation id="8410079205308393430">Zobrazovať návrhy</translation>
 <translation id="8412136526970428322">Je aktivované povolenie <ph name="PERMISSION" /> a ďalšie (<ph name="COUNT" />)</translation>
 <translation id="8413795581997394485">Chráni pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami. Keď navštívite určitý web, Chrome odošle Googlu znejasnenú časť webovej adresy prostredníctvom servera chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak určitý web vykoná niečo podozrivé, odošlú sa aj úplné webové adresy a časti obsahu stránok.</translation>

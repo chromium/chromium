@@ -595,7 +595,6 @@
 <translation id="1651609627703324721">이 탭에서 헤드셋에 VR 콘텐츠를 전송하는 중입니다</translation>
 <translation id="1652281434788353738">세심함</translation>
 <translation id="1652862280638399816">비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chromium을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
-<translation id="165391572855525850">사용자 인증 정보, 크리덴셜, 로그인, 패스키, 잠금, 락, 보관함, 키</translation>
 <translation id="165448107578581061">Gemini가 작업을 처리하는 중…</translation>
 <translation id="1654580009054503925">요청 표시가 허용되지 않음</translation>
 <translation id="1656528038316521561">배경 불투명도</translation>
@@ -5713,7 +5712,6 @@
 <translation id="7285008278689343502">그랜드 테턴 국립공원</translation>
 <translation id="7286867818472074330">패스키 선택</translation>
 <translation id="7287949630503871403">앱에 저장된 데이터</translation>
-<translation id="7288054329308394475">삭제, 제거, 보안, 개인 정보 보호, 정리, 저장, 재설정, 캐시, 쿠키, 느림, 속도</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" />dpi</translation>
 <translation id="7288761372977133974"><ph name="SUBJECT" />의 최근 AI 테마 <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
@@ -6717,7 +6715,6 @@
 <translation id="8403807918453631441">비밀번호를 저장하면 <ph name="BRAND" />에서 확인할 수 있습니다.</translation>
 <translation id="8405118833120731611">{0,plural, =1{이 프로필 닫기}other{이 프로필 닫기(창 #개)}}</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
-<translation id="8407985628044864418">속도, RAM, 지연, 정지, 비정상 종료, 리소스, 사용량, 배터리, 최적화 도구, 느림, 램</translation>
 <translation id="8410079205308393430">추천 표시</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 허용함</translation>
 <translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 일부 페이지 콘텐츠도 전송됩니다.</translation>

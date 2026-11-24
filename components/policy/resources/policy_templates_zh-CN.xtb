@@ -2326,6 +2326,13 @@ ServiceWorkerAutoPreload 功能会在 ServiceWorker 引导过程开始的同时�
 <translation id="2467181864598429837">默认浏览器行为</translation>
 <translation id="2467896267442150508">持续时间不超过 1 周的间隔时段。如果开始时间晚于结束时间，该间隔时段会跨周。</translation>
 <translation id="2476249479201711962">允许在上下文菜单中使用默认搜索服务提供商</translation>
+<translation id="247659494993692492">通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
+
+      如果您不设置此政策，<ph name="PRODUCT_NAME" /> 将会尝试检测某台服务器是否在内网上，确认在内网后才会响应它发出的 IWA 请求。如果检测到某台服务器是在互联网上，<ph name="PRODUCT_NAME" /> 将会忽略这台服务器发出的 IWA 请求。
+
+      注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。
+
+      在 <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="PRODUCT_OS_NAME" /> 上，系统 GSSAPI/Kerberos 库可将服务器主机名规范化为其他服务主体主机（例如通过 DNS CNAME 或反向 DNS PTR 查找）。除非此政策也允许该主机，否则协商身份验证会失败。</translation>
 <translation id="2478756867046106663">允许那些提供误导性体验的网站打开新的窗口或标签页</translation>
 <translation id="2479760962196319822">此政策旨在控制 <ph name="PRODUCT_OS_NAME" /> 用户能否在本地存储数据。
       如果此政策设为 False，则系统禁止在 <ph name="PRODUCT_OS_NAME" /> 上进行本地存储，用户将无法在本地存储任何数据，也无法访问任何本地目录。
@@ -4640,6 +4647,11 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
       注意：此政策必须与 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="3918339829588313389">允许用户设置安全系数不高的 PIN 码</translation>
+<translation id="3920151704940430728">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
+
+如果此政策已停用或未设置，当生成 Kerberos SPN 时，服务器的规范名称将由 CNAME 查找来决定。
+
+注意：在 <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="PRODUCT_OS_NAME" /> 上，启用此政策会跳过 <ph name="PRODUCT_NAME" /> 自己的 CNAME 查找，但系统 GSSAPI/Kerberos 库可能仍会规范化服务主体主机（例如通过 <ph name="KRB5_CONFIG" /> DNS 设置）。除非 <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> 允许该主机，否则协商身份验证会失败；除非 <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> 也允许该主机，否则会拒绝委派。</translation>
 <translation id="392227823425989489">所有系统快捷键都将始终按预期启用。</translation>
 <translation id="3924506460382372403">停用设备显卡状态报告功能</translation>
 <translation id="3925377537407648234">设置显示屏分辨率和缩放比例</translation>
@@ -6693,6 +6705,13 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。</translation>
 <translation id="5212810195096589189">指定虚拟机 CLI 权限</translation>
 <translation id="5213038356678567351">始终不应触发浏览器切换的网站。</translation>
+<translation id="5213420013031914763">启用此政策会禁止使用键盘快捷键或扩展程序 API 截屏。停用或不设置此政策则会允许截屏。
+
+在 <ph name="PRODUCT_NAME" /> 版本 155 至 158 中，启用此政策还会阻止扩展程序通过“chrome.debugger.attach()”附加调试程序，例如当 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有变体版本时。
+
+请注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，此政策不会阻止用户通过操作系统或第三方应用截屏。
+
+在 <ph name="IOS_NAME" /> 上，启用此政策会在系统屏幕截图和屏幕录制中遮盖 <ph name="PRODUCT_NAME" /> 窗口，并使整页屏幕截图功能不可用。</translation>
 <translation id="5216710229085956333">启用 Krisp 降噪功能</translation>
 <translation id="5216815237712190041">配置在无任何用户登录设备的情况下显示在登录屏幕上的设备级壁纸图片。要设置此政策，请指定可供 Chrome 操作系统设备下载相应壁纸图片的网址，并指定用于验证下载内容是否完整的加密哈希值。图片必须是 JPEG 格式，且文件大小不得超过 16MB。网址必须可直接访问，而无需进行任何身份验证。系统会下载并缓存相应的壁纸图片。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
 
@@ -11218,6 +11237,11 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8062485064082966327">使用匿名 Google 服务为无标签图片提供自动说明</translation>
 <translation id="8064875716442437829">启用渲染程序无障碍功能</translation>
 <translation id="8066428282805800713">在 ChromeOS Flex 上发送其他硬件数据</translation>
+<translation id="8070654368411601340">通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可以向哪些服务器进行委派。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。
+
+      如果您不设置此政策，那么即使检测到某台服务器在内网上，<ph name="PRODUCT_NAME" /> 也不会将用户凭证委派给它。
+
+      在 <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="PRODUCT_OS_NAME" /> 上，如果此政策允许向服务器进行委派，则系统 GSSAPI/Kerberos 库可将其主机名规范化为其他服务主体主机（例如通过 DNS CNAME 或反向 DNS PTR 查找）。<ph name="PRODUCT_NAME" /> 随后会拒绝向该服务主体进行委派，除非此政策也允许该主机。</translation>
 <translation id="8071371098891664137">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="8076539570602616846">仅允许符合条件的 Google 账号通过 <ph name="PRODUCT_NAME" /> PDF 查看器将 PDF 文件保存到 Google 云端硬盘</translation>
 <translation id="8078224178125125527">此政策允许您指定哪些代理服务器可以使用 <ph name="PRODUCT_NAME" /> 支持的所有 HTTP 身份验证方案，而无需考虑 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策。
