@@ -121,6 +121,17 @@ public class ArchivedTabsAutoDeletePromoCoordinatorTest {
     }
 
     @Test
+    public void testShowPromo_ShowsBuiltInHandlebar() {
+        simulateShowSuccessAndGetObserver();
+        verify(mMockBottomSheetController)
+                .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
+        ArchivedTabsAutoDeletePromoSheetContent sheetContent =
+                mBottomSheetContentArgumentCaptor.getValue();
+        assertNotNull(sheetContent);
+        assertTrue(sheetContent.showHandlebar());
+    }
+
+    @Test
     public void testShowPromo_Fails_NoSettingsChangeOrObserver() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
