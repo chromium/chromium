@@ -50,6 +50,7 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -2637,6 +2638,28 @@ TEST_P(RenderViewContextMenuReadAnythingTest, MAYBE_AppendPageItems) {
     // Read anything is after translate.
     EXPECT_EQ(model.GetItemCount() - 1, read_anything_index.value());
   }
+}
+
+TEST_P(RenderViewContextMenuReadAnythingTest,
+       ReadAnythingItemSetsCujElementId) {
+  content::ContextMenuParams menu_params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 menu_params);
+  ASSERT_TRUE(GetBrowser());
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  const ui::MenuModel& model = menu.menu_model();
+  std::optional<size_t> read_anything_index;
+  for (size_t i = 0; i < model.GetItemCount(); ++i) {
+    if (model.GetCommandIdAt(i) == IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE) {
+      read_anything_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(read_anything_index.has_value());
+  EXPECT_EQ(kReadAnythingEntryPointContextMenuElementId,
+            model.GetElementIdentifierAt(*read_anything_index));
 }
 
 TEST_P(RenderViewContextMenuReadAnythingTest, GlicNotPresentInReadingMode) {

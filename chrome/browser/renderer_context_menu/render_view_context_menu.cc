@@ -119,6 +119,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -3021,6 +3022,9 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
           GetBrowser())) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
                                     IDS_CONTENT_CONTEXT_READING_MODE);
+    menu_model_.SetElementIdentifierAt(
+        menu_model_.GetItemCount() - 1,
+        kReadAnythingEntryPointContextMenuElementId);
 
     if (is_menu_simplification_enabled) {
       menu_model_.SetIconForCommandId(
