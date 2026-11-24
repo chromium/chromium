@@ -16,6 +16,7 @@ build_webui("build") {
     "images/cvc.svg",
     "images/cvc_amex.svg",
     "images/googleg_standard_clr_32px.svg",
+    "images/horizontal_tabs_browser_preview.svg",
     "images/iban.svg",
     "images/iban_old.svg",
     "images/password_check_neutral.svg",
@@ -44,6 +45,8 @@ build_webui("build") {
     "images/privacy_guide/welcome_banner_dark.svg",
     "images/signin_banner.svg",
     "images/signin_banner_dark.svg",
+    "images/toolbar_browser_preview.svg",
+    "images/vertical_tabs_browser_preview.svg",
     "settings.html",
   ]
 
