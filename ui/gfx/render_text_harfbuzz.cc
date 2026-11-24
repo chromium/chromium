@@ -1392,7 +1392,7 @@ struct ShapeRunWithFontInput {
     hash = base::HashInts(hash, skia_face->uniqueID());
     hash = base::HashInts(hash, script);
     hash = base::HashInts(hash, font_size);
-    hash = base::FastHash(base::as_byte_span(text));
+    hash = base::HashInts(hash, base::FastHash(base::as_byte_span(text)));
     hash = base::HashInts(hash, range.start());
     hash = base::HashInts(hash, range.length());
   }
@@ -2621,6 +2621,20 @@ void RenderTextHarfBuzz::ShapeRunsWithFont(
   in_out_runs->insert(in_out_runs->end(),
                       deferred_text_presentation_runs.begin(),
                       deferred_text_presentation_runs.end());
+}
+
+// static
+size_t RenderTextHarfBuzz::ComputeShapeRunHashForTesting(
+    std::u16string_view text,
+    const internal::TextRunHarfBuzz::FontParams& font_params,
+    Range range) {
+  return internal::ShapeRunWithFontInput(
+             text, font_params, range,
+             /*obscured=*/false,
+             /*glyph_width_for_test=*/0.0f,
+             /*obscured_glyph_spacing=*/0,
+             /*subpixel_rendering_suppressed=*/false)
+      .hash;
 }
 
 void RenderTextHarfBuzz::EnsureLayoutRunList() {

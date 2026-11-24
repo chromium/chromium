@@ -249,6 +249,13 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   RangeF GetCursorSpan(const Range& text_range) override;
   size_t GetLineContainingCaret(const SelectionModel& caret) override;
 
+  // Returns the hash of the shape cache key for |range| of |text| shaped with
+  // |font_params|.
+  static size_t ComputeShapeRunHashForTesting(
+      std::u16string_view text,
+      const internal::TextRunHarfBuzz::FontParams& font_params,
+      Range range);
+
  protected:
   // RenderText:
   SelectionModel AdjacentCharSelectionModel(

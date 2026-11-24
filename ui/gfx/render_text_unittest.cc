@@ -7530,6 +7530,38 @@ TEST_F(RenderTextTest, HarfBuzz_TypefaceCacheRetainsTypeface) {
   EXPECT_FALSE(fresh_typeface->unique());
 }
 
+// The hash of a shape cache key must depend on the typeface, the script and
+// the font size, and not only on the text.
+TEST_F(RenderTextTest, HarfBuzz_ShapeRunHashIncludesFontParams) {
+  Font font;
+  sk_sp<SkTypeface> base_typeface = font.platform_font()->GetNativeSkTypeface();
+
+  internal::TextRunHarfBuzz::FontParams base_params(font);
+  base_params.skia_face = base_typeface;
+  base_params.script = USCRIPT_LATIN;
+  base_params.font_size = 12;
+
+  constexpr std::u16string_view kText = u"hello";
+  const Range range(0, kText.length());
+  const size_t base_hash = RenderTextHarfBuzz::ComputeShapeRunHashForTesting(
+      kText, base_params, range);
+
+  internal::TextRunHarfBuzz::FontParams size_params = base_params;
+  size_params.font_size = 24;
+  EXPECT_NE(base_hash, RenderTextHarfBuzz::ComputeShapeRunHashForTesting(
+                           kText, size_params, range));
+
+  internal::TextRunHarfBuzz::FontParams script_params = base_params;
+  script_params.script = USCRIPT_GREEK;
+  EXPECT_NE(base_hash, RenderTextHarfBuzz::ComputeShapeRunHashForTesting(
+                           kText, script_params, range));
+
+  internal::TextRunHarfBuzz::FontParams face_params = base_params;
+  face_params.skia_face = CloneTypeface(base_typeface.get());
+  EXPECT_NE(base_hash, RenderTextHarfBuzz::ComputeShapeRunHashForTesting(
+                           kText, face_params, range));
+}
+
 TEST_F(RenderTextTest, GlyphBounds) {
   const auto kTestStrings = std::to_array<const char16_t*>(
       {u"asdf 1234 qwer", u"\u0647\u0654", u"\u0645\u0631\u062D\u0628\u0627"});
