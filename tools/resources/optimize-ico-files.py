@@ -9,10 +9,10 @@ Optimizes the PNG images within a Windows ICO icon file. This extracts all of
 the sub-images within the file, runs any PNG-formatted images through
 optimize-png-files.sh, then packs them back into an ICO file.
 
-NOTE: ICO files can contain both raw uncompressed BMP files and PNG files. This
-script does not touch the BMP files, which means if you have a huge uncompressed
-image, it will not get smaller. 256x256 icons should be PNG-formatted first.
-(Smaller icons should be BMPs for compatibility with Windows XP.)
+NOTE: ICO files can contain both raw uncompressed BMP files and PNG files.
+256x256 icons should be PNG-formatted, while smaller icons (48x48 and below)
+are kept as 32-bit uncompressed BMPs. Redundant low-bit-depth (< 32-bit) BMP
+entries are removed when a 32-bit image of the same size is present.
 """
 
 import argparse
@@ -74,6 +74,9 @@ def main(args=None):
         logging.warning('%s: %s', file.name, error)
         # Any errors should cause this process to exit with a status of 1.
         failed = True
+      file.seek(0, os.SEEK_SET)
+      for warning in ico_tools.LintIcoFileWarnings(file):
+        logging.warning('%s: %s', file.name, warning)
       continue
 
     ico_tools.OptimizeIcoFile(file, buf, args.optimization_level)

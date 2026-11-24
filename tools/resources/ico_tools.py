@@ -41,11 +41,15 @@ def OptimizePngFile(temp_dir, png_filename, optimization_level=None):
   if optimization_level is not None:
     args.append('-o%d' % optimization_level)
   args.append(temp_dir)
-  result = subprocess.call(args, stdout=sys.stderr)
-  if result != 0:
-    logging.warning('Warning: optimize-png-files failed (%d)', result)
+  try:
+    result = subprocess.call(args, stdout=sys.stderr)
+  except OSError as e:
+    logging.warning('Warning: optimize-png-files could not run (%s)', e)
   else:
-    logging.debug('optimize-png-files succeeded')
+    if result != 0:
+      logging.warning('Warning: optimize-png-files failed (%d)', result)
+    else:
+      logging.debug('optimize-png-files succeeded')
 
   with open(png_filename, 'rb') as png_file:
     return png_file.read()
@@ -271,6 +275,22 @@ def CheckOrRebuildANDMask(iconimage, rebuild=False):
     return CheckANDMaskAgainstAlpha(xor_data, and_data, width, height)
 
 
+def GetBmpBpp(iconimage):
+  """Returns the bit depth (biBitCount) of a BMP icon entry."""
+  return struct.unpack_from('<H', iconimage, 14)[0]
+
+
+def GetSizesWith32Bit(entries_with_data):
+  """Returns (width, height) sizes that have a 32-bit BMP or PNG entry."""
+  sizes = set()
+  for _, entry, icon_data in entries_with_data:
+    if IsPng(icon_data) or (
+      len(icon_data) >= 40 and GetBmpBpp(icon_data) == 32
+    ):
+      sizes.add((entry[0] or 256, entry[1] or 256))
+  return sizes
+
+
 def LintIcoFile(infile):
   """Read an ICO file and check whether it is acceptable.
 
@@ -344,8 +364,58 @@ def LintIcoFile(infile):
         )
 
 
+def LintIcoFileWarnings(infile):
+  """Read an ICO file and yield non-blocking warnings.
+
+  This checks for redundant low-bit-depth (< 32-bit) BMP entries when a 32-bit
+  BMP or PNG entry of the same size is already present.
+  """
+  icondir = infile.read(6)
+  if len(icondir) != 6:
+    return
+  zero, image_type, num_images = struct.unpack('<HHH', icondir)
+  if zero != 0 or image_type not in (1, 2):
+    return
+
+  icon_dir_entries = []
+  for _ in range(num_images):
+    icondirentry = infile.read(16)
+    if len(icondirentry) != 16:
+      return
+    icon_dir_entries.append(struct.unpack('<BBBBHHLL', icondirentry))
+
+  entries_with_data = []
+  for i in range(num_images):
+    entry = icon_dir_entries[i]
+    size, entry_offset = entry[6], entry[7]
+    infile.seek(entry_offset)
+    icon_data = infile.read(size)
+    if len(icon_data) != size:
+      return
+    entries_with_data.append((i, entry, icon_data))
+
+  sizes_with_32bit = GetSizesWith32Bit(entries_with_data)
+  for i, entry, icon_data in entries_with_data:
+    width = entry[0] or 256
+    height = entry[1] or 256
+    if (
+      not IsPng(icon_data)
+      and len(icon_data) >= 40
+      and (width, height) in sizes_with_32bit
+    ):
+      bpp = GetBmpBpp(icon_data)
+      if bpp < 32:
+        yield (
+          'Entry #%d (%dx%d) is a redundant %d-bit BMP (a 32-bit image of '
+          'this size is already present).' % (i + 1, width, height, bpp)
+        )
+
+
 def OptimizeIcoFile(infile, outfile, optimization_level=None):
   """Read an ICO file, optimize its PNGs, and write the output to outfile.
+
+  Drops redundant low-bit-depth (< 32-bit) BMP entries when a 32-bit BMP or PNG
+  entry of the same size is present.
 
   Args:
     infile: The file to read from. Must be a seekable file-like object
@@ -361,22 +431,54 @@ def OptimizeIcoFile(infile, outfile, optimization_level=None):
     raise InvalidFile('Image type must be 1 or 2.')
 
   # Read and unpack each ICONDIRENTRY.
-  icon_dir_entries = []
+  raw_entries = []
   for i in range(num_images):
     icondirentry = infile.read(16)
-    icon_dir_entries.append(struct.unpack('<BBBBHHLL', icondirentry))
+    raw_entries.append(struct.unpack('<BBBBHHLL', icondirentry))
 
-  # Read each icon's bitmap data, crush PNGs, and update icon dir entries.
-  current_offset = infile.tell()
-  icon_bitmap_data = []
+  entries_with_data = []
   for i in range(num_images):
-    width, height, num_colors, r1, r2, r3, size, _ = icon_dir_entries[i]
-    width = width or 256
-    height = height or 256
-    offset = current_offset
+    entry = raw_entries[i]
+    size, entry_offset = entry[6], entry[7]
+    infile.seek(entry_offset)
     icon_data = infile.read(size)
     if len(icon_data) != size:
       raise EOFError()
+    entries_with_data.append((i, entry, icon_data))
+
+  sizes_with_32bit = GetSizesWith32Bit(entries_with_data)
+
+  kept_entries = []
+  for i, entry, icon_data in entries_with_data:
+    width = entry[0] or 256
+    height = entry[1] or 256
+    if (
+      not IsPng(icon_data)
+      and len(icon_data) >= 40
+      and (width, height) in sizes_with_32bit
+    ):
+      bpp = GetBmpBpp(icon_data)
+      if bpp < 32:
+        logging.info(
+          '%s entry #%d: %dx%d, %d-bit BMP - dropping redundant entry',
+          filename,
+          i + 1,
+          width,
+          height,
+          bpp,
+        )
+        continue
+    kept_entries.append((i, entry, icon_data))
+
+  # Crush PNGs, rebuild AND masks, and update icon dir entries.
+  current_offset = 6 + 16 * len(kept_entries)
+  icon_dir_entries = []
+  icon_bitmap_data = []
+  for i, entry, icon_data in kept_entries:
+    width, height, num_colors, r1, r2, r3, size, _ = entry
+    width = width or 256
+    height = height or 256
+    offset = current_offset
 
     entry_is_png = IsPng(icon_data)
     logging.info(
@@ -394,11 +496,9 @@ def OptimizeIcoFile(infile, outfile, optimization_level=None):
       icon_data = OptimizePng(icon_data, optimization_level=optimization_level)
     elif width >= 256 or height >= 256:
       # It is a large BMP. Reformat as a PNG, then crush it.
-      # Note: Smaller images are kept uncompressed, for compatibility with
-      # Windows XP.
-      # TODO(mgiuca): Now that we no longer support XP, we can probably compress
-      # all of the images. https://crbug.com/663136
-      icon_data = OptimizeBmp(icon_dir_entries[i], icon_data)
+      # Note: Smaller images are kept as 32-bit uncompressed BMPs (matching
+      # ui/gfx/win/icon_util.cc).
+      icon_data = OptimizeBmp(entry, icon_data)
     else:
       new_icon_data = CheckOrRebuildANDMask(icon_data, rebuild=True)
       if new_icon_data != icon_data:
@@ -407,20 +507,22 @@ def OptimizeIcoFile(infile, outfile, optimization_level=None):
 
     new_size = len(icon_data)
     current_offset += new_size
-    icon_dir_entries[i] = (
-      width % 256,
-      height % 256,
-      num_colors,
-      r1,
-      r2,
-      r3,
-      new_size,
-      offset,
+    icon_dir_entries.append(
+      (
+        width % 256,
+        height % 256,
+        num_colors,
+        r1,
+        r2,
+        r3,
+        new_size,
+        offset,
+      )
     )
     icon_bitmap_data.append(icon_data)
 
   # Write the data back to outfile.
-  outfile.write(icondir)
+  outfile.write(struct.pack('<HHH', zero, image_type, len(icon_dir_entries)))
   for icon_dir_entry in icon_dir_entries:
     outfile.write(struct.pack('<BBBBHHLL', *icon_dir_entry))
   for icon_bitmap in icon_bitmap_data:

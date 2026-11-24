@@ -29,36 +29,28 @@ Windows ICO icons should be in the following format:
 
 * A square image of each size: 256, 48, 32, 16.
 * The 256 image should be in PNG format, and optimized.
-* The smaller images should be in BMP (uncompressed) format.
-* Each of the smaller images (48 and less) should have an 8-bit and 32-bit
-  version.
-* The 256 image should not be last (there is a bug in Gnome on Linux where icons
-  look corrupted if the PNG image is last).
+* The smaller images (48 and less) should be 32-bit (ARGB) in BMP (uncompressed)
+  format. 8-bit or lower bit-depth versions are not needed on Windows 10/11.
 
-If you are creating an ICO from a set of PNGs of different sizes, the following
-process (using ImageMagick and GIMP) satisfies the above conditions:
+If you are creating an ICO from a set of 32-bit RGBA PNGs of different sizes,
+the following process satisfies the above conditions:
 
-1. Convert each of the smaller images to 8-bit. With ImageMagick:
+1. Combine the images into an ICO file with ImageMagick:
 
     ```sh
-    for f in FILENAME-??.png; \
-        do convert $f -dither None -colors 256 \
-            png8:`basename $f .png`-indexed.png; \
-    done
+    magick FILENAME-{256,48,32,16}.png FILENAME.ico
     ```
 
-2. Combine the images into an ICO file. With ImageMagick:
+    (Use `convert` instead of `magick` on ImageMagick 6.)
+
+2. Run `tools/resources/optimize-ico-files.py` on the resulting `.ico` file:
 
     ```sh
-    convert FILENAME-256.png FILENAME-{48,32,16}{-indexed,}.png FILENAME.ico
+    tools/resources/optimize-ico-files.py FILENAME.ico
     ```
 
-3. Unfortunately, the 8-bit images have been converted back into 32-bit images.
-   Open the icon in GIMP and re-export it. This will also convert the large
-   256 image into a compressed PNG.
-
-4. Run `src/tools/resources/optimize-ico-files.py` on the resulting .ico file.
-
-You can also run `src/tools/resources/optimize-ico-files.py` on existing .ico
-files. This will convert BMPs to PNGs and run a basic PNG optimization pass, as
-well as fix up any broken image masks (https://crbug.com/41203437).
+You can also run `tools/resources/optimize-ico-files.py` on existing `.ico`
+files. This will convert large (>= 256x256) BMPs to PNGs, drop redundant
+low-bit-depth (< 32-bit) BMPs when a 32-bit image of the same size is present,
+run a PNG optimization pass, and fix up any broken 32-bit image masks
+(https://crbug.com/41203437).
