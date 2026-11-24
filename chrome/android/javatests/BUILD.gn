@@ -625,7 +625,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/ui/android/autofill/internal:java",
-    "//chrome/browser/ui/android/autofill/internal:javatests",
     "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
     "//components/payments/content/android:service_impl_java",
   ]
@@ -1761,7 +1760,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.touch_to_fill") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/ui/android/autofill/internal:java",
-    "//chrome/browser/ui/android/autofill/internal:javatests",
     "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
     "//components/payments/content/android:service_impl_java",
   ]
