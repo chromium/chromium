@@ -1627,6 +1627,12 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.DRAG_THRESHOLD_REQUIRES_MOUSE_MOVEMENT,
                 "When enabled, the cursor needs to move past the drag start threshold in absolute"
                         + " screen coordinates rather than window-relative coordinates."),
+        Flag.baseFeature(
+                "MojoIpczParcelCapacityPolicy",
+                "Adds a feature to allow ipcz to request more shared memory based on various"
+                        + " policies on parcel allocation failures. This means that more Mojo"
+                        + " messages will utilize shared memory rather than falling back to"
+                        + " potentially slow OS transports (e.g. sockets)."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
