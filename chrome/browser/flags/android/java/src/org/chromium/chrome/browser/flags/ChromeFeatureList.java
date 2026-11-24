@@ -1400,10 +1400,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sOnStartupWindowPolicy =
             newCachedFlag(ON_STARTUP_WINDOW_POLICY, /* defaultValue= */ true);
     public static final CachedFlag sOneStepAimAccess =
-            newCachedFlag(
-                    ONE_STEP_AIM_ACCESS,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(ONE_STEP_AIM_ACCESS, /* defaultValue= */ false);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPdfReuseFragment =
             newCachedFlag(
