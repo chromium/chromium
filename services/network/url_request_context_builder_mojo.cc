@@ -70,7 +70,7 @@ URLRequestContextBuilderMojo::CreateDhcpPacFileFetcher(
 #endif
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 std::unique_ptr<net::ProxyResolutionService>
 URLRequestContextBuilderMojo::CreateSystemProxyResolutionService(
     net::NetLog* net_log) {
@@ -86,9 +86,13 @@ URLRequestContextBuilderMojo::CreateSystemProxyResolutionService(
   return net::MacSystemProxyResolutionService::Create(
       std::make_unique<MacSystemProxyResolverMojo>(
           std::move(mojo_system_proxy_resolver_)));
+#elif BUILDFLAG(IS_LINUX)
+  return net::LinuxSystemProxyResolutionService::Create(
+      std::make_unique<LinuxSystemProxyResolverMojo>(
+          std::move(mojo_system_proxy_resolver_)));
 #endif
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 std::unique_ptr<net::ProxyResolutionService>
 URLRequestContextBuilderMojo::CreateProxyResolutionService(
@@ -101,22 +105,10 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
   DCHECK(url_request_context);
   DCHECK(host_resolver);
 
-#if BUILDFLAG(IS_LINUX)
-  if (mojo_system_proxy_resolver_) {
-    std::unique_ptr<net::ProxyResolutionService> proxy_resolution_service =
-        net::LinuxSystemProxyResolutionService::Create(
-            std::make_unique<LinuxSystemProxyResolverMojo>(
-                std::move(mojo_system_proxy_resolver_)));
-    if (proxy_resolution_service) {
-      return proxy_resolution_service;
-    }
-  }
-#endif  // BUILDFLAG(IS_LINUX)
-
   std::unique_ptr<net::ProxyResolutionService> system_proxy_service;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   system_proxy_service = CreateSystemProxyResolutionService(net_log);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   if (mojo_proxy_resolver_factory_) {
     std::unique_ptr<net::DhcpPacFileFetcher> dhcp_pac_file_fetcher =

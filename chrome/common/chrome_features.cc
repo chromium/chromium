@@ -1800,10 +1800,10 @@ BASE_FEATURE(kProcessPerSiteForDSE,
 );
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Uses native resolution for system proxy baselines on Windows and macOS.
-// Linux builds with D-Bus support use the XDG portal resolver directly.
-// TODO(crbug.com/40111093): Restrict Linux native resolution to system proxy
-// configurations as well.
+// Uses native resolution for system proxy baselines on Windows, macOS, and
+// Linux (on Linux builds with D-Bus support, via the XDG ProxyResolver portal;
+// Flatpak sandboxes enable the portal resolver by default via
+// kPortalProxyResolverWhenSandboxed).
 BASE_FEATURE(kSystemProxyResolver, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

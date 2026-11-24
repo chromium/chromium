@@ -116,8 +116,10 @@ ProxyConfigWithAnnotation GetConfigOrDirect(
   if (optional_config)
     return optional_config.value();
 
-  ProxyConfigWithAnnotation config = ProxyConfigWithAnnotation::CreateDirect();
-  return config;
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  config.set_from_system(true);
+  return ProxyConfigWithAnnotation(
+      config, ProxyConfigWithAnnotation::CreateDirect().traffic_annotation());
 }
 
 }  // namespace

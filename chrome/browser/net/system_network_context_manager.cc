@@ -107,6 +107,7 @@
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_mac.h"
 #elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "base/nix/xdg_util.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_linux.h"
 #endif
 
@@ -375,6 +376,13 @@ namespace features {
 // will still result in sandbox being disabled for the lifetime of the running
 // browser.
 BASE_FEATURE(kPersistFailedLaunchState, base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+// Enables using the XDG ProxyResolver desktop portal for system proxy
+// resolution by default when running inside a Flatpak sandbox.
+BASE_FEATURE(kPortalProxyResolverWhenSandboxed,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 }  // namespace features
 
 class SystemNetworkContextManager::NetworkProcessLaunchWatcher
@@ -1029,12 +1037,9 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     }
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // --winhttp-proxy-resolver takes precedence over the SystemProxyResolver
   // feature to preserve the legacy platform PAC resolver on Windows and macOS.
-  // Linux has no legacy platform PAC resolver.
-  // TODO(crbug.com/40111093): Skip the legacy-switch check on Linux.
   if (base::FeatureList::IsEnabled(features::kSystemProxyResolver) &&
       !command_line.HasSwitch(switches::kWinHttpProxyResolver)) {
 #if BUILDFLAG(IS_WIN)
@@ -1043,10 +1048,23 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 #elif BUILDFLAG(IS_MAC)
     network_context_params->system_proxy_resolver =
         ChromeMojoProxyResolverMac::CreateWithSelfOwnedReceiver();
-#else  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#endif
+  }
+#elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  // Flatpak and Snap are Linux app packaging formats that run the whole
+  // browser inside an app sandbox (unrelated to the network service sandbox).
+  // Inside Flatpak, GSettings uses the app sandbox's isolated backend and host
+  // proxy config files are inaccessible, so use the XDG desktop ProxyResolver
+  // portal (which resolves proxies using the host's settings) by default.
+  // Snap connects its gsettings plug to host dconf and keeps using
+  // ProxyConfigServiceLinux directly (avoiding regressing to DIRECT when the
+  // portal interface is unavailable).
+  if (base::FeatureList::IsEnabled(features::kSystemProxyResolver) ||
+      (base::nix::GetAppSandbox() == base::nix::AppSandbox::kFlatpak &&
+       base::FeatureList::IsEnabled(
+           features::kPortalProxyResolverWhenSandboxed))) {
     network_context_params->system_proxy_resolver =
         ChromeMojoProxyResolverLinux::CreateWithSelfOwnedReceiver();
-#endif
   }
 #endif
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -77,13 +78,22 @@
 #include "content/public/browser/storage_partition.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "base/command_line.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "base/nix/xdg_util.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/dbus/xdg/portal.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
@@ -756,6 +766,10 @@ class SystemProxyResolverFeatureBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox_override_{
+      base::nix::AppSandbox::kNone};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_P(SystemProxyResolverFeatureBrowserTest,
@@ -799,3 +813,149 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+namespace {
+
+bool HasDefaultSystemProxyResolver() {
+  return g_browser_process->system_network_context_manager()
+      ->CreateDefaultNetworkContextParams()
+      ->system_proxy_resolver.is_valid();
+}
+
+}  // namespace
+
+class SystemNetworkContextManagerPortalProxyResolverBrowsertest
+    : public SystemNetworkContextManagerBrowsertest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kFailed);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
+    SystemNetworkContextManagerBrowsertest::
+        TearDownInProcessBrowserTestFixture();
+  }
+};
+
+class SystemNetworkContextManagerPortalProxyResolverSandboxBrowsertest
+    : public SystemNetworkContextManagerPortalProxyResolverBrowsertest,
+      public testing::WithParamInterface<base::nix::AppSandbox> {
+ private:
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox_override_{GetParam()};
+};
+
+IN_PROC_BROWSER_TEST_P(
+    SystemNetworkContextManagerPortalProxyResolverSandboxBrowsertest,
+    ConfiguresSystemProxyResolver) {
+  EXPECT_EQ(GetParam() == base::nix::AppSandbox::kFlatpak,
+            HasDefaultSystemProxyResolver());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemNetworkContextManagerPortalProxyResolverSandboxBrowsertest,
+    testing::Values(base::nix::AppSandbox::kNone,
+                    base::nix::AppSandbox::kSnap,
+                    base::nix::AppSandbox::kFlatpak));
+
+class SystemNetworkContextManagerPortalProxyResolverKillSwitchBrowsertest
+    : public SystemNetworkContextManagerPortalProxyResolverBrowsertest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SystemNetworkContextManagerPortalProxyResolverKillSwitchBrowsertest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kPortalProxyResolverWhenSandboxed, false},
+         {features::kSystemProxyResolver, GetParam()}});
+  }
+
+ private:
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox_override_{
+      base::nix::AppSandbox::kFlatpak};
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    SystemNetworkContextManagerPortalProxyResolverKillSwitchBrowsertest,
+    KillSwitchDisablesFlatpakDefault) {
+  EXPECT_EQ(GetParam(), HasDefaultSystemProxyResolver());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemNetworkContextManagerPortalProxyResolverKillSwitchBrowsertest,
+    testing::Bool());
+
+class SystemNetworkContextManagerSandboxedProxyOverrideBrowsertest
+    : public policy::PolicyTest {
+ public:
+  SystemNetworkContextManagerSandboxedProxyOverrideBrowsertest() {
+    EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kFailed);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
+    policy::PolicyTest::TearDownInProcessBrowserTestFixture();
+  }
+
+ private:
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox_override_{
+      base::nix::AppSandbox::kFlatpak};
+};
+
+class SystemNetworkContextManagerSandboxedProxySwitchBrowsertest
+    : public SystemNetworkContextManagerSandboxedProxyOverrideBrowsertest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SystemNetworkContextManagerSandboxedProxyOverrideBrowsertest::
+        SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kProxyServer,
+        embedded_test_server()->host_port_pair().ToString());
+  }
+};
+
+// Verifies that --proxy-server and enterprise proxy policies take precedence
+// over the portal SystemProxyResolver inside Flatpak. PolicyTest maps every
+// host to 127.0.0.1, but nothing listens on port 80, so navigation only
+// succeeds via embedded_test_server().
+IN_PROC_BROWSER_TEST_F(
+    SystemNetworkContextManagerSandboxedProxySwitchBrowsertest,
+    ProxyServerSwitchOverridesPortalResolver) {
+  embedded_test_server()->StartAcceptingConnections();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("http://proxied.test/title2.html")));
+  EXPECT_EQ(u"Title Of Awesomeness",
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SystemNetworkContextManagerSandboxedProxyOverrideBrowsertest,
+    EnterpriseProxyPolicyOverridesPortalResolver) {
+  embedded_test_server()->StartAcceptingConnections();
+
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kProxyMode, base::Value("fixed_servers"));
+  SetPolicy(&policies, policy::key::kProxyServer,
+            base::Value(embedded_test_server()->host_port_pair().ToString()));
+  UpdateProviderPolicy(policies);
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
+      ->FlushProxyConfigMonitorForTesting();
+  browser()
+      ->GetProfile()
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("http://policy-proxied.test/title2.html")));
+  EXPECT_EQ(u"Title Of Awesomeness",
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetTitle());
+}
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)

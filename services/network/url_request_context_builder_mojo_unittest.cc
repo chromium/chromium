@@ -35,10 +35,14 @@
 #include "services/network/mock_mojo_dhcp_wpad_url_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
@@ -46,8 +50,11 @@
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/test/gtest_util.h"
+#include "services/network/proxy_config_service_mojo.h"
+#include "services/network/public/mojom/proxy_config.mojom.h"
 #include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace network {
 
@@ -117,24 +124,30 @@ TEST_F(URLRequestContextBuilderMojoTest, MojoProxyResolver) {
   EXPECT_TRUE(test_mojo_proxy_resolver_factory_.resolver_created());
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class TestSystemProxyResolver
     : public proxy_resolver::mojom::SystemProxyResolver {
  public:
+  TestSystemProxyResolver() { proxy_list_.Set("native.test:8080"); }
+  explicit TestSystemProxyResolver(net::ProxyList proxy_list)
+      : proxy_list_(std::move(proxy_list)) {}
+
   void GetProxyForUrl(const GURL& url,
                       GetProxyForUrlCallback callback) override {
     ++request_count_;
-    net::ProxyList proxies;
-    proxies.Set("native.test:8080");
+    last_url_ = url;
     auto status = proxy_resolver::mojom::SystemProxyResolutionStatus::New();
     status->is_success = true;
-    std::move(callback).Run(proxies, std::move(status));
+    std::move(callback).Run(proxy_list_, std::move(status));
   }
 
   int request_count() const { return request_count_; }
+  const GURL& last_url() const { return last_url_; }
 
  private:
+  net::ProxyList proxy_list_;
   int request_count_ = 0;
+  GURL last_url_;
 };
 
 class URLRequestContextBuilderMojoSystemProxyTest
@@ -215,7 +228,7 @@ TEST_P(URLRequestContextBuilderMojoSystemProxyTest, BrowserConfiguredBaseline) {
 INSTANTIATE_TEST_SUITE_P(All,
                          URLRequestContextBuilderMojoSystemProxyTest,
                          testing::Bool());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Makes sure that pending PAC requests are correctly shut down during teardown.
 TEST_F(URLRequestContextBuilderMojoTest, ShutdownWithHungRequest) {
@@ -257,6 +270,108 @@ TEST_F(URLRequestContextBuilderMojoTest, ShutdownWithHungRequest) {
   // scope.
   EXPECT_TRUE(test_server_.ShutdownAndWaitUntilComplete());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+std::string ResolveProxyForUrl(net::ProxyResolutionService* service,
+                               const GURL& url) {
+  net::ProxyInfo info;
+  net::TestCompletionCallback callback;
+  std::unique_ptr<net::ProxyResolutionRequest> request;
+  int rv = service->ResolveProxy(
+      url, /*method=*/"GET", net::NetworkAnonymizationKey(),
+      net::handles::kInvalidNetworkHandle, &info, callback.callback(), &request,
+      net::NetLogWithSource(), net::DEFAULT_PRIORITY);
+  EXPECT_THAT(callback.GetResult(rv), net::test::IsOk());
+  return info.ToDebugString();
+}
+
+void UpdateAndFlushProxyConfig(
+    mojo::Remote<mojom::ProxyConfigClient>& proxy_config_client,
+    const net::ProxyConfig& config) {
+  proxy_config_client->OnProxyConfigUpdated(
+      net::ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+  base::test::TestFuture<void> flushed;
+  proxy_config_client->FlushProxyConfig(flushed.GetCallback());
+  ASSERT_TRUE(flushed.Wait());
+}
+
+TEST_F(URLRequestContextBuilderMojoTest,
+       SystemProxyResolverUsedOnlyForSystemConfigs) {
+  ASSERT_TRUE(test_server_.Start());
+
+  net::ProxyList portal_proxies;
+  portal_proxies.AddProxyServer(
+      net::PacResultElementToProxyServer("HTTPS portal-proxy:8443"));
+  TestSystemProxyResolver resolver(portal_proxies);
+  mojo::Receiver<proxy_resolver::mojom::SystemProxyResolver> receiver(
+      &resolver);
+
+  net::ProxyConfig system_config = net::ProxyConfig::CreateDirect();
+  system_config.set_from_system(true);
+  net::ProxyConfig::ProxyOverrideRule override_rule;
+  override_rule.destination_matchers.ParseFromString("https://override.test");
+  override_rule.proxy_list.SetSingleProxyServer(
+      net::PacResultElementToProxyServer("PROXY override-proxy:8080"));
+  system_config.set_proxy_override_rules({override_rule});
+
+  mojo::Remote<mojom::ProxyConfigClient> proxy_config_client;
+  builder_.set_proxy_config_service(std::make_unique<ProxyConfigServiceMojo>(
+      proxy_config_client.BindNewPipeAndPassReceiver(),
+      net::ProxyConfigWithAnnotation(system_config,
+                                     TRAFFIC_ANNOTATION_FOR_TESTS),
+      mojo::NullRemote()));
+  builder_.SetMojoProxyResolverFactory(
+      test_mojo_proxy_resolver_factory_.CreateFactoryRemote());
+  builder_.SetMojoSystemProxyResolver(receiver.BindNewPipeAndPassRemote());
+
+  std::unique_ptr<net::URLRequestContext> context(builder_.Build());
+  net::ProxyResolutionService* proxy_service =
+      context->proxy_resolution_service();
+
+  // Enterprise ProxyOverrideRules apply before SystemProxyResolver, while
+  // non-matching URLs delegate to SystemProxyResolver (with HTTPS path
+  // sanitized to "/").
+  EXPECT_EQ("PROXY override-proxy:8080",
+            ResolveProxyForUrl(proxy_service, GURL("https://override.test/1")));
+  EXPECT_EQ(0, resolver.request_count());
+  EXPECT_EQ(
+      "HTTPS portal-proxy:8443",
+      ResolveProxyForUrl(proxy_service, GURL("https://a.example.test/path")));
+  EXPECT_EQ(1, resolver.request_count());
+  EXPECT_EQ(GURL("https://a.example.test/"), resolver.last_url());
+
+  // Non-system fixed, direct, and custom PAC configs (from_system == false,
+  // e.g. CLI switches, env vars, or policies) bypass SystemProxyResolver.
+  net::ProxyConfig fixed_config;
+  fixed_config.proxy_rules().ParseFromString("https=cli-proxy:8443");
+  UpdateAndFlushProxyConfig(proxy_config_client, fixed_config);
+  EXPECT_EQ("PROXY cli-proxy:8443",
+            ResolveProxyForUrl(proxy_service, GURL("https://example.test/b")));
+  EXPECT_EQ(1, resolver.request_count());
+
+  UpdateAndFlushProxyConfig(proxy_config_client,
+                            net::ProxyConfig::CreateDirect());
+  EXPECT_EQ("DIRECT",
+            ResolveProxyForUrl(proxy_service, GURL("https://example.test/c")));
+  EXPECT_EQ(1, resolver.request_count());
+
+  UpdateAndFlushProxyConfig(
+      proxy_config_client,
+      net::ProxyConfig::CreateFromCustomPacURL(test_server_.GetURL(kPacPath)));
+  EXPECT_EQ("PROXY " + test_server_.host_port_pair().ToString(),
+            ResolveProxyForUrl(proxy_service, GURL("https://example.test/d")));
+  EXPECT_TRUE(test_mojo_proxy_resolver_factory_.resolver_created());
+  EXPECT_EQ(1, resolver.request_count());
+
+  // Reverting to a system-origin config resumes delegating to
+  // SystemProxyResolver.
+  UpdateAndFlushProxyConfig(proxy_config_client, system_config);
+  EXPECT_EQ(
+      "HTTPS portal-proxy:8443",
+      ResolveProxyForUrl(proxy_service, GURL("https://e.example.test/path")));
+  EXPECT_EQ(2, resolver.request_count());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace
 

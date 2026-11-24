@@ -25,9 +25,10 @@ class ObjectProxy;
 }  // namespace dbus
 
 // Implements proxy_resolver::mojom::SystemProxyResolver in the browser process
-// using the org.freedesktop.portal.ProxyResolver XDG desktop portal. The
-// network service calls into this when the SystemProxyResolver feature is
-// enabled.
+// using the org.freedesktop.portal.ProxyResolver XDG desktop portal. On Linux,
+// the network service calls into this for system-origin proxy configurations
+// when running in a Flatpak sandbox (by default) or when the
+// SystemProxyResolver feature is enabled.
 //
 // The portal applies the host's proxy configuration (including PAC scripts and
 // WPAD) on the host side, so this works even when Chrome is sandboxed (e.g. in

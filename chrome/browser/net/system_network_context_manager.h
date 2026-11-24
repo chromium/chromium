@@ -13,6 +13,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/net/cert_verifier_service_time_updater.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -48,6 +50,9 @@ class NetLogProxySource;
 
 namespace features {
 BASE_DECLARE_FEATURE(kPersistFailedLaunchState);
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+BASE_DECLARE_FEATURE(kPortalProxyResolverWhenSandboxed);
+#endif
 }  // namespace features
 
 // Responsible for creating and managing access to the system NetworkContext.

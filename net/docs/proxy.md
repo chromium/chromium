@@ -942,7 +942,7 @@ on analyzing it.
 
 ## Native system proxy resolution
 
-On Windows and macOS, when a native resolver is supplied to
+On Windows, macOS, and Linux, when a native resolver is supplied to
 `ConfiguredProxyResolutionService`, it handles all system-origin baselines
 (`ProxyConfig::from_system()`), including DIRECT and static proxy settings,
 after override and dynamic routing (PvD) rules are evaluated.
@@ -979,10 +979,12 @@ The legacy `--winhttp-proxy-resolver` switch takes precedence over the
 `SystemProxyResolver` feature. When both are enabled, Chrome retains the legacy
 platform PAC resolver rather than using the native utility-process resolver.
 
-On Linux builds with D-Bus support, the same feature enables the existing
-`org.freedesktop.portal.ProxyResolver` path. Linux continues to use the portal
-resolver directly rather than the configuration-aware selection described above.
-Linux builds without D-Bus support do not create a portal resolver.
+On Linux builds with D-Bus support, the `org.freedesktop.portal.ProxyResolver`
+portal resolver is enabled by default inside Flatpak sandboxes (gated by the
+default-enabled `PortalProxyResolverWhenSandboxed` kill switch), and can also be
+enabled elsewhere with `--enable-features=SystemProxyResolver`. Like Windows and
+macOS, it uses the configuration-aware selection described above. Linux builds
+without D-Bus support do not create a portal resolver.
 
 Native PAC support is platform-specific. The macOS utility-process resolver
 does not yet execute PAC scripts (crbug.com/442313607); this selection feature

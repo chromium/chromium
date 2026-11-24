@@ -786,6 +786,7 @@ TEST_F(ProxyConfigServiceLinuxTest, BasicGSettingsTest) {
     EXPECT_EQ(tests[i].availability, availability);
 
     if (availability == ProxyConfigService::CONFIG_VALID) {
+      EXPECT_TRUE(config.value().from_system());
       EXPECT_EQ(tests[i].auto_detect, config.value().auto_detect());
       EXPECT_EQ(tests[i].pac_url, config.value().pac_url());
       EXPECT_TRUE(tests[i].proxy_rules.Matches(config.value().proxy_rules()));
@@ -1118,6 +1119,7 @@ TEST_F(ProxyConfigServiceLinuxTest, BasicEnvTest) {
     EXPECT_EQ(tests[i].availability, availability);
 
     if (availability == ProxyConfigService::CONFIG_VALID) {
+      EXPECT_FALSE(config.value().from_system());
       EXPECT_EQ(tests[i].auto_detect, config.value().auto_detect());
       EXPECT_EQ(tests[i].pac_url, config.value().pac_url());
       EXPECT_TRUE(tests[i].proxy_rules.Matches(config.value().proxy_rules()));
@@ -1160,6 +1162,7 @@ TEST_F(ProxyConfigServiceLinuxTest, GSettingsNotification) {
     service_ptr->OnCheckProxyConfigSettings();
     EXPECT_EQ(ProxyConfigService::CONFIG_VALID,
               sync_config_getter.SyncGetLatestProxyConfig(&config));
+    EXPECT_TRUE(config.value().from_system());
     EXPECT_FALSE(config.value().auto_detect());
     EXPECT_TRUE(config.value().proxy_rules().empty());
   }
@@ -1737,6 +1740,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEConfigParser) {
     EXPECT_EQ(tests[i].availability, availability);
 
     if (availability == ProxyConfigService::CONFIG_VALID) {
+      EXPECT_TRUE(config.value().from_system());
       EXPECT_EQ(tests[i].auto_detect, config.value().auto_detect());
       EXPECT_EQ(tests[i].pac_url, config.value().pac_url());
       EXPECT_TRUE(tests[i].proxy_rules.Matches(config.value().proxy_rules()));
@@ -2046,10 +2050,31 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEMultipleKioslaverc) {
     EXPECT_EQ(availability, ProxyConfigService::CONFIG_VALID);
 
     if (availability == ProxyConfigService::CONFIG_VALID) {
+      EXPECT_TRUE(config.value().from_system());
       EXPECT_EQ(tests[i].auto_detect, config.value().auto_detect());
       EXPECT_EQ(tests[i].pac_url, config.value().pac_url());
       EXPECT_TRUE(tests[i].proxy_rules.Matches(config.value().proxy_rules()));
     }
+  }
+}
+
+TEST_F(ProxyConfigServiceLinuxTest, UnsetDesktopMarksFromSystem) {
+  for (const char* desktop : {"sway", "KDE"}) {
+    SCOPED_TRACE(desktop);
+    auto env = std::make_unique<MockEnvironment>();
+    env->values.XDG_CURRENT_DESKTOP = desktop;
+    env->values.KDE_SESSION_VERSION = "6";
+    env->values.HOME = user_home_.value().c_str();
+    SyncConfigGetter sync_config_getter(
+        std::make_unique<ProxyConfigServiceLinux>(
+            std::move(env), TRAFFIC_ANNOTATION_FOR_TESTS));
+    ProxyConfigWithAnnotation config;
+    sync_config_getter.SetupAndInitialFetch();
+    EXPECT_EQ(ProxyConfigService::CONFIG_VALID,
+              sync_config_getter.SyncGetLatestProxyConfig(&config));
+    EXPECT_TRUE(config.value().from_system());
+    EXPECT_FALSE(config.value().auto_detect());
+    EXPECT_TRUE(config.value().proxy_rules().empty());
   }
 }
 

@@ -17,6 +17,7 @@
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -48,7 +49,8 @@
 #include "chrome/browser/ash/net/dhcp_wpad_url_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS))
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/common/chrome_features.h"
@@ -63,7 +65,12 @@
 #include "net/proxy_resolution/proxy_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) &&
+        // BUILDFLAG(USE_DBUS))
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "components/dbus/xdg/portal.h"
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
 namespace {
 
@@ -148,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
   EXPECT_TRUE(base::EqualsASCII(result, "PASS"));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS))
 constexpr char kNativeProxyTestUrl[] = "http://does.not.resolve.test/echo";
 
 class NativeSystemProxyBrowserClient
@@ -221,6 +229,18 @@ class NativeSystemProxyBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+#if BUILDFLAG(IS_LINUX)
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kFailed);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
+    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -266,7 +286,8 @@ IN_PROC_BROWSER_TEST_F(NativeSystemProxyBrowserTest,
                       "document.body.textContent"));
   CloseBrowserSynchronously(proxy_browser);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) &&
+        // BUILDFLAG(USE_DBUS))
 
 // Fetches a PAC script via an http:// URL, and ensures that requests to
 // https://www.google.com fail with ERR_PROXY_CONNECTION_FAILED (by virtue of

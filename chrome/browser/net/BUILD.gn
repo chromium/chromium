@@ -64,6 +64,7 @@ source_set("net") {
     ":probe_message_proto",
     "//base",
     "//build:chromeos_buildflags",
+    "//build/config/linux/dbus:buildflags",
     "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ssl",
@@ -597,6 +598,9 @@ if (!is_android) {
     }
     if (is_mac) {
       sources += [ "chrome_mojo_proxy_resolver_mac_browsertest.cc" ]
+    }
+    if (is_linux && use_dbus) {
+      deps += [ "//components/dbus" ]
     }
     if (enable_device_bound_sessions) {
       sources += [ "device_bound_sessions_browsertest.cc" ]
