@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
@@ -31,9 +32,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -148,6 +151,12 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
       std::move(callback).Run(std::move(result));
       return;
     }
+
+    // Cancel the annotation if the processor disconnects before replying.
+    callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        std::move(callback),
+        image_annotation::mojom::AnnotateImageResult::NewErrorCode(
+            image_annotation::mojom::AnnotateImageError::kCanceled));
 
     processors_.emplace_back(std::move(image_processor));
     processors_.back()->GetJpgImageData(base::BindOnce(
@@ -318,6 +327,35 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
+                       ImageProcessorDisconnectCancelsAnnotation) {
+  FakeAnnotator annotator;
+  mojo::Remote<image_annotation::mojom::Annotator> annotator_remote;
+  annotator.BindReceiver(annotator_remote.BindNewPipeAndPassReceiver(),
+                         url::Origin::Create(https_server_.GetURL("/")));
+
+  // Repeat on the same connection to ensure cancellation does not close it.
+  for (int request = 0; request < 2; ++request) {
+    mojo::PendingRemote<image_annotation::mojom::ImageProcessor> processor;
+    auto processor_receiver = processor.InitWithNewPipeAndPassReceiver();
+    base::test::TestFuture<image_annotation::mojom::AnnotateImageResultPtr>
+        result;
+    annotator_remote->AnnotateImage(
+        https_server_.GetURL("/accessibility/red.png").spec(), "en",
+        std::move(processor), result.GetCallback());
+    annotator_remote.FlushForTesting();
+    EXPECT_FALSE(result.IsReady());
+
+    processor_receiver.reset();
+    ASSERT_TRUE(result.Wait());
+    ASSERT_TRUE(result.Get()->is_error_code());
+    EXPECT_EQ(image_annotation::mojom::AnnotateImageError::kCanceled,
+              result.Get()->get_error_code());
+    annotator_remote.FlushForTesting();
+    EXPECT_TRUE(annotator_remote.is_connected());
+  }
+}
 
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
                        AnnotateImageInAccessibilityTree) {
