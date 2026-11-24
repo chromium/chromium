@@ -81,6 +81,7 @@
     "contextlost",
     "contextmenu",
     "contextoverflow",
+    "contextrequest",
     "contextrestored",
     "controllerchange",
     "cookiechange",

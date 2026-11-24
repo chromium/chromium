@@ -19,6 +19,7 @@
     void updateSelectionBounds(DOMRect selectionBounds);
     void updateCharacterBounds(unsigned long rangeStart, sequence<DOMRect> characterBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);
+    [RuntimeEnabled=EditContextOnDemand] void invalidate();
     sequence<HTMLElement> attachedElements();
 
     readonly attribute DOMString text;
@@ -33,4 +34,5 @@
     attribute EventHandler oncharacterboundsupdate;
     attribute EventHandler oncompositionstart;
     attribute EventHandler oncompositionend;
+    [RuntimeEnabled=EditContextOnDemand] attribute EventHandler oncontextrequest;
 };

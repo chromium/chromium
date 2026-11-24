@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EditContext: On-demand text and selection updates (invalidate and contextrequest)</title>
+<link rel="help" href="https://github.com/w3c/edit-context/issues/156">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</head>
+<body>
+  <script>
+    const kBackspaceKey = "\uE003";
+
+    test(() => {
+      const editContext = new EditContext();
+      assert_equals(typeof editContext.invalidate, "function");
+      assert_equals(editContext.oncontextrequest, null);
+    }, "EditContext exposes invalidate() and oncontextrequest");
+
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      t.add_cleanup(() => div.remove());
+      const editContext = new EditContext();
+      div.editContext = editContext;
+      div.focus();
+
+      const eventOrder = [];
+      let dispatchedEvent = null;
+      editContext.oncontextrequest = (e) => {
+        eventOrder.push("contextrequest");
+        dispatchedEvent = e;
+        editContext.updateText(0, editContext.text.length, "Hello");
+        editContext.updateSelection(5, 5);
+      };
+      editContext.addEventListener("textupdate", () => {
+        eventOrder.push("textupdate");
+      });
+
+      editContext.invalidate();
+      await test_driver.send_keys(div, "!");
+
+      assert_array_equals(eventOrder, ["contextrequest", "textupdate"]);
+      assert_true(dispatchedEvent instanceof Event);
+      assert_equals(dispatchedEvent.constructor, Event);
+      assert_equals(dispatchedEvent.type, "contextrequest");
+      assert_false(dispatchedEvent.bubbles);
+      assert_false(dispatchedEvent.cancelable);
+      assert_equals(editContext.text, "Hello!");
+      assert_equals(editContext.selectionStart, 6);
+      assert_equals(editContext.selectionEnd, 6);
+
+      // Subsequent input while clean must not fire contextrequest again.
+      await test_driver.send_keys(div, "?");
+      assert_array_equals(
+          eventOrder, ["contextrequest", "textupdate", "textupdate"]);
+      assert_equals(editContext.text, "Hello!?");
+    }, "editContext.invalidate() triggers synchronous contextrequest Event before text insertion");
+
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      t.add_cleanup(() => div.remove());
+      const editContext = new EditContext();
+      div.editContext = editContext;
+      div.focus();
+
+      let contextRequestCount = 0;
+      editContext.addEventListener("contextrequest", (e) => {
+        contextRequestCount++;
+        assert_true(e instanceof Event);
+        assert_equals(e.type, "contextrequest");
+        assert_false(e.bubbles);
+        assert_false(e.cancelable);
+        editContext.updateText(0, editContext.text.length, "abcdef");
+        editContext.updateSelection(3, 3);
+      });
+
+      editContext.invalidate();
+      await test_driver.send_keys(div, kBackspaceKey);
+
+      assert_equals(contextRequestCount, 1);
+      assert_equals(editContext.text, "abdef");
+      assert_equals(editContext.selectionStart, 2);
+      assert_equals(editContext.selectionEnd, 2);
+    }, "editContext.invalidate() triggers contextrequest before Backspace deletion");
+
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      t.add_cleanup(() => div.remove());
+      const editContext = new EditContext({ text: "stale", selectionStart: 5, selectionEnd: 5 });
+      div.editContext = editContext;
+      div.focus();
+
+      let contextRequestCount = 0;
+      editContext.addEventListener("contextrequest", () => {
+        contextRequestCount++;
+        editContext.updateText(0, editContext.text.length, "fresh");
+        editContext.updateSelection(5, 5);
+      });
+
+      editContext.invalidate();
+      // Unrelated or partial updates outside contextrequest must not clear the
+      // dirty bit before the browser pulls fresh context.
+      editContext.updateSelection(0, 0);
+      editContext.updateText(0, 5, "partial");
+
+      await test_driver.send_keys(div, "!");
+      assert_equals(contextRequestCount, 1);
+      assert_equals(editContext.text, "fresh!");
+    }, "updateSelection() and updateText() outside contextrequest do not clear dirty state");
+
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      t.add_cleanup(() => div.remove());
+      const editContext = new EditContext();
+      div.editContext = editContext;
+      div.focus();
+
+      let contextRequestCount = 0;
+      let reInvalidateInsideHandler = true;
+      editContext.addEventListener("contextrequest", () => {
+        contextRequestCount++;
+        editContext.updateText(0, editContext.text.length,
+                               contextRequestCount === 1 ? "first" : "second");
+        editContext.updateSelection(editContext.text.length, editContext.text.length);
+        if (reInvalidateInsideHandler) {
+          reInvalidateInsideHandler = false;
+          editContext.invalidate();
+        }
+      });
+
+      editContext.invalidate();
+      await test_driver.send_keys(div, "1");
+      assert_equals(contextRequestCount, 1);
+      assert_equals(editContext.text, "first1");
+
+      // Because invalidate() was called during the first contextrequest, the
+      // next edit must fire contextrequest again.
+      await test_driver.send_keys(div, "2");
+      assert_equals(contextRequestCount, 2);
+      assert_equals(editContext.text, "second2");
+    }, "Calling invalidate() inside contextrequest keeps EditContext dirty for subsequent input");
+
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      t.add_cleanup(() => div.remove());
+      const editContext = new EditContext({
+        text: "0123456789",
+        selectionStart: 10,
+        selectionEnd: 10,
+      });
+      div.editContext = editContext;
+      div.focus();
+
+      editContext.addEventListener("contextrequest", () => {
+        editContext.updateText(0, editContext.text.length, "hi");
+      });
+
+      editContext.invalidate();
+      await test_driver.send_keys(div, "!");
+
+      assert_equals(editContext.text, "hi!");
+      assert_equals(editContext.selectionStart, 3);
+      assert_equals(editContext.selectionEnd, 3);
+    }, "contextrequest shrinking text via updateText() without updateSelection() clamps selection before inserting input");
+
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      t.add_cleanup(() => div.remove());
+      const editContext = new EditContext({ text: "stale", selectionStart: 5, selectionEnd: 5 });
+      div.editContext = editContext;
+      div.focus();
+
+      let contextRequestCount = 0;
+      editContext.addEventListener("contextrequest", () => {
+        contextRequestCount++;
+        editContext.updateText(0, editContext.text.length, "fresh");
+        editContext.updateSelection(5, 5);
+      });
+
+      editContext.invalidate();
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      assert_equals(contextRequestCount, 0);
+
+      await test_driver.send_keys(div, "!");
+      assert_equals(contextRequestCount, 1);
+      assert_equals(editContext.text, "fresh!");
+    }, "Animation frames after invalidate() do not eagerly fire contextrequest before actual input");
+
+    promise_test(async (t) => {
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      t.add_cleanup(() => div.remove());
+      const editContext = new EditContext({
+        text: "existing",
+        selectionStart: 8,
+        selectionEnd: 8,
+      });
+      div.editContext = editContext;
+      div.focus();
+
+      let contextRequestCount = 0;
+      editContext.addEventListener("contextrequest", () => {
+        // Intentionally do not call updateText(), updateSelection(), or
+        // invalidate(); EditContext should fall back to its existing buffer and
+        // selection and clear the dirty state.
+        contextRequestCount++;
+      });
+
+      editContext.invalidate();
+      await test_driver.send_keys(div, "!");
+      assert_equals(contextRequestCount, 1);
+      assert_equals(editContext.text, "existing!");
+      assert_equals(editContext.selectionStart, 9);
+      assert_equals(editContext.selectionEnd, 9);
+
+      // Because invalidate() was not called inside the listener, subsequent
+      // input must not re-fire contextrequest until the next invalidate().
+      await test_driver.send_keys(div, "?");
+      assert_equals(contextRequestCount, 1);
+      assert_equals(editContext.text, "existing!?");
+    }, "contextrequest listener not calling updateText() falls back to existing state and clears dirty bit");
+  </script>
+</body>
+</html>

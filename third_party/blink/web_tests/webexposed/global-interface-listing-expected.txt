@@ -2481,6 +2481,7 @@ interface EditContext : EventTarget
     getter oncharacterboundsupdate
     getter oncompositionend
     getter oncompositionstart
+    getter oncontextrequest
     getter ontextformatupdate
     getter ontextupdate
     getter selectionEnd
@@ -2489,6 +2490,7 @@ interface EditContext : EventTarget
     method attachedElements
     method characterBounds
     method constructor
+    method invalidate
     method updateCharacterBounds
     method updateControlBounds
     method updateSelection
@@ -2497,6 +2499,7 @@ interface EditContext : EventTarget
     setter oncharacterboundsupdate
     setter oncompositionend
     setter oncompositionstart
+    setter oncontextrequest
     setter ontextformatupdate
     setter ontextupdate
 interface Element : Node

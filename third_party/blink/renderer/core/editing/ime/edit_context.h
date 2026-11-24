@@ -48,6 +48,7 @@ class CORE_EXPORT EditContext final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(characterboundsupdate, kCharacterboundsupdate)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(compositionstart, kCompositionstart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(compositionend, kCompositionend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextrequest, kContextrequest)
 
   // Public APIs for an EditContext (called from JS).
 
@@ -94,6 +95,12 @@ class CORE_EXPORT EditContext final : public EventTarget,
                   const String& new_text,
                   ExceptionState& exception_state);
 
+  // Marks the EditContext's text and selection state as stale/dirty without
+  // serializing or pushing new text immediately. If an IME composition is
+  // currently active, it is canceled cleanly. Subsequent browser/IME reads or
+  // edits will fire a `contextrequest` event on demand.
+  void invalidate();
+
   // Get elements that are associated with this EditContext.
   const HeapVector<Member<HTMLElement>>& attachedElements();
 
@@ -114,6 +121,17 @@ class CORE_EXPORT EditContext final : public EventTarget,
   const HeapVector<Member<DOMRect>> characterBounds();
 
   // Internal APIs (called from Blink).
+
+  // Returns whether `invalidate()` has marked the context dirty and fresh
+  // context has not yet been pulled via `CleanContextIfNeeded()`.
+  bool IsContextDirtyForTesting() const { return is_context_dirty_; }
+
+  // If `is_context_dirty_` is true and `EditContextOnDemand` is enabled,
+  // synchronously dispatches a single `contextrequest` event so the web
+  // application can populate fresh text and selection before an IME or browser
+  // operation reads or mutates the EditContext buffer. Coalesces re-entrant
+  // calls while a `contextrequest` dispatch is already in progress.
+  void CleanContextIfNeeded();
 
   // EventTarget overrides
   const AtomicString& InterfaceName() const override;
@@ -217,13 +235,13 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // lengths are supplied in code points, not in UTF-16 code unit or in glyphs.
   void DeleteSurroundingTextInCodePoints(int before, int after);
 
-  // Change the selection range.
-  // Optionally dispatch TextInputEvent to notify the
-  // page that the selection has changed.
-  void SetSelection(int start,
-                    int end,
-                    bool sync_selection = true,
-                    bool dispatch_text_update_event = false);
+  // Updates the selection from an external IME command (e.g.
+  // `WebLocalFrameImpl::SetEditableSelectionOffsets`). When
+  // `EditContextOnDemand` is enabled, pulls fresh context if dirty (bailing out
+  // if the incoming offsets were computed against a dirty buffer) and clamps
+  // `start` and `end` to `text_.length()` before updating selection and
+  // dispatching `textupdate`.
+  void SetSelectionFromIME(int start, int end);
 
   // Sets rect_in_viewport to the surrounding rect, in physical pixels,
   // for the character range specified by `location` and `length`.
@@ -243,6 +261,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
                           const std::vector<ui::ImeTextSpan>& ime_text_spans,
                           const WebRange& replacement_range,
                           int relative_caret_position);
+  bool InsertTextInternal(const WebString& text);
+  void EnsureSelectionWithinTextBoundsInternal();
 
   // Called when `control_bounds_` or `selection_bounds_` change. If this is
   // the active EditContext, schedules a main frame so that
@@ -254,6 +274,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   void ScheduleTextInputStateUpdateIfActive();
 
   void DeleteCurrentSelection();
+  void DeleteSurroundingTextInternal(int before, int after);
+  void SetSelection(int start, int end, bool sync_selection = true);
 
   // Events fired to JS.
   // Fires compositionstart event to JS whenever user starts a composition.
@@ -353,6 +375,21 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // when editContext associations are changed during compositionend or
   // textformatupdate event dispatch.
   bool finish_composing_in_progress_ = false;
+  // Guards against re-entrant `CancelComposition()` when `invalidate()` is
+  // called from synchronous `textupdate`, `textformatupdate`, or
+  // `compositionend` listeners while `OnCancelComposition()`, `CommitText()`,
+  // or `FinishComposingText()` is already ending the composition.
+  bool is_ending_composition_ = false;
+  // Tracks whether `invalidate()` has marked the context dirty and awaiting a
+  // lazy `contextrequest` update.
+  bool is_context_dirty_ = false;
+  // Guards against re-entrant `CleanContextIfNeeded()` dispatches when a
+  // `contextrequest` listener triggers nested operations.
+  bool is_dispatching_context_request_ = false;
+  // Tracks whether `invalidate()` was called during an in-flight
+  // `contextrequest` dispatch, keeping `is_context_dirty_` set after the
+  // dispatch returns.
+  bool invalidated_during_context_request_ = false;
 
   // Elements that are associated with this EditContext.
   HeapVector<Member<HTMLElement>> attached_elements_;

@@ -2946,6 +2946,12 @@
       settable_from_internals: true
     },
     {
+      // See https://crbug.com/574145399 and
+      // https://github.com/w3c/edit-context/issues/156
+      name: "EditContextOnDemand",
+      status: "experimental",
+    },
+    {
       // Update EditContext selectionStart/End before TextUpdateEvent while
       // handling deletion. See https://crbug.com/529413105
       name: "EditContextSelectionUpdateBeforeTextUpdateEvent",
