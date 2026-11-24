@@ -300,4 +300,80 @@ public class FakeBookmarkModelTest {
         verify(mDeleteObserver1).onDeleteBookmarks(new String[] {"Bookmark 2"}, true);
         verify(mDeleteObserver2).onDeleteBookmarks(new String[] {"Bookmark 2"}, true);
     }
+
+    @Test
+    public void testIsBookmarked() {
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getOtherFolderId(), /* index= */ 0, /* title= */ "Folder");
+        GURL bookmarkedUrl = new GURL("https://google.com");
+
+        assertFalse(mBookmarkModel.isBookmarked(bookmarkedUrl));
+        assertFalse(mBookmarkModel.isBookmarked(/* url= */ null));
+
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        folderId, /* index= */ 0, /* title= */ "Bookmark", bookmarkedUrl);
+        assertTrue(mBookmarkModel.isBookmarked(bookmarkedUrl));
+        assertFalse(mBookmarkModel.isBookmarked(new GURL("https://other.com")));
+
+        mBookmarkModel.deleteBookmark(bookmarkId);
+        assertFalse(mBookmarkModel.isBookmarked(bookmarkedUrl));
+    }
+
+    @Test
+    public void testMoveBookmark_updatesAccountBookmarkState() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(/* active= */ true);
+        assertFalse(mBookmarkModel.isAccountBookmark(/* id= */ null));
+        assertFalse(mBookmarkModel.isAccountBookmark(mBookmarkModel.getRootFolderId()));
+
+        BookmarkId outerFolder =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getOtherFolderId(), /* index= */ 0, /* title= */ "Outer");
+        BookmarkId innerFolder =
+                mBookmarkModel.addFolder(outerFolder, /* index= */ 0, /* title= */ "Inner");
+        BookmarkId childBookmark =
+                mBookmarkModel.addBookmark(
+                        innerFolder,
+                        /* index= */ 0,
+                        /* title= */ "Leaf",
+                        new GURL("https://example.com"));
+
+        assertFalse(mBookmarkModel.isAccountBookmark(outerFolder));
+        assertFalse(mBookmarkModel.isAccountBookmark(innerFolder));
+        assertFalse(mBookmarkModel.isAccountBookmark(childBookmark));
+        assertFalse(mBookmarkModel.getBookmarkById(childBookmark).isAccountBookmark());
+
+        mBookmarkModel.moveBookmark(
+                outerFolder, mBookmarkModel.getAccountOtherFolderId(), /* index= */ 0);
+        assertTrue(mBookmarkModel.isAccountBookmark(outerFolder));
+        assertTrue(mBookmarkModel.isAccountBookmark(innerFolder));
+        assertTrue(mBookmarkModel.isAccountBookmark(childBookmark));
+        assertTrue(mBookmarkModel.getBookmarkById(outerFolder).isAccountBookmark());
+        assertTrue(mBookmarkModel.getBookmarkById(innerFolder).isAccountBookmark());
+        assertTrue(mBookmarkModel.getBookmarkById(childBookmark).isAccountBookmark());
+
+        BookmarkId addedInAccount =
+                mBookmarkModel.addBookmark(
+                        innerFolder,
+                        /* index= */ 1,
+                        /* title= */ "Added",
+                        new GURL("https://added.com"));
+        assertTrue(mBookmarkModel.isAccountBookmark(addedInAccount));
+        assertTrue(mBookmarkModel.getBookmarkById(addedInAccount).isAccountBookmark());
+
+        mBookmarkModel.moveBookmark(
+                outerFolder, mBookmarkModel.getMobileFolderId(), /* index= */ 0);
+        assertFalse(mBookmarkModel.isAccountBookmark(outerFolder));
+        assertFalse(mBookmarkModel.isAccountBookmark(innerFolder));
+        assertFalse(mBookmarkModel.isAccountBookmark(childBookmark));
+        assertFalse(mBookmarkModel.isAccountBookmark(addedInAccount));
+        assertFalse(mBookmarkModel.getBookmarkById(outerFolder).isAccountBookmark());
+        assertFalse(mBookmarkModel.getBookmarkById(innerFolder).isAccountBookmark());
+        assertFalse(mBookmarkModel.getBookmarkById(childBookmark).isAccountBookmark());
+        assertFalse(mBookmarkModel.getBookmarkById(addedInAccount).isAccountBookmark());
+
+        mBookmarkModel.deleteBookmark(addedInAccount);
+        assertFalse(mBookmarkModel.isAccountBookmark(addedInAccount));
+    }
 }

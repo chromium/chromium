@@ -372,22 +372,50 @@ public class FakeBookmarkModel extends BookmarkModel {
         oldParentChildIds.remove(oldIndex);
 
         // Add `item` to new `parent`.
+        final boolean isAccountBookmark = isAccountBookmark(parent);
+        putBookmarkItemWithAccountState(item, parent, isAccountBookmark);
+        if (item.isFolder()) {
+            updateDescendantsAccountBookmarkState(id, isAccountBookmark);
+        }
+        getMutableChildIds(parent).add(index, id);
+        bookmarkNodeMoved(getBookmarkById(oldParent), oldIndex, getBookmarkById(parent), index);
+    }
+
+    private void updateDescendantsAccountBookmarkState(
+            @NonNull BookmarkId folderId, boolean isAccountBookmark) {
+        for (BookmarkId childId : getMutableChildIds(folderId)) {
+            BookmarkItem child = mBookmarkIdToItemMap.get(childId);
+            assert child != null;
+            putBookmarkItemWithAccountState(child, child.getParentId(), isAccountBookmark);
+            if (child.isFolder()) {
+                updateDescendantsAccountBookmarkState(childId, isAccountBookmark);
+            }
+        }
+    }
+
+    private void putBookmarkItemWithAccountState(
+            @NonNull BookmarkItem item, @NonNull BookmarkId parentId, boolean isAccountBookmark) {
         mBookmarkIdToItemMap.put(
-                id,
+                item.getId(),
                 new BookmarkItem(
                         item.getId(),
                         item.getTitle(),
                         item.getUrl(),
                         item.isFolder(),
-                        parent,
+                        parentId,
                         item.isEditable(),
                         item.isManaged(),
                         item.getDateAdded(),
                         item.isRead(),
                         item.getDateLastOpened(),
-                        item.isAccountBookmark()));
-        getMutableChildIds(parent).add(index, id);
-        bookmarkNodeMoved(getBookmarkById(oldParent), oldIndex, getBookmarkById(parent), index);
+                        isAccountBookmark));
+    }
+
+    private boolean isAccountRootFolder(BookmarkId id) {
+        return Objects.equals(id, mAccountOtherFolderId)
+                || Objects.equals(id, mAccountDesktopFolderId)
+                || Objects.equals(id, mAccountMobileFolderId)
+                || Objects.equals(id, mAccountReadingListFolderId);
     }
 
     private void updateBookmarkItem(
@@ -448,7 +476,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                 List<BookmarkId> bookmarksList) {
             bookmarksList.addAll(FakeBookmarkModel.this.getChildIds(mRootFolderId));
 
-            // Remove all account folders if the feature flag is disabled.
+            // Remove all account folders if account bookmark folders are not active.
             if (!areAccountBookmarkFoldersActive(nativeBookmarkBridge)) {
                 bookmarksList.remove(mAccountOtherFolderId);
                 bookmarksList.remove(mAccountDesktopFolderId);
@@ -718,11 +746,13 @@ public class FakeBookmarkModel extends BookmarkModel {
         @Override
         public boolean isAccountBookmark(long nativeBookmarkBridge, BookmarkId id) {
             BookmarkItem item = FakeBookmarkModel.this.getBookmarkById(id);
-            BookmarkId parentId = item.getParentId();
-            BookmarkItem parentItem =
-                    parentId == null ? null : FakeBookmarkModel.this.getBookmarkById(parentId);
-            return item.isAccountBookmark()
-                    || (parentItem != null && parentItem.isAccountBookmark());
+            while (item != null) {
+                if (isAccountRootFolder(item.getId())) {
+                    return true;
+                }
+                item = FakeBookmarkModel.this.getBookmarkById(item.getParentId());
+            }
+            return false;
         }
 
         @Override
@@ -803,9 +833,7 @@ public class FakeBookmarkModel extends BookmarkModel {
         @Override
         public boolean isBookmarked(long nativeBookmarkBridge, GURL url) {
             return mBookmarkIdToItemMap.values().stream()
-                            .filter(item -> item.getUrl().equals(url))
-                            .count()
-                    > 0;
+                    .anyMatch(item -> !item.isFolder() && Objects.equals(item.getUrl(), url));
         }
     }
 }
