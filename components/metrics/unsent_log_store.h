@@ -221,6 +221,26 @@ class UnsentLogStore : public LogStore {
   // Records the info in |metadata_pref_name_| as UMA metrics.
   void RecordMetaDataMetrics();
 
+  // Returns one entry for each log in `list_`, in the same order. An empty
+  // entry means that a trim keeps the log. A value is the reason why a trim
+  // drops the log. Does not change any state.
+  //
+  // A trim keeps the newest logs until it has kept at least `min_log_count`
+  // logs and at least `min_queue_size_bytes` bytes. Then it drops all older
+  // logs. Both limits are minimums, so the count minimum keeps extra logs only
+  // when the logs are large. A trim also drops each log that is larger than
+  // `max_log_size_bytes`, if that limit is not 0. These logs do not count
+  // toward the limits. If the `kMetricsLogTrimming` feature is disabled, a
+  // trim keeps all logs.
+  std::vector<std::optional<UnsentLogDropReason>> GetTrimDropReasons() const;
+
+  // Removes from memory each log that has a value in `drop_reasons`, updates
+  // `staged_log_index_`, and notifies `logs_event_manager_`. `drop_reasons`
+  // has one entry for each log in `list_`, as returned by
+  // `GetTrimDropReasons()`.
+  void RemoveTrimmedLogs(
+      const std::vector<std::optional<UnsentLogDropReason>>& drop_reasons);
+
   // Wrapper functions for the notify functions of |logs_event_manager_|.
   void NotifyLogCreated(const LogInfo& info,
                         MetricsLogsEventManager::CreateReason reason);

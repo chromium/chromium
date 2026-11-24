@@ -4,7 +4,8 @@
 
 #include "components/metrics/unsent_log_store_metrics.h"
 
-#include "base/numerics/clamped_math.h"
+#include <array>
+
 #include "base/numerics/safe_conversions.h"
 
 namespace metrics {
@@ -29,11 +30,18 @@ void UnsentLogStoreMetrics::RecordCorruptLogRead(size_t dropped_logs_count) {
   RecordDroppedLogs(UnsentLogDropReason::kPrefCorruption, dropped_logs_count);
 }
 
-void UnsentLogStoreMetrics::RecordTrimmedLogs(size_t queue_limit_count,
-                                              size_t log_too_large_count,
-                                              bool removed_from_memory) {
-  const size_t total_trimmed =
-      base::ClampAdd(queue_limit_count, log_too_large_count);
+void UnsentLogStoreMetrics::RecordTrimmedLogs(
+    base::span<const std::optional<UnsentLogDropReason>> drop_reasons,
+    bool removed_from_memory) {
+  std::array<size_t, static_cast<size_t>(UnsentLogDropReason::kMaxValue) + 1>
+      counts = {};
+  size_t total_trimmed = 0;
+  for (const std::optional<UnsentLogDropReason>& reason : drop_reasons) {
+    if (reason.has_value()) {
+      ++counts[static_cast<size_t>(reason.value())];
+      ++total_trimmed;
+    }
+  }
   if (total_trimmed == 0) {
     return;
   }
@@ -41,9 +49,11 @@ void UnsentLogStoreMetrics::RecordTrimmedLogs(size_t queue_limit_count,
     RecordLogsTrimmedOnDiskOnly(base::saturated_cast<int>(total_trimmed));
     return;
   }
-  RecordDroppedLogs(UnsentLogDropReason::kTrimmedQueueLimit, queue_limit_count);
-  RecordDroppedLogs(UnsentLogDropReason::kTrimmedLogTooLarge,
-                    log_too_large_count);
+  for (size_t i = 0; i < counts.size(); ++i) {
+    if (counts[i] > 0) {
+      RecordDroppedLogs(static_cast<UnsentLogDropReason>(i), counts[i]);
+    }
+  }
   RecordDroppedLogsNum(base::saturated_cast<int>(total_trimmed));
 }
 

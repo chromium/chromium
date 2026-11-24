@@ -4,6 +4,7 @@
 
 #include "components/metrics/unsent_log_store.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <memory>
@@ -11,9 +12,12 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -71,12 +75,10 @@ class LogsPrefWriter {
   LogsPrefWriter(const LogsPrefWriter&) = delete;
   LogsPrefWriter& operator=(const LogsPrefWriter&) = delete;
 
-  ~LogsPrefWriter() { DCHECK(finished_); }
+  ~LogsPrefWriter() = default;
 
   // Persists |log| by appending it to |list_value_|.
   void WriteLogEntry(UnsentLogStore::LogInfo* log) {
-    DCHECK(!finished_);
-
     base::DictValue dict_value;
     dict_value.Set(kLogHashKey, EncodeToBase64(log->hash));
     dict_value.Set(kLogSignatureKey, EncodeToBase64(log->signature));
@@ -100,16 +102,6 @@ class LogsPrefWriter {
     }
     list_value_->Append(std::move(dict_value));
     unsent_persisted_size_ += log->compressed_log_data.length();
-    ++unsent_logs_count_;
-  }
-
-  // Indicates to this writer that it is finished, and that it should not write
-  // any more logs. This also reverses |list_value_| in order to maintain the
-  // original order of the logs that were written.
-  void Finish() {
-    DCHECK(!finished_);
-    finished_ = true;
-    std::ranges::reverse(*list_value_);
   }
 
   base::HistogramBase::Count32 unsent_samples_count() const {
@@ -118,23 +110,15 @@ class LogsPrefWriter {
 
   size_t unsent_persisted_size() const { return unsent_persisted_size_; }
 
-  size_t unsent_logs_count() const { return unsent_logs_count_; }
-
  private:
   // The list where the logs will be written to. This should represent a pref.
   raw_ptr<base::ListValue> list_value_;
-
-  // Whether or not this writer has finished writing to pref.
-  bool finished_ = false;
 
   // The total number of histogram samples written so far.
   base::HistogramBase::Count32 unsent_samples_count_ = 0;
 
   // The total size of logs written so far.
   size_t unsent_persisted_size_ = 0;
-
-  // The total number of logs written so far.
-  size_t unsent_logs_count_ = 0;
 };
 
 bool GetString(const base::DictValue& dict,
@@ -287,93 +271,31 @@ void UnsentLogStore::MarkStagedLogAsSent() {
 }
 
 void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
+  const std::vector<std::optional<UnsentLogDropReason>> drop_reasons =
+      GetTrimDropReasons();
+
   ScopedListPrefUpdate update(local_state_, log_data_pref_name_);
   LogsPrefWriter writer(&update.Get());
 
-  std::vector<std::unique_ptr<LogInfo>> trimmed_list;
-  size_t bytes_used = 0;
-
-  // The distance of the staged log from the end of the list of logs, which is
-  // usually 0 (end of list). This is used in case there is currently a staged
-  // log, which may or may not get trimmed. We want to keep track of the new
-  // position of the staged log after trimming so that we can update
-  // |staged_log_index_|.
-  std::optional<size_t> staged_index_distance;
-
-  const bool trimming_enabled =
-      base::FeatureList::IsEnabled(features::kMetricsLogTrimming);
-
-  size_t queue_limit_trimmed_count = 0;
-  size_t oversized_trimmed_count = 0;
-
-  // Reverse order, so newest ones are prioritized.
-  for (int i = list_.size() - 1; i >= 0; --i) {
-    size_t log_size = list_[i]->compressed_log_data.length();
-
-    if (trimming_enabled) {
-      // Hit the caps, we can stop moving the logs.
-      if (bytes_used >= log_store_limits_.min_queue_size_bytes &&
-          writer.unsent_logs_count() >= log_store_limits_.min_log_count) {
-        // The rest of the logs (including the current one) are trimmed.
-        queue_limit_trimmed_count = static_cast<size_t>(i + 1);
-        if (overwrite_in_memory_store) {
-          NotifyLogsEvent(base::span(list_).first(queue_limit_trimmed_count),
-                          MetricsLogsEventManager::LogEvent::kLogTrimmed);
-        }
-        break;
+  for (size_t i = 0; i < list_.size(); ++i) {
+    if (drop_reasons[i].has_value()) {
+      if (drop_reasons[i] == UnsentLogDropReason::kTrimmedLogTooLarge) {
+        // Record each oversized log's size before `RemoveTrimmedLogs()` can
+        // remove the log from `list_`. Kept outside `RemoveTrimmedLogs()` so
+        // disk-only trims (`overwrite_in_memory_store` is false) still emit it.
+        metrics_->RecordDroppedLogSize(list_[i]->compressed_log_data.length());
       }
-      // Omit overly large individual logs if the value is non-zero.
-      if (log_store_limits_.max_log_size_bytes != 0 &&
-          log_size > log_store_limits_.max_log_size_bytes) {
-        metrics_->RecordDroppedLogSize(log_size);
-        ++oversized_trimmed_count;
-        if (overwrite_in_memory_store) {
-          NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogTrimmed,
-                         list_[i]->hash, "Log size too large.");
-        }
-        continue;
-      }
-    }
-
-    bytes_used += log_size;
-
-    if (staged_log_index_ == i) {
-      staged_index_distance = writer.unsent_logs_count();
+      continue;
     }
 
     // Append log to prefs.
     writer.WriteLogEntry(list_[i].get());
-    if (overwrite_in_memory_store) {
-      trimmed_list.emplace_back(std::move(list_[i]));
-    }
   }
-
-  writer.Finish();
 
   if (overwrite_in_memory_store) {
-    // We went in reverse order, but appended entries. So reverse list to
-    // correct.
-    std::ranges::reverse(trimmed_list);
-
-    // Put the trimmed list in the correct place.
-    list_.swap(trimmed_list);
-
-    // We may need to adjust the staged index since the number of logs may be
-    // reduced.
-    if (staged_index_distance.has_value()) {
-      staged_log_index_ = list_.size() - 1 - staged_index_distance.value();
-    } else {
-      // Set |staged_log_index_| to std::nullopt. It might already be
-      // std::nullopt. E.g., at the time we are trimming logs, there was
-      // no staged log. However, it is also possible that we trimmed away the
-      // staged log, so we need to update the index to std::nullopt.
-      staged_log_index_ = std::nullopt;
-    }
+    RemoveTrimmedLogs(drop_reasons);
   }
-
-  metrics_->RecordTrimmedLogs(queue_limit_trimmed_count,
-                              oversized_trimmed_count,
-                              overwrite_in_memory_store);
+  metrics_->RecordTrimmedLogs(drop_reasons, overwrite_in_memory_store);
 
   WriteToMetricsPref(writer.unsent_samples_count(), total_samples_sent_,
                      writer.unsent_persisted_size());
@@ -563,6 +485,74 @@ void UnsentLogStore::RecordMetaDataMetrics() {
         unsent_samples_count.value(), sent_samples_count.value(),
         unsent_persisted_size_in_kb.value());
   }
+}
+
+std::vector<std::optional<UnsentLogDropReason>>
+UnsentLogStore::GetTrimDropReasons() const {
+  std::vector<std::optional<UnsentLogDropReason>> drop_reasons(list_.size());
+  if (!base::FeatureList::IsEnabled(features::kMetricsLogTrimming)) {
+    return drop_reasons;
+  }
+
+  size_t bytes_used = 0;
+  size_t kept_logs_count = 0;
+
+  // Reverse order, so newest ones are prioritized.
+  for (size_t i = list_.size(); i > 0; --i) {
+    // Both minimums are met; drop the remaining older logs (including the
+    // current one).
+    if (bytes_used >= log_store_limits_.min_queue_size_bytes &&
+        kept_logs_count >= log_store_limits_.min_log_count) {
+      std::ranges::fill(base::span(drop_reasons).first(i),
+                        UnsentLogDropReason::kTrimmedQueueLimit);
+      break;
+    }
+
+    const size_t log_size = list_[i - 1]->compressed_log_data.length();
+    // Omit overly large individual logs if the value is non-zero.
+    if (log_store_limits_.max_log_size_bytes != 0 &&
+        log_size > log_store_limits_.max_log_size_bytes) {
+      drop_reasons[i - 1] = UnsentLogDropReason::kTrimmedLogTooLarge;
+      continue;
+    }
+
+    bytes_used += log_size;
+    ++kept_logs_count;
+  }
+  return drop_reasons;
+}
+
+void UnsentLogStore::RemoveTrimmedLogs(
+    const std::vector<std::optional<UnsentLogDropReason>>& drop_reasons) {
+  CHECK_EQ(drop_reasons.size(), list_.size());
+  std::vector<std::unique_ptr<LogInfo>> kept_logs;
+  // The new index of the staged log. Stays `std::nullopt` if there is no staged
+  // log, or if the trim removes the staged log.
+  std::optional<size_t> new_staged_log_index;
+
+  for (size_t i = 0; i < list_.size(); ++i) {
+    const std::optional<UnsentLogDropReason>& drop_reason = drop_reasons[i];
+    if (!drop_reason.has_value()) {
+      if (staged_log_index_ == i) {
+        new_staged_log_index = kept_logs.size();
+      }
+      kept_logs.push_back(std::move(list_[i]));
+      continue;
+    }
+
+    NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogTrimmed,
+                   list_[i]->hash,
+                   drop_reason == UnsentLogDropReason::kTrimmedLogTooLarge
+                       ? "Log size too large."
+                       : "");
+  }
+
+  // Put the kept logs in the correct place.
+  list_.swap(kept_logs);
+
+  // We may need to adjust the staged index since the number of logs may be
+  // reduced.
+  staged_log_index_ = new_staged_log_index;
 }
 
 void UnsentLogStore::NotifyLogCreated(

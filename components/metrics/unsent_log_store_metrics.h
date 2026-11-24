@@ -6,7 +6,9 @@
 #define COMPONENTS_METRICS_UNSENT_LOG_STORE_METRICS_H_
 
 #include <cstddef>
+#include <optional>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/unsent_log_store.h"
@@ -60,11 +62,13 @@ class UnsentLogStoreMetrics {
   // Records a corrupt persisted log list of `dropped_logs_count` entries.
   void RecordCorruptLogRead(size_t dropped_logs_count);
 
-  // Records the outcome of a trim pass. When `removed_from_memory` is false,
-  // the trimmed logs stay in memory and can still upload in this session.
-  void RecordTrimmedLogs(size_t queue_limit_count,
-                         size_t log_too_large_count,
-                         bool removed_from_memory);
+  // Records the outcome of a trim pass. Each set entry in `drop_reasons` gives
+  // the reason why that log was trimmed, while empty entries were kept. When
+  // `removed_from_memory` is false, the trimmed logs stay in memory and can
+  // still upload in this session.
+  void RecordTrimmedLogs(
+      base::span<const std::optional<UnsentLogDropReason>> drop_reasons,
+      bool removed_from_memory);
 
   // Records the number of logs that a trim removed from persistent storage
   // but kept in memory, so that they can still upload in this session.
