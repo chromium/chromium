@@ -62,11 +62,6 @@ BASE_FEATURE(kPrintCompositorLPAC, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables Renderer AppContainer
 BASE_FEATURE(kRendererAppContainer, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, launch the network service within an LPAC sandbox. If disabled,
-// the network service will run inside an App Container.
-BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, modifies the child's PEB to stop further application of
 // appcompat in the child. Does not affect the browser or unsandboxed
 // processes. The feature has no effect for WOW (32bit on 64bit) installs.

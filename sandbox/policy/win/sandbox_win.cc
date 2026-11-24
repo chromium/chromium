@@ -432,8 +432,6 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         base::win::WellKnownCapability::kEnterpriseAuthentication);
     container->AddCapability(kLpacIdentityServices);
     container->AddCapability(kLpacCryptoServices);
-    container->SetEnableLowPrivilegeAppContainer(base::FeatureList::IsEnabled(
-        features::kWinSboxNetworkServiceSandboxIsLPAC));
   }
 
   if (sandbox_type == Sandbox::kOnDeviceModelExecution) {

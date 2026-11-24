@@ -26,7 +26,6 @@
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
-#include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -294,8 +293,7 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
       {sandbox::mojom::Sandbox::kNetwork,
        L"S-1-15-2-1204153576-2881085000-2101973085-273300490-2415804912-"
        L"3587146283-1585457728",
-       base::FeatureList::IsEnabled(
-           features::kWinSboxNetworkServiceSandboxIsLPAC),
+       false,
        {kInternetClient, kPrivateNetworkClientServer, kEnterpriseAuthentication,
         kLpacIdentityServices, kLpacCryptoServices, kLpacChromeInstallFiles,
         kRegistryRead},
