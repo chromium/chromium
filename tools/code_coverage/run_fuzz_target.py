@@ -39,7 +39,7 @@ _DUMMY_INPUT_FILENAME = 'dummy_corpus_input'
 # Used for running fuzzer targets in code coverage config.
 _DUMMY_CORPUS_DIRECTORY = 'dummy_corpus_dir_which_should_be_empty'
 
-_LIBFUZZER_FLAGS = ['-merge=1', '-timeout=60', '-rss_limit_mb=8192']
+_LIBFUZZER_FLAGS = ['-merge=1', '-timeout=60', '-rss_limit_mb=0']
 
 _SLEEP_DURATION_SECONDS = 8
 

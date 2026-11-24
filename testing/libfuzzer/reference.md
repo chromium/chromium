@@ -170,7 +170,7 @@ Most common flags are:
 |------|-------------|
 | max_len | Maximum length of test input. |
 | timeout | Timeout of seconds. Units slower than this value will be reported as bugs. |
-| rss_limit_mb | Memory usage limit in Mb, default 2048. Some Chrome targets, such as Blink, require more than the default to initialize. |
+| rss_limit_mb | Memory usage limit in MB (`0` disables the limit). Pass `-rss_limit_mb=0` when running locally or in CI, and leave it out of `BUILD.gn`. See [Memory limits](#memory-limits). |
 
 Full list of options can be found at [libFuzzer options] page and by running
 the binary with `-help=1`.
@@ -188,7 +188,27 @@ fuzzer_test("my_fuzzer") {
 }
 ```
 
+### Memory limits
+
+Large Chrome fuzzers (such as Blink and in-process fuzzers) can exceed 2 GB
+just to start up or load a corpus. Running with libFuzzer's 2048 MB default or
+Centipede's 4096 MB default causes false out-of-memory aborts that prevent
+reproducing crashes and cut short coverage runs.
+
+* **Running locally or in CI:** Pass `-rss_limit_mb=0` for libFuzzer (see
+  [libFuzzer options]) and `--rss_limit_mb=0` when invoking Centipede directly
+  (see [Centipede flags]). Disabling the limit avoids false out-of-memory
+  aborts and matches how ClusterFuzz runs Chromium targets. If you are fuzzing
+  locally on a workstation and want to cap memory usage, pass a larger finite
+  limit instead.
+* **In `BUILD.gn` (`libfuzzer_options` / `centipede_options`):** Leave
+  `rss_limit_mb` out of your target's options. ClusterFuzz already runs
+  Chromium libFuzzer and Centipede targets with `rss_limit_mb=0`. Adding a
+  non-zero limit in `BUILD.gn` overrides that default and can trigger false
+  out-of-memory aborts.
+
 [libFuzzer options]: http://llvm.org/docs/LibFuzzer.html#options
+[Centipede flags]: https://github.com/google/fuzztest/blob/main/centipede/centipede_flags.inc
 [Address Sanitizer]: http://clang.llvm.org/docs/AddressSanitizer.html
 [Memory Sanitizer]: http://clang.llvm.org/docs/MemorySanitizer.html
 [Undefined Behavior Sanitizer]: http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html

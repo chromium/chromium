@@ -73,11 +73,13 @@ label. This workflow applies to those cases.
    Note: The sanitizer options may reference suppressions files. You can find those
       at go/crfuzz-clusterfuzz-suppressions (google-internal).
 
-5. Run the fuzz target with the downloaded testcase. The `-runs=100` flag helps
-ensure reproduction even if the crash has minor flakiness.
+5. Run the fuzz target with the downloaded testcase. Pass `-runs=100` to catch
+   flaky crashes, and `-rss_limit_mb=0` so large targets do not abort with
+   false out-of-memory errors before reproducing the crash (matching
+   ClusterFuzz).
 
    ```
-   out/fuzz/$FUZZER_NAME -runs=100 $TESTCASE_PATH
+   out/fuzz/$FUZZER_NAME -runs=100 -rss_limit_mb=0 $TESTCASE_PATH
    ```
 
 [File a bug] if you run into any issues.
@@ -167,8 +169,12 @@ above.
 * On step 5, use the following command:
 
    ```
-   out/fuzz/$FUZZER_NAME -timeout=25 -rss_limit_mb=2048 -print_final_stats=1 $CORPUS_DIRECTORY_FROM_THE_PREVIOUS_STEP
+   out/fuzz/$FUZZER_NAME -timeout=25 -rss_limit_mb=0 -print_final_stats=1 $CORPUS_DIRECTORY_FROM_THE_PREVIOUS_STEP
    ```
+
+   `-rss_limit_mb=0` avoids false out-of-memory aborts on large targets and
+   matches ClusterFuzz. Pass a larger finite limit if you want to cap memory
+   usage on your workstation.
 
 * Wait and hope that the fuzzer will crash.
 

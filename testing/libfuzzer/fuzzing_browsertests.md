@@ -38,7 +38,7 @@ For libfuzzer, provide gn arguments `use_sanitizer_coverage = true`,
 (other permutations may work).
 
 This will give you a single binary you can run like this:
-`my_fuzzer /tmp/corpus -rss_limit_mb=81920`
+`my_fuzzer /tmp/corpus -rss_limit_mb=0`
 
 However, you'll more likely want to use
 [centipede](https://github.com/google/centipede) which has an
