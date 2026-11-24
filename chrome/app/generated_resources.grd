@@ -9928,6 +9928,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ORGANIZER_PANEL" desc="The name of the organizer panel announced by screenreaders." is_accessibility_with_no_ui="true">
         Organizer
       </message>
+      <message name="IDS_ORGANIZER_PANEL_ESC_HINT" desc="Spoken by screen readers and not visually rendered: accessibility description for the search input in the organizer panel to tell the user that pressing the Escape key closes the panel." is_accessibility_with_no_ui="true">
+        Press Escape to close
+      </message>
       <message name="IDS_ORGANIZER_PANEL_NO_RESULTS" desc="Text shown in an organizer panel list section when a search yields no matching items.">
         No results
       </message>

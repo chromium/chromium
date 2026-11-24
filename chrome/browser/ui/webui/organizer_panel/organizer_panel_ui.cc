@@ -85,6 +85,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"collapse", IDS_ORGANIZER_PANEL_COLLAPSE},
       {"createTabGroup", IDS_ORGANIZER_PANEL_CREATE_TAB_GROUP},
       {"currentlyPlaying", IDS_ORGANIZER_PANEL_CURRENTLY_PLAYING},
+      {"escHint", IDS_ORGANIZER_PANEL_ESC_HINT},
       {"expand", IDS_ORGANIZER_PANEL_EXPAND},
       {"noRecentlyClosedTabs", IDS_ORGANIZER_PANEL_NO_RECENTLY_CLOSED_TABS},
       {"noResults", IDS_ORGANIZER_PANEL_NO_RESULTS},

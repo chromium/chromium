@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OrganizerPanelAppElement} from './app.js';
 
@@ -18,8 +18,10 @@ ${this.inTrayView ? html`
   </div>
 ` : ''}
 <cr-toolbar-search-field autofocus id="searchField" label="$i18n{searchTabs}"
-    clear-label="$i18n{clearSearch}" search-delay="100" hide-clear-button
-    @click="${this.onSearchFieldClick_}"
+    clear-label="$i18n{clearSearch}"
+    input-aria-description="${this.showEscHint_ ? '$i18n{escHint}' : nothing}"
+    search-delay="100" hide-clear-button @click="${this.onSearchFieldClick_}"
+    @focusout="${this.onSearchFieldFocusout_}"
     @search-changed="${this.onSearchChanged_}">
   <div id="shortcut" slot="suffixElement">
     ${this.shortcut_}

@@ -42,6 +42,7 @@ suite('OrganizerPanelAppTest', () => {
       collapse: 'Collapse',
       createTabGroup: 'Create tab group',
       currentlyPlaying: 'Currently playing',
+      escHint: 'Press Escape to close',
       expand: 'Expand',
       foreignTabsEnabled: false,
       isIncognitoMode: false,
@@ -129,6 +130,42 @@ suite('OrganizerPanelAppTest', () => {
       }
     }
   }
+
+  test('sets Escape hint on search input until first blur', async () => {
+    const searchField = app.$.searchField;
+    const searchInput = searchField.getSearchInput();
+    assertEquals(
+        'Press Escape to close',
+        searchField.getAttribute('input-aria-description'));
+    assertEquals(
+        'Press Escape to close', searchInput.getAttribute('aria-description'));
+
+    searchInput.focus();
+    searchInput.blur();
+    await microtasksFinished();
+    assertFalse(searchField.hasAttribute('input-aria-description'));
+    assertEquals('', searchInput.getAttribute('aria-description'));
+
+    searchInput.focus();
+    await microtasksFinished();
+    assertFalse(searchField.hasAttribute('input-aria-description'));
+    assertEquals('', searchInput.getAttribute('aria-description'));
+
+    await withVisibilityState(async setVisibility => {
+      setVisibility('hidden');
+      searchInput.dispatchEvent(
+          new FocusEvent('focusout', {bubbles: true, composed: true}));
+      await microtasksFinished();
+      setVisibility('visible');
+      await microtasksFinished();
+      assertEquals(
+          'Press Escape to close',
+          searchField.getAttribute('input-aria-description'));
+      assertEquals(
+          'Press Escape to close',
+          searchInput.getAttribute('aria-description'));
+    });
+  });
 
   test('renders search field with correct label and shortcut', () => {
     const searchField = app.$.searchField;
