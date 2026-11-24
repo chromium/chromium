@@ -366,7 +366,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
         List<BookmarkListEntry> result =
                 mHandler.buildBookmarkListForSearch(
-                        "", Collections.singleton(PowerBookmarkType.SHOPPING));
+                        /* query= */ "test", Collections.singleton(PowerBookmarkType.SHOPPING));
         verifyBookmarkIds(Collections.emptyList(), result);
     }
 

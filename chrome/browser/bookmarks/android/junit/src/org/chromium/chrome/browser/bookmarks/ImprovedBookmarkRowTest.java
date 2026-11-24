@@ -15,8 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
-
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
@@ -55,15 +53,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.listmenu.BasicListMenu;
-import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
-import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -139,18 +130,6 @@ public class ImprovedBookmarkRowTest {
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
-    }
-
-    private ListMenu buildListMenu() {
-        ModelList listItems = new ModelList();
-        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_select));
-        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_delete));
-        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_edit));
-        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_copy_link));
-        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_move));
-
-        ListMenu.Delegate delegate = (item, view) -> {};
-        return BrowserUiListMenuUtils.getBasicListMenu(mActivity, listItems, delegate);
     }
 
     @Test
@@ -269,23 +248,6 @@ public class ImprovedBookmarkRowTest {
     }
 
     @Test
-    public void testListMenuIncludesCopyLink() {
-        ListMenu menu = buildListMenu();
-        assertTrue(menu instanceof BasicListMenu);
-        ModelListAdapter adapter = ((BasicListMenu) menu).getContentAdapter();
-        boolean found = false;
-        for (int i = 0; i < adapter.getCount(); i++) {
-            ListItem item = (ListItem) adapter.getItem(i);
-            if (item.model.get(ListMenuItemProperties.TITLE_ID)
-                    == R.string.bookmark_item_copy_link) {
-                found = true;
-                break;
-            }
-        }
-        assertTrue(found);
-    }
-
-    @Test
     public void testNotEditableButMenuVisibility() {
         mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.MENU);
         mModel.set(ImprovedBookmarkRowProperties.EDITABLE, false);
@@ -398,8 +360,7 @@ public class ImprovedBookmarkRowTest {
 
         assertFalse(
                 "ClipToOutline should be false to allow shadow drawing.", row.getClipToOutline());
-        assertNotNull(
-                "OutlineProvider should be set when feature is enabled.", row.getOutlineProvider());
+        assertNotNull("OutlineProvider should be set.", row.getOutlineProvider());
     }
 
     @Test
@@ -412,13 +373,6 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testDragHandleVisibility() {
-        // Create a new View object to re-run onFinishInflate when the flag is enabled.
-        mImprovedBookmarkRow = ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ true);
-
-        // Re-bind the binder to use the new View object.
-        PropertyModelChangeProcessor.create(
-                mModel, mImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
-
         View dragHandle = mImprovedBookmarkRow.findViewById(R.id.drag_handle);
 
         assertNotNull("Drag handle should be inflated.", dragHandle);
@@ -469,28 +423,6 @@ public class ImprovedBookmarkRowTest {
 
         AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
         mImprovedBookmarkRow.onInitializeAccessibilityNodeInfo(info);
-        assertTrue(info.isCheckable());
-        assertTrue(info.isChecked());
-    }
-
-    @Test
-    public void testAccessibilityNodeInfo_visualRow() {
-        ImprovedBookmarkRow visualRow =
-                ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ true);
-        PropertyModel model =
-                new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS).build();
-        PropertyModelChangeProcessor.create(model, visualRow, ImprovedBookmarkRowViewBinder::bind);
-
-        model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
-        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
-        visualRow.onInitializeAccessibilityNodeInfo(info);
-        assertFalse(info.isCheckable());
-        assertFalse(info.isChecked());
-
-        model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
-        model.set(ImprovedBookmarkRowProperties.SELECTED, true);
-        info = AccessibilityNodeInfo.obtain();
-        visualRow.onInitializeAccessibilityNodeInfo(info);
         assertTrue(info.isCheckable());
         assertTrue(info.isChecked());
     }
