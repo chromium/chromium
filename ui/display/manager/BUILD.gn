@@ -22,6 +22,8 @@ component("manager") {
     "display_change_observer.h",
     "display_configurator.cc",
     "display_configurator.h",
+    "display_id.cc",
+    "display_id.h",
     "display_layout_manager.h",
     "display_layout_store.cc",
     "display_layout_store.h",

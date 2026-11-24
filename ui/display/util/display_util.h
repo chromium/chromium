@@ -60,6 +60,10 @@ DISPLAY_UTIL_EXPORT bool CompareDisplayIds(int64_t id1, int64_t id2);
 // Returns true if the `display_id` is internal.
 DISPLAY_UTIL_EXPORT bool IsInternalDisplayId(int64_t display_id);
 
+// Returns true if `display_id` is an EDID-based display ID (see
+// EdidParser::GetEdidBasedDisplayId()).
+DISPLAY_UTIL_EXPORT bool IsEdidBasedDisplayId(int64_t display_id);
+
 // Returns true if the system has at least one internal display.
 DISPLAY_UTIL_EXPORT bool HasInternalDisplay();
 

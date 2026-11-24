@@ -13,6 +13,7 @@
 #include "ui/display/display_util.h"
 #include "ui/display/screen_info.h"
 #include "ui/display/test/display_test_util.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -486,6 +487,20 @@ TEST(DisplayUtilTest, MultipleInternalDisplayIds) {
       EXPECT_FALSE(IsInternalDisplayId(id));
     }
   }
+}
+
+TEST(DisplayUtilTest, IsEdidBasedDisplayId) {
+  EXPECT_TRUE(IsEdidBasedDisplayId(kEdidBasedDisplayIdFlag | 0x123456789));
+  EXPECT_TRUE(IsEdidBasedDisplayId(kEdidBasedDisplayIdFlag));
+  EXPECT_FALSE(IsEdidBasedDisplayId(2200000257));
+  // Port-based display IDs never have kEdidBasedDisplayIdFlag set.
+  EXPECT_FALSE(
+      IsEdidBasedDisplayId(GenerateDisplayID(0xFFFF, 0xFFFFFFFF, 0xFF)));
+  EXPECT_FALSE(IsEdidBasedDisplayId(kEdidBasedDisplayIdFlag - 1));
+  EXPECT_FALSE(IsEdidBasedDisplayId(0));
+  EXPECT_FALSE(IsEdidBasedDisplayId(kInvalidDisplayId));
+  EXPECT_FALSE(IsEdidBasedDisplayId(kDefaultDisplayId));
+  EXPECT_FALSE(IsEdidBasedDisplayId(kUnifiedDisplayId));
 }
 
 TEST(DisplayUtilTest, CompareDisplayIdsWithMultipleDisplays) {

@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
 
@@ -246,6 +247,10 @@ bool CompareDisplayIds(int64_t id1, int64_t id2) {
 
 bool IsInternalDisplayId(int64_t display_id) {
   return internal_display_ids()->contains(display_id);
+}
+
+bool IsEdidBasedDisplayId(int64_t display_id) {
+  return display_id > 0 && (display_id & kEdidBasedDisplayIdFlag) != 0;
 }
 
 const base::flat_set<int64_t>& GetInternalDisplayIds() {
