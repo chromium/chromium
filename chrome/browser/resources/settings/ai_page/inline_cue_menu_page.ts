@@ -66,14 +66,13 @@ export class SettingsInlineCueMenuPageElement extends
     return {
       sites_: {type: Array},
       showAddSiteDialog_: {type: Boolean},
-      enableQuickAnswersSelectionSuggestions_: {type: Boolean},
       explainFreAccepted_: {type: Boolean},
     };
   }
 
   protected accessor sites_: RawSiteException[] = [];
   protected accessor showAddSiteDialog_: boolean = false;
-  protected accessor enableQuickAnswersSelectionSuggestions_: boolean =
+  protected readonly enableQuickAnswersSelectionSuggestions_: boolean =
       loadTimeData.getBoolean('enableQuickAnswersSelectionSuggestions');
   protected accessor explainFreAccepted_: boolean = false;
 

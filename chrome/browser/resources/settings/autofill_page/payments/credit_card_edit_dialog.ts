@@ -139,11 +139,6 @@ export class SettingsCreditCardEditDialogElement extends
         type: Boolean,
         reflect: true,
       },
-
-      /**
-       * Checks if CVC storage is available based on the feature flag.
-       */
-      cvcStorageAvailable_: {type: Boolean},
     };
   }
 
@@ -180,7 +175,10 @@ export class SettingsCreditCardEditDialogElement extends
   private accessor cardNumberValidationState_: CardNumberValidationState =
       CardNumberValidationState.INVALID_NO_ERROR;
   private accessor expired_: boolean = false;
-  private accessor cvcStorageAvailable_: boolean =
+  /**
+   * Checks if CVC storage is available based on the feature flag.
+   */
+  private readonly cvcStorageAvailable_: boolean =
       loadTimeData.getBoolean('cvcStorageAvailable');
 
   override connectedCallback() {

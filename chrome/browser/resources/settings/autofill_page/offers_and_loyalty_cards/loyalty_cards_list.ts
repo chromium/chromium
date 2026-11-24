@@ -48,15 +48,12 @@ export class SettingsLoyaltyCardsListElement extends CrLitElement {
 
   static override get properties() {
     return {
-      // <if expr="_google_chrome">
-      autofillEnableGradientGoogleLogos_: {type: Boolean},
-      // </if>
       loyaltyCards_: {type: Array},
     };
   }
 
   // <if expr="_google_chrome">
-  protected accessor autofillEnableGradientGoogleLogos_: boolean =
+  protected readonly autofillEnableGradientGoogleLogos_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   // </if>
   protected accessor loyaltyCards_: LoyaltyCardEntry[] = [];

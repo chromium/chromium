@@ -120,17 +120,6 @@ export class SettingsPaymentsPageElement extends
       payOverTimeIssuers: {type: Array},
 
       /**
-       * Whether IBAN is supported in Settings page.
-       */
-      showIbanSettingsEnabled_: {type: Boolean},
-
-      /**
-       * Whether Google Wallet branding should be used instead of Google Pay
-       * branding.
-       */
-      autofillEnableWalletBrandingEnabled_: {type: Boolean},
-
-      /**
        * The model for any credit card-related action menus or dialogs.
        */
       activeCreditCard_: {type: Object},
@@ -154,23 +143,6 @@ export class SettingsPaymentsPageElement extends
       deviceAuthAvailable_: {type: Boolean},
       // </if>
 
-      /**
-       * Checks if CVC storage is available based on the feature flag.
-       */
-      cvcStorageAvailable_: {type: Boolean},
-
-      /**
-       * Checks if a mandatory reauth feature flag is enabled.
-       */
-      // <if expr="is_win or is_macosx or is_chromeos">
-      mandatoryReauthFeatureFlagEnabled_: {type: Boolean},
-      // </if>
-
-      /**
-       * Checks if pay over time should be shown from the settings page.
-       */
-      shouldShowPayOverTimeSettings_: {type: Boolean},
-
       prefsInitialized_: {type: Boolean},
 
       settingsRefresh2026Enabled_: {type: Boolean},
@@ -181,11 +153,18 @@ export class SettingsPaymentsPageElement extends
   accessor ibans: chrome.autofillPrivate.IbanEntry[] = [];
   accessor payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[] =
       [];
-  private accessor showIbanSettingsEnabled_: boolean =
+  /**
+   * Whether IBAN is supported in Settings page.
+   */
+  private readonly showIbanSettingsEnabled_: boolean =
       loadTimeData.getBoolean('showIbansSettings');
   protected accessor creditCardEnabledSyntheticPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  private accessor autofillEnableWalletBrandingEnabled_: boolean =
+  /**
+   * Whether Google Wallet branding should be used instead of Google Pay
+   * branding.
+   */
+  private readonly autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
   protected accessor activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|
       null = null;
@@ -199,13 +178,22 @@ export class SettingsPaymentsPageElement extends
   // <if expr="is_win or is_macosx or is_chromeos">
   private accessor deviceAuthAvailable_: boolean =
       loadTimeData.getBoolean('deviceAuthAvailable');
-  protected accessor mandatoryReauthFeatureFlagEnabled_: boolean =
+  /**
+   * Checks if a mandatory reauth feature flag is enabled.
+   */
+  protected readonly mandatoryReauthFeatureFlagEnabled_: boolean =
       loadTimeData.getBoolean('mandatoryReauthFeatureFlagEnabled');
   // </if>
-  protected accessor cvcStorageAvailable_: boolean =
+  /**
+   * Checks if CVC storage is available based on the feature flag.
+   */
+  protected readonly cvcStorageAvailable_: boolean =
       loadTimeData.getBoolean('cvcStorageAvailable');
   protected accessor showBulkRemoveCvcConfirmationDialog_: boolean = false;
-  protected accessor shouldShowPayOverTimeSettings_: boolean =
+  /**
+   * Checks if pay over time should be shown from the settings page.
+   */
+  protected readonly shouldShowPayOverTimeSettings_: boolean =
       loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
   private accessor prefsInitialized_: boolean = false;
   protected accessor settingsRefresh2026Enabled_: boolean =

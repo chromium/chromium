@@ -26,7 +26,6 @@ import {getCss} from './autofill_page_index.css.js';
 import {getHtml} from './autofill_page_index.html.js';
 import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 
-
 export interface SettingsAutofillPageIndexElement {
   $: {
     viewManager: CrViewManagerElement,
@@ -54,20 +53,17 @@ export class SettingsAutofillPageIndexElement extends
     return {
       routes_: {type: Object},
       isSettingsRefresh2026Enabled_: {type: Boolean},
-      isShoppingEnabled_: {type: Boolean},
-      isOffersAndLoyaltyCardsEnabled_: {type: Boolean},
-      showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
 
   protected accessor routes_: SettingsRoutes = routes;
   protected accessor isSettingsRefresh2026Enabled_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
-  protected accessor isShoppingEnabled_: boolean =
+  protected readonly isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
-  protected accessor isOffersAndLoyaltyCardsEnabled_: boolean =
+  protected readonly isOffersAndLoyaltyCardsEnabled_: boolean =
       loadTimeData.getBoolean('offersAndLoyaltyCardsSettingsEnabled');
-  protected accessor showSuggestionsFromGeminiSettings_: boolean =
+  protected readonly showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {

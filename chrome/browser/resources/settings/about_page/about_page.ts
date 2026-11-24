@@ -77,7 +77,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
   static override get properties() {
     return {
       currentUpdateStatusEvent_: {type: Object},
-      isManaged_: {type: Boolean},
       managedByIcon_: {type: String},
 
       // <if expr="_google_chrome and is_macosx">
@@ -104,7 +103,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
     progress: 0,
     status: UpdateStatus.DISABLED,
   };
-  protected accessor isManaged_: boolean = loadTimeData.getBoolean('isManaged');
+  protected readonly isManaged_: boolean = loadTimeData.getBoolean('isManaged');
   protected accessor managedByIcon_: string =
       loadTimeData.getString('managedByIcon');
 

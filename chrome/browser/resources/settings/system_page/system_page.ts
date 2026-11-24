@@ -78,13 +78,6 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
       isProxyDefault_: {type: Boolean},
       isProxyEnforcedByMultipleSources_: {type: Boolean},
 
-      // <if expr="_google_chrome and is_win">
-      showFeatureNotificationsSetting_: {type: Boolean},
-      // </if>
-      // <if expr="is_win">
-      showProcessIsolationSetting_: {type: Boolean},
-      // </if>
-
       proxyPref_: {type: Object},
       proxyOverrideRulesPref_: {type: Object},
       hardwareAccelerationModeEnabledPref_: {type: Object},
@@ -100,11 +93,11 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   protected accessor isProxyEnforcedByMultipleSources_: boolean = false;
 
   // <if expr="_google_chrome and is_win">
-  protected accessor showFeatureNotificationsSetting_: boolean =
+  protected readonly showFeatureNotificationsSetting_: boolean =
       loadTimeData.getBoolean('showFeatureNotificationsSetting');
   // </if>
   // <if expr="is_win">
-  protected accessor showProcessIsolationSetting_: boolean =
+  protected readonly showProcessIsolationSetting_: boolean =
       loadTimeData.getBoolean('showProcessIsolationSetting');
   private processIsolationEnabledAtStartup_: boolean|undefined;
   // </if>

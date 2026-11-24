@@ -78,8 +78,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       // from 'Delete Browsing data' is completed.
       dbdDeletionConfirmationToastLabel_: {type: String},
 
-      showUniversalOptOutSettings_: {type: Boolean},
-
       cookieControlsModePref_: {type: Object},
     };
   }
@@ -87,7 +85,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   protected accessor showClearBrowsingDataDialog_: boolean = false;
   protected accessor showPrivacyGuideDialog_: boolean = false;
   protected accessor dbdDeletionConfirmationToastLabel_: string = '';
-  private accessor showUniversalOptOutSettings_: boolean =
+  private readonly showUniversalOptOutSettings_: boolean =
       loadTimeData.getBoolean('showUniversalOptOutSettings');
   private accessor cookieControlsModePref_:
       chrome.settingsPrivate.PrefObject<CookieControlsMode>|undefined;

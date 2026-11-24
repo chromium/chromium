@@ -80,21 +80,6 @@ export class CollapsibleAutofillSettingsCardElement extends
        */
       enhancedAutofillEligibleUser_: {type: Boolean},
 
-      /**
-       * Indicates whether the feature `kAutofillAiReauthRequired` is enabled.
-       */
-      // <if expr="is_win or is_macosx or is_chromeos">
-      autofillAiReauthOnViewingSensitiveDataEnabled_: {type: Boolean},
-      // </if>
-
-      isUserEligibleForWalletablePassDetection_: {type: Boolean},
-
-      /**
-       * If true, Autofill AI does not depend on whether Autofill for addresses
-       * is enabled.
-       */
-      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
-
       profileEnabledPref_: {type: Object},
 
       autofillAiEnterprisePolicyPref_: {type: Object},
@@ -105,16 +90,23 @@ export class CollapsibleAutofillSettingsCardElement extends
   // <if expr="is_win or is_macosx or is_chromeos">
   protected accessor enhancedAutofillEligibleUser_: boolean =
       loadTimeData.getBoolean('userEligibleForAutofillAi');
-  protected accessor autofillAiReauthOnViewingSensitiveDataEnabled_: boolean =
+  /**
+   * Indicates whether the feature `kAutofillAiReauthRequired` is enabled.
+   */
+  protected readonly autofillAiReauthOnViewingSensitiveDataEnabled_: boolean =
       loadTimeData.getBoolean('autofillAiReauthOnViewingSensitiveDataEnabled');
   // </if>
   // <if expr="not (is_win or is_macosx or is_chromeos)">
   private accessor enhancedAutofillEligibleUser_: boolean =
       loadTimeData.getBoolean('userEligibleForAutofillAi');
   // </if>
-  protected accessor isUserEligibleForWalletablePassDetection_: boolean =
+  protected readonly isUserEligibleForWalletablePassDetection_: boolean =
       loadTimeData.getBoolean('isUserEligibleForWalletablePassDetection');
-  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+  /**
+   * If true, Autofill AI does not depend on whether Autofill for addresses
+   * is enabled.
+   */
+  private readonly autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
   protected accessor profileEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;

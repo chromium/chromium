@@ -80,7 +80,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
       narrow_: {type: Boolean},
       lastSearchQuery_: {type: String},
       isSettingsRefresh2026_: {type: Boolean},
-      isSettingsSearch2026Enabled_: {type: Boolean},
     };
   }
 
@@ -89,7 +88,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
   protected accessor lastSearchQuery_: string = '';
   private accessor isSettingsRefresh2026_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
-  protected accessor isSettingsSearch2026Enabled_: boolean =
+  protected readonly isSettingsSearch2026Enabled_: boolean =
       loadTimeData.getBoolean('enableSettingsSearch2026');
 
   private activeTimer_: ActiveTimer|null = null;

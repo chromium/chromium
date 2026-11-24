@@ -86,8 +86,6 @@ export class SettingsManageProfileElement extends
        */
       isProfileShortcutSettingVisible_: {type: Boolean},
 
-      hasEnterpriseLabel_: {type: Boolean},
-
       /**
        * TODO(dpapad): Move this back to the HTML file when the Polymer2 version
        * of the code is deleted. Because of "\" being a special character in a
@@ -103,7 +101,7 @@ export class SettingsManageProfileElement extends
   protected accessor hasProfileShortcut_: boolean = false;
   accessor availableIcons: AvatarIcon[] = [];
   protected accessor isProfileShortcutSettingVisible_: boolean = false;
-  protected accessor hasEnterpriseLabel_: boolean =
+  protected readonly hasEnterpriseLabel_: boolean =
       loadTimeData.getBoolean('hasEnterpriseLabel');
   protected accessor pattern_: string = '.*\\S.*';
   private browserProxy_: ManageProfileBrowserProxy =

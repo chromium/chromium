@@ -41,13 +41,7 @@ export class SettingsTabHoverPreviewPageElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      showHoverCardImagesOption_: {type: Boolean},
-    };
-  }
-
-  protected accessor showHoverCardImagesOption_: boolean =
+  protected readonly showHoverCardImagesOption_: boolean =
       loadTimeData.getBoolean('showHoverCardImagesOption');
 
   private metricsProxy_: PerformanceMetricsProxy =

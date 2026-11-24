@@ -101,18 +101,10 @@ export class SettingsPersonalizationOptionsElement extends
       showRestart_: {type: Boolean},
       // </if>
 
-      showSearchAggregatorSuggest_: {type: Boolean},
-
       showSignoutDialog_: {type: Boolean},
-
-      // <if expr="_google_chrome">
-      shouldUseMetricsConsentRestructure_: {type: Boolean},
-      // </if>
 
       // <if expr="not is_chromeos">
       syncFirstSetupInProgress_: {type: Boolean},
-
-      signinAvailable_: {type: Boolean},
 
       chromeSigninUserChoiceInfo_: {type: Object},
       // </if>
@@ -128,19 +120,19 @@ export class SettingsPersonalizationOptionsElement extends
   protected accessor showRestart_: boolean = false;
   // </if>
 
-  protected accessor showSearchAggregatorSuggest_: boolean =
+  protected readonly showSearchAggregatorSuggest_: boolean =
       loadTimeData.getBoolean('showSearchAggregatorSuggest');
 
   protected accessor showSignoutDialog_: boolean = false;
   // <if expr="_google_chrome">
-  protected accessor shouldUseMetricsConsentRestructure_: boolean =
+  protected readonly shouldUseMetricsConsentRestructure_: boolean =
       loadTimeData.getBoolean('shouldUseMetricsConsentRestructure');
   // </if>
 
   // <if expr="not is_chromeos">
   protected accessor syncFirstSetupInProgress_: boolean = false;
 
-  protected accessor signinAvailable_: boolean =
+  protected readonly signinAvailable_: boolean =
       loadTimeData.getBoolean('signinAvailable');
 
   protected accessor chromeSigninUserChoiceInfo_: ChromeSigninUserChoiceInfo|

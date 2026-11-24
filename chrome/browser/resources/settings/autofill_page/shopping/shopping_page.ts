@@ -65,13 +65,6 @@ export class SettingsShoppingPageElement extends
     return {
       allowedEntityTypes_: {type: Object},
 
-      /**
-       * If true, Autofill AI does not depend on whether Autofill for addresses
-       * is enabled.
-       */
-      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
-
-      canEnableOrDisableAutofillAi_: {type: Boolean},
       metricEntityTypes_: {type: Object},
       profileEnabledPref_: {type: Object},
 
@@ -82,8 +75,6 @@ export class SettingsShoppingPageElement extends
        * overridden to be shown as false even if the preference is true.
        */
       shoppingOptedInPref_: {type: Object},
-
-      showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
 
@@ -98,19 +89,23 @@ export class SettingsShoppingPageElement extends
         [EntityTypeName.kShipment]: 'Shipment',
       };
 
-  private accessor canEnableOrDisableAutofillAi_: boolean =
+  private readonly canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
 
   protected accessor shoppingOptedInPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
 
-  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+  /**
+   * If true, Autofill AI does not depend on whether Autofill for addresses
+   * is enabled.
+   */
+  private readonly autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
 
   protected accessor profileEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|null = null;
 
-  protected accessor showSuggestionsFromGeminiSettings_: boolean =
+  protected readonly showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
   private metricsBrowserProxy_: MetricsBrowserProxy =

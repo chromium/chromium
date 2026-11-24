@@ -31,7 +31,6 @@ import {SearchableViewContainerMixinLit} from '../settings_page/searchable_view_
 import {getCss} from './ai_page_index.css.js';
 import {getHtml} from './ai_page_index.html.js';
 
-
 export interface SettingsAiPageIndexElement {
   $: {
     viewManager: CrViewManagerElement,
@@ -59,41 +58,30 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
     return {
       routes_: {type: Object},
       aiSettingsSection_: {type: String},
-      showAiPageAiFeatureSection_: {type: Boolean},
-      showComposeControl_: {type: Boolean},
-      enableAiModeSearchSetting_: {type: Boolean},
-      actorLoginFederatedLoginSupportEnabled_: {type: Boolean},
-      showAiSuggestionsControl_: {type: Boolean},
-      showInlineCueMenuControl_: {type: Boolean},
-      showSkillsSettingPage_: {type: Boolean},
-      showDictationControl_: {type: Boolean},
-      // <if expr="_google_chrome">
-      showOnDeviceAiAdvancedSettings_: {type: Boolean},
-      // </if>
     };
   }
 
   protected accessor routes_: SettingsRoutes = routes;
   protected accessor aiSettingsSection_: AiSettingsSection =
       loadTimeData.getString('aiSettingsSection') as AiSettingsSection;
-  protected accessor showAiPageAiFeatureSection_: boolean =
+  protected readonly showAiPageAiFeatureSection_: boolean =
       loadTimeData.getBoolean('showAiPageAiFeatureSection');
-  protected accessor showComposeControl_: boolean =
+  protected readonly showComposeControl_: boolean =
       loadTimeData.getBoolean('showComposeControl');
-  protected accessor enableAiModeSearchSetting_: boolean =
+  protected readonly enableAiModeSearchSetting_: boolean =
       loadTimeData.getBoolean('enableAiModeSearchSetting');
-  private accessor actorLoginFederatedLoginSupportEnabled_: boolean =
+  private readonly actorLoginFederatedLoginSupportEnabled_: boolean =
       loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled');
-  protected accessor showAiSuggestionsControl_: boolean =
+  protected readonly showAiSuggestionsControl_: boolean =
       loadTimeData.getBoolean('showAiSuggestionsControl');
-  protected accessor showInlineCueMenuControl_: boolean =
+  protected readonly showInlineCueMenuControl_: boolean =
       loadTimeData.getBoolean('showInlineCueMenuControl');
-  protected accessor showSkillsSettingPage_: boolean =
+  protected readonly showSkillsSettingPage_: boolean =
       loadTimeData.getBoolean('showSkillsSettingPage');
-  protected accessor showDictationControl_: boolean =
+  protected readonly showDictationControl_: boolean =
       loadTimeData.getBoolean('showDictationControl');
   // <if expr="_google_chrome">
-  protected accessor showOnDeviceAiAdvancedSettings_: boolean =
+  protected readonly showOnDeviceAiAdvancedSettings_: boolean =
       loadTimeData.getBoolean('showOnDeviceAiAdvancedSettings');
   // </if>
 

@@ -79,8 +79,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
        * being downloading, this displays the download progress.
        */
       enableLiveCaptionSubtitle_: {type: String},
-      enableLiveCaptionMultiLanguage_: {type: Boolean},
-      enableLiveCaptionSpeechRecognitionSmallExpertModel_: {type: Boolean},
       speechRecognitionSmallExpertModelState_: {type: String},
       speechRecognitionSmallExpertModelProgress_: {type: Number},
       speechRecognitionSmallExpertModelSpeed_: {type: String},
@@ -89,7 +87,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
 
       // <if expr="not is_chromeos">
       liveCaptionLanguagePref_: {type: Object},
-      enableLiveTranslate_: {type: Boolean},
       installedLanguagePacks_: {type: Array},
       availableLanguagePacks_: {type: Array},
       detailLanguage_: {type: Object},
@@ -101,9 +98,9 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   protected accessor isLiveCaptionEnabled_: boolean = false;
   protected accessor enableLiveCaptionSubtitle_: string =
       loadTimeData.getString('captionsEnableLiveCaptionSubtitle');
-  protected accessor enableLiveCaptionMultiLanguage_: boolean =
+  protected readonly enableLiveCaptionMultiLanguage_: boolean =
       loadTimeData.getBoolean('enableLiveCaptionMultiLanguage');
-  protected accessor enableLiveCaptionSpeechRecognitionSmallExpertModel_:
+  protected readonly enableLiveCaptionSpeechRecognitionSmallExpertModel_:
       boolean = loadTimeData.valueExists(
                     'enableLiveCaptionSpeechRecognitionSmallExpertModel') ?
       loadTimeData.getBoolean(
@@ -118,7 +115,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   // <if expr="not is_chromeos">
   private accessor liveCaptionLanguagePref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
-  protected accessor enableLiveTranslate_: boolean =
+  protected readonly enableLiveTranslate_: boolean =
       loadTimeData.getBoolean('enableLiveTranslate');
   protected accessor installedLanguagePacks_: LiveCaptionLanguageList = [];
   private accessor availableLanguagePacks_: LiveCaptionLanguageList = [];

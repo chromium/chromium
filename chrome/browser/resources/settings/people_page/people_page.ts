@@ -78,23 +78,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   static override get properties() {
     return {
       // <if expr="not is_chromeos">
-      /**
-       * This flag is used to conditionally show a set of new sign-in UIs to the
-       * profiles that have been migrated to be consistent with the web
-       * sign-ins.
-       * TODO(tangltom): In the future when all profiles are completely
-       * migrated, this should be removed, and UIs hidden behind it should
-       * become default.
-       */
-      signinAllowed_: {type: Boolean},
-
-      /**
-       * This property stores whether the profile is a Dasherless profiles,
-       * which is associated with a non-Dasher account. Some UIs related to
-       * sign in and sync service will be different because they are not
-       * available for these profiles.
-       */
-      isDasherlessProfile_: {type: Boolean},
 
       /**
        * Stored accounts to the system, supplied by SyncBrowserProxy.
@@ -141,9 +124,23 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   // <if expr="not is_chromeos">
-  protected accessor signinAllowed_: boolean =
+  /**
+   * This flag is used to conditionally show a set of new sign-in UIs to the
+   * profiles that have been migrated to be consistent with the web
+   * sign-ins.
+   * TODO(tangltom): In the future when all profiles are completely
+   * migrated, this should be removed, and UIs hidden behind it should
+   * become default.
+   */
+  protected readonly signinAllowed_: boolean =
       loadTimeData.getBoolean('signinAllowed');
-  protected accessor isDasherlessProfile_: boolean =
+  /**
+   * This property stores whether the profile is a Dasherless profiles,
+   * which is associated with a non-Dasher account. Some UIs related to
+   * sign in and sync service will be different because they are not
+   * available for these profiles.
+   */
+  protected readonly isDasherlessProfile_: boolean =
       loadTimeData.getBoolean('isDasherlessProfile');
   // </if>
   accessor syncStatus: SyncStatus|null = null;

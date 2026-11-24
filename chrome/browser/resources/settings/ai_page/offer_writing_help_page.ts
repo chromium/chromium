@@ -50,13 +50,12 @@ export class SettingsOfferWritingHelpPageElement extends
   static override get properties() {
     return {
       siteList_: {type: Array},
-      enableComposeProactiveNudge_: {type: Boolean},
       enterprisePref_: {type: Object},
     };
   }
 
   protected accessor siteList_: string[] = [];
-  protected accessor enableComposeProactiveNudge_: boolean =
+  protected readonly enableComposeProactiveNudge_: boolean =
       loadTimeData.getBoolean('enableComposeProactiveNudge');
   private accessor enterprisePref_: chrome.settingsPrivate.PrefObject|undefined;
 

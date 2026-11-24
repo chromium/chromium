@@ -53,12 +53,11 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   static override get properties() {
     return {
-      shouldShowAiSettings_: {type: Boolean},
       shouldShowWaa_: {type: Boolean},
     };
   }
 
-  protected accessor shouldShowAiSettings_: boolean =
+  protected readonly shouldShowAiSettings_: boolean =
       loadTimeData.getBoolean('showAiPage');
   protected accessor shouldShowWaa_: boolean = false;
   private metricsBrowserProxy_: MetricsBrowserProxy =

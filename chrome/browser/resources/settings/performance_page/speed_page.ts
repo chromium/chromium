@@ -59,7 +59,6 @@ export class SpeedPageElement extends SpeedPageElementBase {
       numericUncheckedValues_: {type: Array},
       cpuPerformanceInfo_: {type: Object},
       cpuPerformanceModelLabel_: {type: String},
-      cpuPerformanceEnabled_: {type: Boolean},
       cpuPerformanceTierOptions_: {type: Array},
       settingsRefresh2026Enabled_: {type: Boolean},
       preloadingStatePref_: {type: Object},
@@ -68,7 +67,7 @@ export class SpeedPageElement extends SpeedPageElementBase {
 
   protected accessor cpuPerformanceInfo_: CpuPerformanceInfo|null = null;
   protected accessor cpuPerformanceModelLabel_: string = '';
-  protected accessor cpuPerformanceEnabled_: boolean =
+  protected readonly cpuPerformanceEnabled_: boolean =
       loadTimeData.getBoolean('cpuPerformanceEnabled');
   protected accessor settingsRefresh2026Enabled_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
@@ -132,7 +131,6 @@ export class SpeedPageElement extends SpeedPageElementBase {
               'cpuPerformanceModel', info.model, coresText);
         });
   }
-
 
   protected isPreloadingEnabled_(): boolean {
     if (!this.preloadingStatePref_) {

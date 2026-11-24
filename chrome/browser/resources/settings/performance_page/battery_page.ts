@@ -43,13 +43,12 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
 
   static override get properties() {
     return {
-      isBatterySaverModeManagedByOs_: {type: Boolean},
       numericUncheckedValues_: {type: Array},
       batterySaverStatePref_: {type: Object},
     };
   }
 
-  protected accessor isBatterySaverModeManagedByOs_: boolean =
+  protected readonly isBatterySaverModeManagedByOs_: boolean =
       loadTimeData.getBoolean('isBatterySaverModeManagedByOS');
   protected accessor numericUncheckedValues_: BatterySaverModeState[] =
       [BatterySaverModeState.DISABLED];

@@ -51,40 +51,24 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      showComposeControl_: {type: Boolean},
-      showPasswordChangeControl_: {type: Boolean},
-      showAiSuggestionsControl_: {type: Boolean},
-      showInlineCueMenuControl_: {type: Boolean},
-      showSkillsSettingPage_: {type: Boolean},
-      showIndigoControl_: {type: Boolean},
-      showGoogleSearchAiModeWorkspaceControl_: {type: Boolean},
-      showDictationControl_: {type: Boolean},
-      // <if expr="_google_chrome">
-      showOnDeviceAiAdvancedSettings_: {type: Boolean},
-      // </if>
-    };
-  }
-
-  protected accessor showComposeControl_: boolean =
+  protected readonly showComposeControl_: boolean =
       loadTimeData.getBoolean('showComposeControl');
-  protected accessor showPasswordChangeControl_: boolean =
+  protected readonly showPasswordChangeControl_: boolean =
       loadTimeData.getBoolean('showPasswordChangeControl');
-  protected accessor showAiSuggestionsControl_: boolean =
+  protected readonly showAiSuggestionsControl_: boolean =
       loadTimeData.getBoolean('showAiSuggestionsControl');
-  protected accessor showInlineCueMenuControl_: boolean =
+  protected readonly showInlineCueMenuControl_: boolean =
       loadTimeData.getBoolean('showInlineCueMenuControl');
-  protected accessor showSkillsSettingPage_: boolean =
+  protected readonly showSkillsSettingPage_: boolean =
       loadTimeData.getBoolean('showSkillsSettingPage');
-  protected accessor showIndigoControl_: boolean =
+  protected readonly showIndigoControl_: boolean =
       loadTimeData.getBoolean('showIndigoControl');
-  protected accessor showGoogleSearchAiModeWorkspaceControl_: boolean =
+  protected readonly showGoogleSearchAiModeWorkspaceControl_: boolean =
       loadTimeData.getBoolean('showGoogleSearchAiModeWorkspaceControl');
-  protected accessor showDictationControl_: boolean =
+  protected readonly showDictationControl_: boolean =
       loadTimeData.getBoolean('showDictationControl');
   // <if expr="_google_chrome">
-  protected accessor showOnDeviceAiAdvancedSettings_: boolean =
+  protected readonly showOnDeviceAiAdvancedSettings_: boolean =
       loadTimeData.getBoolean('showOnDeviceAiAdvancedSettings');
   // </if>
 
@@ -232,7 +216,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     OpenWindowProxyImpl.getInstance().openUrl(url);
   }
-
 
   private recordInteractionMetrics_(
       interaction: AiPageInteractions, action: string) {

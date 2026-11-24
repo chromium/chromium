@@ -109,18 +109,15 @@ export class SettingsAutofillPageElement extends
   static override get properties() {
     return {
       hierarchy_: {type: Object},
-      isShoppingEnabled_: {type: Boolean},
-      isOffersAndLoyaltyCardsEnabled_: {type: Boolean},
-      showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
 
   protected accessor hierarchy_: DataTypeHierarchy;
-  protected accessor isShoppingEnabled_: boolean =
+  protected readonly isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
-  protected accessor isOffersAndLoyaltyCardsEnabled_: boolean =
+  protected readonly isOffersAndLoyaltyCardsEnabled_: boolean =
       loadTimeData.getBoolean('offersAndLoyaltyCardsSettingsEnabled');
-  protected accessor showSuggestionsFromGeminiSettings_: boolean =
+  protected readonly showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
   private dataChipIdToChip_: Map<YourSavedInfoDataChip, DataChip> = new Map();

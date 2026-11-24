@@ -151,14 +151,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
       years_: {type: Array},
 
-      enableSavePrivatePassesToWallet_: {type: Boolean},
-
-      // <if expr="_google_chrome">
-      isWalletPassBranding2026Enabled_: {type: Boolean},
-
-      autofillEnableGradientGoogleLogos_: {type: Boolean},
-      // </if>
-
       /**
        * True while waiting for the backend to respond from Wallet API call.
        */
@@ -191,12 +183,12 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   protected accessor privacyPolicyLinkText_: string|undefined;
   protected accessor legalMessageHtml_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
-  private accessor enableSavePrivatePassesToWallet_: boolean =
+  private readonly enableSavePrivatePassesToWallet_: boolean =
       loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses');
   // <if expr="_google_chrome">
-  private accessor isWalletPassBranding2026Enabled_: boolean =
+  private readonly isWalletPassBranding2026Enabled_: boolean =
       loadTimeData.getBoolean('isAutofillAiWalletPassBranding2026Enabled');
-  private accessor autofillEnableGradientGoogleLogos_: boolean =
+  private readonly autofillEnableGradientGoogleLogos_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   // </if>
   protected accessor saveInProgress_: boolean = false;

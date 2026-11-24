@@ -166,7 +166,6 @@ export class SettingsContactInfoPageElement extends
       showEmailRemoveConfirmationDialog_: {type: Boolean},
       showGmailOtpDisclaimerDialog_: {type: Boolean},
       activeEmailIssuer_: {type: String},
-      isEmailVerificationProtocolEnabled_: {type: Boolean},
       emailVerificationStatePref_: {type: Object},
       emailVerificationAddresses_: {type: Array},
       emailVerificationExpanded_: {type: Boolean},
@@ -191,7 +190,7 @@ export class SettingsContactInfoPageElement extends
   protected accessor showEmailRemoveConfirmationDialog_: boolean = false;
   protected accessor showGmailOtpDisclaimerDialog_: boolean = false;
   private accessor activeEmailIssuer_: string = '';
-  protected accessor isEmailVerificationProtocolEnabled_: boolean =
+  protected readonly isEmailVerificationProtocolEnabled_: boolean =
       loadTimeData.getBoolean('emailVerificationProtocolEnabled');
   private accessor emailVerificationStatePref_:
       chrome.settingsPrivate.PrefObject<Record<string, {issuer_site?: string}>>|

@@ -57,11 +57,6 @@ export class SettingsDownloadsPageElement extends
       downloadLocation_: {type: String},
       // </if>
 
-      /**
-       * Whether the user can toggle the option to display downloads when
-       * they're done.
-       */
-      downloadBubblePartialViewControlledByPref_: {type: Boolean},
       settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
@@ -76,7 +71,11 @@ export class SettingsDownloadsPageElement extends
   protected accessor downloadLocation_: string = '';
   // </if>
 
-  protected accessor downloadBubblePartialViewControlledByPref_: boolean =
+  /**
+   * Whether the user can toggle the option to display downloads when
+   * they're done.
+   */
+  protected readonly downloadBubblePartialViewControlledByPref_: boolean =
       loadTimeData.getBoolean('downloadBubblePartialViewControlledByPref');
   protected accessor settingsRefresh2026Enabled_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';

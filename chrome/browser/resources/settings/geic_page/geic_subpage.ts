@@ -50,13 +50,12 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
     return {
       defaultTabAccessToggleExpanded_: {type: Boolean},
       devicePolicyButtonDisabled_: {type: Boolean},
-      showDevicePolicyToggle_: {type: Boolean},
     };
   }
 
   protected accessor defaultTabAccessToggleExpanded_: boolean = false;
   protected accessor devicePolicyButtonDisabled_: boolean = false;
-  protected accessor showDevicePolicyToggle_: boolean =
+  protected readonly showDevicePolicyToggle_: boolean =
       loadTimeData.getBoolean('showGeicDevicePolicyToggle');
 
   override onRelaunchDialogClose(event: Event) {

@@ -76,9 +76,6 @@ export class SettingsAutofillPageV2Element extends
       travelCount_: {type: Number},
       offersAndLoyaltyCardsCount_: {type: Number},
       shoppingCount_: {type: Number},
-      isShoppingEnabled_: {type: Boolean},
-      isOffersAndLoyaltyCardsEnabled_: {type: Boolean},
-      showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
 
@@ -89,11 +86,11 @@ export class SettingsAutofillPageV2Element extends
   protected accessor travelCount_: number|undefined;
   protected accessor offersAndLoyaltyCardsCount_: number|undefined;
   protected accessor shoppingCount_: number|undefined;
-  protected accessor isShoppingEnabled_: boolean =
+  protected readonly isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
-  protected accessor isOffersAndLoyaltyCardsEnabled_: boolean =
+  protected readonly isOffersAndLoyaltyCardsEnabled_: boolean =
       loadTimeData.getBoolean('offersAndLoyaltyCardsSettingsEnabled');
-  protected accessor showSuggestionsFromGeminiSettings_: boolean =
+  protected readonly showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
   private creditCardCount_?: number;

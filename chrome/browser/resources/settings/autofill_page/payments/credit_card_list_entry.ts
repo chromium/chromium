@@ -48,12 +48,6 @@ export class SettingsCreditCardListEntryElement extends
     return {
       /** A saved credit card. */
       creditCard: {type: Object},
-
-      autofillEnableWalletBrandingEnabled_: {type: Boolean},
-
-      // <if expr="_google_chrome">
-      autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
-      // </if>
     };
   }
 
@@ -69,11 +63,11 @@ export class SettingsCreditCardListEntryElement extends
     },
   };
 
-  private accessor autofillEnableWalletBrandingEnabled_: boolean =
+  private readonly autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
 
   // <if expr="_google_chrome">
-  private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
+  private readonly autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   // </if>
 

@@ -165,24 +165,13 @@ export class SettingsAppearancePageElement extends
       themeUrl_: {type: String},
       systemTheme_: {type: Number},
 
-      // <if expr="is_linux">
-      showCustomChromeFrame_: {type: Boolean},
-      // </if>
-
-      showHoverCardImagesOption_: {type: Boolean},
       showManagedThemeDialog_: {type: Boolean},
       // <if expr="is_macosx">
       glassEffectOptions_: {type: Array},
-      showGlassEffectEnabled_: {type: Boolean},
       // </if>
       tabStripOptions_: {type: Array},
-      ntpSimplificationBookmarksBarEnabled_: {type: Boolean},
       bookmarksBarOptions_: {type: Array},
-      showOrganizerPanelEnabled_: {type: Boolean},
-      showEverythingMenuEnabled_: {type: Boolean},
       showResetPinnedActionsButton_: {type: Boolean},
-      showCtrlTabMru_: {type: Boolean},
-      tabStripUnificationEnabled_: {type: Boolean},
       sidePanelAlignmentOptions_: {type: Array},
       configurableSidePanels_: {type: Array},
     };
@@ -301,27 +290,27 @@ export class SettingsAppearancePageElement extends
   /**
    * Whether to show the "Custom Chrome Frame" setting.
    */
-  protected accessor showCustomChromeFrame_: boolean =
+  protected readonly showCustomChromeFrame_: boolean =
       loadTimeData.getBoolean('showCustomChromeFrame');
   // </if>
 
-  protected accessor showHoverCardImagesOption_: boolean =
+  protected readonly showHoverCardImagesOption_: boolean =
       loadTimeData.getBoolean('showHoverCardImagesOption');
   protected accessor showManagedThemeDialog_: boolean = false;
   // <if expr="is_macosx">
-  protected accessor showGlassEffectEnabled_: boolean =
+  protected readonly showGlassEffectEnabled_: boolean =
       loadTimeData.getBoolean('showGlassEffectEnabled');
   // </if>
-  protected accessor ntpSimplificationBookmarksBarEnabled_: boolean =
+  protected readonly ntpSimplificationBookmarksBarEnabled_: boolean =
       loadTimeData.getBoolean('ntpSimplificationBookmarksBarEnabled');
-  protected accessor showOrganizerPanelEnabled_: boolean =
+  protected readonly showOrganizerPanelEnabled_: boolean =
       loadTimeData.getBoolean('showOrganizerPanelEnabled');
-  private accessor showEverythingMenuEnabled_: boolean =
+  private readonly showEverythingMenuEnabled_: boolean =
       loadTimeData.getBoolean('showEverythingMenuEnabled');
   protected accessor showResetPinnedActionsButton_: boolean = false;
-  protected accessor showCtrlTabMru_: boolean =
+  protected readonly showCtrlTabMru_: boolean =
       loadTimeData.getBoolean('showCtrlTabMru');
-  protected accessor tabStripUnificationEnabled_: boolean =
+  protected readonly tabStripUnificationEnabled_: boolean =
       loadTimeData.getBoolean('tabStripUnificationEnabled');
 
   protected accessor configurableSidePanels_:
@@ -726,7 +715,6 @@ export class SettingsAppearancePageElement extends
 
     return this.verticalTabsEnabledPref_.value;
   }
-
 
   protected onManagedDialogClose_() {
     this.showManagedThemeDialog_ = false;

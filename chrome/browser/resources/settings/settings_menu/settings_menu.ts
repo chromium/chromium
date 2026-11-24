@@ -63,7 +63,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
       settingsRefresh2026Enabled_: {type: Boolean},
 
-      isManaged_: {type: Boolean},
       managedByIcon_: {type: String},
       managementPageUrl_: {type: String},
 
@@ -71,21 +70,19 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
        * Dictionary defining page visibility.
        */
       pageVisibility_: {type: Object},
-
-      showAiPage_: {type: Boolean},
     };
   }
 
   accessor collapsed: boolean = false;
   protected accessor settingsRefresh2026Enabled_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
-  protected accessor isManaged_: boolean = loadTimeData.getBoolean('isManaged');
+  protected readonly isManaged_: boolean = loadTimeData.getBoolean('isManaged');
   protected accessor managedByIcon_: string =
       loadTimeData.getString('managedByIcon');
   protected accessor managementPageUrl_: string =
       loadTimeData.getString('managementPageUrl');
   protected accessor pageVisibility_: PageVisibility|undefined = pageVisibility;
-  private accessor showAiPage_: boolean = loadTimeData.getBoolean('showAiPage');
+  private readonly showAiPage_: boolean = loadTimeData.getBoolean('showAiPage');
   private pathToActionMap_: Map<string, string>;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =

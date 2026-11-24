@@ -139,17 +139,9 @@ export class SettingsCreditCardEditDialogV2Element extends
       /** Whether the current expiration date field is invalid. */
       expirationDateValidationState_: {type: String},
 
-      /**
-       * Checks if CVC storage is available based on the feature flag.
-       */
-      cvcStorageAvailable_: {type: Boolean},
-
       primaryAccountName_: {type: String},
       primaryAccountEmail_: {type: String},
       primaryAccountIconUrl_: {type: String},
-      // <if expr="_google_chrome">
-      autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
-      // </if>
     };
   }
 
@@ -173,13 +165,16 @@ export class SettingsCreditCardEditDialogV2Element extends
       ValidationState.INVALID_NO_ERROR;
   private accessor expirationDateValidationState_: ValidationState =
       ValidationState.INVALID_NO_ERROR;
-  private accessor cvcStorageAvailable_: boolean =
+  /**
+   * Checks if CVC storage is available based on the feature flag.
+   */
+  private readonly cvcStorageAvailable_: boolean =
       loadTimeData.getBoolean('cvcStorageAvailable');
   protected accessor primaryAccountName_: string = '';
   protected accessor primaryAccountEmail_: string = '';
   protected accessor primaryAccountIconUrl_: string = '';
   // <if expr="_google_chrome">
-  private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
+  private readonly autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   // </if>
 

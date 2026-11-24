@@ -24,7 +24,6 @@ import './do_not_track_toggle.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
@@ -67,28 +66,25 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         notify: true,
       },
 
-      showUniversalOptOutSettings_: {type: Boolean},
-
       pageTitle_: {type: String},
     };
   }
 
   accessor searchTerm: string = '';
-  protected accessor pageTitle_: string = '';
-  protected accessor showUniversalOptOutSettings_: boolean =
+  protected readonly showUniversalOptOutSettings_: boolean =
       loadTimeData.getBoolean('showUniversalOptOutSettings');
+  protected accessor pageTitle_: string;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
+  constructor() {
+    super();
 
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('showUniversalOptOutSettings_')) {
-      this.pageTitle_ = this.computePageTitle_();
-    }
+    this.pageTitle_ = this.i18n(
+        this.showUniversalOptOutSettings_ ?
+            'thirdPartyCookiesAndSiteDataPageTitle' :
+            'thirdPartyCookiesPageTitle');
   }
 
   protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
@@ -125,13 +121,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     this.metricsBrowserProxy_.recordAction(
         toggle.checked ? 'Privacy.UniversalOptOut.SettingsToggleOn' :
                          'Privacy.UniversalOptOut.SettingsToggleOff');
-  }
-
-  private computePageTitle_(): string {
-    return this.i18n(
-        this.showUniversalOptOutSettings_ ?
-            'thirdPartyCookiesAndSiteDataPageTitle' :
-            'thirdPartyCookiesPageTitle');
   }
 
   override currentRouteChanged(currentRoute: Route, oldRoute?: Route) {

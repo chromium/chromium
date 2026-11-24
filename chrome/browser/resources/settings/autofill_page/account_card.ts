@@ -40,8 +40,6 @@ import {AccountManagerBrowserProxyImpl} from '../people_page/account_manager_bro
 // </if>
 // clang-format on
 
-
-
 import {getCss} from './account_card.css.js';
 import {getHtml} from './account_card.html.js';
 
@@ -62,13 +60,6 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
 
   static override get properties() {
     return {
-      /**
-       * This flag is used to conditionally show a set of new sign-in UIs to the
-       * profiles that have been migrated to be consistent with the web
-       * sign-ins.
-       */
-      signinAllowed_: {type: Boolean},
-
       /**
        * The current sync status, supplied by SyncBrowserProxy.
        */
@@ -96,16 +87,16 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
        */
       profileName_: {type: String},
 
-      /**
-       * Whether the profile row is clickable. The behavior depends on the
-       * platform.
-       */
-      isProfileActionable_: {type: Boolean},
       // </if>
     };
   }
 
-  private accessor signinAllowed_: boolean =
+  /**
+   * This flag is used to conditionally show a set of new sign-in UIs to the
+   * profiles that have been migrated to be consistent with the web
+   * sign-ins.
+   */
+  private readonly signinAllowed_: boolean =
       loadTimeData.getBoolean('signinAllowed');
   accessor syncStatus: SyncStatus|null = null;
 
@@ -119,7 +110,11 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
   // <if expr="is_chromeos">
   protected accessor profileIconUrl_: string = '';
   protected accessor profileName_: string = '';
-  protected accessor isProfileActionable_: boolean =
+  /**
+   * Whether the profile row is clickable. The behavior depends on the
+   * platform.
+   */
+  protected readonly isProfileActionable_: boolean =
       loadTimeData.getBoolean('isAccountManagerEnabled');
   // </if>
 

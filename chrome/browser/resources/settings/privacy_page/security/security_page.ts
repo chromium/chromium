@@ -106,30 +106,12 @@ export class SettingsSecurityPageElement extends
 
   static override get properties() {
     return {
-      // <if expr="not is_chromeos">
-      /**
-       * Whether the secure DNS setting should be displayed.
-       */
-      showSecureDnsSetting_: {type: Boolean},
-      // </if>
-
-      // <if expr="is_chromeos">
-      /**
-       * Whether a link to secure DNS OS setting should be displayed.
-       */
-      showSecureDnsSettingLink_: {type: Boolean},
-      // </if>
-
       /**
        * Setting for HTTPS-First Mode when the toggle is off.
        */
       httpsFirstModeUncheckedValues_: {type: Array},
 
       javascriptOptimizerSubLabel_: {type: String},
-      enableHttpsFirstModeNewSettings_: {type: Boolean},
-      enableSecurityKeysSubpage_: {type: Boolean},
-      enableHashPrefixRealTimeLookups_: {type: Boolean},
-      hideExtendedReportingRadioButton_: {type: Boolean},
       showDisableSafebrowsingDialog_: {type: Boolean},
 
       /**
@@ -158,23 +140,29 @@ export class SettingsSecurityPageElement extends
   }
 
   // <if expr="not is_chromeos">
-  protected accessor showSecureDnsSetting_: boolean =
+  /**
+   * Whether the secure DNS setting should be displayed.
+   */
+  protected readonly showSecureDnsSetting_: boolean =
       loadTimeData.getBoolean('showSecureDnsSetting');
   // </if>
 
   // <if expr="is_chromeos">
-  protected accessor showSecureDnsSettingLink_: boolean =
+  /**
+   * Whether a link to secure DNS OS setting should be displayed.
+   */
+  protected readonly showSecureDnsSettingLink_: boolean =
       loadTimeData.getBoolean('showSecureDnsSettingLink');
   // </if>
 
-  protected accessor enableSecurityKeysSubpage_: boolean =
+  protected readonly enableSecurityKeysSubpage_: boolean =
       loadTimeData.getBoolean('enableSecurityKeysSubpage');
   protected accessor showDisableSafebrowsingDialog_: boolean = false;
-  private accessor enableHashPrefixRealTimeLookups_: boolean =
+  private readonly enableHashPrefixRealTimeLookups_: boolean =
       loadTimeData.getBoolean('enableHashPrefixRealTimeLookups');
   protected accessor httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[] =
       [HttpsFirstModeSetting.DISABLED];
-  protected accessor enableHttpsFirstModeNewSettings_: boolean =
+  protected readonly enableHttpsFirstModeNewSettings_: boolean =
       loadTimeData.getBoolean('enableHttpsFirstModeNewSettings');
   protected accessor javascriptOptimizerSubLabel_: string = '';
   private accessor lastFocusTime_: number|undefined;
@@ -185,7 +173,7 @@ export class SettingsSecurityPageElement extends
       SafeBrowsingSetting.STANDARD;
   private accessor isRouteSecurity_: boolean = true;
   private eventTracker_: EventTracker = new EventTracker();
-  protected accessor hideExtendedReportingRadioButton_: boolean =
+  protected readonly hideExtendedReportingRadioButton_: boolean =
       loadTimeData.getBoolean('extendedReportingRemovePrefDependency') &&
       loadTimeData.getBoolean('hashPrefixRealTimeLookupsSamplePing');
   private accessor safeBrowsingPref_:

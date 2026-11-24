@@ -49,7 +49,6 @@ import type {AccessibilityBrowserProxy} from './a11y_browser_proxy.js';
 import {AccessibilityBrowserProxyImpl} from './a11y_browser_proxy.js';
 import {getHtml} from './a11y_page.html.js';
 
-
 /**
  * Must be kept in sync with the C++ enum of the same name in
  * chrome/browser/ui/toasts/toast_metrics.h.
@@ -106,12 +105,8 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
   static override get properties() {
     return {
-      // <if expr="is_macosx or is_win">
-      enableLiveCaption_: {type: Boolean},
-      // </if>
       // <if expr="not is_chromeos">
       numericUncheckedToastAlertValues_: {type: Array},
-      showPageColors_: {type: Boolean},
       requestedA11yPageColorsPref_: {type: Object},
       pageColorsOptions_: {type: Array},
       // </if>
@@ -135,13 +130,13 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       AccessibilityBrowserProxyImpl.getInstance();
 
   // <if expr="is_macosx or is_win">
-  protected accessor enableLiveCaption_: boolean =
+  protected readonly enableLiveCaption_: boolean =
       loadTimeData.getBoolean('enableLiveCaption');
   // </if>
   // <if expr="not is_chromeos">
   protected accessor numericUncheckedToastAlertValues_: ToastAlertLevel[] =
       [ToastAlertLevel.ACTIONABLE];
-  protected accessor showPageColors_: boolean =
+  protected readonly showPageColors_: boolean =
       loadTimeData.getBoolean('pageColorsSettingsEnabled');
   private accessor requestedA11yPageColorsPref_:
       chrome.settingsPrivate.PrefObject<PageColors>|undefined;

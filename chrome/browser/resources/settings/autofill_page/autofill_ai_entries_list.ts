@@ -79,14 +79,6 @@ export class SettingsAutofillAiEntriesListElement extends
 
   static override get properties() {
     return {
-      /**
-       Controls whether the user can use Autofill AI. For example this can be
-       false if the extensions API disables the feature.
-       Specifically in this file, it controls whether users can add new
-       entities.
-      */
-      canEnableOrDisableAutofillAi_: {type: Boolean},
-
       allowedEntityTypes: {type: Object},
 
       listTitle: {type: String},
@@ -136,16 +128,6 @@ export class SettingsAutofillAiEntriesListElement extends
       activeEntityInstanceDeleteTitle_: {type: String},
 
       entityInstances_: {type: Array},
-
-      /**
-        If true, Autofill AI does not depend on whether Autofill for addresses
-        is enabled.
-      */
-      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
-
-      // <if expr="_google_chrome">
-      autofillEnableGradientGoogleLogos_: {type: Boolean},
-      // </if>
     };
   }
 
@@ -164,13 +146,23 @@ export class SettingsAutofillAiEntriesListElement extends
   protected accessor showRemoveEntityInstanceDialog_: boolean = false;
   protected accessor activeEntityInstanceDeleteTitle_: string = '';
   protected accessor entityInstances_: EntityInstanceWithLabels[] = [];
-  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+  /**
+   * If true, Autofill AI does not depend on whether Autofill for addresses
+   * is enabled.
+   */
+  private readonly autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
   // <if expr="_google_chrome">
-  protected accessor autofillEnableGradientGoogleLogos_: boolean =
+  protected readonly autofillEnableGradientGoogleLogos_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   // </if>
-  private accessor canEnableOrDisableAutofillAi_: boolean =
+  /**
+   * Controls whether the user can use Autofill AI. For example this can be
+   * false if the extensions API disables the feature.
+   * Specifically in this file, it controls whether users can add new
+   * entities.
+   */
+  private readonly canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
   private activeEntityInstanceGuid_: string|null = null;
   private metricsBrowserProxy_: MetricsBrowserProxy =

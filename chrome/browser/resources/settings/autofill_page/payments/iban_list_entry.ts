@@ -65,12 +65,6 @@ export class SettingsIbanListEntryElement extends
     return {
       /** A saved IBAN. */
       iban: {type: Object},
-
-      autofillEnableWalletBrandingEnabled_: {type: Boolean},
-
-      // <if expr="_google_chrome">
-      autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
-      // </if>
     };
   }
 
@@ -81,11 +75,11 @@ export class SettingsIbanListEntryElement extends
     },
   };
 
-  private accessor autofillEnableWalletBrandingEnabled_: boolean =
+  private readonly autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
 
   // <if expr="_google_chrome">
-  private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
+  private readonly autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   // </if>
 

@@ -82,14 +82,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       // The label of the confirmation toast that is displayed when the user
       // chooses a default search engine.
       confirmationToastLabel_: {type: String},
-
-      // With this enabled, the shortcuts settings are present on this page
-      // rather than the search engines subpage.
-      searchSettingsUpdateEnabled_: {type: Boolean},
-
-      // Whether the version of the picker with the "More options" entry point
-      // is enabled by feature flags.
-      pickerWithMoreEnginesEnabled_: {type: Boolean},
     };
   }
 
@@ -100,11 +92,15 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   protected accessor showMoreEnginesDialog_: boolean = false;
   protected accessor saveGuestChoice_: boolean|null = null;
   protected accessor defaultSearchEngine_: SearchEngine|null = null;
-  protected accessor searchSettingsUpdateEnabled_: boolean =
+  // With this enabled, the shortcuts settings are present on this page
+  // rather than the search engines subpage.
+  protected readonly searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');
-  private accessor pickerWithMoreEnginesEnabled_: boolean =
+  // Whether the version of the picker with the "More options" entry point
+  // is enabled by feature flags.
+  private readonly pickerWithMoreEnginesEnabled_: boolean =
       loadTimeData.getBoolean('pickerWithMoreEngines');
-  protected accessor searchPageTitle_: string = '';
+  protected accessor searchPageTitle_: string = this.computeSearchPageTitle_();
   protected accessor confirmationToastLabel_: string = '';
 
   private browserProxy_: SearchEnginesBrowserProxy =
@@ -149,10 +145,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
     if (changedPrivateProperties.has('searchEngines_')) {
       this.defaultSearchEngine_ = this.computeDefaultSearchEngine_();
-    }
-
-    if (changedPrivateProperties.has('searchSettingsUpdateEnabled_')) {
-      this.searchPageTitle_ = this.computeSearchPageTitle_();
     }
   }
 

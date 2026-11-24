@@ -19,7 +19,6 @@ import {SearchableViewContainerMixinLit} from '../settings_page/searchable_view_
 import {getCss} from './people_page_index.css.js';
 import {getHtml} from './people_page_index.html.js';
 
-
 export interface SettingsPeoplePageIndexElement {
   $: {
     viewManager: CrViewManagerElement,
@@ -46,12 +45,11 @@ export class SettingsPeoplePageIndexElement extends
   static override get properties() {
     return {
       routes_: {type: Object},
-      enableDeviceTabVisibilitySettings_: {type: Boolean},
     };
   }
 
   protected accessor routes_: SettingsRoutes = routes;
-  protected accessor enableDeviceTabVisibilitySettings_: boolean =
+  protected readonly enableDeviceTabVisibilitySettings_: boolean =
       loadTimeData.getBoolean('enableDeviceTabVisibilitySettings');
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {

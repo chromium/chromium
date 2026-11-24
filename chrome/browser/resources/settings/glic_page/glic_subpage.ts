@@ -107,28 +107,13 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       registeredFocusToggleShortcut_: {type: String},
       registeredSelectionShortcut_: {type: String},
       tabAccessToggleExpanded_: {type: Boolean},
-      closedCaptionsToggleEnabled_: {type: Boolean},
-      headlessCaptionsEnabled_: {type: Boolean},
-      glicExtensionsFeatureEnabled_: {type: Boolean},
-      glicUserStatusCheckFeatureEnabled_: {type: Boolean},
-      glicSelectionFeatureEnabled_: {type: Boolean},
-      glicHotkeyLocalScopeEnabled_: {type: Boolean},
-      showGlicDefaultTabContextSetting_: {type: Boolean},
-      showGlicExperimentalTriggering_: {type: Boolean},
       experimentalTriggeringExpanded_: {type: Boolean},
-      showGlicPersonalContextLink_: {type: Boolean},
-      showGlicInstructionLink_: {type: Boolean},
-      showGlicKeepSidepanelOpenOnNewTabsSetting_: {type: Boolean},
-      showGlicShakeTrigger_: {type: Boolean},
-      microphoneToggleEnabled_: {type: Boolean},
       defaultTabAccessToggleExpanded_: {type: Boolean},
       webActuationFeatureEnabled_: {type: Boolean},
       webActuationEnabledPref_: {type: Object},
       isWebActuationDisabledForEnterprise_: {type: Boolean},
       webActuationEnabledExpanded_: {type: Boolean},
-      actorLoginFederatedLoginSupportEnabled_: {type: Boolean},
       devicePolicyButtonDisabled_: {type: Boolean},
-      showDevicePolicyToggle_: {type: Boolean},
     };
   }
 
@@ -144,42 +129,42 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   protected accessor registeredFocusToggleShortcut_: string = '';
   protected accessor registeredSelectionShortcut_: string = '';
   protected accessor tabAccessToggleExpanded_: boolean = false;
-  protected accessor closedCaptionsToggleEnabled_: boolean =
+  protected readonly closedCaptionsToggleEnabled_: boolean =
       loadTimeData.getBoolean('glicCanUseLive');
-  protected accessor headlessCaptionsEnabled_: boolean =
+  protected readonly headlessCaptionsEnabled_: boolean =
       loadTimeData.getBoolean('headlessCaptionsEnabled');
-  protected accessor glicExtensionsFeatureEnabled_: boolean =
+  protected readonly glicExtensionsFeatureEnabled_: boolean =
       loadTimeData.getBoolean('glicExtensionsFeatureEnabled');
-  private accessor glicUserStatusCheckFeatureEnabled_: boolean =
+  private readonly glicUserStatusCheckFeatureEnabled_: boolean =
       loadTimeData.getBoolean('glicUserStatusCheckFeatureEnabled');
-  protected accessor glicSelectionFeatureEnabled_: boolean =
+  protected readonly glicSelectionFeatureEnabled_: boolean =
       loadTimeData.getBoolean('glicSelectionFeatureEnabled');
-  protected accessor glicHotkeyLocalScopeEnabled_: boolean =
+  protected readonly glicHotkeyLocalScopeEnabled_: boolean =
       loadTimeData.getBoolean('glicHotkeyLocalScopeEnabled');
-  protected accessor showGlicDefaultTabContextSetting_: boolean =
+  protected readonly showGlicDefaultTabContextSetting_: boolean =
       loadTimeData.getBoolean('showGlicDefaultTabContextSetting');
-  protected accessor showGlicExperimentalTriggering_: boolean =
+  protected readonly showGlicExperimentalTriggering_: boolean =
       loadTimeData.getBoolean('showGlicExperimentalTriggering');
   protected accessor experimentalTriggeringExpanded_: boolean = false;
-  protected accessor showGlicPersonalContextLink_: boolean =
+  protected readonly showGlicPersonalContextLink_: boolean =
       loadTimeData.getBoolean('showGeminiPersonalContextLink');
-  protected accessor showGlicInstructionLink_: boolean =
+  protected readonly showGlicInstructionLink_: boolean =
       loadTimeData.getBoolean('showInstructionLink');
-  protected accessor showGlicKeepSidepanelOpenOnNewTabsSetting_: boolean =
+  protected readonly showGlicKeepSidepanelOpenOnNewTabsSetting_: boolean =
       loadTimeData.getBoolean('showGlicKeepSidepanelOpenOnNewTabsSetting');
-  protected accessor showGlicShakeTrigger_: boolean =
+  protected readonly showGlicShakeTrigger_: boolean =
       loadTimeData.getBoolean('showGlicShakeTrigger');
-  protected accessor microphoneToggleEnabled_: boolean =
+  protected readonly microphoneToggleEnabled_: boolean =
       loadTimeData.getBoolean('glicCanUseLive');
   protected accessor defaultTabAccessToggleExpanded_: boolean = false;
   protected accessor webActuationFeatureEnabled_: boolean = false;
   protected accessor isWebActuationDisabledForEnterprise_: boolean =
       loadTimeData.getBoolean('isWebActuationDisabledForEnterprise');
   protected accessor webActuationEnabledExpanded_: boolean = false;
-  protected accessor actorLoginFederatedLoginSupportEnabled_: boolean =
+  protected readonly actorLoginFederatedLoginSupportEnabled_: boolean =
       loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled');
   protected accessor devicePolicyButtonDisabled_: boolean = false;
-  protected accessor showDevicePolicyToggle_: boolean =
+  protected readonly showDevicePolicyToggle_: boolean =
       loadTimeData.getBoolean('showGeicDevicePolicyToggle');
 
   private shortcutInput_: string = '';

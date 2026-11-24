@@ -127,8 +127,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
       existingPassphraseLabel_: {type: String},
 
-      mayShowLinkedGoogleServicesSetting_: {type: Boolean},
-
       personalizationCollapseExpanded_: {type: Boolean},
     };
   }
@@ -146,7 +144,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private accessor signedIn_: boolean = true;
   protected accessor syncDisabledByAdmin_: boolean = false;
   protected accessor syncSectionDisabled_: boolean = false;
-  protected accessor mayShowLinkedGoogleServicesSetting_: boolean =
+  protected readonly mayShowLinkedGoogleServicesSetting_: boolean =
       loadTimeData.getBoolean('mayShowLinkedGoogleServicesSetting');
   protected accessor personalizationCollapseExpanded_: boolean = false;
 

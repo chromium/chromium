@@ -66,19 +66,6 @@ export class SettingsIdentityDocsPageElement extends
       allowedEntityTypes_: {type: Object},
 
       /**
-       * If true, Autofill AI does not depend on whether Autofill for addresses
-       * is enabled.
-       */
-      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
-
-      /**
-       * Controls whether the user can use Autofill AI (in this context,
-       * identity docs filling). As an example, this can be false if the
-       * extensions API disables the feature.
-       */
-      canEnableOrDisableAutofillAi_: {type: Boolean},
-
-      /**
        * Fake preference used by `this.$.optInToggle`. Stores the value of
        * the `autofill.autofill_ai.identity_entities_enabled` preference if
        * the toggle is enabled (clickable). If the toggle is disabled, then the
@@ -89,7 +76,6 @@ export class SettingsIdentityDocsPageElement extends
 
       metricEntityTypes_: {type: Object},
       profileEnabledPref_: {type: Object},
-      showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
 
@@ -106,19 +92,28 @@ export class SettingsIdentityDocsPageElement extends
         [EntityTypeName.kPassport]: 'Passport',
       };
 
-  private accessor canEnableOrDisableAutofillAi_: boolean =
+  /**
+   * Controls whether the user can use Autofill AI (in this context,
+   * identity docs filling). As an example, this can be false if the
+   * extensions API disables the feature.
+   */
+  private readonly canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
 
   protected accessor identityDocsOptedInPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
 
-  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+  /**
+   * If true, Autofill AI does not depend on whether Autofill for addresses
+   * is enabled.
+   */
+  private readonly autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
 
   protected accessor profileEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|null = null;
 
-  protected accessor showSuggestionsFromGeminiSettings_: boolean =
+  protected readonly showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
   private metricsBrowserProxy_: MetricsBrowserProxy =

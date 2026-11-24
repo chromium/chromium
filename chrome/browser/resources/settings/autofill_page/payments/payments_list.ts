@@ -50,16 +50,6 @@ export class SettingsPaymentsListElement extends CrLitElement {
        * An array of all saved Pay Over Time issuers.
        */
       payOverTimeIssuers: {type: Array},
-
-      /**
-       * True if displaying IBANs in settings is enabled.
-       */
-      enableIbans_: {type: Boolean},
-
-      /**
-       * True if displaying Pay Over Time in settings is enabled.
-       */
-      enablePayOverTime_: {type: Boolean},
     };
   }
 
@@ -67,9 +57,15 @@ export class SettingsPaymentsListElement extends CrLitElement {
   accessor ibans: chrome.autofillPrivate.IbanEntry[] = [];
   accessor payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[] =
       [];
-  private accessor enableIbans_: boolean =
+  /**
+   * True if displaying IBANs in settings is enabled.
+   */
+  private readonly enableIbans_: boolean =
       loadTimeData.getBoolean('showIbansSettings');
-  private accessor enablePayOverTime_: boolean =
+  /**
+   * True if displaying Pay Over Time in settings is enabled.
+   */
+  private readonly enablePayOverTime_: boolean =
       loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
 
   /**

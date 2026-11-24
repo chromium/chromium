@@ -62,12 +62,10 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
        */
       syncPrefs: {type: Object},
 
-      mayShowLinkedGoogleServicesSetting_: {type: Boolean},
       personalizationCollapseExpanded_: {type: Boolean},
       existingPassphraseLabel_: {type: String},
       dataEncrypted_: {type: Boolean},
       encryptionExpanded_: {type: Boolean},
-      enableDeviceTabVisibilitySettings_: {type: Boolean},
     };
   }
 
@@ -76,13 +74,13 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
   protected accessor syncStatus_: SyncStatus|null = null;
   accessor syncPrefs: SyncPrefs|null = null;
 
-  protected accessor mayShowLinkedGoogleServicesSetting_: boolean =
+  protected readonly mayShowLinkedGoogleServicesSetting_: boolean =
       loadTimeData.getBoolean('mayShowLinkedGoogleServicesSetting');
   protected accessor personalizationCollapseExpanded_: boolean = false;
   private accessor dataEncrypted_: boolean = false;
   protected accessor encryptionExpanded_: boolean = false;
   protected accessor existingPassphraseLabel_: string = '';
-  protected accessor enableDeviceTabVisibilitySettings_: boolean =
+  protected readonly enableDeviceTabVisibilitySettings_: boolean =
       loadTimeData.getBoolean('enableDeviceTabVisibilitySettings');
 
   override connectedCallback() {

@@ -23,7 +23,6 @@ import {SearchableViewContainerMixinLit} from '../settings_page/searchable_view_
 import {getCss} from './search_page_index.css.js';
 import {getHtml} from './search_page_index.html.js';
 
-
 export interface SettingsSearchPageIndexElement {
   $: {
     viewManager: CrViewManagerElement,
@@ -50,15 +49,13 @@ export class SettingsSearchPageIndexElement extends
   static override get properties() {
     return {
       routes_: {type: Object},
-      searchSettingsUpdateEnabled_: {type: Boolean},
-      omniboxEverywhereSettingsEnabled_: {type: Boolean},
     };
   }
 
   protected accessor routes_: SettingsRoutes = routes;
-  protected accessor searchSettingsUpdateEnabled_: boolean =
+  protected readonly searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');
-  protected accessor omniboxEverywhereSettingsEnabled_: boolean =
+  protected readonly omniboxEverywhereSettingsEnabled_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereSettingsEnabled');
 
   private showDefaultViews_() {

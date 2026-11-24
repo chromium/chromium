@@ -9,7 +9,6 @@ import '../icons.html.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -44,25 +43,15 @@ export class SettingsDoNotTrackToggleElement extends
   static override get properties() {
     return {
       showDialog_: {type: Boolean},
-      showUniversalOptOutSettings_: {type: Boolean},
       doNotTrackSublabel_: {type: String},
     };
   }
 
   protected accessor showDialog_: boolean = false;
-  private accessor showUniversalOptOutSettings_: boolean =
+  private readonly showUniversalOptOutSettings_: boolean =
       loadTimeData.getBoolean('showUniversalOptOutSettings');
-  protected accessor doNotTrackSublabel_: string = '';
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('showUniversalOptOutSettings_')) {
-      this.doNotTrackSublabel_ = this.computeDoNotTrackToggleSubLabel_();
-    }
-  }
+  protected accessor doNotTrackSublabel_: string =
+      this.computeDoNotTrackToggleSubLabel_();
 
   /**
    * Handles the change event for the do-not-track toggle. Shows a

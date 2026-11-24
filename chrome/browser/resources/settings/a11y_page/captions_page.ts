@@ -50,7 +50,6 @@ export class SettingsCaptionsPageElement extends
       textOpacityOptions_: {type: Array},
       textShadowOptions_: {type: Array},
       textSizeOptions_: {type: Array},
-      enableLiveCaption_: {type: Boolean},
       backgroundColorPref_: {type: Object},
       backgroundOpacityPref_: {type: Object},
       textColorPref_: {type: Object},
@@ -185,7 +184,7 @@ export class SettingsCaptionsPageElement extends
     {value: '200%', name: loadTimeData.getString('veryLarge')},
   ];
 
-  protected accessor enableLiveCaption_: boolean =
+  protected readonly enableLiveCaption_: boolean =
       loadTimeData.getBoolean('enableLiveCaption');
 
   private accessor backgroundColorPref_:

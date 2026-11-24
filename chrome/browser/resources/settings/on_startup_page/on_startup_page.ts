@@ -30,7 +30,6 @@ import {OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
 import {getCss} from './on_startup_page.css.js';
 import {getHtml} from './on_startup_page.html.js';
 
-
 /** Enum values for the 'session.restore_on_startup' preference. */
 export enum PrefValues {
   CONTINUE = 1,
@@ -60,10 +59,6 @@ export class SettingsOnStartupPageElement extends
     return {
       restoreOnStartupPref_: {type: Object},
 
-      // <if expr="is_win">
-      isForegroundLaunchFeatureEnabled_: {type: Boolean},
-      // </if>
-
       ntpExtension_: {type: Object},
       settingsRefresh2026Enabled_: {type: Boolean},
     };
@@ -72,7 +67,7 @@ export class SettingsOnStartupPageElement extends
   private accessor restoreOnStartupPref_:
       chrome.settingsPrivate.PrefObject<PrefValues>|undefined;
   // <if expr="is_win">
-  protected accessor isForegroundLaunchFeatureEnabled_: boolean =
+  protected readonly isForegroundLaunchFeatureEnabled_: boolean =
       loadTimeData.getBoolean('isForegroundLaunchFeatureEnabled');
   // </if>
   protected accessor ntpExtension_: NtpExtension|null = null;

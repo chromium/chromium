@@ -55,7 +55,6 @@ export class SettingsSearchEngineEntryElement extends
       showShortcut: {type: Boolean, reflect: true},
       showQueryUrl: {type: Boolean, reflect: true},
       isDefault: {type: Boolean, reflect: true},
-      searchSettingsUpdateEnabled_: {type: Boolean},
     };
   }
 
@@ -85,7 +84,7 @@ export class SettingsSearchEngineEntryElement extends
   accessor isDefault: boolean = false;
   private accessor defaultSearchProviderDataPref_:
       chrome.settingsPrivate.PrefObject|undefined = undefined;
-  protected accessor searchSettingsUpdateEnabled_: boolean =
+  protected readonly searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');
 
   private browserProxy_: SearchEnginesBrowserProxy =

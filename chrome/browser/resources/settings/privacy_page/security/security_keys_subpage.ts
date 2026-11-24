@@ -49,7 +49,6 @@ export class SecurityKeysSubpageElement extends SecurityKeysSubpageElementBase {
 
   static override get properties() {
     return {
-      enableBioEnrollment_: {type: Boolean},
       showSetPINDialog_: {type: Boolean},
       showCredentialManagementDialog_: {type: Boolean},
       showResetDialog_: {type: Boolean},
@@ -57,7 +56,7 @@ export class SecurityKeysSubpageElement extends SecurityKeysSubpageElementBase {
     };
   }
 
-  protected accessor enableBioEnrollment_: boolean =
+  protected readonly enableBioEnrollment_: boolean =
       loadTimeData.getBoolean('enableSecurityKeysBioEnrollment');
   protected accessor showSetPINDialog_: boolean = false;
   protected accessor showCredentialManagementDialog_: boolean = false;

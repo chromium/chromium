@@ -64,22 +64,8 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     return {
       allowedEntityTypes_: {type: Object},
 
-      /**
-       * If true, Autofill AI does not depend on whether Autofill for addresses
-       * is enabled.
-       */
-      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
-
-      /**
-       * Controls whether the user can use Autofill AI (in this context travel
-       * info filling). As an example, this can be false if the extensions API
-       * disables the feature.
-       */
-      canEnableOrDisableAutofillAi_: {type: Boolean},
-
       metricEntityTypes_: {type: Object},
       profileEnabledPref_: {type: Object},
-      showSuggestionsFromGeminiSettings_: {type: Boolean},
 
       /**
        * Fake preference used by `this.$.optInToggle`. Shows value of
@@ -106,19 +92,28 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
         [EntityTypeName.kVehicle]: 'Vehicle',
       };
 
-  private accessor canEnableOrDisableAutofillAi_: boolean =
+  /**
+   * Controls whether the user can use Autofill AI (in this context travel
+   * info filling). As an example, this can be false if the extensions API
+   * disables the feature.
+   */
+  private readonly canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
 
   protected accessor travelOptedInPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
 
-  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+  /**
+   * If true, Autofill AI does not depend on whether Autofill for addresses
+   * is enabled.
+   */
+  private readonly autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
 
   protected accessor profileEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|null = null;
 
-  protected accessor showSuggestionsFromGeminiSettings_: boolean =
+  protected readonly showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
