@@ -235,51 +235,27 @@ bool CSSPreloadScanner::HasFinishedRuleValue() const {
   return rule_value_[rule_value_.length() - 1] == ')';
 }
 
-static String ParseCSSStringOrURL(const String& string) {
-  wtf_size_t offset = 0;
-  wtf_size_t reduced_length = string.length();
-
-  // Remove whitespace from the rule start
-  while (reduced_length && IsHTMLSpace<UChar>(string[offset])) {
-    ++offset;
-    --reduced_length;
-  }
-  // Remove whitespace from the rule end
+static String ParseCssStringOrUrl(const StringView& string) {
+  // Remove whitespace from the rule start and end.
   // TODO(yoav): Evaluate performance benefits of using raw string operations.
   // TODO(yoav): Look into moving parsing to use better parsing primitives.
-  while (reduced_length &&
-         IsHTMLSpace<UChar>(string[offset + reduced_length - 1])) {
-    --reduced_length;
-  }
+  StringView view = string.StripWhiteSpace(IsHTMLSpace<UChar>);
 
-  // Skip the "url(" prefix and the ")" suffix
-  if (reduced_length >= 5 && (string[offset] == 'u' || string[offset] == 'U') &&
-      (string[offset + 1] == 'r' || string[offset + 1] == 'R') &&
-      (string[offset + 2] == 'l' || string[offset + 2] == 'L') &&
-      string[offset + 3] == '(' && string[offset + reduced_length - 1] == ')') {
-    offset += 4;
-    reduced_length -= 5;
-  }
-
-  // Skip whitespace before and after the URL inside the "url()" parenthesis.
-  while (reduced_length && IsHTMLSpace<UChar>(string[offset])) {
-    ++offset;
-    --reduced_length;
-  }
-  while (reduced_length &&
-         IsHTMLSpace<UChar>(string[offset + reduced_length - 1])) {
-    --reduced_length;
+  // Skip the "url(" prefix and the ")" suffix, and any whitespace before and
+  // after the URL inside the "url()" parenthesis.
+  if (view.length() >= 5 && EqualIgnoringAsciiCase(view.substr(0, 4), "url(") &&
+      view.ends_with(')')) {
+    view =
+        view.substr(4, view.length() - 5).StripWhiteSpace(IsHTMLSpace<UChar>);
   }
 
   // Remove single-quotes or double-quotes from the URL
-  if ((reduced_length >= 2) &&
-      (string[offset] == string[offset + reduced_length - 1]) &&
-      (string[offset] == '\'' || string[offset] == '"')) {
-    offset++;
-    reduced_length -= 2;
+  if (view.length() >= 2 && ((view.starts_with('\'') && view.ends_with('\'')) ||
+                             (view.starts_with('"') && view.ends_with('"')))) {
+    view = view.substr(1, view.length() - 2);
   }
 
-  return string.substr(offset, reduced_length);
+  return view.empty() ? g_empty_string : view.ToString();
 }
 
 bool CSSPreloadScanner::CanPreloadImportRule() const {
@@ -307,7 +283,7 @@ bool CSSPreloadScanner::CanPreloadImportRule() const {
 void CSSPreloadScanner::EmitRule(const SegmentedString& source) {
   if (EqualIgnoringAsciiCase(rule_, "import")) {
     if (CanPreloadImportRule()) {
-      String url = ParseCSSStringOrURL(rule_value_.ToString());
+      String url = ParseCssStringOrUrl(rule_value_);
       auto request = PreloadRequest::CreateIfNeeded(
           fetch_initiator_type_names::kCSS, url, *predicted_base_element_url_,
           ResourceType::kCSSStyleSheet, referrer_policy_,
