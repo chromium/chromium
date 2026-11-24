@@ -329,6 +329,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1256143630373008432">Selbsttest fehlgeschlagen</translation>
 <translation id="1257336506558170607">Ausgewähltes Zertifikat exportieren</translation>
 <translation id="1258491128795710625">Neue Funktionen</translation>
+<translation id="1259453023447377372">Gespeicherte Tabgruppe</translation>
 <translation id="1260451001046713751">Pop-ups und Weiterleitungen von <ph name="HOST" /> immer zulassen</translation>
 <translation id="1262395978737369974">Dürfen immer die JavaScript-Optimierung verwenden</translation>
 <translation id="1262564987698748643">Websites dürfen nachfragen, ob sie meine Tastatureingaben überschreiben dürfen</translation>
@@ -1840,6 +1841,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2610780100389066815">Microsoft-Vertrauenslistensignatur</translation>
 <translation id="261114180663074524">Melde dich in deinem Microsoft-Konto an und versuch es dann noch einmal</translation>
 <translation id="2611885296070244383">Mikrofon (intern)</translation>
+<translation id="2612346259364350954">Seiteninhalt verwenden, um markierten Text zu erklären</translation>
 <translation id="2612676031748830579">Kartennummer</translation>
 <translation id="261305050785128654">Gib für Websites an, welche Sprachen du sprichst. Sofern möglich, werden Inhalte in diesen Sprachen angezeigt.</translation>
 <translation id="2613210758071148851">Keine Erweiterungen auf <ph name="RESTRICTED_SITE" /> zulassen</translation>
@@ -2140,6 +2142,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="284884486564166077">Mit Lens in einem Bild suchen</translation>
 <translation id="2849035674501872372">Nachsehen</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Weitere Optionen für „<ph name="TAB_GROUP_NAME" />“</translation>
 <translation id="285033512555869047">Geschlossen</translation>
 <translation id="2851291081585704741">Du bist offline</translation>
 <translation id="285237063405807022">(wird geladen)</translation>
@@ -2211,6 +2214,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word-, Excel- und PowerPoint-Dateien öffnen</translation>
 <translation id="2908162660801918428">Mediengalerie nach Verzeichnis hinzufügen</translation>
+<translation id="2909334296570021569">Tabgruppe öffnen</translation>
 <translation id="2909487040556589351">Chrome für dein Mobilgerät herunterladen</translation>
 <translation id="2910318910161511225">Stelle eine Verbindung zu einem Netzwerk her und versuche es noch einmal</translation>
 <translation id="2910678330803525229">Du kannst jetzt lossurfen</translation>
@@ -2376,6 +2380,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3042097545107738107">Strategie für das optimierte Laden ändern.</translation>
 <translation id="3043016484125065343">Melde dich an, um deine Lesezeichen zu sehen</translation>
 <translation id="3043581297103810752">Von <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Optionen für <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Mit KI optimieren</translation>
 <translation id="3045447014237878114">Diese Website hat automatisch mehrere Dateien heruntergeladen</translation>
 <translation id="304644035656848980">Mikrofon-Audiovorschau</translation>
@@ -3220,6 +3225,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3748424433435232460">Auf diesem Gerät ist bereits ein Passwort für dieses Konto gespeichert</translation>
 <translation id="3748466028423001972">Mit unterer Ansicht tauschen</translation>
 <translation id="3748706263662799310">Programmfehler melden</translation>
+<translation id="3750406842345107892">Der Inhalt und die URL der aktuellen Seite sowie der markierte Text werden an Google gesendet, um eine Erklärung zu erstellen</translation>
 <translation id="3752115502500640407">Kopie deines Passworts für <ph name="WEBSITE" /> teilen</translation>
 <translation id="3753412199586870466">Seitenleiste öffnen</translation>
 <translation id="3753585830134123417">Fenstergröße nach links angepasst</translation>
@@ -4113,6 +4119,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4550926046134589611">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" /> geöffnet.</translation>
 <translation id="4551379727767354516">Meine letzten KI-Designs</translation>
 <translation id="4551763574344810652">"<ph name="MODIFIER_KEY_DESCRIPTION" />" drücken, um Aktion rückgängig zu machen</translation>
+<translation id="4552721860956824254">Stumm geschaltet</translation>
 <translation id="4553526521109675518">Du musst dein Chromebook neu starten, um die Gerätesprache zu ändern. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Eine neue Version dieser App ist erforderlich</translation>
 <translation id="4555769855065597957">Schatten</translation>
@@ -5058,6 +5065,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5379140238605961210">Zugriff auf das Mikrofon weiter blockieren</translation>
 <translation id="5382591305415226340">Unterstützte Links verwalten</translation>
 <translation id="5384401776498845256">Wer Inhalte mit dir teilen kann</translation>
+<translation id="5386856927586721327">Mit <ph name="LENS_ICON" /> Google Lens Fragen zu deinem Bildschirm stellen</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> bearbeiten</translation>
 <translation id="538822246583124912">Die Unternehmensrichtlinie hat sich geändert. Der Button für Tests wurde zur Symbolleiste hinzugefügt. Klicke auf den Button, um das Dialogfeld zum Aktivieren von Tests zu öffnen.</translation>
 <translation id="5388436023007579456">Apps und Websites mit Kameraberechtigung sowie Systemdienste können die Kamera verwenden. Möglicherweise musst du die App neu starten oder die Seite aktualisieren, damit die Kamera verwendet werden kann.</translation>
@@ -7356,6 +7364,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7396845648024431313"><ph name="APP_NAME" /> wird beim Systemstart gestartet und auch dann weiter im Hintergrund ausgeführt, wenn du alle anderen <ph name="PRODUCT_NAME" />-Fenster geschlossen hast.</translation>
 <translation id="7399045143794278225">Synchronisierung anpassen</translation>
 <translation id="7399616692258236448">Standortanfragen werden automatisch für alle Websites blockiert, außer für diejenigen, die du zulässt</translation>
+<translation id="7399746352569282594">Geteilte Ansicht schließen: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7400059772197434086">wird daran gehindert, deine Informationen zu nutzen auf</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -7995,6 +8004,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7953955868932471628">Verknüpfungen verwalten</translation>
 <translation id="7955105108888461311">Persönlich fragen</translation>
 <translation id="7955177647836564772">Wenn Smart Lock aktiviert ist und dein Smartphone entsperrt ist, musst du weder ein Passwort noch eine PIN eingeben</translation>
+<translation id="7955672267519272700">„<ph name="TAB_TITLE" />“ schließen</translation>
 <translation id="7956373551960864128">Deine gespeicherten Drucker</translation>
 <translation id="7956918070009672177">Auf deinem Gerät sind keine Stimmen für <ph name="LANGUAGE" /> vorhanden. Stell eine Internetverbindung her und versuch es noch einmal.</translation>
 <translation id="7957074856830851026">Geräteinformationen wie Seriennummer oder Asset-ID abrufen</translation>
