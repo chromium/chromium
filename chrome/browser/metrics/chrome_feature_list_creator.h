@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -17,14 +18,11 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/feature_list_creator/feature_list_creator_client.h"
 
 namespace ash {
 class ChromeBrowserMainPartsAsh;
 }  // namespace ash
-
-namespace flags_ui {
-class FlagsStorage;
-}  // namespace flags_ui
 
 namespace installer {
 class InitialPreferences;
@@ -35,7 +33,7 @@ class NetworkTimeTracker;
 }  // namespace network_time
 
 namespace variations {
-struct SeedResponse;
+class VariationsIdsProvider;
 }  // namespace variations
 
 class ChromeMetricsServicesManagerClient;
@@ -46,17 +44,19 @@ class ChromeMetricsServicesManagerClient;
 // its ownership will be taken by BrowserProcessImpl when the full browser
 // starts. Note: On ChromeOS, this class depends on BrowserPolicyConnectorAsh
 // whose behavior depends on DBusThreadManager being initialized.
-class ChromeFeatureListCreator {
+class ChromeFeatureListCreator : public variations::FeatureListCreatorClient {
  public:
   // The instance of ChromeFeatureListCreator gets constructed on first access
   // through this API and is never destroyed. This construction is generally a
   // no-op until CreateFeatureList() is called.
+  // TODO(b/572685701): Move pre-BrowserProcessImpl ownership to StartupData and
+  // remove this singleton.
   static ChromeFeatureListCreator* GetInstance();
 
   ChromeFeatureListCreator(const ChromeFeatureListCreator&) = delete;
   ChromeFeatureListCreator& operator=(const ChromeFeatureListCreator&) = delete;
 
-  ~ChromeFeatureListCreator();
+  ~ChromeFeatureListCreator() override;
 
   // Initializes all necessary parameters to create the feature list and calls
   // base::FeatureList::SetInstance() to set the global instance. Calls
@@ -67,6 +67,11 @@ class ChromeFeatureListCreator {
   // CreateFeatureList() so that Local State is available while the FeatureList
   // waits for the first-run variations seed.
   void CreatePrefService();
+
+  // Creates the global `variations::VariationsIdsProvider` in the
+  // `kUseSignedInState` mode with a clock backed by `network_time_tracker_`.
+  // Returns the created instance.
+  variations::VariationsIdsProvider* CreateVariationsIdsProvider();
 
   // Sets the application locale and verifies (via a CHECK) that it matches
   // what was used when creating field trials.
@@ -94,23 +99,11 @@ class ChromeFeatureListCreator {
   std::unique_ptr<installer::InitialPreferences> TakeInitialPrefs();
 #endif
 
-  // Passes ownership of the initial variations seed to the caller. Returns
-  // nullptr if there is no seed.
-  std::unique_ptr<variations::SeedResponse> TakeInitialSeed();
-
   PrefService* local_state() { return local_state_.get(); }
   policy::ChromeBrowserPolicyConnector* browser_policy_connector() {
     return browser_policy_connector_.get();
   }
-  network_time::NetworkTimeTracker* network_time_tracker() {
-    CHECK(network_time_tracker_);
-    return network_time_tracker_.get();
-  }
   const std::string& actual_locale() { return actual_locale_; }
-
-  ChromeBrowserFieldTrials* browser_field_trials() {
-    return browser_field_trials_.get();
-  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Get the FeatureList::Accessor, clearing immediately -- this must only be
@@ -126,24 +119,18 @@ class ChromeFeatureListCreator {
 
   ChromeFeatureListCreator();
 
-  void ConvertFlagsToSwitches();
-
-  // Creates the storage for the about:flags state that startup applies. On
-  // ChromeOS, the storage reads the flags that session_manager passes on the
-  // command line. Elsewhere, it reads the flags from `local_state_`.
-  std::unique_ptr<flags_ui::FlagsStorage> CreateFlagsStorage();
-
-  void CreateNetworkTimeTracker();
-
-  // Sets up the field trials and related initialization. Call only after
-  // about:flags have been converted to switches.
-  void SetUpFieldTrials();
-
-  void CreateMetricsServices();
-
-  // Loads the initial preferences and the initial variations seed needed for
-  // first run. This is always called and early outs if not first-run.
-  void SetupInitialPrefs();
+  // variations::FeatureListCreatorClient:
+  flags_ui::FlagsState& GetFlagsState() override;
+  std::unique_ptr<flags_ui::FlagsStorage> CreateFlagsStorage() override;
+  crash_keys::SwitchFilterFunction GetSwitchFilter() override;
+  metrics_services_manager::MetricsServicesManager&
+  GetOrCreateMetricsServicesManager() override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void WillSetUpFieldTrials(base::FeatureList& feature_list) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  variations::PlatformFieldTrials& GetPlatformFieldTrials() override;
+  std::vector<base::FeatureList::FeatureOverrideInfo> GetExtraFeatureOverrides(
+      const base::CommandLine& command_line) override;
 
   // Must be destroyed after |local_state_|.
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
@@ -166,12 +153,11 @@ class ChromeFeatureListCreator {
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
 
-  std::unique_ptr<ChromeBrowserFieldTrials> browser_field_trials_;
+  ChromeBrowserFieldTrials browser_field_trials_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<installer::InitialPreferences> installer_initial_prefs_;
 #endif
-  std::unique_ptr<variations::SeedResponse> initial_seed_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the platform needs to be able to access the

@@ -67,10 +67,14 @@ extern const char kAccountPreferencesPrefix[];
 // the created PrefService or NULL if creation has failed. Note, it is
 // guaranteed that in asynchronous version initialization happens after this
 // function returned.
+//
+// CreateLocalState() reads `pref_filename` synchronously and records
+// UMA.Startup.LocalStateFileExistence. If the read succeeds, the platform
+// ManagementService uses the Local State pref store as its cache. Only then
+// does CreateLocalState() get the policy service from `policy_connector`, so
+// the policy providers load with the cache in place.
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
-    scoped_refptr<PersistentPrefStore> pref_store,
-    policy::PolicyService* policy_service,
     scoped_refptr<PrefRegistry> pref_registry,
     policy::BrowserPolicyConnector* policy_connector);
 

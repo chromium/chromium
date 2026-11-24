@@ -5,7 +5,9 @@
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 
 #include <map>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -34,6 +36,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
@@ -186,10 +189,12 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
 };
 
 ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
-    PrefService* local_state)
+    PrefService* local_state,
+    std::unique_ptr<variations::SeedResponse> initial_seed)
     : enabled_state_provider_(
           std::make_unique<ChromeEnabledStateProvider>(local_state)),
-      local_state_(local_state) {
+      local_state_(local_state),
+      initial_seed_(std::move(initial_seed)) {
   CHECK(local_state, base::NotFatalUntil::M161);
 }
 
@@ -292,9 +297,16 @@ void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
 std::unique_ptr<variations::VariationsService>
 ChromeMetricsServicesManagerClient::CreateVariationsService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // `variations::MaybeImportFirstRunSeed()` skips the first-run seed when Local
+  // State already has a seed. Drop it so `VariationsService` does not keep it.
+  if (local_state_->HasPrefPath(variations::prefs::kVariationsSeedDate)) {
+    initial_seed_.reset();
+  }
+  auto service_client =
+      std::make_unique<ChromeVariationsServiceClient>(std::move(initial_seed_));
   return variations::VariationsService::Create(
-      std::make_unique<ChromeVariationsServiceClient>(), local_state_,
-      GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
+      std::move(service_client), local_state_, GetMetricsStateManager(),
+      switches::kDisableBackgroundNetworking,
       base::BindOnce(&content::GetNetworkConnectionTracker));
 }
 
@@ -371,18 +383,6 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
 #else
   return ::IsOffTheRecordSessionActive();
 #endif
-}
-
-void ChromeMetricsServicesManagerClient::OnFieldTrialsInitialized() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if BUILDFLAG(IS_WIN)
-  // Set the registry value so that Crashpad will have the sampling state now
-  // and for subsequent runs. Note that Crashpad uses *both* the registry value
-  // and the value sent from SetUploadConsent() below.
-  // We use IsClientInSampleForCrashes() which checks the feature for whether
-  // crash reports should be sent.
-  install_static::SetCollectStatsInSample(IsClientInSampleForCrashes());
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 #if BUILDFLAG(IS_WIN)

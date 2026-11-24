@@ -12,6 +12,7 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
+#include "components/variations/seed_response.h"
 #include "components/variations/synthetic_trial_registry.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -42,7 +43,9 @@ enum class Channel;
 class ChromeMetricsServicesManagerClient
     : public metrics_services_manager::MetricsServicesManagerClient {
  public:
-  explicit ChromeMetricsServicesManagerClient(PrefService* local_state);
+  explicit ChromeMetricsServicesManagerClient(
+      PrefService* local_state,
+      std::unique_ptr<variations::SeedResponse> initial_seed = nullptr);
 
   ChromeMetricsServicesManagerClient(
       const ChromeMetricsServicesManagerClient&) = delete;
@@ -72,9 +75,6 @@ class ChromeMetricsServicesManagerClient
 #if BUILDFLAG(IS_CHROMEOS)
   void OnCrosSettingsCreated();
 #endif
-
-  // Performs initialization that requires field trials to be set up.
-  void OnFieldTrialsInitialized();
 
   // metrics_services_manager::MetricsServicesManagerClient:
   std::unique_ptr<variations::VariationsService> CreateVariationsService()
@@ -110,6 +110,9 @@ class ChromeMetricsServicesManagerClient
 
   // Weak pointer to the local state prefs store.
   const raw_ptr<PrefService> local_state_;
+
+  // Initial variations seed from first run, if present.
+  std::unique_ptr<variations::SeedResponse> initial_seed_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   base::CallbackListSubscription reporting_setting_subscription_;

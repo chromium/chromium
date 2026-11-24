@@ -35,6 +35,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
+#include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -918,9 +919,7 @@ void ChromeBrowserMainParts::SetupMetrics() {
   // Now that field trials have been created, initializes metrics recording.
   metrics->InitializeMetricsRecordingState();
 
-  startup_data_->chrome_feature_list_creator()
-      ->browser_field_trials()
-      ->RegisterSyntheticTrials();
+  ChromeBrowserFieldTrials::RegisterSyntheticTrials();
 }
 
 // static

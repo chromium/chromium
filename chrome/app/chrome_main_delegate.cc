@@ -71,8 +71,6 @@
 #include "components/metrics/persistent_histograms.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
-#include "components/variations/service/variations_network_clock.h"
-#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "content/public/app/initialize_mojo_core.h"
 #include "content/public/common/content_client.h"
@@ -1113,12 +1111,9 @@ ChromeMainDelegate::CreateVariationsIdsProvider() {
   // `ChromeContentBrowserClient`. Once the global browser instance is
   // created, it will take over ownership of the NetworkTimeTracker.
 
-  return ::variations::VariationsIdsProvider::CreateInstance(
-      ::variations::VariationsIdsProvider::Mode::kUseSignedInState,
-      std::make_unique<::variations::VariationsNetworkClock>(
-          chrome_content_browser_client_->startup_data()
-              ->chrome_feature_list_creator()
-              ->network_time_tracker()));
+  return chrome_content_browser_client_->startup_data()
+      ->chrome_feature_list_creator()
+      ->CreateVariationsIdsProvider();
 #endif  // defined(BUILDING_CHROME_RENDERER)
 }
 

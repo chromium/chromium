@@ -69,12 +69,27 @@
 #include "chrome/browser/metrics/client_id_backup_correctness_fix_field_trial.h"
 #endif  // BUILDFLAG(IS_POSIX)
 
-ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
-    : local_state_(local_state) {
-  CHECK(local_state_, base::NotFatalUntil::M162);
-}
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
+#include "chrome/install_static/install_util.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+ChromeBrowserFieldTrials::ChromeBrowserFieldTrials() = default;
 
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() = default;
+
+void ChromeBrowserFieldTrials::OnVariationsSetupComplete() {
+#if BUILDFLAG(IS_WIN)
+  // Set the registry value so that Crashpad will have the sampling state now
+  // and for subsequent runs. Note that Crashpad uses *both* the registry value
+  // and the value sent from SetUploadConsent() in
+  // ChromeMetricsServicesManagerClient::UpdateRunningServices().
+  // We use IsClientInSampleForCrashes() which checks the feature for whether
+  // crash reports should be sent.
+  install_static::SetCollectStatsInSample(
+      ChromeMetricsServicesManagerClient::IsClientInSampleForCrashes());
+#endif  // BUILDFLAG(IS_WIN)
+}
 
 void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
     bool has_seed,
@@ -115,6 +130,7 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
 #endif  // BUILDFLAG(IS_POSIX)
 }
 
+// static
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 #if BUILDFLAG(IS_ANDROID)
   {

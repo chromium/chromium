@@ -222,7 +222,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // (A) The server-provided timestamp of when the seed to be used was fetched.
   // (B) The Chrome binary's build time.
   // (C) A client-provided timestamp stored in prefs during the FRE on some
-  //     platforms (in ChromeFeatureListCreator::SetupInitialPrefs()).
+  //     platforms (in first_run::ExtractVariationsSeedFromInitialPrefs()).
   //
   // These are prioritized as follows:
   // (1) The server-provided timestamp (A) is returned when it is available and

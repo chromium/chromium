@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,6 +27,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
@@ -419,12 +421,35 @@ const char kAccountPreferencesPrefix[] = "account_values";
 
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
-    scoped_refptr<PersistentPrefStore> pref_store,
-    policy::PolicyService* policy_service,
     scoped_refptr<PrefRegistry> pref_registry,
     policy::BrowserPolicyConnector* policy_connector) {
+  // ManagementService needs Local State but creating local state needs
+  // ManagementService, instantiate the underlying PrefStore early and share it
+  // between both.
+  auto pref_store = base::MakeRefCounted<JsonPrefStore>(pref_filename);
+
+  // Try and read the local state prefs, if it succeeds, use it as the
+  // ManagementService's cache.
+  const auto read_error = pref_store->ReadPrefs();
+
+  // Record whether `ReadPrefs()` found the Local State file.
+  // Use `read_error` to avoid a separate `PathExists()` call at startup.
+  base::UmaHistogramBoolean(
+      "UMA.Startup.LocalStateFileExistence",
+      read_error != JsonPrefStore::PREF_READ_ERROR_NO_FILE);
+
+  if (read_error == JsonPrefStore::PREF_READ_ERROR_NONE) {
+    policy::ManagementServiceFactory::GetForPlatform()->UsePrefStoreAsCache(
+        pref_store);
+  }
+
+  // Get the policy service only after the management cache is set. The first
+  // `GetPolicyService()` call creates the platform policy provider, which loads
+  // policies synchronously and reads the management trustworthiness.
+  policy::PolicyService* policy_service = policy_connector->GetPolicyService();
+
   sync_preferences::PrefServiceSyncableFactory factory;
-  PrepareFactory(&factory, pref_filename, policy_service, pref_store,
+  PrepareFactory(&factory, pref_filename, policy_service, std::move(pref_store),
                  /*extension_prefs=*/nullptr,
                  /*async=*/false, policy_connector);
   return factory.Create(std::move(pref_registry));

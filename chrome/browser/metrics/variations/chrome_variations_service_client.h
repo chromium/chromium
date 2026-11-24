@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_METRICS_VARIATIONS_CHROME_VARIATIONS_SERVICE_CLIENT_H_
 #define CHROME_BROWSER_METRICS_VARIATIONS_CHROME_VARIATIONS_SERVICE_CLIENT_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "components/variations/seed_response.h"
 #include "components/variations/service/variations_service_client.h"
 
 namespace network {
@@ -19,7 +21,8 @@ class SharedURLLoaderFactory;
 class ChromeVariationsServiceClient
     : public variations::VariationsServiceClient {
  public:
-  ChromeVariationsServiceClient();
+  explicit ChromeVariationsServiceClient(
+      std::unique_ptr<variations::SeedResponse> initial_seed = nullptr);
 
   ChromeVariationsServiceClient(const ChromeVariationsServiceClient&) = delete;
   ChromeVariationsServiceClient& operator=(
@@ -49,6 +52,8 @@ class ChromeVariationsServiceClient
  private:
   // variations::VariationsServiceClient:
   version_info::Channel GetChannel() override;
+
+  std::unique_ptr<variations::SeedResponse> initial_seed_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_VARIATIONS_CHROME_VARIATIONS_SERVICE_CLIENT_H_

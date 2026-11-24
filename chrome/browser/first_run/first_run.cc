@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -44,12 +45,18 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/variations/seed_response.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/browser_features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/installer/util/google_update_settings.h"
+#include "components/language/core/browser/pref_names.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 class BrowserContext;
@@ -367,6 +374,21 @@ bool IsFirstRunSuppressed(const base::CommandLine& command_line) {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+void MaybeSetInitialLocaleFromInstaller(PrefService& local_state) {
+  if (!IsChromeFirstRun()) {
+    return;
+  }
+  // Read the Google Update registry key on first run to get the installer
+  // language. Use that language as the default locale in preferences.
+  std::wstring install_lang;
+  if (GoogleUpdateSettings::GetLanguage(&install_lang)) {
+    local_state.SetString(language::prefs::kApplicationLocale,
+                          base::WideToASCII(install_lang));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void CreateSentinelIfNeeded() {
   if (IsChromeFirstRun()) {
     auto sentinel_creation_result = CreateSentinel();
@@ -410,6 +432,32 @@ std::unique_ptr<installer::InitialPreferences> LoadInitialPrefs() {
   if (!initial_prefs->read_from_file())
     return nullptr;
   return initial_prefs;
+}
+
+std::unique_ptr<variations::SeedResponse> ExtractVariationsSeedFromInitialPrefs(
+    installer::InitialPreferences& initial_prefs) {
+  // Read both getters unconditionally so `initial_prefs` removes both keys.
+  std::string compressed_variations_seed =
+      initial_prefs.GetCompressedVariationsSeed();
+  std::string variations_seed_signature =
+      initial_prefs.GetVariationsSeedSignature();
+
+  std::string seed_data;
+  if (compressed_variations_seed.empty() ||
+      !base::Base64Decode(compressed_variations_seed, &seed_data)) {
+    return nullptr;
+  }
+
+  auto seed = std::make_unique<variations::SeedResponse>();
+  seed->data = std::move(seed_data);
+  seed->signature = std::move(variations_seed_signature);
+  // Set the variation seed date to the current system time. If the user's
+  // clock is incorrect, this may cause some field trial expiry checks to
+  // not do the right thing until the next seed update from the server,
+  // when this value will be updated.
+  seed->date = base::Time::Now();
+  seed->is_gzip_compressed = true;
+  return seed;
 }
 
 ProcessInitialPreferencesResult ProcessInitialPreferences(

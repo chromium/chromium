@@ -4,6 +4,7 @@
 
 #include "chrome/browser/first_run/first_run.h"
 
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/variations/seed_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -73,6 +75,48 @@ TEST_F(FirstRunTest,
   EXPECT_EQ("xyz", install_prefs.GetCompressedVariationsSeed());
   EXPECT_EQ("abc", install_prefs.GetVariationsSeedSignature());
   // Variations prefs should have been extracted (removed) from the dictionary.
+  EXPECT_TRUE(install_prefs.initial_dictionary().empty());
+}
+
+TEST_F(FirstRunTest, ExtractVariationsSeedFromInitialPrefs_ValidSeed) {
+  const std::string encoded_seed = base::Base64Encode("compressed-seed-bytes");
+  installer::InitialPreferences install_prefs(
+      "{\"variations_compressed_seed\":\"" + encoded_seed +
+      "\",\"variations_seed_signature\":\"test-signature\"}");
+
+  std::unique_ptr<variations::SeedResponse> seed =
+      ExtractVariationsSeedFromInitialPrefs(install_prefs);
+
+  ASSERT_NE(seed, nullptr);
+  EXPECT_EQ(seed->data, "compressed-seed-bytes");
+  EXPECT_EQ(seed->signature, "test-signature");
+  EXPECT_FALSE(seed->date.is_null());
+  EXPECT_TRUE(seed->is_gzip_compressed);
+  EXPECT_TRUE(install_prefs.initial_dictionary().empty());
+}
+
+TEST_F(FirstRunTest,
+       ExtractVariationsSeedFromInitialPrefs_InvalidBase64ClearsKeys) {
+  installer::InitialPreferences install_prefs(
+      "{\"variations_compressed_seed\":\"!invalid-base64!\","
+      "\"variations_seed_signature\":\"test-signature\"}");
+
+  std::unique_ptr<variations::SeedResponse> seed =
+      ExtractVariationsSeedFromInitialPrefs(install_prefs);
+
+  EXPECT_EQ(seed, nullptr);
+  EXPECT_TRUE(install_prefs.initial_dictionary().empty());
+}
+
+TEST_F(FirstRunTest, ExtractVariationsSeedFromInitialPrefs_EmptySeed) {
+  installer::InitialPreferences install_prefs(
+      "{\"variations_compressed_seed\":\"\","
+      "\"variations_seed_signature\":\"test-signature\"}");
+
+  std::unique_ptr<variations::SeedResponse> seed =
+      ExtractVariationsSeedFromInitialPrefs(install_prefs);
+
+  EXPECT_EQ(seed, nullptr);
   EXPECT_TRUE(install_prefs.initial_dictionary().empty());
 }
 

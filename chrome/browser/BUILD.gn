@@ -5136,9 +5136,11 @@ source_set("core_unit_tests") {
       "//chrome/browser/shortcuts",
       "//chrome/browser/web_applications",
       "//chrome/browser/win:chrome_process_finder",
+      "//chrome/chrome_elf:nt_registry",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",
       "//components/webui/flags",
+      "//components/webui/flags:switches",
     ]
   }
 

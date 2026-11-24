@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/process/process.h"
 #include "base/test/scoped_command_line.h"
@@ -102,8 +103,9 @@ TEST_F(BrowserLaunchDataCollectorDesktopTest, GetEventWithFlagSwitches) {
   base::test::ScopedCommandLine scoped_current_cli;
   base::CommandLine* current_cli = scoped_current_cli.GetProcessCommandLine();
   current_cli->AppendSwitch("internal-switch-before");
-  about_flags::ConvertFlagsToSwitches(&flags_storage, current_cli,
-                                      flags_ui::kAddSentinels);
+  about_flags::GetCurrentFlagsState()->ConvertFlagsToSwitches(
+      &flags_storage, current_cli, flags_ui::kAddSentinels,
+      switches::kEnableFeatures, switches::kDisableFeatures);
   current_cli->AppendSwitch("internal-switch-after");
 
   BrowserLaunchDataCollectorDesktop collector;

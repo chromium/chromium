@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,16 +19,21 @@
 #include "extensions/buildflags/buildflags.h"
 
 class GURL;
+class PrefService;
 class Profile;
 
 namespace base {
 class CommandLine;
 class FilePath;
-}
+}  // namespace base
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+namespace variations {
+struct SeedResponse;
+}  // namespace variations
 
 // This namespace contains the chrome first-run installation actions needed to
 // fully test the custom installer. It also contains the opposite actions to
@@ -96,6 +102,12 @@ bool IsChromeFirstRun();
 bool IsFirstRunSuppressed(const base::CommandLine& command_line);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Sets the initial application locale in `local_state` from the installer
+// language on first run.
+void MaybeSetInitialLocaleFromInstaller(PrefService& local_state);
+#endif
+
 // Creates the first run sentinel if needed. This should only be called after
 // the process singleton has been grabbed by the current process.
 void CreateSentinelIfNeeded();
@@ -131,6 +143,12 @@ void SetInitialPrefsPathForTesting(const base::FilePath& master_prefs);
 // initial preferences. Returns the pointer to installer::InitialPreferences
 // object if successful; otherwise, returns nullptr.
 std::unique_ptr<installer::InitialPreferences> LoadInitialPrefs();
+
+// Extracts the compressed variations seed and signature from `initial_prefs`
+// and removes both keys from `initial_prefs`. Returns nullptr when
+// `initial_prefs` has no valid base64 seed.
+std::unique_ptr<variations::SeedResponse> ExtractVariationsSeedFromInitialPrefs(
+    installer::InitialPreferences& initial_prefs);
 
 // The master_preferences is a JSON file with the same entries as the
 // 'Default\Preferences' file. This function locates this file from a standard

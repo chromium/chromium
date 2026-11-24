@@ -236,7 +236,6 @@ static_library("common_lib") {
     "//components/variations/net",
     "//components/visitedlink/common",
     "//components/web_distiller/core",
-    "//components/webui/flags:switches",
     "//content/public/common:buildflags",
     "//google_apis",
     "//gpu/command_buffer/service",

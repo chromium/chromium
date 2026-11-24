@@ -215,7 +215,6 @@
 #include "components/webui/flags/flags_state.h"
 #include "components/webui/flags/flags_storage.h"
 #include "components/webui/flags/flags_ui_metrics.h"
-#include "components/webui/flags/flags_ui_switches.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
@@ -14346,30 +14345,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   return false;
-}
-
-void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
-                            base::CommandLine* command_line,
-                            flags_ui::SentinelsMode sentinels) {
-  if (command_line->HasSwitch(switches::kNoExperiments)) {
-    return;
-  }
-
-  FlagsStateSingleton::GetFlagsState()->ConvertFlagsToSwitches(
-      flags_storage, command_line, sentinels, switches::kEnableFeatures,
-      switches::kDisableFeatures);
-}
-
-std::vector<std::string> RegisterAllFeatureVariationParameters(
-    flags_ui::FlagsStorage* flags_storage,
-    base::FeatureList* feature_list) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kNoExperiments)) {
-    return {};
-  }
-
-  return FlagsStateSingleton::GetFlagsState()
-      ->RegisterAllFeatureVariationParameters(flags_storage, feature_list);
 }
 
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,

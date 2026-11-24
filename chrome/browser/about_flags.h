@@ -21,10 +21,6 @@
 
 class Profile;
 
-namespace base {
-class FeatureList;
-}
-
 namespace flags_ui {
 class FlagsStorage;
 }
@@ -43,23 +39,6 @@ void GetStorage(Profile* profile, GetStorageCallback callback);
 // Returns true if the FeatureEntry should not be shown.
 bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
                                        const flags_ui::FeatureEntry& entry);
-
-// Reads the state from |flags_storage| and adds the command line flags
-// belonging to the active feature entries to |command_line|.
-void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
-                            base::CommandLine* command_line,
-                            flags_ui::SentinelsMode sentinels);
-
-// Registers variations parameter values selected for features in about:flags.
-// The selected flags are retrieved from |flags_storage|, the registered
-// variation parameters are connected to their corresponding features in
-// |feature_list|. Returns the (possibly empty) list of additional variation ids
-// to register in the MetricsService that come from variations selected using
-// chrome://flags. Does nothing and returns an empty list if the process command
-// line has --no-experiments.
-std::vector<std::string> RegisterAllFeatureVariationParameters(
-    flags_ui::FlagsStorage* flags_storage,
-    base::FeatureList* feature_list);
 
 // Gets the list of feature entries. Entries that are available for the current
 // platform are appended to |supported_entries|; all other entries are appended
@@ -107,7 +86,7 @@ void SetStringFlag(const std::string& internal_name,
                    flags_ui::FlagsStorage* flags_storage);
 
 // Removes all switches that were added to a command line by a previous call to
-// |ConvertFlagsToSwitches()|.
+// |flags_ui::FlagsState::ConvertFlagsToSwitches()|.
 void RemoveFlagsSwitches(base::CommandLine::SwitchMap* switch_list);
 
 // Reset all flags to the default state by clearing all flags.

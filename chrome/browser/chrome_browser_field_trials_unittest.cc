@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_browser_sampling_trials.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,10 +17,18 @@
 #include "base/functional/callback_helpers.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_reg_util_win.h"
+#include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
+#include "chrome/chrome_elf/nt_registry/nt_registry.h"
+#include "chrome/install_static/install_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 TEST(ChromeBrowserFieldTrialsTest, SamplingTrials) {
-  TestingPrefServiceSimple local_state;
-  ChromeBrowserFieldTrials chrome_browser_field_trials(&local_state);
+  ChromeBrowserFieldTrials chrome_browser_field_trials;
 
   const char kSamplingTrialName[] = "MetricsAndCrashSampling";
 #if BUILDFLAG(IS_ANDROID)
@@ -79,3 +86,35 @@ TEST(ChromeBrowserFieldTrialsTest, SamplingTrials) {
       entropy_providers.default_entropy(), feature_list.get());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+TEST(ChromeBrowserFieldTrialsTest,
+     OnVariationsSetupCompleteUpdatesCrashpadSample) {
+  registry_util::RegistryOverrideManager override_manager;
+  std::wstring hkcu_override_path;
+  ASSERT_NO_FATAL_FAILURE(override_manager.OverrideRegistry(
+      HKEY_CURRENT_USER, &hkcu_override_path));
+  nt::SetTestingOverride(nt::HKCU, hkcu_override_path);
+  absl::Cleanup reset_nt_override = [] {
+    nt::SetTestingOverride(nt::HKCU, std::wstring());
+  };
+
+  ChromeBrowserFieldTrials chrome_browser_field_trials;
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        metrics::internal::kMetricsReportingFeature);
+    chrome_browser_field_trials.OnVariationsSetupComplete();
+    EXPECT_TRUE(install_static::GetCollectStatsInSample());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        metrics::internal::kMetricsReportingFeature);
+    chrome_browser_field_trials.OnVariationsSetupComplete();
+    EXPECT_FALSE(install_static::GetCollectStatsInSample());
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)

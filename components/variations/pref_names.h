@@ -104,9 +104,9 @@ inline constexpr char kVariationsSafeCompressedSeed[] =
 // be one of the following:
 // (A) A build timestamp if the received date is unknown.
 // (B) A client-provided timestamp set during the FRE on select platforms in
-//     ChromeFeatureListCreator::SetupInitialPrefs() when the client fetches a
-//     seed from a Variations server and the regular seed is promoted to the
-//     safe seed.
+//     first_run::ExtractVariationsSeedFromInitialPrefs() when the client
+//     fetches a seed from a Variations server and the regular seed is promoted
+//     to the safe seed.
 // (C) An empty (default-constructed) base::Time if there is no known "safe"
 //     seed.
 //
@@ -154,7 +154,8 @@ inline constexpr char kVariationsSafeSeedSignature[] =
 //
 // On select platforms, this is set to a client-provided timestamp until a seed
 // is fetched from a Variations server and the pref is updated with a
-// server-provided timestamp. See ChromeFeatureListCreator::SetupInitialPrefs().
+// server-provided timestamp. See
+// first_run::ExtractVariationsSeedFromInitialPrefs().
 inline constexpr char kVariationsSeedDate[] = "variations_seed_date";
 
 // Digital signature of the binary variations seed data, base64-encoded.

@@ -81,8 +81,9 @@ TEST(ChromeBrowserMainWinTest, GetRestartCommand) {
         ORIGIN_LIST_VALUE_TYPE("flag-switch", "")}});
   about_flags::SetFeatureEntryEnabled(&flags_storage, kExperimentName,
                                       /*enable=*/true);
-  about_flags::ConvertFlagsToSwitches(&flags_storage, &experiments_command_line,
-                                      flags_ui::kAddSentinels);
+  about_flags::GetCurrentFlagsState()->ConvertFlagsToSwitches(
+      &flags_storage, &experiments_command_line, flags_ui::kAddSentinels,
+      switches::kEnableFeatures, switches::kDisableFeatures);
   // Check that ConvertFlagsToSwitches added the start sentinel.
   ASSERT_TRUE(
       experiments_command_line.HasSwitch(::switches::kFlagSwitchesBegin));

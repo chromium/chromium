@@ -60,7 +60,6 @@ include_rules = [
   "+components/variations/net",
   "+components/version_info",
   "+components/web_distiller/core",
-  "+components/webui/flags/flags_ui_switches.h",
   "+device/vr/buildflags/buildflags.h",
   "+extensions/buildflags",
   "+extensions/common",

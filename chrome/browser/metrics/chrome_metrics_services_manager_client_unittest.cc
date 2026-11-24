@@ -4,12 +4,19 @@
 
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -18,15 +25,15 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/service/variations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/test_reg_util_win.h"
-#include "chrome/chrome_elf/nt_registry/nt_registry.h"
-#include "chrome/install_static/install_util.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#endif  // BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "components/variations/pref_names.h"
+#include "components/variations/seed_response.h"
+#include "content/public/test/browser_task_environment.h"
+#endif
 
 using ::testing::NotNull;
 
@@ -92,6 +99,69 @@ TEST_F(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
   EXPECT_TRUE(metrics_state_manager->is_foreground_session() ||
               metrics_state_manager->is_background_session());
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeMetricsServicesManagerClientTest,
+       CreateVariationsServiceForwardsInitialSeed) {
+  content::BrowserTaskEnvironment task_environment;
+  base::ScopedPathOverride user_data_dir_override(chrome::DIR_USER_DATA);
+  local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
+
+  {
+    auto initial_seed = std::make_unique<variations::SeedResponse>();
+    initial_seed->data = "invalid-seed-data";
+    initial_seed->date = base::Time::Now();
+    initial_seed->is_gzip_compressed = true;
+
+    ChromeMetricsServicesManagerClient client(local_state(),
+                                              std::move(initial_seed));
+    {
+      base::HistogramTester histogram_tester;
+      std::unique_ptr<variations::VariationsService> variations_service =
+          client.CreateVariationsService();
+      EXPECT_NE(variations_service, nullptr);
+      histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 1);
+    }
+    {
+      base::HistogramTester histogram_tester;
+      std::unique_ptr<variations::VariationsService> second_variations_service =
+          client.CreateVariationsService();
+      EXPECT_NE(second_variations_service, nullptr);
+      histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 0);
+    }
+  }
+
+  local_state()->SetTime(variations::prefs::kVariationsSeedDate,
+                         base::Time::Now());
+  local_state()->SetString(variations::prefs::kVariationsCompressedSeed,
+                           "existing-seed");
+  auto unconsumed_seed = std::make_unique<variations::SeedResponse>();
+  unconsumed_seed->data = "unconsumed-seed-data";
+  unconsumed_seed->date = base::Time::Now();
+  unconsumed_seed->is_gzip_compressed = true;
+
+  ChromeMetricsServicesManagerClient client_with_existing_seed(
+      local_state(), std::move(unconsumed_seed));
+  {
+    base::HistogramTester histogram_tester;
+    std::unique_ptr<variations::VariationsService> variations_service =
+        client_with_existing_seed.CreateVariationsService();
+    EXPECT_NE(variations_service, nullptr);
+    histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 0);
+    EXPECT_EQ(
+        local_state()->GetString(variations::prefs::kVariationsCompressedSeed),
+        "existing-seed");
+  }
+  local_state()->ClearPref(variations::prefs::kVariationsSeedDate);
+  {
+    base::HistogramTester histogram_tester;
+    std::unique_ptr<variations::VariationsService> variations_service =
+        client_with_existing_seed.CreateVariationsService();
+    EXPECT_NE(variations_service, nullptr);
+    histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 0);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that IsClientInSampleForMetrics() uses the "MetricsReporting"
 // feature to determine sampling if the |kUsePostFREFixSamplingTrial| pref is
@@ -187,34 +257,3 @@ TEST_F(IsClientInSampleTest, IsClientInSampleForCrashesTest) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN)
-TEST_F(ChromeMetricsServicesManagerClientTest, OnFieldTrialsInitialized) {
-  registry_util::RegistryOverrideManager override_manager;
-  std::wstring hkcu_override_path;
-  ASSERT_NO_FATAL_FAILURE(override_manager.OverrideRegistry(
-      HKEY_CURRENT_USER, &hkcu_override_path));
-  nt::SetTestingOverride(nt::HKCU, hkcu_override_path);
-  absl::Cleanup reset_nt_override = [] {
-    nt::SetTestingOverride(nt::HKCU, std::wstring());
-  };
-
-  ChromeMetricsServicesManagerClient client(local_state());
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        metrics::internal::kMetricsReportingFeature);
-    client.OnFieldTrialsInitialized();
-    EXPECT_TRUE(install_static::GetCollectStatsInSample());
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        metrics::internal::kMetricsReportingFeature);
-    client.OnFieldTrialsInitialized();
-    EXPECT_FALSE(install_static::GetCollectStatsInSample());
-  }
-}
-#endif  // BUILDFLAG(IS_WIN)

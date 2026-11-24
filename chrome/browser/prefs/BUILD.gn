@@ -73,6 +73,7 @@ source_set("impl") {
     "//chrome/browser/context_hub",
     "//chrome/browser/devtools",
     "//chrome/browser/engagement",
+    "//chrome/browser/enterprise",
     "//chrome/browser/external_protocol",
     "//chrome/browser/first_run",
     "//chrome/browser/gcm",

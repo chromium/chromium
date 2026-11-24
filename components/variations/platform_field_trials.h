@@ -39,10 +39,6 @@ class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
       const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) {}
 
-  // Registers any synthetic field trials. Will be called later than the above
-  // methods, in particular after g_browser_process is available..
-  virtual void RegisterSyntheticTrials() {}
-
   // Registers feature overrides. Called after server trials and client side
   // trials are set up, before initializing the singleton feature list. This
   // can be used to override a feature after a field trial you expect to

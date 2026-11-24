@@ -5,60 +5,47 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/time/default_clock.h"
-#include "base/time/default_tick_clock.h"
-#include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "chrome/browser/about_flags.h"
-#include "chrome/browser/devtools/features.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
-#include "chrome/installer/util/initial_preferences.h"
-#include "components/content_settings/core/common/features.h"
-#include "components/crash/core/common/crash_keys.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/variations/feature_list_creator/feature_list_creator.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/variations_switches.h"
+#include "components/variations/service/variations_service_utils.h"
+#include "components/variations/variations_ids_provider.h"
+#include "components/webui/flags/flags_state.h"
 #include "components/webui/flags/flags_storage.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
-#include "content/public/common/content_switches.h"
-#include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/prefs/android/local_state_prefs_android.h"
-#include "components/variations/android/variations_seed_bridge.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "components/webui/flags/pref_service_flags_storage.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/installer/util/google_update_settings.h"
-#include "components/language/core/browser/pref_names.h"
-#endif  // BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/first_run/first_run.h"
+#include "chrome/installer/util/initial_preferences.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -78,10 +65,19 @@ void ChromeFeatureListCreator::CreateFeatureList() {
   if (!local_state_) {
     CreatePrefService();
   }
-  ConvertFlagsToSwitches();
-  CreateMetricsServices();
-  SetupInitialPrefs();
-  SetUpFieldTrials();
+  // Convert active flags to switches before
+  // `ui::ResourceBundle::InitSharedInstanceWithLocale()` because experiment
+  // flags such as `--touch-optimized-ui` affect loaded resources.
+  CHECK(!ui::ResourceBundle::HasSharedInstance(), base::NotFatalUntil::M161);
+  variations::CreateFeatureList(*this);
+}
+
+variations::VariationsIdsProvider*
+ChromeFeatureListCreator::CreateVariationsIdsProvider() {
+  CHECK(network_time_tracker_);
+  return variations::CreateVariationsIdsProvider(
+      variations::VariationsIdsProvider::Mode::kUseSignedInState,
+      network_time_tracker_.get());
 }
 
 void ChromeFeatureListCreator::SetApplicationLocale(const std::string& locale) {
@@ -121,26 +117,9 @@ ChromeFeatureListCreator::TakeInitialPrefs() {
 }
 #endif
 
-std::unique_ptr<variations::SeedResponse>
-ChromeFeatureListCreator::TakeInitialSeed() {
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<variations::SeedResponse> seed =
-      variations::android::GetVariationsFirstRunSeed();
-  // A non-empty seed stays in the Java first-run prefs until
-  // ChromeVariationsServiceClient::ClearNativeVariationsSeed() is called, so
-  // that it is not lost if the process dies before it is durably stored.
-  if (seed->data.empty()) {
-    variations::android::ClearJavaFirstRunPrefs();
-  }
-  return seed;
-#else
-  return std::move(initial_seed_);
-#endif
-}
-
-ChromeFeatureListCreator::ChromeFeatureListCreator() {
-  CreateNetworkTimeTracker();
-}
+ChromeFeatureListCreator::ChromeFeatureListCreator()
+    : network_time_tracker_(
+          network_time::NetworkTimeTracker::CreateUninitialized()) {}
 
 void ChromeFeatureListCreator::CreatePrefService() {
   CHECK(!local_state_);
@@ -162,53 +141,16 @@ void ChromeFeatureListCreator::CreatePrefService() {
       std::make_unique<policy::ChromeBrowserPolicyConnector>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // ManagementService needs Local State but creating local state needs
-  // ManagementService, instantiate the underlying PrefStore early and share it
-  // between both.
-  auto local_state_pref_store =
-      base::MakeRefCounted<JsonPrefStore>(local_state_file);
-
-  // Try and read the local state prefs, if it succeeds, use it as the
-  // ManagementService's cache.
-  const auto read_error = local_state_pref_store->ReadPrefs();
-
-  // Record whether Local State was present when ReadPrefs() attempted to load
-  // it. Deriving this from the read result avoids a separate PathExists() call
-  // on the startup critical path.
-  base::UmaHistogramBoolean(
-      "UMA.Startup.LocalStateFileExistence",
-      read_error != JsonPrefStore::PREF_READ_ERROR_NO_FILE);
-
-  if (read_error == JsonPrefStore::PREF_READ_ERROR_NONE) {
-    auto* platform_management_service =
-        policy::ManagementServiceFactory::GetForPlatform();
-    platform_management_service->UsePrefStoreAsCache(local_state_pref_store);
-  }
-
-  local_state_ = chrome_prefs::CreateLocalState(
-      local_state_file, local_state_pref_store,
-      browser_policy_connector_->GetPolicyService(), std::move(pref_registry),
-      browser_policy_connector_.get());
+  local_state_ =
+      chrome_prefs::CreateLocalState(local_state_file, std::move(pref_registry),
+                                     browser_policy_connector_.get());
 
   // Apply local test policies from the kLocalTestPoliciesForNextStartup pref if
   // there are any.
   browser_policy_connector_->MaybeApplyLocalTestPolicies(local_state_.get());
 
-// TODO(asvitkine): This is done here so that the pref is set before
-// VariationsService queries the locale. This should potentially be moved to
-// somewhere better, e.g. as a helper in first_run namespace.
 #if BUILDFLAG(IS_WIN)
-  if (first_run::IsChromeFirstRun()) {
-    // During first run we read the google_update registry key to find what
-    // language the user selected when downloading the installer. This
-    // becomes our default language in the prefs.
-    // Other platforms obey the system locale.
-    std::wstring install_lang;
-    if (GoogleUpdateSettings::GetLanguage(&install_lang)) {
-      local_state_->SetString(language::prefs::kApplicationLocale,
-                              base::WideToASCII(install_lang));
-    }
-  }
+  first_run::MaybeSetInitialLocaleFromInstaller(*local_state_);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -218,31 +160,8 @@ void ChromeFeatureListCreator::CreatePrefService() {
 #endif
 }
 
-void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
-  // Convert active flags into switches. This needs to be done before
-  // ui::ResourceBundle::InitSharedInstanceWithLocale as some loaded resources
-  // are affected by experiment flags (--touch-optimized-ui in particular).
-  CHECK(!ui::ResourceBundle::HasSharedInstance(), base::NotFatalUntil::M161);
-  TRACE_EVENT0("startup", "ChromeFeatureListCreator::ConvertFlagsToSwitches");
-
-  std::unique_ptr<flags_ui::FlagsStorage> flags_storage = CreateFlagsStorage();
-  about_flags::ConvertFlagsToSwitches(flags_storage.get(),
-                                      base::CommandLine::ForCurrentProcess(),
-                                      flags_ui::kAddSentinels);
-  // Also apply command-line switches to local_state_ now so switches added
-  // from about:flags above take effect (including during early Android
-  // startup).
-  local_state_->UpdateCommandLinePrefStore(
-      base::MakeRefCounted<ChromeCommandLinePrefStore>(
-          base::CommandLine::ForCurrentProcess()));
-
-  // Update the command-line crash keys now so that crashes during field trial
-  // setup report the switches and features added from about:flags.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  crash_keys::SetFeaturesFromCommandLine(command_line);
-  crash_keys::SetSwitchesFromCommandLine(command_line,
-                                         &crash_keys::IsBoringSwitch);
+flags_ui::FlagsState& ChromeFeatureListCreator::GetFlagsState() {
+  return CHECK_DEREF(about_flags::GetCurrentFlagsState());
 }
 
 std::unique_ptr<flags_ui::FlagsStorage>
@@ -262,101 +181,62 @@ ChromeFeatureListCreator::CreateFlagsStorage() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void ChromeFeatureListCreator::CreateNetworkTimeTracker() {
-  // The NetworkTimeTracker is needed before the PrefService and
-  // URLLoaderFactory can be fully initialized, so we only partially create it
-  // now (we pass nullptr for both values). The PrefService and URLLoaderFactory
-  // will be provided later, via the Initialize() method invoked by the
-  // BrowserProcessImpl constructor.
-  network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
-      std::make_unique<base::DefaultClock>(),
-      std::make_unique<base::DefaultTickClock>(),
-      /*pref_service=*/nullptr,
-      /*url_loader_factory=*/nullptr,
-      /*network_time_pref_delegate=*/std::nullopt);
-  CHECK(!network_time_tracker_->is_initialized());
+crash_keys::SwitchFilterFunction ChromeFeatureListCreator::GetSwitchFilter() {
+  return &crash_keys::IsBoringSwitch;
 }
 
-void ChromeFeatureListCreator::SetUpFieldTrials() {
-  browser_field_trials_ =
-      std::make_unique<ChromeBrowserFieldTrials>(local_state_.get());
+metrics_services_manager::MetricsServicesManager&
+ChromeFeatureListCreator::GetOrCreateMetricsServicesManager() {
+  // `variations::CreateFeatureList()` calls this once, before
+  // `TakeMetricsServicesManager()`.
+  CHECK(!metrics_services_manager_);
 
-  metrics_services_manager_->InstantiateFieldTrialList();
-  auto feature_list = std::make_unique<base::FeatureList>();
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, the platform needs to be able to access the
-  // FeatureList::Accessor. On other platforms, this API should not be used.
-  cros_feature_list_accessor_ = feature_list->ConstructAccessor();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  // `variations::CreateFeatureList()` calls this right after it converts
+  // about:flags to switches. Apply command-line switches to `local_state_` now
+  // so switches added from about:flags take effect (including during early
+  // Android startup).
+  local_state_->UpdateCommandLinePrefStore(
+      base::MakeRefCounted<ChromeCommandLinePrefStore>(
+          base::CommandLine::ForCurrentProcess()));
 
-  // Associate parameters chosen in about:flags and create trial/group for them.
-  // Read the same flags that ConvertFlagsToSwitches() converted.
-  std::unique_ptr<flags_ui::FlagsStorage> flags_storage = CreateFlagsStorage();
-  std::vector<std::string> variation_ids =
-      about_flags::RegisterAllFeatureVariationParameters(flags_storage.get(),
-                                                         feature_list.get());
+  std::unique_ptr<variations::SeedResponse> initial_seed;
+// Android does first run in Java instead of native.
+// ChromeOS has its own out-of-box-experience code.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  if (first_run::IsChromeFirstRun()) {
+    installer_initial_prefs_ = first_run::LoadInitialPrefs();
+    if (installer_initial_prefs_) {
+      initial_seed = first_run::ExtractVariationsSeedFromInitialPrefs(
+          *installer_initial_prefs_);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-  variations::VariationsService* variations_service =
-      metrics_services_manager_->GetVariationsService();
-  variations_service->SetUpFieldTrials(
-      variation_ids,
-      content::GetSwitchDependentFeatureOverrides(
-          *base::CommandLine::ForCurrentProcess()),
-      std::move(feature_list), browser_field_trials_.get());
-  metrics_services_manager_client_->OnFieldTrialsInitialized();
-
-  initial_seed_.reset();
-}
-
-void ChromeFeatureListCreator::CreateMetricsServices() {
-  auto client =
-      std::make_unique<ChromeMetricsServicesManagerClient>(local_state_.get());
+  auto client = std::make_unique<ChromeMetricsServicesManagerClient>(
+      local_state_.get(), std::move(initial_seed));
   metrics_services_manager_client_ = client.get();
   metrics_services_manager_ =
       std::make_unique<metrics_services_manager::MetricsServicesManager>(
           std::move(client));
+  return *metrics_services_manager_;
 }
 
-void ChromeFeatureListCreator::SetupInitialPrefs() {
-// Android does first run in Java instead of native.
-// ChromeOS has its own out-of-box-experience code.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  // On first run, we need to process the predictor preferences before the
-  // browser's profile_manager object is created, but after ResourceBundle
-  // is initialized.
-  // If the user specifies an initial preferences file, it is assumed that
-  // they want to reset the preferences regardless of whether it's the
-  // first run.
-  if (!first_run::IsChromeFirstRun()) {
-    return;
-  }
+#if BUILDFLAG(IS_CHROMEOS)
+void ChromeFeatureListCreator::WillSetUpFieldTrials(
+    base::FeatureList& feature_list) {
+  // On ChromeOS, the platform needs to be able to access the
+  // FeatureList::Accessor. On other platforms, this API should not be used.
+  cros_feature_list_accessor_ = feature_list.ConstructAccessor();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  installer_initial_prefs_ = first_run::LoadInitialPrefs();
-  if (!installer_initial_prefs_) {
-    return;
-  }
+variations::PlatformFieldTrials&
+ChromeFeatureListCreator::GetPlatformFieldTrials() {
+  return browser_field_trials_;
+}
 
-  // Keep the initial VariationsService seed for the seed store, if it exists
-  // in initial prefs. Note: The getters we call remove them from the installer
-  // initial prefs, which is why both the seed and signature are retrieved here
-  // and not within the if below.
-  std::string compressed_variations_seed =
-      installer_initial_prefs_->GetCompressedVariationsSeed();
-  std::string variations_seed_signature =
-      installer_initial_prefs_->GetVariationsSeedSignature();
-
-  std::string seed_data;
-  if (!compressed_variations_seed.empty() &&
-      base::Base64Decode(compressed_variations_seed, &seed_data)) {
-    initial_seed_ = std::make_unique<variations::SeedResponse>();
-    initial_seed_->data = std::move(seed_data);
-    initial_seed_->signature = std::move(variations_seed_signature);
-    // Set the variation seed date to the current system time. If the user's
-    // clock is incorrect, this may cause some field trial expiry checks to
-    // not do the right thing until the next seed update from the server,
-    // when this value will be updated.
-    initial_seed_->date = base::Time::Now();
-    initial_seed_->is_gzip_compressed = true;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+std::vector<base::FeatureList::FeatureOverrideInfo>
+ChromeFeatureListCreator::GetExtraFeatureOverrides(
+    const base::CommandLine& command_line) {
+  return content::GetSwitchDependentFeatureOverrides(command_line);
 }

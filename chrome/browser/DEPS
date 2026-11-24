@@ -622,6 +622,9 @@ specific_include_rules = {
     # For GetVirtualKeyboardController.
     "+ash/keyboard/ui/keyboard_ui_controller.h",
   ],
+  r"chrome_browser_field_trials_unittest\.cc": [
+    "+chrome/chrome_elf/nt_registry/nt_registry.h",
+  ],
   "chrome_browsing_data_remover_delegate_unittest.cc": [
     "+services/network/network_context.h",
     "+services/network/network_service.h",

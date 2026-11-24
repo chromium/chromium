@@ -66,7 +66,7 @@ struct COMPONENT_EXPORT(VARIATIONS) SeedInfo {
   // Date used for study date checks. Is a server-provided timestamp.
   // On some platforms, on the first run, it's set to a client-provided
   // timestamp until the server-provided timestamp is fetched. (See
-  // ChromeFeatureListCreator::SetupInitialPrefs())
+  // first_run::ExtractVariationsSeedFromInitialPrefs())
   const base::Time seed_date;
   // The time at which the seed was fetched. This is always a client-side
   // timestamp.

@@ -277,10 +277,10 @@ void RemoveCommandLineSwitch(base::CommandLine* current_cl,
   *current_cl = new_cl;
 }
 
-// ChromeOS does not call ConvertFlagsToSwitches on startup (see
-// ChromeFeatureListCreator::ConvertFlagsToSwitches() for details) so the
-// command line cannot be updated using pref values. Instead, this method
-// modifies it on the fly when the user makes a change.
+// On ChromeOS, startup reads flags only from the command line that
+// session_manager sets, not from the flags stored in preferences (see
+// ChromeFeatureListCreator::CreateFlagsStorage()). Update the process command
+// line directly when the user edits `entry`.
 void DidModifyOriginListFlag(const FlagsStorage& flags_storage,
                              const FeatureEntry& entry) {
   base::CommandLine* current_cl = base::CommandLine::ForCurrentProcess();
@@ -295,10 +295,10 @@ void DidModifyOriginListFlag(const FlagsStorage& flags_storage,
   current_cl->AppendSwitchASCII(entry.switches.command_line_switch, sanitized);
 }
 
-// ChromeOS does not call ConvertFlagsToSwitches on startup (see
-// ChromeFeatureListCreator::ConvertFlagsToSwitches() for details) so the
-// command line cannot be updated using pref values. Instead, this method
-// modifies it on the fly when the user makes a change.
+// On ChromeOS, startup reads flags only from the command line that
+// session_manager sets, not from the flags stored in preferences (see
+// ChromeFeatureListCreator::CreateFlagsStorage()). Update the process command
+// line directly when the user edits `entry`.
 void DidModifyStringFlag(const FlagsStorage& flags_storage,
                          const FeatureEntry& entry) {
   base::CommandLine* current_cl = base::CommandLine::ForCurrentProcess();

@@ -4,13 +4,14 @@
 
 #include "chrome/browser/metrics/variations/chrome_variations_service_client.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
-#include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -45,7 +46,9 @@
 #include "base/enterprise_util.h"
 #endif
 
-ChromeVariationsServiceClient::ChromeVariationsServiceClient() = default;
+ChromeVariationsServiceClient::ChromeVariationsServiceClient(
+    std::unique_ptr<variations::SeedResponse> initial_seed)
+    : initial_seed_(std::move(initial_seed)) {}
 
 ChromeVariationsServiceClient::~ChromeVariationsServiceClient() = default;
 
@@ -99,7 +102,19 @@ bool ChromeVariationsServiceClient::HasPendingNativeVariationsSeed() {
 
 std::unique_ptr<variations::SeedResponse>
 ChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
-  return ChromeFeatureListCreator::GetInstance()->TakeInitialSeed();
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<variations::SeedResponse> seed =
+      variations::android::GetVariationsFirstRunSeed();
+  // A non-empty seed stays in the Java first-run prefs until
+  // ChromeVariationsServiceClient::ClearNativeVariationsSeed() is called, so
+  // that it is not lost if the process dies before it is durably stored.
+  if (seed->data.empty()) {
+    variations::android::ClearJavaFirstRunPrefs();
+  }
+  return seed;
+#else
+  return std::move(initial_seed_);
+#endif
 }
 
 void ChromeVariationsServiceClient::ClearNativeVariationsSeed() {

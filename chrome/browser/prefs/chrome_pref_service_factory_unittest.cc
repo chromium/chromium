@@ -4,14 +4,22 @@
 
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 
+#include "base/base_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
@@ -94,6 +102,56 @@ TEST_F(ChromePrefServiceFactoryTamperedPrefTest,
   chrome_prefs::ClearTamperedPrefList(profile_.get());
 
   EXPECT_TRUE(chrome_prefs::GetTamperedPrefList(profile_.get()).empty());
+}
+
+TEST_F(ChromePrefServiceFactoryTestBase, CreateLocalStateRecordsFileExistence) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kNoErrorDialogs);
+  base::ScopedClosureRunner reset_management_cache(base::BindOnce([]() {
+    policy::PlatformManagementService::GetInstance()->UsePrefServiceAsCache(
+        nullptr);
+  }));
+  const base::FilePath local_state_path =
+      data_dir_.GetPath().AppendASCII("Local State");
+  policy::ChromeBrowserPolicyConnector* policy_connector =
+      g_browser_process->browser_policy_connector();
+
+  {
+    base::HistogramTester histogram_tester;
+    auto registry = base::MakeRefCounted<PrefRegistrySimple>();
+    std::unique_ptr<PrefService> local_state = chrome_prefs::CreateLocalState(
+        local_state_path, std::move(registry), policy_connector);
+    ASSERT_NE(local_state, nullptr);
+    histogram_tester.ExpectUniqueSample("UMA.Startup.LocalStateFileExistence",
+                                        false, 1);
+  }
+
+  ASSERT_TRUE(base::WriteFile(local_state_path, "{}"));
+
+  {
+    base::HistogramTester histogram_tester;
+    auto registry = base::MakeRefCounted<PrefRegistrySimple>();
+    std::unique_ptr<PrefService> local_state = chrome_prefs::CreateLocalState(
+        local_state_path, std::move(registry), policy_connector);
+    ASSERT_NE(local_state, nullptr);
+    histogram_tester.ExpectUniqueSample("UMA.Startup.LocalStateFileExistence",
+                                        true, 1);
+  }
+
+  ASSERT_TRUE(base::WriteFile(local_state_path, "not-json"));
+
+  {
+    base::HistogramTester histogram_tester;
+    auto registry = base::MakeRefCounted<PrefRegistrySimple>();
+    std::unique_ptr<PrefService> local_state = chrome_prefs::CreateLocalState(
+        local_state_path, std::move(registry), policy_connector);
+    ASSERT_NE(local_state, nullptr);
+    histogram_tester.ExpectUniqueSample("UMA.Startup.LocalStateFileExistence",
+                                        true, 1);
+  }
+
+  task_environment_.RunUntilIdle();
 }
 
 #if BUILDFLAG(IS_ANDROID)
