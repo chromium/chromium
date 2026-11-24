@@ -280,23 +280,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.HomePageEngineType2" enum="OmniboxSearchEngineType"
-    expires_after="2024-04-30">
-  <owner>mpearson@chromium.org</owner>
-  <owner>csharp@chromium.org</owner>
-  <summary>
-    Tries to pretend the home page URL is a search URL, and records the search
-    engine type of that URL by comparing the TLD+1 of the home page URL with
-    those of the different known search engines. Recorded when a regular profile
-    is opened, if a home page URL has been set. Note that at least one profile
-    is opened on startup.
-
-    To be explicit: not logged when an Incognito profile is opened because that
-    inherits the settings from its parent profile. As such, it's not necessary
-    to log the Incognito profile's settings.
-  </summary>
-</histogram>
-
 <histogram name="Settings.HoverCards.ImagePreview.Enabled"
     enum="BooleanEnabled" expires_after="2026-04-12">
   <owner>charlesmeng@chromium.org</owner>

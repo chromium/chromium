@@ -34,25 +34,10 @@ PrefMetricsService::~PrefMetricsService() = default;
 
 // static
 void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
-                                                     bool homepage_is_ntp,
-                                                     const GURL& homepage_url) {
+                                                     bool homepage_is_ntp) {
   if (show_home_button) {
     UMA_HISTOGRAM_BOOLEAN("Settings.GivenShowHomeButton_HomePageIsNewTabPage2",
                           homepage_is_ntp);
-  }
-
-  // For non-NTP homepages, see if the URL comes from the same TLD+1 as a known
-  // search engine.  Note that this is only an approximation of search engine
-  // use, due to both false negatives (pages that come from unknown TLD+1 X but
-  // consist of a search box that sends to known TLD+1 Y) and false positives
-  // (pages that share a TLD+1 with a known engine but aren't actually search
-  // pages, e.g. plus.google.com).
-  if (!homepage_is_ntp) {
-    if (homepage_url.is_valid()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Settings.HomePageEngineType2",
-          search_engine_utils::GetEngineType(homepage_url), SEARCH_ENGINE_MAX);
-    }
   }
 }
 
@@ -62,10 +47,8 @@ void PrefMetricsService::RecordLaunchPrefs() {
   // it will be logged later once all the dependent information is available.
   // See DeferredStartupHandler.java.
 #if !BUILDFLAG(IS_ANDROID)
-  GURL homepage_url(prefs_->GetString(prefs::kHomePage));
   RecordHomePageLaunchMetrics(prefs_->GetBoolean(prefs::kShowHomeButton),
-                              prefs_->GetBoolean(prefs::kHomePageIsNewTabPage),
-                              homepage_url);
+                              prefs_->GetBoolean(prefs::kHomePageIsNewTabPage));
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -85,7 +68,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
           .ShouldOpenUrls()) {
     const base::ListValue& url_list =
         prefs_->GetList(prefs::kURLsToRestoreOnStartup);
-    // Similarly, check startup pages for known search engine TLD+1s.
+    // Check startup pages for known search engine TLD+1s.
     for (const base::Value& i : url_list) {
       const std::string* url_text = i.GetIfString();
       if (url_text) {

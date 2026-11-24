@@ -138,8 +138,7 @@ public class LaunchMetrics {
         if (homepageGurl.isEmpty()) {
             assert !showHomeButton : "Homepage should be disabled for an empty GURL";
         }
-        LaunchMetricsJni.get()
-                .recordHomePageLaunchMetrics(showHomeButton, homepageIsNtp, homepageGurl);
+        LaunchMetricsJni.get().recordHomePageLaunchMetrics(showHomeButton, homepageIsNtp);
     }
 
     /**
@@ -168,7 +167,6 @@ public class LaunchMetrics {
                 @DisplayMode.EnumType int displayMode,
                 @Nullable WebContents webContents);
 
-        void recordHomePageLaunchMetrics(
-                boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl);
+        void recordHomePageLaunchMetrics(boolean showHomeButton, boolean homepageIsNtp);
     }
 }

@@ -14,7 +14,6 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -87,11 +86,9 @@ static void JNI_LaunchMetrics_RecordLaunch(
 static void JNI_LaunchMetrics_RecordHomePageLaunchMetrics(
     JNIEnv* env,
     bool show_home_button,
-    bool homepage_is_ntp,
-    const JavaRef<jobject>& jhomepage_gurl) {
-  GURL homepage_gurl = url::GURLAndroid::ToNativeGURL(env, jhomepage_gurl);
-  PrefMetricsService::RecordHomePageLaunchMetrics(
-      show_home_button, homepage_is_ntp, homepage_gurl);
+    bool homepage_is_ntp) {
+  PrefMetricsService::RecordHomePageLaunchMetrics(show_home_button,
+                                                  homepage_is_ntp);
 }
 
 }  // namespace metrics

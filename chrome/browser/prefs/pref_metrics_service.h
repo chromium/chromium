@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "url/gurl.h"
 
 class PrefService;
 class Profile;
@@ -27,8 +26,7 @@ class PrefMetricsService : public KeyedService {
 
   // Records metrics about various per-profile configurations on profile open.
   static void RecordHomePageLaunchMetrics(bool show_home_button,
-                                          bool homepage_is_ntp,
-                                          const GURL& homepage_url);
+                                          bool homepage_is_ntp);
 
   class Factory : public ProfileKeyedServiceFactory {
    public:
