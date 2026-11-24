@@ -46,6 +46,10 @@
 
 namespace skills {
 
+constexpr char kClickSaveScript[] =
+    "document.querySelector('skills-dialog-app').shadowRoot"
+    ".querySelector('#saveButton').click();";
+
 class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
  public:
   SkillsUiWindowControllerBrowserTest() {
@@ -283,8 +287,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
     for (let i = 0; i < 50; i++) {
       const btn = root.querySelector('#saveButton');
       if (btn && !btn.disabled) {
-          setTimeout(() => btn.click(), 0);
-          return 'CLICKED';
+        return 'READY';
       }
 
       // Fill inputs if found & empty
@@ -311,7 +314,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   })();
 )";
 
-  EXPECT_EQ("CLICKED", content::EvalJs(web_contents, kSaveScript));
+  ASSERT_EQ("READY", content::EvalJs(web_contents, kSaveScript));
+
+  // Click without waiting for a reply: saving closes the dialog and destroys
+  // its WebContents, which can happen before an EvalJs() reply arrives.
+  content::ExecuteScriptAsync(web_contents, kClickSaveScript);
 
   // Wait for the C++ backend to process the save and close the dialog.
   ASSERT_TRUE(close_future.Wait());
@@ -385,8 +392,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
     for (let i = 0; i < 50; i++) {
       const btn = root.querySelector('#saveButton');
       if (btn && !btn.disabled) {
-          setTimeout(() => btn.click(), 0);
-          return 'CLICKED';
+        return 'READY';
       }
 
       // Fill inputs if found & empty
@@ -413,7 +419,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   })();
 )";
 
-  EXPECT_EQ("CLICKED", content::EvalJs(web_contents, kSaveScript));
+  ASSERT_EQ("READY", content::EvalJs(web_contents, kSaveScript));
+
+  // Click without waiting for a reply: saving closes the dialog and destroys
+  // its WebContents, which can happen before an EvalJs() reply arrives.
+  content::ExecuteScriptAsync(web_contents, kClickSaveScript);
 
   // Wait for the C++ backend to process the save and close the dialog.
   ASSERT_TRUE(close_future.Wait());
