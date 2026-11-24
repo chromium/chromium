@@ -80,7 +80,16 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
     _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_mainStackView];
 
-    AddSameConstraints(_mainStackView, self);
+    AddSameConstraintsToSides(
+        _mainStackView, self,
+        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom);
+    // Gives way while a host measures the view before it has a width (e.g. a
+    // collection view sizing its cell), as the items' fixed insets don't fit in
+    // a zero width.
+    NSLayoutConstraint* trailingConstraint = [_mainStackView.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor];
+    trailingConstraint.priority = UILayoutPriorityRequired - 1;
+    trailingConstraint.active = YES;
 
     // Prefers the smallest height that fits the content, so self-sizing hosts
     // pinning this view with weaker constraints cannot stretch it.
