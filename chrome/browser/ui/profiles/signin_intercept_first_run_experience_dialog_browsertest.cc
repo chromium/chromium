@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -260,7 +261,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
       HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
           GURL("chrome://history-sync-optin"),
           HistorySyncOptinLaunchContext::kModal);
-  const GURL kProfileCustomizationUrl = GURL("chrome://profile-customization");
+  const GURL kProfileCustomizationUrl = AppendProfileCustomizationQueryParams(
+      GURL("chrome://profile-customization"),
+      ProfileCustomizationStyle::kSignedInProfileCreation);
 
   std::unique_ptr<content::TestNavigationObserver> history_sync_observer_;
   std::unique_ptr<content::TestNavigationObserver>

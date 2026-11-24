@@ -184,16 +184,8 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     BrowserWindowInterface* browser,
     ProfileCustomizationStyle style,
     bool show_supervised_user_iph) {
-  GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
-  switch (style) {
-    case ProfileCustomizationStyle::kSignedInProfileCreation:
-      // The signed-in profile creation uses the URL without query parameters.
-      break;
-    case ProfileCustomizationStyle::kSignedOutProfileCreation:
-    case ProfileCustomizationStyle::kEditProfile:
-      url = AppendProfileCustomizationQueryParams(url, style);
-      break;
-  }
+  GURL url = AppendProfileCustomizationQueryParams(
+      GURL(chrome::kChromeUIProfileCustomizationURL), style);
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, url, ProfileCustomizationUI::kPreferredHeight,
       ProfileCustomizationUI::kPreferredWidth);

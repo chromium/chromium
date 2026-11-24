@@ -431,8 +431,10 @@ void SigninInterceptFirstRunExperienceDialog::PreloadProfileCustomizationUI() {
           browser_->GetProfile(),
           content::SiteInstance::Create(browser_->GetProfile())));
   profile_customization_preloaded_contents_->GetController().LoadURL(
-      GURL(chrome::kChromeUIProfileCustomizationURL), content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+      AppendProfileCustomizationQueryParams(
+          GURL(chrome::kChromeUIProfileCustomizationURL),
+          ProfileCustomizationStyle::kSignedInProfileCreation),
+      content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   ProfileCustomizationUI* web_ui =
       profile_customization_preloaded_contents_->GetWebUI()
           ->GetController()
