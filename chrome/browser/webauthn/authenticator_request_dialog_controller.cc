@@ -2406,7 +2406,9 @@ void AuthenticatorRequestDialogController::PopulatePasswords() {
             std::make_pair(password->username_value,
                            password->password_value)));
     mechanism.description = l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER);
+        ui_presentation() == UIPresentation::kModalImmediate
+            ? IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER
+            : IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
 
     model_->mechanisms.emplace_back(std::move(mechanism));
   }

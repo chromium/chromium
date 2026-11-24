@@ -2989,6 +2989,46 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsWithOrigin) {
   EXPECT_EQ(origin_psl.value(), u"sub.example.com");
 }
 
+TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsDescription) {
+  struct TestCase {
+    UIPresentation presentation;
+    int expected_description_id;
+  };
+  const TestCase kTestCases[] = {
+      {UIPresentation::kAmbient, IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER},
+      {UIPresentation::kModalImmediate,
+       IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.presentation));
+    auto model =
+        base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+    controller.SetUIPresentation(test_case.presentation);
+
+    TransportAvailabilityInfo tai;
+    tai.request_type = device::FidoRequestType::kGetAssertion;
+    tai.available_transports = {};
+
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords;
+    auto form = std::make_unique<password_manager::PasswordForm>();
+    form->username_value = u"user@example.com";
+    form->url = GURL("https://example.com/login");
+    form->signon_realm = "https://example.com/";
+    form->match_type = affiliations::MatchType::kExact;
+    passwords.push_back(std::move(form));
+
+    model->relying_party_id = "example.com";
+    UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
+    controller.StartFlow(std::move(tai), std::move(passwords));
+
+    ASSERT_EQ(model->mechanisms.size(), 1u);
+    EXPECT_EQ(model->mechanisms[0].description,
+              l10n_util::GetStringUTF16(test_case.expected_description_id));
+  }
+}
+
 TEST(WebAuthnUiHelpersTest, GetProviderIcon) {
   using CredentialInfo =
       AuthenticatorRequestDialogModel::Mechanism::CredentialInfo;
