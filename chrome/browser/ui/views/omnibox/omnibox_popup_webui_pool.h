@@ -21,16 +21,16 @@ namespace views {
 class Widget;
 }  // namespace views
 
-class OmniboxPopupPresenterBase;
+class OmniboxPopupWebUIPoolHost;
 class OmniboxPopupUI;
 class OmniboxPopupWebUIPoolClient;
 template <typename T>
 class WebUIContentsWrapperT;
 
 // The pool of WebUI omnibox popups that a profile's browser windows share. It
-// tracks the presenters that share their popup, so that a window can take an
+// tracks the hosts that share their popup, so that a window can take an
 // idle popup of the same kind from another window instead of loading a new
-// WebContents. Each popup in use stays owned by its window's presenter. Used
+// WebContents. Each popup in use stays owned by its window's host. Used
 // only with `omnibox::kOmniboxWebUIPopupShareAcrossWindows`. Created by
 // `OmniboxPopupWebUIPoolFactory`. With
 // `omnibox::kOmniboxWebUIPopupShareDropIdleOnMemoryPressure`, it destroys the
@@ -44,31 +44,30 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
 
   base::WeakPtr<OmniboxPopupWebUIPool> GetWeakPtr();
 
-  // `presenter` and `client` must be removed before they are destroyed.
-  void AddPresenter(OmniboxPopupPresenterBase* presenter);
-  // `kind` is the presenter's `GetSharedPopupKind()`, which can't be read
-  // while the presenter is being destroyed.
-  void RemovePresenter(OmniboxPopupPresenterBase* presenter,
-                       OmniboxPopupState kind);
+  // `host` and `client` must be removed before they are destroyed.
+  void AddHost(OmniboxPopupWebUIPoolHost* host);
+  // `kind` is the host's `GetSharedPopupKind()`, which can't be read
+  // while the host is being destroyed.
+  void RemoveHost(OmniboxPopupWebUIPoolHost* host, OmniboxPopupState kind);
   void AddClient(OmniboxPopupWebUIPoolClient* client);
   void RemoveClient(OmniboxPopupWebUIPoolClient* client);
 
-  // Returns whether a presenter other than `presenter`, of the same popup
+  // Returns whether a host other than `host`, of the same popup
   // kind, has WebUI content.
-  bool HasWebUIContent(const OmniboxPopupPresenterBase& presenter) const;
+  bool HasWebUIContent(const OmniboxPopupWebUIPoolHost& host) const;
 
-  // Returns whether a presenter other than `presenter`, of the same popup
+  // Returns whether a host other than `host`, of the same popup
   // kind, has WebUI content whose page is still loading.
-  bool HasLoadingWebUIContent(const OmniboxPopupPresenterBase& presenter) const;
+  bool HasLoadingWebUIContent(const OmniboxPopupWebUIPoolHost& host) const;
 
-  // Releases the WebContents of an idle popup of the same kind as `presenter`
+  // Releases the WebContents of an idle popup of the same kind as `host`
   // in another browser window, or returns null if there is none.
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> TakeIdleWebUIContents(
-      const OmniboxPopupPresenterBase& presenter);
+      const OmniboxPopupWebUIPoolHost& host);
 
-  // Destroys the idle popups of the same kind as `presenter` in other browser
+  // Destroys the idle popups of the same kind as `host` in other browser
   // windows. Returns how many it destroyed.
-  size_t DropOtherIdleWebUIContents(const OmniboxPopupPresenterBase& presenter);
+  size_t DropOtherIdleWebUIContents(const OmniboxPopupWebUIPoolHost& host);
 
   // Returns whether the last popup of `kind` was destroyed with its browser
   // window since the last call for `kind`.
@@ -104,7 +103,7 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
   // if none is known. The others run theirs when their window is activated.
   void RunWaitingClient();
 
-  std::vector<raw_ptr<OmniboxPopupPresenterBase>> presenters_;
+  std::vector<raw_ptr<OmniboxPopupWebUIPoolHost>> hosts_;
   base::flat_set<OmniboxPopupState> holder_closed_kinds_;
   std::vector<raw_ptr<OmniboxPopupWebUIPoolClient>> clients_;
   base::WeakPtr<views::Widget> last_active_browser_widget_;

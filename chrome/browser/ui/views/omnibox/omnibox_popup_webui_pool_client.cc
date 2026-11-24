@@ -14,10 +14,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_factory.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_host.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -25,12 +25,11 @@
 // static
 std::unique_ptr<OmniboxPopupWebUIPoolClient>
 OmniboxPopupWebUIPoolClient::CreateIfSharingEnabled(
-    OmniboxPopupPresenterBase& presenter,
-    Profile* profile,
-    views::Widget* browser_widget) {
+    OmniboxPopupWebUIPoolHost& host,
+    Profile* profile) {
   if (!base::FeatureList::IsEnabled(
           omnibox::kOmniboxWebUIPopupShareAcrossWindows) ||
-      presenter.GetSharedPopupKind() == OmniboxPopupState::kNone) {
+      host.GetSharedPopupKind() == OmniboxPopupState::kNone) {
     return nullptr;
   }
   // Ash internal profiles have no pool.
@@ -39,35 +38,31 @@ OmniboxPopupWebUIPoolClient::CreateIfSharingEnabled(
   if (!pool) {
     return nullptr;
   }
-  return std::make_unique<OmniboxPopupWebUIPoolClient>(presenter, *pool,
-                                                       browser_widget);
+  return std::make_unique<OmniboxPopupWebUIPoolClient>(host, *pool);
 }
 
 OmniboxPopupWebUIPoolClient::OmniboxPopupWebUIPoolClient(
-    OmniboxPopupPresenterBase& presenter,
-    OmniboxPopupWebUIPool& pool,
-    views::Widget* browser_widget)
-    : presenter_(presenter),
-      kind_(presenter.GetSharedPopupKind()),
-      pool_(pool.GetWeakPtr()) {
-  pool.AddPresenter(&presenter);
+    OmniboxPopupWebUIPoolHost& host,
+    OmniboxPopupWebUIPool& pool)
+    : host_(host), kind_(host.GetSharedPopupKind()), pool_(pool.GetWeakPtr()) {
+  pool.AddHost(&host);
   pool.AddClient(this);
-  // Presenters are built after the location bar joins the browser window's
+  // Hosts are built after the location bar joins the browser window's
   // widget, so this is set outside unit tests.
-  if (browser_widget) {
+  if (views::Widget* browser_widget = host.GetBrowserWidget()) {
     browser_widget_observation_.Observe(browser_widget);
   }
 }
 
 OmniboxPopupWebUIPoolClient::~OmniboxPopupWebUIPoolClient() {
   if (pool_) {
-    pool_->RemovePresenter(&*presenter_, kind_);
+    pool_->RemoveHost(&*host_, kind_);
     pool_->RemoveClient(this);
   }
 }
 
 bool OmniboxPopupWebUIPoolClient::HasSharedWebUIContent() const {
-  return pool_ && pool_->HasWebUIContent(*presenter_);
+  return pool_ && pool_->HasWebUIContent(*host_);
 }
 
 bool OmniboxPopupWebUIPoolClient::SkipPrewarmIfSharedContentExists() {
@@ -80,7 +75,7 @@ bool OmniboxPopupWebUIPoolClient::SkipPrewarmIfSharedContentExists() {
 
 std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
 OmniboxPopupWebUIPoolClient::TakeIdleWebUIContents() {
-  return pool_ ? pool_->TakeIdleWebUIContents(*presenter_) : nullptr;
+  return pool_ ? pool_->TakeIdleWebUIContents(*host_) : nullptr;
 }
 
 OmniboxPopupWebUIBaseContent*
@@ -92,10 +87,9 @@ OmniboxPopupWebUIPoolClient::TakeAndAdoptIdleWebUIContents(
     return nullptr;
   }
   OmniboxPopupWebUIBaseContent* content =
-      presenter_->AdoptWebUIContents(std::move(contents));
+      host_->AdoptWebUIContents(std::move(contents));
   base::UmaHistogramMicrosecondsTimes(
-      base::StrCat(
-          {presenter_->GetPopupMetricPrefix(), ".Shared.MoveDuration"}),
+      base::StrCat({host_->GetPopupMetricPrefix(), ".Shared.MoveDuration"}),
       base::TimeTicks::Now() - start);
   RecordContentSource(source);
   return content;
@@ -114,8 +108,7 @@ void OmniboxPopupWebUIPoolClient::OnWebUIContentCreated() {
 
 void OmniboxPopupWebUIPoolClient::RecordContentSource(ContentSource source) {
   base::UmaHistogramEnumeration(
-      base::StrCat(
-          {presenter_->GetPopupMetricPrefix(), ".Shared.ContentSource"}),
+      base::StrCat({host_->GetPopupMetricPrefix(), ".Shared.ContentSource"}),
       source);
 }
 
@@ -129,11 +122,11 @@ bool OmniboxPopupWebUIPoolClient::RunPendingRequestIfReady() {
   if (!pending_request_) {
     return false;
   }
-  if (presenter_->GetWebUIContent()) {
+  if (host_->GetWebUIContent()) {
     pending_request_.Reset();
     return false;
   }
-  if (pool_ && pool_->HasLoadingWebUIContent(*presenter_)) {
+  if (pool_ && pool_->HasLoadingWebUIContent(*host_)) {
     return false;
   }
   std::move(pending_request_).Run();
@@ -147,7 +140,7 @@ void OmniboxPopupWebUIPoolClient::OnWebUIContentsLoaded() {
 }
 
 void OmniboxPopupWebUIPoolClient::OnPopupHidden() {
-  if (OmniboxPopupWebUIBaseContent* content = presenter_->GetWebUIContent()) {
+  if (OmniboxPopupWebUIBaseContent* content = host_->GetWebUIContent()) {
     if (OmniboxPopupUI* popup_ui =
             content->contents_wrapper()
                 ? content->contents_wrapper()->GetWebUIController()
@@ -172,7 +165,7 @@ void OmniboxPopupWebUIPoolClient::OnWidgetActivationChanged(
   if (pool_) {
     pool_->OnBrowserWindowActivated(widget);
   }
-  if (presenter_->GetWebUIContent()) {
+  if (host_->GetWebUIContent()) {
     return;
   }
   // Post rather than move the popup inside the activation change, which is
@@ -189,20 +182,19 @@ void OmniboxPopupWebUIPoolClient::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void OmniboxPopupWebUIPoolClient::TakeIdleWebUIContentsIfNeeded() {
-  if (presenter_->GetWebUIContent() || RunPendingRequestIfReady()) {
+  if (host_->GetWebUIContent() || RunPendingRequestIfReady()) {
     return;
   }
   TakeAndAdoptIdleWebUIContents(ContentSource::kTakenOnActivation);
 }
 
 void OmniboxPopupWebUIPoolClient::DropOtherIdleWebUIContents() {
-  if (!pool_ || !presenter_->GetWebUIContent()) {
+  if (!pool_ || !host_->GetWebUIContent()) {
     return;
   }
-  if (const size_t dropped = pool_->DropOtherIdleWebUIContents(*presenter_)) {
-    base::UmaHistogramExactLinear(
-        base::StrCat({presenter_->GetPopupMetricPrefix(),
-                      ".Shared.CopiesDroppedOnHide"}),
-        dropped, 10);
+  if (const size_t dropped = pool_->DropOtherIdleWebUIContents(*host_)) {
+    base::UmaHistogramExactLinear(base::StrCat({host_->GetPopupMetricPrefix(),
+                                                ".Shared.CopiesDroppedOnHide"}),
+                                  dropped, 10);
   }
 }

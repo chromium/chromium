@@ -566,6 +566,13 @@ OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::AdoptWebUIContents(
   return GetWebUIContent();
 }
 
+views::Widget* OmniboxPopupPresenterBase::GetBrowserWidget() const {
+  // In macOS immersive fullscreen the location bar's widget is a
+  // non-activatable overlay, not the browser window's widget.
+  views::Widget* widget = presenter_delegate_->GetLocationBarWidget();
+  return widget ? widget->GetTopLevelWidget() : nullptr;
+}
+
 // static
 OmniboxPopupPresenterBase::WebUIContentCreationStrategy
 OmniboxPopupPresenterBase::GetWebUIContentCreationStrategy(
@@ -600,10 +607,8 @@ void OmniboxPopupPresenterBase::ApplyWebUIContentCreationStrategy(
   // Joins the profile's pool before prewarming, so that prewarming can see the
   // other windows' popups. `location_bar_` is null in unit tests.
   if (location_bar_) {
-    views::Widget* widget = presenter_delegate_->GetLocationBarWidget();
     pool_client_ = OmniboxPopupWebUIPoolClient::CreateIfSharingEnabled(
-        *this, location_bar_->GetProfile(),
-        widget ? widget->GetTopLevelWidget() : nullptr);
+        *this, location_bar_->GetProfile());
   }
   switch (strategy) {
     case WebUIContentCreationStrategy::kEager:
@@ -629,11 +634,7 @@ bool OmniboxPopupPresenterBase::NeedsWebUIContentBeforeShow() const {
 }
 
 void OmniboxPopupPresenterBase::CreateWebUIContentAfterWindowPresentation() {
-  views::Widget* widget = delegate().GetLocationBarWidget();
-  // Key on the browser window's widget rather than the macOS immersive
-  // fullscreen overlay that may host the location bar.
-  views::Widget* browser_widget =
-      widget ? widget->GetTopLevelWidget() : nullptr;
+  views::Widget* browser_widget = GetBrowserWidget();
   if (!browser_widget) {
     // `Show()` and the other callers of `GetOrCreateWebUIContent()` still
     // create the content when they need it.
@@ -1013,11 +1014,6 @@ void OmniboxPopupPresenterBase::UnregisterBlocker() {
 }
 
 void OmniboxPopupPresenterBase::OnFileSelectionClosed() {}
-
-views::Widget* OmniboxPopupPresenterBase::GetBrowserWidget() {
-  views::Widget* widget = delegate().GetLocationBarWidget();
-  return widget ? widget->GetTopLevelWidget() : nullptr;
-}
 
 bool OmniboxPopupPresenterBase::IsBrowserOrPopupActive() {
   views::Widget* browser_widget = GetBrowserWidget();

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_config.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_host.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -65,6 +66,7 @@ class OmniboxPopupPresenterBase
     : public OmniboxPopupHost,
       public OmniboxPopupContentDelegate,
       public OmniboxPopupContentSizer,
+      public OmniboxPopupWebUIPoolHost,
       public content::WebContentsObserver,
       public permissions::PermissionRequestManager::Observer {
  public:
@@ -156,31 +158,34 @@ class OmniboxPopupPresenterBase
   // content.
   OmniboxPopupWebUIBaseContent* GetOrCreateWebUIContent(CreationReason reason);
 
+  // OmniboxPopupWebUIPoolHost:
   // Releases the loaded WebContents of the popup, which must be hidden, so
   // that the presenter of the same popup kind in another browser window of the
   // profile can adopt it with `AdoptWebUIContents()`. Destroys this
   // presenter's content; the next `GetOrCreateWebUIContent()` creates a new
   // one.
-  std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> ReleaseWebUIContents();
+  std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> ReleaseWebUIContents()
+      override;
 
   // Returns whether `ReleaseWebUIContents()` may move the popup to another
   // browser window now. Errs toward false: the popup must have loaded content,
   // be hidden, hold no deactivation blocker or permission prompt, and its
   // content must hold no work for this window; see
   // `OmniboxPopupWebUIBaseContent::CanReleaseContentsWrapper()`.
-  bool CanReleaseWebUIContents();
+  bool CanReleaseWebUIContents() override;
 
   // Returns the kind of popup that this presenter shares with the other
   // browser windows of its profile with
   // `omnibox::kOmniboxWebUIPopupShareAcrossWindows`, or
   // `OmniboxPopupState::kNone` if it does not share its popup.
-  virtual OmniboxPopupState GetSharedPopupKind() const;
+  OmniboxPopupState GetSharedPopupKind() const override;
 
   // Creates this presenter's content around `contents`, which another browser
   // window's presenter released, instead of loading a new WebContents. The
   // presenter must not have content.
   OmniboxPopupWebUIBaseContent* AdoptWebUIContents(
-      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents);
+      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
+  views::Widget* GetBrowserWidget() const override;
 
   // Called when the browser window that hosts this popup presents a frame
   // after `CreateWebUIContentAfterWindowPresentation()`. If the WebUI content
@@ -204,8 +209,6 @@ class OmniboxPopupPresenterBase
   // through the delegate's `OnPopupFirstVisuallyNonEmptyPaint()`.
   bool CompletedFirstVisuallyNonEmptyPaint() override;
   void SetCompletedFirstVisuallyNonEmptyPaintForTesting(bool completed);
-
-  virtual std::string_view GetPopupMetricPrefix() const = 0;
 
   OmniboxPopupPresenterDelegate& delegate() const {
     return *presenter_delegate_;
@@ -386,10 +389,6 @@ class OmniboxPopupPresenterBase
   LocationBar* location_bar() const { return location_bar_.get(); }
 
   OmniboxController* controller() const { return controller_.get(); }
-
-  // Returns the browser window's widget. In macOS immersive fullscreen this is
-  // not the location bar's widget, which is then a non-activatable overlay.
-  views::Widget* GetBrowserWidget();
 
   // permissions::PermissionRequestManager::Observer:
   void OnPromptAdded() override;
