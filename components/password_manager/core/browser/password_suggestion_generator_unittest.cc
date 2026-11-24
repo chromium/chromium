@@ -5,6 +5,8 @@
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -14,6 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
+#include "build/build_config.h"
 #include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
@@ -41,9 +45,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -66,6 +72,7 @@ using testing::IsEmpty;
 using testing::Matcher;
 using testing::NiceMock;
 using testing::Not;
+using testing::Optional;
 using testing::Property;
 using testing::Return;
 using testing::ReturnRef;
@@ -171,6 +178,24 @@ Matcher<Suggestion> EqualsManagePasswordsSuggestion(
                Field("trailing_icon", &Suggestion::trailing_icon,
                      Suggestion::Icon::kGooglePasswordManager));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+Matcher<Suggestion> EqualsDefaultPasswordSuggestion() {
+  return EqualsDomainPasswordSuggestion(
+      SuggestionType::kPasswordEntry, u"username",
+      std::u16string(8u, constants::kPasswordReplacementChar),
+      /*realm_label=*/u"", gfx::Image());
+}
+
+Matcher<Suggestion> EqualsUnlockTrustedVaultSuggestion() {
+  return EqualsSuggestion(SuggestionType::kPendingStateTrustedVaultError,
+                          l10n_util::GetStringUTF16(
+                              IDS_PASSWORD_MANAGER_UNLOCK_TRUSTED_VAULT_PROMO),
+                          Suggestion::Icon::kGooglePasswordManager);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 Matcher<Suggestion> EqualsTroubleSigningInSuggestion(
@@ -1802,6 +1827,154 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                       FillingReauthPromoShown::kNotShown, 1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+class PasswordSuggestionGeneratorTrustedVaultTest
+    : public PasswordSuggestionGeneratorTest {
+ protected:
+  void SetUp() override {
+    PasswordSuggestionGeneratorTest::SetUp();
+    EnablePasswordSync();
+    ON_CALL(sync_service(), GetUserActionableError())
+        .WillByDefault(Return(syncer::SyncService::UserActionableError::
+                                  kNeedsTrustedVaultKeyForPasswords));
+  }
+
+  std::vector<Suggestion> GetSuggestions(
+      base::optional_ref<const PasswordFormFillData> fill_data = std::nullopt,
+      const std::u16string& username_filter = u"",
+      OffersGeneration offers_generation = OffersGeneration(false)) {
+    return generator().GetSuggestionsForDomain(
+        undo_controller(), fill_data, favicon(), username_filter,
+        offers_generation, ShowPasswordSuggestions(true),
+        ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
+  }
+
+  base::test::ScopedFeatureList feature_list_{
+      password_manager::features::kPasswordSignInInContextErrorResolution};
+};
+
+// Tests that the unlock option is shown alone when no credentials exist.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       GeneratesUnlockPromoWhenLocked_Alone) {
+  EXPECT_THAT(GetSuggestions(),
+              ElementsAre(EqualsUnlockTrustedVaultSuggestion()));
+}
+
+// Tests that the unlock option is appended between local credentials and
+// footer.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       GeneratesUnlockPromoWhenLocked_WithLocalCredentials) {
+  EXPECT_THAT(GetSuggestions(password_form_fill_data()),
+              ElementsAre(EqualsDefaultPasswordSuggestion(),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsUnlockTrustedVaultSuggestion(),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+}
+
+// Tests that the unlock option stays visible when filtering out credentials.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       GeneratesUnlockOptionWhenLocked_NonMatchingUsernameFilter) {
+  EXPECT_THAT(GetSuggestions(password_form_fill_data(), u"nonmatching"),
+              ElementsAre(EqualsUnlockTrustedVaultSuggestion()));
+}
+
+// Tests that generation is suppressed while locked, including on signup forms.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       DoesNotOfferPasswordGenerationWhenLocked) {
+  EXPECT_THAT(
+      GetSuggestions(password_form_fill_data(), u"", OffersGeneration(true)),
+      ElementsAre(EqualsDefaultPasswordSuggestion(),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsUnlockTrustedVaultSuggestion(),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsManagePasswordsSuggestion()));
+
+  // On a registration form with 0 saved credentials (`!fill_data.has_value()`),
+  // both password generation and the sign-in unlock option are suppressed.
+  EXPECT_THAT(GetSuggestions(std::nullopt, u"", OffersGeneration(true)),
+              IsEmpty());
+}
+
+// Tests that the unlock option is hidden and generation stays on when disabled.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       UnlockPromoSuppressedAndGenerationOfferedWhenFeatureDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      password_manager::features::kPasswordSignInInContextErrorResolution);
+
+  EXPECT_THAT(
+      GetSuggestions(password_form_fill_data(), u"", OffersGeneration(true)),
+      ElementsAre(EqualsDefaultPasswordSuggestion(),
+                  EqualsGeneratePasswordSuggestion(),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsManagePasswordsSuggestion()));
+}
+
+// Tests that the unlock option is suppressed on Google and settings origins.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       SuppressedOnGaiaOrSettingsURL) {
+  ON_CALL(client(), GetLastCommittedURL()).WillByDefault(ReturnRef(kGaiaURL));
+  EXPECT_THAT(GetSuggestions(password_form_fill_data()),
+              ElementsAre(EqualsDefaultPasswordSuggestion(),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+  EXPECT_THAT(GetSuggestions(), IsEmpty());
+
+  ON_CALL(client(), GetLastCommittedURL())
+      .WillByDefault(ReturnRef(kPasswordsManagerURL));
+  EXPECT_THAT(GetSuggestions(password_form_fill_data()),
+              ElementsAre(EqualsDefaultPasswordSuggestion(),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+
+  // Embedded Google subframe on an external main-frame URL is also suppressed.
+  ON_CALL(client(), GetLastCommittedURL())
+      .WillByDefault(ReturnRef(kExternalURL));
+  driver().set_last_committed_url(kGaiaURL);
+  EXPECT_EQ(generator().GetTrustedVaultUnlockSuggestion(), std::nullopt);
+}
+
+// Tests that GetTrustedVaultUnlockSuggestion returns the promo while locked.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       GetTrustedVaultUnlockSuggestion_ReturnsUnlockPromoWhenLocked) {
+  EXPECT_THAT(generator().GetTrustedVaultUnlockSuggestion(),
+              Optional(EqualsUnlockTrustedVaultSuggestion()));
+}
+
+// Tests that GetTrustedVaultUnlockSuggestion returns nullopt when unlocked.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       GetTrustedVaultUnlockSuggestion_ReturnsNulloptWhenUnlocked) {
+  ON_CALL(sync_service(), GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+  EXPECT_EQ(generator().GetTrustedVaultUnlockSuggestion(), std::nullopt);
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Tests that the signin-pending option takes precedence over the unlock option.
+TEST_F(PasswordSuggestionGeneratorTrustedVaultTest,
+       PendingStateSigninTakesPrecedenceOverTrustedVaultError) {
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_test_env()->identity_manager(), "example@google.com",
+      signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.GetAccountId());
+
+  EXPECT_EQ(generator().GetTrustedVaultUnlockSuggestion(), std::nullopt);
+  EXPECT_THAT(
+      GetSuggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kPendingStateSignin)));
+  EXPECT_THAT(GetSuggestions(password_form_fill_data()),
+              ElementsAre(EqualsDefaultPasswordSuggestion(),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kPendingStateSignin),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordSuggestionGeneratorTest,

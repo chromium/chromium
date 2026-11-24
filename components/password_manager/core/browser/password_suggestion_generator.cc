@@ -6,8 +6,11 @@
 
 #include <algorithm>
 #include <functional>
+#include <optional>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/containers/extend.h"
@@ -36,6 +39,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -102,8 +106,6 @@ Suggestion::PasswordSuggestionDetails GetSuggestionDetailsForRecoveryFlow(
       credential.backup_password_value.value(), credential.realm,
       credential.is_grouped_affiliation);
 }
-
-
 
 void AppendBackupSuggestion(const autofill::PasswordAndMetadata& credential,
                             std::vector<Suggestion>* suggestions) {
@@ -392,6 +394,27 @@ void RecordPendingStatePromoHistogram(FillingReauthPromoShown sample) {
 
 #endif
 
+Suggestion CreateTrustedVaultUnlockEntry() {
+  Suggestion suggestion(SuggestionType::kPendingStateTrustedVaultError);
+  suggestion.main_text =
+      Suggestion::Text(l10n_util::GetStringUTF16(
+                           IDS_PASSWORD_MANAGER_UNLOCK_TRUSTED_VAULT_PROMO),
+                       Suggestion::Text::IsPrimary(true),
+                       Suggestion::Text::ShouldTruncate(false));
+  suggestion.icon = Suggestion::Icon::kGooglePasswordManager;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  return suggestion;
+}
+
+void CreateEntryForTrustedVaultUnlock(std::vector<Suggestion>& suggestions) {
+  if (!suggestions.empty()) {
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestions.push_back(std::move(separator));
+  }
+
+  suggestions.emplace_back(CreateTrustedVaultUnlockEntry());
+}
 }  // namespace
 
 PasswordSuggestionGenerator::PasswordSuggestionGenerator(
@@ -528,10 +551,15 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
           .has_value();
 #endif
 
-  // Don't return early if there is a QR code suggestion. It still needs to be
-  // appended later in the footer section.
+  const bool has_trusted_vault_error = ShouldShowTrustedVaultUnlock();
+  const bool is_signup_form = offers_generation && !fill_data.has_value();
+  const bool show_trusted_vault_error =
+      has_trusted_vault_error && !is_signup_form;
+
+  // Don't return early if there is a QR code suggestion or trusted vault error.
+  // They still need to be appended later in the footer section.
   if (!fill_data.has_value() && !uses_passkeys && !has_qr &&
-      suggestions.empty()) {
+      suggestions.empty() && !show_trusted_vault_error) {
     // Probably the credential was deleted in the mean time.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (CanShowPendingStatePromo(*password_client_)) {
@@ -550,7 +578,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
   }
 
   // Add password generation entry, if available.
-  if (offers_generation) {
+  if (offers_generation && !has_trusted_vault_error) {
     suggestions.emplace_back(CreateGenerationEntry());
   }
 
@@ -567,6 +595,9 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
   }
 #endif
 
+  if (show_trusted_vault_error) {
+    CreateEntryForTrustedVaultUnlock(suggestions);
+  }
   // Add "Manage all passwords" link to settings.
   AppendOptionalFooterSection(&suggestions);
 
@@ -754,4 +785,24 @@ PasswordSuggestionGenerator::GetWebauthnInlineQrCodeSuggestion() const {
   return std::nullopt;
 }
 
+bool PasswordSuggestionGenerator::ShouldShowTrustedVaultUnlock() const {
+  if (!password_manager_util::ShouldShowTrustedVaultErrorInAutofill(
+          password_client_, password_manager_driver_)) {
+    return false;
+  }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (CanShowPendingStatePromo(*password_client_)) {
+    return false;
+  }
+#endif
+  return true;
+}
+
+std::optional<autofill::Suggestion>
+PasswordSuggestionGenerator::GetTrustedVaultUnlockSuggestion() const {
+  if (ShouldShowTrustedVaultUnlock()) {
+    return CreateTrustedVaultUnlockEntry();
+  }
+  return std::nullopt;
+}
 }  // namespace password_manager

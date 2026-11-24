@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SUGGESTION_GENERATOR_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -114,9 +115,13 @@ class PasswordSuggestionGenerator {
   // Returns a `kWebauthnPasskeyQrCode` suggestion if it should be shown on the
   // official Chrome Sign-in page guarded by a feature flag.
   std::optional<autofill::Suggestion> GetWebauthnInlineQrCodeSuggestion() const;
+  // Returns a `kPendingStateTrustedVaultError` suggestion if trusted vault
+  // error resolution is needed.
+  std::optional<autofill::Suggestion> GetTrustedVaultUnlockSuggestion() const;
 
  private:
   bool IsLastCommittedUrlCryptographic() const;
+  bool ShouldShowTrustedVaultUnlock() const;
 
   // If there are any fillable suggestions already in the list, append a "Manage
   // passwords" entry (and a preceding separator) to `suggestions`. If Passkeys
