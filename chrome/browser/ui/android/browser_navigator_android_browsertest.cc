@@ -2561,8 +2561,10 @@ class NavigateAndroidMixedProfileBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(NavigateAndroidMixedProfileBrowserTest,
-                       Async_Disposition_NewWindow_FromIncognitoProfile) {
+// TODO(crbug.com/589906741): Flaky TestFuture timeout on Desktop Android CI.
+IN_PROC_BROWSER_TEST_F(
+    NavigateAndroidMixedProfileBrowserTest,
+    DISABLED_Async_Disposition_NewWindow_FromIncognitoProfile) {
   BrowserWindowInterface* incognito_window = CreateIncognitoBrowserWindow();
   ASSERT_NE(incognito_window, nullptr);
   ASSERT_TRUE(incognito_window->GetProfile()->IsOffTheRecord());
