@@ -70,3 +70,19 @@ interface ExtensibleTestUnionExchangeV2 {
   [Sync] ExchangeWithNullableDefault@2(TestUnionV2 u)
       => (ExtensibleTestUnionV1WithNullableDefault u);
 };
+
+union RecursiveUnionPartner {
+  int32 leaf@0;
+  RecursiveUnion? child@1;
+};
+
+union RecursiveUnion {
+  int32 leaf@0;
+  RecursiveUnionPartner? partner@1;
+  array<RecursiveUnion> array_children@2;
+  array<map<int32, map<int8, array<RecursiveUnion?>>>> complex_children@3;
+};
+
+struct RecursiveUnionWrapper {
+  RecursiveUnion value@0;
+};

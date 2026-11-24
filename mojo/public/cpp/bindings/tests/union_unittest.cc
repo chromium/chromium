@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -1231,6 +1232,120 @@ TEST(UnionTest, ExtensibleUnion) {
     EXPECT_TRUE(result->is_name());
     EXPECT_FALSE(result->get_name().has_value());
   }
+}
+
+namespace {
+
+enum class RecursiveUnionKind {
+  kDirectChild,
+  kArrayChildren,
+  kComplexChildren,
+};
+
+mojom::RecursiveUnionPtr BuildRecursiveUnion(RecursiveUnionKind kind,
+                                             int depth) {
+  auto current = mojom::RecursiveUnion::NewLeaf(42);
+  switch (kind) {
+    case RecursiveUnionKind::kDirectChild:
+      if (depth % 2 == 1) {
+        current = mojom::RecursiveUnion::NewPartner(
+            mojom::RecursiveUnionPartner::NewLeaf(42));
+      }
+      for (int i = 0; i < depth - (depth % 2); i += 2) {
+        current = mojom::RecursiveUnion::NewPartner(
+            mojom::RecursiveUnionPartner::NewChild(std::move(current)));
+      }
+      break;
+    case RecursiveUnionKind::kArrayChildren:
+      for (int i = 0; i < depth; ++i) {
+        auto next = mojom::RecursiveUnion::NewArrayChildren({});
+        next->get_array_children().push_back(std::move(current));
+        current = std::move(next);
+      }
+      break;
+    case RecursiveUnionKind::kComplexChildren:
+      for (int i = 0; i < depth; ++i) {
+        auto next = mojom::RecursiveUnion::NewComplexChildren({});
+        next->get_complex_children().emplace_back()[1][int8_t{1}].push_back(
+            std::move(current));
+        current = std::move(next);
+      }
+      break;
+  }
+  return current;
+}
+
+template <typename MojomType>
+void ExpectSerializeAndDeserializeDepthResult(
+    mojo::StructPtr<MojomType> in,
+    mojo::internal::ValidationError expected_error) {
+  mojo::internal::ValidationErrorObserverForTesting observer(base::DoNothing());
+  mojo::StructPtr<MojomType> out;
+  bool expected_ok = (expected_error == mojo::internal::VALIDATION_ERROR_NONE);
+  EXPECT_EQ(expected_ok, SerializeAndDeserialize<MojomType>(in, out));
+  EXPECT_EQ(expected_error, observer.last_error());
+  EXPECT_EQ(expected_ok, !out.is_null());
+}
+
+void VerifyRecursiveUnionDepthLimit(RecursiveUnionKind kind) {
+  // Struct-wrapped root union (`RecursiveUnionWrapper`).
+  ExpectSerializeAndDeserializeDepthResult(
+      mojom::RecursiveUnionWrapper::New(
+          BuildRecursiveUnion(kind, kMaxRecursionDepth)),
+      mojo::internal::VALIDATION_ERROR_NONE);
+  ExpectSerializeAndDeserializeDepthResult(
+      mojom::RecursiveUnionWrapper::New(
+          BuildRecursiveUnion(kind, kMaxRecursionDepth + 1)),
+      mojo::internal::VALIDATION_ERROR_MAX_RECURSION_DEPTH);
+
+  // Standalone top-level union (`RecursiveUnion` without wrapper struct).
+  ExpectSerializeAndDeserializeDepthResult(
+      BuildRecursiveUnion(kind, kMaxRecursionDepth),
+      mojo::internal::VALIDATION_ERROR_NONE);
+  ExpectSerializeAndDeserializeDepthResult(
+      BuildRecursiveUnion(kind, kMaxRecursionDepth + 1),
+      mojo::internal::VALIDATION_ERROR_MAX_RECURSION_DEPTH);
+}
+
+}  // namespace
+
+TEST(UnionTest, RecursiveUnionDirectChildMaxDepth) {
+  VerifyRecursiveUnionDepthLimit(RecursiveUnionKind::kDirectChild);
+}
+
+TEST(UnionTest, RecursiveUnionArrayMaxDepth) {
+  VerifyRecursiveUnionDepthLimit(RecursiveUnionKind::kArrayChildren);
+}
+
+TEST(UnionTest, RecursiveUnionComplexContainerMaxDepth) {
+  VerifyRecursiveUnionDepthLimit(RecursiveUnionKind::kComplexChildren);
+}
+
+TEST(UnionTest, RecursiveUnionSiblingsDoNotAccumulateDepth) {
+  mojo::internal::ValidationErrorObserverForTesting observer(base::DoNothing());
+
+  // Multiple sibling union elements should not accumulate recursion depth.
+  std::vector<mojom::RecursiveUnionPtr> siblings;
+  for (int i = 0; i < kMaxRecursionDepth + 50; ++i) {
+    siblings.push_back(mojom::RecursiveUnion::NewLeaf(i));
+  }
+  // Also include two sibling branches each nested to depth kMaxRecursionDepth -
+  // 1 (total depth inside the root union is kMaxRecursionDepth for each
+  // branch).
+  siblings.push_back(BuildRecursiveUnion(RecursiveUnionKind::kArrayChildren,
+                                         kMaxRecursionDepth - 1));
+  siblings.push_back(BuildRecursiveUnion(RecursiveUnionKind::kComplexChildren,
+                                         kMaxRecursionDepth - 1));
+
+  size_t expected_size = siblings.size();
+  auto in = mojom::RecursiveUnionWrapper::New(
+      mojom::RecursiveUnion::NewArrayChildren(std::move(siblings)));
+  mojom::RecursiveUnionWrapperPtr out;
+  ASSERT_TRUE(SerializeAndDeserialize<mojom::RecursiveUnionWrapper>(in, out));
+  EXPECT_EQ(mojo::internal::VALIDATION_ERROR_NONE, observer.last_error());
+  ASSERT_TRUE(out);
+  ASSERT_TRUE(out->value->is_array_children());
+  EXPECT_EQ(expected_size, out->value->get_array_children().size());
 }
 
 }  // namespace union_unittest

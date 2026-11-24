@@ -135,28 +135,66 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   // This object should be created on the stack once every time we recurse down
   // into a subfield during validation to make sure we don't recurse too deep
   // and blow the stack.
+  //
+  // Wrapper patterns like `mojo_base.mojom.Value` (`union Value` ->
+  // `struct ListValue` -> `array<Value>`) use both a struct and an inlined
+  // union for a single logical nesting step, so `ScopedDepthTracker` tracks
+  // whether validation is already inside a union (`in_union_`) to avoid
+  // double-counting that step while still bounding union-only recursion.
   class ScopedDepthTracker {
    public:
+    enum class Kind {
+      // Out-of-line struct (e.g. `ListValue` inside `Value`). Always
+      // increments `stack_depth_` and resets `in_union_` to `false`.
+      kStruct,
+      // Union stored inline in a struct field or `array<Union>` element.
+      // Shares the enclosing struct's depth when `!prev_in_union_` (e.g.
+      // `Value` elements in `ListValue::storage`), and increments
+      // `stack_depth_` when already inside a union (`prev_in_union_`, e.g.
+      // `union U { array<U> }`).
+      kInlinedUnion,
+      // Out-of-line union pointed to by another union's payload slot (e.g.
+      // mutually recursive unions). Always inside an enclosing union, so
+      // always increments `stack_depth_` and keeps `in_union_` set to `true`.
+      kNonInlinedUnion,
+    };
+
     // |ctx| must outlive this object.
-    explicit ScopedDepthTracker(ValidationContext* ctx) : ctx_(ctx) {
-      ++ctx_->stack_depth_;
+    ScopedDepthTracker(ValidationContext* ctx, Kind kind)
+        : ctx_(ctx),
+          prev_stack_depth_(ctx->stack_depth_),
+          prev_in_union_(ctx->in_union_) {
+      if (kind != Kind::kInlinedUnion || prev_in_union_) {
+        ++ctx_->stack_depth_;
+      }
+      ctx_->in_union_ = (kind != Kind::kStruct);
     }
 
     ScopedDepthTracker(const ScopedDepthTracker&) = delete;
     ScopedDepthTracker& operator=(const ScopedDepthTracker&) = delete;
 
-    ~ScopedDepthTracker() { --ctx_->stack_depth_; }
+    ~ScopedDepthTracker() {
+      ctx_->stack_depth_ = prev_stack_depth_;
+      ctx_->in_union_ = prev_in_union_;
+    }
 
    private:
     // `ctx_` is not a raw_ptr<...> for performance reasons: On-stack pointee
     // (i.e. not covered by BackupRefPtr protection).
-    RAW_PTR_EXCLUSION ValidationContext* ctx_;
+    RAW_PTR_EXCLUSION ValidationContext* const ctx_;
+    const int prev_stack_depth_;
+    const bool prev_in_union_;
   };
 
   // Returns true if the recursion depth limit has been reached.
   [[nodiscard]] bool ExceedsMaxDepth() {
     return stack_depth_ > kMaxRecursionDepth;
   }
+
+  // Marks `ValidationContext` as inside a union when validating a non-inlined
+  // union header (including standalone root unions validated via
+  // `Union::Validate`, which do not enter via `ScopedDepthTracker`).
+  void EnterNonInlinedUnion() { in_union_ = true; }
 
   Message* message() const { return message_; }
   const char* description() const { return description_; }
@@ -189,6 +227,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   uint32_t associated_endpoint_handle_end_;
 
   int stack_depth_;
+  bool in_union_ = false;
 };
 
 }  // namespace internal

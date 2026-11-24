@@ -460,7 +460,8 @@ NOINLINE bool ValidateNonNullMapContainer(
 NOINLINE bool ValidateStructImpl(const uint64_t* offset,
                                  ValidationContext* validation_context,
                                  ValidateStructFunc* validate_func) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
+  ValidationContext::ScopedDepthTracker depth_tracker(
+      validation_context, ValidationContext::ScopedDepthTracker::Kind::kStruct);
   // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
          validate_func(UNSAFE_BUFFERS(DecodePointer(offset)),
@@ -478,6 +479,9 @@ NOINLINE bool ValidateNonNullStructImpl(const uint64_t* offset,
 NOINLINE bool ValidateInlinedUnionImpl(const void* data,
                                        ValidationContext* validation_context,
                                        ValidateUnionFunc* validate_func) {
+  ValidationContext::ScopedDepthTracker depth_tracker(
+      validation_context,
+      ValidationContext::ScopedDepthTracker::Kind::kInlinedUnion);
   if (validation_context->ExceedsMaxDepth()) {
     ReportValidationError(validation_context,
                           VALIDATION_ERROR_MAX_RECURSION_DEPTH);
@@ -503,9 +507,12 @@ NOINLINE bool ValidateNonNullInlinedUnionImpl(
   return ValidateInlinedUnionImpl(data, validation_context, validate_func);
 }
 
-bool ValidateNonInlinedUnionImpl(const uint64_t* offset,
-                                 ValidationContext* validation_context,
-                                 ValidateUnionFunc* validate_func) {
+NOINLINE bool ValidateNonInlinedUnionImpl(const uint64_t* offset,
+                                          ValidationContext* validation_context,
+                                          ValidateUnionFunc* validate_func) {
+  ValidationContext::ScopedDepthTracker depth_tracker(
+      validation_context,
+      ValidationContext::ScopedDepthTracker::Kind::kNonInlinedUnion);
   // SAFETY: The decoded pointer is bounds-checked before it is dereferenced.
   return ValidateParamsOffset(offset, validation_context) &&
          validate_func(UNSAFE_BUFFERS(DecodePointer(offset)),
@@ -621,6 +628,7 @@ NOINLINE bool ValidateNonInlinedUnionHeaderAndClaimMemory(
     return false;
   }
 
+  validation_context->EnterNonInlinedUnion();
   return true;
 }
 
