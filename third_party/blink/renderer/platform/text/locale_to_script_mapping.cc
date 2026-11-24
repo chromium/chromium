@@ -30,15 +30,28 @@
 
 #include "third_party/blink/renderer/platform/text/locale_to_script_mapping.h"
 
+#include <stddef.h>
+
+#include <algorithm>
+#include <array>
+#include <string_view>
+
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+template <size_t kMaxLen>
 struct SubtagScript {
-  const char* subtag;
+  std::array<char, kMaxLen + 1> subtag{};
   UScriptCode script;
+
+  consteval SubtagScript(std::string_view str, UScriptCode s) : script(s) {
+    CHECK_LE(str.size(), kMaxLen);
+    std::ranges::copy(str, subtag.begin());
+  }
 };
 
 UScriptCode ScriptNameToCode(const StringView& script_name) {
@@ -47,7 +60,7 @@ UScriptCode ScriptNameToCode(const StringView& script_name) {
   // assigning a per-script font in Settings. For example, "hira" is mapped to
   // USCRIPT_KATAKANA_OR_HIRAGANA instead of USCRIPT_HIRAGANA, since we want all
   // Japanese scripts to be rendered using the same font setting.
-  static constexpr SubtagScript kScriptNameCodeList[] = {
+  static constexpr SubtagScript<4> kScriptNameCodeList[] = {
       {"zyyy", USCRIPT_COMMON},
       {"qaai", USCRIPT_INHERITED},
       {"arab", USCRIPT_ARABIC},
@@ -156,7 +169,7 @@ UScriptCode ScriptNameToCode(const StringView& script_name) {
       {"zxxx", USCRIPT_UNWRITTEN_LANGUAGES},
       {"zzzz", USCRIPT_UNKNOWN}};
   for (const auto& kv : kScriptNameCodeList) {
-    if (EqualIgnoringAsciiCase(script_name, kv.subtag)) {
+    if (EqualIgnoringAsciiCase(script_name, kv.subtag.data())) {
       if (kv.script == USCRIPT_ARABIC_NASTALIQ &&
           !RuntimeEnabledFeatures::NastaliqScriptEnabled()) {
         return USCRIPT_INVALID_CODE;
@@ -168,7 +181,7 @@ UScriptCode ScriptNameToCode(const StringView& script_name) {
 }
 
 UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
-  static constexpr SubtagScript kLocaleScriptList[] = {
+  static constexpr SubtagScript<6> kLocaleScriptList[] = {
       {"aa", USCRIPT_LATIN},
       {"ab", USCRIPT_CYRILLIC},
       {"ady", USCRIPT_CYRILLIC},
@@ -454,7 +467,7 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
   StringView tag(canonical_locale);
   while (!tag.empty()) {
     for (const auto& kv : kLocaleScriptList) {
-      if (EqualIgnoringAsciiCase(tag, kv.subtag)) {
+      if (EqualIgnoringAsciiCase(tag, kv.subtag.data())) {
         if (kv.script == USCRIPT_ARABIC_NASTALIQ &&
             !RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
           return USCRIPT_ARABIC;
@@ -478,13 +491,13 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
 }
 
 static UScriptCode ScriptCodeForHanFromRegion(const StringView& region) {
-  static constexpr SubtagScript kRegionScriptList[] = {
+  static constexpr SubtagScript<2> kRegionScriptList[] = {
       {"hk", USCRIPT_TRADITIONAL_HAN}, {"jp", USCRIPT_KATAKANA_OR_HIRAGANA},
       {"kr", USCRIPT_HANGUL},          {"mo", USCRIPT_TRADITIONAL_HAN},
       {"tw", USCRIPT_TRADITIONAL_HAN},
   };
   for (const auto& kv : kRegionScriptList) {
-    if (EqualIgnoringAsciiCase(region, kv.subtag)) {
+    if (EqualIgnoringAsciiCase(region, kv.subtag.data())) {
       return kv.script;
     }
   }
