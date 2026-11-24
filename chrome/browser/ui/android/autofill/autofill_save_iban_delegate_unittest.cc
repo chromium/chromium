@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -13,11 +14,14 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/browser_ui/device_lock/android/test_device_lock_bridge.h"
 #include "content/public/browser/web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
 
 namespace autofill {
 namespace {
+
+using ::testing::Optional;
 
 const std::u16string kUserProvidedNickname = u"My doctor's IBAN";
 
@@ -137,6 +141,32 @@ TEST_F(AutofillSaveIbanDelegateTest, DeviceLockRequirementsMet) {
               testing::Optional(EqualToLocalCallbackArgs(
                   SaveIbanOfferUserDecision::kAccepted,
                   /*user_provided_nickname=*/kUserProvidedNickname)));
+}
+
+// Tests that a temporary nickname passed to OnUiAccepted() remains valid when
+// the device lock check finishes asynchronously.
+TEST_F(AutofillSaveIbanDelegateTest,
+       DeviceLockRequirementsMetWithTemporaryNickname) {
+  base::MockOnceClosure mock_finish_gathering_consent_callback;
+  EXPECT_CALL(mock_finish_gathering_consent_callback, Run);
+
+  std::optional<std::u16string> nickname =
+      u"A long heap-allocated IBAN nickname";
+  delegate_->OnUiAccepted(mock_finish_gathering_consent_callback.Get(),
+                          *nickname);
+  nickname->assign(nickname->size(), u'x');
+  nickname.reset();
+
+  EXPECT_TRUE(test_bridge_->did_start_checking_device_lock_requirements());
+  EXPECT_FALSE(local_offer_decision_.has_value());
+
+  test_bridge_->SimulateFinishedCheckingDeviceLockRequirements(
+      /*are_device_lock_requirements_met=*/true);
+  EXPECT_THAT(
+      local_offer_decision_,
+      Optional(EqualToLocalCallbackArgs(
+          SaveIbanOfferUserDecision::kAccepted,
+          /*user_provided_nickname=*/u"A long heap-allocated IBAN nickname")));
 }
 
 // Tests that IBAN is not saved if device lock UI is shown but device lock is

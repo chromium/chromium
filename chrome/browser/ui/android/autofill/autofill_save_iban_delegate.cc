@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/notreached.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
@@ -28,7 +30,8 @@ void AutofillSaveIbanDelegate::OnUiAccepted(
   device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
       web_contents_->GetNativeView()->GetWindowAndroid(),
       base::BindOnce(&AutofillSaveIbanDelegate::OnAfterDeviceLockUi,
-                     weak_ptr_factory_.GetWeakPtr(), user_provided_nickname));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::u16string(user_provided_nickname)));
 }
 
 void AutofillSaveIbanDelegate::OnUiCanceled() {
