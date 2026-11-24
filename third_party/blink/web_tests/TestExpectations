@@ -8778,6 +8778,9 @@ crbug.com/589626372 [ Debug Linux ] external/wpt/html/user-activation/traverse-a
 crbug.com/588928170 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-generated-content-001.html [ Failure Pass ]
 crbug.com/584920130 [ Win11-arm64 ] external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Failure Pass ]
 
+# Gardener 2026-11-24
+crbug.com/589988269 [ Win10.20h2 ] external/wpt/svg/path/arc-tiny-radii.html [ Failure Pass ]
+
 # CQ flakiness quarantine 2026-11-23
 crbug.com/584728940 [ Linux Release ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash Pass ]
 crbug.com/339680580 [ Mac ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Failure Pass ]
