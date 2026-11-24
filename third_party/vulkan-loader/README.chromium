@@ -3,7 +3,7 @@ Short Name: Vulkan Loader
 Version: N/A
 URL: https://github.com/KhronosGroup/Vulkan-Loader
 SOURCE CODE: git clone https://github.com/KhronosGroup/Vulkan-Loader.git
-Revision: 9e2ebe347d92d60ad0b56967a49e8c006f894e2f
+Revision: 7d76ff3c3eac272ed37f606e13915b3bd288c30b
 Update Mechanism: Autoroll
 Security Critical: no
 Shipped: yes
