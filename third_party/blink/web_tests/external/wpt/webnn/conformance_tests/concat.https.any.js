@@ -2460,7 +2460,36 @@ const concatTests = [
         }
       }
     }
-  }
+  },
+  {
+    'name': 'concat two uint32 2D constant tensors of same shape along axis 0',
+    'graph': {
+      'inputs': {
+        'concatInput1': {
+          'data': [1, 2, 3, 4, 5, 6],
+          'descriptor': {shape: [2, 3], dataType: 'uint32'},
+          'constant': true
+        },
+        'concatInput2': {
+          'data': [7, 8, 9, 10, 11, 12],
+          'descriptor': {shape: [2, 3], dataType: 'uint32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'concat',
+        'arguments':
+            [{'inputs': ['concatInput1', 'concatInput2']}, {'axis': 0}],
+        'outputs': 'concatOutput'
+      }],
+      'expectedOutputs': {
+        'concatOutput': {
+          'data': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          'descriptor': {shape: [4, 3], dataType: 'uint32'}
+        }
+      }
+    }
+  },
 ];
 
 webnn_conformance_test(concatTests, buildAndExecuteGraph, getZeroULPTolerance);

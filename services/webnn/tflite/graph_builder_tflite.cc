@@ -1212,11 +1212,17 @@ ContextProperties GraphBuilderTflite::GetContextProperties(
        /*where_value=*/
        {kFloat16To32AndInt8To64AndUint32, SupportedRanks::UpTo(5)}});
 
-  // The ML Drift GPU delegate does not support the int64 data type, so remove
-  // it from all op support limits when targeting the GPU to guide developers
-  // away from using operators that will fall back to the CPU.
   if (context_device == mojom::Device::kGpu) {
+    // The ML Drift GPU delegate does not support the int64 data type, so remove
+    // it from all op support limits when targeting the GPU to guide developers
+    // away from using operators that will fall back to the CPU.
     properties.data_type_limits.RemoveDataType(OperandDataType::kInt64);
+
+    // The ML Drift GPU delegate's CONCATENATION parser reads constant inputs
+    // via `ObjectReader::AddConstInput()`, which CHECK-fails on uint32 tensors
+    // instead of rejecting the node, so keep uint32 concat off the GPU.
+    properties.data_type_limits.concat_inputs.data_types.Remove(
+        OperandDataType::kUint32);
   }
 
   return properties;
