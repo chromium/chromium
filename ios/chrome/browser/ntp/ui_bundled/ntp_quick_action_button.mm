@@ -87,13 +87,18 @@ UIImageSymbolConfiguration* SymbolConfigurationForLayoutType(
     }
   }
 
-  if (IsNewTabPageUICleanupEnabled()) {
+  if (AreAimMerchandisingQuickActionsEnabled()) {
     UIImageSymbolWeight weight = (symbol == SymbolImageCreate)
                                      ? UIImageSymbolWeightLight
-                                     : UIImageSymbolWeightSemibold;
+                                     : UIImageSymbolWeightMedium;
     return
         [UIImageSymbolConfiguration configurationWithPointSize:symbol_point_size
                                                         weight:weight];
+  }
+  if (IsNewTabPageUICleanupEnabled()) {
+    return [UIImageSymbolConfiguration
+        configurationWithPointSize:symbol_point_size
+                            weight:UIImageSymbolWeightSemibold];
   }
   return [UIImageSymbolConfiguration
       configurationWithPointSize:symbol_point_size
