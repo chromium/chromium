@@ -22,6 +22,7 @@
 #include "chrome/common/glic_enums.mojom.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_source.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -39,14 +40,15 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
     BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
-#include "extensions/common/extension_id.h"
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
@@ -125,18 +127,80 @@ void PopulateInstalledExtensionInfo(content::BrowserContext* browser_context,
   extension_info.set_is_from_store(extension->from_webstore());
 }
 
-// Returns the strongest extension signal on a download that was not started
-// via the `chrome.downloads` API. Used for metrics only: these signals do not
-// attribute the download yet. `download` must not be null.
-ExtensionDownloadAttributionSignal ClassifyUnattributedDownload(
+// Returns the `ExtensionInfo` to report for `extension_id`. The ID is always
+// set, even if the extension is no longer installed. `fallback_name`, if not
+// empty, is reported as the name when the extension is not found in
+// `ExtensionRegistry`.
+ExtensionInfo BuildExtensionInfo(
+    content::BrowserContext* browser_context,
+    const extensions::ExtensionId& extension_id,
+    const std::string& fallback_name = std::string()) {
+  ExtensionInfo extension_info;
+  extension_info.set_id(extension_id);
+  if (!fallback_name.empty()) {
+    extension_info.set_name(fallback_name);
+  }
+  PopulateInstalledExtensionInfo(browser_context, extension_id, extension_info);
+  return extension_info;
+}
+
+// Returns the ID of the extension whose content requested `download`, if the
+// request initiator identifies one. `download` must not be null.
+//
+// Only navigation and renderer-initiated downloads are considered. A download
+// started from browser UI (e.g. "Save as", "Save link as", retry) reuses the
+// frame's origin or replays the initiator of an earlier request, so there the
+// initiator does not say who started the download. The same holds for a reload
+// or back/forward navigation, and for the built-in PDF Viewer, which navigates
+// the links a user clicks in a PDF.
+std::optional<extensions::ExtensionId> GetExtensionIdFromRequestInitiator(
     download::DownloadItem* download) {
-  // An extension frame (popup, offscreen document) made the request itself.
-  const std::optional<url::Origin>& initiator = download->GetRequestInitiator();
-  if (initiator.has_value() &&
-      initiator->scheme() == extensions::kExtensionScheme) {
-    return ExtensionDownloadAttributionSignal::kExtensionRequestInitiator;
+  const download::DownloadSource source = download->GetDownloadSource();
+  if (source != download::DownloadSource::NAVIGATION &&
+      source != download::DownloadSource::FROM_RENDERER) {
+    return std::nullopt;
   }
 
+  // A reload or back/forward navigation keeps the original initiator, even
+  // when the user starts it (e.g. by bypassing an interstitial). This matches
+  // `ExtensionActorTracker::DidFinishNavigation()`.
+  const ui::PageTransition transition = download->GetTransitionType();
+  if (source == download::DownloadSource::NAVIGATION &&
+      (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD) ||
+       (transition & ui::PAGE_TRANSITION_FORWARD_BACK))) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/570065942): A user clicking a download link inside an
+  // extension page also produces `NAVIGATION` or `FROM_RENDERER` with the
+  // extension's origin, so it is attributed to the extension here. Revisit if
+  // user-clicked links on extension pages need to be excluded.
+
+  // An opaque origin, such as a sandboxed extension page's, has an empty scheme
+  // and does not match.
+  const std::optional<url::Origin>& initiator = download->GetRequestInitiator();
+  if (!initiator.has_value() ||
+      initiator->scheme() != extensions::kExtensionScheme) {
+    return std::nullopt;
+  }
+
+  // The built-in PDF Viewer navigates the links a user clicks in a PDF with
+  // `chrome.tabs.update()` and `chrome.tabs.create()`, so it is the request
+  // initiator of downloads the user started.
+  // TODO(crbug.com/570065942): Other extensions that show content in a tab
+  // and navigate for the user (e.g. third-party document viewers) are still
+  // attributed here. Track these false positives and exclude them if needed.
+  if (initiator->host() == extension_misc::kPdfExtensionId) {
+    return std::nullopt;
+  }
+  return initiator->host();
+}
+
+// Returns the strongest extension signal on a download that is not attributed
+// to an extension. Used for metrics only: the tab's actor does not attribute
+// the download yet. `download` must not be null.
+ExtensionDownloadAttributionSignal ClassifyUnattributedDownload(
+    download::DownloadItem* download) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // TODO(crbug.com/570065942): Prefer the actor at download start once it is
   // snapshotted onto the `DownloadItem`. The tab's current actor can differ
@@ -240,40 +304,44 @@ std::optional<ExtensionInfo> GetExtensionInitiatorInfo(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-  // TODO(crbug.com/570065942): Only downloads started via the
-  // `chrome.downloads` API are attributed, since `DownloadedByExtension` is
-  // only attached there. Downloads an extension triggers by other means (e.g.
-  // navigation from an extension page, `<a download>`, content scripts) are not
-  // detected yet.
+  // The `BrowserContext` is attached to `download` as user data. It may be null
+  // if none was attached.
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(download);
+
+  // A download started via the `chrome.downloads` API.
   const extensions::DownloadedByExtension* by_ext =
       extensions::DownloadedByExtension::Get(download);
-  if (!by_ext || by_ext->id().empty()) {
-    base::UmaHistogramEnumeration(kExtensionActorLookupDownloadResultHistogram,
-                                  ClassifyUnattributedDownload(download));
-    return std::nullopt;
-  }
-  base::UmaHistogramEnumeration(
-      kExtensionActorLookupDownloadResultHistogram,
-      ExtensionDownloadAttributionSignal::kDownloadedByExtension);
-
-  ExtensionInfo extension_info;
-
-  // Always report the ID, even if the extension has since been uninstalled.
-  extension_info.set_id(by_ext->id());
-
-  // Set the name saved when the download started, as a fallback in case the
-  // extension is no longer installed.
-  if (!by_ext->name().empty()) {
-    extension_info.set_name(by_ext->name());
+  if (by_ext && !by_ext->id().empty()) {
+    base::UmaHistogramEnumeration(
+        kExtensionActorLookupDownloadResultHistogram,
+        ExtensionDownloadAttributionSignal::kDownloadedByExtension);
+    // The name saved when the download started is the fallback, in case the
+    // extension is no longer installed.
+    return BuildExtensionInfo(browser_context, by_ext->id(), by_ext->name());
   }
 
-  // The BrowserContext is attached to `download` as user data. It may be null
-  // if none was attached.
-  PopulateInstalledExtensionInfo(
-      content::DownloadItemUtils::GetBrowserContext(download), by_ext->id(),
-      extension_info);
+  // A download that extension content requested another way, e.g. by
+  // navigating to the file. No name was saved when it started.
+  // TODO(crbug.com/554183135): Download warning bypass events also look up the
+  // initiator here, so they name the extension that started the download (for
+  // both `DownloadedByExtension` and this fallback). Revisit whether
+  // user-bypassed events should omit the initiator.
+  if (std::optional<extensions::ExtensionId> extension_id =
+          GetExtensionIdFromRequestInitiator(download)) {
+    base::UmaHistogramEnumeration(
+        kExtensionActorLookupDownloadResultHistogram,
+        ExtensionDownloadAttributionSignal::kExtensionRequestInitiator);
+    return BuildExtensionInfo(browser_context, *extension_id);
+  }
 
-  return extension_info;
+  // TODO(crbug.com/570065942): A download an extension triggers by acting on a
+  // web page (e.g. clicking a link from a content script or through
+  // `chrome.debugger`) has a web or empty request initiator and is not
+  // attributed yet.
+  base::UmaHistogramEnumeration(kExtensionActorLookupDownloadResultHistogram,
+                                ClassifyUnattributedDownload(download));
+  return std::nullopt;
 #else
   return std::nullopt;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -302,11 +370,7 @@ std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
   base::UmaHistogramEnumeration(kExtensionActorLookupWebContentsResultHistogram,
                                 ExtensionActorAttributionResult::kAttributed);
 
-  ExtensionInfo extension_info;
-  extension_info.set_id(*actor_id);
-  PopulateInstalledExtensionInfo(web_contents->GetBrowserContext(), *actor_id,
-                                 extension_info);
-  return extension_info;
+  return BuildExtensionInfo(web_contents->GetBrowserContext(), *actor_id);
 #else
   return std::nullopt;
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&

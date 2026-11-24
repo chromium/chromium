@@ -12,7 +12,7 @@ namespace enterprise_connectors {
 inline constexpr char kExtensionActorTrackerClearedHistogram[] =
     "Enterprise.ExtensionActorAttribution.Tracker.Cleared";
 inline constexpr char kExtensionActorLookupDownloadResultHistogram[] =
-    "Enterprise.ExtensionActorAttribution.Lookup.Download.Result";
+    "Enterprise.ExtensionActorAttribution.Lookup.Download.Result2";
 inline constexpr char kExtensionActorLookupWebContentsResultHistogram[] =
     "Enterprise.ExtensionActorAttribution.Lookup.WebContents.Result";
 
@@ -57,8 +57,9 @@ enum class ExtensionActorAttributionResult {
 // `kExtensionRequestInitiator`, `kTabActor`, and the first match is recorded.
 // Buckets name the signal that was present, not whether it produced
 // attribution, so they keep their meaning as more signals start being used.
-// Currently only `kDownloadedByExtension` produces attribution; the other two
-// size the downloads that bypass `chrome.downloads` (crbug.com/570065942).
+// Currently `kDownloadedByExtension` and `kExtensionRequestInitiator` produce
+// attribution; `kTabActor` sizes the downloads an extension drives through a
+// web page (crbug.com/570065942).
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -69,12 +70,18 @@ enum class ExtensionDownloadAttributionSignal {
   kNone = 0,
   // Started via the `chrome.downloads` API (`DownloadedByExtension`).
   kDownloadedByExtension = 1,
-  // The request initiator is a `chrome-extension://` origin, e.g. an extension
-  // popup or offscreen document navigated to the file.
-  kExtensionRequestInitiator = 2,
+  // 2 is deprecated. It was recorded for any download whose request initiator
+  // was a `chrome-extension://` origin, including downloads started from
+  // browser UI. `kExtensionRequestInitiator` replaces it.
+
   // The originating tab has an active extension actor.
   kTabActor = 3,
-  kMaxValue = kTabActor,
+  // A navigation or renderer-initiated download whose request initiator is a
+  // `chrome-extension://` origin, e.g. an extension page navigated to the file.
+  // Reloads, back/forward navigations and the built-in PDF Viewer are not
+  // counted.
+  kExtensionRequestInitiator = 4,
+  kMaxValue = kExtensionRequestInitiator,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:ExtensionDownloadAttributionSignal)
 

@@ -3524,23 +3524,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Enterprise.ExtensionActorAttribution.Lookup.Download.Result"
+<histogram name="Enterprise.ExtensionActorAttribution.Lookup.Download.Result2"
     enum="ExtensionDownloadAttributionSignal" expires_after="2027-11-10">
   <owner>mingyil@google.com</owner>
   <owner>haihan@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
     The strongest signal identifying the extension behind a download, checked in
-    order: the chrome.downloads API, a chrome-extension:// request initiator,
-    then an active extension actor on the originating tab. Only the
-    chrome.downloads signal is currently used to attribute the download; the
-    other two size the downloads that bypass that API. Recorded each time Chrome
-    looks up the extension behind a download for an enterprise security event or
-    a content analysis request, while the kEnterpriseExtensionActorAttribution
-    feature is enabled. The tab's actor is read at lookup time, so it can differ
-    from the actor when the download started. A single download can be looked up
-    more than once, and lookups are recorded for every profile, including
-    profiles where enterprise reporting is off.
+    order: the chrome.downloads API, a chrome-extension:// request initiator on
+    a navigation (other than a reload or back/forward) or renderer-initiated
+    download, then an active extension actor on the originating tab. The
+    built-in PDF Viewer does not count as a request initiator. Recorded each
+    time Chrome looks up the extension behind a download for an enterprise
+    security event or a content analysis request, while the
+    kEnterpriseExtensionActorAttribution feature is enabled. The tab's actor is
+    read at lookup time, so it can differ from the actor when the download
+    started. A single download can be looked up more than once, and lookups are
+    recorded for every profile, including profiles where enterprise reporting is
+    off.
   </summary>
 </histogram>
 

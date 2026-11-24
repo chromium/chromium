@@ -3059,8 +3059,11 @@ chromium-metrics-reviews@google.com.
 <enum name="ExtensionDownloadAttributionSignal">
   <int value="0" label="No extension signal"/>
   <int value="1" label="Started via chrome.downloads API"/>
-  <int value="2" label="Request initiator is a chrome-extension:// origin"/>
+  <int value="2"
+      label="(Obsolete) Request initiator is a chrome-extension:// origin"/>
   <int value="3" label="Originating tab has an active extension actor"/>
+  <int value="4"
+      label="Navigation/renderer download from a chrome-extension:// origin"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h:ExtensionDownloadAttributionSignal) -->

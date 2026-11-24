@@ -222,8 +222,13 @@ if (!is_android) {
     ]
 
     if (enterprise_cloud_content_analysis && enable_extensions_core) {
-      sources += [ "extension_actor_tracker_browsertest.cc" ]
+      sources += [
+        "event_initiator_utils_browsertest.cc",
+        "extension_actor_tracker_browsertest.cc",
+      ]
       deps += [
+        "//chrome/browser/download:test_support",
+        "//chrome/browser/extensions:test_support",
         "//chrome/test/base:ui_test_utils",
         "//components/enterprise/connectors/core:test_support",
         "//extensions:test_support",

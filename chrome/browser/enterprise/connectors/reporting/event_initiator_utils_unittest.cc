@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/download/public/common/download_source.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
@@ -63,6 +63,7 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -94,15 +95,17 @@ constexpr char kExtensionVersion[] = "1.2.3";
 constexpr char kConversationId[] = "test-conversation-id";
 constexpr char kTriggeringContextId[] = "test-triggering-context-id";
 
-// A download item whose request initiator can be set, which
-// `content::FakeDownloadItem` does not support.
+// A download item whose request initiator and download source can be set.
+// `content::FakeDownloadItem` supports neither.
 class TestDownloadItem : public testing::NiceMock<download::MockDownloadItem> {
  public:
   explicit TestDownloadItem(
-      std::optional<url::Origin> request_initiator = std::nullopt)
+      std::optional<url::Origin> request_initiator = std::nullopt,
+      download::DownloadSource source = download::DownloadSource::NAVIGATION)
       : request_initiator_(std::move(request_initiator)) {
     ON_CALL(*this, GetRequestInitiator())
         .WillByDefault(testing::ReturnRef(request_initiator_));
+    ON_CALL(*this, GetDownloadSource()).WillByDefault(testing::Return(source));
   }
 
  private:
@@ -147,14 +150,15 @@ class EventInitiatorUtilsTest : public testing::Test {
     return extension;
   }
 
-  // Creates a download with `request_initiator` that is not associated with
-  // any extension. If `web_contents` is non-null it is attached as the
-  // originating tab, along with `profile_`.
+  // Creates a download with `request_initiator` and `source` that was not
+  // started via the `chrome.downloads` API. If `web_contents` is non-null it is
+  // attached as the originating tab, along with `profile_`.
   std::unique_ptr<TestDownloadItem> CreateDownload(
       std::optional<url::Origin> request_initiator = std::nullopt,
-      content::WebContents* web_contents = nullptr) {
-    auto item =
-        std::make_unique<TestDownloadItem>(std::move(request_initiator));
+      content::WebContents* web_contents = nullptr,
+      download::DownloadSource source = download::DownloadSource::NAVIGATION) {
+    auto item = std::make_unique<TestDownloadItem>(std::move(request_initiator),
+                                                   source);
     content::DownloadItemUtils::AttachInfoForTesting(item.get(), &profile_,
                                                      web_contents);
     return item;
@@ -230,17 +234,147 @@ TEST_F(EventInitiatorUtilsTest, EmptyExtensionIdReturnsNullopt) {
       ExtensionDownloadAttributionSignal::kNone, 1);
 }
 
-// A download requested by an extension frame is not attributed yet, but the
-// signal is recorded.
-TEST_F(EventInitiatorUtilsTest,
-       ExtensionRequestInitiatorIsRecordedNotAttributed) {
+// A download that extension content requested without the `chrome.downloads`
+// API is attributed through its request initiator.
+TEST_F(EventInitiatorUtilsTest, ExtensionRequestInitiatorPopulatesProvenance) {
   base::HistogramTester histogram_tester;
-  auto item = CreateDownload(url::Origin::Create(
-      GURL(base::StrCat({extensions::kExtensionScheme, "://", kExtensionId}))));
-  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  auto item = CreateDownload(
+      extensions::Extension::CreateOriginFromExtensionId(kExtensionId));
+
+  std::optional<ExtensionInfo> extension_info =
+      GetExtensionInitiatorInfo(item.get());
+
+  ASSERT_TRUE(extension_info.has_value());
+  EXPECT_EQ(kExtensionId, extension_info->id());
+  EXPECT_EQ(kExtensionName, extension_info->name());
+  EXPECT_EQ(kExtensionVersion, extension_info->version());
+  EXPECT_EQ(ExtensionInfo::INTERNAL, extension_info->install_location());
+  EXPECT_TRUE(extension_info->is_from_store());
+
   histogram_tester.ExpectUniqueSample(
       kExtensionActorLookupDownloadResultHistogram,
       ExtensionDownloadAttributionSignal::kExtensionRequestInitiator, 1);
+}
+
+// Unlike `DownloadedByExtension`, the request initiator carries no name, so an
+// extension that is no longer installed is attributed by its ID alone.
+TEST_F(EventInitiatorUtilsTest,
+       UninstalledExtensionRequestInitiatorReportsIdOnly) {
+  auto item = CreateDownload(extensions::Extension::CreateOriginFromExtensionId(
+      kUninstalledExtensionId));
+
+  std::optional<ExtensionInfo> extension_info =
+      GetExtensionInitiatorInfo(item.get());
+
+  ASSERT_TRUE(extension_info.has_value());
+  EXPECT_EQ(kUninstalledExtensionId, extension_info->id());
+  EXPECT_FALSE(extension_info->has_name());
+  EXPECT_FALSE(extension_info->has_version());
+  EXPECT_FALSE(extension_info->has_install_location());
+  EXPECT_FALSE(extension_info->has_is_from_store());
+}
+
+// An opaque origin, even one derived from an extension's origin, does not
+// identify an extension.
+TEST_F(EventInitiatorUtilsTest, OpaqueRequestInitiatorIsNotAttributed) {
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(
+      extensions::Extension::CreateOriginFromExtensionId(kExtensionId)
+          .DeriveNewOpaqueOrigin());
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kNone, 1);
+}
+
+// The built-in PDF Viewer navigates the links a user clicks in a PDF, so it is
+// the request initiator of downloads the user started.
+TEST_F(EventInitiatorUtilsTest, PdfViewerRequestInitiatorIsNotAttributed) {
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(extensions::Extension::CreateOriginFromExtensionId(
+      extension_misc::kPdfExtensionId));
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kNone, 1);
+}
+
+struct DownloadSourceTestCase {
+  download::DownloadSource source;
+  bool is_attributed;
+};
+
+class EventInitiatorUtilsDownloadSourceTest
+    : public EventInitiatorUtilsTest,
+      public testing::WithParamInterface<DownloadSourceTestCase> {};
+
+// The request initiator only says who started a download when content started
+// it. Browser UI reuses the initiator of an earlier request.
+TEST_P(EventInitiatorUtilsDownloadSourceTest,
+       ExtensionRequestInitiatorAttributesContentDownloadsOnly) {
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(
+      extensions::Extension::CreateOriginFromExtensionId(kExtensionId),
+      /*web_contents=*/nullptr, GetParam().source);
+
+  EXPECT_EQ(GetParam().is_attributed,
+            GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      GetParam().is_attributed
+          ? ExtensionDownloadAttributionSignal::kExtensionRequestInitiator
+          : ExtensionDownloadAttributionSignal::kNone,
+      1);
+}
+
+// Covers every `DownloadSource`. `chrome.downloads` downloads (`EXTENSION_API`)
+// are attributed through `DownloadedByExtension` instead.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EventInitiatorUtilsDownloadSourceTest,
+    testing::Values(
+        DownloadSourceTestCase{download::DownloadSource::UNKNOWN, false},
+        DownloadSourceTestCase{download::DownloadSource::NAVIGATION, true},
+        DownloadSourceTestCase{download::DownloadSource::DRAG_AND_DROP, false},
+        DownloadSourceTestCase{download::DownloadSource::FROM_RENDERER, true},
+        DownloadSourceTestCase{download::DownloadSource::EXTENSION_API, false},
+        DownloadSourceTestCase{download::DownloadSource::EXTENSION_INSTALLER,
+                               false},
+        DownloadSourceTestCase{download::DownloadSource::INTERNAL_API, false},
+        DownloadSourceTestCase{download::DownloadSource::WEB_CONTENTS_API,
+                               false},
+        DownloadSourceTestCase{download::DownloadSource::OFFLINE_PAGE, false},
+        DownloadSourceTestCase{download::DownloadSource::CONTEXT_MENU, false},
+        DownloadSourceTestCase{download::DownloadSource::RETRY, false},
+        DownloadSourceTestCase{download::DownloadSource::RETRY_FROM_BUBBLE,
+                               false},
+        DownloadSourceTestCase{download::DownloadSource::TOOLBAR_MENU, false}));
+
+// A reload or back/forward navigation keeps the initiator of the navigation it
+// repeats, so the request initiator does not say who started the download.
+TEST_F(EventInitiatorUtilsTest,
+       ReloadAndHistoryNavigationDownloadsAreNotAttributed) {
+  const ui::PageTransition kBackForward = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FORWARD_BACK);
+  const std::pair<const char*, ui::PageTransition> kTransitions[] = {
+      {"reload", ui::PAGE_TRANSITION_RELOAD},
+      {"back/forward", kBackForward},
+  };
+  for (const auto& [name, transition] : kTransitions) {
+    SCOPED_TRACE(name);
+    base::HistogramTester histogram_tester;
+    auto item = CreateDownload(
+        extensions::Extension::CreateOriginFromExtensionId(kExtensionId));
+    ON_CALL(*item, GetTransitionType())
+        .WillByDefault(testing::Return(transition));
+
+    EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+    histogram_tester.ExpectUniqueSample(
+        kExtensionActorLookupDownloadResultHistogram,
+        ExtensionDownloadAttributionSignal::kNone, 1);
+  }
 }
 
 // A web-origin initiator is not an extension signal on its own.
@@ -302,7 +436,8 @@ TEST_F(EventInitiatorUtilsTest, TabWithoutActorIsNotAnExtensionSignal) {
 }
 
 // Signals are checked in order: chrome.downloads, then request initiator,
-// then tab actor. Only the strongest is recorded.
+// then tab actor. Only the strongest is recorded, and it decides which
+// extension is attributed.
 TEST_F(EventInitiatorUtilsTest, StrongestDownloadSignalWins) {
   InstallExtension(ManifestLocation::kInternal,
                    extensions::Extension::FROM_WEBSTORE);
@@ -310,26 +445,45 @@ TEST_F(EventInitiatorUtilsTest, StrongestDownloadSignalWins) {
       web_contents_factory_.CreateWebContents(&profile_);
   ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
                                         "Runtime.evaluate");
-  const url::Origin extension_origin = url::Origin::Create(
-      GURL(base::StrCat({extensions::kExtensionScheme, "://", kExtensionId})));
+  // The request initiator names a second extension, to tell the signals apart.
+  const url::Origin initiator_origin =
+      extensions::Extension::CreateOriginFromExtensionId(
+          kUninstalledExtensionId);
 
   {
     base::HistogramTester histogram_tester;
-    auto item = CreateDownload(extension_origin, web_contents);
-    EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+    auto item = CreateDownload(initiator_origin, web_contents);
+    std::optional<ExtensionInfo> extension_info =
+        GetExtensionInitiatorInfo(item.get());
+    ASSERT_TRUE(extension_info.has_value());
+    EXPECT_EQ(kUninstalledExtensionId, extension_info->id());
     histogram_tester.ExpectUniqueSample(
         kExtensionActorLookupDownloadResultHistogram,
         ExtensionDownloadAttributionSignal::kExtensionRequestInitiator, 1);
   }
   {
     base::HistogramTester histogram_tester;
-    auto item = CreateDownload(extension_origin, web_contents);
+    auto item = CreateDownload(initiator_origin, web_contents);
     new extensions::DownloadedByExtension(item.get(), kExtensionId,
                                           kExtensionName);
-    EXPECT_TRUE(GetExtensionInitiatorInfo(item.get()).has_value());
+    std::optional<ExtensionInfo> extension_info =
+        GetExtensionInitiatorInfo(item.get());
+    ASSERT_TRUE(extension_info.has_value());
+    EXPECT_EQ(kExtensionId, extension_info->id());
     histogram_tester.ExpectUniqueSample(
         kExtensionActorLookupDownloadResultHistogram,
         ExtensionDownloadAttributionSignal::kDownloadedByExtension, 1);
+  }
+  {
+    // A download started from browser UI is not attributed by its request
+    // initiator, which leaves the tab actor as the strongest signal.
+    base::HistogramTester histogram_tester;
+    auto item = CreateDownload(initiator_origin, web_contents,
+                               download::DownloadSource::CONTEXT_MENU);
+    EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+    histogram_tester.ExpectUniqueSample(
+        kExtensionActorLookupDownloadResultHistogram,
+        ExtensionDownloadAttributionSignal::kTabActor, 1);
   }
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

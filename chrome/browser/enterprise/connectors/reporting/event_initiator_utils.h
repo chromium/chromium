@@ -24,15 +24,26 @@ class DownloadItem;
 namespace enterprise_connectors {
 
 // Returns an `ExtensionInfo` describing the extension that initiated
-// `download`, as recorded by `extensions::DownloadedByExtension`.
+// `download`. The extension is identified by the first of:
 //
-// Returns `std::nullopt` if `download` is null or was not initiated via the
-// `chrome.downloads` API (downloads an extension triggers by other means, such
-// as navigation, are not attributed). For an installed extension,
+// 1. `extensions::DownloadedByExtension`, which is attached to downloads
+//    started via the `chrome.downloads` API and restored from download history.
+// 2. The request initiator, when a `chrome-extension://` origin requested a
+//    navigation or renderer-initiated download, e.g. an extension page
+//    navigated to the file or the extension called `chrome.tabs.update()`.
+//    Downloads started from browser UI (e.g. "Save as", retry) or by a reload
+//    or back/forward navigation are excluded, because they reuse the initiator
+//    of an earlier request. So is the built-in PDF Viewer, which navigates the
+//    links a user clicks in a PDF. The initiator is not persisted, so a
+//    download restored from history is not attributed this way.
+//
+// Returns `std::nullopt` if `download` is null or neither identifies an
+// extension. Downloads an extension triggers by acting on a web page (e.g. from
+// a content script) are not attributed. For an installed extension,
 // `ExtensionInfo` is filled with its ID, name, version, install location and
 // whether it is from the Chrome Web Store. If `download` has no associated
-// `BrowserContext` or the extension is no longer installed, only the ID and
-// snapshotted name from `DownloadedByExtension` are set.
+// `BrowserContext` or the extension is no longer installed, only the ID is set,
+// plus the name snapshotted by `DownloadedByExtension` if there is one.
 //
 // Must be called on the UI thread.
 std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
