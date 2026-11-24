@@ -44,8 +44,7 @@ GetValidProfiles() {
 TEST(EncodingSupportTest, EnablesVp8HardwareEncoderAlways) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kCastStreamingVp8);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, DisablesVp8HardwareEncoderWithSwitch) {
@@ -54,8 +53,7 @@ TEST(EncodingSupportTest, DisablesVp8HardwareEncoderWithSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceDisableHardwareVp8);
-  EXPECT_FALSE(
-      IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, EnablesVp8HardwareEncoderWithForceSwitch) {
@@ -64,15 +62,13 @@ TEST(EncodingSupportTest, EnablesVp8HardwareEncoderWithForceSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceEnableHardwareVp8);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, EnablesAv1HardwareEncoder) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kCastStreamingAv1);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kAV1, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kAV1, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, DisablesAv1HardwareEncoderWithSwitch) {
@@ -81,8 +77,7 @@ TEST(EncodingSupportTest, DisablesAv1HardwareEncoderWithSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceDisableHardwareAv1);
-  EXPECT_FALSE(
-      IsHardwareEnabled(VideoCodec::kAV1, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kAV1, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, EnablesAv1HardwareEncoderWithForceSwitch) {
@@ -91,15 +86,13 @@ TEST(EncodingSupportTest, EnablesAv1HardwareEncoderWithForceSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceEnableHardwareAv1);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kAV1, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kAV1, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, EnablesVp9HardwareEncoder) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kCastStreamingVp9);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kVP9, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP9, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, DisablesVp9HardwareEncoderWithSwitch) {
@@ -108,8 +101,7 @@ TEST(EncodingSupportTest, DisablesVp9HardwareEncoderWithSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceDisableHardwareVp9);
-  EXPECT_FALSE(
-      IsHardwareEnabled(VideoCodec::kVP9, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kVP9, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, EnablesVp9HardwareEncoderWithForceSwitch) {
@@ -118,15 +110,13 @@ TEST(EncodingSupportTest, EnablesVp9HardwareEncoderWithForceSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceEnableHardwareVp9);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kVP9, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP9, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, EnablesHevcHardwareEncoder) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kCastStreamingHardwareHevc);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kHEVC, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kHEVC, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, DisablesHevcHardwareEncoderWithSwitch) {
@@ -136,7 +126,7 @@ TEST(EncodingSupportTest, DisablesHevcHardwareEncoderWithSwitch) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceDisableHardwareHevc);
   EXPECT_FALSE(
-      IsHardwareEnabled(VideoCodec::kHEVC, GetValidProfiles(), k1080p, 30.0));
+      IsHardwareEnabled(VideoCodec::kHEVC, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, EnablesHevcHardwareEncoderWithForceSwitch) {
@@ -145,45 +135,58 @@ TEST(EncodingSupportTest, EnablesHevcHardwareEncoderWithForceSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kCastStreamingForceEnableHardwareHevc);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kHEVC, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kHEVC, GetValidProfiles(), k1080p));
 }
 
 TEST(EncodingSupportTest, DenyListedHardwareEncoderNotOffered) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kCastStreamingVp8);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p));
   EXPECT_FALSE(IsHardwareDenyListed(VideoCodec::kVP8));
   DenyListHardwareCodec(VideoCodec::kVP8);
-  EXPECT_FALSE(
-      IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles(), k1080p));
   EXPECT_TRUE(IsHardwareDenyListed(VideoCodec::kVP8));
+  ClearHardwareCodecDenyListForTesting();
 }
 
 TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {
 #if BUILDFLAG(IS_MAC)
   base::test::ScopedFeatureList feature(kCastStreamingMacHardwareH264);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p));
 
   feature.Reset();
   feature.InitAndDisableFeature(kCastStreamingMacHardwareH264);
   EXPECT_FALSE(
-      IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p, 30.0));
+      IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p));
 #elif BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature(kCastStreamingWinHardwareH264);
-  EXPECT_TRUE(
-      IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p));
 
   feature.Reset();
   feature.InitAndDisableFeature(kCastStreamingWinHardwareH264);
   EXPECT_FALSE(
-      IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p, 30.0));
+      IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p));
 #else
-  EXPECT_EQ(true, IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(),
-                                    k1080p, 30.0));
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles(), k1080p));
 #endif
+}
+
+TEST(EncodingSupportTest, ChecksResolutionBoundsAndIgnoresReportedMaxFps) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kCastStreamingVp9);
+
+  VideoEncodeAccelerator::SupportedProfile profile(
+      media::VP9PROFILE_PROFILE0, k1080p, /*max_framerate_numerator=*/30,
+      /*max_framerate_denominator=*/1);
+  profile.min_resolution = gfx::Size(320, 180);
+  const std::vector<VideoEncodeAccelerator::SupportedProfile> profiles = {
+      profile};
+
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP9, profiles, k1080p));
+  EXPECT_FALSE(
+      IsHardwareEnabled(VideoCodec::kVP9, profiles, gfx::Size(160, 90)));
+  EXPECT_FALSE(
+      IsHardwareEnabled(VideoCodec::kVP9, profiles, gfx::Size(3840, 2160)));
 }
 
 TEST(EncodingSupportTest, GetCodecParameterString) {

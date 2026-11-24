@@ -89,6 +89,8 @@ class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
     on_started_cb_ = std::move(cb);
   }
 
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
  private:
   mojo::Receiver<media::mojom::VideoCaptureHost> receiver_;
   mojo::Remote<media::mojom::VideoCaptureObserver> observer_;

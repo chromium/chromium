@@ -64,12 +64,31 @@ source_set("common") {
   ]
 }
 
+# Shared across components (such as mirroring_service and tests) so the
+# hardware codec denylist singleton is not duplicated across DSO boundaries
+# in component builds.
+component("encoding_support") {
+  sources = [
+    "encoding/encoding_support.cc",
+    "encoding/encoding_support.h",
+  ]
+
+  defines = [ "IS_MEDIA_CAST_ENCODING_SUPPORT_IMPL" ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
+
+  public_deps = [
+    "//base",
+    "//media",
+    "//ui/gfx/geometry",
+  ]
+
+  deps = [ "//media:media_buildflags" ]
+}
+
 source_set("encoding") {
   sources = [
     "encoding/audio_encoder.cc",
     "encoding/audio_encoder.h",
-    "encoding/encoding_support.cc",
-    "encoding/encoding_support.h",
     "encoding/frame_complexity_estimator.cc",
     "encoding/frame_complexity_estimator.h",
     "encoding/media_video_encoder_wrapper.cc",
@@ -81,6 +100,7 @@ source_set("encoding") {
   configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   public_deps = [
+    ":encoding_support",
     "//base",
     "//media",
     "//third_party/libvpx",

@@ -5,8 +5,10 @@
 #ifndef MEDIA_CAST_ENCODING_ENCODING_SUPPORT_H_
 #define MEDIA_CAST_ENCODING_ENCODING_SUPPORT_H_
 
+#include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace gfx {
@@ -24,31 +26,36 @@ enum class VideoCodec;
 namespace cast::encoding_support {
 
 // Returns true if software encoding is supported for this codec.
+COMPONENT_EXPORT(MEDIA_CAST_ENCODING_SUPPORT)
 bool IsSoftwareEnabled(VideoCodec codec);
 
 // Returns true if a hardware encoder should be used for a codec with a
 // given receiver and set of VEA profiles. Some receivers have implementation
 // bugs that keep the external encoder from being used even if it is supported
 // by the sender.
+COMPONENT_EXPORT(MEDIA_CAST_ENCODING_SUPPORT)
 bool IsHardwareEnabled(
     VideoCodec codec,
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles,
-    gfx::Size requested_resolution,
-    double requested_frame_rate);
+    gfx::Size requested_resolution);
 
 // Should be called before calling DenyListHardwareCodec() to ensure that we
 // don't attempt to disable the codec multiple times.
+COMPONENT_EXPORT(MEDIA_CAST_ENCODING_SUPPORT)
 bool IsHardwareDenyListed(VideoCodec codec);
 
 // Call to disable a hardware codec using a singleton.
+COMPONENT_EXPORT(MEDIA_CAST_ENCODING_SUPPORT)
 void DenyListHardwareCodec(VideoCodec codec);
 
 // Reset the global hardware codec deny list for use in testing.
+COMPONENT_EXPORT(MEDIA_CAST_ENCODING_SUPPORT)
 void ClearHardwareCodecDenyListForTesting();
 
 // Gets the preferred codec profile (usually some flavor of "main") for the
 // given `codec`.
+COMPONENT_EXPORT(MEDIA_CAST_ENCODING_SUPPORT)
 VideoCodecProfile ToProfile(VideoCodec codec);
 
 // Gets the codec parameter string (based on the related VideoCodecProfile) for
@@ -61,6 +68,7 @@ VideoCodecProfile ToProfile(VideoCodec codec);
 // higher levels than they support, even if they could handle the actual content
 // (e.g., Chromecast 1 only supports up to H.264 Level 4.1, and offering Level
 // 4.2 for a 1080p30 stream might cause it to be rejected).
+COMPONENT_EXPORT(MEDIA_CAST_ENCODING_SUPPORT)
 std::string GetCodecParameterString(VideoCodec codec,
                                     gfx::Size resolution,
                                     double frame_rate);
