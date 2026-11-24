@@ -99,7 +99,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
 
   // The maximum number of bytes of memory that may be allocated. This will
   // cause memory usage to be reduced if currently above |bytes|.
-  void SetMaxBytes(size_t bytes);
+  void SetMaxBytesForTesting(base::ByteSize bytes);
 
   // Reduce memory usage if above current effective maximum bytes.
   void EnforceMemoryPolicy();
@@ -154,13 +154,13 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
       base::UnsafeSharedMemoryRegion* shared_memory_region);
   void DeletedDiscardableSharedMemory(int32_t id, int client_id);
   void ReduceMemoryUsageUntilWithinMaxBytes() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void ReduceMemoryUsageUntilWithinBytes(size_t bytes)
+  void ReduceMemoryUsageUntilWithinBytes(base::ByteSize bytes)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReleaseMemory(base::DiscardableSharedMemory* memory)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void BytesAllocatedChanged(size_t new_bytes_allocated) const;
+  void BytesAllocatedChanged(base::ByteSize new_bytes_allocated) const;
 
-  size_t GetEffectiveMaxBytes() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  base::ByteSize GetEffectiveMaxBytes() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   virtual void ScheduleEnforceMemoryPolicy() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -181,10 +181,10 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // a heap. The LRU memory segment always first.
   using MemorySegmentVector = std::vector<scoped_refptr<MemorySegment>>;
   MemorySegmentVector segments_ GUARDED_BY(lock_);
-  size_t default_max_bytes_ GUARDED_BY(lock_);
-  size_t max_bytes_ GUARDED_BY(lock_);
-  size_t effective_max_bytes_ GUARDED_BY(lock_);
-  size_t bytes_allocated_ GUARDED_BY(lock_);
+  base::ByteSize default_max_bytes_ GUARDED_BY(lock_);
+  base::ByteSize max_bytes_ GUARDED_BY(lock_);
+  base::ByteSize effective_max_bytes_ GUARDED_BY(lock_);
+  base::ByteSize bytes_allocated_ GUARDED_BY(lock_);
   scoped_refptr<base::SingleThreadTaskRunner> enforce_memory_policy_task_runner_
       GUARDED_BY(lock_);
   base::RepeatingClosure enforce_memory_policy_callback_ GUARDED_BY(lock_);

@@ -107,7 +107,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
 
   // Enough memory for both allocations.
   task_environment_.FastForwardBy(base::Seconds(1));
-  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
+  manager_->SetMaxBytesForTesting(
+      base::ByteSize(memory1.mapped_size() + memory2.mapped_size()));
 
   task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
@@ -134,7 +135,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
 
   // Just enough memory for one allocation.
   task_environment_.FastForwardBy(base::Seconds(1));
-  manager_->SetMaxBytes(memory2.mapped_size());
+  manager_->SetMaxBytesForTesting(base::ByteSize(memory2.mapped_size()));
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
 
   // LRU allocation should still be resident.
@@ -161,7 +162,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, EnforceMemoryPolicy) {
 
   // Not enough memory for one allocation.
   task_environment_.FastForwardBy(base::Seconds(1));
-  manager_->SetMaxBytes(memory.mapped_size() - 1);
+  manager_->SetMaxBytesForTesting(base::ByteSize(memory.mapped_size() - 1));
   // We need to enforce memory policy as our memory usage is currently above
   // the limit.
   EXPECT_TRUE(manager_->enforce_memory_policy_pending());
@@ -216,7 +217,7 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   // Make sure the manager is able to reduce memory after the segment 1 was
   // deleted.
   task_environment_.FastForwardBy(base::Seconds(1));
-  manager_->SetMaxBytes(0);
+  manager_->SetMaxBytesForTesting(base::ByteSize(0));
 
   // Unlock segment 2.
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -243,7 +244,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
 
   // Allow two segments to be resident so moderate pressure should trim to one.
   task_environment_.FastForwardBy(base::Seconds(1));
-  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
+  manager_->SetMaxBytesForTesting(
+      base::ByteSize(memory1.mapped_size() + memory2.mapped_size()));
   task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -281,7 +283,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
   ASSERT_TRUE(memory2.Map(kDataSize));
 
   task_environment_.FastForwardBy(base::Seconds(1));
-  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
+  manager_->SetMaxBytesForTesting(
+      base::ByteSize(memory1.mapped_size() + memory2.mapped_size()));
   task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -317,15 +320,16 @@ class DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest
 
 class SetMaxBytesRunner : public base::DelegateSimpleThread::Delegate {
  public:
-  SetMaxBytesRunner(DiscardableSharedMemoryManager* manager, size_t bytes)
+  SetMaxBytesRunner(DiscardableSharedMemoryManager* manager,
+                    base::ByteSize bytes)
       : manager_(manager), bytes_(bytes) {}
   ~SetMaxBytesRunner() override = default;
 
-  void Run() override { manager_->SetMaxBytes(bytes_); }
+  void Run() override { manager_->SetMaxBytesForTesting(bytes_); }
 
  private:
   const raw_ptr<DiscardableSharedMemoryManager> manager_;
-  const size_t bytes_;
+  const base::ByteSize bytes_;
 };
 
 TEST_F(DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest,
@@ -339,7 +343,7 @@ TEST_F(DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest,
 
   // Set the max bytes to a value that will require EnforceMemoryPolicy()
   // to be schedule on a thread without a message loop.
-  SetMaxBytesRunner runner(manager_.get(), kDataSize - 1);
+  SetMaxBytesRunner runner(manager_.get(), base::ByteSize(kDataSize - 1));
   base::DelegateSimpleThread thread(&runner, "max_bytes_setter");
   thread.Start();
   thread.Join();
@@ -366,7 +370,8 @@ TEST_F(DiscardableSharedMemoryManagerTest,
 
   // Allow two segments to be resident.
   task_environment_.FastForwardBy(base::Seconds(1));
-  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
+  manager_->SetMaxBytesForTesting(
+      base::ByteSize(memory1.mapped_size() + memory2.mapped_size()));
   task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
   task_environment_.FastForwardBy(base::Seconds(1));

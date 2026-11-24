@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
@@ -167,20 +168,18 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
 // Returns the default maximum number of bytes to use for discardable memory,
 // taking the amount physical memory available and other platform specific
 // constraints into account.
-uint64_t GetDefaultMaxBytes() {
-  const uint64_t kMegabyte = 1024ull * 1024;
-
+base::ByteSize GetDefaultMaxBytes() {
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Bypass IsLowEndDevice() check and fix default_max_bytes to 64MB on
   // Chromecast devices. Set value here as IsLowEndDevice() is used on some, but
   // not all Chromecast devices.
-  uint64_t default_max_bytes = 64 * kMegabyte;
+  base::ByteSize default_max_bytes = base::MiB(64);
 #else
 #if BUILDFLAG(IS_ANDROID)
   // Limits the number of FDs used to 32, assuming a 4MB allocation size.
-  uint64_t default_max_bytes = 128 * kMegabyte;
+  base::ByteSize default_max_bytes = base::MiB(128);
 #else
-  uint64_t default_max_bytes = 512 * kMegabyte;
+  base::ByteSize default_max_bytes = base::MiB(512);
 #endif
 
   // Use 1/8th of discardable memory on low-end devices.
@@ -191,28 +190,26 @@ uint64_t GetDefaultMaxBytes() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath shmem_dir;
   if (base::GetShmemTempDir(false, &shmem_dir)) {
-    int64_t shmem_dir_amount_of_free_space =
-        base::SysInfo::AmountOfFreeDiskSpace(shmem_dir).value_or(-1);
-    DCHECK_GT(shmem_dir_amount_of_free_space, 0);
-    int64_t shmem_dir_amount_of_free_space_mb =
-        shmem_dir_amount_of_free_space / kMegabyte;
+    const std::optional<base::SysInfo::DiskSpaceInfo> shmem_dir_space =
+        base::SysInfo::AmountOfDiskSpace(shmem_dir);
+    const base::ByteSize shmem_dir_free_space =
+        shmem_dir_space ? shmem_dir_space->available : base::ByteSize();
+    DCHECK(!shmem_dir_free_space.is_zero());
 
-    if (shmem_dir_amount_of_free_space_mb < 64) {
+    if (shmem_dir_free_space < base::MiB(64)) {
       LOG(WARNING) << "Less than 64MB of free space in temporary directory for "
                       "shared memory files: "
-                   << shmem_dir_amount_of_free_space_mb;
+                   << shmem_dir_free_space.InMiB();
     }
 
     // Allow 1/2 of available shmem dir space to be used for discardable memory.
-    default_max_bytes =
-        std::min(default_max_bytes,
-                 static_cast<uint64_t>(shmem_dir_amount_of_free_space / 2));
+    default_max_bytes = std::min(default_max_bytes, shmem_dir_free_space / 2);
   }
 #endif
 
   // Allow 25% of physical memory to be used for discardable memory.
   return std::min(default_max_bytes,
-                  base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() / 4);
+                  base::SysInfo::AmountOfTotalPhysicalMemory() / 4);
 }
 
 constexpr base::TimeDelta kEnforceMemoryPolicyDelay = base::Seconds(1);
@@ -263,7 +260,7 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
   DCHECK(!g_instance)
       << "A DiscardableSharedMemoryManager already exists in this process.";
   g_instance = this;
-  DCHECK_NE(max_bytes_, 0u);
+  DCHECK(!max_bytes_.is_zero());
   enforce_memory_policy_callback_ =
       base::BindRepeating(&DiscardableSharedMemoryManager::EnforceMemoryPolicy,
                           weak_ptr_factory_.GetWeakPtr());
@@ -436,7 +433,7 @@ void DiscardableSharedMemoryManager::ClientRemoved(int client_id) {
   if (it == clients_.end())
     return;
 
-  size_t bytes_allocated_before_releasing_memory = bytes_allocated_;
+  base::ByteSize bytes_allocated_before_releasing_memory = bytes_allocated_;
 
   for (auto& segment_it : it->second)
     ReleaseMemory(segment_it.second->memory());
@@ -447,7 +444,8 @@ void DiscardableSharedMemoryManager::ClientRemoved(int client_id) {
     BytesAllocatedChanged(bytes_allocated_);
 }
 
-void DiscardableSharedMemoryManager::SetMaxBytes(size_t bytes) {
+void DiscardableSharedMemoryManager::SetMaxBytesForTesting(
+    base::ByteSize bytes) {
   base::AutoLock lock(lock_);
 
   max_bytes_ = bytes;
@@ -465,7 +463,7 @@ void DiscardableSharedMemoryManager::EnforceMemoryPolicy() {
 base::ByteSize DiscardableSharedMemoryManager::GetAllocatedSize() const {
   base::AutoLock lock(lock_);
 
-  return base::ByteSize(bytes_allocated_);
+  return bytes_allocated_;
 }
 
 void DiscardableSharedMemoryManager::WillDestroyCurrentMessageLoop() {
@@ -496,14 +494,15 @@ void DiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   // Memory usage must be reduced to prevent the addition of |size| from
   // taking usage above the max bytes. Usage should be reduced to 0 in
   // cases where |size| is greater than the max bytes.
-  size_t required_max_bytes = 0;
-  size_t effective_max_bytes = GetEffectiveMaxBytes();
+  base::ByteSize required_max_bytes;
+  base::ByteSize effective_max_bytes = GetEffectiveMaxBytes();
   // Note: the actual mapped size can be larger than requested and cause
   // |bytes_allocated_| to temporarily be larger than |max_bytes_|. The
   // error is minimized by incrementing |bytes_allocated_| with the actual
   // mapped size rather than |size| below.
-  if (size < effective_max_bytes) {
-    required_max_bytes = effective_max_bytes - size;
+  if (base::ByteSize(size) < effective_max_bytes) {
+    required_max_bytes =
+        (effective_max_bytes - base::ByteSize(size)).AsByteSize();
   }
 
   if (bytes_allocated_ > required_max_bytes) {
@@ -517,14 +516,16 @@ void DiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
     return;
   }
 
-  base::CheckedNumeric<size_t> checked_bytes_allocated = bytes_allocated_;
+  base::CheckedNumeric<size_t> checked_bytes_allocated =
+      bytes_allocated_.InBytes();
   checked_bytes_allocated += memory->mapped_size();
   if (!checked_bytes_allocated.IsValid()) {
     *shared_memory_region = base::UnsafeSharedMemoryRegion();
     return;
   }
 
-  bytes_allocated_ = checked_bytes_allocated.ValueOrDie();
+  bytes_allocated_ =
+      base::ByteSize(static_cast<size_t>(checked_bytes_allocated.ValueOrDie()));
   BytesAllocatedChanged(bytes_allocated_);
 
   *shared_memory_region = memory->DuplicateRegion();
@@ -554,7 +555,7 @@ void DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
     return;
   }
 
-  size_t bytes_allocated_before_releasing_memory = bytes_allocated_;
+  base::ByteSize bytes_allocated_before_releasing_memory = bytes_allocated_;
 
   ReleaseMemory(segment_it->second->memory());
 
@@ -567,7 +568,7 @@ void DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
 void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinMaxBytes() {
   lock_.AssertAcquired();
 
-  size_t effective_max_bytes = GetEffectiveMaxBytes();
+  base::ByteSize effective_max_bytes = GetEffectiveMaxBytes();
   if (bytes_allocated_ <= effective_max_bytes) {
     return;
   }
@@ -579,11 +580,11 @@ void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinMaxBytes() {
 }
 
 void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinBytes(
-    size_t bytes) {
+    base::ByteSize bytes) {
   TRACE_EVENT1("renderer_host",
                "DiscardableSharedMemoryManager::"
                "ReduceMemoryUsageUntilWithinBytes",
-               "bytes_allocated", bytes_allocated_);
+               "bytes_allocated", bytes_allocated_.InBytes());
 
   // Usage time of currently locked segments are updated to this time and
   // we stop eviction attempts as soon as we come across a segment that we've
@@ -591,7 +592,7 @@ void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinBytes(
   base::Time current_time = base::Time::Now();
 
   lock_.AssertAcquired();
-  size_t bytes_allocated_before_purging = bytes_allocated_;
+  base::ByteSize bytes_allocated_before_purging = bytes_allocated_;
   while (!segments_.empty()) {
     if (bytes_allocated_ <= bytes) {
       break;
@@ -631,7 +632,7 @@ void DiscardableSharedMemoryManager::ReleaseMemory(
     base::DiscardableSharedMemory* memory) {
   lock_.AssertAcquired();
 
-  size_t size = memory->mapped_size();
+  const base::ByteSize size(memory->mapped_size());
   DCHECK_GE(bytes_allocated_, size);
   bytes_allocated_ -= size;
 
@@ -646,13 +647,14 @@ void DiscardableSharedMemoryManager::ReleaseMemory(
 }
 
 void DiscardableSharedMemoryManager::BytesAllocatedChanged(
-    size_t new_bytes_allocated) const {
+    base::ByteSize new_bytes_allocated) const {
   static crash_reporter::CrashKeyString<24> total_discardable_memory(
       "total-discardable-memory-allocated");
-  total_discardable_memory.Set(base::NumberToString(new_bytes_allocated));
+  total_discardable_memory.Set(
+      base::NumberToString(new_bytes_allocated.InBytes()));
 }
 
-size_t DiscardableSharedMemoryManager::GetEffectiveMaxBytes() const {
+base::ByteSize DiscardableSharedMemoryManager::GetEffectiveMaxBytes() const {
   lock_.AssertAcquired();
   return effective_max_bytes_;
 }
