@@ -48,10 +48,6 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/current_module.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX)
 #include "base/nix/xdg_util.h"
 #include "base/scoped_environment_variable_override.h"
@@ -360,9 +356,6 @@ TEST_F(MetricsLogTest, BasicRecord) {
   hardware->set_system_ram_mb(
       base::SysInfo::AmountOfTotalPhysicalMemory().InMiB());
   hardware->set_hardware_class(GetExpectedHardwareClass());
-#if BUILDFLAG(IS_WIN)
-  hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   system_profile->mutable_os()->set_name("CrOS");
