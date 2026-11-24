@@ -2220,8 +2220,17 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // It is possible that one prefetched response is served to multiple prerender
 // in the current design.
+// TODO(crbug.com/587601601): Fails on Android when landing on index 0 of a
+// 64-test sub-batch due to Desktop UA mismatch.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ServingToPrerenderNavigationTwice \
+  DISABLED_ServingToPrerenderNavigationTwice
+#else
+#define MAYBE_ServingToPrerenderNavigationTwice \
+  ServingToPrerenderNavigationTwice
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       ServingToPrerenderNavigationTwice) {
+                       MAYBE_ServingToPrerenderNavigationTwice) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
