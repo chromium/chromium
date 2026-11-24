@@ -234,8 +234,6 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   _syncService->TriggerLocalDataMigration(
       syncer::DataTypeSet{syncer::DataType::PASSWORDS});
 
-  // TODO(crbug.com/40281800): Remove this histogram enumeration when using
-  // `MoveCredentialsToAccount`.
   base::UmaHistogramEnumeration(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
       password_manager::metrics_util::MoveToAccountStoreTrigger::
