@@ -31,16 +31,6 @@ inline constexpr int kHeuristicMinContentLength = 200;
 COMPONENT_EXPORT(WEB_DISTILLER_FEATURES)
 BASE_DECLARE_FEATURE(kSyncReaderForAccessibility);
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature declarations below -- alphabetical order.
-COMPONENT_EXPORT(WEB_DISTILLER_FEATURES)
-BASE_DECLARE_FEATURE(kReaderModeBlurTransitionAnimation);
-COMPONENT_EXPORT(WEB_DISTILLER_FEATURES)
-BASE_DECLARE_FEATURE(kReaderModeDelayBottomSheetPeek);
-COMPONENT_EXPORT(WEB_DISTILLER_FEATURES)
-BASE_DECLARE_FEATURE(kReaderModeToggleLinks);
-#endif
-
 }  // namespace web_distiller
 
 #endif  // COMPONENTS_WEB_DISTILLER_CORE_WEB_DISTILLER_FEATURES_H_

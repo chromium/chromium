@@ -20,11 +20,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
-import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -72,7 +72,7 @@ public class ReaderModePrefsRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @EnableFeatures(ChromeFeatureList.READER_MODE_TOGGLE_LINKS)
     public void testRender_LinksEnabled() throws IOException {
         createView(true);
         mRenderTestRule.render(mReaderModePrefsView, "reader_mode_prefs_links_enabled");
@@ -81,7 +81,7 @@ public class ReaderModePrefsRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @EnableFeatures(ChromeFeatureList.READER_MODE_TOGGLE_LINKS)
     public void testRender_LinksDisabled() throws IOException {
         createView(false);
         mRenderTestRule.render(mReaderModePrefsView, "reader_mode_prefs_links_disabled");

@@ -207,7 +207,6 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "components/wallet/core/common/wallet_features.h"
-#include "components/web_distiller/core/web_distiller_features.h"
 #include "components/web_distiller/core/web_distiller_switches.h"
 #include "components/webapps/browser/features.h"
 #include "components/webui/flags/feature_entry.h"
@@ -5774,17 +5773,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReaderModeBlurTransitionAnimationName,
      flag_descriptions::kReaderModeBlurTransitionAnimationDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(web_distiller::kReaderModeBlurTransitionAnimation)},
+     FEATURE_VALUE_TYPE(chrome::android::kReaderModeBlurTransitionAnimation)},
     {"reader-mode-delay-bottomsheet-peek",
      flag_descriptions::kReaderModeDelayBottomSheetPeekName,
      flag_descriptions::kReaderModeDelayBottomSheetPeekDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(web_distiller::kReaderModeDelayBottomSheetPeek)},
+     FEATURE_VALUE_TYPE(chrome::android::kReaderModeDelayBottomSheetPeek)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
     {"reader-mode-toggle-links", flag_descriptions::kReaderModeToggleLinksName,
      flag_descriptions::kReaderModeToggleLinksDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(web_distiller::kReaderModeToggleLinks)},
+     FEATURE_VALUE_TYPE(chrome::android::kReaderModeToggleLinks)},
     {"submenu-type-override", flag_descriptions::kSubmenuTypeOverrideName,
      flag_descriptions::kSubmenuTypeOverrideDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kSubmenuTypeOverrideChoices)},

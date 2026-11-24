@@ -20,10 +20,6 @@ component("web_distiller_features") {
     ":prefs",
     "//base",
   ]
-
-  if (is_android) {
-    deps += [ "//components/web_distiller/core/android:jni_headers" ]
-  }
 }
 
 action("web_distiller_viewer_js") {

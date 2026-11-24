@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -19,7 +20,6 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/testing_search_terms_data.h"
 #include "components/web_distiller/core/url_constants.h"
-#include "components/web_distiller/core/web_distiller_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/drop_data.h"
@@ -104,7 +104,7 @@ TEST_F(ChromeWebContentsViewDelegateAndroidTest,
                                  kAndroidNavigationBlurTransitionAnimation,
                              {{"skip_srp", "true"}}}},
       /*disabled_features=*/{
-          web_distiller::kReaderModeBlurTransitionAnimation});
+          chrome::android::kReaderModeBlurTransitionAnimation});
 
   const bool is_phone =
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
@@ -122,7 +122,7 @@ TEST_F(ChromeWebContentsViewDelegateAndroidTest,
                                  kAndroidNavigationBlurTransitionAnimation,
                              {{"skip_srp", "true"}}}},
       /*disabled_features=*/{
-          web_distiller::kReaderModeBlurTransitionAnimation});
+          chrome::android::kReaderModeBlurTransitionAnimation});
 
   // Is SRP -> Animation should NOT be shown.
   SetIsSrp(kSrpUrl);
@@ -138,7 +138,7 @@ TEST_F(
                                  kAndroidNavigationBlurTransitionAnimation,
                              {{"skip_srp", "true"}}}},
       /*disabled_features=*/{
-          web_distiller::kReaderModeBlurTransitionAnimation});
+          chrome::android::kReaderModeBlurTransitionAnimation});
 
   // SRP to Reader Mode transition. Reader Mode feature is disabled.
   SetIsSrp(kSrpUrl);
@@ -153,11 +153,10 @@ TEST_F(
     ChromeWebContentsViewDelegateAndroidTest,
     ShouldShowBlurTransition_GenericEnabled_SkipSrp_IsSrp_ReaderModeEnabled) {
   scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::
-                                 kAndroidNavigationBlurTransitionAnimation,
-                             {{"skip_srp", "true"}}},
-                            {web_distiller::kReaderModeBlurTransitionAnimation,
-                             {}}},
+      /*enabled_features=*/
+      {{features::kAndroidNavigationBlurTransitionAnimation,
+        {{"skip_srp", "true"}}},
+       {chrome::android::kReaderModeBlurTransitionAnimation, {}}},
       /*disabled_features=*/{});
 
   const bool is_phone =
@@ -175,7 +174,8 @@ TEST_F(
 TEST_F(ChromeWebContentsViewDelegateAndroidTest,
        ShouldShowBlurTransition_GenericDisabled_ReaderModeEnabled) {
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{web_distiller::kReaderModeBlurTransitionAnimation},
+      /*enabled_features=*/{chrome::android::
+                                kReaderModeBlurTransitionAnimation},
       /*disabled_features=*/{
           features::kAndroidNavigationBlurTransitionAnimation});
 
@@ -199,7 +199,7 @@ TEST_F(ChromeWebContentsViewDelegateAndroidTest,
       /*enabled_features=*/{},
       /*disabled_features=*/{
           features::kAndroidNavigationBlurTransitionAnimation,
-          web_distiller::kReaderModeBlurTransitionAnimation});
+          chrome::android::kReaderModeBlurTransitionAnimation});
 
   content::MockNavigationHandle handle(kReaderModeUrl, main_rfh());
   EXPECT_FALSE(delegate_->ShouldShowBlurTransitionAnimation(&handle));

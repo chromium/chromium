@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,7 +20,6 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
-import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */
@@ -102,7 +102,7 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
 
     @Override
     public boolean shouldShowReaderModeToggleLinksSetting() {
-        return WebDistillerFeatures.sReaderModeToggleLinks.isEnabled();
+        return ChromeFeatureList.sReaderModeToggleLinks.isEnabled();
     }
 
     @Override

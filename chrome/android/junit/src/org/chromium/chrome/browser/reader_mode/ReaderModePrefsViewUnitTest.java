@@ -42,8 +42,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
-import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.web_distiller.mojom.FontFamily;
 import org.chromium.web_distiller.mojom.Theme;
@@ -263,7 +263,7 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @EnableFeatures(ChromeFeatureList.READER_MODE_TOGGLE_LINKS)
     public void testToggleLinksButton_Enabled() {
         View toggleLinksButton = mReaderModePrefsView.findViewById(R.id.toggle_links_button);
         Assert.assertNotNull(toggleLinksButton);
@@ -293,7 +293,7 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @DisableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @DisableFeatures(ChromeFeatureList.READER_MODE_TOGGLE_LINKS)
     public void testToggleLinksButton_Disabled() {
         View toggleLinksButton = mReaderModePrefsView.findViewById(R.id.toggle_links_button);
         Assert.assertNull(toggleLinksButton);

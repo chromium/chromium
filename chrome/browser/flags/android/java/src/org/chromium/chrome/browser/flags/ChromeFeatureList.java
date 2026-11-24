@@ -797,6 +797,9 @@ public abstract class ChromeFeatureList {
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
     public static final String READER_MODE_CPA_REENTRY = "ReaderModeCpaReentry";
+    public static final String READER_MODE_DELAY_BOTTOM_SHEET_PEEK =
+            "ReaderModeDelayBottomSheetPeek";
+    public static final String READER_MODE_TOGGLE_LINKS = "ReaderModeToggleLinks";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT =
             "RemoveExtraHeadersOnCrossOriginRedirect";
@@ -1893,6 +1896,10 @@ public abstract class ChromeFeatureList {
                             ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION, false);
     public static final MutableFlagWithSafeDefault sPdfLauncherActivity =
             newMutableFlagWithSafeDefault(PDF_LAUNCHER_ACTIVITY, false);
+    public static final MutableFlagWithSafeDefault sReaderModeDelayBottomSheetPeek =
+            newMutableFlagWithSafeDefault(READER_MODE_DELAY_BOTTOM_SHEET_PEEK, false);
+    public static final MutableFlagWithSafeDefault sReaderModeToggleLinks =
+            newMutableFlagWithSafeDefault(READER_MODE_TOGGLE_LINKS, false);
     public static final MutableFlagWithSafeDefault sRemoveExtraHeadersOnCrossOriginRedirect =
             newMutableFlagWithSafeDefault(REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT, true);
     public static final MutableFlagWithSafeDefault sRestoreTabGroupsOnFre =

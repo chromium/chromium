@@ -29,6 +29,7 @@ source_set("unit_tests") {
     ":tab_contents",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/flags:flags_android",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",

@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
-import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.components.web_distiller.core.WebDistillerService;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -123,7 +123,7 @@ public class ReaderModeBottomSheetManagerTest {
     }
 
     @Test
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
+    @EnableFeatures(ChromeFeatureList.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
     public void testDelayBottomSheetPeekOnInitialLoad() {
         ReaderModeBottomSheetManager.setBottomSheetPeekDelayForTesting(2000);
         createManagerAndGetTabObserver();
@@ -141,7 +141,7 @@ public class ReaderModeBottomSheetManagerTest {
     }
 
     @Test
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
+    @EnableFeatures(ChromeFeatureList.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
     public void testCancelDelayedPeekOnHide() {
         ReaderModeBottomSheetManager.setBottomSheetPeekDelayForTesting(2000);
         createManagerAndGetTabObserver();
@@ -156,7 +156,7 @@ public class ReaderModeBottomSheetManagerTest {
     }
 
     @Test
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
+    @EnableFeatures(ChromeFeatureList.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
     public void testCancelDelayedPeekOnNewNavigation() {
         ReaderModeBottomSheetManager.setBottomSheetPeekDelayForTesting(2000);
         createManagerAndGetTabObserver();

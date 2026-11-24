@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/web_distiller/core/url_constants.h"
-#include "components/web_distiller/core/web_distiller_features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -93,14 +92,14 @@ bool ChromeWebContentsViewDelegateAndroid::ShouldShowBlurTransitionAnimation(
     // show Reading Mode navigation.
     if (IsReaderModeNavigation(url, last_committed_url) &&
         base::FeatureList::IsEnabled(
-            web_distiller::kReaderModeBlurTransitionAnimation)) {
+            chrome::android::kReaderModeBlurTransitionAnimation)) {
       return true;
     }
     return false;
   }
 
   if (base::FeatureList::IsEnabled(
-          web_distiller::kReaderModeBlurTransitionAnimation)) {
+          chrome::android::kReaderModeBlurTransitionAnimation)) {
     return IsReaderModeNavigation(url, last_committed_url);
   }
 

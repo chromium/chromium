@@ -8,7 +8,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/web_distiller/core/DistilledPagePrefs.java",
-    "java/src/org/chromium/components/web_distiller/core/WebDistillerFeatureMap.java",
     "java/src/org/chromium/components/web_distiller/core/WebDistillerService.java",
     "java/src/org/chromium/components/web_distiller/core/WebDistillerUrlUtils.java",
   ]
@@ -28,8 +27,6 @@ android_library("web_distiller_core_java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/web_distiller/core/DistilledPagePrefs.java",
-    "java/src/org/chromium/components/web_distiller/core/WebDistillerFeatureMap.java",
-    "java/src/org/chromium/components/web_distiller/core/WebDistillerFeatures.java",
     "java/src/org/chromium/components/web_distiller/core/WebDistillerService.java",
     "java/src/org/chromium/components/web_distiller/core/WebDistillerUrlUtils.java",
   ]
