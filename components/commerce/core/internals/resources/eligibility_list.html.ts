@@ -18,10 +18,10 @@ export function getHtml(this: EligibilityListElement) {
   <li>
     <b>Locale</b>: ${this.locale_}
   </li>
-  ${this.details_.map(detail => html`
+  ${this.details_.map(item => html`
     <li>
-      <b>${detail.name}</b>: ${detail.value}
-      <span class="${this.getColor_(detail)}">${this.getMark_(detail)}</span>
+      <b>${item.name}</b>: ${item.value}
+      <span class="${this.getColor_(item)}">${this.getMark_(item)}</span>
     </li>
   `)}
 </ul>`;

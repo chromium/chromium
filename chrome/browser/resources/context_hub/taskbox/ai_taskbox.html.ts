@@ -72,13 +72,13 @@ export function getHtml(this: AiTaskboxElement) {
 
       <div class="todo-list">
         ${this.todos && this.todos.length > 0 ? html`
-          ${repeat(this.todos, todo => todo.id, todo => html`
-            <todo-item .id="${todo.id}" .heading="${todo.title}"
-                .description="${todo.description}" .status="${todo.status}"
-                .actionableUrl="${todo.actionableUrl || ''}"
-                .sourceReferences="${todo.sourceReferences}"
-                .score="${todo.score}"
-                .liked="${this.feedbacks_.get(todo.id) ?? null}"
+          ${repeat(this.todos, item => item.id, item => html`
+            <todo-item .id="${item.id}" .heading="${item.title}"
+                .description="${item.description}" .status="${item.status}"
+                .actionableUrl="${item.actionableUrl || ''}"
+                .sourceReferences="${item.sourceReferences}"
+                .score="${item.score}"
+                .liked="${this.feedbacks_.get(item.id) ?? null}"
                 .feedbackMode="${this.feedbackModeEnabled_}"
                 .disable_state_mgmt="${
                     this.launchpadEnabled_ || this.isGeneratingGmailTodos_}"
@@ -123,13 +123,13 @@ export function getHtml(this: AiTaskboxElement) {
                 (this.completedTodos?.length || 0) > 0}">
           <div class="todo-list completed-todo-list">
             ${this.completedTodos && this.completedTodos.length > 0 ? html`
-              ${repeat(this.completedTodos, todo => todo.id, todo => html`
-                <todo-item .id="${todo.id}" .heading="${todo.title}"
-                    .description="${todo.description}" .status="${todo.status}"
-                    .actionableUrl="${todo.actionableUrl || ''}"
-                    .sourceReferences="${todo.sourceReferences}"
-                    .score="${todo.score}"
-                    .liked="${this.feedbacks_.get(todo.id) ?? null}"
+              ${repeat(this.completedTodos, item => item.id, item => html`
+                <todo-item .id="${item.id}" .heading="${item.title}"
+                    .description="${item.description}" .status="${item.status}"
+                    .actionableUrl="${item.actionableUrl || ''}"
+                    .sourceReferences="${item.sourceReferences}"
+                    .score="${item.score}"
+                    .liked="${this.feedbacks_.get(item.id) ?? null}"
                     .feedbackMode="${this.feedbackModeEnabled_}"
                     .disable_state_mgmt="${this.launchpadEnabled_ ||
                         this.isGeneratingGmailTodos_}"
@@ -158,13 +158,13 @@ export function getHtml(this: AiTaskboxElement) {
                 (this.dismissedTodos?.length || 0) > 0}">
           <div class="todo-list dismissed-todo-list">
             ${this.dismissedTodos && this.dismissedTodos.length > 0 ? html`
-              ${repeat(this.dismissedTodos, todo => todo.id, todo => html`
-                <todo-item .id="${todo.id}" .heading="${todo.title}"
-                    .description="${todo.description}" .status="${todo.status}"
-                    .actionableUrl="${todo.actionableUrl || ''}"
-                    .sourceReferences="${todo.sourceReferences}"
-                    .score="${todo.score}"
-                    .liked="${this.feedbacks_.get(todo.id) ?? null}"
+              ${repeat(this.dismissedTodos, item => item.id, item => html`
+                <todo-item .id="${item.id}" .heading="${item.title}"
+                    .description="${item.description}" .status="${item.status}"
+                    .actionableUrl="${item.actionableUrl || ''}"
+                    .sourceReferences="${item.sourceReferences}"
+                    .score="${item.score}"
+                    .liked="${this.feedbacks_.get(item.id) ?? null}"
                     .feedbackMode="${this.feedbackModeEnabled_}"
                     .disable_state_mgmt="${this.launchpadEnabled_ ||
                         this.isGeneratingGmailTodos_}"

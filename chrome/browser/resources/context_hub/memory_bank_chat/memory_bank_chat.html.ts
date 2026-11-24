@@ -80,10 +80,10 @@ export function getHtml(this: MemoryBankChatElement) {
     <div class="attached-entries-bar">
       <span class="attached-label">Attached context:</span>
       <div class="attached-chips">
-        ${Array.from(this.attachedChips_.values()).map(chip => html`
-          <div class="entry-chip" title="${chip.title}">
-            <span class="chip-title">${chip.title}</span>
-            <cr-icon-button class="chip-remove-btn" data-id="${chip.id}"
+        ${Array.from(this.attachedChips_.values()).map(item => html`
+          <div class="entry-chip" title="${item.title}">
+            <span class="chip-title">${item.title}</span>
+            <cr-icon-button class="chip-remove-btn" data-id="${item.id}"
                 iron-icon="cr:close" aria-label="Remove attached memory"
                 @click="${this.onRemoveAttachedChipClick_}">
             </cr-icon-button>

@@ -39,9 +39,10 @@ export function getHtml(this: MemoryBanksEditDialogElement) {
           <option value="" ?selected="${!this.editCollection_}">
             None
           </option>
-          ${this.getEditDialogCollections_().map(col => html`
-            <option value="${col}" ?selected="${this.editCollection_ === col}">
-              ${col}
+          ${this.getEditDialogCollections_().map(item => html`
+            <option value="${item}"
+                ?selected="${this.editCollection_ === item}">
+              ${item}
             </option>
           `)}
         </select>
@@ -57,11 +58,11 @@ export function getHtml(this: MemoryBanksEditDialogElement) {
         </cr-icon-button>
       </div>
       <div class="filter-chips-row">
-        ${this.editTags_.map(tag => html`
+        ${this.editTags_.map(item => html`
           <div class="filter-chip">
-            <span class="chip-text">${tag}</span>
+            <span class="chip-text">${item}</span>
             <cr-icon-button class="chip-close-btn" iron-icon="cr:close"
-                data-tag="${tag}" @click="${this.onRemoveTagClick_}">
+                data-tag="${item}" @click="${this.onRemoveTagClick_}">
             </cr-icon-button>
           </div>
         `)}
@@ -75,16 +76,16 @@ export function getHtml(this: MemoryBanksEditDialogElement) {
             </cr-input>
             ${this.getFilteredTags_().length > 0 ? html`
               <div class="suggestions-dropdown tag-suggestions" role="listbox">
-                ${this.getFilteredTags_().map((tag, index) => html`
+                ${this.getFilteredTags_().map((item, index) => html`
                   <div
                       class="suggestion-item ${
                                index === this.highlightedTagIndex_ ?
                           'highlighted' :
                           ''}"
-                      role="option" data-tag="${tag}" title="${tag}"
+                      role="option" data-tag="${item}" title="${item}"
                       aria-selected="${index === this.highlightedTagIndex_}"
                       @mousedown="${this.onTagSuggestionMousedown_}">
-                    ${tag}
+                    ${item}
                   </div>
                 `)}
               </div>

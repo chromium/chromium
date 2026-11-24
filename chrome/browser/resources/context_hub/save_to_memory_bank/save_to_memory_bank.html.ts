@@ -78,9 +78,10 @@ export function getHtml(this: SaveToMemoryBankElement) {
                 </option>
               ` : html`
                 <option value="" ?selected="${!this.collection}">None</option>
-                ${this.collections.map(col => html`
-                  <option value="${col}" ?selected="${col === this.collection}">
-                    ${col}
+                ${this.collections.map(item => html`
+                  <option value="${item}"
+                      ?selected="${item === this.collection}">
+                    ${item}
                   </option>
                 `)}
               `}
@@ -98,11 +99,11 @@ export function getHtml(this: SaveToMemoryBankElement) {
           </cr-icon-button>
         </div>
         <div class="filter-chips-row">
-          ${this.tags.map(tag => html`
+          ${this.tags.map(item => html`
             <div class="filter-chip">
-              <span class="chip-text" title="${tag}">${tag}</span>
+              <span class="chip-text" title="${item}">${item}</span>
               <cr-icon-button class="chip-close-btn" iron-icon="cr:close"
-                  data-tag="${tag}" aria-label="${'Remove tag ' + tag}"
+                  data-tag="${item}" aria-label="${'Remove tag ' + item}"
                   @click="${this.onRemoveTagClick}">
               </cr-icon-button>
             </div>
@@ -118,16 +119,16 @@ export function getHtml(this: SaveToMemoryBankElement) {
               ${this.filteredTags_.length > 0 ? html`
                 <div class="suggestions-dropdown tag-suggestions"
                     role="listbox">
-                  ${this.filteredTags_.map((tag, index) => html`
+                  ${this.filteredTags_.map((item, index) => html`
                     <div
                         class="suggestion-item ${
                                  index === this.highlightedTagIndex ?
                             'highlighted' :
                             ''}"
-                        role="option" data-tag="${tag}" title="${tag}"
+                        role="option" data-tag="${item}" title="${item}"
                         aria-selected="${index === this.highlightedTagIndex}"
                         @mousedown="${this.onTagSuggestionMousedown}">
-                      ${tag}
+                      ${item}
                     </div>
                   `)}
                 </div>

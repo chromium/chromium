@@ -86,22 +86,22 @@ export function getHtml(this: ContextualActionMenuElement) {
               ${this.getInputTypeLabel_(InputType.kBrowserTab)}
             </h4>
           ` : ''}
-          ${this.tabSuggestions.map((tab, index) => html`
+          ${this.tabSuggestions.map((item, index) => html`
             <div class="suggestion-container" role="presentation">
               <button class="dropdown-item" role="menuitemcheckbox"
-                  aria-checked="${this.isTabSelected_(tab)}"
-                  title="${tab.title}" data-index="${index}" aria-label="${
+                  aria-checked="${this.isTabSelected_(item)}"
+                  title="${item.title}" data-index="${index}" aria-label="${
                       this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
-                      tab.title}"
-                  ?disabled="${this.isTabDisabled_(tab)}"
+                      item.title}"
+                  ?disabled="${this.isTabDisabled_(item)}"
                   @pointerenter="${this.onTabPointerenter_}"
                   @click="${this.onTabClick_}">
-                <cr-composebox-tab-favicon .url="${tab.url}"
-                    .tabId="${tab.tabId}"
-                    .isSubmitted="${this.isTabSelected_(tab)}">
+                <cr-composebox-tab-favicon .url="${item.url}"
+                    .tabId="${item.tabId}"
+                    .isSubmitted="${this.isTabSelected_(item)}">
                 </cr-composebox-tab-favicon>
-                <span class="tab-title">${tab.title}</span>
-                ${this.isTabSelected_(tab) ? html`
+                <span class="tab-title">${item.title}</span>
+                ${this.isTabSelected_(item) ? html`
                   <cr-icon class="multi-tab-icon"
                       icon="composebox:check-circle-filled"
                       id="multi-tab-check">
@@ -162,19 +162,19 @@ export function getHtml(this: ContextualActionMenuElement) {
         ` : ''}
       ` : ''}
 
-      ${this.inputState?.allowedTools.map(mode => html`
-        <button class="dropdown-item" data-mode="${mode}" role="menuitemradio"
-            aria-checked="${this.isToolActive_(mode)}" aria-label="${
+      ${this.inputState?.allowedTools.map(item => html`
+        <button class="dropdown-item" data-mode="${item}" role="menuitemradio"
+            aria-checked="${this.isToolActive_(item)}" aria-label="${
                 this.showContextMenuHeaders_ && this.getToolHeader_() ?
                 `${this.getToolHeader_()}: ` :
-                ''}${this.getToolLabel_(mode)}"
-            title="${this.getToolTooltip_(mode)}" @click="${this.onToolClick_}"
-            ?disabled="${this.isToolDisabled_(mode)}">
-          ${this.getIconForToolMode_(mode) ? html`
-            <cr-icon icon="${this.getIconForToolMode_(mode)}"></cr-icon>
+                ''}${this.getToolLabel_(item)}"
+            title="${this.getToolTooltip_(item)}" @click="${this.onToolClick_}"
+            ?disabled="${this.isToolDisabled_(item)}">
+          ${this.getIconForToolMode_(item) ? html`
+            <cr-icon icon="${this.getIconForToolMode_(item)}"></cr-icon>
           ` : ''}
-          <span>${this.getToolLabel_(mode)}</span>
-          ${this.isToolActive_(mode) ? html`
+          <span>${this.getToolLabel_(item)}</span>
+          ${this.isToolActive_(item) ? html`
             <cr-icon class="multi-tab-icon" icon="cr:check"></cr-icon>
           ` : ''}
         </button>
@@ -198,20 +198,20 @@ export function getHtml(this: ContextualActionMenuElement) {
         ` : ''}
       ` : ''}
 
-      ${this.inputState?.allowedModels.map(mode => html`
+      ${this.inputState?.allowedModels.map(item => html`
         <button class="dropdown-item" role="menuitemradio"
-            aria-checked="${this.isModelActive_(mode)}" aria-label="${
+            aria-checked="${this.isModelActive_(item)}" aria-label="${
                 this.showContextMenuHeaders_ && this.getModelHeader_() ?
                 `${this.getModelHeader_()}: ` :
-                ''}${this.getModelLabel_(mode)}"
-            data-model="${mode}" title="${this.getModelTooltip_(mode)}"
+                ''}${this.getModelLabel_(item)}"
+            data-model="${item}" title="${this.getModelTooltip_(item)}"
             @click="${this.onModelClick_}"
-            ?disabled="${this.isModelDisabled_(mode)}">
-          ${this.getIconForModelMode_(mode) ? html`
-            <cr-icon icon="${this.getIconForModelMode_(mode)}"></cr-icon>
+            ?disabled="${this.isModelDisabled_(item)}">
+          ${this.getIconForModelMode_(item) ? html`
+            <cr-icon icon="${this.getIconForModelMode_(item)}"></cr-icon>
           ` : ''}
-          <span>${this.getModelLabel_(mode)}</span>
-          ${this.isModelActive_(mode) ? html`
+          <span>${this.getModelLabel_(item)}</span>
+          ${this.isModelActive_(item) ? html`
             <cr-icon class="multi-tab-icon" icon="cr:check" id="model-check">
             </cr-icon>
           ` : ''}
@@ -255,21 +255,22 @@ export function getHtml(this: ContextualActionMenuElement) {
           ` : ''}
         ` : ''}
 
-        ${this.tabSuggestions.map((tab, index) => html`
+        ${this.tabSuggestions.map((item, index) => html`
           <div class="suggestion-container" role="presentation">
             <button class="dropdown-item" role="menuitemcheckbox"
-                aria-checked="${this.isTabSelected_(tab)}" title="${tab.title}"
-                data-index="${index}" aria-label="${
+                aria-checked="${this.isTabSelected_(item)}"
+                title="${item.title}" data-index="${index}" aria-label="${
                     this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
-                    tab.title}"
-                ?disabled="${this.isTabDisabled_(tab)}"
+                    item.title}"
+                ?disabled="${this.isTabDisabled_(item)}"
                 ?hidden="${!this.shareTabsFlyoutOpen}"
                 @click="${this.onTabClick_}">
-              <cr-composebox-tab-favicon .url="${tab.url}" .tabId="${tab.tabId}"
-                  .isSubmitted="${this.isTabSelected_(tab)}">
+              <cr-composebox-tab-favicon .url="${item.url}"
+                  .tabId="${item.tabId}"
+                  .isSubmitted="${this.isTabSelected_(item)}">
               </cr-composebox-tab-favicon>
-              <span class="tab-title">${tab.title}</span>
-              ${this.isTabSelected_(tab) ? html`
+              <span class="tab-title">${item.title}</span>
+              ${this.isTabSelected_(item) ? html`
                 <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
               ` : ''}
             </button>

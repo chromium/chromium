@@ -43,8 +43,8 @@ ${this.isLoading_ ? html`
       </div>
     ` : html`
       <trace-report .isHeader="${true}"></trace-report>
-      ${this.traces_.map((traceReport: ClientTraceReport) => html`
-        <trace-report .trace="${traceReport}" @show-toast="${this.onShowToast_}"
+      ${this.traces_.map((item: ClientTraceReport) => html`
+        <trace-report .trace="${item}" @show-toast="${this.onShowToast_}"
             @refresh-traces-request="${this.onRefreshTracesRequest_}">
         </trace-report>
       `)}

@@ -8,9 +8,9 @@ import type {ComposeboxFaviconGroupElement} from './composebox_favicon_group.js'
 
 export function getHtml(this: ComposeboxFaviconGroupElement) {
   return html`
-${this.visibleTabs_.map(tab => html`
-  <div class="favicon-item ${this.isTabLoading_(tab) ? 'loading' : ''}"
-      style="--favicon-image: ${this.getFaviconUrl_(tab)}">
+${this.visibleTabs_.map(item => html`
+  <div class="favicon-item ${this.isTabLoading_(item) ? 'loading' : ''}"
+      style="--favicon-image: ${this.getFaviconUrl_(item)}">
   </div>
 `)}
 ${this.remainingCount_ > 0 ? html`

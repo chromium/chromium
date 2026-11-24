@@ -35,8 +35,8 @@ export function getHtml(this: BookmarksFolderNodeElement) {
 </div>
 <div id="descendants" role="group">
   ${this.isOpen ? html`
-    ${this.getFolderChildren_().map(child => html`
-      <bookmarks-folder-node item-id="${child}" draggable="true"
+    ${this.getFolderChildren_().map(item => html`
+      <bookmarks-folder-node item-id="${item}" draggable="true"
           depth="${this.getChildDepth_()}">
       </bookmarks-folder-node>
     `)}

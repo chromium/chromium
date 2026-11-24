@@ -49,8 +49,8 @@ export function getHtml(
     </div>
     ${entry.tags && entry.tags.length > 0 ? html`
       <div class="card-tags">
-        ${entry.tags.slice(0, 4).map(tag => html`
-          <span class="tag-pill" title="${tag}">${tag}</span>
+        ${entry.tags.slice(0, 4).map(item => html`
+          <span class="tag-pill" title="${item}">${item}</span>
         `)}
       </div>
     ` : ''}

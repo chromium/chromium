@@ -64,9 +64,9 @@ export function getHtml(this: PolicyTableElement) {
       </policy-table-header-cell>
       <div class="toggle" role="columnheader"></div>
     </div>
-    ${this.sortedPolicies.map(policy => html`
-      <policy-row .policy="${policy}" .visibleColumns="${this.visibleColumns}"
-          class="policy-data" ?hidden="${this.isPolicyHidden(policy)}">
+    ${this.sortedPolicies.map(item => html`
+      <policy-row .policy="${item}" .visibleColumns="${this.visibleColumns}"
+          class="policy-data" ?hidden="${this.isPolicyHidden(item)}">
       </policy-row>
     `)}
     <div class="no-policy" ?hidden="${this.hasVisiblePolicies()}">

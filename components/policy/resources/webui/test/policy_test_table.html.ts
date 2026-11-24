@@ -19,8 +19,8 @@ export function getHtml(this: PolicyTestTableElement) {
     <div class="cell">$i18n{testTableLevel}</div>
     <div class="cell" id="header-remove-btn-cell"></div>
   </header>
-  ${this.rows.map((row, index) => html`
-    <policy-test-row .schema="${this.schema}" .initialValues="${row}"
+  ${this.rows.map((item, index) => html`
+    <policy-test-row .schema="${this.schema}" .initialValues="${item}"
         data-index="${index}" @remove-row="${this.onRemoveRow}">
     </policy-test-row>
   `)}

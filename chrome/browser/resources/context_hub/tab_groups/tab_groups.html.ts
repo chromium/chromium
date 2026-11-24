@@ -44,14 +44,14 @@ export function getHtml(this: TabGroupsElement) {
       </p>
       ${this.tabs_.length > 0 ? html`
         <div class="group-tabs-list landing-tabs">
-          ${this.tabs_.map(tab => html`
-            <button class="tab-row" data-id="${tab.id}" title="${tab.url}"
+          ${this.tabs_.map(item => html`
+            <button class="tab-row" data-id="${item.id}" title="${item.url}"
                 @click="${this.onTabClick_}">
               <span class="favicon"
                   style="background-image: ${
-                      getFaviconForPageURL(tab.url, false)}">
+                      getFaviconForPageURL(item.url, false)}">
               </span>
-              <span class="tab-title">${tab.title}</span>
+              <span class="tab-title">${item.title}</span>
             </button>
           `)}
         </div>
@@ -145,22 +145,22 @@ export function getHtml(this: TabGroupsElement) {
         </cr-expand-button>
         <cr-collapse ?opened="${this.ungroupedExpanded_}">
           <div class="group-tabs-list">
-            ${this.ungroupedTabs_.map(tab => html`
-              <div class="tab-item" draggable="true" data-id="${tab.id}"
+            ${this.ungroupedTabs_.map(item => html`
+              <div class="tab-item" draggable="true" data-id="${item.id}"
                   data-group="${UNGROUPED_INDEX}"
                   @dragstart="${this.onTabDragstart_}"
                   @dragend="${this.onDragend_}">
-                <button class="tab-row" data-id="${tab.id}" title="${tab.url}"
+                <button class="tab-row" data-id="${item.id}" title="${item.url}"
                     @click="${this.onTabClick_}">
                   <span class="favicon"
                       style="background-image: ${
-                          getFaviconForPageURL(tab.url, false)}">
+                          getFaviconForPageURL(item.url, false)}">
                   </span>
-                  <span class="tab-title">${tab.title}</span>
+                  <span class="tab-title">${item.title}</span>
                 </button>
                 ${this.groups_.length > 0 ? html`
                   <cr-icon-button class="move-tab-btn" iron-icon="cr:more-vert"
-                      title="Move to a group" data-id="${tab.id}"
+                      title="Move to a group" data-id="${item.id}"
                       data-group="${UNGROUPED_INDEX}"
                       @click="${this.onMoveTabClick_}">
                   </cr-icon-button>
@@ -297,10 +297,10 @@ export function getHtml(this: TabGroupsElement) {
 
 <cr-action-menu id="moveMenu" role-description="Move to"
     @close="${this.onMoveMenuClose_}">
-  ${this.getMoveTargets_().map(target => html`
-    <button class="dropdown-item" data-group="${target.index}"
+  ${this.getMoveTargets_().map(item => html`
+    <button class="dropdown-item" data-group="${item.index}"
         @click="${this.onMoveToClick_}">
-      ${target.label}
+      ${item.label}
     </button>
   `)}
 </cr-action-menu>

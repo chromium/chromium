@@ -29,7 +29,7 @@ ${this.showingChat_ ? html`
             </cr-search-field>
             ${this.searchSuggestions_.length > 0 ? html`
               <div class="search-suggestions" role="listbox">
-                ${this.searchSuggestions_.map((suggestion, index) => html`
+                ${this.searchSuggestions_.map((item, index) => html`
                   <div
                       class="suggestion-item ${
                                index === this.highlightedSuggestionIndex_ ?
@@ -39,10 +39,10 @@ ${this.showingChat_ ? html`
                           index === this.highlightedSuggestionIndex_}"
                       @mousedown="${this.onSuggestionMousedown_}">
                     <div class="suggestion-content">
-                      <span class="suggestion-label">${suggestion.label}</span>
-                      ${suggestion.description ? html`
+                      <span class="suggestion-label">${item.label}</span>
+                      ${item.description ? html`
                         <span class="suggestion-desc">
-                          ${suggestion.description}
+                          ${item.description}
                         </span>
                       ` : ''}
                     </div>
@@ -167,11 +167,11 @@ ${this.showingChat_ ? html`
                             @change="${this.onToggleAllCollectionsChange_}">
                           All Collections
                         </cr-checkbox>
-                        ${this.availableCollections_.map(c => html`
-                          <cr-checkbox data-collection="${c}"
-                              ?checked="${this.isCollectionSelected_(c)}"
+                        ${this.availableCollections_.map(item => html`
+                          <cr-checkbox data-collection="${item}"
+                              ?checked="${this.isCollectionSelected_(item)}"
                               @change="${this.onCollectionCheckboxChange_}">
-                            ${c || 'No collection'}
+                            ${item || 'No collection'}
                           </cr-checkbox>
                         `)}
                       ` : html`
@@ -209,11 +209,11 @@ ${this.showingChat_ ? html`
                             @change="${this.onToggleAllTagsChange_}">
                           All Tags
                         </cr-checkbox>
-                        ${this.availableTags_.map(tag => html`
-                          <cr-checkbox data-tag="${tag}"
-                              ?checked="${this.isTagSelected_(tag)}"
+                        ${this.availableTags_.map(item => html`
+                          <cr-checkbox data-tag="${item}"
+                              ?checked="${this.isTagSelected_(item)}"
                               @change="${this.onTagCheckboxChange_}">
-                            ${tag || 'No tags'}
+                            ${item || 'No tags'}
                           </cr-checkbox>
                         `)}
                       ` : html`
@@ -258,8 +258,8 @@ ${this.showingChat_ ? html`
           ` : html`
             <div class="grid">
               ${this.filteredEntries_.map(
-                  (entry, index) =>
-                      getMemoryBankEntryHtml.call(this, entry, index))}
+                  (item, index) =>
+                      getMemoryBankEntryHtml.call(this, item, index))}
             </div>
           `}
         `}

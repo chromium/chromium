@@ -33,9 +33,9 @@ export function getHtml(this: ModificationsPanelElement) {
           this.trustStateValue !== '2' || this.constraints.length === 0}">
     <div class="modifications-row-label">$i18n{constraints}</div>
     <div>
-      ${this.constraints.map((constraint: string, index: number) => html`
+      ${this.constraints.map((item: string, index: number) => html`
         <div class="constraint">
-          ${constraint}
+          ${item}
           <cr-icon-button id="constraint-delete-${index}" data-index="${index}"
               @click="${this.onDeleteConstraintClick_}"
               ?hidden="${!this.isEditable}"

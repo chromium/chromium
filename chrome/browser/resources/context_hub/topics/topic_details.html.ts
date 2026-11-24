@@ -43,10 +43,10 @@ export function getHtml(this: TopicDetailsElement) {
                     <option value="" ?selected="${!this.getDuplicateOfId_()}">
                       Choose a topic
                     </option>
-                    ${this.getDuplicateOptions_().map(option => html`
-                      <option value="${option.id}"
-                          ?selected="${option.id === this.getDuplicateOfId_()}">
-                        ${option.title}
+                    ${this.getDuplicateOptions_().map(item => html`
+                      <option value="${item.id}"
+                          ?selected="${item.id === this.getDuplicateOfId_()}">
+                        ${item.title}
                       </option>
                     `)}
                   </select>
@@ -58,9 +58,9 @@ export function getHtml(this: TopicDetailsElement) {
               aria-haspopup="dialog" ?hidden="${this.sites_.length === 0}"
               @click="${this.onSitesButtonClick_}">
             <span id="siteFavicons" aria-hidden="true">
-              ${this.getButtonFaviconUrls_().map(url => html`
+              ${this.getButtonFaviconUrls_().map(item => html`
                 <span class="favicon"
-                    style="background-image: ${this.getFavicon_(url)}">
+                    style="background-image: ${this.getFavicon_(item)}">
                 </span>
               `)}
             </span>

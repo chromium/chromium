@@ -21,9 +21,9 @@ export function getHtml(this: ColorPipelineInternalsAppElement) {
       <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
           @iron-activate="${this.onSelectorIronActivate_}"
           @click="${this.onLinkClick_}" selected-attribute="selected">
-        ${this.sections_.map(section => html`
-          <a role="menuitem" href="#${section.title}" class="cr-nav-menu-item">
-            ${section.title}
+        ${this.sections_.map(item => html`
+          <a role="menuitem" href="#${item.title}" class="cr-nav-menu-item">
+            ${item.title}
           </a>
         `)}
       </cr-menu-selector>

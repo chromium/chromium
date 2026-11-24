@@ -10,18 +10,18 @@ export function getHtml(this: ChromeUrlsAppElement) {
   return html`
 <h2>List of Chrome URLs</h2>
 <ul>
-  ${this.webuiUrlInfos_.map(info => html`
-    ${this.isChromeUrlsUrl_(info) ? html`
+  ${this.webuiUrlInfos_.map(item => html`
+    ${this.isChromeUrlsUrl_(item) ? html`
       <li>
         <a href="#">chrome://chrome-urls</a>
       </li>
     ` : html`
-      ${info.enabled ? html`
+      ${item.enabled ? html`
         <li>
-          <a href="${info.url}">${info.url}</a>
+          <a href="${item.url}">${item.url}</a>
         </li>
       ` : html`
-        <li>${info.url}</li>
+        <li>${item.url}</li>
       `}
     `}
   `)}
@@ -37,13 +37,13 @@ ${this.internalUrlInfos_.length ? html`
     ${this.getDebugPagesToggleButtonLabel_()}
   </cr-button>
   <ul>
-    ${this.internalUrlInfos_.map(info => html`
-      ${this.isInternalUiEnabled_(info) ? html`
+    ${this.internalUrlInfos_.map(item => html`
+      ${this.isInternalUiEnabled_(item) ? html`
         <li>
-          <a href="${info.url}">${info.url}</a>
+          <a href="${item.url}">${item.url}</a>
         </li>
       ` : html`
-        <li>${info.url}</li>
+        <li>${item.url}</li>
       `}
     `)}
   </ul>
@@ -56,8 +56,8 @@ ${this.commandUrls_.length ? html`
     address bar if you need them.
   </p>
   <ul>
-    ${this.commandUrls_.map(url => html`
-      <li>${url}</li>
+    ${this.commandUrls_.map(item => html`
+      <li>${item}</li>
     `)}
   </ul>
 ` : ''}`;

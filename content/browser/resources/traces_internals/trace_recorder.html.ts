@@ -95,15 +95,15 @@ export function getHtml(this: TraceRecorderElement) {
         <div>Disable</div>
         <div>Tag</div>
       </div>
-      ${this.trackEventTags.map(tagName => html`
+      ${this.trackEventTags.map(item => html`
         <div class="row">
-          <input type="checkbox" data-tag="${tagName}"
-              .checked="${this.isTagEnabled(tagName)}"
+          <input type="checkbox" data-tag="${item}"
+              .checked="${this.isTagEnabled(item)}"
               @change="${this.onTagsTrueChange_}">
-          <input type="checkbox" data-tag="${tagName}"
-              .checked="${this.isTagDisabled(tagName)}"
+          <input type="checkbox" data-tag="${item}"
+              .checked="${this.isTagDisabled(item)}"
               @change="${this.onTagsFalseChange_}">
-          <div>${tagName}</div>
+          <div>${item}</div>
         </div>
       `)}
     </div>
@@ -123,15 +123,15 @@ export function getHtml(this: TraceRecorderElement) {
         <div>Tags</div>
         <div>Description</div>
       </div>
-      ${this.trackEventCategories.map(category => html`
+      ${this.trackEventCategories.map(item => html`
         <div class="row">
-          <input data-name="${category.name}" type="checkbox"
-              .disabled="${this.isCategoryForced(category)}"
-              .checked="${this.isCategoryEnabled(category)}"
+          <input data-name="${item.name}" type="checkbox"
+              .disabled="${this.isCategoryForced(item)}"
+              .checked="${this.isCategoryEnabled(item)}"
               @change="${this.onCategoryChange_}">
-          <div>${this.canonicalCategoryName(category)}</div>
-          <div>${category.tags.join(', ')}</div>
-          <div>${category.description}</div>
+          <div>${this.canonicalCategoryName(item)}</div>
+          <div>${item.tags.join(', ')}</div>
+          <div>${item.description}</div>
         </div>
       `)}
     </div>
@@ -234,15 +234,14 @@ export function getHtml(this: TraceRecorderElement) {
         <div>Flag</div>
         <div>Description</div>
       </div>
-      ${this.etwEvents.map((event, index) => html`
+      ${this.etwEvents.map((item, index) => html`
         <div class="row">
           <cr-toggle class="config-toggle" data-index="${index}"
-              ?checked="${
-                  this.isEtwEventEnabled(event.provider, event.keyword)}"
+              ?checked="${this.isEtwEventEnabled(item.provider, item.keyword)}"
               @change="${this.onEtwEVentChange_}">
           </cr-toggle>
-          <div>${event.name}</div>
-          <div>${event.description}</div>
+          <div>${item.name}</div>
+          <div>${item.description}</div>
         </div>
       `)}
       <div class="row">

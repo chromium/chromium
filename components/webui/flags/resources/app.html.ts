@@ -110,8 +110,8 @@ export function getHtml(this: AppElement) {
           aria-labelledby="tab-available" aria-hidden="false">
         <!-- Non default experiments. -->
         <div id="non-default-experiments">
-          ${this.nonDefaultFeatures.map(feature => html`
-            <flags-experiment id="${feature.internal_name}" .data="${feature}"
+          ${this.nonDefaultFeatures.map(item => html`
+            <flags-experiment id="${item.internal_name}" .data="${item}"
                 @select-change="${this.onSelectChange_}"
                 @textarea-change="${this.onTextareaChange_}"
                 @input-change="${this.onInputChange_}">
@@ -120,8 +120,8 @@ export function getHtml(this: AppElement) {
         </div>
         <!-- Experiments with default settings. -->
         <div id="default-experiments">
-          ${this.defaultFeatures.map(feature => html`
-            <flags-experiment id="${feature.internal_name}" .data="${feature}"
+          ${this.defaultFeatures.map(item => html`
+            <flags-experiment id="${item.internal_name}" .data="${item}"
                 @select-change="${this.onSelectChange_}"
                 @textarea-change="${this.onTextareaChange_}"
                 @input-change="${this.onInputChange_}">
@@ -135,8 +135,8 @@ export function getHtml(this: AppElement) {
           ?selected="${this.isTabSelected_(1)}" role="tabpanel"
           aria-labelledby="tab-unavailable" aria-hidden="false">
         <div id="unavailable-experiments">
-          ${this.data.unsupportedFeatures.map(feature => html`
-            <flags-experiment id="${feature.internal_name}" .data="${feature}"
+          ${this.data.unsupportedFeatures.map(item => html`
+            <flags-experiment id="${item.internal_name}" .data="${item}"
                 unsupported>
             </flags-experiment>
           `)}

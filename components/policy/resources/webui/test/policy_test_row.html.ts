@@ -14,8 +14,8 @@ export function getHtml(this: PolicyTestRowElement) {
   <select class="namespace ${this.namespaceError ? 'error' : ''}"
       .value="${this.policyNamespace}" @change="${this.onNamespaceChange}"
       @focus="${this.onFocus}">
-    ${this.namespaces.map(ns => html`
-      <option value="${ns}">${ns === 'chrome' ? 'Chrome' : ns}</option>
+    ${this.namespaces.map(item => html`
+      <option value="${item}">${item === 'chrome' ? 'Chrome' : item}</option>
     `)}
   </select>
 </div>
@@ -26,8 +26,8 @@ export function getHtml(this: PolicyTestRowElement) {
       placeholder="$i18n{testNameSelect}" @change="${this.onNameChange}"
       @focus="${this.onFocus}">
   <datalist id="policy-name-list">
-    ${this.policyNames.map(name => html`
-      <option value="${name}">${name}</option>
+    ${this.policyNames.map(item => html`
+      <option value="${item}">${item}</option>
     `)}
   </datalist>
 </div>

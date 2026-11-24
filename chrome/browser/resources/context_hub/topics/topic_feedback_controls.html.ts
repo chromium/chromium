@@ -53,9 +53,9 @@ ${this.isDisliked_() ? html`
     ${this.isDefectMissing_() ? html`
       <div id="defectError" role="alert">Select at least one reason</div>
     ` : ''}
-    ${this.getSuggestionFields_().map(field => html`
-      <cr-input class="suggestion" data-defect="${field.defect}"
-          label="${field.label}" .value="${this.getSuggestion_(field.defect)}"
+    ${this.getSuggestionFields_().map(item => html`
+      <cr-input class="suggestion" data-defect="${item.defect}"
+          label="${item.label}" .value="${this.getSuggestion_(item.defect)}"
           @value-changed="${this.onSuggestionValueChanged_}"
           @change="${this.onCommentChange_}">
       </cr-input>

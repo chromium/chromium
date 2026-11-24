@@ -109,8 +109,8 @@ export function getHtml(this: PolicyAppElement) {
     </section>
     <section id="main-section"
         class="${this.policyGroups_.length === 0 ? 'empty' : ''}">
-      ${this.policyGroups_.map(group => html`
-        <policy-table .dataModel="${group}"
+      ${this.policyGroups_.map(item => html`
+        <policy-table .dataModel="${item}"
             .filterPattern="${this.filterPattern_}"
             .showUnset="${this.showUnset_}"
             .visibleColumns="${this.visibleColumns_}">

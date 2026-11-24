@@ -59,8 +59,8 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
 <section id="log-section">
   <h2>Log</h2>
   <div id="log-container">
-    ${this.logs_.map(log => html`
-      <div class="log-entry">${log}</div>
+    ${this.logs_.map(item => html`
+      <div class="log-entry">${item}</div>
     `)}
   </div>
 </section>`;

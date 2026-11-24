@@ -13,14 +13,14 @@ export function getHtml(this: BookmarksCommandManagerElement) {
     .template="${() => html`
       <cr-action-menu @mousedown="${this.onMenuMousedown_}"
           role-description="$i18n{menu}">
-        ${this.computeMenuCommands_().map(command => html`
-          <button class="dropdown-item" data-command="${command}"
-              ?hidden="${!this.isCommandVisible_(command, this.menuIds_)}"
-              ?disabled="${!this.isCommandEnabled_(command, this.menuIds_)}"
+        ${this.computeMenuCommands_().map(item => html`
+          <button class="dropdown-item" data-command="${item}"
+              ?hidden="${!this.isCommandVisible_(item, this.menuIds_)}"
+              ?disabled="${!this.isCommandEnabled_(item, this.menuIds_)}"
               @click="${this.onCommandClick_}">
-            ${this.getCommandLabel_(command)}
+            ${this.getCommandLabel_(item)}
           </button>
-          <hr ?hidden="${!this.showDividerAfter_(command)}" aria-hidden="true">
+          <hr ?hidden="${!this.showDividerAfter_(item)}" aria-hidden="true">
         `)}
       </cr-action-menu>
     `}">

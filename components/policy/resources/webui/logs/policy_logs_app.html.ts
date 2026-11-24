@@ -54,37 +54,36 @@ export function getHtml(this: PolicyLogsAppElement) {
       aria-label="$i18n{filterLogs}" .value="${this.filterPattern}"
       @input="${this.onFilterInput}">
   <div id="severity-filters">
-    ${['error', 'warning', 'info', 'verbose'].map(severity => html`
+    ${['error', 'warning', 'info', 'verbose'].map(item => html`
       <label>
-        <input type="checkbox" id="${severity}-checkbox"
-            data-severity="${severity}"
-            ?checked="${!!this.checkedSeverities[severity.toUpperCase()]}"
+        <input type="checkbox" id="${item}-checkbox" data-severity="${item}"
+            ?checked="${!!this.checkedSeverities[item.toUpperCase()]}"
             @change="${this.onSeverityCheckboxChange}">
-        ${severity.toUpperCase()}
+        ${item.toUpperCase()}
       </label>
     `)}
   </div>
 </div>
 
 <div id="logs-container" role="grid" aria-label="Logs List">
-  ${this.getFilteredLogs().map(log => html`
+  ${this.getFilteredLogs().map(item => html`
     <div role="row" class="log-line">
-      <div role="gridcell" class="log-column timestamp">${log.timestamp}</div>
+      <div role="gridcell" class="log-column timestamp">${item.timestamp}</div>
       <div role="gridcell" class="log-column severity">
-        ${highlightText(log.logSeverity, this.getFilterWords())}
+        ${highlightText(item.logSeverity, this.getFilterWords())}
       </div>
       <div role="gridcell" class="log-column file-and-line">
-        <a href="${log.location}" title="${log.fileAndLine}" target="_blank">
+        <a href="${item.location}" title="${item.fileAndLine}" target="_blank">
           <span class="file">
             ${highlightText(
-                this.getLogFileAndLine(log).file, this.getFilterWords())}
+                this.getLogFileAndLine(item).file, this.getFilterWords())}
           </span>
           ${highlightText(
-              ':' + this.getLogFileAndLine(log).line, this.getFilterWords())}
+              ':' + this.getLogFileAndLine(item).line, this.getFilterWords())}
         </a>
       </div>
       <div role="gridcell" class="log-column message">
-        ${highlightText(log.message, this.getFilterWords())}
+        ${highlightText(item.message, this.getFilterWords())}
       </div>
     </div>
   `)}
@@ -93,8 +92,8 @@ export function getHtml(this: PolicyLogsAppElement) {
 <h2>$i18n{variations}</h2>
 
 <ul id="active-variations-container" aria-label="Active Variations List">
-  ${this.versionInfo?.variations.map(variation => html`
-    <li>${variation}</li>
+  ${this.versionInfo?.variations.map(item => html`
+    <li>${item}</li>
   `) ??
       ''}
 </ul>

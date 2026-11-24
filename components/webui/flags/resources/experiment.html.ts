@@ -54,8 +54,8 @@ export function getHtml(this: ExperimentElement) {
 
       ${this.feature_.links ? html`
         <div class="links-container">
-          ${this.feature_.links.map(link => html`
-            <a href="${link}">${link}</a>
+          ${this.feature_.links.map(item => html`
+            <a href="${item}">${item}</a>
           `)}
         </div>
       ` : ''}
@@ -80,9 +80,9 @@ export function getHtml(this: ExperimentElement) {
             data-internal-name="${this.feature_.internal_name}"
             aria-labelledby="${this.getHeaderId_()}"
             @change="${this.onExperimentSelectChange_}">
-          ${this.feature_.options!.map(option => html`
-            <option .selected="${option.selected}">
-              ${option.description}
+          ${this.feature_.options!.map(item => html`
+            <option .selected="${item.selected}">
+              ${item.description}
             </option>
           `)}
         </select>
