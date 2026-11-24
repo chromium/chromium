@@ -99,17 +99,28 @@ TEST(OnDeviceModelUiMetadataTest, LiveTranscriptionModel) {
 }
 
 TEST(OnDeviceModelUiMetadataTest, ProofreadingAndSummarizingModels) {
-  EXPECT_FALSE(
+  // kAIProofreadingAPI is enabled by default, so the proofreader is visible
+  // without a flag. The summarizer is not.
+  EXPECT_TRUE(
       GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kProofreaderSmallExpert)
           .has_value());
   EXPECT_FALSE(
       GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kSummarizerSmallExpert)
           .has_value());
 
+  {
+    // Disabling kAIProofreadingAPI (e.g. by a kill switch) hides the
+    // proofreader.
+    base::test::ScopedFeatureList disabled;
+    disabled.InitAndDisableFeature(blink::features::kAIProofreadingAPI);
+    EXPECT_FALSE(
+        GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kProofreaderSmallExpert)
+            .has_value());
+  }
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {blink::features::kAIProofreadingAPI,
-       blink::features::kAISummarizationAPI,
+      {blink::features::kAISummarizationAPI,
        blink::features::kAISummarizationPerformancePreference},
       {});
 
@@ -147,9 +158,6 @@ TEST(OnDeviceModelUiMetadataTest, HiddenModelsReturnNullopt) {
       GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kClassifier).has_value());
   EXPECT_FALSE(GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kLanguageDetection)
                    .has_value());
-  EXPECT_FALSE(
-      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kProofreaderSmallExpert)
-          .has_value());
   EXPECT_FALSE(
       GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kSummarizerSmallExpert)
           .has_value());

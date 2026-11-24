@@ -36,11 +36,7 @@ bool IsModelEnabled(OnDeviceBaseModel base_model,
     case OnDeviceModelCategory::kGeneralPurpose:
       return true;
     case OnDeviceModelCategory::kProofreading:
-      // kAIProofreadingAPI is FEATURE_ENABLED_BY_DEFAULT with
-      // copied_from_base_feature_if: "overridden" for Origin Trial support, so
-      // check for an explicit override (e.g. chrome://flags or Finch).
-      return base::FeatureList::GetStateIfOverridden(
-                 blink::features::kAIProofreadingAPI) == true;
+      return base::FeatureList::IsEnabled(blink::features::kAIProofreadingAPI);
     case OnDeviceModelCategory::kSummarizing:
       return base::FeatureList::IsEnabled(
                  blink::features::kAISummarizationAPI) &&

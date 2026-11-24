@@ -274,6 +274,7 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   const base::ByteSize kAsrSize = base::GiB(3);
   const base::ByteSize kNanoSize = base::GiB(1);
   const base::ByteSize kGemmaSize = base::GiB(2);
+  const base::ByteSize kProofreaderSize = base::MiB(300);
 
   fake_control.SetModels({
       OnDeviceModelControl::ModelInfo(
@@ -283,9 +284,11 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
       OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kClassifier,
                                       OnDeviceModelControl::ModelStatus::kReady,
                                       base::MiB(200).InBytes()),
+      // Listed without a flag: kAIProofreadingAPI is enabled by default.
       OnDeviceModelControl::ModelInfo(
           OnDeviceBaseModel::kProofreaderSmallExpert,
-          OnDeviceModelControl::ModelStatus::kReady, base::MiB(300).InBytes()),
+          OnDeviceModelControl::ModelStatus::kReady,
+          kProofreaderSize.InBytes()),
       OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kV3NanoGpu,
                                       OnDeviceModelControl::ModelStatus::kReady,
                                       kNanoSize.InBytes()),
@@ -306,11 +309,11 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   EXPECT_TRUE(call_data.arg2()->GetBool());
 
   const base::ListValue& capabilities = call_data.arg3()->GetList();
-  ASSERT_EQ(3u, capabilities.size());
+  ASSERT_EQ(4u, capabilities.size());
 
-  // Sorted by category first (GeneralPurpose before LiveTranscription), then
-  // by size descending within each category: Gemma4 (2 GiB), V3NanoGpu (1 GiB),
-  // ASR (3 GiB).
+  // Sorted by category first (GeneralPurpose, Proofreading, LiveTranscription),
+  // then by size descending within each category: Gemma4 (2 GiB), V3NanoGpu
+  // (1 GiB), Proofreader (300 MiB), ASR (3 GiB).
   const base::DictValue& row0 = capabilities[0].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kGemma4), row0.FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
@@ -346,21 +349,32 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
             *row1.FindString("size"));
 
   const base::DictValue& row2 = capabilities[2].GetDict();
-  EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kSpeechRecognitionSmallExpert),
+  EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kProofreaderSmallExpert),
             row2.FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
             row2.FindInt("status"));
-  EXPECT_EQ(static_cast<int>(OnDeviceModelCategory::kLiveTranscription),
+  EXPECT_EQ(static_cast<int>(OnDeviceModelCategory::kProofreading),
             row2.FindInt("category"));
+  EXPECT_EQ("Gemma 197M", *row2.FindString("modelName"));
+  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kProofreaderSize)),
+            *row2.FindString("size"));
+
+  const base::DictValue& row3 = capabilities[3].GetDict();
+  EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kSpeechRecognitionSmallExpert),
+            row3.FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
+            row3.FindInt("status"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelCategory::kLiveTranscription),
+            row3.FindInt("category"));
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_TITLE),
-            *row2.FindString("categoryTitle"));
+            *row3.FindString("categoryTitle"));
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_DESCRIPTION),
-            *row2.FindString("description"));
-  EXPECT_EQ("Gemma 500M", *row2.FindString("modelName"));
+            *row3.FindString("description"));
+  EXPECT_EQ("Gemma 500M", *row3.FindString("modelName"));
   EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kAsrSize)),
-            *row2.FindString("size"));
+            *row3.FindString("size"));
 }
 
 TEST_F(OnDeviceAiSettingsHandlerTest,
@@ -451,10 +465,10 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleDeleteOnDeviceAiCapability) {
   });
 
   // Hidden/unmapped models (e.g. kClassifier) and flag-disabled models (e.g.
-  // kProofreaderSmallExpert) should not be uninstallable.
+  // kSummarizerSmallExpert) should not be uninstallable.
   for (OnDeviceBaseModel disallowed_model :
        {OnDeviceBaseModel::kClassifier,
-        OnDeviceBaseModel::kProofreaderSmallExpert}) {
+        OnDeviceBaseModel::kSummarizerSmallExpert}) {
     base::ListValue invalid_args;
     invalid_args.Append("ignored_callback_id");
     invalid_args.Append(static_cast<int>(disallowed_model));
