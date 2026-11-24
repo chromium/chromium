@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.install.InstallException;
+import com.google.android.play.core.install.model.InstallErrorCode;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +55,28 @@ public class InAppUpdateInstallerTest {
         assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
 
         source.setException(new RuntimeException("Async failure"));
+        ShadowLooper.idleMainLooper();
+        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
+    }
+
+    // Play holds no download, so restoring the flag would only cause further attempts that cannot
+    // succeed.
+    @Test
+    public void testCompleteUpdate_keepsFlagClearedWhenPlayHoldsNoDownload() {
+        TaskCompletionSource<Void> source = completeUpdateWithPendingTask();
+
+        source.setException(new InstallException(InstallErrorCode.ERROR_DOWNLOAD_NOT_PRESENT));
+        ShadowLooper.idleMainLooper();
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
+    }
+
+    // Other Play errors do not say the download is gone, so the flag is restored for a later
+    // attempt.
+    @Test
+    public void testCompleteUpdate_restoresFlagOnOtherInstallError() {
+        TaskCompletionSource<Void> source = completeUpdateWithPendingTask();
+
+        source.setException(new InstallException(InstallErrorCode.ERROR_INSTALL_NOT_ALLOWED));
         ShadowLooper.idleMainLooper();
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
     }

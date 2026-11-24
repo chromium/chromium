@@ -2938,18 +2938,32 @@ chromium-metrics-reviews@google.com.
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records lifecycle events for background installation of a downloaded in-app
-    update on Chrome for Android: initial schedule on stop, retry scheduled with
-    backoff after an active foreground-service skip (recorded separately from
-    the initial schedule), cancelled on return to foreground, skipped by a guard
-    (screen locked, incognito tabs open, activity visible at run time, active
-    foreground service, update not downloaded), completeUpdate invoked,
-    completeUpdate failed, getAppUpdateInfo failed. Query failures in
-    ActivityManager.getMyMemoryState() fail safe into the active foreground
-    service bucket. There is no success bucket because Play replaces the package
-    and kills the process before a success listener can run; for the same reason
-    CompleteUpdateCalled undercounts when the task runs in a cold Java-only
-    process, and the install outcome should be measured at the next launch.
+    Records the steps of installing a downloaded in-app update in the background
+    on Chrome for Android. Use it to check that background installs are running
+    and how often they are skipped or fail.
+
+    An install is scheduled when the user leaves Chrome with an update
+    downloaded. It is cancelled if the user returns first, and retried later if
+    Chrome was running a foreground service such as media playback. Each
+    'Skipped' bucket names the reason an install was not attempted. 'Skipped:
+    Not downloaded' means Chrome no longer had an update to install.
+
+    'Complete update called' means Chrome asked Google Play to install the
+    update. A request that fails also records 'Complete update failed'. A
+    request made when Google Play no longer held the download, for example
+    because it had already installed the update, also records 'Complete update:
+    Download not present'; that is not a failure. The failure rate is 'Complete
+    update failed' divided by ('Complete update called' minus 'Complete update:
+    Download not present').
+
+    Successful installs are not recorded, because the install ends the Chrome
+    process. Any sample from the install task can also be missing when the task
+    ran in a process that Android started only for it. To estimate how many, add
+    'Complete update called' to the 'Skipped' buckets, leaving out 'Screen
+    locked' and 'Incognito tabs open' because those are normally recorded before
+    a task runs. Compare the total with the 'In-app update restart task' bucket
+    of Android.BackgroundTaskScheduler.TaskStarted, which counts every task run
+    and is not affected.
   </summary>
 </histogram>
 

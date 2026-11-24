@@ -1795,9 +1795,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Skipped: Not downloaded"/>
   <int value="6" label="Complete update called"/>
   <int value="7" label="Complete update failed"/>
-  <int value="8" label="GetAppUpdateInfo failed"/>
+  <int value="8"
+      label="(Obsolete) GetAppUpdateInfo failed. Removed in 2026/11."/>
   <int value="9" label="Skipped: Foreground service active"/>
   <int value="10" label="Retry scheduled"/>
+  <int value="11" label="Complete update: Download not present"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateBackgroundRestartEvent.java:InAppUpdateBackgroundRestartEvent) -->

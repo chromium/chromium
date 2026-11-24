@@ -10,10 +10,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.Task;
-import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
-import com.google.android.play.core.install.model.InstallStatus;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
@@ -31,11 +29,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Background task that checks whether an in-app update is still downloaded and Chrome has no
- * visible activities, incognito tabs, or active foreground services, then invokes {@link
- * AppUpdateManager#completeUpdate()} to silently install the staged update while Chrome is in the
- * background. An active foreground service is the only non-terminal skip: the task finishes and
- * reschedules itself with capped exponential backoff.
+ * Background task that silently installs a downloaded in-app update while Chrome is in the
+ * background. When the persisted downloaded flag is set and Chrome has no visible activities,
+ * incognito tabs, or active foreground services, it invokes {@link
+ * AppUpdateManager#completeUpdate()}. An active foreground service is the only non-terminal skip:
+ * the task finishes and reschedules itself with capped exponential backoff.
+ *
+ * <p>The task does not call {@link AppUpdateManager#getAppUpdateInfo()} first. That query depends
+ * on a Play server round trip, so while offline it cannot report a downloaded update: depending on
+ * the Play Core client, Play either fails it or answers "no update available". {@code
+ * completeUpdate()} reads only Play's local state, so it works offline and reports a missing
+ * download itself.
  *
  * <p>Note: This task runs in a cold background JobScheduler process without native libraries
  * loaded. Never call native-backed {@code ChromeFeatureList} methods (such as {@code isEnabled()}
@@ -108,13 +112,17 @@ public class InAppUpdateRestartTask implements BackgroundTask {
         }
 
         AppUpdateManager manager = getAppUpdateManager(context);
+        Log.i(TAG, "InAppUpdateRestartTask: Calling completeUpdate().");
+        recordEvent(InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_CALLED);
         try {
-            manager.getAppUpdateInfo()
+            InAppUpdateInstaller.completeUpdate(manager)
                     .addOnCompleteListener(
-                            task -> onAppUpdateInfoResult(manager, task, callback, retryCount));
+                            completeTask -> onCompleteUpdateResult(completeTask, callback));
         } catch (RuntimeException e) {
-            Log.w(TAG, "InAppUpdateRestartTask: Failed to request AppUpdateInfo", e);
-            recordEvent(InAppUpdateBackgroundRestartEvent.GET_APP_UPDATE_INFO_FAILED);
+            Log.e(TAG, "InAppUpdateRestartTask: Failed to call completeUpdate", e);
+            recordEvent(InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_FAILED);
+            // No work continues after this method returns, so the job ends by returning false
+            // rather than through the callback.
             return false;
         }
 
@@ -128,79 +136,21 @@ public class InAppUpdateRestartTask implements BackgroundTask {
         return false;
     }
 
-    private void onAppUpdateInfoResult(
-            AppUpdateManager manager,
-            Task<AppUpdateInfo> task,
-            TaskFinishedCallback callback,
-            int retryCount) {
-        if (mStopped) {
-            return;
-        }
-
-        if (!task.isSuccessful()) {
-            Exception e = task.getException();
-            if (e != null) {
-                Log.w(TAG, "InAppUpdateRestartTask: Failed to get AppUpdateInfo", e);
-            } else {
-                Log.w(TAG, "InAppUpdateRestartTask: Failed to get AppUpdateInfo");
-            }
-            recordEvent(InAppUpdateBackgroundRestartEvent.GET_APP_UPDATE_INFO_FAILED);
-            callback.taskFinished(false);
-            return;
-        }
-
-        AppUpdateInfo appUpdateInfo = task.getResult();
-        int status = appUpdateInfo.installStatus();
-        if (status != InstallStatus.DOWNLOADED) {
-            Log.i(
-                    TAG,
-                    "InAppUpdateRestartTask: Status is %d (not DOWNLOADED) -> clearing flag.",
-                    status);
-            InAppUpdatePolicy.setUpdateDownloaded(false);
-            recordEvent(InAppUpdateBackgroundRestartEvent.SKIPPED_NOT_DOWNLOADED);
-            callback.taskFinished(false);
-            return;
-        }
-
-        // Re-check preconditions immediately before invoking completeUpdate() to prevent TOCTOU
-        // races (e.g. an Activity becoming visible or a foreground service starting while
-        // getAppUpdateInfo() was in flight).
-        @PreconditionResult int preconditions = checkPreconditions();
-        if (preconditions != PreconditionResult.OK) {
-            callback.taskFinished(false);
-            if (preconditions == PreconditionResult.SKIPPED_FOREGROUND_SERVICE) {
-                InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(retryCount);
-            }
-            return;
-        }
-
-        invokeCompleteUpdate(manager, callback);
-    }
-
-    private void invokeCompleteUpdate(AppUpdateManager manager, TaskFinishedCallback callback) {
-        Log.i(TAG, "InAppUpdateRestartTask: Status is DOWNLOADED -> calling completeUpdate().");
-        recordEvent(InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_CALLED);
-
-        try {
-            InAppUpdateInstaller.completeUpdate(manager)
-                    .addOnCompleteListener(
-                            completeTask -> onCompleteUpdateResult(completeTask, callback));
-        } catch (RuntimeException e) {
-            Log.e(TAG, "InAppUpdateRestartTask: Failed to call completeUpdate", e);
-            recordEvent(InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_FAILED);
-            callback.taskFinished(false);
-        }
-    }
-
     private void onCompleteUpdateResult(Task<Void> completeTask, TaskFinishedCallback callback) {
         if (mStopped) {
             return;
         }
 
+        Exception completeException = completeTask.getException();
         if (completeTask.isSuccessful()) {
             Log.i(TAG, "InAppUpdateRestartTask: completeUpdate() succeeded.");
+        } else if (InAppUpdateInstaller.isDownloadNotPresent(completeException)) {
+            // Play no longer holds the download that the flag referred to, for example after it
+            // installed the update itself or removed an old download. InAppUpdateInstaller leaves
+            // the flag cleared, so no further task is scheduled for it.
+            Log.i(TAG, "InAppUpdateRestartTask: Play holds no downloaded update.");
+            recordEvent(InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_DOWNLOAD_NOT_PRESENT);
         } else {
-            Exception completeException = completeTask.getException();
             if (completeException != null) {
                 Log.e(TAG, "InAppUpdateRestartTask: completeUpdate() failed", completeException);
             } else {

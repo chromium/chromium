@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,9 +22,9 @@ import android.os.PersistableBundle;
 
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
-import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
-import com.google.android.play.core.install.model.InstallStatus;
+import com.google.android.play.core.install.InstallException;
+import com.google.android.play.core.install.model.InstallErrorCode;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -70,7 +68,6 @@ public class InAppUpdateRestartTaskTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AppUpdateManager mMockAppUpdateManager;
-    @Mock private AppUpdateInfo mMockAppUpdateInfo;
     @Mock private BackgroundTaskScheduler mMockScheduler;
     @Mock private TaskFinishedCallback mMockCallback;
 
@@ -92,8 +89,6 @@ public class InAppUpdateRestartTaskTest {
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mMockScheduler);
         InAppUpdateRestartTask.setAppUpdateManagerForTesting(mMockAppUpdateManager);
 
-        when(mMockAppUpdateManager.getAppUpdateInfo())
-                .thenReturn(Tasks.forResult(mMockAppUpdateInfo));
         when(mMockAppUpdateManager.completeUpdate()).thenReturn(Tasks.forResult(null));
 
         mTask = new InAppUpdateRestartTask();
@@ -111,16 +106,6 @@ public class InAppUpdateRestartTaskTest {
 
     private boolean startTask() {
         return mTask.onStartTask(mContext, mTaskParameters, mMockCallback);
-    }
-
-    private boolean startTask(int retryCount) {
-        PersistableBundle extras = new PersistableBundle();
-        extras.putInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT, retryCount);
-        TaskParameters params =
-                TaskParameters.create(TaskIds.IN_APP_UPDATE_RESTART_JOB_ID)
-                        .addExtras(extras)
-                        .build();
-        return mTask.onStartTask(mContext, params, mMockCallback);
     }
 
     private void showActivity() {
@@ -160,33 +145,42 @@ public class InAppUpdateRestartTaskTest {
         return builder.build();
     }
 
+    // The task must not query getAppUpdateInfo() before installing: while offline that query
+    // cannot report a downloaded update, which would stop a staged update from being installed.
     @Test
-    public void testOnStartTask_downloaded_callsCompleteUpdateAndFinishesTask() {
+    public void testOnStartTask_downloaded_callsCompleteUpdateWithoutQueryingUpdateInfo() {
         InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
 
         var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_CALLED);
 
         assertTrue(startTask());
         ShadowLooper.idleMainLooper();
 
+        verify(mMockAppUpdateManager, never()).getAppUpdateInfo();
         verify(mMockAppUpdateManager).completeUpdate();
         assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
         verify(mMockCallback).taskFinished(false);
         watcher.assertExpected();
     }
 
+    // When Play reports that it holds no download, the flag stays cleared and the run gets its own
+    // bucket, apart from both failures and skips where Play was not called.
     @Test
-    public void testOnStartTask_notDownloaded_clearsFlagAndFinishesTask() {
+    public void testOnStartTask_playHoldsNoDownload_keepsFlagClearedAndRecordsDownloadNotPresent() {
         InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.CANCELED);
+        when(mMockAppUpdateManager.completeUpdate())
+                .thenReturn(
+                        Tasks.forException(
+                                new InstallException(InstallErrorCode.ERROR_DOWNLOAD_NOT_PRESENT)));
 
-        var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.SKIPPED_NOT_DOWNLOADED);
+        var watcher =
+                expectEvents(
+                        InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_CALLED,
+                        InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_DOWNLOAD_NOT_PRESENT);
 
         assertTrue(startTask());
         ShadowLooper.idleMainLooper();
 
-        verify(mMockAppUpdateManager, never()).completeUpdate();
         verify(mMockCallback).taskFinished(false);
         assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
         watcher.assertExpected();
@@ -216,29 +210,6 @@ public class InAppUpdateRestartTaskTest {
     }
 
     @Test
-    public void testOnStartTask_activityBecomesVisibleBeforeCallback_skipsWithVisibleAtRun() {
-        InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-
-        TaskCompletionSource<AppUpdateInfo> tcs = new TaskCompletionSource<>();
-        when(mMockAppUpdateManager.getAppUpdateInfo()).thenReturn(tcs.getTask());
-
-        var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.SKIPPED_VISIBLE_AT_RUN);
-
-        assertTrue(startTask());
-
-        // Activity becomes visible before the callback runs.
-        showActivity();
-
-        tcs.setResult(mMockAppUpdateInfo);
-        ShadowLooper.idleMainLooper();
-
-        verify(mMockAppUpdateManager, never()).completeUpdate();
-        verify(mMockCallback).taskFinished(false);
-        watcher.assertExpected();
-    }
-
-    @Test
     public void testOnStartTask_incognitoTabsOpen_finishesWithoutInstall() {
         InAppUpdatePolicy.setUpdateDownloaded(true);
         IncognitoTabHost host = mock(IncognitoTabHost.class);
@@ -252,42 +223,11 @@ public class InAppUpdateRestartTaskTest {
         watcher.assertExpected();
     }
 
+    // completeUpdate() is called from onStartTask() itself, so a synchronous failure ends the job
+    // through the return value and taskFinished() is not called.
     @Test
-    public void
-            testOnStartTask_getAppUpdateInfoThrowsSynchronously_returnsFalseAndNeverCallsTaskFinished() {
+    public void testOnStartTask_completeUpdateThrowsSynchronously_returnsFalseAndKeepsFlag() {
         InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateManager.getAppUpdateInfo())
-                .thenThrow(new RuntimeException("Synchronous failure"));
-
-        var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.GET_APP_UPDATE_INFO_FAILED);
-
-        assertFalse(startTask());
-        verify(mMockCallback, never()).taskFinished(anyBoolean());
-        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
-        watcher.assertExpected();
-    }
-
-    @Test
-    public void testOnStartTask_getAppUpdateInfoFailsAsynchronously_finishesJobAndRecordsEvent() {
-        InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateManager.getAppUpdateInfo())
-                .thenReturn(Tasks.forException(new RuntimeException("Async failure")));
-
-        var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.GET_APP_UPDATE_INFO_FAILED);
-
-        assertTrue(startTask());
-        ShadowLooper.idleMainLooper();
-
-        verify(mMockAppUpdateManager, never()).completeUpdate();
-        verify(mMockCallback).taskFinished(false);
-        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
-        watcher.assertExpected();
-    }
-
-    @Test
-    public void testOnStartTask_completeUpdateThrowsSynchronously_finishesJobAndKeepsFlag() {
-        InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
         when(mMockAppUpdateManager.completeUpdate())
                 .thenThrow(new RuntimeException("Synchronous completeUpdate failure"));
 
@@ -296,10 +236,10 @@ public class InAppUpdateRestartTaskTest {
                         InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_CALLED,
                         InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_FAILED);
 
-        assertTrue(startTask());
+        assertFalse(startTask());
         ShadowLooper.idleMainLooper();
 
-        verify(mMockCallback).taskFinished(false);
+        verify(mMockCallback, never()).taskFinished(anyBoolean());
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
         watcher.assertExpected();
     }
@@ -323,31 +263,12 @@ public class InAppUpdateRestartTaskTest {
     }
 
     @Test
-    public void testOnStopTask_whileGetAppUpdateInfoInFlight_doesNotCompleteUpdateOrFinishTask() {
-        InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-
-        TaskCompletionSource<AppUpdateInfo> tcs = new TaskCompletionSource<>();
-        when(mMockAppUpdateManager.getAppUpdateInfo()).thenReturn(tcs.getTask());
-
-        assertTrue(startTask());
-
-        // Task is stopped while getAppUpdateInfo is in flight.
-        mTask.onStopTask(mContext, mTaskParameters);
-
-        // Complete the async getAppUpdateInfo task.
-        tcs.setResult(mMockAppUpdateInfo);
-        ShadowLooper.idleMainLooper();
-
-        verify(mMockAppUpdateManager, never()).completeUpdate();
-        verify(mMockCallback, never()).taskFinished(anyBoolean());
-    }
-
-    @Test
     public void testOnStopTask_returnsFalse() {
         assertFalse(mTask.onStopTask(mContext, mTaskParameters));
     }
 
+    // A Play error other than download-not-present does not say the download is gone, so it counts
+    // as a failure and the flag is restored for a later attempt.
     @Test
     public void testOnStartTask_completeUpdate_clearsFlagEagerlyAndRestoresOnFailure() {
         var watcher =
@@ -356,11 +277,27 @@ public class InAppUpdateRestartTaskTest {
                         InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_FAILED);
         TaskCompletionSource<Void> source = startTaskWithPendingCompleteUpdate();
 
-        source.setException(new RuntimeException("Install failure"));
+        source.setException(new InstallException(InstallErrorCode.ERROR_INSTALL_NOT_ALLOWED));
         ShadowLooper.idleMainLooper();
 
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
         verify(mMockCallback).taskFinished(false);
+        watcher.assertExpected();
+    }
+
+    // A stopped task reports nothing further, and the flag still follows Play's answer: it stays
+    // cleared when Play holds no download.
+    @Test
+    public void testOnStopTask_duringCompleteUpdate_keepsFlagClearedWhenPlayHoldsNoDownload() {
+        var watcher = expectEvents(InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_CALLED);
+        TaskCompletionSource<Void> source = startTaskWithPendingCompleteUpdate();
+
+        mTask.onStopTask(mContext, mTaskParameters);
+        source.setException(new InstallException(InstallErrorCode.ERROR_DOWNLOAD_NOT_PRESENT));
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
+        verify(mMockCallback, never()).taskFinished(anyBoolean());
         watcher.assertExpected();
     }
 
@@ -406,34 +343,28 @@ public class InAppUpdateRestartTaskTest {
         watcher.assertExpected();
     }
 
+    // The retry count carried in the task extras must feed the backoff, so a later retry waits
+    // longer than the first one.
     @Test
-    public void testOnStartTask_foregroundServiceStartsDuringAsyncCheck_finishesBeforeRetry() {
+    public void testOnStartTask_foregroundServiceActiveOnRetry_usesRetryCountForBackoff() {
         InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-        when(mMockScheduler.schedule(any(), any())).thenReturn(true);
-
-        TaskCompletionSource<AppUpdateInfo> tcs = new TaskCompletionSource<>();
-        when(mMockAppUpdateManager.getAppUpdateInfo()).thenReturn(tcs.getTask());
-
-        var watcher =
-                expectEvents(
-                        InAppUpdateBackgroundRestartEvent.SKIPPED_FOREGROUND_SERVICE,
-                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED);
-
-        assertTrue(startTask(2));
-
         InAppUpdatePolicy.setProcessImportanceForTesting(
                 ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE);
-        tcs.setResult(mMockAppUpdateInfo);
+        when(mMockScheduler.schedule(any(), any())).thenReturn(true);
+        PersistableBundle extras = new PersistableBundle();
+        extras.putInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT, 2);
+        TaskParameters params =
+                TaskParameters.create(TaskIds.IN_APP_UPDATE_RESTART_JOB_ID)
+                        .addExtras(extras)
+                        .build();
+
+        assertFalse(mTask.onStartTask(mContext, params, mMockCallback));
         ShadowLooper.idleMainLooper();
 
-        verify(mMockAppUpdateManager, never()).completeUpdate();
+        assertSkippedWithoutCallingPlay();
         ArgumentCaptor<TaskInfo> captor = ArgumentCaptor.forClass(TaskInfo.class);
-        InOrder order = inOrder(mMockCallback, mMockScheduler);
-        order.verify(mMockCallback).taskFinished(false);
-        order.verify(mMockScheduler).schedule(eq(mContext), captor.capture());
+        verify(mMockScheduler).schedule(eq(mContext), captor.capture());
         assertScheduledRetry(captor.getValue(), 60, 3);
-        watcher.assertExpected();
     }
 
     /**
@@ -442,7 +373,6 @@ public class InAppUpdateRestartTaskTest {
      */
     private TaskCompletionSource<Void> startTaskWithPendingCompleteUpdate() {
         InAppUpdatePolicy.setUpdateDownloaded(true);
-        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
         TaskCompletionSource<Void> source = new TaskCompletionSource<>();
         when(mMockAppUpdateManager.completeUpdate()).thenReturn(source.getTask());
 
