@@ -147,6 +147,10 @@ class AppAccessNotifierTest : public testing::Test,
     app_access_notifier_.reset();
     ash_test_helper_.TearDown();
     scoped_user_manager_.reset();
+    apps::AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
+        &capability_access_cache_secondary_user_);
+    apps::AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
+        &capability_access_cache_primary_user_);
   }
 
   void SetupPrimaryUser() {

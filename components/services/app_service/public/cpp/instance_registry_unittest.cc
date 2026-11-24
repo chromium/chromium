@@ -75,8 +75,7 @@ class InstanceRegistryTest : public testing::Test,
 
   int num_running_apps_ = 0;
   std::set<std::string> updated_ids_;
-  std::set<raw_ptr<const aura::Window, SetExperimental>>
-      updated_enclosing_windows_;
+  std::set<raw_ptr<const aura::Window>> updated_enclosing_windows_;
 
   apps::InstanceRegistry instance_registry_;
 };
@@ -634,36 +633,32 @@ TEST_F(InstanceRegistryTest, GetInstances) {
   MakeInstanceWithWindow("b", &window2);
   MakeInstanceWithWindow("a", &window3);
 
-  auto instances = instance_registry().GetInstances("a");
-  EXPECT_EQ(2U, instances.size());
+  EXPECT_EQ(2U, instance_registry().GetInstances("a").size());
 
   std::set<aura::Window*> windows;
-  for (const apps::Instance* instance : instances) {
+  for (const apps::Instance* instance : instance_registry().GetInstances("a")) {
     EXPECT_EQ("a", instance->AppId());
     windows.insert(instance->Window());
   }
   EXPECT_TRUE(windows.contains(&window1));
   EXPECT_TRUE(windows.contains(&window3));
 
-  instances = instance_registry().GetInstances("b");
-  EXPECT_EQ(1U, instances.size());
-
-  auto it = instances.begin();
-  EXPECT_EQ("b", (*it)->AppId());
-  EXPECT_EQ(&window2, (*it)->Window());
+  EXPECT_EQ(1U, instance_registry().GetInstances("b").size());
+  for (const apps::Instance* instance : instance_registry().GetInstances("b")) {
+    EXPECT_EQ("b", instance->AppId());
+    EXPECT_EQ(&window2, instance->Window());
+  }
 
   MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed);
   MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed);
 
-  instances = instance_registry().GetInstances("a");
-  EXPECT_EQ(1U, instances.size());
+  EXPECT_EQ(1U, instance_registry().GetInstances("a").size());
+  for (const apps::Instance* instance : instance_registry().GetInstances("a")) {
+    EXPECT_EQ("a", instance->AppId());
+    EXPECT_EQ(&window3, instance->Window());
+  }
 
-  it = instances.begin();
-  EXPECT_EQ("a", (*it)->AppId());
-  EXPECT_EQ(&window3, (*it)->Window());
-
-  instances = instance_registry().GetInstances("b");
-  EXPECT_TRUE(instances.empty());
+  EXPECT_TRUE(instance_registry().GetInstances("b").empty());
 }
 
 TEST_F(InstanceRegistryTest, ContainsAppId) {

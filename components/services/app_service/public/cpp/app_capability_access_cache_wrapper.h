@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCacheWrapper {
   void RemoveAppCapabilityAccessCache(AppCapabilityAccessCache* cache);
 
  private:
-  std::map<AccountId, raw_ptr<AppCapabilityAccessCache, CtnExperimental>>
+  std::map<AccountId, raw_ptr<AppCapabilityAccessCache>>
       app_capability_access_caches_;
 };
 

@@ -187,8 +187,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   // Nested OnCapabilityAccesses calls are expected to be rare (but still dealt
   // with sensibly). In the typical case, OnCapabilityAccesses should call
   // DoOnCapabilityAccesses exactly once, and deltas_pending_ will stay empty.
-  std::map<std::string, raw_ptr<CapabilityAccess, CtnExperimental>>
-      deltas_in_progress_;
+  std::map<std::string, raw_ptr<CapabilityAccess>> deltas_in_progress_;
   std::vector<CapabilityAccessPtr> deltas_pending_;
 
   AccountId account_id_;

@@ -66,6 +66,8 @@ TEST_F(AppCapabilityAccessCacheWrapperTest, OneAccount) {
 
   VerifyAccountId(account_id_1());
   cache1.RemoveObserver(this);
+  AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
+      &cache1);
 }
 
 TEST_F(AppCapabilityAccessCacheWrapperTest, MultipleAccounts) {
@@ -98,6 +100,8 @@ TEST_F(AppCapabilityAccessCacheWrapperTest, MultipleAccounts) {
 
   AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
       &cache2);
+  AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
+      &cache1);
   EXPECT_FALSE(
       AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
           account_id_2()));

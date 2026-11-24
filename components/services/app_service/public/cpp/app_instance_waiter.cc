@@ -14,9 +14,15 @@ AppInstanceWaiter::AppInstanceWaiter(apps::InstanceRegistry& registry,
 AppInstanceWaiter::~AppInstanceWaiter() = default;
 
 void AppInstanceWaiter::Await() {
-  auto instances = registry_->GetInstances(app_id_);
-  CHECK_LE(instances.size(), 1u);
-  if (instances.empty() || (*instances.begin())->State() != state_) {
+  // Drop the returned Instance pointers before spinning `run_loop_`, as the
+  // target transition (e.g. `kDestroyed`) may destroy the Instance.
+  bool should_wait = false;
+  {
+    auto instances = registry_->GetInstances(app_id_);
+    CHECK_LE(instances.size(), 1u);
+    should_wait = instances.empty() || (*instances.begin())->State() != state_;
+  }
+  if (should_wait) {
     observation_.Observe(&*registry_);
     run_loop_.Run();
   }
