@@ -1708,12 +1708,10 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     vertical_tabs_outline.color = {
         .color = kColorVerticalTabStripShadow,
         // Vertical tabs outline fades partially during expand-on-hover to be
-        // replaced with shadow. Note that the glass alpha will affect the
-        // entire paint operation, so no need to re-multiply it in here.
+        // replaced with shadow.
         .opacity =
-            static_cast<float>(1.0f - kVerticalTabStripOutlineFadeOnHover *
-                                          vertical_tabs_bottom_corner_amount) *
-            frame_color.opacity,
+            static_cast<float>(1.0 - kVerticalTabStripOutlineFadeOnHover *
+                                         vertical_tabs_bottom_corner_amount),
     };
     // Vertical tab strip always draws trailing edge.
     vertical_tabs_outline.trailing = true;
@@ -1749,8 +1747,8 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     // Do corner cutouts and transparency. These updates are needed in glass-
     // enabled mode even if glass is off for the current window.
     if (features::IsGlassFrameEnabled()) {
-      views().vertical_tab_strip_top_corner->SetAlpha(frame_color.opacity);
-      views().vertical_tab_strip_bottom_corner->SetAlpha(frame_color.opacity);
+      views().vertical_tab_strip_top_corner->SetBackground(frame_color);
+      views().vertical_tab_strip_bottom_corner->SetBackground(frame_color);
       vertical_tabs_background->SetCutoutFrom(tab_strip_cutout_views);
 
       // Has to be done after most other adjustments to ensure the correct
