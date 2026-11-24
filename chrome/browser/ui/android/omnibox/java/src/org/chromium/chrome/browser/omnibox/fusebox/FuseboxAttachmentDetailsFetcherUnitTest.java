@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1403,5 +1404,131 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 FuseboxAttachmentDetailsFetcher.getTargetSizeForDownscaling(width, height);
 
         verifyDownscaleTargetWithinLimits(targetSize, "Area over limit, image should be scaled");
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_queryThrowsException_fallsBackToUriTitle() {
+        when(mContentResolver.query(eq(SAMPLE_URI), isNull(), isNull(), isNull(), isNull()))
+                .thenThrow(new SecurityException("Permission denied"));
+        when(mContentResolver.getType(SAMPLE_URI)).thenReturn(MimeTypeUtils.IMAGE_PNG_MIME_TYPE);
+        mAttachmentData = SAMPLE_DATA;
+        setupMockBitmapDecoder(SAMPLE_SMALL_BITMAP, /* throwOom= */ false);
+        mFetcher =
+                new FuseboxAttachmentDetailsFetcher(
+                        mContext,
+                        mContentResolver,
+                        SAMPLE_URI,
+                        mCallback,
+                        FuseboxAttachmentButtonType.FILES);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                SAMPLE_URI.getLastPathSegment(),
+                MimeTypeUtils.IMAGE_PNG_MIME_TYPE,
+                SAMPLE_DATA,
+                SAMPLE_SMALL_BITMAP,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                FuseboxAttachmentButtonType.FILES);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_getTypeThrowsIllegalArgumentException_failsGracefully() {
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(new Object[] {SAMPLE_TITLE, FILE_SIZE_SMALL});
+        when(mContentResolver.query(eq(SAMPLE_URI), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(cursor);
+        when(mContentResolver.getType(SAMPLE_URI))
+                .thenThrow(new IllegalArgumentException("Bad URI"));
+        mFetcher =
+                new FuseboxAttachmentDetailsFetcher(
+                        mContext,
+                        mContentResolver,
+                        SAMPLE_URI,
+                        mCallback,
+                        FuseboxAttachmentButtonType.FILES);
+        var readResultWatcher =
+                newReadResultWatcher(
+                        FuseboxAttachmentReadResult.PROVIDER_ERROR, MimeTypeUtils.Type.UNKNOWN);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void
+            testFetchAttachmentDetails_openInputStreamThrowsSecurityException_failsWithProviderError()
+                    throws IOException {
+        setupFetcherWithAttachment(
+                SAMPLE_PNG_TITLE,
+                MimeTypeUtils.IMAGE_PNG_MIME_TYPE,
+                SAMPLE_DATA,
+                /* thumbnail= */ null,
+                FuseboxAttachmentButtonType.FILES);
+        when(mContentResolver.openInputStream(SAMPLE_URI))
+                .thenThrow(new SecurityException("No access"));
+        var readResultWatcher =
+                newReadResultWatcher(
+                        FuseboxAttachmentReadResult.PROVIDER_ERROR, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void
+            testFetchAttachmentDetails_openInputStreamThrowsIllegalState_failsWithProviderError()
+                    throws IOException {
+        setupFetcherWithAttachment(
+                SAMPLE_PNG_TITLE,
+                MimeTypeUtils.IMAGE_PNG_MIME_TYPE,
+                SAMPLE_DATA,
+                /* thumbnail= */ null,
+                FuseboxAttachmentButtonType.FILES);
+        when(mContentResolver.openInputStream(SAMPLE_URI))
+                .thenThrow(new IllegalStateException("Provider failed"));
+        var readResultWatcher =
+                newReadResultWatcher(
+                        FuseboxAttachmentReadResult.PROVIDER_ERROR, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        readResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_loadThumbnailThrowsSecurityException_succeeds()
+            throws IOException {
+        setupFetcherWithAttachment(
+                SAMPLE_PNG_TITLE,
+                MimeTypeUtils.IMAGE_PNG_MIME_TYPE,
+                SAMPLE_DATA,
+                /* thumbnail= */ null,
+                FuseboxAttachmentButtonType.GALLERY);
+        doThrow(new SecurityException("Thumbnail denied"))
+                .when(mContentResolver)
+                .loadThumbnail(any(), any(), any());
+        setupMockBitmapDecoder(SAMPLE_SMALL_BITMAP, /* throwOom= */ false);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                SAMPLE_PNG_TITLE,
+                MimeTypeUtils.IMAGE_PNG_MIME_TYPE,
+                SAMPLE_DATA,
+                SAMPLE_SMALL_BITMAP,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                FuseboxAttachmentButtonType.GALLERY);
     }
 }

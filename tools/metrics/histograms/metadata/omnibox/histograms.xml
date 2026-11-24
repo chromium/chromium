@@ -2964,18 +2964,20 @@ Keep consistent with active providers. Doesn't need to include every provider in
     returns and before the attachment is uploaded.
 
     Distinguishes a clean read from an empty stream, a short read (fewer bytes
-    than the provider-reported size, possibly recovered by a retry), I/O and
-    memory errors, and bytes that the platform image decoder rejected. Decoding
-    happens when AIM image downscaling is enabled, and always for formats that
-    must be transcoded before upload (HEIF, TIFF/DNG, JPEG XL, or an
-    unrecognised signature on a declared image). For declared images, an
-    OutOfMemoryError or decoder rejection during that mandatory transcode is
-    recorded as undecodable; attachments not declared as images keep their raw
-    bytes and are uploaded as plain files instead. Empty, I/O, OOM and
-    undecodable outcomes cause the attachment to be dropped on the client; short
-    reads are forwarded to the upload pipeline so that the decoder has the final
-    say. The file type is the one the content provider declared (e.g. Unknown
-    for application/octet-stream), even if the bytes are an image.
+    than the provider-reported size, possibly recovered by a retry), I/O,
+    provider (RuntimeException from ContentResolver), and memory errors, and
+    bytes that the platform image decoder rejected. Decoding happens when AIM
+    image downscaling is enabled, and always for formats that must be transcoded
+    before upload (HEIF, TIFF/DNG, JPEG XL, or an unrecognised signature on a
+    declared image). For declared images, an OutOfMemoryError or decoder
+    rejection during that mandatory transcode is recorded as undecodable;
+    attachments not declared as images keep their raw bytes and are uploaded as
+    plain files instead. Empty, I/O, provider, OOM and undecodable outcomes
+    cause the attachment to be dropped on the client; short reads are forwarded
+    to the upload pipeline so that the decoder has the final say. The file type
+    is the one the content provider declared (e.g. Unknown for
+    application/octet-stream), even if the bytes are an image; provider errors
+    during MIME-type lookup are also recorded under Unknown.
 
     There is a unique histogram for each file type (Audio, Image, PDF, ...), and
     a general aggregate total histogram for all file types. Recorded once per

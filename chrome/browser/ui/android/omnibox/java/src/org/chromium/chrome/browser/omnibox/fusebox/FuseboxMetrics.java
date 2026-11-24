@@ -351,6 +351,7 @@ public class FuseboxMetrics {
         FuseboxAttachmentReadResult.IO_ERROR,
         FuseboxAttachmentReadResult.OOM,
         FuseboxAttachmentReadResult.DECODE_FAILED,
+        FuseboxAttachmentReadResult.PROVIDER_ERROR,
         FuseboxAttachmentReadResult.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -381,7 +382,12 @@ public class FuseboxMetrics {
         /** Bytes were read, but the platform image decoder could not decode them. */
         int DECODE_FAILED = 6;
 
-        int COUNT = 7;
+        /**
+         * ContentResolver threw a RuntimeException (e.g. SecurityException, IllegalStateException).
+         */
+        int PROVIDER_ERROR = 7;
+
+        int COUNT = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentReadResult)

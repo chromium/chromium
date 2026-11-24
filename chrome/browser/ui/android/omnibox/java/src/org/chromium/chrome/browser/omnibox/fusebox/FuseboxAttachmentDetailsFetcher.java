@@ -99,7 +99,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     @Override
     protected Boolean doInBackground() {
-        Long size;
+        Long size = null;
         try (Cursor cursor =
                 mContentResolver.query(
                         mUri,
@@ -109,6 +109,9 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
                         /* sortOrder= */ null)) {
             mTitle = fetchTitle(cursor);
             size = fetchSize(cursor);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Failed to query attachment metadata", e);
+            mTitle = fetchTitle(null);
         }
 
         mMimeType = fetchMimeType();
@@ -195,7 +198,14 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     }
 
     private @Nullable String fetchMimeType() {
-        return mContentResolver.getType(mUri);
+        try {
+            return mContentResolver.getType(mUri);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Failed to query attachment mime type", e);
+            FuseboxMetrics.recordAttachmentReadResult(
+                    FuseboxAttachmentReadResult.PROVIDER_ERROR, MimeTypeUtils.Type.UNKNOWN);
+            return null;
+        }
     }
 
     private @Nullable Long fetchSize(@Nullable Cursor cursor) {
@@ -333,6 +343,10 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
                 Log.w(TAG, "Failed to read attachment data", e);
                 if (best != null && best.length > 0) break;
                 return new ReadOutcome(null, FuseboxAttachmentReadResult.OOM);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Provider failed while reading attachment data", e);
+                if (best != null && best.length > 0) break;
+                return new ReadOutcome(null, FuseboxAttachmentReadResult.PROVIDER_ERROR);
             }
 
             if (data != null && (best == null || data.length > best.length)) {
@@ -453,7 +467,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
                                     new Size(
                                             THUMBNAIL_BITMAP_EDGE_SIZE, THUMBNAIL_BITMAP_EDGE_SIZE),
                                     null));
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
             // Ignore.
         }
 
