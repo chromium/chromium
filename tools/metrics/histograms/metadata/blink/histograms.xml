@@ -892,20 +892,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ContextMenu.ImageSelection.RetrievalOutcome"
-    enum="ImageSelectionRetrievalOutcome" expires_after="2023-08-31">
-  <owner>flackr@chromium.org</owner>
-  <owner>blink-interactions-team@google.com</owner>
-  <summary>
-    The outcome of a follow up retrieval of an image node after a selection has
-    occurred, which occurs asynchronously and thus could be unsuccessful due to
-    changes that may occur between the initial hit test and the retrieval.
-
-    Only recorded when a user long presses or right clicks a document (and an
-    image is found).
-  </summary>
-</histogram>
-
 <histogram name="Blink.CookiesTime.AblationDelay2" units="ms"
     expires_after="2026-03-01">
   <owner>elkurin@chromium.org</owner>

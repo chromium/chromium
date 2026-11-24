@@ -34,7 +34,6 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -329,24 +328,13 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
 }
 
 Node* ContextMenuController::ContextMenuImageNodeForFrame(LocalFrame* frame) {
-  ImageSelectionRetrievalOutcome outcome;
   // We currently will fail to retrieve an image if another hit test is made
   // on a non-image node is made before retrieval of the image.
-  if (!image_selection_cached_result_) {
-    outcome = ImageSelectionRetrievalOutcome::kImageNotFound;
-  } else if (image_selection_cached_result_->GetDocument().GetFrame() !=
-             frame) {
-    outcome = ImageSelectionRetrievalOutcome::kCrossFrameRetrieval;
-  } else {
-    outcome = ImageSelectionRetrievalOutcome::kImageFound;
+  if (!image_selection_cached_result_ ||
+      image_selection_cached_result_->GetDocument().GetFrame() != frame) {
+    return nullptr;
   }
-
-  base::UmaHistogramEnumeration(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome", outcome);
-
-  return outcome == ImageSelectionRetrievalOutcome::kImageFound
-             ? image_selection_cached_result_
-             : nullptr;
+  return image_selection_cached_result_;
 }
 
 // TODO(crbug.com/1184297) Cache image node when the context menu is shown and

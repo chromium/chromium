@@ -7733,14 +7733,6 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/cookie_jar.h:FirstCookieRequest) -->
 
-<enum name="ImageSelectionRetrievalOutcome">
-  <int value="0" label="Cached image node was successfully retrieved."/>
-  <int value="1" label="Cached image node was not found."/>
-  <int value="2"
-      label="Specified frame was different from the cached node so the image
-             was not retrieved."/>
-</enum>
-
 <!-- LINT.IfChange(InlineScriptCacheFetchResult) -->
 
 <enum name="InlineScriptCacheFetchResult">

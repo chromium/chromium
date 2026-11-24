@@ -92,25 +92,6 @@ class CORE_EXPORT ContextMenuController
     kBlockedByCrossFrameNode = 4,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.  Keep in sync with enum in
-  // tools/metrics/histograms/enums.xml
-  enum class ImageSelectionRetrievalOutcome : uint8_t {
-    // The cached image was successfully retrieved.
-    kImageFound = 0,
-
-    // The cached image was not found, possibly because an initial image
-    // selection hit test was not made, a subsequent non-image hit test was
-    // made before retrieval, or the image has become unfetchable.
-    kImageNotFound = 1,
-
-    // The retrieval was made from a different frame than the origuinal hit
-    // test, which is unexpected.
-    kCrossFrameRetrieval = 2,
-
-    kMaxValue = kCrossFrameRetrieval,
-  };
-
  private:
   friend class ContextMenuControllerTest;
 

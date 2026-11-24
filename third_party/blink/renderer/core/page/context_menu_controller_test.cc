@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -2014,8 +2013,6 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageRetrievalCachedImageFound) {
     </body>
   )HTML");
 
-  base::HistogramTester histograms;
-
   PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
   EXPECT_TRUE(
       ShowContextMenu(location, ui::mojom::blink::MenuSourceType::kLongPress));
@@ -2026,18 +2023,6 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageRetrievalCachedImageFound) {
           ->GetContextMenuController()
           .ContextMenuImageNodeForFrame(GetDocument()->GetFrame());
   EXPECT_TRUE(image_node != nullptr);
-
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 1);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::
-          kCrossFrameRetrieval,
-      0);
 }
 
 // Test that an image node is not successfully retrieved if a hit test was never
@@ -2071,8 +2056,6 @@ TEST_F(ContextMenuControllerTest,
     </body>
   )HTML");
 
-  base::HistogramTester histograms;
-
   // Attempt to retrieve without an initial call to show the context menu.
   Node* image_node =
       web_view_helper_.GetWebView()
@@ -2080,18 +2063,6 @@ TEST_F(ContextMenuControllerTest,
           ->GetContextMenuController()
           .ContextMenuImageNodeForFrame(GetDocument()->GetFrame());
   EXPECT_TRUE(image_node == nullptr);
-
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 1);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::
-          kCrossFrameRetrieval,
-      0);
 }
 
 // Test that the retrieved image node is null if another hit test has been
@@ -2126,8 +2097,6 @@ TEST_F(ContextMenuControllerTest,
     </body>
   )HTML");
 
-  base::HistogramTester histograms;
-
   PhysicalOffset location_with_image(LayoutUnit(5), LayoutUnit(5));
   EXPECT_TRUE(ShowContextMenu(location_with_image,
                               ui::mojom::blink::MenuSourceType::kLongPress));
@@ -2142,18 +2111,6 @@ TEST_F(ContextMenuControllerTest,
           ->GetContextMenuController()
           .ContextMenuImageNodeForFrame(GetDocument()->GetFrame());
   EXPECT_TRUE(image_node == nullptr);
-
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 1);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::
-          kCrossFrameRetrieval,
-      0);
 }
 
 // Test that the retrieved image node is null if the retrieval frame is
@@ -2187,8 +2144,6 @@ TEST_F(ContextMenuControllerTest,
     </body>
   )HTML");
 
-  base::HistogramTester histograms;
-
   PhysicalOffset location_with_image(LayoutUnit(5), LayoutUnit(5));
   EXPECT_TRUE(ShowContextMenu(location_with_image,
                               ui::mojom::blink::MenuSourceType::kLongPress));
@@ -2200,18 +2155,6 @@ TEST_F(ContextMenuControllerTest,
                          ->GetContextMenuController()
                          .ContextMenuImageNodeForFrame(nullptr);
   EXPECT_TRUE(image_node == nullptr);
-
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageFound, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::kImageNotFound, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.RetrievalOutcome",
-      ContextMenuController::ImageSelectionRetrievalOutcome::
-          kCrossFrameRetrieval,
-      1);
 }
 
 TEST_F(ContextMenuControllerTest, AnnotationType) {
