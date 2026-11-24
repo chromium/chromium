@@ -240,6 +240,12 @@ void ApplyFormattedString(const omnibox::FormattedString& formatted_string,
   return 1;
 }
 
+- (omnibox::SuggestTemplateInfo::ActionIconType)actionIcon {
+  return _match.suggest_template
+             ? _match.suggest_template->action_icon()
+             : omnibox::SuggestTemplateInfo::ACTION_ICON_TYPE_UNSPECIFIED;
+}
+
 - (NSNumber*)suggestionGroupId {
   if (!_match.suggestion_group_id.has_value()) {
     return nil;

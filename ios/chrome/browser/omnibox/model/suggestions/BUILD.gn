@@ -23,6 +23,7 @@ source_set("ui_interface") {
     "//ios/web/public:web_state_observer",
     "//ui/base:types",
   ]
+  public_deps = [ "//third_party/omnibox_proto" ]
 }
 
 source_set("suggestions") {

@@ -16,6 +16,8 @@ enum class TrailingIconType {
   kRefineQuery,
   /// Open existing tab icon type.
   kOpenExistingTab,
+  /// Blue dot icon type. The dot is only an indicator and isn't tappable.
+  kBlueDot,
 };
 
 // Trailing button view used in the omnibox popup row.

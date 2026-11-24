@@ -65,6 +65,10 @@
   return NO;
 }
 
+- (omnibox::SuggestTemplateInfo::ActionIconType)actionIcon {
+  return omnibox::SuggestTemplateInfo::ACTION_ICON_TYPE_UNSPECIFIED;
+}
+
 - (NSAttributedString*)text {
   return [[NSAttributedString alloc]
       initWithString:self.pedal.title

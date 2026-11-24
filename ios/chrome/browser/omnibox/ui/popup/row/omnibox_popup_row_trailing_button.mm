@@ -18,6 +18,9 @@ namespace {
 /// Size of the trailing button.
 const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
 
+/// Size of the dot shown in the trailing button.
+const CGFloat kTrailingButtonDotPointSize = 8.0f;
+
 }  // namespace
 
 @implementation OmniboxPopupRowTrailingButton {
@@ -54,6 +57,21 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
   [self updateTintColor];
 }
 
+#pragma mark - UIView
+
+- (CGSize)intrinsicContentSize {
+  if (self.trailingIconType != TrailingIconType::kBlueDot) {
+    return [super intrinsicContentSize];
+  }
+  // The dot gets the append arrow's size, so that it is centered where the
+  // arrow is on other rows.
+  CGFloat multiplier = OmniboxPopupRowContentSizeMultiplierForCategory(
+      self.traitCollection.preferredContentSizeCategory);
+  UIImage* appendArrow = SymbolWithPointSize(
+      SymbolRefineQuery, kTrailingButtonIconPointSizeMedium * multiplier);
+  return appendArrow.size;
+}
+
 #pragma mark - private
 
 - (void)setRefineQueryArrowDirectionDown:(BOOL)refineQueryArrowDirectionDown {
@@ -77,6 +95,7 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
   if (multiplier) {
     UIImage* icon;
     self.hidden = NO;
+    self.userInteractionEnabled = YES;
     switch (self.trailingIconType) {
       case TrailingIconType::kNone:
         self.accessibilityIdentifier = nil;
@@ -99,6 +118,14 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
             kTrailingButtonIconPointSizeMedium * multiplier);
         self.accessibilityIdentifier =
             kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
+        break;
+      case TrailingIconType::kBlueDot:
+        icon = SymbolWithPointSize(SymbolCircleFill,
+                                   kTrailingButtonDotPointSize * multiplier);
+        self.accessibilityIdentifier = nil;
+        // The dot is only an indicator. Taps on it go to the row, which opens
+        // the suggestion.
+        self.userInteractionEnabled = NO;
         break;
     }
 
