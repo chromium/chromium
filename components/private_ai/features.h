@@ -56,6 +56,12 @@ extern const base::FeatureParam<int> kPrivateAiAuthTokenCacheBatchSize;
 // requested.
 extern const base::FeatureParam<int> kPrivateAiAuthTokenCacheLowWaterMark;
 
+// The maximum random duration subtracted from the expiration time of each
+// fetched batch of auth tokens so clients do not all refill at the same
+// 15-minute boundary.
+extern const base::FeatureParam<base::TimeDelta>
+    kPrivateAiAuthTokenCacheExpirationFuzz;
+
 // The backoff duration for fetching auth tokens if the user is not eligible.
 extern const base::FeatureParam<base::TimeDelta>
     kPrivateAiTryGetAuthTokensNotEligibleBackoff;

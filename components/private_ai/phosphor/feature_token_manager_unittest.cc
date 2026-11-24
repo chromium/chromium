@@ -226,9 +226,11 @@ TEST_F(FeatureTokenManagerTest, PrefetchAuthTokens) {
 }
 
 TEST_F(FeatureTokenManagerTest, ExpiredToken) {
+  const base::TimeDelta expiration_delta =
+      kPrivateAiAuthTokenCacheExpirationFuzz.Get() + base::Seconds(1);
   mock_fetcher_->ExpectGetAuthnTokensCall(
       expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
-      TokenBatch(expected_batch_size_, base::Time::Now() + base::Seconds(1)));
+      TokenBatch(expected_batch_size_, base::Time::Now() + expiration_delta));
 
   // This will trigger the first fetch.
   GetAuthTokenFuture future;
@@ -243,7 +245,7 @@ TEST_F(FeatureTokenManagerTest, ExpiredToken) {
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   // Advance time so the token expires and the timer for refill fires.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.FastForwardBy(expiration_delta + base::Seconds(1));
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
 
   // Now a token should be available.
@@ -365,6 +367,38 @@ TEST_F(FeatureTokenManagerTest, OnAccountStatusChanged_ResetsTransientBackoff) {
   GetAuthTokenFuture future2;
   feature_token_manager_->GetAuthToken(future2.GetCallback());
   EXPECT_TRUE(future2.Get().has_value());
+}
+
+TEST_F(FeatureTokenManagerTest, TokenExpirationFuzzed) {
+  mock_fetcher_->ExpectGetAuthnTokensCall(
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
+      TokenBatch(expected_batch_size_, kFutureExpiration));
+
+  GetAuthTokenFuture future;
+  feature_token_manager_->GetAuthToken(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+
+  ASSERT_TRUE(future.Get().has_value());
+  base::Time fuzzed_expiration = future.Get()->expiration;
+  base::TimeDelta fuzz_limit = kPrivateAiAuthTokenCacheExpirationFuzz.Get();
+  EXPECT_LE(fuzzed_expiration, kFutureExpiration - base::Seconds(5));
+  EXPECT_GE(fuzzed_expiration, kFutureExpiration - fuzz_limit);
+
+  // Subsequent tokens in the same batch share the same fuzzed expiration, and
+  // the refill timer fires at the fuzzed expiration time rather than waiting
+  // until the un-fuzzed `kFutureExpiration`.
+  GetAuthTokenFuture cached_future;
+  feature_token_manager_->GetAuthToken(cached_future.GetCallback());
+  ASSERT_TRUE(cached_future.Get().has_value());
+  EXPECT_EQ(cached_future.Get()->expiration, fuzzed_expiration);
+
+  mock_fetcher_->ExpectGetAuthnTokensCall(
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
+      TokenBatch(expected_batch_size_,
+                 kFutureExpiration + base::Hours(1)));
+  task_environment_.FastForwardBy(fuzzed_expiration - base::Time::Now());
+  EXPECT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
 }
 
 }  // namespace

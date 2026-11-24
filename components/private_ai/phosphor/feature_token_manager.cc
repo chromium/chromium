@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -32,6 +33,15 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 
 namespace private_ai::phosphor::internal {
+
+namespace {
+
+// Minimum time before actual expiration that a token is considered
+// "expired" and removed. The maximum time is given by the
+// `kPrivateAiAuthTokenCacheExpirationFuzz` feature param.
+constexpr base::TimeDelta kMinimumFuzzInterval = base::Seconds(5);
+
+}  // namespace
 
 FeatureTokenManager::FeatureTokenManager(TokenFetcher* fetcher,
                                          PrivateAiLogger* logger,
@@ -145,6 +155,18 @@ void FeatureTokenManager::OnGotAuthTokens(
     FailPendingCallbacks(TokenManager::Error::kTokenFetchFailed);
     ScheduleMaybeRefillCache();
     return;
+  }
+
+  // Randomize the expiration time of the tokens, applying the same "fuzz" to
+  // all tokens in the batch so clients do not all refill at the same 15-minute
+  // boundary.
+  base::TimeDelta fuzz_limit = kPrivateAiAuthTokenCacheExpirationFuzz.Get();
+  if (fuzz_limit > kMinimumFuzzInterval) {
+    base::TimeDelta fuzz =
+        base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
+    for (auto& token : *result) {
+      token.expiration -= fuzz;
+    }
   }
 
   for (auto& token : *result) {

@@ -56,6 +56,12 @@ const base::FeatureParam<int> kPrivateAiAuthTokenCacheLowWaterMark{
     /*default_value=*/1};
 
 const base::FeatureParam<base::TimeDelta>
+    kPrivateAiAuthTokenCacheExpirationFuzz{
+        &kPrivateAi,
+        /*name=*/"auth-token-cache-expiration-fuzz",
+        /*default_value=*/base::Minutes(15)};
+
+const base::FeatureParam<base::TimeDelta>
     kPrivateAiTryGetAuthTokensNotEligibleBackoff{
         &kPrivateAi,
         /*name=*/"try-get-auth-tokens-not-eligible-backoff",
