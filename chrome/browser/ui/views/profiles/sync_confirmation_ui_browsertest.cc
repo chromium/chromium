@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -437,7 +438,15 @@ class SyncConfirmationUIDialogPixelTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {
+// TODO(crbug.com/589872887): Re-enable on Win after Skia Gold flake is
+// resolved on M158.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest,
+                       MAYBE_InvokeUi_default) {
   set_baseline("8481376");
   ShowAndVerifyUi();
 }
