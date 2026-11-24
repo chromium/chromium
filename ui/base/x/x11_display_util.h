@@ -39,6 +39,14 @@ base::TimeDelta GetDisplayRefreshInterval(
     size_t primary_display_index,
     const std::optional<gfx::Rect>& bounds_px);
 
+// Removes displays that mirror another display, i.e. have the same bounds in
+// pixels.  When the primary display mirrors another display, the primary is
+// kept in its place.  Updates `primary_display_index` to the primary display's
+// new index.  Exposed for unit testing.
+COMPONENT_EXPORT(UI_BASE_X)
+void RemoveMirroredDisplays(std::vector<display::Display>& displays,
+                            size_t& primary_display_index);
+
 // A distance metric for ranges [min1, max1), [min2, max2).  Exposed for unit
 // testing.
 // - Returns 0 if the ranges touch at an endpoint but don't overlap.

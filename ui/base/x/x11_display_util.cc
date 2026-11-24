@@ -532,6 +532,8 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     *primary_display_index_out = 0;
   }
 
+  RemoveMirroredDisplays(displays, *primary_display_index_out);
+
   if (!display::Display::HasForceDeviceScaleFactor()) {
     for (auto& display : displays) {
       display.set_device_scale_factor(
@@ -569,6 +571,41 @@ base::TimeDelta GetDisplayRefreshInterval(
 
   const float frequency = best_display->display_frequency();
   return frequency > 0 ? base::Seconds(1. / frequency) : kDefaultInterval;
+}
+
+void RemoveMirroredDisplays(std::vector<display::Display>& displays,
+                            size_t& primary_display_index) {
+  // Copies `displays` into a new vector `unique_displays`, omitting displays
+  // with duplicate bounds.  If the primary display duplicates an earlier
+  // display, it takes the earlier display's place and `primary_display_index`
+  // is updated to point there.  Then `displays` is updated with only the
+  // non-duplicate displays.
+  std::vector<display::Display> unique_displays;
+  size_t new_primary_display_index = 0;
+  for (size_t i = 0; i < displays.size(); ++i) {
+    auto& display = displays[i];
+    const bool is_primary = i == primary_display_index;
+    // Mirrored outputs are positioned at the same place, so a display mirrors
+    // an earlier one exactly when their pixel bounds are equal.
+    auto it = std::ranges::find(unique_displays, display.bounds(),
+                                &display::Display::bounds);
+    if (it == unique_displays.end()) {
+      // Not a mirror: keep it.  If it's the primary, its new index is the
+      // position it's appended at.
+      if (is_primary) {
+        new_primary_display_index = unique_displays.size();
+      }
+      unique_displays.push_back(std::move(display));
+    } else if (is_primary) {
+      // The primary mirrors an earlier display: replace that display with the
+      // primary so the primary output's ID and properties are reported.
+      new_primary_display_index = it - unique_displays.begin();
+      *it = std::move(display);
+    }
+    // Otherwise a non-primary display mirrors an earlier one: drop it.
+  }
+  displays = std::move(unique_displays);
+  primary_display_index = new_primary_display_index;
 }
 
 int RangeDistance(int min1, int max1, int min2, int max2) {

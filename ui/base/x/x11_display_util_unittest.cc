@@ -210,6 +210,30 @@ TEST(X11DisplayUtilTest, GetDisplayRefreshInterval) {
       k60Hz);
 }
 
+// Mirrored outputs (e.g. `xrandr --same-as`) have identical bounds and should
+// be reported as a single display.
+TEST(X11DisplayUtilTest, RemoveMirroredDisplays) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(10, gfx::Rect(0, 0, 1920, 1080));
+  displays.emplace_back(11, gfx::Rect(1920, 0, 2560, 1440));
+  displays.emplace_back(12, gfx::Rect(0, 0, 1920, 1080));
+  size_t primary_display_index = 1;
+  RemoveMirroredDisplays(displays, primary_display_index);
+  ASSERT_EQ(displays.size(), 2u);
+  EXPECT_EQ(displays[0].id(), 10);
+  EXPECT_EQ(displays[1].id(), 11);
+  EXPECT_EQ(primary_display_index, 1u);
+
+  // A primary display that mirrors an earlier display replaces it.
+  displays.emplace_back(12, gfx::Rect(0, 0, 1920, 1080));
+  primary_display_index = 2;
+  RemoveMirroredDisplays(displays, primary_display_index);
+  ASSERT_EQ(displays.size(), 2u);
+  EXPECT_EQ(displays[0].id(), 12);
+  EXPECT_EQ(displays[1].id(), 11);
+  EXPECT_EQ(primary_display_index, 0u);
+}
+
 // GtkUi folds the font scale (Xft.dpi / 96) into the primary scale, so it can
 // legitimately be less than 1. The fallback must accept such scales like the
 // XRandR path does.
