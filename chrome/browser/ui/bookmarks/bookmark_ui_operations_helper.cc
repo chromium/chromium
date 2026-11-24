@@ -7,6 +7,8 @@
 #include <cstddef>
 #include <unordered_set>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -124,6 +126,7 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
     BrowserWindowInterface* browser) {
   CHECK(target_parent());
   CHECK(!target_parent()->IsManaged());
+  CHECK_LE(index, target_parent()->GetChildrenCount());
   if (!data.IsFromProfilePath(profile->GetPath())) {
     RecordBookmarksAdded(profile);
     RecordBookmarkDropped(data, target_parent()->IsPermanentNode(), false);
@@ -655,7 +658,11 @@ void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
     CHECK(!model()->client()->IsNodeManaged(moved_node));
     merged_surface_service_->Move(moved_node, *folder, index_to_add_at,
                                   browser);
-    index_to_add_at++;
+    // Moving a node already in `folder` shifts indices without increasing the
+    // child count, while cross-storage moves may be deferred to a dialog.
+    if (folder->HasDirectChildNode(moved_node)) {
+      index_to_add_at = merged_surface_service_->GetIndexOf(moved_node) + 1;
+    }
   }
 }
 

@@ -191,6 +191,7 @@ std::optional<size_t> PermanentFolderOrderingTracker::MoveToIndex(
     const bookmarks::BookmarkNode* node,
     size_t index) {
   CHECK(node);
+  CHECK_LE(index, GetChildrenCount());
   std::optional<size_t> old_index_if_tracked =
       IsTrackedPermanentNode(node->parent())
           ? std::optional<size_t>(GetIndexOf(node))
@@ -650,6 +651,7 @@ void PermanentFolderOrderingTracker::AddBookmarkNodeIfTracked(
 size_t PermanentFolderOrderingTracker::GetInStorageBookmarkCountBeforeIndex(
     bool account_node,
     size_t index) const {
+  CHECK_LE(index, GetChildrenCount());
   const BookmarkNode* parent =
       account_node ? account_node_ : local_or_syncable_node_;
   if (!ShouldTrackOrdering()) {
@@ -662,5 +664,4 @@ size_t PermanentFolderOrderingTracker::GetInStorageBookmarkCountBeforeIndex(
   return std::count_if(
       ordering_.begin(), ordering_.begin() + index,
       [parent](const BookmarkNode* node) { return node->parent() == parent; });
-  ;
 }

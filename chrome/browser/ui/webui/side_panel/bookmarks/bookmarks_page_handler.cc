@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -309,23 +310,19 @@ std::vector<int64_t> GetBookmarkIDsFromSidePanelIDs(
   return node_ids;
 }
 
-// Will return `std::nullopt` if `side_panel_id` does not correspond to a
-// permanent node special ID or is not an actual int64 id. Invalid inputs should
-// result in no-ops.
+// Returns `std::nullopt` when `side_panel_id` is neither a permanent folder
+// special ID nor a valid int64 node ID, when `bookmark_merged_surface` is not
+// loaded, when the managed permanent folder has no `managed_node()`, or when
+// the resolved node is missing, not a folder, or the root node. Invalid inputs
+// should result in no-ops.
 std::optional<BookmarkParentFolder> GetBookmarkParentFolderFromSidePanel(
     const BookmarkMergedSurfaceService& bookmark_merged_surface,
     const std::string& side_panel_id) {
-  // Permanent folders have a special string ID.
   std::optional<BookmarkParentFolder> side_panel_permanent_parent_folder =
       GetBookmarkSidePanelPermanentParentFolder(side_panel_id);
-  if (side_panel_permanent_parent_folder.has_value()) {
-    return side_panel_permanent_parent_folder.value();
-  }
-
-  // A regular folder should have a valid int64 node ID.
   int64_t folder_id = 0;
-  // Conversion check validity.
-  if (!base::StringToInt64(side_panel_id, &folder_id)) {
+  if (!side_panel_permanent_parent_folder.has_value() &&
+      !base::StringToInt64(side_panel_id, &folder_id)) {
     if (mojo::IsInMessageDispatch()) {
       mojo::ReportBadMessage(
           "Unsupported conversion: side_panel_id should either be a permanent "
@@ -334,8 +331,26 @@ std::optional<BookmarkParentFolder> GetBookmarkParentFolderFromSidePanel(
     return std::nullopt;
   }
 
-  return BookmarkParentFolder::FromFolderNode(bookmarks::GetBookmarkNodeByID(
-      bookmark_merged_surface.bookmark_model(), folder_id));
+  if (!bookmark_merged_surface.loaded()) {
+    return std::nullopt;
+  }
+
+  if (side_panel_permanent_parent_folder.has_value()) {
+    if (side_panel_permanent_parent_folder ==
+            BookmarkParentFolder::ManagedFolder() &&
+        (!bookmark_merged_surface.managed_bookmark_service() ||
+         !bookmark_merged_surface.managed_bookmark_service()->managed_node())) {
+      return std::nullopt;
+    }
+    return side_panel_permanent_parent_folder.value();
+  }
+
+  const bookmarks::BookmarkNode* node = bookmarks::GetBookmarkNodeByID(
+      bookmark_merged_surface.bookmark_model(), folder_id);
+  if (!node || !node->is_folder() || node->is_root()) {
+    return std::nullopt;
+  }
+  return BookmarkParentFolder::FromFolderNode(node);
 }
 
 std::vector<side_panel::mojom::BookmarksTreeNodePtr> ConstructMojoChildNodes(
@@ -462,40 +477,49 @@ void BookmarksPageHandler::DropBookmarks(const std::string& folder_id,
   }
 
   // Do not allow a drop in a managed folder.
-  if (bookmark_merged_surface_->IsParentFolderManaged(parent.value())) {
+  if (bookmark_merged_surface_->IsParentFolderManaged(*parent)) {
     return;
   }
-
-  const bookmarks::BookmarkNode* parent_node =
-      bookmark_merged_surface_->GetDefaultParentForNewNodes(parent.value());
 
   const base::FilePath destination_profile_path =
       browser_window_interface_->GetProfile()->GetPath();
   content::WebContents* side_panel_web_contents = web_ui_->GetWebContents();
   CHECK(side_panel_web_contents);
 
-  const bookmarks::BookmarkNodeData* drag_data =
+  auto* drag_event_router =
       extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
-          side_panel_web_contents)
-          ->GetBookmarkNodeData();
-  CHECK(drag_data);
-  CHECK(drag_data->is_valid());
+          side_panel_web_contents);
+  if (!drag_event_router) {
+    return;
+  }
+
+  const bookmarks::BookmarkNodeData* router_drag_data =
+      drag_event_router->GetBookmarkNodeData();
+  if (!router_drag_data) {
+    return;
+  }
+  const bookmarks::BookmarkNodeData drag_data = *router_drag_data;
+  drag_event_router->ClearBookmarkNodeData();
 
   // The following checks are only necessary when moving data within the same
   // profile.
-  if (drag_data->IsFromProfilePath(destination_profile_path)) {
+  if (drag_data.IsFromProfilePath(destination_profile_path)) {
+    bookmarks::BookmarkModel* bookmark_model =
+        bookmark_merged_surface_->bookmark_model();
     for (const auto& node :
-         drag_data->GetNodes(bookmark_merged_surface_->bookmark_model(),
-                             destination_profile_path)) {
-      // Abort if we are trying to move a node into one of its descendants.
-      // This can also happen from other surfaces, e.g. when dragging a folder
-      // from the bookmark manager into one of its children in the side panel.
+         drag_data.GetNodes(bookmark_model, destination_profile_path)) {
+      // Abort when trying to move a permanent node or move a node into one of
+      // its descendants. This can also happen from other surfaces, e.g. when
+      // dragging a folder from the bookmark manager into one of its children
+      // in the side panel.
       // Also do not continue if any of the dropped nodes are managed.
       // TODO(crbug.com/409283807): Dropping into descendants should be blocked
       // by the UI instead.
       // TODO(crbug.com/409284055): Instead of doing a no-op, perform a copy
       // when dropping managed nodes.
-      if (parent_node->HasAncestor(node) ||
+      if (bookmark_model->is_permanent_node(node) ||
+          (parent->HoldsNonPermanentFolder() &&
+           parent->as_non_permanent_folder()->HasAncestor(node)) ||
           bookmark_merged_surface_->IsNodeManaged(node)) {
         return;
       }
@@ -504,11 +528,11 @@ void BookmarksPageHandler::DropBookmarks(const std::string& folder_id,
 
   BookmarkUIOperationsHelperMergedSurfaces(bookmark_merged_surface_,
                                            &parent.value())
-      .DropBookmarks(browser_window_interface_->GetProfile(), *drag_data,
-                     /*index=*/parent_node->children().size(),
-                     /*copy=*/false,
-                     chrome::BookmarkReorderDropTarget::kBookmarkSidePanel,
-                     browser_window_interface_);
+      .DropBookmarks(
+          browser_window_interface_->GetProfile(), drag_data,
+          /*index=*/bookmark_merged_surface_->GetChildrenCount(*parent),
+          /*copy=*/false, chrome::BookmarkReorderDropTarget::kBookmarkSidePanel,
+          browser_window_interface_);
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabCommand(

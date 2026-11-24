@@ -16,6 +16,7 @@
 #include "base/pickle.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
@@ -128,6 +129,8 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
   std::unique_ptr<internal::BookmarkUIOperationsHelper> helper_;
 };
 
+using testing::ElementsAre;
+using testing::Pointer;
 using testing::Types;
 
 typedef Types<BookmarkUIOperationsHelperNonMergedSurfaces,
@@ -185,6 +188,108 @@ TYPED_TEST(BookmarkUIOperationsHelperTest,
   EXPECT_EQ(2u, bb_node->children().size());
   EXPECT_EQ(this->model()->other_node()->children()[0].get(),
             folder_child_node);
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest,
+           DropMultipleBookmarksAlreadyInTargetFolder) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* bb_node = model->bookmark_bar_node();
+  const BookmarkNode* target_folder =
+      model->AddFolder(bb_node, 0, u"target_folder");
+  const BookmarkNode* node_a =
+      model->AddURL(bb_node, 1, u"a", GURL("https://a.example.com"));
+  const BookmarkNode* node_b =
+      model->AddURL(bb_node, 2, u"b", GURL("https://b.example.com"));
+
+  bookmarks::BookmarkNodeData drag_data({node_a, node_b});
+  drag_data.SetOriginatingProfilePath(this->profile()->GetPath());
+
+  // Move both nodes into `target_folder` before completing the drop at the end
+  // of `target_folder`.
+  model->Move(node_a, target_folder, 0);
+  model->Move(node_b, target_folder, 1);
+
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(target_folder);
+  EXPECT_EQ(helper->DropBookmarks(
+                this->profile(), drag_data,
+                /*index=*/target_folder->children().size(), /*copy=*/false,
+                chrome::BookmarkReorderDropTarget::kBookmarkSidePanel),
+            ui::mojom::DragOperation::kMove);
+  EXPECT_THAT(target_folder->children(),
+              ElementsAre(Pointer(node_a), Pointer(node_b)));
+
+  // Verify the reverse initial order where the first dragged node is already at
+  // the end of `target_folder` (a no-op move on the first iteration).
+  model->Move(node_b, target_folder, 0);
+  ASSERT_THAT(target_folder->children(),
+              ElementsAre(Pointer(node_b), Pointer(node_a)));
+
+  EXPECT_EQ(helper->DropBookmarks(
+                this->profile(), drag_data,
+                /*index=*/target_folder->children().size(), /*copy=*/false,
+                chrome::BookmarkReorderDropTarget::kBookmarkSidePanel),
+            ui::mojom::DragOperation::kMove);
+  EXPECT_THAT(target_folder->children(),
+              ElementsAre(Pointer(node_a), Pointer(node_b)));
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest,
+           DropMultipleBookmarksPartiallyInTargetFolder) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* bb_node = model->bookmark_bar_node();
+  const BookmarkNode* target_folder =
+      model->AddFolder(bb_node, 0, u"target_folder");
+  const BookmarkNode* node_a =
+      model->AddURL(target_folder, 0, u"a", GURL("https://a.example.com"));
+  const BookmarkNode* node_b =
+      model->AddURL(bb_node, 1, u"b", GURL("https://b.example.com"));
+
+  bookmarks::BookmarkNodeData drag_data({node_a, node_b});
+  drag_data.SetOriginatingProfilePath(this->profile()->GetPath());
+
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(target_folder);
+  EXPECT_EQ(helper->DropBookmarks(
+                this->profile(), drag_data,
+                /*index=*/target_folder->children().size(), /*copy=*/false,
+                chrome::BookmarkReorderDropTarget::kBookmarkSidePanel),
+            ui::mojom::DragOperation::kMove);
+  EXPECT_THAT(target_folder->children(),
+              ElementsAre(Pointer(node_a), Pointer(node_b)));
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest,
+           ReorderMultipleBookmarksWithinFolder) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"folder");
+  const BookmarkNode* n1 =
+      model->AddURL(folder, 0, u"1", GURL("https://1.example.com"));
+  const BookmarkNode* n2 =
+      model->AddURL(folder, 1, u"2", GURL("https://2.example.com"));
+  const BookmarkNode* n3 =
+      model->AddURL(folder, 2, u"3", GURL("https://3.example.com"));
+  const BookmarkNode* n4 =
+      model->AddURL(folder, 3, u"4", GURL("https://4.example.com"));
+
+  bookmarks::BookmarkNodeData drag_data({n1, n2});
+  drag_data.SetOriginatingProfilePath(this->profile()->GetPath());
+
+  internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(folder);
+  EXPECT_EQ(helper->DropBookmarks(
+                this->profile(), drag_data, /*index=*/3, /*copy=*/false,
+                chrome::BookmarkReorderDropTarget::kBookmarkBarView),
+            ui::mojom::DragOperation::kMove);
+  EXPECT_THAT(folder->children(),
+              ElementsAre(Pointer(n3), Pointer(n1), Pointer(n2), Pointer(n4)));
+
+  EXPECT_EQ(helper->DropBookmarks(
+                this->profile(), drag_data, /*index=*/0, /*copy=*/false,
+                chrome::BookmarkReorderDropTarget::kBookmarkBarView),
+            ui::mojom::DragOperation::kMove);
+  EXPECT_THAT(folder->children(),
+              ElementsAre(Pointer(n1), Pointer(n2), Pointer(n3), Pointer(n4)));
 }
 
 TYPED_TEST(BookmarkUIOperationsHelperTest, DropBookmarksFromAnotherProfile) {
@@ -755,6 +860,105 @@ TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
   EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
                 .GetDefaultParentForNonMergedSurfaces(),
             managed_new_folder);
+}
+
+class BookmarkUIOperationsHelperMergedSurfacesDropTest : public testing::Test {
+ public:
+  BookmarkUIOperationsHelperMergedSurfacesDropTest() {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        BookmarkModelFactory::GetInstance(),
+        BookmarkModelFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        BookmarkMergedSurfaceServiceFactory::GetInstance(),
+        BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+
+    model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
+    service_ =
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
+    WaitForBookmarkMergedSurfaceServiceToLoad(service_);
+    model_->CreateAccountPermanentFolders();
+  }
+
+  TestingProfile* profile() { return profile_.get(); }
+  BookmarkModel* model() { return model_; }
+  BookmarkMergedSurfaceService* service() { return service_; }
+
+ private:
+  base::test::ScopedFeatureList features_{
+      switches::kSyncEnableBookmarksInTransportMode};
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<BookmarkModel> model_ = nullptr;
+  raw_ptr<BookmarkMergedSurfaceService> service_ = nullptr;
+};
+
+TEST_F(BookmarkUIOperationsHelperMergedSurfacesDropTest,
+       DropMultipleBookmarksInMergedPermanentFolder) {
+  const BookmarkNode* account_node_1 = model()->AddURL(
+      model()->account_other_node(), 0, u"a1", GURL("https://a1.example.com"));
+  const BookmarkNode* account_node_2 = model()->AddURL(
+      model()->account_other_node(), 1, u"a2", GURL("https://a2.example.com"));
+  const BookmarkNode* local_node_1 = model()->AddURL(
+      model()->other_node(), 0, u"l1", GURL("https://l1.example.com"));
+
+  BookmarkParentFolder other_folder = BookmarkParentFolder::OtherFolder();
+  ASSERT_EQ(3u, service()->GetChildrenCount(other_folder));
+
+  bookmarks::BookmarkNodeData drop_data({account_node_1, local_node_1});
+  drop_data.SetOriginatingProfilePath(profile()->GetPath());
+  EXPECT_EQ(
+      BookmarkUIOperationsHelperMergedSurfaces(service(), &other_folder)
+          .DropBookmarks(profile(), drop_data,
+                         /*index=*/service()->GetChildrenCount(other_folder),
+                         /*copy=*/false,
+                         chrome::BookmarkReorderDropTarget::kBookmarkSidePanel),
+      ui::mojom::DragOperation::kMove);
+  ASSERT_EQ(3u, service()->GetChildrenCount(other_folder));
+  EXPECT_EQ(account_node_2, service()->GetNodeAtIndex(other_folder, 0));
+  EXPECT_EQ(account_node_1, service()->GetNodeAtIndex(other_folder, 1));
+  EXPECT_EQ(local_node_1, service()->GetNodeAtIndex(other_folder, 2));
+}
+
+TEST_F(BookmarkUIOperationsHelperMergedSurfacesDropTest,
+       DropMultipleBookmarksCrossStorageDeferredDialog) {
+  const BookmarkNode* account_folder = model()->AddFolder(
+      model()->account_bookmark_bar_node(), 0, u"Account Folder");
+  const BookmarkNode* existing_account_child = model()->AddURL(
+      account_folder, 0, u"existing", GURL("https://existing.example.com"));
+  const BookmarkNode* local_bookmark =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"local",
+                      GURL("https://local.example.com"));
+  const BookmarkNode* account_bookmark =
+      model()->AddURL(model()->account_bookmark_bar_node(), 1, u"account",
+                      GURL("https://account.example.com"));
+
+  base::MockCallback<
+      BookmarkMergedSurfaceService::ShowMoveStorageDialogCallback>
+      dialog_callback;
+  service()->SetShowMoveStorageDialogCallback(dialog_callback.Get());
+  EXPECT_CALL(dialog_callback,
+              Run(nullptr, local_bookmark, account_folder, /*index=*/1u));
+
+  BookmarkParentFolder account_parent =
+      BookmarkParentFolder::FromFolderNode(account_folder);
+  bookmarks::BookmarkNodeData drop_data({local_bookmark, account_bookmark});
+  drop_data.SetOriginatingProfilePath(profile()->GetPath());
+  EXPECT_EQ(
+      BookmarkUIOperationsHelperMergedSurfaces(service(), &account_parent)
+          .DropBookmarks(profile(), drop_data,
+                         /*index=*/account_folder->children().size(),
+                         /*copy=*/false,
+                         chrome::BookmarkReorderDropTarget::kBookmarkSidePanel),
+      ui::mojom::DragOperation::kMove);
+
+  // `local_bookmark` remains in its original parent until dialog confirmation,
+  // while `account_bookmark` is moved at a valid in-bounds index.
+  EXPECT_EQ(model()->bookmark_bar_node(), local_bookmark->parent());
+  EXPECT_THAT(
+      account_folder->children(),
+      ElementsAre(Pointer(existing_account_child), Pointer(account_bookmark)));
 }
 
 }  // namespace

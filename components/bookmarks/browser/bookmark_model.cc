@@ -567,17 +567,18 @@ void BookmarkModel::Move(const BookmarkNode* node,
                          size_t index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
-  DCHECK(node);
-  DCHECK(node->HasAncestor(root_node()));
+  CHECK(node);
+  CHECK(new_parent);
+  CHECK(node->HasAncestor(root_node()));
   CHECK(new_parent->HasAncestor(root_node()));
-  DCHECK(IsValidIndex(new_parent, index, true));
-  DCHECK(!is_root_node(new_parent));
-  DCHECK(!is_permanent_node(node));
+  CHECK(!is_root_node(new_parent));
+  CHECK(!is_permanent_node(node));
   CHECK(!new_parent->HasAncestor(node));
 
   SCOPED_CRASH_KEY_NUMBER("BookmarkModelMove", "newParentType",
                           new_parent->type());
   DUMP_WILL_BE_CHECK(new_parent->is_folder());
+  CHECK_LE(index, new_parent->children().size());
 
   const BookmarkNode* old_parent = node->parent();
   size_t old_index = old_parent->GetIndexOf(node).value();

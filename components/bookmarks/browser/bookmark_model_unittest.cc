@@ -23,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1385,7 +1386,6 @@ TEST_F(BookmarkModelTest, MoveWithUuidCollisionInDescendant) {
                                    NodeTypeForUuidLookup::kAccountNodes));
 }
 
-#if defined(GTEST_HAS_DEATH_TEST)
 using BookmarkModelDeathTest = BookmarkModelTest;
 
 TEST_F(BookmarkModelDeathTest, MoveIntoSelfOrDescendantCrashes) {
@@ -1393,10 +1393,19 @@ TEST_F(BookmarkModelDeathTest, MoveIntoSelfOrDescendantCrashes) {
       model()->AddFolder(model()->bookmark_bar_node(), 0, u"Folder");
   const BookmarkNode* child = model()->AddFolder(folder, 0, u"Child");
 
-  EXPECT_DEATH(model()->Move(folder, folder, 0), "");
-  EXPECT_DEATH(model()->Move(folder, child, 0), "");
+  EXPECT_CHECK_DEATH(model()->Move(folder, folder, 0));
+  EXPECT_CHECK_DEATH(model()->Move(folder, child, 0));
 }
-#endif  // defined(GTEST_HAS_DEATH_TEST)
+
+TEST_F(BookmarkModelDeathTest, MoveOutOfBoundsIndexCrashes) {
+  const BookmarkNode* node =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"Bookmark",
+                      GURL("https://example.com"));
+  const BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 1, u"Folder");
+
+  EXPECT_CHECK_DEATH(model()->Move(node, folder, 1));
+}
 
 // Tests the default node if no bookmarks have been added yet
 TEST_F(BookmarkModelTest, ParentForNewNodesWithEmptyModel) {

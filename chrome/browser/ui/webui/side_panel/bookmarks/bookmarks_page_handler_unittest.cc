@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -261,16 +262,41 @@ class BookmarksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     return mock_browser_window_interface_;
   }
 
-  void CreateHandler(int managed_bookmarks_count = 0) {
+  enum class ManagedBookmarkMode {
+    kWithManagedNode,
+    kWithoutManagedNode,
+    kNoManagedService,
+  };
+
+  void CreateHandler(int managed_bookmarks_count = 0,
+                     ManagedBookmarkMode managed_mode =
+                         ManagedBookmarkMode::kWithManagedNode) {
     CHECK(!handler_);
 
     prefs_ = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
 
-    managed_bookmark_service_ =
-        CreateManagedBookmarkService(prefs_.get(), managed_bookmarks_count);
-    bookmark_model_ = std::make_unique<bookmarks::BookmarkModel>(
-        std::make_unique<TestBookmarkClientWithManagedService>(
-            managed_bookmark_service_.get()));
+    std::unique_ptr<bookmarks::TestBookmarkClient> bookmark_client;
+    switch (managed_mode) {
+      case ManagedBookmarkMode::kWithManagedNode:
+        managed_bookmark_service_ =
+            CreateManagedBookmarkService(prefs_.get(), managed_bookmarks_count);
+        bookmark_client =
+            std::make_unique<TestBookmarkClientWithManagedService>(
+                managed_bookmark_service_.get());
+        break;
+      case ManagedBookmarkMode::kWithoutManagedNode:
+        CHECK_EQ(managed_bookmarks_count, 0);
+        managed_bookmark_service_ = CreateManagedBookmarkService(
+            prefs_.get(), /*managed_bookmarks_size=*/0);
+        bookmark_client = std::make_unique<bookmarks::TestBookmarkClient>();
+        break;
+      case ManagedBookmarkMode::kNoManagedService:
+        CHECK_EQ(managed_bookmarks_count, 0);
+        bookmark_client = std::make_unique<bookmarks::TestBookmarkClient>();
+        break;
+    }
+    bookmark_model_ =
+        std::make_unique<bookmarks::BookmarkModel>(std::move(bookmark_client));
 
     auto bookmark_merged_service =
         std::make_unique<BookmarkMergedSurfaceService>(
@@ -329,6 +355,22 @@ class BookmarksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     int64_t bookmark_id;
     CHECK(base::StringToInt64(string_id, &bookmark_id));
     return bookmark_id;
+  }
+
+  void PrepareDragData(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                                 VectorExperimental>>& nodes) {
+    bookmarks::BookmarkNodeData data(nodes);
+    data.SetOriginatingProfilePath(profile()->GetPath());
+    extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+        fake_side_panel_web_contents_.get())
+        ->OnDrop(data);
+  }
+
+  void DropBookmarks(const std::string& folder_id) {
+    base::MockCallback<BookmarksPageHandler::DropBookmarksCallback>
+        mock_callback;
+    EXPECT_CALL(mock_callback, Run());
+    handler_->DropBookmarks(folder_id, mock_callback.Get());
   }
 
  private:
@@ -1055,6 +1097,149 @@ TEST_F(BookmarksPageHandlerTest,
               ElementsAre(MatchesNode(node1), MatchesNode(node2)));
 
   histogram_tester.ExpectTotalCount("Bookmarks.AddedPerProfileType", 1);
+}
+
+TEST_F(BookmarksPageHandlerTest, DropBookmarksMovedIntoTargetFolderBeforeDrop) {
+  const bookmarks::BookmarkNode* node1 =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"title1",
+                      GURL("https://one.example.com/"));
+  const bookmarks::BookmarkNode* node2 =
+      model()->AddURL(model()->bookmark_bar_node(), 1, u"title2",
+                      GURL("https://two.example.com/"));
+  const bookmarks::BookmarkNode* target_folder =
+      model()->AddFolder(model()->other_node(), 0, u"target_folder");
+
+  // Capture drag payload before `node1` and `node2` move into `target_folder`.
+  PrepareDragData({node1, node2});
+  model()->Move(node1, target_folder, 0);
+  model()->Move(node2, target_folder, 1);
+  ASSERT_EQ(2u, target_folder->children().size());
+
+  DropBookmarks(base::ToString(target_folder->id()));
+
+  EXPECT_TRUE(model()->bookmark_bar_node()->children().empty());
+  EXPECT_THAT(target_folder->children(),
+              ElementsAre(Pointer(node1), Pointer(node2)));
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       DropBookmarksInMergedPermanentFolderAppendsAcrossStorages) {
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* account_existing =
+      model()->AddURL(model()->account_other_node(), 0, u"a_existing",
+                      GURL("https://account.example.com/"));
+  const bookmarks::BookmarkNode* local_existing =
+      model()->AddURL(model()->other_node(), 0, u"l_existing",
+                      GURL("https://local.example.com/"));
+  const bookmarks::BookmarkNode* local_1 = model()->AddURL(
+      model()->bookmark_bar_node(), 0, u"l1", GURL("https://one.example.com/"));
+  const bookmarks::BookmarkNode* local_2 = model()->AddURL(
+      model()->bookmark_bar_node(), 1, u"l2", GURL("https://two.example.com/"));
+
+  PrepareDragData({local_1, local_2});
+  DropBookmarks(kSidePanelOtherBookmarksID);
+
+  BookmarkParentFolder other_folder = BookmarkParentFolder::OtherFolder();
+  ASSERT_EQ(4u, service()->GetChildrenCount(other_folder));
+  EXPECT_EQ(account_existing, service()->GetNodeAtIndex(other_folder, 0));
+  EXPECT_EQ(local_existing, service()->GetNodeAtIndex(other_folder, 1));
+  EXPECT_EQ(local_1, service()->GetNodeAtIndex(other_folder, 2));
+  EXPECT_EQ(local_2, service()->GetNodeAtIndex(other_folder, 3));
+
+  // Verify the drag payload was consumed so a duplicate DropBookmarks call is a
+  // no-op.
+  EXPECT_EQ(nullptr,
+            extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+                side_panel_web_contents())
+                ->GetBookmarkNodeData());
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       DropBookmarksWithStaleTargetOrMissingDragData) {
+  const bookmarks::BookmarkNode* node1 =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"title1",
+                      GURL("https://one.example.com/"));
+  const bookmarks::BookmarkNode* target_folder =
+      model()->AddFolder(model()->other_node(), 0, u"target_folder");
+  const std::string deleted_folder_id = base::ToString(target_folder->id());
+
+  // Missing drag payload should be a no-op.
+  DropBookmarks(deleted_folder_id);
+
+  // Removing the target folder before the drop arrives should be a no-op.
+  PrepareDragData({node1});
+  model()->Remove(target_folder, bookmarks::metrics::BookmarkEditSource::kOther,
+                  FROM_HERE);
+  DropBookmarks(deleted_folder_id);
+
+  // URL, root, and empty managed permanent folder IDs should all be no-ops.
+  DropBookmarks(base::ToString(node1->id()));
+  DropBookmarks(base::ToString(model()->root_node()->id()));
+  DropBookmarks(kSidePanelManagedBookmarksID);
+
+  // Attempting to drop a permanent folder node should also be a no-op.
+  PrepareDragData({model()->bookmark_bar_node()});
+  DropBookmarks(kSidePanelOtherBookmarksID);
+
+  EXPECT_THAT(model()->bookmark_bar_node()->children(),
+              ElementsAre(Pointer(node1)));
+  EXPECT_TRUE(model()->other_node()->children().empty());
+}
+
+TEST_F(BookmarksPageHandlerTest, DropBookmarksBeforeBookmarkModelLoads) {
+  ClearHandler();
+  CreateHandler(/*managed_bookmarks_count=*/0);
+
+  // Seed external URL drag data so these calls would reach `DropBookmarks`
+  // and hit `loaded()` CHECKs if the `!loaded()` guard were missing.
+  bookmarks::BookmarkNodeData data;
+  ASSERT_TRUE(data.ReadFromTuple(GURL("https://example.com/"), u"title"));
+  auto* drag_event_router =
+      extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+          side_panel_web_contents());
+  drag_event_router->OnDrop(data);
+
+  DropBookmarks(kSidePanelOtherBookmarksID);
+  DropBookmarks(kSidePanelManagedBookmarksID);
+  DropBookmarks("1");
+
+  EXPECT_NE(nullptr, drag_event_router->GetBookmarkNodeData());
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       DropBookmarksInManagedFolderWithoutManagedNode) {
+  for (ManagedBookmarkMode mode : {ManagedBookmarkMode::kNoManagedService,
+                                   ManagedBookmarkMode::kWithoutManagedNode}) {
+    SCOPED_TRACE(mode == ManagedBookmarkMode::kNoManagedService
+                     ? "NoManagedService"
+                     : "WithoutManagedNode");
+    ClearHandler();
+    CreateHandler(/*managed_bookmarks_count=*/0, mode);
+    LoadBookmarkModel();
+
+    ASSERT_TRUE(service()->loaded());
+    if (mode == ManagedBookmarkMode::kNoManagedService) {
+      ASSERT_EQ(nullptr, service()->managed_bookmark_service());
+    } else {
+      ASSERT_NE(nullptr, service()->managed_bookmark_service());
+      ASSERT_EQ(nullptr, managed_bookmark_service()->managed_node());
+    }
+
+    const bookmarks::BookmarkNode* node =
+        model()->AddURL(model()->bookmark_bar_node(), 0, u"title",
+                        GURL("https://one.example.com/"));
+    PrepareDragData({node});
+    DropBookmarks(kSidePanelManagedBookmarksID);
+
+    EXPECT_THAT(model()->bookmark_bar_node()->children(),
+                ElementsAre(Pointer(node)));
+    EXPECT_NE(
+        nullptr,
+        extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+            side_panel_web_contents())
+            ->GetBookmarkNodeData());
+  }
 }
 
 TEST_F(BookmarksPageHandlerTest, OpenBookmark) {
