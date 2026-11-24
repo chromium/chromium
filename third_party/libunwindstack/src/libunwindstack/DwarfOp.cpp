@@ -1902,7 +1902,7 @@ bool DwarfOp<AddressType>::op_regx() {
 // For simplicity, the code will read the value before doing the unwind.
 template <typename AddressType>
 bool DwarfOp<AddressType>::op_breg() {
-  uint16_t reg = cur_op() - 0x70;
+  uint16_t reg = regs_info_->regs->Convert(cur_op() - 0x70);
   if (reg >= regs_info_->Total()) {
     last_error_.code = DWARF_ERROR_ILLEGAL_VALUE;
     return false;
@@ -1913,7 +1913,7 @@ bool DwarfOp<AddressType>::op_breg() {
 
 template <typename AddressType>
 bool DwarfOp<AddressType>::op_bregx() {
-  AddressType reg = OperandAt(0);
+  uint16_t reg = regs_info_->regs->Convert(OperandAt(0));
   if (reg >= regs_info_->Total()) {
     last_error_.code = DWARF_ERROR_ILLEGAL_VALUE;
     return false;

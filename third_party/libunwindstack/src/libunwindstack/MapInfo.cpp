@@ -41,6 +41,32 @@ bool MapInfo::ElfFileNotReadable() {
          !android::base::StartsWith(map_name, "/memfd:");
 }
 
+std::shared_ptr<MapInfo> MapInfo::GetPrevReadOnlyMap() {
+  if (offset() == 0 || name().empty() || (flags() & PROT_EXEC) == 0) {
+    return nullptr;
+  }
+
+  // Provide a cutoff since the read-only map for this execute map is always
+  // before or at the start() - offset(). This isn't true when shared libraries
+  // are mapped from apks, because both maps will have non-zero offsets, but
+  // this should still avoid searching all of the maps in the worst case.
+  uint64_t last_start = 0;
+  if (start() > offset()) {
+    last_start = start() - offset();
+  }
+  for (auto map = prev_map(); map != nullptr && map->start() >= last_start; map = map->prev_map()) {
+    if (map->name() == name() && map->flags() == PROT_READ) {
+      // Found the previous read-only map, but the offset is bigger than our offset
+      // so assume that there is no read-only map for this map.
+      if (map->offset() >= offset()) {
+        return nullptr;
+      }
+      return map;
+    }
+  }
+  return nullptr;
+}
+
 std::shared_ptr<MapInfo> MapInfo::GetPrevRealMap() {
   if (name().empty()) {
     return nullptr;
@@ -76,14 +102,13 @@ std::shared_ptr<MapInfo> MapInfo::GetNextRealMap() {
 bool MapInfo::InitFileMemoryFromPreviousReadOnlyMap(MemoryFileAtOffset* memory) {
   // One last attempt, see if the previous map is read-only with the
   // same name and stretches across this map.
-  auto prev_real_map = GetPrevRealMap();
-  if (prev_real_map == nullptr || prev_real_map->flags() != PROT_READ ||
-      prev_real_map->offset() >= offset()) {
+  auto prev_read_only_map = GetPrevReadOnlyMap();
+  if (prev_read_only_map == nullptr) {
     return false;
   }
 
-  uint64_t map_size = end() - prev_real_map->end();
-  if (!memory->Init(name(), prev_real_map->offset(), map_size)) {
+  uint64_t map_size = end() - prev_read_only_map->end();
+  if (!memory->Init(name(), prev_read_only_map->offset(), map_size)) {
     return false;
   }
 
@@ -92,12 +117,12 @@ bool MapInfo::InitFileMemoryFromPreviousReadOnlyMap(MemoryFileAtOffset* memory) 
     return false;
   }
 
-  if (!memory->Init(name(), prev_real_map->offset(), max_size)) {
+  if (!memory->Init(name(), prev_read_only_map->offset(), max_size)) {
     return false;
   }
 
-  set_elf_offset(offset() - prev_real_map->offset());
-  set_elf_start_offset(prev_real_map->offset());
+  set_elf_offset(offset() - prev_read_only_map->offset());
+  set_elf_start_offset(prev_read_only_map->offset());
   return true;
 }
 
@@ -234,27 +259,27 @@ std::shared_ptr<Memory> MapInfo::CreateMemory(const std::shared_ptr<Memory>& pro
     return memory_ranges;
   }
 
-  auto prev_real_map = GetPrevRealMap();
-
   // Find the read-only map by looking at the previous map. The linker
   // doesn't guarantee that this invariant will always be true. However,
   // if that changes, there is likely something else that will change and
   // break something.
-  if (offset() == 0 || prev_real_map == nullptr || prev_real_map->offset() >= offset()) {
+  auto prev_read_only_map = GetPrevReadOnlyMap();
+  if (prev_read_only_map == nullptr) {
     set_memory_backed_elf(false);
     return nullptr;
   }
 
   // Make sure that relative pc values are corrected properly.
-  set_elf_offset(offset() - prev_real_map->offset());
+  set_elf_offset(offset() - prev_read_only_map->offset());
   // Use this as the elf start offset, otherwise, you always get offsets into
   // the r-x section, which is not quite the right information.
-  set_elf_start_offset(prev_real_map->offset());
+  set_elf_start_offset(prev_read_only_map->offset());
 
   MemoryRanges* ranges = new MemoryRanges;
   std::shared_ptr<Memory> memory_ranges(ranges);
-  if (!ranges->Insert(new MemoryRange(process_memory, prev_real_map->start(),
-                                      prev_real_map->end() - prev_real_map->start(), 0))) {
+  if (!ranges->Insert(new MemoryRange(process_memory, prev_read_only_map->start(),
+                                      prev_read_only_map->end() - prev_read_only_map->start(),
+                                      0))) {
     return nullptr;
   }
   if (!ranges->Insert(new MemoryRange(process_memory, start(), end() - start(), elf_offset()))) {
@@ -262,16 +287,6 @@ std::shared_ptr<Memory> MapInfo::CreateMemory(const std::shared_ptr<Memory>& pro
   }
   return memory_ranges;
 }
-
-class ScopedElfCacheLock {
- public:
-  ScopedElfCacheLock() {
-    if (Elf::CachingEnabled()) Elf::CacheLock();
-  }
-  ~ScopedElfCacheLock() {
-    if (Elf::CachingEnabled()) Elf::CacheUnlock();
-  }
-};
 
 Elf* MapInfo::GetElf(const std::shared_ptr<Memory>& process_memory, ArchEnum expected_arch) {
   // Make sure no other thread is trying to add the elf to this map.
@@ -281,10 +296,12 @@ Elf* MapInfo::GetElf(const std::shared_ptr<Memory>& process_memory, ArchEnum exp
     return elf().get();
   }
 
-  ScopedElfCacheLock elf_cache_lock;
-  if (Elf::CachingEnabled() && !name().empty()) {
-    if (Elf::CacheGet(this)) {
-      return elf().get();
+  if (use_global_elf_cache_) {
+    Elf::ScopedCacheLock elf_cache_lock;
+    if (Elf::CachingEnabled() && !name().empty()) {
+      if (Elf::CacheGet(this)) {
+        return elf().get();
+      }
     }
   }
 
@@ -300,31 +317,30 @@ Elf* MapInfo::GetElf(const std::shared_ptr<Memory>& process_memory, ArchEnum exp
 
   if (!elf()->valid()) {
     set_elf_start_offset(offset());
-  } else if (auto prev_real_map = GetPrevRealMap(); prev_real_map != nullptr &&
-                                                    prev_real_map->flags() == PROT_READ &&
-                                                    prev_real_map->offset() < offset()) {
+  } else if (auto prev_read_only_map = GetPrevReadOnlyMap(); prev_read_only_map != nullptr) {
     // If there is a read-only map then a read-execute map that represents the
     // same elf object, make sure the previous map is using the same elf
     // object if it hasn't already been set. Locking this should not result
     // in a deadlock as long as the invariant that the code only ever tries
     // to lock the previous real map holds true.
-    std::lock_guard<std::mutex> guard(prev_real_map->elf_mutex());
-    if (prev_real_map->elf() == nullptr) {
+    std::lock_guard<std::mutex> guard(prev_read_only_map->elf_mutex());
+    if (prev_read_only_map->elf() == nullptr) {
       // Need to verify if the map is the previous read-only map.
-      prev_real_map->set_elf(elf());
-      prev_real_map->set_memory_backed_elf(memory_backed_elf());
-      prev_real_map->set_elf_start_offset(elf_start_offset());
-      prev_real_map->set_elf_offset(prev_real_map->offset() - elf_start_offset());
-    } else if (prev_real_map->elf_start_offset() == elf_start_offset()) {
+      prev_read_only_map->set_elf(elf());
+      prev_read_only_map->set_memory_backed_elf(memory_backed_elf());
+      prev_read_only_map->set_elf_start_offset(elf_start_offset());
+      prev_read_only_map->set_elf_offset(prev_read_only_map->offset() - elf_start_offset());
+    } else if (prev_read_only_map->elf_start_offset() == elf_start_offset()) {
       // Discard this elf, and use the elf from the previous map instead.
-      set_elf(prev_real_map->elf());
+      set_elf(prev_read_only_map->elf());
     }
   }
 
   // Cache the elf only after all of the above checks since we might
   // discard the original elf we created.
-  if (Elf::CachingEnabled()) {
-    Elf::CacheAdd(this);
+  if (use_global_elf_cache_) {
+    Elf::ScopedCacheLock elf_cache_lock;
+    if (Elf::CachingEnabled()) Elf::CacheAdd(this);
   }
   return elf().get();
 }

@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 namespace unwindstack {
 
 struct arm_user_regs {

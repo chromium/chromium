@@ -37,14 +37,26 @@ class SharedString {
   const char* c_str() const { return is_null() ? "" : data_->c_str(); }
 
   operator const std::string&() const {
-    [[clang::no_destroy]] static const std::string empty;
-    return data_ ? *data_.get() : empty;
+    [[clang::no_destroy]] static const EmptyString empty;
+    return data_ ? *data_.get() : empty.str;
   }
 
   operator std::string_view() const { return static_cast<const std::string&>(*this); }
 
  private:
   std::shared_ptr<const std::string> data_;
+
+  // Wrap the std::string in a struct with a non-constexpr user-declared
+  // constructor, ensuring that the static variable consistently uses dynamic
+  // initialization regardless of whether string() is a constexpr constructor
+  // (i.e. regardless of whether the code is compiled with C++17 or C++20). If
+  // this code were always compiled with C++20, then this struct could be
+  // removed, and the std::string variable could be declared
+  // `[[clang::no_destroy]] static constinit const` See b/330974273.
+  struct EmptyString {
+    EmptyString() {}
+    std::string str;
+  };
 };
 
 template <typename T, typename = std::enable_if_t<std::is_same_v<T, SharedString>>>

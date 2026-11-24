@@ -77,8 +77,17 @@ void Global::FindAndReadVariable(Maps* maps, const char* var_str) {
   //   f1000-f2000 0 ---
   //   f2000-f3000 1000 r-x /system/lib/libc.so
   //   f3000-f4000 2000 rw- /system/lib/libc.so
+  // It is also possible to see page size compat maps after the read-only like so:
+  //   f0000-f1000 0 r-- /system/lib/libc.so
+  //   f1000-f2000 0 --- [page size compat]
+  //   f2000-f3000 1000 r-x /system/lib/libc.so
+  //   f3000-f4000 2000 rw- /system/lib/libc.so
+  // [page size compat] was introduced in the Android kernel in commit:
+  // https://android-review.googlesource.com/c/kernel/common/+/3052547
+  // This will be needed in Android kernels as long as 4kB-page-sized
+  // devices are supported.
   MapInfo* map_zero = nullptr;
-  for (const auto& info : *maps) {
+  maps->ForEachMapInfo([&map_zero, &variable, this](MapInfo* info) -> bool {
     if ((info->flags() & (PROT_READ | PROT_WRITE)) == (PROT_READ | PROT_WRITE) &&
         map_zero != nullptr && Searchable(info->name()) && info->name() == map_zero->name()) {
       Elf* elf = map_zero->GetElf(memory_, arch());
@@ -88,14 +97,15 @@ void Global::FindAndReadVariable(Maps* maps, const char* var_str) {
         if (ptr >= info->offset() && ptr < offset_end) {
           ptr = info->start() + ptr - info->offset();
           if (ReadVariableData(ptr)) {
-            break;
+            return false;
           }
         }
       }
-    } else if (info->offset() == 0 && !info->name().empty()) {
-      map_zero = info.get();
+    } else if (info->offset() == 0 && !info->IsBlank()) {
+      map_zero = info;
     }
-  }
+    return true;
+  });
 }
 
 }  // namespace unwindstack

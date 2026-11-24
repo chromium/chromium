@@ -28,11 +28,10 @@
 
 #pragma once
 
-namespace unwindstack {
-
+#include <stdint.h>
 #include <sys/cdefs.h>
 
-typedef uint64_t __riscv_mc_gp_state[32];  // unsigned long
+namespace unwindstack {
 
 struct __riscv_mc_f_ext_state {
   uint32_t __f[32];
@@ -67,7 +66,7 @@ struct riscv64_sigset_t {
 };
 
 struct riscv64_mcontext_t {
-  __riscv_mc_gp_state __gregs;
+  uint64_t __gregs[32];  // unsigned long
   union __riscv_mc_fp_state __fpregs;
 };
 

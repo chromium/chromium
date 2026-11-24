@@ -61,15 +61,20 @@ void Unwinder::FillInDexFrame() {
   frame->sp = regs_->sp();
 
   frame->map_info = maps_->Find(dex_pc);
-  if (frame->map_info != nullptr) {
-    frame->rel_pc = dex_pc - frame->map_info->start();
-    // Initialize the load bias for this map so subsequent calls
-    // to GetLoadBias() will always return data.
-    frame->map_info->set_load_bias(0);
-  } else {
+  if (frame->map_info == nullptr) {
     frame->rel_pc = dex_pc;
     warnings_ |= WARNING_DEX_PC_NOT_IN_MAP;
     return;
+  }
+
+  auto& map_info = frame->map_info;
+  frame->rel_pc = dex_pc - map_info->start();
+  if (!map_info->LoadBiasInitialized()) {
+    // Only do this once per MapInfo object used for a dex pc frame. If
+    // multiple threads happen to do this at the same time, this action
+    // is idempotent and will set the same values.
+    map_info->set_elf_start_offset(map_info->offset());
+    map_info->set_load_bias(0);
   }
 
   if (!resolve_names_) {

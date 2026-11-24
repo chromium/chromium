@@ -43,7 +43,7 @@ index 24931b8..83ee955 100644
      }
  
 diff --git a/src/libunwindstack/include/unwindstack/MapInfo.h b/src/libunwindstack/include/unwindstack/MapInfo.h
-index 9f025ff..61eb548 100644
+index 2225675..6a60fcd 100644
 --- a/src/libunwindstack/include/unwindstack/MapInfo.h
 +++ b/src/libunwindstack/include/unwindstack/MapInfo.h
 @@ -42,7 +42,7 @@ class MapInfo {
@@ -52,15 +52,15 @@ index 9f025ff..61eb548 100644
          offset_(offset),
 -        flags_(flags),
 +        flags_(static_cast<uint16_t>(flags)),
+         use_global_elf_cache_(use_global_elf_cache),
          name_(name),
          elf_fields_(nullptr),
-         prev_map_(prev_map) {}
-@@ -50,7 +50,7 @@ class MapInfo {
+@@ -52,7 +52,7 @@ class MapInfo {
        : start_(start),
          end_(end),
          offset_(offset),
 -        flags_(flags),
 +        flags_(static_cast<uint16_t>(flags)),
+         use_global_elf_cache_(use_global_elf_cache),
          name_(name),
          elf_fields_(nullptr) {}
- 

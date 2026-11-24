@@ -241,7 +241,7 @@ class GlobalDebugImpl : public GlobalDebugInterface<Symfile>, public Global {
     // Follow the linked list.
     while (uid.address != 0) {
       // Check if we have reached an already cached entry (we restart from head repeatedly).
-      if (entries->count(uid) != 0) {
+      if (entries->contains(uid)) {
         return true;
       }
 

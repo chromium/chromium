@@ -103,7 +103,6 @@ crowbar_workflow(
             "patches/0002-create-local-process-memory.patch",
             "patches/0004-dont-include-bionic-headers.patch",
             "patches/0005-stub-out-logging-libunwindstack.patch",
-            "patches/0006-remove-extra-semicolon.patch",
             "patches/0013-use-third-party-rustc-demangle.patch",
             "patches/0016-remove-static-initializers.patch",
             "patches/0017-add-type-cast.patch",

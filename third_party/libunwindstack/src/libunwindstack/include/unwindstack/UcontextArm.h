@@ -41,12 +41,12 @@ struct arm_stack_t {
 };
 
 struct arm_mcontext_t {
-  uint32_t trap_no;             // unsigned long
-  uint32_t error_code;          // unsigned long
-  uint32_t oldmask;             // unsigned long
-  uint32_t regs[ARM_REG_LAST];  // unsigned long
-  uint32_t cpsr;                // unsigned long
-  uint32_t fault_address;       // unsigned long
+  uint32_t trap_no;                // unsigned long
+  uint32_t error_code;             // unsigned long
+  uint32_t oldmask;                // unsigned long
+  uint32_t regs[ARM_REG_R15 + 1];  // unsigned long
+  uint32_t cpsr;                   // unsigned long
+  uint32_t fault_address;          // unsigned long
 };
 
 struct arm_ucontext_t {

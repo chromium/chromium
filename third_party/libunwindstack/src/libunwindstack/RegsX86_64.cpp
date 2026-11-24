@@ -29,7 +29,8 @@
 
 namespace unwindstack {
 
-RegsX86_64::RegsX86_64() : RegsImpl<uint64_t>(X86_64_REG_LAST, Location(LOCATION_SP_OFFSET, -8)) {}
+RegsX86_64::RegsX86_64()
+    : RegsImpl<uint64_t>(X86_64_REG_LAST, X86_64_ALL_REG_LAST, Location(LOCATION_SP_OFFSET, -8)) {}
 
 ArchEnum RegsX86_64::Arch() {
   return ARCH_X86_64;
@@ -81,10 +82,12 @@ void RegsX86_64::IterateRegisters(std::function<void(const char*, uint64_t)> fn)
   fn("rbp", regs_[X86_64_REG_RBP]);
   fn("rsp", regs_[X86_64_REG_RSP]);
   fn("rip", regs_[X86_64_REG_RIP]);
+  // Extra register
+  fn("err", regs_[X86_64_REG_ERR]);
 }
 
-Regs* RegsX86_64::Read(void* remote_data) {
-  x86_64_user_regs* user = reinterpret_cast<x86_64_user_regs*>(remote_data);
+Regs* RegsX86_64::Read(const void* remote_data) {
+  const x86_64_user_regs* user = reinterpret_cast<const x86_64_user_regs*>(remote_data);
 
   RegsX86_64* regs = new RegsX86_64();
   (*regs)[X86_64_REG_RAX] = user->rax;
@@ -109,26 +112,32 @@ Regs* RegsX86_64::Read(void* remote_data) {
 }
 
 void RegsX86_64::SetFromUcontext(x86_64_ucontext_t* ucontext) {
-  // R8-R15
-  memcpy(&regs_[X86_64_REG_R8], &ucontext->uc_mcontext.r8, 8 * sizeof(uint64_t));
-
-  // Rest of the registers.
-  regs_[X86_64_REG_RDI] = ucontext->uc_mcontext.rdi;
-  regs_[X86_64_REG_RSI] = ucontext->uc_mcontext.rsi;
-  regs_[X86_64_REG_RBP] = ucontext->uc_mcontext.rbp;
-  regs_[X86_64_REG_RBX] = ucontext->uc_mcontext.rbx;
-  regs_[X86_64_REG_RDX] = ucontext->uc_mcontext.rdx;
+  // The ucontext registers and the regular registers are not in the same
+  // order, so copy each value individually.
   regs_[X86_64_REG_RAX] = ucontext->uc_mcontext.rax;
+  regs_[X86_64_REG_RDX] = ucontext->uc_mcontext.rdx;
   regs_[X86_64_REG_RCX] = ucontext->uc_mcontext.rcx;
+  regs_[X86_64_REG_RBX] = ucontext->uc_mcontext.rbx;
+  regs_[X86_64_REG_RSI] = ucontext->uc_mcontext.rsi;
+  regs_[X86_64_REG_RDI] = ucontext->uc_mcontext.rdi;
+  regs_[X86_64_REG_RBP] = ucontext->uc_mcontext.rbp;
   regs_[X86_64_REG_RSP] = ucontext->uc_mcontext.rsp;
+  regs_[X86_64_REG_R8] = ucontext->uc_mcontext.r8;
+  regs_[X86_64_REG_R9] = ucontext->uc_mcontext.r9;
+  regs_[X86_64_REG_R10] = ucontext->uc_mcontext.r10;
+  regs_[X86_64_REG_R11] = ucontext->uc_mcontext.r11;
+  regs_[X86_64_REG_R12] = ucontext->uc_mcontext.r12;
+  regs_[X86_64_REG_R13] = ucontext->uc_mcontext.r13;
+  regs_[X86_64_REG_R14] = ucontext->uc_mcontext.r14;
+  regs_[X86_64_REG_R15] = ucontext->uc_mcontext.r15;
   regs_[X86_64_REG_RIP] = ucontext->uc_mcontext.rip;
+  // Special register
+  regs_[X86_64_REG_ERR] = ucontext->uc_mcontext.err;
 }
 
 Regs* RegsX86_64::CreateFromUcontext(void* ucontext) {
-  x86_64_ucontext_t* x86_64_ucontext = reinterpret_cast<x86_64_ucontext_t*>(ucontext);
-
   RegsX86_64* regs = new RegsX86_64();
-  regs->SetFromUcontext(x86_64_ucontext);
+  regs->SetFromUcontext(reinterpret_cast<x86_64_ucontext_t*>(ucontext));
   return regs;
 }
 

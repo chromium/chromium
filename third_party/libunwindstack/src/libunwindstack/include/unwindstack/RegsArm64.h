@@ -62,13 +62,21 @@ class RegsArm64 : public RegsImpl<uint64_t> {
 
   Regs* Clone() override final;
 
-  static Regs* Read(void* data);
+  uint16_t Convert(uint16_t reg) override;
+
+  static const uint16_t kDwarfVGReg = 46;
+
+  static Regs* Read(const void* data, pid_t pid = -1);
 
   static Regs* CreateFromUcontext(void* ucontext);
 
+  static uint64_t GetVgFromRemote(pid_t pid);
+
+  static uint64_t GetVgFromLocal();
+
  protected:
-  uint64_t pseudo_regs_[Arm64Reg::ARM64_PREG_LAST - Arm64Reg::ARM64_PREG_FIRST];
-  uint64_t pac_mask_;
+  uint64_t pseudo_regs_[Arm64Reg::ARM64_PREG_LAST] = {};
+  uint64_t pac_mask_ = 0;
 };
 
 }  // namespace unwindstack

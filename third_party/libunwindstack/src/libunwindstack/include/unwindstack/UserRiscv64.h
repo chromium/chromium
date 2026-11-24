@@ -28,10 +28,21 @@
 
 #pragma once
 
+#include <stdint.h>
+
 namespace unwindstack {
 
 struct riscv64_user_regs {
   uint64_t regs[32];
+};
+
+struct riscv64_v_regset_state {
+  uint64_t vstart;
+  uint64_t vl;
+  uint64_t vtype;
+  uint64_t vcsr;
+  uint64_t vlenb;
+  // There is more data beyond this, but we don't care about it.
 };
 
 }  // namespace unwindstack

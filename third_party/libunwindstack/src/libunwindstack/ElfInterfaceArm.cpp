@@ -83,10 +83,6 @@ bool ElfInterfaceArm::GetPrel31Addr(uint32_t offset, uint32_t* addr) {
   return true;
 }
 
-#if !defined(PT_ARM_EXIDX)
-#define PT_ARM_EXIDX 0x70000001
-#endif
-
 void ElfInterfaceArm::HandleUnknownType(uint32_t type, uint64_t ph_offset, uint64_t ph_filesz) {
   if (type != PT_ARM_EXIDX) {
     return;

@@ -27,6 +27,7 @@ namespace unwindstack {
 
 namespace Log {
 
+[[noreturn]] void Fatal(const char* format, ...) __printflike(1, 2);
 void Error(const char* format, ...) __printflike(1, 2);
 void Info(const char* format, ...) __printflike(1, 2);
 void Info(uint8_t indent, const char* format, ...) __printflike(2, 3);

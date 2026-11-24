@@ -39,6 +39,10 @@ enum ArmReg : uint16_t {
   ARM_REG_R15,
   ARM_REG_LAST,
 
+  // Extra register
+  ARM_REG_ERROR_CODE = ARM_REG_LAST,  // Only found in ucontext data.
+  ARM_ALL_REG_LAST,
+
   ARM_REG_SP = ARM_REG_R13,
   ARM_REG_LR = ARM_REG_R14,
   ARM_REG_PC = ARM_REG_R15,

@@ -53,7 +53,15 @@ enum Riscv64Reg : uint16_t {
   RISCV64_REG_T4,
   RISCV64_REG_T5,
   RISCV64_REG_T6,
-  RISCV64_REG_MAX,
+  RISCV64_REG_LAST,
+
+  // Extra register
+  RISCV64_REG_VLENB = RISCV64_REG_LAST,  // Has to be read using assembler.
+  RISCV64_ALL_REG_LAST,
+
+  // Set for compatibility
+  RISCV64_REG_REAL_COUNT = RISCV64_REG_LAST,
+  RISCV64_REG_COUNT = RISCV64_REG_LAST + 1,
 };
 
 }  // namespace unwindstack

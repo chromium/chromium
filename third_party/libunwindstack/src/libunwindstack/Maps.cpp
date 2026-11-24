@@ -69,8 +69,8 @@ bool Maps::Parse() {
         strncmp(mapinfo.name.c_str() + 5, "ashmem/", 7) != 0) {
       flags |= unwindstack::MAPS_FLAGS_DEVICE_MAP;
     }
-    maps_.emplace_back(
-        MapInfo::Create(prev_map, mapinfo.start, mapinfo.end, mapinfo.pgoff, flags, mapinfo.name));
+    maps_.emplace_back(MapInfo::Create(prev_map, mapinfo.start, mapinfo.end, mapinfo.pgoff, flags,
+                                       mapinfo.name, use_global_elf_cache_));
     prev_map = maps_.back();
   });
 }
@@ -78,14 +78,14 @@ bool Maps::Parse() {
 void Maps::Add(uint64_t start, uint64_t end, uint64_t offset, uint64_t flags,
                const std::string& name) {
   std::shared_ptr<MapInfo> prev_map(maps_.empty() ? nullptr : maps_.back());
-  auto map_info = MapInfo::Create(prev_map, start, end, offset, flags, name);
+  auto map_info = MapInfo::Create(prev_map, start, end, offset, flags, name, use_global_elf_cache_);
   maps_.emplace_back(std::move(map_info));
 }
 
 void Maps::Add(uint64_t start, uint64_t end, uint64_t offset, uint64_t flags,
                const std::string& name, uint64_t load_bias) {
   std::shared_ptr<MapInfo> prev_map(maps_.empty() ? nullptr : maps_.back());
-  auto map_info = MapInfo::Create(prev_map, start, end, offset, flags, name);
+  auto map_info = MapInfo::Create(prev_map, start, end, offset, flags, name, use_global_elf_cache_);
   map_info->set_load_bias(load_bias);
   maps_.emplace_back(std::move(map_info));
 }
@@ -125,7 +125,7 @@ bool BufferMaps::Parse() {
           flags |= unwindstack::MAPS_FLAGS_DEVICE_MAP;
         }
         maps_.emplace_back(MapInfo::Create(prev_map, mapinfo.start, mapinfo.end, mapinfo.pgoff,
-                                           flags, mapinfo.name));
+                                           flags, mapinfo.name, use_global_elf_cache_));
         prev_map = maps_.back();
       });
 }
@@ -165,6 +165,14 @@ bool LocalUpdatableMaps::Parse() {
   bool parsed = Maps::Parse();
   pthread_rwlock_unlock(&maps_rwlock_);
   return parsed;
+}
+
+void LocalUpdatableMaps::ForEachMapInfo(std::function<bool(MapInfo*)> const& find_var) {
+  pthread_rwlock_rdlock(&maps_rwlock_);
+  for (const auto& info : maps_) {
+    if (!find_var(info.get())) break;
+  }
+  pthread_rwlock_unlock(&maps_rwlock_);
 }
 
 bool LocalUpdatableMaps::Reparse(/*out*/ bool* any_changed) {

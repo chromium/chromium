@@ -29,7 +29,8 @@
 
 namespace unwindstack {
 
-RegsArm::RegsArm() : RegsImpl<uint32_t>(ARM_REG_LAST, Location(LOCATION_REGISTER, ARM_REG_LR)) {}
+RegsArm::RegsArm()
+    : RegsImpl<uint32_t>(ARM_REG_LAST, ARM_ALL_REG_LAST, Location(LOCATION_REGISTER, ARM_REG_LR)) {}
 
 ArchEnum RegsArm::Arch() {
   return ARCH_ARM;
@@ -78,13 +79,15 @@ void RegsArm::IterateRegisters(std::function<void(const char*, uint64_t)> fn) {
   fn("sp", regs_[ARM_REG_SP]);
   fn("lr", regs_[ARM_REG_LR]);
   fn("pc", regs_[ARM_REG_PC]);
+  // Extra register
+  fn("error_code", regs_[ARM_REG_ERROR_CODE]);
 }
 
-Regs* RegsArm::Read(void* remote_data) {
-  arm_user_regs* user = reinterpret_cast<arm_user_regs*>(remote_data);
+Regs* RegsArm::Read(const void* remote_data) {
+  const arm_user_regs* user = reinterpret_cast<const arm_user_regs*>(remote_data);
 
   RegsArm* regs = new RegsArm();
-  memcpy(regs->RawData(), &user->regs[0], ARM_REG_LAST * sizeof(uint32_t));
+  memcpy(regs->RawData(), &user->regs[0], (ARM_REG_R15 + 1) * sizeof(uint32_t));
   return regs;
 }
 
@@ -92,7 +95,9 @@ Regs* RegsArm::CreateFromUcontext(void* ucontext) {
   arm_ucontext_t* arm_ucontext = reinterpret_cast<arm_ucontext_t*>(ucontext);
 
   RegsArm* regs = new RegsArm();
-  memcpy(regs->RawData(), &arm_ucontext->uc_mcontext.regs[0], ARM_REG_LAST * sizeof(uint32_t));
+  memcpy(regs->RawData(), &arm_ucontext->uc_mcontext.regs[0],
+         sizeof(arm_ucontext->uc_mcontext.regs));
+  regs->regs_[ARM_REG_ERROR_CODE] = arm_ucontext->uc_mcontext.error_code;
   return regs;
 }
 
@@ -160,7 +165,7 @@ bool RegsArm::StepIfSignalHandler(uint64_t elf_offset, Elf* elf, Memory* process
     return false;
   }
 
-  if (!process_memory->ReadFully(offset, regs_.data(), sizeof(uint32_t) * ARM_REG_LAST)) {
+  if (!process_memory->ReadFully(offset, regs_.data(), sizeof(uint32_t) * (ARM_REG_R15 + 1))) {
     return false;
   }
   return true;

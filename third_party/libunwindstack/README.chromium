@@ -1,8 +1,7 @@
 Name: libunwindstack
 URL: https://android.googlesource.com/platform/system/unwinding
-Date: 2023-01-29
-Version: N/A
-Revision: 9ebb4981c2b9ba73018702531ded8de9c169958a
+Version: android-17.0.0_r1
+Revision: 31327c70da147fdc069598c4a5fd075aea8d3312
 License: Apache-2.0, BSD-2-Clause
 License File: LICENSE, src/libunwindstack/LICENSE_BSD
 Shipped: yes
@@ -50,9 +49,8 @@ The libbase and ART patches are in libbase/patches/ and art/patches/.
   Memory::CreateLocalProcessMemory().
 - 0004-dont-include-bionic-headers.patch: no <bionic/mte.h> or
   <bionic/pac.h> in NDK builds.
-- 0005-stub-out-logging-libunwindstack.patch: no-op log functions, so
-  no liblog.
-- 0006-remove-extra-semicolon.patch: no extra semicolon in Unwinder.h.
+- 0005-stub-out-logging-libunwindstack.patch: no-op log functions
+  (Fatal() only aborts), so no liblog.
 - 0013-use-third-party-rustc-demangle.patch: use Chromium's
   rustc_demangle() C API.
 - 0016-remove-static-initializers.patch: no static initializers in

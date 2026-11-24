@@ -139,7 +139,7 @@ const typename DwarfEhFrameWithHdr<AddressType>::FdeInfo*
 DwarfEhFrameWithHdr<AddressType>::GetFdeInfoFromIndex(size_t index) {
   auto entry = fde_info_.find(index);
   if (entry != fde_info_.end()) {
-    return &fde_info_[index];
+    return &entry->second;
   }
   FdeInfo* info = &fde_info_[index];
 

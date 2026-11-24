@@ -42,6 +42,10 @@ enum X86_64Reg : uint16_t {
   X86_64_REG_RIP = 16,
   X86_64_REG_LAST,
 
+  // Extra register
+  X86_64_REG_ERR = X86_64_REG_LAST,  // Only found in ucontext data.
+  X86_64_ALL_REG_LAST,
+
   X86_64_REG_SP = X86_64_REG_RSP,
   X86_64_REG_PC = X86_64_REG_RIP,
 };

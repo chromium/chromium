@@ -1,9 +1,9 @@
 upstream {
-  commit: "9ebb4981c2b9ba73018702531ded8de9c169958a"
+  version: "android-17.0.0_r1"
   artifacts {
     git {
       repository: "https://android.googlesource.com/platform/system/unwinding"
-      commit: "9ebb4981c2b9ba73018702531ded8de9c169958a"
+      commit: "31327c70da147fdc069598c4a5fd075aea8d3312"
     }
   }
 }
@@ -19,5 +19,16 @@ stages {
       patterns: "!/libbase/src/"
       patterns: "!/art/src/"
     }
+  }
+}
+latest {
+  generic {
+    format: "android-${n0}.0.0_r${n1}"
+    regex_groups { key: "n0" value: "[0-9]+" }
+    regex_groups { key: "n1" value: "[0-9]+" }
+  }
+  git {
+    repository: "https://android.googlesource.com/platform/system/unwinding"
+    tags {}
   }
 }

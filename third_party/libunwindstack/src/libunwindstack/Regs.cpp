@@ -51,9 +51,9 @@ static constexpr size_t kMaxUserRegsSize = std::max(
 Regs* Regs::RemoteGet(pid_t pid, ErrorCode* error_code) {
   // Make the buffer large enough to contain the largest registers type.
   std::vector<uint64_t> buffer(kMaxUserRegsSize / sizeof(uint64_t));
-  struct iovec io;
-  io.iov_base = buffer.data();
-  io.iov_len = buffer.size() * sizeof(uint64_t);
+  struct iovec io {
+    .iov_base = buffer.data(), .iov_len = buffer.size() * sizeof(uint64_t)
+  };
 
   if (ptrace(PTRACE_GETREGSET, pid, NT_PRSTATUS, reinterpret_cast<void*>(&io)) == -1) {
     Log::Error("PTRACE_GETREGSET failed for pid %d: %s", pid, strerror(errno));
@@ -72,9 +72,9 @@ Regs* Regs::RemoteGet(pid_t pid, ErrorCode* error_code) {
   case sizeof(arm_user_regs):
     return RegsArm::Read(buffer.data());
   case sizeof(arm64_user_regs):
-    return RegsArm64::Read(buffer.data());
+    return RegsArm64::Read(buffer.data(), pid);
   case sizeof(riscv64_user_regs):
-    return RegsRiscv64::Read(buffer.data());
+    return RegsRiscv64::Read(buffer.data(), pid);
   }
 
   Log::Error("No matching size of user regs structure for pid %d: size %zu", pid, io.iov_len);

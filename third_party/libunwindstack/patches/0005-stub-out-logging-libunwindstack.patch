@@ -2,20 +2,23 @@ Make the log functions in LogAndroid.cpp no-ops
 
 This suppresses log statements and avoids the liblog dependency
 (<log/log.h>, <async_safe/log.h>) that upstream libunwindstack has.
+Log::Fatal() (upstream 838034d) keeps only its abort(), as Log.h
+declares it [[noreturn]].
 
 Chromium commits 53d2d81 (#if 0 the bodies) and 8d71305 (empty bodies,
 includes deleted) in libunwindstack.git.
 
 diff --git a/src/libunwindstack/LogAndroid.cpp b/src/libunwindstack/LogAndroid.cpp
-index 6fb613f..b88b8d9 100644
+index e6ed025..b959145 100644
 --- a/src/libunwindstack/LogAndroid.cpp
 +++ b/src/libunwindstack/LogAndroid.cpp
-@@ -16,17 +16,6 @@
+@@ -16,81 +16,25 @@
  
  #include <stdarg.h>
  #include <stdint.h>
 -#include <stdio.h>
--
+ #include <stdlib.h>
+ 
 -#include <string>
 -
 -#define LOG_TAG "unwind"
@@ -25,10 +28,10 @@ index 6fb613f..b88b8d9 100644
 -#include <async_safe/log.h>
 -#endif
 -#include <android-base/stringprintf.h>
- 
+-
  #include <unwindstack/Log.h>
  
-@@ -34,54 +23,13 @@ namespace unwindstack {
+ namespace unwindstack {
  
  namespace Log {
  
@@ -66,6 +69,14 @@ index 6fb613f..b88b8d9 100644
 -  va_end(args);
 -}
 +void Error(const char* format, ...) {}
+ 
+ void Fatal(const char* format, ...) {
+-  va_list args;
+-  va_start(args, format);
+-  LogWithPriority(ANDROID_LOG_FATAL, 0, format, args);
+-  va_end(args);
+   abort();
+ }
  
 -#if defined(__BIONIC__)
 -void AsyncSafe(const char* format, ...) {

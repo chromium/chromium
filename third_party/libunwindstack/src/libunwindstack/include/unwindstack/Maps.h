@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -55,6 +56,12 @@ class Maps {
 
   virtual const std::string GetMapsFile() const { return ""; }
 
+  virtual void ForEachMapInfo(std::function<bool(MapInfo*)> const& find_var) {
+    for (const auto& info : maps_) {
+      if (!find_var(info.get())) break;
+    }
+  }
+
   void Add(uint64_t start, uint64_t end, uint64_t offset, uint64_t flags, const std::string& name);
   void Add(uint64_t start, uint64_t end, uint64_t offset, uint64_t flags, const std::string& name,
            uint64_t load_bias);
@@ -76,8 +83,12 @@ class Maps {
     return maps_[index];
   }
 
+  void set_use_global_elf_cache(bool check) { use_global_elf_cache_ = check; }
+  bool use_global_elf_cache() { return use_global_elf_cache_; }
+
  protected:
   std::vector<std::shared_ptr<MapInfo>> maps_;
+  bool use_global_elf_cache_ = true;
 };
 
 class RemoteMaps : public Maps {
@@ -107,6 +118,8 @@ class LocalUpdatableMaps : public Maps {
   bool Parse() override;
 
   const std::string GetMapsFile() const override;
+
+  virtual void ForEachMapInfo(std::function<bool(MapInfo*)> const& find_var) override;
 
   bool Reparse(/*out*/ bool* any_changed = nullptr);
 

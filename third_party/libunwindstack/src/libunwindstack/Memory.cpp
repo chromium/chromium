@@ -279,6 +279,7 @@ void MemoryFileAtOffset::Clear() {
   if (data_) {
     munmap(&data_[-offset_], size_ + offset_);
     data_ = nullptr;
+    size_ = 0;
   }
 }
 

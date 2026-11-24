@@ -16,6 +16,7 @@
 
 #include <stdarg.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <unwindstack/Log.h>
 
@@ -28,6 +29,10 @@ void Info(const char* format, ...) {}
 void Info(uint8_t indent, const char* format, ...) {}
 
 void Error(const char* format, ...) {}
+
+void Fatal(const char* format, ...) {
+  abort();
+}
 
 void AsyncSafe(const char* format, ...) {}
 

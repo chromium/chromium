@@ -26,15 +26,15 @@
 
 namespace unwindstack {
 
-std::string DemangleNameIfNeeded(const std::string& name) {
-  if (name.length() < 2 || name[0] != '_') {
+static std::string Demangle(const char* name, size_t length) {
+  if (length < 2 || name[0] != '_') {
     return name;
   }
 
   if (name[1] == 'Z') {
     // Try to demangle C++ name.
     char* demangled_str =
-        abi::__cxa_demangle(name.c_str(), nullptr, nullptr, nullptr);
+        abi::__cxa_demangle(name, nullptr, nullptr, nullptr);
     return demangled_str != nullptr ? std::string(demangled_str) : name;
   }
 
@@ -43,12 +43,23 @@ std::string DemangleNameIfNeeded(const std::string& name) {
     // This uses the same buffer size as:
     // https://source.chromium.org/chromium/chromium/src/+/main:third_party/breakpad/breakpad/src/common/language.cc;l=186;drc=f5123d71965578abf905d6388a79a232597bb1eb
     std::array<char, 1 * 1024 * 1024> rustc_demangled;
-    int success = rustc_demangle(name.c_str(), rustc_demangled.data(),
+    int success = rustc_demangle(name, rustc_demangled.data(),
                                  rustc_demangled.size());
     return success == 1 ? std::string(rustc_demangled.data()) : name;
   }
 
   return name;
+}
+
+std::string DemangleNameIfNeeded(const std::string& name) {
+  // This is special, the Android linker has functions of the form __dl_XXX,
+  // where the XX might be a mangled name. Try to demangle that part and
+  // add the __dl_ back.
+  if (name.starts_with("__dl_")) {
+    return "__dl_" + Demangle(&name[5], name.length() - 5);
+  }
+
+  return Demangle(name.c_str(), name.length());
 }
 
 }  // namespace unwindstack

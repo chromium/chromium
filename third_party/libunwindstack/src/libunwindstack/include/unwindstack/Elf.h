@@ -29,18 +29,6 @@
 #include <unwindstack/Memory.h>
 #include <unwindstack/SharedString.h>
 
-#if !defined(EM_AARCH64)
-#define EM_AARCH64 183
-#endif
-
-#if !defined(EM_RISCV)
-#define EM_RISCV 243
-#endif
-
-#if !defined(SHF_COMPRESSED)
-#define SHF_COMPRESSED 0x800
-#endif
-
 namespace unwindstack {
 
 // Forward declaration.
@@ -117,12 +105,20 @@ class Elf {
 
   static bool CachingEnabled() { return cache_enabled_; }
 
-  static void CacheLock();
-  static void CacheUnlock();
   static void CacheAdd(MapInfo* info);
   static bool CacheGet(MapInfo* info);
 
   static std::string GetPrintableBuildID(std::string& build_id);
+
+  class ScopedCacheLock {
+   public:
+    ScopedCacheLock() {
+      if (cache_lock_) cache_lock_->lock();
+    }
+    ~ScopedCacheLock() {
+      if (cache_lock_) cache_lock_->unlock();
+    }
+  };
 
  protected:
   bool valid_ = false;

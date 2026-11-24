@@ -450,7 +450,7 @@ bool DwarfSectionImpl<AddressType>::EvalRegister(const DwarfLocation* loc, uint3
       *reg_ptr = eval_info->cfa + loc->values[0];
       break;
     case DWARF_LOCATION_REGISTER: {
-      uint32_t cur_reg = loc->values[0];
+      uint16_t cur_reg = eval_info->regs_info.regs->Convert(loc->values[0]);
       if (cur_reg >= eval_info->regs_info.Total()) {
         last_error_.code = DWARF_ERROR_ILLEGAL_VALUE;
         return false;
@@ -499,7 +499,8 @@ bool DwarfSectionImpl<AddressType>::Eval(const DwarfCie* cie, Memory* regular_me
                                          const DwarfLocations& loc_regs, Regs* regs,
                                          bool* finished) {
   RegsImpl<AddressType>* cur_regs = reinterpret_cast<RegsImpl<AddressType>*>(regs);
-  if (cie->return_address_register >= cur_regs->total_regs()) {
+  uint16_t return_address_register = cur_regs->Convert(cie->return_address_register);
+  if (return_address_register >= cur_regs->total_all_regs()) {
     last_error_.code = DWARF_ERROR_ILLEGAL_VALUE;
     return false;
   }
@@ -525,14 +526,16 @@ bool DwarfSectionImpl<AddressType>::Eval(const DwarfCie* cie, Memory* regular_me
   const DwarfLocation* loc = &cfa_entry->second;
   // Only a few location types are valid for the cfa.
   switch (loc->type) {
-    case DWARF_LOCATION_REGISTER:
-      if (loc->values[0] >= cur_regs->total_regs()) {
+    case DWARF_LOCATION_REGISTER: {
+      uint16_t cur_reg = cur_regs->Convert(loc->values[0]);
+      if (cur_reg >= cur_regs->total_all_regs()) {
         last_error_.code = DWARF_ERROR_ILLEGAL_VALUE;
         return false;
       }
-      eval_info.cfa = (*cur_regs)[loc->values[0]];
+      eval_info.cfa = (*cur_regs)[cur_reg];
       eval_info.cfa += loc->values[1];
       break;
+    }
     case DWARF_LOCATION_VAL_EXPRESSION: {
       AddressType value;
       if (!EvalExpression(*loc, regular_memory, &value, &eval_info.regs_info, nullptr)) {
@@ -552,21 +555,23 @@ bool DwarfSectionImpl<AddressType>::Eval(const DwarfCie* cie, Memory* regular_me
     // Already handled the CFA register.
     if (reg == CFA_REG) continue;
 
-    AddressType* reg_ptr;
-    if (reg >= cur_regs->total_regs()) {
-      if (entry.second.type != DWARF_LOCATION_PSEUDO_REGISTER) {
-        // Skip this unknown register.
-        continue;
-      }
+    if (entry.second.type == DWARF_LOCATION_PSEUDO_REGISTER) {
       if (!eval_info.regs_info.regs->SetPseudoRegister(reg, entry.second.values[0])) {
         last_error_.code = DWARF_ERROR_ILLEGAL_VALUE;
         return false;
       }
-    } else {
-      reg_ptr = eval_info.regs_info.Save(reg);
-      if (!EvalRegister(&entry.second, reg, reg_ptr, &eval_info)) {
-        return false;
-      }
+      continue;
+    }
+
+    AddressType* reg_ptr;
+    reg = cur_regs->Convert(reg);
+    if (reg >= cur_regs->total_all_regs()) {
+      // Skip this unknown register.
+      continue;
+    }
+    reg_ptr = eval_info.regs_info.Save(reg);
+    if (!EvalRegister(&entry.second, reg, reg_ptr, &eval_info)) {
+      return false;
     }
   }
 
@@ -574,7 +579,7 @@ bool DwarfSectionImpl<AddressType>::Eval(const DwarfCie* cie, Memory* regular_me
   if (eval_info.return_address_undefined) {
     cur_regs->set_pc(0);
   } else {
-    cur_regs->set_pc((*cur_regs)[cie->return_address_register]);
+    cur_regs->set_pc((*cur_regs)[return_address_register]);
   }
 
   // If the pc was set to zero, consider this the final frame. Exception: if
@@ -600,9 +605,12 @@ bool DwarfSectionImpl<AddressType>::GetCfaLocationInfo(uint64_t pc, const DwarfF
       last_error_ = cfa.last_error();
       return false;
     }
-    cie_loc_regs_[fde->cie_offset] = *loc_regs;
+    DwarfLocations* cie_loc_regs = &cie_loc_regs_[fde->cie_offset];
+    *cie_loc_regs = *loc_regs;
+    cfa.set_cie_loc_regs(cie_loc_regs);
+  } else {
+    cfa.set_cie_loc_regs(&reg_entry->second);
   }
-  cfa.set_cie_loc_regs(&cie_loc_regs_[fde->cie_offset]);
   if (!cfa.GetLocationInfo(pc, fde->cfa_instructions_offset, fde->cfa_instructions_end, loc_regs)) {
     last_error_ = cfa.last_error();
     return false;
@@ -706,8 +714,7 @@ bool DwarfSectionImpl<AddressType>::GetNextCieOrFde(uint64_t& next_entries_offse
   }
 
   if (entry_is_cie) {
-    auto entry = cie_entries_.find(start_offset);
-    if (entry == cie_entries_.end()) {
+    if (!cie_entries_.contains(start_offset)) {
       DwarfCie* cie = &cie_entries_[start_offset];
       cie->lsda_encoding = DW_EH_PE_omit;
       cie->cfa_instructions_end = next_entries_offset;

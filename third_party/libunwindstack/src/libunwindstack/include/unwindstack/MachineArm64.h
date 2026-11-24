@@ -57,14 +57,18 @@ enum Arm64Reg : uint16_t {
   ARM64_REG_PSTATE,
   ARM64_REG_LAST,
 
+  // Extra registers
+  ARM64_REG_ESR = ARM64_REG_LAST,  // Only found in ucontext data.
+  ARM64_REG_VG,                    // Read from ucontext data or prctl calls.
+  ARM64_ALL_REG_LAST,
+
   ARM64_REG_SP = ARM64_REG_R31,
   ARM64_REG_LR = ARM64_REG_R30,
 
   // Pseudo registers. These are not machine registers.
 
   // AARCH64 Return address signed state pseudo-register
-  ARM64_PREG_RA_SIGN_STATE = 34,
-  ARM64_PREG_FIRST = ARM64_PREG_RA_SIGN_STATE,
+  ARM64_PREG_RA_SIGN_STATE = 0,
   ARM64_PREG_LAST,
 };
 
