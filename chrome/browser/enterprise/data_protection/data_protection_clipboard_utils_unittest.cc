@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -1040,6 +1041,112 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       EmptyFormatsReplacement_MultiFormat) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  auto source = CopyEndpoint(GURL("https://source.com"));
+
+  ui::ClipboardMetadata custom_metadata = CopyMetadata();
+  custom_metadata.format_type = ui::ClipboardFormatType::WebCustomFormatMap();
+  ui::ClipboardMetadata text_metadata = CopyMetadata();
+  ui::ClipboardMetadata html_metadata = CopyMetadata();
+  html_metadata.format_type = ui::ClipboardFormatType::HtmlType();
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      custom_future;
+  IsClipboardCopyAllowedByPolicy(source, custom_metadata,
+                                 content::ClipboardPasteData(),
+                                 custom_future.GetCallback());
+  auto custom_replacement = custom_future.Get<std::optional<std::u16string>>();
+  ASSERT_TRUE(custom_replacement);
+  EXPECT_EQ(*custom_replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      text_future;
+  IsClipboardCopyAllowedByPolicy(source, text_metadata,
+                                 content::ClipboardPasteData(),
+                                 text_future.GetCallback());
+  auto text_replacement = text_future.Get<std::optional<std::u16string>>();
+  ASSERT_TRUE(text_replacement);
+  EXPECT_EQ(*text_replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+
+  content::ClipboardPasteData html_data;
+  html_data.html = u"<p>foo</p>";
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      html_future;
+  IsClipboardCopyAllowedByPolicy(source, html_metadata, std::move(html_data),
+                                 html_future.GetCallback());
+  auto html_replacement = html_future.Get<std::optional<std::u16string>>();
+  ASSERT_TRUE(html_replacement);
+  EXPECT_EQ(*html_replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  EXPECT_EQ(data_controls::LastReplacedClipboardDataObserver::GetInstance()
+                ->pending_restriction_level(),
+            data_controls::CopyRestrictionLevel::kNone);
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().seqno,
+            ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_EQ(
+      data_controls::GetLastReplacedClipboardData().clipboard_paste_data.html,
+      u"<p>foo</p>");
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      second_custom_future_1;
+  IsClipboardCopyAllowedByPolicy(source, custom_metadata,
+                                 content::ClipboardPasteData(),
+                                 second_custom_future_1.GetCallback());
+  ASSERT_TRUE(second_custom_future_1.Get<std::optional<std::u16string>>());
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      second_custom_future_2;
+  IsClipboardCopyAllowedByPolicy(source, custom_metadata,
+                                 content::ClipboardPasteData(),
+                                 second_custom_future_2.GetCallback());
+  ASSERT_TRUE(second_custom_future_2.Get<std::optional<std::u16string>>());
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  EXPECT_TRUE(data_controls::GetLastReplacedClipboardData()
+                  .clipboard_paste_data.empty());
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+  EXPECT_EQ(data_controls::LastReplacedClipboardDataObserver::GetInstance()
+                ->pending_restriction_level(),
+            data_controls::CopyRestrictionLevel::kNone);
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
        StringReplacement_MultiType) {
   data_controls::SetDataControls(profile_->GetPrefs(), {
                                                            R"({
@@ -1433,6 +1540,39 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
 }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+namespace {
+
+// A clipboard that holds back a text write, and so its change notification,
+// until `FlushPendingWrite()`. Stands in for the Windows and Mac clipboards,
+// which notify `ui::ClipboardMonitor` asynchronously once it has an observer.
+class DeferredNotificationClipboard : public ui::TestClipboard {
+ public:
+  bool has_pending_write() const { return pending_text_.has_value(); }
+
+  void FlushPendingWrite() {
+    ASSERT_TRUE(has_pending_write());
+    ui::TestClipboard::WriteText(*std::exchange(pending_text_, std::nullopt));
+  }
+
+  // ui::TestClipboard:
+  void WriteText(std::string_view text) override {
+    pending_text_ = std::string(text);
+  }
+
+ private:
+  std::optional<std::string> pending_text_;
+};
+
+DeferredNotificationClipboard& UseDeferredNotificationClipboard() {
+  ui::Clipboard::DestroyClipboardForCurrentThread();
+  auto clipboard = std::make_unique<DeferredNotificationClipboard>();
+  DeferredNotificationClipboard& clipboard_ref = *clipboard;
+  ui::Clipboard::SetClipboardForCurrentThread(std::move(clipboard));
+  return clipboard_ref;
+}
+
+}  // namespace
+
 class DataProtectionIsClipboardCopyAllowedByContentAnalysisTest
     : public DataProtectionClipboardTest {
  public:
@@ -1961,6 +2101,171 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
 
   ASSERT_EQ(frame_url_chain.size(), 1);
   EXPECT_EQ(frame_url_chain[0], "https://initiating.com/");
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyContentAnalysis_EmptyFormatBeforeClipboardChange) {
+  DeferredNotificationClipboard& clipboard = UseDeferredNotificationClipboard();
+  base::ScopedClosureRunner restore_clipboard(
+      base::BindOnce([] { ui::TestClipboard::CreateForCurrentThread(); }));
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::KEEP_IN_MANAGED_CHROME);
+          }),
+          "dm_token"));
+  base::ScopedClosureRunner reset_factory(base::BindOnce(
+      &enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting));
+
+  auto source = CopyEndpoint(GURL("https://source.com"));
+  ui::ClipboardMetadata custom_metadata = CopyMetadata();
+  custom_metadata.format_type = ui::ClipboardFormatType::WebCustomFormatMap();
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      custom_future;
+  IsClipboardCopyAllowedByPolicy(source, custom_metadata,
+                                 content::ClipboardPasteData(),
+                                 custom_future.GetCallback());
+  EXPECT_EQ(custom_future.Get<0>(),
+            ui::ClipboardFormatType::WebCustomFormatMap());
+  EXPECT_TRUE(custom_future.Get<1>().empty());
+  EXPECT_FALSE(custom_future.Get<2>().has_value());
+  EXPECT_TRUE(clipboard.has_pending_write());
+  EXPECT_EQ(data_controls::LastReplacedClipboardDataObserver::GetInstance()
+                ->pending_restriction_level(),
+            data_controls::CopyRestrictionLevel::kOngoingScan);
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      text_future;
+  IsClipboardCopyAllowedByPolicy(
+      source, CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      text_future.GetCallback());
+  EXPECT_EQ(text_future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
+  EXPECT_TRUE(text_future.Get<1>().text.empty());
+  std::optional<std::u16string> replacement = text_future.Get<2>();
+  ASSERT_TRUE(replacement.has_value());
+  EXPECT_EQ(
+      *replacement,
+      l10n_util::GetStringUTF16(
+          IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE));
+
+  ASSERT_NO_FATAL_FAILURE(clipboard.FlushPendingWrite());
+  EXPECT_EQ(
+      data_controls::GetLastReplacedClipboardData().clipboard_paste_data.text,
+      std::u16string(100, 'a'));
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().seqno,
+            ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_EQ(data_controls::LastReplacedClipboardDataObserver::GetInstance()
+                ->pending_restriction_level(),
+            data_controls::CopyRestrictionLevel::kNone);
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyContentAnalysisWithDataControlsReplacement_EmptyFormat) {
+  DeferredNotificationClipboard& clipboard = UseDeferredNotificationClipboard();
+  base::ScopedClosureRunner restore_clipboard(
+      base::BindOnce([] { ui::TestClipboard::CreateForCurrentThread(); }));
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::KEEP_IN_MANAGED_CHROME);
+          }),
+          "dm_token"));
+  base::ScopedClosureRunner reset_factory(base::BindOnce(
+      &enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting));
+
+  ui::ClipboardMetadata custom_metadata = CopyMetadata();
+  custom_metadata.format_type = ui::ClipboardFormatType::WebCustomFormatMap();
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(CopyEndpoint(GURL("https://source.com")),
+                                 custom_metadata, content::ClipboardPasteData(),
+                                 future.GetCallback());
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  ASSERT_TRUE(replacement.has_value());
+  EXPECT_EQ(*replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+  EXPECT_EQ(data_controls::LastReplacedClipboardDataObserver::GetInstance()
+                ->pending_restriction_level(),
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+
+  ASSERT_NO_FATAL_FAILURE(clipboard.FlushPendingWrite());
+  EXPECT_TRUE(data_controls::GetLastReplacedClipboardData()
+                  .clipboard_paste_data.empty());
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().seqno,
+            ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_EQ(data_controls::LastReplacedClipboardDataObserver::GetInstance()
+                ->pending_restriction_level(),
+            data_controls::CopyRestrictionLevel::kNone);
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
