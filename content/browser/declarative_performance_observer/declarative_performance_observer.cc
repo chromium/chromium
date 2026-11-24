@@ -138,24 +138,17 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
     AddEntryToBuffer(BuildVisibilityStateEntry(started_in_foreground_));
   }
 
-  // The storage partition associated with the RenderFrameHost is guaranteed to
-  // be a `StoragePartitionImpl` in production and in all standard test
-  // harnesses. We can safely downcast it here to retrieve the DPO store.
-  // Note that `storage_partition_for_testing_` is only injected
-  // post-construction, so the constructor always retrieves the store from the
-  // default partition.
-  auto* partition =
-      static_cast<StoragePartitionImpl*>(rfh->GetStoragePartition());
-  DeclarativePerformanceObserverStore* store =
-      partition ? partition->GetDeclarativePerformanceObserverStore() : nullptr;
+  if (DeclarativePerformanceObserverStore* store = GetEarlyFailureStore()) {
+    store->SetEarlyFailurePolicy(url::Origin::Create(committed_url_),
+                                 policy->capture_early_failures);
+  }
 
-  if (store) {
-    url::Origin origin = url::Origin::Create(committed_url_);
-    store->SetEarlyFailurePolicy(origin, policy->capture_early_failures);
-    store->TakeEarlyFailureReports(
-        origin, base::BindOnce(
-                    &DeclarativePerformanceObserver::OnEarlyFailureReportsTaken,
-                    weak_factory_.GetWeakPtr()));
+  // Taking the reports deletes them from the store, so a prerendered document
+  // must not take them: if the prerender is discarded they would be lost
+  // without ever being sent. Leave them in the store and take them at
+  // activation instead.
+  if (!navigation_handle->IsInPrerenderedMainFrame()) {
+    TakeEarlyFailureReports();
   }
 }
 
@@ -206,6 +199,9 @@ void DeclarativePerformanceObserver::OnPrerenderActivation(
            base::NotFatalUntil::M160);
   CHECK(navigation_handle->IsPrerenderedPageActivation(),
         base::NotFatalUntil::M160);
+
+  // The constructor deferred this while the page was only prerendered.
+  TakeEarlyFailureReports();
 
   for (auto& entry : buffered_entries_) {
     if (entry.is_dict()) {
@@ -606,6 +602,31 @@ void DeclarativePerformanceObserver::FlushAbortedPostHeaderNavigation(
       isolation_info.network_anonymization_key(),
       base::DictValue().Set("entries", std::move(entries)));
   network_context->SendReportsAndRemoveSource(reporting_source);
+}
+
+DeclarativePerformanceObserverStore*
+DeclarativePerformanceObserver::GetEarlyFailureStore() const {
+  // The storage partition associated with the RenderFrameHost is guaranteed to
+  // be a `StoragePartitionImpl` in production and in all standard test
+  // harnesses. `storage_partition_for_testing_` is deliberately not consulted
+  // here: it can hold a `TestStoragePartition`, which is not a
+  // `StoragePartitionImpl`.
+  auto* partition = static_cast<StoragePartitionImpl*>(
+      render_frame_host().GetStoragePartition());
+  return partition ? partition->GetDeclarativePerformanceObserverStore()
+                   : nullptr;
+}
+
+void DeclarativePerformanceObserver::TakeEarlyFailureReports() {
+  DeclarativePerformanceObserverStore* store = GetEarlyFailureStore();
+  if (!store) {
+    return;
+  }
+  store->TakeEarlyFailureReports(
+      url::Origin::Create(committed_url_),
+      base::BindOnce(
+          &DeclarativePerformanceObserver::OnEarlyFailureReportsTaken,
+          weak_factory_.GetWeakPtr()));
 }
 
 void DeclarativePerformanceObserver::OnEarlyFailureReportsTaken(

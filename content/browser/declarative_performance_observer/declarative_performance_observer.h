@@ -27,6 +27,7 @@
 
 namespace content {
 
+class DeclarativePerformanceObserverStore;
 class NavigationHandle;
 class StoragePartition;
 
@@ -109,6 +110,15 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   void FlushMetrics();
   void AppendSessionEndEntry();
   void EndSessionAndFlush();
+
+  // The persistent store backing this document's partition, or null if the
+  // partition has none.
+  DeclarativePerformanceObserverStore* GetEarlyFailureStore() const;
+
+  // Hands the stored early failure reports for this document's origin over to
+  // `OnEarlyFailureReportsTaken`, deleting them from the store.
+  void TakeEarlyFailureReports();
+
   void OnEarlyFailureReportsTaken(base::ListValue reports);
 
   std::string reporting_endpoint_;

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -150,6 +151,16 @@ class TestNetworkContext : public network::TestNetworkContext {
   size_t dropped_reports_due_to_expired_source_ = 0;
   base::OnceClosure quit_closure_;
 };
+
+// The store runs its work on a background DB sequence. Round-trips one
+// operation through it so that any previously posted read or write, and its
+// reply, have completed.
+void FlushStore(DeclarativePerformanceObserverStore* store,
+                const url::Origin& origin) {
+  base::RunLoop barrier;
+  store->SetEarlyFailurePolicy(origin, true, barrier.QuitClosure());
+  barrier.Run();
+}
 
 class DeclarativePerformanceObserverTest : public RenderViewHostTestHarness {
  public:
@@ -899,6 +910,49 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsPrerenderActivation) {
 
 class DeclarativePerformanceObserverPrerenderTest
     : public DeclarativePerformanceObserverTest {
+ protected:
+  // Stores one early failure report for `url`'s origin, then starts and commits
+  // a prerender for `url`. Returns the prerendered main frame.
+  RenderFrameHost* SeedEarlyFailureAndCommitPrerender(const GURL& url) {
+    const url::Origin origin = url::Origin::Create(url);
+    auto* partition =
+        static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+    auto* store = partition->GetDeclarativePerformanceObserverStore();
+    store->SetEarlyFailurePolicy(origin, true);
+
+    NavigationHandleTiming failure_timing;
+    testing::NiceMock<MockNavigationHandle> failed_handle(url, main_rfh());
+    ON_CALL(failed_handle, GetNavigationHandleTiming())
+        .WillByDefault(testing::ReturnRef(failure_timing));
+    DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
+        &failed_handle, partition, net::ERR_CONNECTION_REFUSED);
+    FlushStore(store, origin);
+
+    return WebContentsTester::For(web_contents())
+        ->AddPrerenderAndCommitNavigation(url);
+  }
+
+  // Attaches an observer opted in to early failure capture to `rfh`, as the
+  // commit of `url` in a prerendered main frame would.
+  void CreatePrerenderObserver(RenderFrameHost* rfh, const GURL& url) {
+    auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+    policy->reporting_endpoint = "telemetry";
+    policy->capture_early_failures = true;
+    policy->entry_types.push_back(
+        network::mojom::PerformanceEntryType::kNavigation);
+
+    NavigationHandleTiming timing;
+    testing::NiceMock<MockNavigationHandle> navigation_handle(url, rfh);
+    navigation_handle.set_has_committed(true);
+    ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+        .WillByDefault(testing::Return(policy.get()));
+    ON_CALL(navigation_handle, GetNavigationHandleTiming())
+        .WillByDefault(testing::ReturnRef(timing));
+    ON_CALL(navigation_handle, IsInPrerenderedMainFrame())
+        .WillByDefault(testing::Return(true));
+    CreateObserverFor(rfh, &navigation_handle);
+  }
+
  private:
   test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
@@ -946,6 +1000,70 @@ TEST_F(DeclarativePerformanceObserverPrerenderTest,
   ASSERT_TRUE(deleted_observer.WaitUntilDeleted());
 
   EXPECT_TRUE(network_context_.reports().empty());
+}
+
+TEST_F(DeclarativePerformanceObserverPrerenderTest,
+       DoesNotDrainEarlyFailureStoreWhilePrerendering) {
+  const GURL kInitialURL("https://example.com/index.html");
+  const GURL kPrerenderURL("https://example.com/prerender.html");
+
+  test::ScopedPrerenderWebContentsDelegate delegate(*web_contents());
+  WebContentsTester::For(web_contents())->NavigateAndCommit(kInitialURL);
+
+  RenderFrameHost* prerender_rfh =
+      SeedEarlyFailureAndCommitPrerender(kPrerenderURL);
+  ASSERT_TRUE(prerender_rfh);
+  ASSERT_EQ(prerender_rfh->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kPrerendering);
+
+  CreatePrerenderObserver(prerender_rfh, kPrerenderURL);
+
+  auto* partition =
+      static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+  FlushStore(partition->GetDeclarativePerformanceObserverStore(),
+             url::Origin::Create(kPrerenderURL));
+
+  EXPECT_TRUE(network_context_.reports().empty());
+}
+
+TEST_F(DeclarativePerformanceObserverPrerenderTest,
+       SendsDeferredEarlyFailureReportsOnPrerenderActivation) {
+  const GURL kInitialURL("https://example.com/index.html");
+  const GURL kPrerenderURL("https://example.com/prerender.html");
+  const url::Origin kPrerenderOrigin = url::Origin::Create(kPrerenderURL);
+
+  test::ScopedPrerenderWebContentsDelegate delegate(*web_contents());
+  WebContentsTester::For(web_contents())->NavigateAndCommit(kInitialURL);
+
+  RenderFrameHost* prerender_rfh =
+      SeedEarlyFailureAndCommitPrerender(kPrerenderURL);
+  ASSERT_TRUE(prerender_rfh);
+  CreatePrerenderObserver(prerender_rfh, kPrerenderURL);
+
+  auto* partition =
+      static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+  auto* store = partition->GetDeclarativePerformanceObserverStore();
+
+  // Precondition: the stored report is still deferred at this point. Without
+  // it the assertion below would hold even if nothing happened on activation.
+  FlushStore(store, kPrerenderOrigin);
+  ASSERT_TRUE(network_context_.reports().empty());
+
+  WebContentsTester::For(web_contents())
+      ->ActivatePrerenderedPage(kPrerenderURL);
+
+  FlushStore(store, kPrerenderOrigin);
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const base::ListValue* entries =
+      network_context_.reports()[0].body.FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(entries->size(), 1u);
+  const base::DictValue* entry = (*entries)[0].GetIfDict();
+  ASSERT_TRUE(entry);
+  const base::DictValue* error = entry->FindDict("error");
+  ASSERT_TRUE(error);
+  EXPECT_EQ(*(error->FindString("netError")), "ERR_CONNECTION_REFUSED");
 }
 
 TEST_F(DeclarativePerformanceObserverTest,
