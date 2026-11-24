@@ -35,7 +35,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -78,7 +77,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -157,10 +156,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_channel_override.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 using chrome_browser_interstitials::SecurityInterstitialIDNTest;
 using content::BrowserThread;
@@ -3958,28 +3953,9 @@ class SafeBrowsingBlockingPageEnterpriseIsolatedModeTest
  public:
   SafeBrowsingBlockingPageEnterpriseIsolatedModeTest() = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{enterprise_isolated_mode::
-                                  kEnableEnterpriseIsolatedMode},
-        /*disabled_features=*/{kDelayedWarnings});
-    SafeBrowsingBlockingPagePlatformBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SafeBrowsingBlockingPageEnterpriseIsolatedModeTestBase::SetUpCommandLine(
-        command_line);
-    command_line->AppendSwitch(
-        enterprise_isolated_mode::switches::
-            kForceEnterpriseIsolatedModeReplacesIncognito);
-  }
-
  private:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-  chrome::ScopedChannelOverride channel_override_{
-      chrome::ScopedChannelOverride::Channel::kDev};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList scoped_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{/*replaces_incognito=*/true};
 };
 
 class SafeBrowsingBlockingPageEnterpriseIsolatedModeDisabledTest
@@ -3987,17 +3963,9 @@ class SafeBrowsingBlockingPageEnterpriseIsolatedModeDisabledTest
  public:
   SafeBrowsingBlockingPageEnterpriseIsolatedModeDisabledTest() = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            enterprise_isolated_mode::kEnableEnterpriseIsolatedMode,
-            kDelayedWarnings});
-    SafeBrowsingBlockingPagePlatformBrowserTest::SetUp();
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{/*replaces_incognito=*/false};
 };
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnterpriseIsolatedModeTest,

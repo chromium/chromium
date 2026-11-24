@@ -920,6 +920,7 @@ source_set("unit_tests") {
     sources += [
       "cloud_content_scanning/cloud_binary_upload_service_factory_unittest.cc",
     ]
+    deps += [ "//components/enterprise/isolated_mode:test_support" ]
   }
 
   if (safe_browsing_mode == 1) {
@@ -999,7 +1000,6 @@ source_set("unit_tests") {
       "//components/enterprise/common/proto:connectors_proto",
       "//components/enterprise/connectors/core",
       "//components/enterprise/isolated_mode",
-      "//components/enterprise/isolated_mode:test_support",
       "//components/enterprise/obfuscation/core:enterprise_obfuscation",
       "//components/history/content/browser",
       "//components/history/core/browser",
@@ -1443,7 +1443,6 @@ source_set("browser_tests") {
       ":verdict_cache_manager_factory",
       "//base",
       "//base/test:test_support",
-      "//build:branding_buildflags",
       "//chrome/browser/interstitials:idn_test_support",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/optimization_guide:test_support",
@@ -1469,6 +1468,7 @@ source_set("browser_tests") {
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_scoped_utils",
+      "//components/enterprise/isolated_mode:test_support",
       "//components/error_page/content/browser",
       "//components/no_state_prefetch/browser",
       "//components/omnibox/browser",

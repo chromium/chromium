@@ -4,13 +4,10 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,15 +31,10 @@ class CloudBinaryUploadServiceFactoryTest : public testing::Test {
 
 TEST_F(CloudBinaryUploadServiceFactoryTest,
        RedirectedToOriginalInIsolatedMode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
   TestingProfile* original_profile =
       profile_manager_->CreateTestingProfile("original_profile");
-  original_profile->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
   TestingProfile* profile =
       TestingProfile::Builder().BuildIncognito(original_profile);
   ASSERT_TRUE(profile->IsEnterpriseIsolatedModeProfile());
