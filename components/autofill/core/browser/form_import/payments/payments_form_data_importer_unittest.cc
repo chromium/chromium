@@ -3116,7 +3116,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 // Tests that split credit card number extraction extracts the last value if any
 // of the field is invalid or missing.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
-       ExtractsLastFieldIfHasInvalidOrMIssingFields) {
+       ExtractsLastFieldIfHasInvalidOrMissingFields) {
   PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
   PushField(FieldType::CREDIT_CARD_NUMBER, u"", Mode::kUserEdited, 0);
   PushField(FieldType::CREDIT_CARD_NUMBER, u"3333", Mode::kUserEdited, 4);

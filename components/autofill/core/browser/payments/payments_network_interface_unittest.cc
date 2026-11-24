@@ -201,9 +201,9 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
   void OnDidUploadCard(
       PaymentsRpcResult result,
-      const UploadCardResponseDetails& upload_card_respone_details) {
+      const UploadCardResponseDetails& upload_card_response_details) {
     result_ = result;
-    upload_card_response_details_ = upload_card_respone_details;
+    upload_card_response_details_ = upload_card_response_details;
   }
 
   void OnDidSelectChallengeOption(PaymentsRpcResult result,

@@ -471,7 +471,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
   // `source_rfh` represents the render frame the form comes from.
   // `target_rfh` is the frame the form is routed to by AutofillDriverRouter,
   // i.e., it's either `source_rfh` itself (or `nullptr` as a shorthand) or an
-  // ancester of `source_rfh`.
+  // ancestor of `source_rfh`.
   FormData SeeForm(content::RenderFrameHost* source_rfh,
                    FormData form,
                    content::RenderFrameHost* target_rfh = nullptr) {

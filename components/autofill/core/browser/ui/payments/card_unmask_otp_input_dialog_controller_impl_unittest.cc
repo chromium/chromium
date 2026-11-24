@@ -120,7 +120,7 @@ TEST_P(CardUnmaskOtpInputDialogControllerImplTest,
 }
 
 TEST_P(CardUnmaskOtpInputDialogControllerImplTest,
-       DialogCancelledByUserBeforeConfirmation_OtpMistmatch) {
+       DialogCancelledByUserBeforeConfirmation_OtpMismatch) {
   base::HistogramTester histogram_tester;
 
   ShowDialog();

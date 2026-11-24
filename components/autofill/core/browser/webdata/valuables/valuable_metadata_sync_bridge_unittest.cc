@@ -669,7 +669,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   const EntityInstance driver_license =
       MaskEntityInstance(test::GetDriversLicenseEntityInstance(
           {.record_type = EntityInstance::RecordType::kServerWallet}));
-  const EntityInstance redress_numer =
+  const EntityInstance redress_number =
       MaskEntityInstance(test::GetRedressNumberEntityInstance(
           {.record_type = EntityInstance::RecordType::kServerWallet}));
   const EntityInstance ktn =
@@ -681,7 +681,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
 
   entity_table().AddOrUpdateEntityInstance(passport);
   entity_table().AddOrUpdateEntityInstance(driver_license);
-  entity_table().AddOrUpdateEntityInstance(redress_numer);
+  entity_table().AddOrUpdateEntityInstance(redress_number);
   entity_table().AddOrUpdateEntityInstance(ktn);
   entity_table().AddOrUpdateEntityInstance(national_id);
 
@@ -690,7 +690,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   EXPECT_THAT(ExtractMetadataIdsFromDataBatch(std::move(batch)),
               UnorderedElementsAre(passport.metadata().guid.value(),
                                    driver_license.metadata().guid.value(),
-                                   redress_numer.metadata().guid.value(),
+                                   redress_number.metadata().guid.value(),
                                    ktn.metadata().guid.value(),
                                    national_id.metadata().guid.value()));
 }

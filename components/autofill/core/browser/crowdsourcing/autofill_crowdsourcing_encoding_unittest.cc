@@ -2145,9 +2145,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_MilestoneSet) {
   std::string major_version;
   ASSERT_TRUE(re2::RE2::FullMatch(uploads[0].client_version(),
                                   kChromeVersionRegex, &major_version));
-  int major_version_as_interger;
-  ASSERT_TRUE(base::StringToInt(major_version, &major_version_as_interger));
-  EXPECT_NE(major_version_as_interger, 0);
+  int major_version_as_integer;
+  ASSERT_TRUE(base::StringToInt(major_version, &major_version_as_integer));
+  EXPECT_NE(major_version_as_integer, 0);
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,

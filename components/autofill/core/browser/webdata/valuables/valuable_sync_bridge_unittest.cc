@@ -190,8 +190,8 @@ class ValuableSyncBridgeTest : public testing::Test {
   }
 
   void AddEntities(const std::vector<EntityInstance>& entities) {
-    for (const EntityInstance& entitity : entities) {
-      entity_table_.AddOrUpdateEntityInstance(entitity);
+    for (const EntityInstance& entity : entities) {
+      entity_table_.AddOrUpdateEntityInstance(entity);
     }
   }
 

@@ -105,7 +105,7 @@ NameLastSecond::~NameLastSecond() = default;
 
 NameLast::NameLast() : AddressComponent(NAME_LAST, {}, MergeMode::kDefault) {
   RegisterChildNode(&last_first_);
-  RegisterChildNode(&last_conjuntion_);
+  RegisterChildNode(&last_conjunction_);
   RegisterChildNode(&last_second_);
 }
 

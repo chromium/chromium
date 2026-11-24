@@ -327,7 +327,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   autofill_driver->FormsRemoved(/*removed_forms=*/{form_data.renderer_id()},
                                 /*removed_unowned_fields=*/{});
 
-  // Validate that no form was sent to AutfillManager as submitted.
+  // Validate that no form was sent to `AutofillManager` as submitted.
   auto& autofill_manager = main_frame_manager();
   EXPECT_FALSE(autofill_manager.submitted_form());
 

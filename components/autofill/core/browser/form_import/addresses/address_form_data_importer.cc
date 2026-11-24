@@ -627,8 +627,8 @@ AddressFormDataImporter::ExtractAddressProfileFromSection(
           : AddressImportRequirement::kNoInvalidFieldTypesRequirementFulfilled);
   autofill_metrics::LogAddressFormImportRequirementMetric(
       has_synthesized_types
-          ? AddressImportRequirement::kNoSythesizedTypesRequirementViolated
-          : AddressImportRequirement::kNoSythesizedTypesRequirementFulfilled);
+          ? AddressImportRequirement::kNoSynthesizedTypesRequirementViolated
+          : AddressImportRequirement::kNoSynthesizedTypesRequirementFulfilled);
   autofill_metrics::LogAddressFormImportRequirementMetric(
       import_metadata.observed_invalid_country
           ? AddressImportRequirement::kCountryValidRequirementViolated

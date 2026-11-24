@@ -263,7 +263,7 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictionsInvalidType) {
 
 // Tests that the cache returns an empty map if there is no cache entry for
 // the form signature.
-TEST_F(AutofillAiModelCacheImplTest, GetNonExistantFieldPrediction) {
+TEST_F(AutofillAiModelCacheImplTest, GetNonExistentFieldPrediction) {
   EXPECT_THAT(cache().GetFieldPredictions(FormSignature(4565)), IsEmpty());
 }
 

@@ -5605,7 +5605,7 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 TEST_F(BrowserAutofillManagerTest,
-       DidShowSuggestions_AddessSuggestion_NoPreflightFetchingCall) {
+       DidShowSuggestions_AddressSuggestion_NoPreflightFetchingCall) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 

@@ -59,7 +59,7 @@ TEST(CountryNamesForLocaleTest, EmptyCountryCodeForOversizedCountryName) {
 }
 
 // Test that an instance is correctly constructed using the move semantics.
-TEST(CountryNamesForLocaleTest, MoveConstructior) {
+TEST(CountryNamesForLocaleTest, MoveConstructor) {
   // Construct a working `CountryNamesForLocale` instance.
   CountryNamesForLocale de_names(base::i18n::GetKnownLanguageTag("de"));
   EXPECT_EQ("DE", de_names.GetCountryCode(u"Deutschland"));

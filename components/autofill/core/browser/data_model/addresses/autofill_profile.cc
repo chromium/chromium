@@ -1266,11 +1266,11 @@ FieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
   FieldTypeSet inaccessible_fields;
   // Consider only AddressFields which are invisible in the settings for some
   // countries.
-  for (const AddressField& adress_field :
+  for (const AddressField& address_field :
        {AddressField::ADMIN_AREA, AddressField::LOCALITY,
         AddressField::DEPENDENT_LOCALITY, AddressField::POSTAL_CODE,
         AddressField::SORTING_CODE}) {
-    FieldType field_type = i18n::TypeForField(adress_field);
+    FieldType field_type = i18n::TypeForField(address_field);
     CHECK_EQ(GroupTypeOfFieldType(field_type), FieldTypeGroup::kAddress);
     if (HasRawInfo(field_type) &&
         !GetAddress().IsAddressFieldSettingAccessible(field_type)) {

@@ -230,7 +230,7 @@ TEST_F(AddressFormattingTest,
 }
 
 TEST_F(AddressFormattingTest,
-       GetEnvelopeStyleAddressHasDiffereceInUiWhenFullnameDiffers) {
+       GetEnvelopeStyleAddressHasDifferenceInUiWhenFullnameDiffers) {
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.SetInfo(NAME_FULL, u"John H. Doe", "en-US");
 
@@ -244,7 +244,7 @@ TEST_F(AddressFormattingTest,
 }
 
 TEST_F(AddressFormattingTest,
-       GetEnvelopeStyleAddressHasDiffereceInUiWhenAlternativeFullnameDiffers) {
+       GetEnvelopeStyleAddressHasDifferenceInUiWhenAlternativeFullnameDiffers) {
   AutofillProfile profile1 = test::GetFullProfile(AddressCountryCode("JP"));
   profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"", "ja-JP");
 
@@ -258,7 +258,7 @@ TEST_F(AddressFormattingTest,
 }
 
 TEST_F(AddressFormattingTest,
-       GetEnvelopeStyleAddressHasDiffereceInUiWhenZipcodeDiffers) {
+       GetEnvelopeStyleAddressHasDifferenceInUiWhenZipcodeDiffers) {
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"91111", "en-US");
 

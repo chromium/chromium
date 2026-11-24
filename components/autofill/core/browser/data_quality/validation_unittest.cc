@@ -79,7 +79,7 @@ const char16_t* const kPlausibleCreditCardCVCNumbers[] = {u"1234", u"2099",
                                                           u"111", u"982"};
 
 // Tests the plausibility of supplied credit card expiration years.
-TEST(AutofillValidation, IsPlausibleCreditCardExparationYear) {
+TEST(AutofillValidation, IsPlausibleCreditCardExpirationYear) {
   for (const char16_t* plausible_year : kPlausibleCreditCardExpirationYears) {
     EXPECT_TRUE(IsPlausible4DigitExpirationYear(plausible_year))
         << base::UTF16ToUTF8(plausible_year);

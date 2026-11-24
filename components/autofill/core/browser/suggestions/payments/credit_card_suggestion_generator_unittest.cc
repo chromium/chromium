@@ -4921,7 +4921,7 @@ TEST_P(SuggestionIphBubbleTest,
        CreateCreditCardSuggestion_CardInfoRetrievalSuggestion) {
   CreditCard server_card = CreateServerCard();
   std::string kIssuerId = {"paypay"};
-  std::vector<std::u16string> kDiplayName = {u"PayPay"};
+  std::vector<std::u16string> kDisplayName = {u"PayPay"};
   server_card.set_issuer_id(kIssuerId);
   server_card.set_card_info_retrieval_enrollment_state(
       card_info_retrieval_enrollment_state());
@@ -4938,7 +4938,7 @@ TEST_P(SuggestionIphBubbleTest,
   EXPECT_EQ(
       card_info_retrieval_enrollment_state() ==
           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
-      card_number_field_suggestion.iph_metadata.iph_params == kDiplayName);
+      card_number_field_suggestion.iph_metadata.iph_params == kDisplayName);
 
 #if BUILDFLAG(IS_ANDROID)
   std::u16string expected_description =

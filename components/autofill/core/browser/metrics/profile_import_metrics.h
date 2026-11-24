@@ -77,10 +77,10 @@ enum class AddressProfileImportRequirementMetric {
   kDeprecatedNameRequirementViolated = 29,
 
   // The form is not allowed to contain any synthesized types.
-  kNoSythesizedTypesRequirementFulfilled = 30,
-  kNoSythesizedTypesRequirementViolated = 31,
+  kNoSynthesizedTypesRequirementFulfilled = 30,
+  kNoSynthesizedTypesRequirementViolated = 31,
 
-  kMaxValue = kNoSythesizedTypesRequirementViolated,
+  kMaxValue = kNoSynthesizedTypesRequirementViolated,
 };
 
 // These values are persisted to UMA logs. Entries should not be renumbered

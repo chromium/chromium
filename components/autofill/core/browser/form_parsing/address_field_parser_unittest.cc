@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/form_parsing/parsing_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -97,7 +98,7 @@ TEST_F(AddressFieldParserTest, ParseStreetNameAndHouseNumberAptPL) {
 // Tests that fields are classified as |ADDRESS_HOME_STREET_NAME| and
 // |ADDRESS_HOME_HOUSE_NUMBER| when they are labeled accordingly and
 // both are present.
-TEST_F(AddressFieldParserTest, ParseStreetNameAndHouseNumbertPL) {
+TEST_F(AddressFieldParserTest, ParseStreetNameAndHouseNumberPL) {
   AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("PL"),
@@ -107,7 +108,7 @@ TEST_F(AddressFieldParserTest, ParseStreetNameAndHouseNumbertPL) {
 // Tests that fields are classified as |ADDRESS_HOME_STREET_NAME|,
 // |ADDRESS_HOME_HOUSE_NUMBER| and |ADDRESS_HOME_APT_NUM|  when they are labeled
 // accordingly and both are present.
-TEST_F(AddressFieldParserTest, ParseStreetNameHouseNumbertAndAptNumPL) {
+TEST_F(AddressFieldParserTest, ParseStreetNameHouseNumberAndAptNumPL) {
   AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
   AddTextFormFieldData("apartment", "Nr lokalu", ADDRESS_HOME_APT_NUM);

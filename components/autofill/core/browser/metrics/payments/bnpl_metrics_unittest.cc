@@ -527,7 +527,7 @@ class BnplFormEventsMetricsTest : public AutofillMetricsBaseTest,
     TearDownHelper();
   }
 
-  void ShowSuggestonsAndSelectBnplIssuer(IssuerId issuer_id) {
+  void ShowSuggestionsAndSelectBnplIssuer(IssuerId issuer_id) {
     autofill_manager().OnAskForValuesToFillTest(
         form(), form().fields().back().global_id());
     bnpl_manager()->OnCreditCardSuggestionsShown(
@@ -828,14 +828,14 @@ TEST_F(BnplFormEventsMetricsTest, AffirmSelectedFromPayLaterTab) {
 
   test_paydm().AddServerCreditCard(test::GetMaskedServerCardVisa());
 
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplAffirm);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplAffirm);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kAffirmAccepted, 1);
 
   // To ensure the metrics logs only once per page.
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplAffirm);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplAffirm);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
@@ -861,14 +861,14 @@ TEST_F(BnplFormEventsMetricsTest, ZipSelectedFromPayLaterTab) {
 
   test_paydm().AddServerCreditCard(test::GetMaskedServerCardVisa());
 
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplZip);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplZip);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kZipAccepted, 1);
 
   // To ensure the metrics logs only once per page.
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplZip);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplZip);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
@@ -894,14 +894,14 @@ TEST_F(BnplFormEventsMetricsTest, KlarnaSelectedFromPayLaterTab) {
 
   test_paydm().AddServerCreditCard(test::GetMaskedServerCardVisa());
 
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplKlarna);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplKlarna);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kKlarnaAccepted, 1);
 
   // To ensure the metrics logs only once per page.
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplKlarna);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplKlarna);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
@@ -927,14 +927,14 @@ TEST_F(BnplFormEventsMetricsTest, AfterpaySelectedFromPayLaterTab) {
 
   test_paydm().AddServerCreditCard(test::GetMaskedServerCardVisa());
 
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplAfterpay);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplAfterpay);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kAfterpayAccepted, 1);
 
   // To ensure the metrics logs only once per page.
-  ShowSuggestonsAndSelectBnplIssuer(IssuerId::kBnplAfterpay);
+  ShowSuggestionsAndSelectBnplIssuer(IssuerId::kBnplAfterpay);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",

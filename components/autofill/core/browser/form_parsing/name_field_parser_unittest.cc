@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -184,7 +185,7 @@ TEST_F(NameFieldParserTest, MiddleInitialAtEnd) {
 }
 
 // Test the coverage of all found strings for first and second last names.
-TEST_F(NameFieldParserTest, HispanicLastNameRegexConverage) {
+TEST_F(NameFieldParserTest, HispanicLastNameRegexCoverage) {
   std::vector<std::u16string> first_last_name_strings = {
       u"Primer apellido", u"apellidoPaterno", u"apellido_paterno",
       u"first_surname",   u"first surname",   u"apellido1"};

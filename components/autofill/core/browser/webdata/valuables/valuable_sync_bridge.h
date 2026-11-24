@@ -135,7 +135,7 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
       std::vector<AutofillOfferData> wallet_direct_offers);
 
   // Sets the Wallet data from `entity_data` to this client and records metrics
-  // about added/deleted data. Returns a ModelError if any errors occured.
+  // about added/deleted data. Returns a `ModelError` if any errors occurred.
   std::optional<syncer::ModelError> SetSyncData(
       const syncer::EntityChangeList& entity_data);
 

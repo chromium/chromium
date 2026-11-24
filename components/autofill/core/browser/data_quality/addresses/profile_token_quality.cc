@@ -243,10 +243,10 @@ size_t ProfileTokenQuality::AddSubsetOfObservations(
     return 0;
   }
   const size_t observations_to_add =
-      diable_randomization_for_testing_ ? observations.size()
-      : observations.size() >= 11       ? 8
-      : observations.size() > 3         ? observations.size() - 3
-                                        : 1;
+      disable_randomization_for_testing_ ? observations.size()
+      : observations.size() >= 11        ? 8
+      : observations.size() > 3          ? observations.size() - 3
+                                         : 1;
   // Shuffle the `observations` and add the first `observations_to_add` many.
   base::RandomShuffle(observations.begin(), observations.end());
   for (auto& [type, observation] :

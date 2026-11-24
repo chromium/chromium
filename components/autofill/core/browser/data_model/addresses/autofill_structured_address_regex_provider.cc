@@ -391,7 +391,7 @@ std::string ParseStreetNameHouseNumberExpression() {
 // Both the floor and the apartment must be indicated by a suffix.
 // Example: Calla 1, 2º, 3ª
 // Where 2 is the floor and 3 the apartment number.
-std::string ParseStreetNameHouseNumberSuffixedFloorAndAppartmentExpression() {
+std::string ParseStreetNameHouseNumberSuffixedFloorAndApartmentExpression() {
   return CaptureTypeWithPattern(
       ADDRESS_HOME_STREET_ADDRESS,
       {CaptureTypeWithPattern(
@@ -528,7 +528,7 @@ std::string StructuredAddressesRegExProvider::GetPattern(
     case RegEx::kParseStreetNameHouseNumberSuffixedFloor:
       return ParseStreetNameHouseNumberExpressionSuffixedFloor();
     case RegEx::kParseStreetNameHouseNumberSuffixedFloorAndApartmentRe:
-      return ParseStreetNameHouseNumberSuffixedFloorAndAppartmentExpression();
+      return ParseStreetNameHouseNumberSuffixedFloorAndApartmentExpression();
     case RegEx::kParseStreetNameHouseNumber:
       return ParseStreetNameHouseNumberExpression();
   }

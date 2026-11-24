@@ -194,7 +194,7 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
   }
 
   // Sort the `BnplIssuerContext` vector so that it follows below rules:
-  // 1. Eligible issuers should be in front of uneligible ones in a sorted
+  // 1. Eligible issuers should be in front of ineligible ones in a sorted
   //    vector.
   // 2. Linked issuers must go before unlinked ones if they have the same
   //    eligibility.

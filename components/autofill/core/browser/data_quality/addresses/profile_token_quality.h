@@ -251,7 +251,7 @@ class ProfileTokenQuality {
   base::flat_map<FieldType, base::circular_deque<Observation>> observations_;
 
   // When true, `AddSubsetOfObservations()` adds all observations.
-  bool diable_randomization_for_testing_ = false;
+  bool disable_randomization_for_testing_ = false;
 };
 
 }  // namespace autofill

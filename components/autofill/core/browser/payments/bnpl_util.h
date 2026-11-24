@@ -95,8 +95,8 @@ struct BnplTosModel {
 };
 
 // Return all BNPL Issuer contexts including eligibility in order of:
-// eligible + linked, eligible + unlinked, uneligible + linked,
-// uneligible + unlinked.
+// eligible + linked, eligible + unlinked, ineligible + linked,
+// ineligible + unlinked.
 // If `enforced_order` is provided and non-empty, the initial order of issuers
 // is taken from `enforced_order` instead of being randomly shuffled, while
 // still respecting eligibility and linked status sorting.

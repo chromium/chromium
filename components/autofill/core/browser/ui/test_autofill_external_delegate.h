@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 
@@ -55,7 +56,7 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   void WaitForPopupHidden();
 
   void CheckSuggestions(FieldGlobalId field_id,
-                        const std::vector<Suggestion>& expected_sugestions);
+                        const std::vector<Suggestion>& expected_suggestions);
 
   // Check that the autofill suggestions were not sent at all.
   void CheckSuggestionsNotReturned(FieldGlobalId field_id);

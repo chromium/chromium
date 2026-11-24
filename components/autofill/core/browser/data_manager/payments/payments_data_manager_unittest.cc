@@ -744,8 +744,8 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   MockPaymentsDataManagerObserver observer;
   EXPECT_CALL(observer, OnPaymentsDataChanged).Times(0);
   base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
-      observeration{&observer};
-  observeration.Observe(&payments_data_manager());
+      observation{&observer};
+  observation.Observe(&payments_data_manager());
   test_api(payments_data_manager()).AddServerCreditCard(credit_card3);
   ASSERT_EQ(payments_data_manager().GetCreditCards().size(), 3U);
   EXPECT_EQ(payments_data_manager().GetCreditCards()[2]->Compare(credit_card3),
@@ -3522,7 +3522,7 @@ TEST_P(PaymentsDataManagerShouldBlockBenefitsTest, NonSupportedAppLocale) {
 // Tests that card flat rate benefits should be blocked when benefit suggestions
 // are disabled for the given url.
 TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
-       BlockedUrlForFlateRateBenefit) {
+       BlockedUrlForFlatRateBenefit) {
   if (app_locale() != base::i18n::GetKnownLanguageTag("en-US") &&
       app_locale() != base::i18n::GetKnownLanguageTag("en-GB")) {
     GTEST_SKIP() << "This test should not run for unsupported app locales.";
@@ -3575,7 +3575,7 @@ TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
 // on the flat rate benefit blocklist, but the blocklist feature flag is
 // disabled.
 TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
-       BlockedUrlForFlateRateBenefit_BlocklistDisabled) {
+       BlockedUrlForFlatRateBenefit_BlocklistDisabled) {
   if (app_locale() != base::i18n::GetKnownLanguageTag("en-US") &&
       app_locale() != base::i18n::GetKnownLanguageTag("en-GB")) {
     GTEST_SKIP() << "This test should not run for unsupported app locales.";

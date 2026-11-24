@@ -138,7 +138,7 @@ std::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
 
 // Maps non-standardized `value`s for the HTML autocomplete attribute to an
 // HtmlFieldType. This is primarily a list of "reasonable guesses".
-std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
+std::optional<HtmlFieldType> ParseNonStandardizedAutocompleteAttribute(
     std::string_view value) {
   static constexpr auto non_standardized_attributes =
       base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
@@ -187,7 +187,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
 
   return ParseStandardizedAutocompleteAttribute(value)
       .or_else([&] { return ParseProposedAutocompleteAttribute(value); })
-      .or_else([&] { return ParseNonStandarizedAutocompleteAttribute(value); })
+      .or_else([&] { return ParseNonStandardizedAutocompleteAttribute(value); })
       // `value` cannot be mapped to any HtmlFieldType. By classifying the field
       // as HtmlFieldType::kUnrecognized Autofill is effectively disabled.
       .value_or(HtmlFieldType::kUnrecognized);

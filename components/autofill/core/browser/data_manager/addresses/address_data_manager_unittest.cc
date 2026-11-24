@@ -1285,7 +1285,7 @@ TEST_F(AddressDataManagerTest,
 
 // Tests that any `kAccountNameEmail` is created on construction of
 // `AddressDataManager`.
-TEST_F(AddressDataManagerTest, CreateAccountNameEmailProfileAfterInitalLoad) {
+TEST_F(AddressDataManagerTest, CreateAccountNameEmailProfileAfterInitialLoad) {
   const CoreAccountInfo core_info =
       identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);

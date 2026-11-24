@@ -1872,7 +1872,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersEligibleFirst) {
           // Unlinked eligible issuers.
           EqualsBnplIssuerContext(IssuerId::kBnplZip,
                                   BnplIssuerEligibilityForPage::kIsEligible),
-          // Linked uneligible issuers.
+          // Linked ineligible issuers.
           EqualsBnplIssuerContext(
               IssuerId::kBnplAfterpay,
               BnplIssuerEligibilityForPage::
@@ -1891,7 +1891,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersEligibleFirst) {
 // ineligible.
 // - Test 2(current test): Checks the order of unlinked eligible, linked
 // ineligible, and unlinked ineligible.
-TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersUneligibleLast) {
+TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersIneligibleLast) {
   // Unlinked issuer + eligibility: kIsEligible.
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                           /*price_higher_bound_in_micros=*/1'000'000'000,
@@ -1931,11 +1931,11 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersUneligibleLast) {
           // Unlinked eligible issuers.
           EqualsBnplIssuerContext(IssuerId::kBnplZip,
                                   BnplIssuerEligibilityForPage::kIsEligible),
-          // Linked uneligible issuers.
+          // Linked ineligible issuers.
           EqualsBnplIssuerContext(IssuerId::kBnplAfterpay,
                                   BnplIssuerEligibilityForPage::
                                       kNotEligibleIssuerDoesNotSupportMerchant),
-          // Unlinked uneligible issuers.
+          // Unlinked ineligible issuers.
           EqualsBnplIssuerContext(
               IssuerId::kBnplAffirm,
               BnplIssuerEligibilityForPage::

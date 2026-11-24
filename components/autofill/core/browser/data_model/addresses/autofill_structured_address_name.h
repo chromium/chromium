@@ -96,7 +96,7 @@ class NameLast : public AddressComponent {
   void ParseValueAndAssignSubcomponentsByFallbackMethod() override;
 
   NameLastFirst last_first_;
-  NameLastConjunction last_conjuntion_;
+  NameLastConjunction last_conjunction_;
   NameLastSecond last_second_;
 };
 

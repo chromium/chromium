@@ -1745,7 +1745,7 @@ TEST_F(FormFillerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
 
 // Verify when extension is misclassified, and there is a complete
 // phone field, we do not fill anything to extension field.
-TEST_F(FormFillerTest, FillFirstPhoneNumber_NotFillMisclassifiedExtention) {
+TEST_F(FormFillerTest, FillFirstPhoneNumber_NotFillMisclassifiedExtension) {
   // Create a field with a misclassified phone extension field.
   FormData form = test::GetFormData(
       {.fields = {

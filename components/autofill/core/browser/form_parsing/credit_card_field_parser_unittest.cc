@@ -128,7 +128,7 @@ TEST_F(CreditCardFieldParserTest, ParseCreditCardNoDate) {
   ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
-TEST_F(CreditCardFieldParserTest, ParseMiniumCreditCard) {
+TEST_F(CreditCardFieldParserTest, ParseMinimumCreditCard) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
@@ -137,7 +137,7 @@ TEST_F(CreditCardFieldParserTest, ParseMiniumCreditCard) {
 }
 
 // Ensure that a placeholder hint for a 2-digit year is respected
-TEST_F(CreditCardFieldParserTest, ParseMiniumCreditCardWith2DigitYearHint) {
+TEST_F(CreditCardFieldParserTest, ParseMinimumCreditCardWith2DigitYearHint) {
   base::test::ScopedFeatureList scoped_features{
       features::kAutofillEnableExpirationDateImprovements};
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
@@ -148,7 +148,7 @@ TEST_F(CreditCardFieldParserTest, ParseMiniumCreditCardWith2DigitYearHint) {
 }
 
 // Ensure that a max-length can trump an incorrect 4-digit placeholder hint.
-TEST_F(CreditCardFieldParserTest, ParseMiniumCreditCardWithMaxLength) {
+TEST_F(CreditCardFieldParserTest, ParseMinimumCreditCardWithMaxLength) {
   base::test::ScopedFeatureList scoped_features{
       features::kAutofillEnableExpirationDateImprovements};
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);

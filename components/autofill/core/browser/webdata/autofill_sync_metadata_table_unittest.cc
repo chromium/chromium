@@ -29,7 +29,7 @@ using syncer::MetadataBatch;
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
-class AutfillSyncMetadataTableTest
+class AutofillSyncMetadataTableTest
     : public testing::Test,
       public testing::WithParamInterface<syncer::DataType> {
  protected:
@@ -48,7 +48,7 @@ class AutfillSyncMetadataTableTest
   std::unique_ptr<WebDatabase> db_;
 };
 
-TEST_P(AutfillSyncMetadataTableTest, AutofillNoMetadata) {
+TEST_P(AutofillSyncMetadataTableTest, AutofillNoMetadata) {
   syncer::DataType data_type = GetParam();
   MetadataBatch metadata_batch;
   EXPECT_TRUE(table_->GetAllSyncMetadata(data_type, &metadata_batch));
@@ -56,7 +56,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillNoMetadata) {
   EXPECT_THAT(DataTypeState(), EqualsProto(metadata_batch.GetDataTypeState()));
 }
 
-TEST_P(AutfillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
+TEST_P(AutofillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
   syncer::DataType data_type = GetParam();
   EntityMetadata metadata;
   std::string storage_key = "storage_key";
@@ -97,7 +97,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
-TEST_P(AutfillSyncMetadataTableTest, AutofillWriteThenDeleteSyncMetadata) {
+TEST_P(AutofillSyncMetadataTableTest, AutofillWriteThenDeleteSyncMetadata) {
   syncer::DataType data_type = GetParam();
   EntityMetadata metadata;
   MetadataBatch metadata_batch;
@@ -126,7 +126,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillWriteThenDeleteSyncMetadata) {
   EXPECT_THAT(DataTypeState(), EqualsProto(metadata_batch.GetDataTypeState()));
 }
 
-TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptSyncMetadata) {
+TEST_P(AutofillSyncMetadataTableTest, AutofillCorruptSyncMetadata) {
   syncer::DataType data_type = GetParam();
   MetadataBatch metadata_batch;
   sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
@@ -140,7 +140,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptSyncMetadata) {
   EXPECT_FALSE(table_->GetAllSyncMetadata(data_type, &metadata_batch));
 }
 
-TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptDataTypeState) {
+TEST_P(AutofillSyncMetadataTableTest, AutofillCorruptDataTypeState) {
   syncer::DataType data_type = GetParam();
   MetadataBatch metadata_batch;
   sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
@@ -155,7 +155,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptDataTypeState) {
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillTableTest,
-    AutfillSyncMetadataTableTest,
+    AutofillSyncMetadataTableTest,
     testing::ValuesIn([] {
       std::vector<syncer::DataType> supported_types;
       for (syncer::DataType data_type : syncer::DataTypeSet::All()) {
