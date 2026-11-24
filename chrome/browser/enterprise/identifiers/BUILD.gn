@@ -14,7 +14,7 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_profile",
     "//components/enterprise:test_support",
-    "//components/enterprise/isolated_mode",
+    "//components/enterprise/isolated_mode:test_support",
     "//components/policy/core/common:test_support",
     "//content/test:test_support",
     "//testing/gtest",

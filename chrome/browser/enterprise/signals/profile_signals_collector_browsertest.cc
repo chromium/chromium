@@ -24,7 +24,7 @@
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -273,27 +273,14 @@ class ProfileSignalsCollectorIsolatedModeTest
     : public ProfileSignalsCollectorTest {
  protected:
   ProfileSignalsCollectorIsolatedModeTest() {
-    feature_list_.InitWithFeatures(
-        {enterprise_isolated_mode::kEnableEnterpriseIsolatedMode,
-         enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2},
-        {});
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    ProfileSignalsCollectorTest::SetUpBrowserContextKeyedServices(context);
-    SetupIsolatedMode(Profile::FromBrowserContext(context));
+    feature_list_.InitAndEnableFeature(
+        enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2);
   }
 
  private:
-  void SetupIsolatedMode(Profile* profile) {
-    ASSERT_TRUE(profile);
-    profile->GetPrefs()->SetInteger(
-        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-        static_cast<int>(
-            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-  }
   base::test::ScopedFeatureList feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorIsolatedModeTest,

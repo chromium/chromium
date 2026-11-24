@@ -12,8 +12,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -76,15 +75,17 @@ TEST_F(DeviceTrustConnectorServiceFactoryTest, CreateForRegularProfile) {
   EXPECT_TRUE(DeviceTrustConnectorServiceFactory::GetForProfile(profile()));
 }
 
-TEST_F(DeviceTrustConnectorServiceFactoryTest, CreatedForIsolatedModeProfile) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile()->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+struct ScopedIsolatedModeInitializer {
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
+};
 
+class DeviceTrustConnectorServiceFactoryIsolatedModeTest
+    : private ScopedIsolatedModeInitializer,
+      public DeviceTrustConnectorServiceFactoryTest {};
+
+TEST_F(DeviceTrustConnectorServiceFactoryIsolatedModeTest,
+       CreatedForIsolatedModeProfile) {
   Profile* isolated_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(isolated_profile);

@@ -28,8 +28,7 @@
 #include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -908,9 +907,8 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(RealtimeReportingClientTestBase, GetProfileUserNameInIsolatedMode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
 
   TestingProfile* original_profile = profile_manager_.CreateTestingProfile(
       "original_profile", IdentityTestEnvironmentProfileAdaptor::
@@ -919,10 +917,6 @@ TEST_F(RealtimeReportingClientTestBase, GetProfileUserNameInIsolatedMode) {
   adaptor.identity_test_env()->MakePrimaryAccountAvailable(
       "profile@example.com", signin::ConsentLevel::kSignin);
 
-  original_profile->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
   TestingProfile* isolated_profile =
       TestingProfile::Builder().BuildIncognito(original_profile);
   ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());

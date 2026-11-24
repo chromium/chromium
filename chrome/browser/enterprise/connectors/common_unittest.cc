@@ -12,9 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/core/features.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/navigation_simulator.h"
@@ -206,10 +204,6 @@ TEST_F(CollectFrameUrlsTest, InitiatingFrame) {
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 TEST(EnterpriseConnectorsCommonTest, GetProfileEmail) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-
   content::BrowserTaskEnvironment task_environment;
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager.SetUp());
@@ -229,15 +223,13 @@ TEST(EnterpriseConnectorsCommonTest, GetProfileEmail) {
   ASSERT_FALSE(incognito_profile->IsEnterpriseIsolatedModeProfile());
   EXPECT_EQ("", GetProfileEmail(incognito_profile));
 
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
   TestingProfile* isolated_original_profile =
       profile_manager.CreateTestingProfile(
           "isolated_original_profile",
           IdentityTestEnvironmentProfileAdaptor::
               GetIdentityTestEnvironmentFactories());
-  isolated_original_profile->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
   IdentityTestEnvironmentProfileAdaptor isolated_adaptor(
       isolated_original_profile);
   isolated_adaptor.identity_test_env()->MakePrimaryAccountAvailable(
