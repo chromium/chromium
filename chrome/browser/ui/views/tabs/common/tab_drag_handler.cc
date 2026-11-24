@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_data.h"
@@ -731,6 +732,10 @@ content::WebContents* TabDragHandler::GetContentsForTab(views::View* view) {
 }
 
 bool TabDragHandler::IsTabDetachable(const views::View* view) const {
+  if (const auto* tab_view = views::AsViewClass<TabView>(view)) {
+    return !web_app::IsPinnedHomeTab(base::to_address(tab_strip_model_),
+                                     tab_view->GetTabInterface());
+  }
   return true;
 }
 

@@ -10,10 +10,13 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -30,6 +33,11 @@
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -38,6 +46,8 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
@@ -2587,6 +2597,88 @@ IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
       ReleaseMouseAsync(), WaitForState(kDragStatePoller, false));
 }
 
+class TabbedWebAppTabDragTest : public HorizontalTabDragTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = HorizontalTabDragTest::GetEnabledFeatures();
+    enabled.push_back({blink::features::kDesktopPWAsTabStrip, {}});
+    return enabled;
+  }
+
+  webapps::AppId InstallMockAppWithHomeTab() {
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL("https://www.example.com"));
+    web_app_info->title = u"A tabbed web app";
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+    web_app_info->display_override = {
+        web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
+    blink::Manifest::TabStrip manifest_tab_strip;
+    manifest_tab_strip.home_tab = blink::Manifest::HomeTabParams();
+    web_app_info->tab_strip = std::move(manifest_tab_strip);
+
+    return web_app::test::InstallWebApp(browser()->GetProfile(),
+                                        std::move(web_app_info));
+  }
+
+  void SetUpTabbedWebAppWithHomeAndSecondTab() {
+    webapps::AppId app_id = InstallMockAppWithHomeTab();
+    BrowserWindowInterface* const app_browser =
+        web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
+    ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+    CloseBrowserSynchronously(browser());
+    ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+    SetBrowser(app_browser);
+    ASSERT_EQ(app_browser, browser());
+
+    chrome::AddTabAt(browser(), GURL("https://www.example.com/newpage"), -1,
+                     /*foreground=*/false);
+    views::test::RunScheduledLayout(&GetBrowserView());
+    ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+    ASSERT_TRUE(browser()->GetTabStripModel()->IsTabPinned(0));
+  }
+
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+};
+
+IN_PROC_BROWSER_TEST_P(TabbedWebAppTabDragTest, IsHomeTabNotDetachable) {
+  ASSERT_NO_FATAL_FAILURE(SetUpTabbedWebAppWithHomeAndSecondTab());
+
+  TabDragContext* drag_context = GetTabStripRegionView()->GetDragContext();
+  ASSERT_TRUE(drag_context);
+  EXPECT_FALSE(drag_context->IsTabDetachable(GetTabViewAt(0)));
+  EXPECT_TRUE(drag_context->IsTabDetachable(GetTabViewAt(1)));
+  views::View non_tab_view;
+  EXPECT_TRUE(drag_context->IsTabDetachable(&non_tab_view));
+}
+
+// Detachable tabs are not supported for PWAs on Mac.
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(TabbedWebAppTabDragTest, CantDragHomeTab) {
+  ASSERT_NO_FATAL_FAILURE(SetUpTabbedWebAppWithHomeAndSecondTab());
+
+  tabs::TabInterface* const home_tab =
+      browser()->GetTabStripModel()->GetTabAtIndex(0);
+
+  RunTestSequenceInContext(
+      BrowserElements::From(browser())->GetContext(),
+      WaitForShow(kTabStripRegionElementId),
+      PollState(kDragStatePoller, GetDragActive()),
+      StartDragTabByOffset(0, gfx::Vector2d(0, 100)),
+      WaitForState(kDragStatePoller, true), ReleaseMouseAsync(),
+      WaitForState(kDragStatePoller, false), Do([&]() {
+        EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+        EXPECT_TRUE(browser()->GetTabStripModel()->IsTabPinned(0));
+        EXPECT_EQ(home_tab, browser()->GetTabStripModel()->GetTabAtIndex(0));
+      }));
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 namespace {
 
 std::string TabDragTestParamName(
@@ -2627,5 +2719,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HorizontalTabDragTest,
+                         testing::Bool(),
+                         DirectionParamName);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabbedWebAppTabDragTest,
                          testing::Bool(),
                          DirectionParamName);
