@@ -23,6 +23,10 @@
  * [android-pixel6-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf-pgo): Android U.
  * [android-pixel9-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel9-perf): Android B.
 
+### Ios
+
+ * [ios-iphone15pro-perf](https://ci.chromium.org/p/chrome/builders/ci/ios-iphone15pro-perf): iPhone 15 Pro (iPhone16,1), iOS 26.
+
 ### Linux
 
  * [linux-falcon-rak-5070-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-falcon-rak-5070-perf): Linux Falcon RAK 5070.

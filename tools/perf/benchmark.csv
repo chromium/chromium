@@ -40,6 +40,7 @@ dawn_perf_tests,enga@chromium.org,Dawn,https://dawn.googlesource.com/dawn/+/HEAD
 desktop_ui,"yuhengh@chromium.org, tluk@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md,smoke_test
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
+ios_chrome_perf_benchmarks_eg2tests_module,"justincohen@chromium.org, bling-engprod@google.com",UI>Browser>Mobile,https://chromium.googlesource.com/chromium/src/+/HEAD/ios/chrome/test/perf/perf_egtest.mm,
 jetstream2,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
 jetstream2-no-field-trials,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
 load_library_perf_tests,"xhwang@chromium.org, jrummell@chromium.org",Internals>Media>Encrypted,,

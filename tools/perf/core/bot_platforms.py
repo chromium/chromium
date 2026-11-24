@@ -1358,6 +1358,12 @@ PLATFORM_INFO = {
     'platform_os': 'android',
     'is_fyi': False,
   },
+  'ios-iphone15pro-perf': {
+    'description': 'iPhone 15 Pro (iPhone16,1), iOS 26',
+    'num_shards': 1,
+    'platform_os': 'ios',
+    'is_fyi': False,
+  },
   'fuchsia-perf-nsn': {
     'description': '',
     'num_shards': 1,

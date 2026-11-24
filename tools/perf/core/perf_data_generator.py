@@ -154,6 +154,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset(
     'android-pixel10_webview-perf-pgo-fieldtrial',
     'android-pixel10_webview-perf-pgo-heapdump',
     'android-brya-kano-i5-8gb-perf',
+    'ios-iphone15pro-perf',
     'ios-iphone15pro-perf-fyi',
     'linux-arm-builder-perf',
     'linux-builder-perf',
@@ -250,6 +251,10 @@ PUBLIC_PERF_BUILDERS = [
 #   ;drc=93a804bc8c5871e1fb70a762e461d787749cb2d7;l=470
 _COMMON_FUCHSIA_ARGS = ['-d', '--os-check=ignore']
 
+# Xcode used by the iOS device perf testers.
+# TODO(crbug.com/570775933): Keep synced with xcode.ios.xcode_default.
+_IOS_XCODE_BUILD_VERSION = '27a266a'
+
 # This is an opt-in list for builders which uses dynamic sharding.
 DYNAMIC_SHARDING_TESTERS = []
 
@@ -283,8 +288,7 @@ FYI_BUILDERS = {
         'timeout': 3600,
         'extra_args': [
           '--benchmark-name=bling',
-          # TODO(crbug.com/570775933): Keep synced with xcode.ios.xcode_default.
-          '--xcode-build-version=27a266a',
+          f'--xcode-build-version={_IOS_XCODE_BUILD_VERSION}',
           '--out-dir=${ISOLATED_OUTDIR}',
           '--xcodebuild-device-runner',
           '--xctest',
@@ -309,7 +313,7 @@ FYI_BUILDERS = {
     },
     'named_caches': [
       {
-        'name': 'xcode_ios_27a266a',
+        'name': f'xcode_ios_{_IOS_XCODE_BUILD_VERSION}',
         'path': 'Xcode.app',
       },
     ],
@@ -928,6 +932,42 @@ BUILDERS = {
       'device_type': 'wembley_2GB',
       'device_os_flavor': 'google',
     },
+  },
+  'ios-iphone15pro-perf': {
+    'tests': [
+      {
+        'isolate': 'ios_chrome_perf_benchmarks_eg2tests_module',
+        'type': TEST_TYPES.GENERIC,
+        'num_shards': 1,
+        'timeout': 3600,
+        'extra_args': [
+          '--benchmark-name=bling',
+          f'--xcode-build-version={_IOS_XCODE_BUILD_VERSION}',
+          '--out-dir=${ISOLATED_OUTDIR}',
+          '--xcodebuild-device-runner',
+          '--xctest',
+        ],
+      }
+    ],
+    'platform': 'ios',
+    'dimension': {
+      'cpu': None,
+      'device': 'iPhone16,1',
+      'device_status': 'available',
+      'os': 'iOS-26',
+      'pool': 'chrome.tests.perf',
+    },
+    'cipd': {
+      'cipd_package': 'infra/tools/mac_toolchain/${platform}',
+      'location': '.',
+      'revision': 'git_revision:ed58ac9443fe1754e84d596bdaf9961cbaa6e85b',
+    },
+    'named_caches': [
+      {
+        'name': f'xcode_ios_{_IOS_XCODE_BUILD_VERSION}',
+        'path': 'Xcode.app',
+      },
+    ],
   },
   'linux-perf': {
     'tests': [
@@ -1657,6 +1697,14 @@ OTHER_BENCHMARKS.update(
       documentation_url=(
         'https://chromium.googlesource.com/chromium/'
         'src/+/HEAD/tools/binary_size/README.md#resource_sizes_py'
+      ),
+    ),
+    'ios_chrome_perf_benchmarks_eg2tests_module': BenchmarkMetadata(
+      emails='justincohen@chromium.org, bling-engprod@google.com',
+      component='UI>Browser>Mobile',
+      documentation_url=(
+        'https://chromium.googlesource.com/chromium/'
+        'src/+/HEAD/ios/chrome/test/perf/perf_egtest.mm'
       ),
     ),
   }
