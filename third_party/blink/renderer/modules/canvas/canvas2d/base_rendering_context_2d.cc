@@ -255,11 +255,6 @@ bool BaseRenderingContext2D::HasUnusedResourcesForTesting() const {
   return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
 }
 
-bool BaseRenderingContext2D::UnusedResourcesReclaimTimerIsRunningForTesting()
-    const {
-  return image_pool_ && image_pool_->IsReclaimTimerRunningForTesting();
-}
-
 bool BaseRenderingContext2D::HasBacking() const {
   return image_pool_ != nullptr || surface_ != nullptr;
 }
@@ -532,17 +527,13 @@ void BaseRenderingContext2D::CreateSharedImagePool(
                             kTopLeft_GrSurfaceOrigin, alpha_type, buffer_usage,
                             /*is_software=*/false);
 
-  std::optional<base::TimeDelta> expiration_time =
-      (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-          ? std::make_optional(kUnusedResourceExpirationTime)
-          : std::nullopt;
   bool is_single_buffered = shared_image_usage_flags.Has(
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 
   image_pool_ = gpu::SharedImagePool<CanvasResource>::Create(
       image_info, sii,
       is_accelerated_ ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
-      is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
+      is_single_buffered ? 0 : kMaxRecycledCanvasResources);
   resource_recycling_enabled_ =
       base::MakeRefCounted<base::RefCountedData<bool>>(true);
 

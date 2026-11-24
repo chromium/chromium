@@ -34,11 +34,7 @@
 
 namespace blink {
 
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
-
-inline constexpr base::TimeDelta kUnusedResourceExpirationTime =
-    base::Seconds(5);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

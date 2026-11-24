@@ -280,14 +280,8 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
                                 alpha_type, /*buffer_usage=*/std::nullopt,
                                 /*is_software=*/false);
 
-      std::optional<base::TimeDelta> expiration_time =
-          (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-              ? std::make_optional(kUnusedResourceExpirationTime)
-              : std::nullopt;
-
       image_pool_ = gpu::SharedImagePool<Resource>::Create(
-          image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
-          expiration_time);
+          image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources);
     }
   }
 

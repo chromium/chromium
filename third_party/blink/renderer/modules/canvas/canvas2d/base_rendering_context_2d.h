@@ -343,7 +343,6 @@ class MODULES_EXPORT BaseRenderingContext2D
     return sw_snapshot_sk_image_id_;
   }
   bool HasUnusedResourcesForTesting() const;
-  bool UnusedResourcesReclaimTimerIsRunningForTesting() const;
 
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;

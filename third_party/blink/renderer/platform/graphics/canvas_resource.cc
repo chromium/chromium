@@ -43,11 +43,6 @@
 
 namespace blink {
 
-// When enabled, unused resources (ready to be recycled) are reclaimed after a
-// delay.
-BASE_FEATURE(kCanvas2DReclaimUnusedResources,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether we add SHARED_IMAGE_USAGE_WEBGPU_READ by default to shared
 // image backed CanvasResources so that they can be imported into WebGPU without
 // an intermediate copy. This could cause a different shared image backing type
