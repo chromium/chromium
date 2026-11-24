@@ -2238,14 +2238,14 @@ IN_PROC_BROWSER_TEST_F(
   // Start active video capture.
   VideoCaptureWaiter video_waiter(payment_handler_contents);
   ChipAnimationWaiter in_use_expand_waiter(indicator_chip);
-  ASSERT_EQ("success", content::EvalJs(payment_handler_contents, R"(
-              navigator.mediaDevices.getUserMedia({video: true})
-                .then(stream => {
-                  window.activeStream = stream;
-                  return 'success';
-                })
-                .catch(err => err.name);
-            )"));
+  content::ExecuteScriptAsync(payment_handler_contents, R"(
+    window.captureResult = navigator.mediaDevices.getUserMedia({video: true})
+      .then(stream => {
+        window.activeStream = stream;
+        return 'success';
+      })
+      .catch(err => err.name);
+  )");
   video_waiter.WaitForCaptureState(true);
 
   // Blocked timers should be stopped, and theme/icon reset to in-use.
@@ -2267,6 +2267,9 @@ IN_PROC_BROWSER_TEST_F(
       test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
   EXPECT_EQ(PaymentHandlerWebFlowViewController::IndicatorType::kInUse,
             test_api(web_flow_controller).indicator_type());
+
+  ASSERT_EQ("success",
+            content::EvalJs(payment_handler_contents, "window.captureResult;"));
 
   // Stop video capture and verify clean state restoration.
   ASSERT_EQ("stopped", content::EvalJs(payment_handler_contents, R"(
