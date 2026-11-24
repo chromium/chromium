@@ -16,6 +16,8 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.TripBuilder;
@@ -193,10 +195,15 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
     public RegularNewTabPageStation openNewTabFast() {
+        return openNewTabFastTo().reach(RegularNewTabPageStation.openedInNewTabFrom(this));
+    }
+
+    /** Trigger to open a new tab programmatically as if selecting "New Tab" from the app menu. */
+    @CheckReturnValue
+    public TripBuilder openNewTabFastTo() {
         assert !mIsIncognito || !IncognitoUtils.shouldOpenIncognitoAsWindow()
                 : "Regular tabs can only be opened in regular (non-incognito) windows.";
-        return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_tab_menu_id, this)
-                .arriveAt(RegularNewTabPageStation.newBuilder().initOpeningNewTab().build());
+        return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_tab_menu_id, this);
     }
 
     /**

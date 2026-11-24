@@ -5,6 +5,7 @@
 package org.chromium.base.test.transit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 
@@ -103,6 +104,59 @@ public class DefaultFacilitiesUnitTest {
                 () -> origin.noopTo().arriveAt(destination, destination.defaultFacility));
 
         assertEquals(Phase.ACTIVE, destination.defaultFacility.getPhase());
+    }
+
+    @Test
+    public void testReach_withoutDefaultFacility_doesNotEnterIt() throws Throwable {
+        PlainStation origin = hopOnTo(new PlainStation());
+
+        StationWithDefaultFacility destination = new StationWithDefaultFacility();
+        mTransitRule.runTransition(
+                () ->
+                        origin.noopTo()
+                                .reach(
+                                        Outcome.enter(destination)
+                                                .withoutDefaultFacility(
+                                                        destination.defaultFacility)));
+
+        assertEquals(Phase.ACTIVE, destination.getPhase());
+        assertEquals(Phase.NEW, destination.defaultFacility.getPhase());
+    }
+
+    @Test
+    public void testReach_withoutNonDefaultFacility_throws() throws Throwable {
+        PlainStation origin = hopOnTo(new PlainStation());
+        StationWithDefaultFacility destination = new StationWithDefaultFacility();
+        TestFacility notDefaultFacility = new TestFacility();
+
+        AssertionError error =
+                mTransitRule.runTransitionExpectingThrow(
+                        AssertionError.class,
+                        () ->
+                                origin.noopTo()
+                                        .reach(
+                                                Outcome.enter(destination)
+                                                        .withoutDefaultFacility(
+                                                                notDefaultFacility)));
+        assertTrue(error.getMessage(), error.getMessage().contains("is not a default Facility"));
+    }
+
+    @Test
+    public void testReach_withoutAndEnteringSameDefaultFacility_throws() throws Throwable {
+        PlainStation origin = hopOnTo(new PlainStation());
+        StationWithDefaultFacility destination = new StationWithDefaultFacility();
+
+        AssertionError error =
+                mTransitRule.runTransitionExpectingThrow(
+                        AssertionError.class,
+                        () ->
+                                origin.noopTo()
+                                        .reach(
+                                                Outcome.enter(destination)
+                                                        .and(destination.defaultFacility)
+                                                        .withoutDefaultFacility(
+                                                                destination.defaultFacility)));
+        assertTrue(error.getMessage(), error.getMessage().contains("is both skipped and entered"));
     }
 
     @Test

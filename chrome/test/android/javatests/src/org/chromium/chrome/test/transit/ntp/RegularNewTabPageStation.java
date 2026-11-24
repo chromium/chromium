@@ -11,23 +11,32 @@ import static org.chromium.base.test.transit.Condition.whether;
 
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.OptionalViewElement;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.SimpleConditions;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.search.SearchBoxContainerView;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
+import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -43,11 +52,20 @@ public class RegularNewTabPageStation extends CtaPageStation {
     public @Nullable ViewElement<View> logoElement;
     public Element<NewTabPage> nativePageElement;
 
-    public RegularNewTabPageStation(Config config, boolean nativeNtp) {
-        this(config, nativeNtp, /* expectLogo= */ true);
+    /** The focused Omnibox, entered by default. Null unless the Station expects it focused. */
+    public final @Nullable OmniboxFacility omnibox;
+
+    /** What the Station checks about the search provider logo of the native NTP. */
+    @IntDef({Logo.SHOWN, Logo.NOT_SHOWN, Logo.NOT_CHECKED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Logo {
+        int SHOWN = 0;
+        int NOT_SHOWN = 1;
+        int NOT_CHECKED = 2;
     }
 
-    public RegularNewTabPageStation(Config config, boolean nativeNtp, boolean expectLogo) {
+    private RegularNewTabPageStation(
+            Config config, boolean nativeNtp, @Logo int logo, boolean omniboxFocused) {
         super(
                 config.withIncognito(false)
                         .withExpectedUrlSubstring(
@@ -60,15 +78,18 @@ public class RegularNewTabPageStation extends CtaPageStation {
                 delayedElements -> {
                     if (mActivityElement.value().isTablet()) {
                         urlBarElement = delayedElements.declareView(URL_BAR);
-                    } else {
-                        delayedElements.declareNoView(URL_BAR);
                     }
                 });
 
+        omnibox =
+                omniboxFocused
+                        ? declareDefaultFacility(new OmniboxFacility(/* fakeSuggestions= */ null))
+                        : null;
+
         if (nativeNtp) {
-            if (expectLogo) {
+            if (logo == Logo.SHOWN) {
                 logoElement = declareView(withId(R.id.search_provider_logo));
-            } else {
+            } else if (logo == Logo.NOT_SHOWN) {
                 declareNoView(withId(R.id.search_provider_logo));
             }
             // Scoped to the NTP's own fakebox class: R.id.search_box is also used by the Hub
@@ -98,18 +119,58 @@ public class RegularNewTabPageStation extends CtaPageStation {
         return new Builder<>(
                 c ->
                         new RegularNewTabPageStation(
-                                c, /* nativeNtp= */ !UrlOverrideUtils.isWebUiNtpOverrideEnabled()));
+                                c,
+                                /* nativeNtp= */ !UrlOverrideUtils.isWebUiNtpOverrideEnabled(),
+                                Logo.SHOWN,
+                                /* omniboxFocused= */ false));
     }
 
     public static Builder<RegularNewTabPageStation> newNativeNtpBuilder() {
-        return new Builder<>(c -> new RegularNewTabPageStation(c, /* nativeNtp= */ true));
+        return new Builder<>(
+                c ->
+                        new RegularNewTabPageStation(
+                                c, /* nativeNtp= */ true, Logo.SHOWN, /* omniboxFocused= */ false));
     }
 
     public static Builder<RegularNewTabPageStation> newNativeNtpWithoutLogoBuilder() {
         return new Builder<>(
                 c ->
                         new RegularNewTabPageStation(
-                                c, /* nativeNtp= */ true, /* expectLogo= */ false));
+                                c,
+                                /* nativeNtp= */ true,
+                                Logo.NOT_SHOWN,
+                                /* omniboxFocused= */ false));
+    }
+
+    /**
+     * Outcome: the NTP opened in a new tab from Chrome UI, e.g. the "New tab" menu item.
+     *
+     * <p>With {@link ChromeFeatureList#ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE}, the native NTP
+     * focuses the Omnibox on load, so this enters {@link #omnibox}, skips the logo check, and skips
+     * {@link #toolbar} on phones (which hide toolbar buttons while focused).
+     */
+    public static Outcome<RegularNewTabPageStation> openedInNewTabFrom(
+            Station<ChromeTabbedActivity> origin) {
+        boolean nativeNtp = !UrlOverrideUtils.isWebUiNtpOverrideEnabled();
+        boolean omniboxFocused =
+                nativeNtp
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE);
+        RegularNewTabPageStation ntp =
+                new Builder<>(
+                                c ->
+                                        new RegularNewTabPageStation(
+                                                c,
+                                                nativeNtp,
+                                                omniboxFocused ? Logo.NOT_CHECKED : Logo.SHOWN,
+                                                omniboxFocused))
+                        .initOpeningNewTab()
+                        .build();
+        Outcome<RegularNewTabPageStation> outcome = Outcome.enter(ntp);
+        if (omniboxFocused && !origin.getActivity().isTablet()) {
+            outcome = outcome.withoutDefaultFacility(ntp.toolbar);
+        }
+        return outcome;
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */

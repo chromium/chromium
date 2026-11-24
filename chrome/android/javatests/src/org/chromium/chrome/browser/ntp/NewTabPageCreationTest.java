@@ -18,21 +18,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -63,23 +59,16 @@ public class NewTabPageCreationTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE)
     public void testCreateNTPInNewTab() {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
         @TabLaunchType int expectedType = TabLaunchType.FROM_CHROME_UI;
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("NewTabPage.OpenedInNewTab", expectedType)
                         .build();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        TabCreatorUtil.launchNtp(
-                                mActivityTestRule.getActivity().getCurrentTabCreator()));
+        page.openNewTabFast();
 
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-
-        Tab tab = mActivityTestRule.getActivityTab();
-        // TODO(crbug.com/428022848): Hop on once there is a Station for the NTP with the Omnibox
-        // focused, which hides the toolbar buttons and the logo.
-        ChromeTabUtils.waitForNtpLoaded(tab);
 
         verify(mTestState).didAddTab();
         verify(mTestState).onNtpLoaded(any(NewTabPageManager.class));

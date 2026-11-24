@@ -48,6 +48,7 @@ import java.util.function.Supplier;
 public class Outcome<R extends @Nullable Object> {
     private final List<Facility<?>> mFacilitiesToEnter = new ArrayList<>();
     private final List<Facility<?>> mFacilitiesToExit = new ArrayList<>();
+    private final List<Facility<?>> mDefaultFacilitiesToSkip = new ArrayList<>();
     private final List<State> mStatesToEnter = new ArrayList<>();
     private final List<State> mStatesToExit = new ArrayList<>();
     private final List<Condition> mConditions = new ArrayList<>();
@@ -130,6 +131,15 @@ public class Outcome<R extends @Nullable Object> {
         return this;
     }
 
+    /**
+     * Also skip |facility|, a default Facility of the destination Station, when the app is expected
+     * to arrive without it.
+     */
+    public Outcome<R> withoutDefaultFacility(Facility<?> facility) {
+        mDefaultFacilitiesToSkip.add(facility);
+        return this;
+    }
+
     /** Also wait for |conditions|. */
     public Outcome<R> andWaitFor(Condition... conditions) {
         mConditions.addAll(Arrays.asList(conditions));
@@ -189,6 +199,7 @@ public class Outcome<R extends @Nullable Object> {
             mStatesToExit.add(state);
         }
         mConditions.addAll(other.mConditions);
+        mDefaultFacilitiesToSkip.addAll(other.mDefaultFacilitiesToSkip);
         mInNewTask |= other.mInNewTask;
     }
 
@@ -221,6 +232,10 @@ public class Outcome<R extends @Nullable Object> {
 
     List<Facility<?>> getFacilitiesToExit() {
         return mFacilitiesToExit;
+    }
+
+    List<Facility<?>> getDefaultFacilitiesToSkip() {
+        return mDefaultFacilitiesToSkip;
     }
 
     List<State> getStatesToEnter() {

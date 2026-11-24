@@ -396,6 +396,9 @@ public class TripBuilder {
         List<Facility<?>> facilitiesToEnter = mOutcome.getFacilitiesToEnter();
         assert !inNewTask || destinationStation != null
                 : "A new Station needs to be entered in the new task";
+        List<Facility<?>> defaultFacilitiesToSkip = mOutcome.getDefaultFacilitiesToSkip();
+        assert defaultFacilitiesToSkip.isEmpty() || destinationStation != null
+                : "Outcome#withoutDefaultFacility() requires a destination Station";
 
         // Hopping on means entering Public Transit from outside of it: there is no origin Station
         // to infer, and whatever was still considered active is abandoned.
@@ -440,8 +443,17 @@ public class TripBuilder {
                 mOriginStation.assertInPhase(Phase.ACTIVE);
                 destinationStation.requireToBeInSameTask(mOriginStation);
             }
-            for (Facility<?> facility : destinationStation.getDefaultFacilities()) {
-                if (!facilitiesToEnter.contains(facility)) {
+            List<Facility<?>> defaultFacilities = destinationStation.getDefaultFacilities();
+            for (Facility<?> facility : defaultFacilitiesToSkip) {
+                assert defaultFacilities.contains(facility)
+                        : String.format(
+                                "%s is not a default Facility of %s", facility, destinationStation);
+                assert !facilitiesToEnter.contains(facility)
+                        : String.format("%s is both skipped and entered", facility);
+            }
+            for (Facility<?> facility : defaultFacilities) {
+                if (!facilitiesToEnter.contains(facility)
+                        && !defaultFacilitiesToSkip.contains(facility)) {
                     facilitiesToEnter.add(facility);
                 }
             }
