@@ -106,6 +106,95 @@ suite('NewTabPageComposeboxTest', () => {
         }
       });
 
+  test(
+      'updates input icon based on willFulfillInAim when plus button is not ' +
+          'in the input row',
+      async () => {
+        const originalDynamicAim =
+            loadTimeData.getBoolean('dynamicAimFulfillmentEnabled');
+        try {
+          loadTimeData.overrideValues({
+            dynamicAimFulfillmentEnabled: true,
+          });
+          testProxy.searchboxHandler.setPromiseResolveFor('getInputState', {
+            state: new MockInputState({
+              toolConfigs: [],
+              toolsSectionConfig: {header: ''},
+              modelSectionConfig: {header: ''},
+              willFulfillInAim: false,
+            }),
+          });
+          createComposeboxElement(testProxy, {
+            searchboxNextEnabled: true,
+            tabFaviconChipsToCoinsEnabled: true,
+          });
+          testProxy.element.searchboxLayoutMode = 'Compact';
+          await microtasksFinished();
+
+          const getIconContainer = () =>
+              testProxy.element.getInputElement()
+                  .shadowRoot.querySelector<HTMLElement>('#iconContainer')!;
+          const getAimIcon = () =>
+              testProxy.element.getInputElement()
+                  .shadowRoot.querySelector<HTMLElement>('#aimIcon')!;
+
+          // Without attached tabs the `+` button sits in the input row, so the
+          // leading icon container stays hidden.
+          assertEquals(
+              'none', window.getComputedStyle(getIconContainer()).display);
+
+          // Attaching a tab moves the `+` button out of the input row and shows
+          // the leading icon container with the search loupe in SRP mode.
+          testProxy.element.addFileContextForTesting(createComposeboxFile(1, {
+            type: 'tab',
+            inputType: InputType.kBrowserTab,
+            tabId: 1,
+            url: 'https://example.com',
+          }));
+          await microtasksFinished();
+
+          assertEquals(
+              'flex', window.getComputedStyle(getIconContainer()).display);
+          assertFalse(testProxy.element.hasAttribute('will-fulfill-in-aim'));
+          const compactSrpStyle = window.getComputedStyle(getAimIcon());
+          assertEquals(
+              'none', compactSrpStyle.getPropertyValue('background-image'));
+          assertTrue(compactSrpStyle.getPropertyValue('-webkit-mask-image')
+                         .includes('search_cr23'));
+
+          // Switching to AI Mode restores the search spark icon.
+          testProxy.element.willFulfillInAim = true;
+          await microtasksFinished();
+          assertTrue(testProxy.element.hasAttribute('will-fulfill-in-aim'));
+          assertTrue(window.getComputedStyle(getAimIcon())
+                         .getPropertyValue('-webkit-mask-image')
+                         .includes('search_spark'));
+
+          // In tall layout mode the `+` button sits outside the input row, so
+          // the leading icon container is shown immediately with the search
+          // loupe in SRP mode.
+          testProxy.element.searchboxLayoutMode = 'TallBottomContext';
+          testProxy.element.willFulfillInAim = false;
+          await microtasksFinished();
+          assertEquals(
+              'flex', window.getComputedStyle(getIconContainer()).display);
+          assertFalse(testProxy.element.hasAttribute('will-fulfill-in-aim'));
+          assertTrue(window.getComputedStyle(getAimIcon())
+                         .getPropertyValue('-webkit-mask-image')
+                         .includes('search_cr23'));
+
+          testProxy.element.willFulfillInAim = true;
+          await microtasksFinished();
+          assertTrue(window.getComputedStyle(getAimIcon())
+                         .getPropertyValue('-webkit-mask-image')
+                         .includes('search_spark'));
+        } finally {
+          loadTimeData.overrideValues({
+            dynamicAimFulfillmentEnabled: originalDynamicAim,
+          });
+        }
+      });
+
   test('ntp composebox uses configured forward submit icon', async () => {
     createComposeboxElement(testProxy, {
       searchboxNextEnabled: true,

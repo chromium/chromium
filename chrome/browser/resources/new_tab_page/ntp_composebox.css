@@ -75,6 +75,18 @@
   flex-shrink: 0;
 }
 
+/* When the leading input icon is shown (when the plus button is not in the
+ * input row, e.g., compact mode with attached tabs or tall layout modes),
+ * replace the AIM spark icon with the search loupe while fulfilling on SRP. */
+:host(:not([will-fulfill-in-aim])) #composeboxInput::part(aim-icon) {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/search_cr23_old.svg);
+}
+
+:host-context([webui-rounded-icons]):host(:not([will-fulfill-in-aim]))
+    #composeboxInput::part(aim-icon) {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/search_cr23.svg);
+}
+
 #context {
   display: flex;
   flex-direction: column;
