@@ -12,11 +12,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/scoped_hglobal.h"
 #include "base/win/shlwapi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ui {
 namespace {
@@ -120,8 +124,9 @@ class MockVirtualFilesDataObject
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IDataObject> {
  public:
-  explicit MockVirtualFilesDataObject(bool return_null_stream = false)
-      : return_null_stream_(return_null_stream) {}
+  explicit MockVirtualFilesDataObject(TYMED null_medium = TYMED_NULL,
+                                      bool has_medium_owner = false)
+      : null_medium_(null_medium), has_medium_owner_(has_medium_owner) {}
 
   IFACEMETHODIMP GetData(FORMATETC* format_etc, STGMEDIUM* medium) override {
     if (!format_etc || !medium) {
@@ -150,9 +155,18 @@ class MockVirtualFilesDataObject
 
     if (format_etc->cfFormat ==
         ClipboardFormatType::FileContentAtIndexType(0).ToFormatEtc().cfFormat) {
-      if (return_null_stream_) {
-        *medium = {
-            .tymed = TYMED_ISTREAM, .pstm = nullptr, .pUnkForRelease = nullptr};
+      if (null_medium_ != TYMED_NULL) {
+        *medium = {};
+        medium->tymed = null_medium_;
+        if (null_medium_ == TYMED_ISTREAM) {
+          medium->pstm = nullptr;
+        } else {
+          medium->pstg = nullptr;
+        }
+        if (has_medium_owner_) {
+          medium->pUnkForRelease = this;
+          AddRef();
+        }
         return S_OK;
       }
       HGLOBAL hglobal = ::GlobalAlloc(GHND, 4);
@@ -211,7 +225,8 @@ class MockVirtualFilesDataObject
   IFACEMETHODIMP EnumDAdvise(IEnumSTATDATA**) override { return E_NOTIMPL; }
 
  private:
-  const bool return_null_stream_;
+  const TYMED null_medium_;
+  const bool has_medium_owner_;
 };
 
 // Emits a FILEGROUPDESCRIPTORW that allocates room for `allocated_items`
@@ -456,8 +471,7 @@ TEST_F(ClipboardUtilWinTest, GetFileContents) {
 
 TEST_F(ClipboardUtilWinTest, GetFileContentsWithNullStream) {
   Microsoft::WRL::ComPtr<IDataObject> data_object =
-      Microsoft::WRL::Make<MockVirtualFilesDataObject>(
-          /*return_null_stream=*/true);
+      Microsoft::WRL::Make<MockVirtualFilesDataObject>(TYMED_ISTREAM);
 
   std::wstring filename;
   std::vector<uint8_t> file_contents = {1, 2, 3};
@@ -465,6 +479,35 @@ TEST_F(ClipboardUtilWinTest, GetFileContentsWithNullStream) {
                                               &file_contents));
   EXPECT_EQ(filename, L"File1.txt");
   EXPECT_TRUE(file_contents.empty());
+}
+
+TEST_F(ClipboardUtilWinTest, GetVirtualFilesAsTempFilesRejectsNullInterfaces) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::UI};
+
+  for (bool chunked_read : {false, true}) {
+    SCOPED_TRACE(chunked_read);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kVirtualFileChunkedRead,
+                                      chunked_read);
+    for (TYMED medium : {TYMED_ISTREAM, TYMED_ISTORAGE}) {
+      SCOPED_TRACE(medium);
+      for (bool has_medium_owner : {false, true}) {
+        SCOPED_TRACE(has_medium_owner);
+        Microsoft::WRL::ComPtr<IDataObject> data_object =
+            Microsoft::WRL::Make<MockVirtualFilesDataObject>(medium,
+                                                             has_medium_owner);
+        base::test::TestFuture<
+            const std::vector<std::pair<base::FilePath, base::FilePath>>&>
+            future;
+        clipboard_util::GetVirtualFilesAsTempFiles(data_object.Get(),
+                                                   future.GetCallback());
+        EXPECT_TRUE(future.Get().empty());
+        EXPECT_EQ(2u, data_object->AddRef());
+        EXPECT_EQ(1u, data_object->Release());
+      }
+    }
+  }
 }
 
 TEST_F(ClipboardUtilWinTest, GetVirtualFilenamesRejectsOversizedItemCount) {

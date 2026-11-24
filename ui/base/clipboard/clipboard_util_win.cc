@@ -316,6 +316,17 @@ HGLOBAL CopyFileContentsToHGlobal(IDataObject* data_object, LONG index) {
                &content))
     return hdata;
 
+  if ((content.tymed == TYMED_ISTREAM && !content.pstm) ||
+      (content.tymed == TYMED_ISTORAGE && !content.pstg)) {
+    LOG(WARNING) << "Drag source returned a null file contents interface for "
+                    "storage medium "
+                 << content.tymed;
+    // Release the cleanup owner without releasing the missing interface.
+    content.tymed = TYMED_NULL;
+    ReleaseStgMedium(&content);
+    return nullptr;
+  }
+
   HRESULT hr = S_OK;
 
   if (content.tymed == TYMED_ISTORAGE) {
