@@ -10,12 +10,10 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -28,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -35,14 +34,12 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
-#include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -319,10 +316,7 @@ void ClipboardPromise::HandleReadWithPermission(
   // Snapshot the sequence number before format enumeration so a clipboard
   // change during the async IPC will be detected by getType() (fail-closed).
   // See crbug.com/498411773.
-  if (RuntimeEnabledFeatures::
-          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
-    sequence_number_at_read_start_ = system_clipboard->SequenceNumber();
-  }
+  sequence_number_at_read_start_ = system_clipboard->SequenceNumber();
 
 #if BUILDFLAG(IS_MAC)
   // Check macOS platform permission state.
@@ -344,30 +338,12 @@ void ClipboardPromise::ResolveRead() {
     return;
   }
   ScriptState::Scope scope(script_state);
-  HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>> items;
-  HeapVector<Member<ClipboardItem>> clipboard_items;
-  if (RuntimeEnabledFeatures::
-          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
-    clipboard_items = {MakeGarbageCollected<ClipboardItem>(
-        item_mime_types_, sequence_number_at_read_start_, GetExecutionContext(),
-        /*sanitize_html_for_lazy_read=*/!will_read_unprocessed_html_,
-        ClipboardItem::AccessMode::kLazy)};
-  } else {
-    base::UmaHistogramCounts10000(
-        "Blink.Clipboard.EagerRead.TotalBlobSizeKB",
-        static_cast<int>(total_eager_read_blob_size_ / 1024));
-    items.ReserveInitialCapacity(clipboard_item_data_.size());
-
-    for (const auto& item : clipboard_item_data_) {
-      if (!item.second) {
-        continue;
-      }
-      auto promise =
-          ToResolvedPromise<V8UnionBlobOrString>(script_state, item.second);
-      items.emplace_back(item.first, promise);
-    }
-    clipboard_items = {MakeGarbageCollected<ClipboardItem>(items)};
-  }
+  HeapVector<Member<ClipboardItem>> clipboard_items = {
+      MakeGarbageCollected<ClipboardItem>(
+          item_mime_types_, sequence_number_at_read_start_,
+          GetExecutionContext(),
+          /*sanitize_html_for_lazy_read=*/!will_read_unprocessed_html_,
+          ClipboardItem::AccessMode::kLazy)};
   script_promise_resolver_->DowncastTo<IDLSequence<ClipboardItem>>()->Resolve(
       clipboard_items);
 }
@@ -402,63 +378,13 @@ void ClipboardPromise::OnReadAvailableFormatNames(
     return;
   }
 
-  if (RuntimeEnabledFeatures::
-          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
-    item_mime_types_.ReserveInitialCapacity(format_names.size());
-  } else {
-    clipboard_item_data_.ReserveInitialCapacity(format_names.size());
-  }
+  item_mime_types_.ReserveInitialCapacity(format_names.size());
   for (const String& format_name : format_names) {
     if (ClipboardItem::supports(GetExecutionContext(), format_name)) {
-      if (RuntimeEnabledFeatures::
-              ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
-        item_mime_types_.emplace_back(format_name);
-      } else {
-        clipboard_item_data_.emplace_back(format_name,
-                                          /* Placeholder value. */ nullptr);
-      }
+      item_mime_types_.emplace_back(format_name);
     }
   }
-  if (RuntimeEnabledFeatures::
-          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
-    ResolveRead();
-  } else {
-    ReadNextRepresentation();
-  }
-}
-
-void ClipboardPromise::ReadNextRepresentation() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!GetExecutionContext())
-    return;
-  if (clipboard_representation_index_ == clipboard_item_data_.size()) {
-    ResolveRead();
-    return;
-  }
-
-  ClipboardReader* clipboard_reader = ClipboardReader::Create(
-      GetExecutionContext(), GetSystemClipboard(),
-      clipboard_item_data_[clipboard_representation_index_].first, this,
-      /*sanitize_html=*/!will_read_unprocessed_html_);
-  if (!clipboard_reader) {
-    OnRead(nullptr,
-           clipboard_item_data_[clipboard_representation_index_].first);
-    return;
-  }
-  clipboard_reader->Read();
-}
-
-void ClipboardPromise::OnRead(Blob* blob, const String& mime_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // ClipboardPromise tracks representation index internally, so ignore
-  // mime_type.
-  if (blob) {
-    clipboard_item_data_[clipboard_representation_index_].second =
-        MakeGarbageCollected<V8UnionBlobOrString>(blob);
-    total_eager_read_blob_size_ += blob->size();
-  }
-  ++clipboard_representation_index_;
-  ReadNextRepresentation();
+  ResolveRead();
 }
 
 void ClipboardPromise::OnReadPlainText(const String& text) {
@@ -895,20 +821,6 @@ bool ClipboardPromise::RejectIfDocumentNotFocused() {
   return true;
 }
 
-LocalFrame* ClipboardPromise::GetLocalFrame() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ExecutionContext* context = GetExecutionContext();
-  // In case the context was destroyed and the caller didn't check for it, we
-  // just return nullptr.
-  if (!context) {
-    return nullptr;
-  }
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    return window->GetFrame();
-  }
-  return nullptr;
-}
-
 SystemClipboard* ClipboardPromise::GetSystemClipboard() {
   ExecutionContext* context = GetExecutionContext();
   if (!context) {
@@ -959,7 +871,6 @@ void ClipboardPromise::Trace(Visitor* visitor) const {
   visitor->Trace(clipboard_item_data_);
   visitor->Trace(item_mime_types_);
   visitor->Trace(clipboard_item_data_with_promises_);
-  ClipboardReaderResultHandler::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -18,7 +17,6 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -55,12 +53,7 @@ class ClipboardPngReader final : public ClipboardReader {
  private:
   void OnReadPng(mojo_base::BigBuffer data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    Blob* blob = nullptr;
-    if (RuntimeEnabledFeatures::
-            ReadClipboardDataOnClipboardItemGetTypeEnabled() ||
-        data.size()) {
-      blob = Blob::Create(data, ui::kMimeTypePng);
-    }
+    Blob* blob = Blob::Create(data, ui::kMimeTypePng);
     base::UmaHistogramBoolean("Blink.Clipboard.Reader.ProcessedDataNull",
                               !data.size());
     result_handler_->OnRead(blob, ui::kMimeTypePng);
@@ -127,12 +120,7 @@ class ClipboardTextReader final : public ClipboardReader {
 
   void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    Blob* blob = nullptr;
-    if (RuntimeEnabledFeatures::
-            ReadClipboardDataOnClipboardItemGetTypeEnabled() ||
-        utf8_bytes.size()) {
-      blob = Blob::Create(utf8_bytes, ui::kMimeTypePlainText);
-    }
+    Blob* blob = Blob::Create(utf8_bytes, ui::kMimeTypePlainText);
     result_handler_->OnRead(blob, ui::kMimeTypePlainText);
   }
 };
@@ -218,12 +206,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
 
   void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    Blob* blob = nullptr;
-    if (RuntimeEnabledFeatures::
-            ReadClipboardDataOnClipboardItemGetTypeEnabled() ||
-        utf8_bytes.size()) {
-      blob = Blob::Create(utf8_bytes, ui::kMimeTypeHtml);
-    }
+    Blob* blob = Blob::Create(utf8_bytes, ui::kMimeTypeHtml);
     result_handler_->OnRead(blob, ui::kMimeTypeHtml);
   }
 

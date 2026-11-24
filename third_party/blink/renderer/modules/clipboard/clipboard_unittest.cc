@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/modules/clipboard/mock_clipboard_permission_service.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -584,51 +583,9 @@ TEST_F(ClipboardTest, LazyReadMultipleGetType_Histogram) {
       "Blink.Clipboard.LazyRead.TotalBlobSizeKB", 5, 1);
 }
 
-// Tests that Blink.Clipboard.EagerRead.TotalBlobSizeKB histogram is recorded
-// when clipboard.read() completes in eager (non-lazy) mode.
-TEST_F(ClipboardTest, EagerReadTotalBlobSizeKB_Histogram) {
-  ScopedReadClipboardDataOnClipboardItemGetTypeForTest disable_lazy(false);
-  base::HistogramTester histogram_tester;
-  V8TestingScope scope;
-  ExecutionContext* executionContext = GetFrame().DomWindow();
-
-  // Write ~3 KB of plain text (3072 chars ≈ 3 KB).
-  String plain_text = String(Vector<UChar>(3072, 'A'));
-  WritePlainTextToClipboard(plain_text);
-  // Write ~2 KB of HTML (2048 chars ≈ 2 KB).
-  String html_text = String(Vector<UChar>(2048, 'B'));
-  WriteHtmlToClipboard(html_text);
-
-  EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<1>(
-          [](mojom::blink::PermissionService::RequestPermissionCallback
-                 callback) {
-            std::move(callback).Run(
-                mojom::blink::PermissionStatusWithDetails::New(
-                    mojom::blink::PermissionStatus::GRANTED, nullptr));
-          }));
-  BindMockPermissionService(executionContext);
-  SetSecureOrigin(executionContext);
-  SetPageFocus(true);
-
-  // Read clipboard in eager mode (lazy feature disabled).
-  ScriptPromise<IDLSequence<ClipboardItem>> promise =
-      ClipboardPromise::CreateForRead(executionContext, scope.GetScriptState(),
-                                      nullptr, scope.GetExceptionState());
-  ScriptPromiseTester read_tester(scope.GetScriptState(), promise);
-  read_tester.WaitUntilSettled();
-  ASSERT_TRUE(read_tester.IsFulfilled());
-
-  // Histogram should record ~5 KB because eager mode reads all
-  // MIME types: ~3 KB text/plain + ~2 KB text/html.
-  histogram_tester.ExpectUniqueSample(
-      "Blink.Clipboard.EagerRead.TotalBlobSizeKB", 5, 1);
-}
-
 // Tests that Blink.Clipboard.Reader.ProcessedDataNull histogram is recorded
-// the text clipboard reader receives empty data from the OS clipboard.
+// when the text clipboard reader receives empty data from the OS clipboard.
 TEST_F(ClipboardTest, ReaderProcessedDataNull_EmptyText) {
-  ScopedReadClipboardDataOnClipboardItemGetTypeForTest disable_lazy(false);
   base::HistogramTester histogram_tester;
   V8TestingScope scope;
   ExecutionContext* executionContext = GetFrame().DomWindow();
@@ -649,13 +606,18 @@ TEST_F(ClipboardTest, ReaderProcessedDataNull_EmptyText) {
   SetSecureOrigin(executionContext);
   SetPageFocus(true);
 
-  // Read clipboard in eager mode — text reader will get empty data.
   ScriptPromise<IDLSequence<ClipboardItem>> promise =
       ClipboardPromise::CreateForRead(executionContext, scope.GetScriptState(),
                                       nullptr, scope.GetExceptionState());
   ScriptPromiseTester read_tester(scope.GetScriptState(), promise);
   read_tester.WaitUntilSettled();
   ASSERT_TRUE(read_tester.IsFulfilled());
+
+  auto* get_text = MakeGarbageCollected<ClipboardItemGetType>("text/plain");
+  auto text_promise = promise.Then(scope.GetScriptState(), get_text);
+  ScriptPromiseTester text_tester(scope.GetScriptState(), text_promise);
+  text_tester.WaitUntilSettled();
+  EXPECT_TRUE(text_tester.IsFulfilled());
 
   // Histogram should record true because the text reader received empty data.
   histogram_tester.ExpectUniqueSample(

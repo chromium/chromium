@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_PROMISE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_PROMISE_H_
 
-#include <stdint.h>
-
 #include <optional>
 #include <utility>
 
@@ -21,18 +19,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
-#include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
 
-class Blob;
 class ClipboardWriter;
-class LocalFrame;
 class ExceptionState;
 class ExecutionContext;
 class ClipboardItem;
@@ -47,8 +41,7 @@ class SystemClipboard;
 // types. Spec: https://w3c.github.io/clipboard-apis/#async-clipboard-api
 class MODULES_EXPORT ClipboardPromise final
     : public GarbageCollected<ClipboardPromise>,
-      public ExecutionContextLifecycleObserver,
-      public ClipboardReaderResultHandler {
+      public ExecutionContextLifecycleObserver {
  public:
   // Creates a promise for reading clipboard data.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-read
@@ -99,19 +92,6 @@ class MODULES_EXPORT ClipboardPromise final
 
   // Handles rejections originating from the ClipboardWriter.
   void RejectFromReadOrDecodeFailure();
-
-  // TODO(crbug.com/487128731): Remove ClipboardReaderResultHandler interface
-  // from ClipboardPromise once lazy read getType is stable.
-  // Adds the given `blob` to the `clipboard_item_data_`.
-  void OnRead(Blob* blob, const String& mime_type) override;
-
-  // Returns the local frame associated with the promise.
-  LocalFrame* GetLocalFrame() const override;
-
-  // Returns the execution context associated with the promise.
-  ExecutionContext* GetExecutionContext() const override {
-    return ExecutionContextLifecycleObserver::GetExecutionContext();
-  }
 
   SystemClipboard* GetSystemClipboard();
 
@@ -172,9 +152,6 @@ class MODULES_EXPORT ClipboardPromise final
   // `format_names`: The available format names on the clipboard
   void OnReadAvailableFormatNames(const Vector<String>& format_names);
 
-  // Reads the next clipboard representation.
-  void ReadNextRepresentation();
-
   // Resolves the read promise.
   void ResolveRead();
 
@@ -223,7 +200,7 @@ class MODULES_EXPORT ClipboardPromise final
   // Clipboard sequence number as of the start of the paste event whose implicit
   // permission grant this read is riding.
   std::optional<absl::uint128> sequence_number_at_paste_start_;
-  // The list of formats read from the clipboard.
+  // Formats and resolved Blob or string data to be written to the clipboard.
   HeapVector<std::pair<String, Member<V8UnionBlobOrString>>>
       clipboard_item_data_;
   // The list of formats with their corresponding promises to the Blob data to
@@ -236,10 +213,6 @@ class MODULES_EXPORT ClipboardPromise final
   // Stores the types provided by the web authors.
   Vector<String> write_clipboard_item_types_;
   HeapVector<String> item_mime_types_;
-  // Cumulative size of blobs read in eager mode for telemetry.
-  // Uses uint64_t to match Blob::size() return type and avoid truncation on
-  // 32-bit platforms.
-  uint64_t total_eager_read_blob_size_ = 0;
   // Sequence number snapshotted before format enumeration so the lazy-read
   // path can detect a clipboard change during the async IPC.
   // See crbug.com/498411773.

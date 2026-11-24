@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/single_sample_metrics.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -17,7 +16,6 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -74,8 +72,6 @@ ClipboardItem::ClipboardItem(const HeapVector<String>& mime_types,
       sequence_number_(sequence_number),
       access_mode_(access_mode),
       sanitize_html_for_lazy_read_(sanitize_html_for_lazy_read) {
-  CHECK(
-      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
   for (const auto& mime_type : mime_types) {
     String web_custom_format = Clipboard::ParseWebCustomFormat(mime_type);
     if (web_custom_format.empty()) {
@@ -139,8 +135,6 @@ ClipboardItem::ClipboardItem(
 Vector<String> ClipboardItem::types() const {
   Vector<String> types;
   if (access_mode_ == AccessMode::kLazy) {
-    CHECK(RuntimeEnabledFeatures::
-              ReadClipboardDataOnClipboardItemGetTypeEnabled());
     types.ReserveInitialCapacity(mime_types_.size());
     for (const auto& item : mime_types_) {
       types.push_back(item);
@@ -156,9 +150,6 @@ Vector<String> ClipboardItem::types() const {
 }
 
 void ClipboardItem::ResolveFormatData(const String& mime_type, Blob* blob) {
-  CHECK(
-      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
-
   if (representations_with_resolvers_.find(mime_type) ==
       representations_with_resolvers_.end()) {
     return;
@@ -213,9 +204,6 @@ ScriptPromise<Blob> ClipboardItem::getType(ScriptState* script_state,
     return ScriptPromise<Blob>();
   }
 
-  CHECK(
-      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
-
   if (!GetExecutionContext()) {
     return ScriptPromise<Blob>();
   }
@@ -256,8 +244,6 @@ ScriptPromise<Blob> ClipboardItem::getType(ScriptState* script_state,
 
 void ClipboardItem::ReadRepresentationFromClipboardReader(
     const String& format) {
-  CHECK(
-      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
   SystemClipboard* system_clipboard = GetSystemClipboard();
   if (!system_clipboard) {
     ResolveFormatData(format, nullptr);

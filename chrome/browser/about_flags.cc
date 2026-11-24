@@ -12874,12 +12874,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch6)},
 #endif
 
-    {"defer-os-clipboard-read-call-to-get-type",
-     flag_descriptions::kDeferOsClipboardReadCallToGetTypeName,
-     flag_descriptions::kDeferOsClipboardReadCallToGetTypeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kReadClipboardDataOnClipboardItemGetType)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"apb144-patch7", flag_descriptions::kApb144Patch7Name,
      flag_descriptions::kApb144Patch7Description, kOsAndroid,
