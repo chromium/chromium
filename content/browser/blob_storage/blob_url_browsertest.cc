@@ -4,14 +4,21 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/pattern.h"
-#include "base/test/run_until.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -26,6 +33,7 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/resource_load_observer.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -74,6 +82,7 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
 
   bool allow_cookie_access_ = false;
 };
+
 }  // namespace
 
 // Tests of the blob: URL scheme.
@@ -96,6 +105,70 @@ class BlobUrlBrowserTest : public ContentBrowserTest {
 
   MockContentBrowserClient& GetMockClient() { return *client_; }
 
+  testing::AssertionResult SelectFileThenModifyItsContents(
+      base::ScopedTempDir& temp_dir) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!temp_dir.CreateUniqueTempDir()) {
+      return testing::AssertionFailure()
+             << "failed to create temporary directory";
+    }
+    const base::FilePath path = temp_dir.GetPath().AppendASCII("upload.txt");
+    const base::Time original_time = base::Time::Now();
+    if (!base::WriteFile(path, "original contents")) {
+      return testing::AssertionFailure() << "failed to write file";
+    }
+    if (!base::TouchFile(path, original_time, original_time)) {
+      return testing::AssertionFailure()
+             << "failed to set the original timestamp";
+    }
+    if (!NavigateToURL(shell(),
+                       embedded_test_server()->GetURL("/title1.html"))) {
+      return testing::AssertionFailure() << "navigation failed";
+    }
+
+    FileChooserDelegate delegate(path, base::OnceClosure());
+    shell()->web_contents()->SetDelegate(&delegate);
+    const EvalJsResult selection = EvalJs(shell(), R"(
+      (async () => {
+        window.fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        document.body.append(fileInput);
+        await new Promise(resolve => {
+          fileInput.onchange = resolve;
+          fileInput.click();
+        });
+        return 'selected';
+      })()
+    )");
+    shell()->web_contents()->SetDelegate(shell());
+    if (!selection.is_ok()) {
+      return testing::AssertionFailure() << selection.ExtractError();
+    }
+
+    // Blob registration posts a timestamp read to the ThreadPool, then stores
+    // the reply on the blob storage context's sequence. Wait for that to
+    // complete by round-tripping to the BlobStorageContext, waiting for
+    // ThreadPool tasks to complete, and then round tripping BlobStorageContext
+    // again.
+    mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context(
+        ChromeBlobStorageContext::GetRemoteFor(
+            shell()->web_contents()->GetBrowserContext()));
+    blob_storage_context.FlushForTesting();
+    base::RunLoop timestamp_read;
+    base::ThreadPoolInstance::Get()->FlushAsyncForTesting(
+        timestamp_read.QuitClosure());
+    timestamp_read.Run();
+    blob_storage_context.FlushForTesting();
+
+    // Avoid depending on filesystem timestamp granularity or either reader's
+    // subsecond tolerance.
+    const base::Time modified_time = original_time + base::Seconds(10);
+    if (!base::TouchFile(path, modified_time, modified_time)) {
+      return testing::AssertionFailure() << "failed to modify file timestamp";
+    }
+    return testing::AssertionSuccess();
+  }
+
   void TearDownOnMainThread() override {
     client_.reset();
     ContentBrowserTest::TearDownOnMainThread();
@@ -104,6 +177,59 @@ class BlobUrlBrowserTest : public ContentBrowserTest {
  private:
   std::unique_ptr<MockContentBrowserClient> client_;
 };
+
+// Regression test for crbug.com/587861740
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, FormDataUploadOfChangedFileFails) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(SelectFileThenModifyItsContents(temp_dir));
+
+  ResourceLoadObserver observer(shell());
+  EXPECT_EQ("TypeError", EvalJs(shell(), R"(
+    (async () => {
+      const data = new FormData();
+      data.append('file', fileInput.files[0]);
+      try {
+        const response = await fetch('/echo', {method: 'POST', body: data});
+        return await response.text();
+      } catch (error) {
+        return error.name;
+      }
+    })()
+  )"));
+  const GURL upload_url = embedded_test_server()->GetURL("/echo");
+  observer.WaitForResourceCompletion(upload_url);
+  ASSERT_TRUE(observer.GetResource(upload_url));
+  EXPECT_EQ(net::ERR_UPLOAD_FILE_CHANGED,
+            (*observer.GetResource(upload_url))->net_error);
+}
+
+// Same setup as FormDataUploadOfChangedFileFails, but the page drains the
+// FormData locally. Also regression test for crbug.com/587861740
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
+                       FormDataLocalReadOfChangedFileFails) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(SelectFileThenModifyItsContents(temp_dir));
+
+  // FileReaderLoader maps ERR_UPLOAD_FILE_CHANGED to NotReadableError.
+  EXPECT_EQ(
+      "NotReadableError: The requested file could not be read, typically due "
+      "to permission problems that have occurred after a reference to a file "
+      "was acquired.",
+      EvalJs(shell(), R"(
+    (async () => {
+      const data = new FormData();
+      data.append('file', fileInput.files[0]);
+      try {
+        const body = await new Response(data).blob();
+        return await body.text();
+      } catch (error) {
+        return `${error.name}: ${error.message}`;
+      }
+    })()
+  )"));
+}
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, LinkToUniqueOriginBlob) {
   // Use a data URL to obtain a test page in a unique origin. The page

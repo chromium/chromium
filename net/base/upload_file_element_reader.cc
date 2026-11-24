@@ -287,8 +287,8 @@ int UploadFileElementReader::DoGetFileInfoComplete(int result) {
   // time is set, treat it as error. Note that |expected_modification_time_| may
   // have gone through multiple conversion steps involving loss of precision
   // (including conversion to time_t). Therefore the check below only verifies
-  // that the timestamps are within one second of each other. This check is used
-  // for sliced files.
+  // that the timestamps are within one second of each other. This check is
+  // used, for example, for Blink-provided files.
   if (!expected_modification_time_.is_null() &&
       (expected_modification_time_ - file_info_.last_modified)
               .magnitude()

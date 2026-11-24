@@ -189,14 +189,20 @@ void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
             base::BindOnce(
-                [](const base::FilePath& path) {
+                [](const base::FilePath& path, base::Time modification_time) {
                   base::File::Info info;
-                  if (!base::GetFileInfo(path, &info))
+                  if (!base::GetFileInfo(path, &info)) {
                     return SizeAndTime{0, std::nullopt};
+                  }
+                  // TODO(crbug.com/587861740): The modification time and the
+                  // size may describe different versions of the file. Is that a
+                  // problem?
                   return SizeAndTime{static_cast<uint64_t>(info.size),
-                                     info.last_modified};
+                                     modification_time.is_null()
+                                         ? info.last_modified
+                                         : modification_time};
                 },
-                item->path()),
+                item->path(), modification_time),
             base::BindOnce(
                 [](CaptureSnapshotCallback callback,
                    const SizeAndTime& result) {
