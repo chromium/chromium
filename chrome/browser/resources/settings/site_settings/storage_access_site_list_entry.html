@@ -1,56 +1,25 @@
-<style include="cr-shared-style settings-shared">
-  :host {
-    padding-inline-end: 4px;
-    display: block;
-  }
-
-  .row-aligned {
-    align-items: center;
-    display: flex;
-  }
-
-  .site-representation {
-    display: flex;
-  }
-
-  .list-frame {
-    padding-inline-end: 0;
-  }
-
-  .settings-row {
-    flex: 1;
-  }
-
-  storage-access-static-site-list-entry {
-    width: 100%;
-  }
-
-  cr-expand-button {
-    width: 100%;
-    --cr-section-vertical-padding: 0;
-  }
-</style>
-<div id="collapseParent" focus-row-container>
-  <!-- Static row, only if the exception applies to all domains, '*'. -->
-  <template is="dom-if" if="[[shouldBeStatic_(model.*)]]" restamp>
+<div>
+  ${this.shouldBeStatic_() ? html`
+    <!-- Static row, only if the exception applies to all domains, '*'. -->
     <storage-access-static-site-list-entry
-        model="[[getStaticSiteEntryForModel_(model.*)]]">
+        .model="${this.getStaticSiteEntryForModel_()}">
     </storage-access-static-site-list-entry>
-  </template>
-  <!-- Collapsible row, otherwise. -->
-  <template is="dom-if" if="[[shouldBeCollapsible_(model.*)]]" restamp>
+  ` : html`
+    <!-- Collapsible row, otherwise. -->
     <div class="list-item">
       <!-- Top row of the collapsible component that represents an origin. -->
-      <cr-expand-button id="expandButton" no-hover expanded="{{expanded_}}"
-          aria-label$="[[expandAriaLabel_]]"
-          focus-type="embedded-site">
+      <cr-expand-button id="expandButton" no-hover .expanded="${this.expanded_}"
+          @expanded-changed="${this.onExpandedChanged_}"
+          aria-label="${this.getExpandButtonAriaLabel_()}">
         <div class="settings-row">
-          <site-favicon url="[[model.origin]]"></site-favicon>
+          <site-favicon .url="${this.model.origin}"></site-favicon>
           <div class="middle" id="displayName">
             <div class="site-representation url-directionality text-elide">
-              [[model.displayName]]
+              ${this.model.displayName}
             </div>
-            <div class="second-line cr-secondary-text">[[description_]]</div>
+            <div class="second-line cr-secondary-text">
+              ${this.getDescription_()}
+            </div>
           </div>
         </div>
       </cr-expand-button>
@@ -58,22 +27,22 @@
       <div class="row-aligned">
         <div class="separator"></div>
         <cr-icon-button id="resetAllButton" class="icon-delete-gray"
-            aria-label$="[[getResetAllButtonAriaLabel_(model.*)]]"
-            on-click="onResetAllButtonClick_" focus-type="reset-all">
+            aria-label="${this.getResetAllButtonAriaLabel_()}"
+            @click="${this.onResetAllButtonClick_}">
         </cr-icon-button>
       </div>
     </div>
-    <template is="dom-if" if="[[expanded_]]" id="originList">
+    ${this.expanded_ ? html`
       <div class="list-frame">
-        <template is="dom-repeat" items="[[model.exceptions]]">
+        ${this.model.exceptions.map(item => html`
           <!-- Nested row that represents an embedding origin. -->
           <div class="hr">
             <storage-access-static-site-list-entry
-                model="[[getStaticSiteEntryForException_(item)]]">
+                .model="${this.getStaticSiteEntryForException_(item)}">
             </storage-access-static-site-list-entry>
           </div>
-        </template>
+        `)}
       </div>
-    </template>
-  </template>
+    ` : ''}
+  `}
 </div>

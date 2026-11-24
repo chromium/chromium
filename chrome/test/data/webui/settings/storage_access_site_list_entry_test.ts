@@ -4,18 +4,16 @@
 
 /** @fileoverview Suite of tests for storage-access-site-list-entry. */
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import type {CrExpandButtonElement, StorageAccessStaticSiteListEntry, StorageAccessSiteException, StorageAccessSiteListEntryElement} from 'chrome://settings/lazy_load.js';
+import type {CrExpandButtonElement, StorageAccessSiteException, StorageAccessSiteListEntryElement, StorageAccessStaticSiteListEntry} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
-import {createStorageAccessSiteException, createStorageAccessEmbeddingException} from './test_util.js';
-// clang-format on
+import {createStorageAccessEmbeddingException, createStorageAccessSiteException} from './test_util.js';
 
 /**
  * Origin used in `storageAccessException` and
@@ -73,17 +71,15 @@ suite('StorageAccessSiteListEntry', function() {
 
   /**
    * Configures the test element for a particular category.
-   * @param exceptions The `StorageAccessSiteException` to use.
    */
   function setUpEntry(exception: StorageAccessSiteException): Promise<void> {
     testElement.model = exception;
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('origin site name', async function() {
     await setUpEntry(storageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
     const displayName = testElement.shadowRoot.querySelector('#displayName');
     assertTrue(!!displayName);
 
@@ -96,7 +92,6 @@ suite('StorageAccessSiteListEntry', function() {
   test('origin site description', async function() {
     await setUpEntry(storageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
     const displayName = testElement.shadowRoot.querySelector('#displayName');
     assertTrue(!!displayName);
 
@@ -112,7 +107,7 @@ suite('StorageAccessSiteListEntry', function() {
             '#expandButton');
     assertTrue(!!expandButton);
     expandButton.click();
-    await expandButton.updateComplete;
+    await microtasksFinished();
 
     // Validate the row description when opened.
     assertEquals(
@@ -122,13 +117,12 @@ suite('StorageAccessSiteListEntry', function() {
   test('nested site rows', async function() {
     await setUpEntry(storageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
     const expandButton =
         testElement.shadowRoot.querySelector<CrExpandButtonElement>(
             '#expandButton');
     assertTrue(!!expandButton);
     expandButton.click();
-    await expandButton.updateComplete;
+    await microtasksFinished();
 
     // Validate that the nested site entries are created on the collapsible
     // element.
@@ -138,12 +132,8 @@ suite('StorageAccessSiteListEntry', function() {
     assertEquals(
         storageAccessException.exceptions.length, siteListEntry.length);
 
-    // Validate that the first nested site entry.
-    const firstNested = siteListEntry[0];
-    assertTrue(!!firstNested);
-    const firstException = storageAccessException.exceptions[0];
-    assertTrue(!!firstException);
-
+    // Validate the first nested site entry.
+    const firstException = storageAccessException.exceptions[0]!;
     const expectedFirstReset = loadTimeData.getStringF(
         'storageAccessResetSite', origin, firstException.embeddingDisplayName);
 
@@ -157,14 +147,10 @@ suite('StorageAccessSiteListEntry', function() {
       incognito: firstException.incognito,
     };
 
-    assertDeepEquals(expectedFirstModel, firstNested.model);
+    assertDeepEquals(expectedFirstModel, siteListEntry[0]!.model);
 
-    // Validate that the second nested site entry.
-    const secondNested = siteListEntry[1];
-    assertTrue(!!secondNested);
-    const secondException = storageAccessException.exceptions[1];
-    assertTrue(!!secondException);
-
+    // Validate the second nested site entry.
+    const secondException = storageAccessException.exceptions[1]!;
     const expectedSecondReset = loadTimeData.getStringF(
         'storageAccessResetSite', origin, secondException.embeddingDisplayName);
 
@@ -178,13 +164,12 @@ suite('StorageAccessSiteListEntry', function() {
       incognito: secondException.incognito,
     };
 
-    assertDeepEquals(expectedSecondModel, secondNested.model);
+    assertDeepEquals(expectedSecondModel, siteListEntry[1]!.model);
   });
 
   test('reset all permissions with the same origin site', async function() {
     await setUpEntry(storageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
     const resetAllButton =
         testElement.shadowRoot.querySelector<HTMLElement>('#resetAllButton');
     assertTrue(!!resetAllButton);
@@ -220,7 +205,6 @@ suite('StorageAccessSiteListEntry', function() {
   test('reset all aria-label', async function() {
     await setUpEntry(storageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
     const resetAllButton =
         testElement.shadowRoot.querySelector<HTMLElement>('#resetAllButton');
     assertTrue(!!resetAllButton);
@@ -236,7 +220,6 @@ suite('StorageAccessSiteListEntry', function() {
   test('expand aria-label', async function() {
     await setUpEntry(storageAccessException);
 
-    assertTrue(!!testElement.shadowRoot);
     const expandButton =
         testElement.shadowRoot.querySelector<CrExpandButtonElement>(
             '#expandButton');
@@ -249,7 +232,7 @@ suite('StorageAccessSiteListEntry', function() {
         expectedExpandOpenArialLabel, expandButton.getAttribute('aria-label'));
 
     expandButton.click();
-    await expandButton.updateComplete;
+    await microtasksFinished();
 
     // Validate expand button aria-label when opened.
     const expectedExpandCloseArialLabel =
@@ -262,8 +245,6 @@ suite('StorageAccessSiteListEntry', function() {
       'static entry for exception that applies to everything',
       async function() {
         await setUpEntry(storageAccessExceptionAppliesToEverything);
-
-        assertTrue(!!testElement.shadowRoot);
 
         const staticRow = testElement.shadowRoot.querySelector(
             'storage-access-static-site-list-entry');
