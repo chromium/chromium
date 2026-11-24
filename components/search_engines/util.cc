@@ -477,9 +477,12 @@ void RemoveDuplicatePrepopulateIDs(
   // Selection and cleanup phase: swap out elements if necessary to ensure new
   // vector contains only the best representative for each prepopulate_id.
   // Then delete the remaining duplicates.
-  for (auto& id_data : duplication_map) {
-    const auto prepopulated_engine =
-        prepopulated_engine_map.find(id_data.first);
+  for (auto& [dupe_id, dupe_data] : duplication_map) {
+    if (dupe_data.duplicates.empty()) {
+      continue;
+    }
+
+    const auto prepopulated_engine = prepopulated_engine_map.find(dupe_id);
     std::unique_ptr<TemplateURLData> prepopulated_data =
         (prepopulated_engine != prepopulated_engine_map.end())
             ? TemplateURLDataFromPrepopulatedEngine(
@@ -498,10 +501,10 @@ void RemoveDuplicatePrepopulateIDs(
     // more like the value we will end up with in the end.
     // Otherwise, a URL is best if it matches the prepopulated data's keyword;
     // if none match, just fall back to using the one with the lowest ID.
-    auto& best = checked_urls[id_data.second.index_representative];
+    auto& best = checked_urls[dupe_data.index_representative];
     if (!has_default_search_keyword(best)) {
       bool matched_keyword = has_prepopulated_keyword(best);
-      for (auto& duplicate : id_data.second.duplicates) {
+      for (auto& duplicate : dupe_data.duplicates) {
         if (has_default_search_keyword(duplicate)) {
           best.swap(duplicate);
           break;
@@ -517,7 +520,7 @@ void RemoveDuplicatePrepopulateIDs(
     }
 
     // Clean up what's left.
-    for (const auto& duplicate : id_data.second.duplicates) {
+    for (const auto& duplicate : dupe_data.duplicates) {
       if (service) {
         service->RemoveKeyword(duplicate->id());
         if (removed_keyword_guids) {
