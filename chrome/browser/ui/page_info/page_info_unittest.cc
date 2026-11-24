@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -51,6 +52,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/page_info_action.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -89,6 +91,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -303,6 +309,21 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
                                        visible_security_state_);
     page_info_ = std::make_unique<PageInfo>(std::move(delegate), web_contents(),
                                             url(), surface);
+    base::RunLoop run_loop;
+    page_info_->InitializeUiState(mock_ui(), run_loop.QuitClosure());
+    run_loop.Run();
+    return page_info_.get();
+  }
+
+  // Creates `page_info_` using the given `delegate`, e.g. a mock. Must be
+  // called at most once per test, before any call to `page_info()`.
+  PageInfo* CreatePageInfoWithDelegate(
+      std::unique_ptr<ChromePageInfoDelegate> delegate) {
+    CHECK(!page_info_);
+    delegate->SetSecurityStateForTests(security_level_,
+                                       visible_security_state_);
+    page_info_ =
+        std::make_unique<PageInfo>(std::move(delegate), web_contents(), url());
     base::RunLoop run_loop;
     page_info_->InitializeUiState(mock_ui(), run_loop.QuitClosure());
     run_loop.Run();
@@ -2480,6 +2501,193 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT),
       PageInfoUI::PermissionStateToUIString(&delegate, info));
+}
+
+namespace {
+
+// A ChromePageInfoDelegate whose navigation entry points are mocked out, so
+// that PageInfo's actions can be triggered without a browser window.
+class MockChromePageInfoDelegate : public ChromePageInfoDelegate {
+ public:
+  explicit MockChromePageInfoDelegate(content::WebContents* web_contents)
+      : ChromePageInfoDelegate(web_contents) {}
+
+  MOCK_METHOD(void, ShowSiteSettings, (const GURL&), (override));
+  MOCK_METHOD(void, ShowCookiesSettings, (), (override));
+  MOCK_METHOD(void, ShowSyncSettings, (), (override));
+  MOCK_METHOD(void, OpenCookiesDialog, (), (override));
+  MOCK_METHOD(void,
+              OpenConnectionHelpCenterPage,
+              (const ui::Event&),
+              (override));
+  MOCK_METHOD(void, OpenSafetyTipHelpCenterPage, (), (override));
+  MOCK_METHOD(void,
+              OpenSafeBrowsingHelpCenterPage,
+              (const ui::Event*, bool),
+              (override));
+  MOCK_METHOD(void,
+              OpenContentSettingsExceptions,
+              (ContentSettingsType),
+              (override));
+  MOCK_METHOD(void, OnCookiesPageOpened, (), (override));
+  MOCK_METHOD(void,
+              OnPageInfoActionOccurred,
+              (page_info::PageInfoAction),
+              (override));
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  MOCK_METHOD(void,
+              OnUserActionOnPasswordUi,
+              (safe_browsing::WarningAction),
+              (override));
+#endif
+};
+
+struct PageInfoActionTestCase {
+  // Name of the PageInfo entry point, used to identify failures.
+  const char* name;
+  // The action expected in the "WebsiteSettings.Action" histograms.
+  page_info::PageInfoAction expected_action;
+  // The expected user action.
+  const char* expected_user_action;
+  // Invokes the PageInfo entry point, after setting the expectations on the
+  // delegate call it should result in.
+  void (*trigger)(PageInfo& page_info, MockChromePageInfoDelegate& delegate);
+};
+
+}  // namespace
+
+// Verifies that each of the PageInfo entry points invoked by the UI forwards to
+// the delegate and records exactly its own action: once in the
+// "WebsiteSettings.Action" histograms, once as a user action, and once as a
+// notification to the delegate.
+//
+// Actions that require more setup are covered by dedicated tests instead, e.g.
+// OnPermissionsChanged and OnChosenObjectDeleted.
+TEST_F(PageInfoTest, ActionsRecordMetrics) {
+  const PageInfoActionTestCase kTestCases[] = {
+      {"OpenSiteSettingsView", page_info::PAGE_INFO_SITE_SETTINGS_OPENED,
+       "PageInfo.SiteSettings.Opened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate,
+                     ShowSiteSettings(GURL("http://www.example.com")));
+         page_info.OpenSiteSettingsView();
+       }},
+      {"OpenContentSettingsExceptions",
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED,
+       "PageInfo.SiteSettings.Opened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, OpenContentSettingsExceptions(
+                                   ContentSettingsType::GEOLOCATION));
+         page_info.OpenContentSettingsExceptions(
+             ContentSettingsType::GEOLOCATION);
+       }},
+      {"OpenCookiesSettingsView", page_info::PAGE_INFO_COOKIES_SETTINGS_OPENED,
+       "PageInfo.CookiesSubpage.SettingsLinkClicked",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, ShowCookiesSettings());
+         page_info.OpenCookiesSettingsView();
+       }},
+      {"OpenSyncSettingsView", page_info::PAGE_INFO_SYNC_SETTINGS_OPENED,
+       "PageInfo.CookiesSubpage.SyncSettingsLinkClicked",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, ShowSyncSettings());
+         page_info.OpenSyncSettingsView();
+       }},
+      {"OpenCookiesDialog", page_info::PAGE_INFO_COOKIES_DIALOG_OPENED,
+       "PageInfo.Cookies.Opened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, OpenCookiesDialog());
+         page_info.OpenCookiesDialog();
+       }},
+      {"OnCookiesPageOpened", page_info::PAGE_INFO_COOKIES_PAGE_OPENED,
+       "PageInfo.CookiesSubpage.Opened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, OnCookiesPageOpened());
+         page_info.OnCookiesPageOpened();
+       }},
+      {"OpenConnectionHelpCenterPage",
+       page_info::PAGE_INFO_CONNECTION_HELP_OPENED,
+       "PageInfo.Security.ConnectionHelp.Opened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, OpenConnectionHelpCenterPage(_));
+         page_info.OpenConnectionHelpCenterPage(ui::KeyEvent(
+             ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE));
+       }},
+      {"OpenSafetyTipHelpCenterPage",
+       page_info::PAGE_INFO_SAFETY_TIP_HELP_OPENED,
+       "PageInfo.SafetyTip.HelpOpened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, OpenSafetyTipHelpCenterPage());
+         page_info.OpenSafetyTipHelpCenterPage();
+       }},
+      {"OpenSafeBrowsingHelpCenterPage",
+       page_info::PAGE_INFO_SAFE_BROWSING_HELP_OPENED,
+       "PageInfo.SafeBrowsing.HelpOpened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, OpenSafeBrowsingHelpCenterPage(
+                                   nullptr, /*is_suspicious_site=*/false));
+         page_info.OpenSafeBrowsingHelpCenterPage(nullptr,
+                                                  /*is_suspicious_site=*/false);
+       }},
+      {"OpenSafeBrowsingHelpCenterPage (suspicious site)",
+       page_info::PAGE_INFO_UNSAFE_SITE_HELP_OPENED,
+       "PageInfo.UnsafeSite.HelpOpened",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate, OpenSafeBrowsingHelpCenterPage(
+                                   nullptr, /*is_suspicious_site=*/true));
+         page_info.OpenSafeBrowsingHelpCenterPage(nullptr,
+                                                  /*is_suspicious_site=*/true);
+       }},
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+      {"OnChangePasswordButtonPressed",
+       page_info::PAGE_INFO_CHANGE_PASSWORD_PRESSED,
+       "PageInfo.ChangePasswordPressed",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate,
+                     OnUserActionOnPasswordUi(
+                         safe_browsing::WarningAction::CHANGE_PASSWORD));
+         page_info.OnChangePasswordButtonPressed();
+       }},
+      {"OnAllowlistPasswordReuseButtonPressed",
+       page_info::PAGE_INFO_PASSWORD_REUSE_ALLOWED,
+       "PageInfo.PasswordReuseAllowed",
+       [](PageInfo& page_info, MockChromePageInfoDelegate& delegate) {
+         EXPECT_CALL(delegate,
+                     OnUserActionOnPasswordUi(
+                         safe_browsing::WarningAction::MARK_AS_LEGITIMATE));
+         page_info.OnAllowlistPasswordReuseButtonPressed();
+       }},
+#endif
+  };
+
+  auto owned_delegate =
+      std::make_unique<NiceMock<MockChromePageInfoDelegate>>(web_contents());
+  MockChromePageInfoDelegate* delegate = owned_delegate.get();
+  PageInfo* page_info = CreatePageInfoWithDelegate(std::move(owned_delegate));
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.name);
+    base::HistogramTester histograms;
+    base::UserActionTester user_actions;
+
+    EXPECT_CALL(*delegate, OnPageInfoActionOccurred(test.expected_action));
+    test.trigger(*page_info, *delegate);
+    Mock::VerifyAndClearExpectations(delegate);
+
+    histograms.ExpectUniqueSample(page_info::kWebsiteSettingsActionHistogram,
+                                  test.expected_action, 1);
+    histograms.ExpectUniqueSample("WebsiteSettings.Action.Default",
+                                  test.expected_action, 1);
+
+    // Only the expected user action is recorded, and none of the others.
+    for (const auto& other : kTestCases) {
+      const bool is_expected = std::string_view(other.expected_user_action) ==
+                               test.expected_user_action;
+      EXPECT_EQ(is_expected ? 1 : 0,
+                user_actions.GetActionCount(other.expected_user_action))
+          << other.expected_user_action;
+    }
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -993,7 +993,7 @@ void PageInfo::OpenContentSettingsExceptions(
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
-  RecordPageInfoAction(page_info::PAGE_INFO_CONNECTION_HELP_OPENED);
+  RecordPageInfoAction(page_info::PAGE_INFO_SITE_SETTINGS_OPENED);
   delegate_->OpenContentSettingsExceptions(content_settings_type);
 #endif
 }
