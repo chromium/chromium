@@ -202,6 +202,7 @@ BASE_DECLARE_FEATURE(kEdgeToEdgeExtraLogs);
 BASE_DECLARE_FEATURE(kEdgeToEdgeMonitorConfigurations);
 BASE_DECLARE_FEATURE(kEdgeToEdgeTablet);
 BASE_DECLARE_FEATURE(kEdgeToEdgeTopInset);
+BASE_DECLARE_FEATURE(kEdgeToEdgeTopPageColorSampling);
 BASE_DECLARE_FEATURE(kEdgeToEdgeUseBackupNavbarInsets);
 BASE_DECLARE_FEATURE(kEnableAndroidSidePanel);
 BASE_DECLARE_FEATURE(kEnableAndroidSidePanelDevFeature);

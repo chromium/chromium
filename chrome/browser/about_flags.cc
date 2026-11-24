@@ -6211,6 +6211,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeTopInset,
                                     kEdgeToEdgeTopInsetVariations,
                                     "EdgeToEdgeTopInset")},
+    {"edge-to-edge-top-page-color-sampling",
+     flag_descriptions::kEdgeToEdgeTopPageColorSamplingName,
+     flag_descriptions::kEdgeToEdgeTopPageColorSamplingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeTopPageColorSampling)},
 
     {"android-navigation-blur-transition-animation",
      flag_descriptions::kAndroidNavigationBlurTransitionAnimationName,

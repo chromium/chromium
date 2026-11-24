@@ -12250,6 +12250,7 @@ from previous Chrome versions.
   <int value="-821635312" label="EyeDropper:enabled"/>
   <int value="-821547066" label="AnimateSuggestionsListAppearance:disabled"/>
   <int value="-821236443" label="ComposeTextSelection:disabled"/>
+  <int value="-820776953" label="EdgeToEdgeTopPageColorSampling:disabled"/>
   <int value="-820676825" label="MessagesPreinstall:enabled"/>
   <int value="-820041355" label="enable-transition-compositing"/>
   <int value="-819896562" label="RouteMatching:enabled"/>
@@ -14973,6 +14974,7 @@ from previous Chrome versions.
   <int value="-16732224"
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:enabled"/>
   <int value="-16413037" label="ReduceUserAgent:enabled"/>
+  <int value="-16334993" label="EdgeToEdgeTopPageColorSampling:enabled"/>
   <int value="-16086999" label="TrimOnFreeze:enabled"/>
   <int value="-15879016"
       label="OmniboxUIExperimentUnboldSuggestionText:disabled"/>

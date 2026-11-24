@@ -6139,6 +6139,13 @@ inline constexpr char kEdgeToEdgeTopInsetDescription[] =
     "unifies top inset consumption and allows opted-in "
     "pages to draw under the top inset.";
 
+inline constexpr char kEdgeToEdgeTopPageColorSamplingName[] =
+    "Edge-to-Edge Top Page Color Sampling";
+inline constexpr char kEdgeToEdgeTopPageColorSamplingDescription[] =
+    "Samples the color at the top of the web page and uses it for the status "
+    "bar when the page sits directly under the status bar. Requires the "
+    "Edge-to-Edge Top Inset feature.";
+
 inline constexpr char kEdgeToEdgeExtraLogsName[] = "edge-to-edge-extra-logs";
 inline constexpr char kEdgeToEdgeExtraLogsDescription[] =
     "When this is enabled, extra logs will be emitted for tracking "

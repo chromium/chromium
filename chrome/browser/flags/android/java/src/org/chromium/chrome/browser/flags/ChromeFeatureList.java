@@ -617,6 +617,8 @@ public abstract class ChromeFeatureList {
             "EdgeToEdgeMonitorConfigurations";
     public static final String EDGE_TO_EDGE_TABLET = "EdgeToEdgeTablet";
     public static final String EDGE_TO_EDGE_TOP_INSET = "EdgeToEdgeTopInset";
+    public static final String EDGE_TO_EDGE_TOP_PAGE_COLOR_SAMPLING =
+            "EdgeToEdgeTopPageColorSampling";
     public static final String EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS =
             "EdgeToEdgeUseBackupNavbarInsets";
     public static final String EMAIL_VERIFICATION_PROTOCOL = "EmailVerificationProtocol";
@@ -1271,6 +1273,8 @@ public abstract class ChromeFeatureList {
                     EDGE_TO_EDGE_TOP_INSET,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sEdgeToEdgeTopPageColorSampling =
+            newCachedFlag(EDGE_TO_EDGE_TOP_PAGE_COLOR_SAMPLING, /* defaultValue= */ false);
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
     public static final CachedFlag sEnableAndroidSidePanel =
@@ -1667,6 +1671,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeMonitorConfigurations,
                     sEdgeToEdgeTablet,
                     sEdgeToEdgeTopInset,
+                    sEdgeToEdgeTopPageColorSampling,
                     sEdgeToEdgeUseBackupNavbarInsets,
                     sEnableAndroidSidePanel,
                     sEnableAndroidSidePanelDevFeature,

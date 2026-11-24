@@ -3359,6 +3359,15 @@
     "expiry_milestone": 170
   },
   {
+    "name": "edge-to-edge-top-page-color-sampling",
+    "owners": [
+      "ksukh@chromium.org",
+      "aixba@chromium.org",
+      "pwa-team@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "elastic-overscroll",
     "owners": [ "gastonr@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 200
