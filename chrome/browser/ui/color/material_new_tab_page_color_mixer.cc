@@ -20,7 +20,8 @@ namespace {
 constexpr SkColor kColorSysSurface_Light = SkColorSetRGB(0xFF, 0xFF, 0xFF);
 constexpr SkColor kColorSysSurface1_Light = SkColorSetRGB(0xF8, 0xFA, 0xFD);
 constexpr SkColor kColorSysSurface3_Light = SkColorSetRGB(0xEF, 0xF3, 0xFA);
-constexpr SkColor kColorSysStateHoverOnSubtle_Light = SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F);
+constexpr SkColor kColorSysStateHoverOnSubtle_Light =
+    SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F);
 constexpr SkColor kColorSysStateRippleNeutralOnSubtle_Light =
     SkColorSetARGB(0x14, 0x1F, 0x1F, 0x1F);
 constexpr SkColor kColorGemSysColorPrimary_Light =
@@ -58,7 +59,6 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageButtonBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorNewTabPageButtonForeground] = {ui::kColorSysOnTonalContainer};
-
 
   mixer[kColorNewTabPageControlBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
@@ -200,8 +200,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
 
   // Realbox is at this time always themed light, so we use custom color values
   // defined instead of using GM3 color variables.
-  mixer[kColorNewTabPageCommonInputPlaceholder] = {SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
-  mixer[kColorNewTabPageRealboxNextIconHover] = {kColorSysStateHoverOnSubtle_Light};
+  mixer[kColorNewTabPageCommonInputPlaceholder] = {
+      SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorNewTabPageRealboxNextIconHover] = {
+      kColorSysStateHoverOnSubtle_Light};
 #if BUILDFLAG(IS_ANDROID)
   mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
       SkColorSetRGB(0x0B, 0x57, 0xD0)};
@@ -216,44 +218,37 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
 #endif
   mixer[kColorComposeboxBackground] = {SK_ColorWHITE};
   mixer[kColorComposeboxFileChipSpinner] = {kColorSysPrimary_Light};
-  mixer[kColorComposeboxFont] = {
-      dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
-                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
-  mixer[kColorComposeboxFontLight] = {
-      SkColorSetRGB(0x1F, 0x1F, 0x1F)};
+  mixer[kColorComposeboxFont] = {dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
+                                           : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorComposeboxFontLight] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxGhostCardBackground] = {
       kColorSysStateRippleNeutralOnSubtle_Light};
-  mixer[kColorComposeboxCancelButton] = {
-      dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
-                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorComposeboxCancelButton] = {dark_mode
+                                             ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
+                                             : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
   mixer[kColorComposeboxCancelButtonLight] = {ui::kColorRefNeutral30};
   mixer[kColorComposeboxErrorScrimBackground] = {
       dark_mode ? ui::SetAlpha({ui::kColorRefNeutral0}, 0xE6)
                 : ui::SetAlpha({SkColorSetRGB(0xFF, 0xFF, 0xFF)}, 0xE6)};
-  mixer[kColorComposeboxErrorScrimButtonBackground] = {
-      ui::kColorSysPrimary};
+  mixer[kColorComposeboxErrorScrimButtonBackground] = {ui::kColorSysPrimary};
   mixer[kColorComposeboxErrorScrimButtonBackgroundHover] = {
       ui::kColorSysStateHoverOnProminent};
-  mixer[kColorComposeboxErrorScrimButtonText] = {
-      ui::kColorSysOnPrimary};
-  mixer[kColorComposeboxErrorScrimForeground] = {
-      ui::kColorSysInverseSurface};
-  mixer[kColorComposeboxHover] = {
-      dark_mode ? SkColorSetRGB(0x25, 0x26, 0x2E)
-                : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
+  mixer[kColorComposeboxErrorScrimButtonText] = {ui::kColorSysOnPrimary};
+  mixer[kColorComposeboxErrorScrimForeground] = {ui::kColorSysInverseSurface};
+  mixer[kColorComposeboxHover] = {dark_mode ? SkColorSetRGB(0x25, 0x26, 0x2E)
+                                            : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
   mixer[kColorComposeboxInputIcon] = {ui::kColorRefNeutral30};
-  mixer[kColorComposeboxLensButton] = {
-      dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
-                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
-  mixer[kColorComposeboxOutlineHcm] = {
-      dark_mode ? SkColorSetRGB(0xFF, 0xFF, 0xFF)
-                : SkColorSetRGB(0x00, 0x00, 0x00)};
+  mixer[kColorComposeboxLensButton] = {dark_mode
+                                           ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
+                                           : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorComposeboxOutlineHcm] = {dark_mode
+                                           ? SkColorSetRGB(0xFF, 0xFF, 0xFF)
+                                           : SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorComposeboxRecentTabChipOutline] = {kColorSysTonalOutline_Light};
   mixer[kColorComposeboxScrimBackground] = {ui::kColorSysBase};
   mixer[kColorComposeboxSubmitButtonBackground] = {
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
-  mixer[kColorComposeboxSuggestionActivity] = {
-      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorComposeboxSuggestionActivity] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorComposeboxTabSelectorButtonSelected] = {
       kColorGemSysColorPrimary_Light};
   mixer[kColorComposeboxTypeAhead] = {dark_mode
@@ -265,11 +260,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeboxUploadButton] = {ui::kColorRefNeutral10};
   mixer[kColorComposeboxFileChipBackground] = {kColorSysSurface3_Light};
   mixer[kColorComposeboxFileChipFaviconBackground] = {kColorSysSurface_Light};
-  mixer[kColorComposeboxFileChipText] = {
-      SkColorSetRGB(0x1F, 0x1F, 0x1F)};
-  mixer[kColorComposeboxPdfChipIcon] = {
-      dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
-                : SkColorSetRGB(0x56, 0x59, 0x5E)};
+  mixer[kColorComposeboxFileChipText] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};
+  mixer[kColorComposeboxPdfChipIcon] = {dark_mode
+                                            ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
+                                            : SkColorSetRGB(0x56, 0x59, 0x5E)};
   mixer[kColorComposeboxFileImageOverlay] = {
       SkColorSetARGB(0x99, 0x00, 0x00, 0x00)};
   mixer[kColorComposeboxFileCarouselDivider] = {
