@@ -2764,7 +2764,9 @@
   command.shouldFocusOmnibox = YES;
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler openURLInNewTab:command];
+  [UIView performWithoutAnimation:^{
+    [sceneHandler openURLInNewTab:command];
+  }];
 }
 
 - (void)openMultimodalActionsMenu {
