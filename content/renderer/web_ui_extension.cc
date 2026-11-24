@@ -8,26 +8,24 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/common/bindings_policy.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
-#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/web_ui_extension_data.h"
 #include "content/renderer/web_ui_histograms_extension.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-local-handle.h"
@@ -41,29 +39,20 @@ namespace content {
 
 namespace {
 
-bool ShouldRespondToRequest(blink::WebLocalFrame** frame_ptr,
-                            RenderFrame** render_frame_ptr) {
+// Returns the RenderFrameImpl for the current V8 context if it has WebUI
+// bindings, or null otherwise.
+RenderFrameImpl* GetWebUIFrameForCurrentContext() {
   blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForCurrentContext();
-  if (!frame || !frame->View())
-    return false;
+  if (!frame) {
+    return nullptr;
+  }
 
-  GURL frame_url = frame->GetDocument().Url();
+  RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(frame);
+  if (!render_frame->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi)) {
+    return nullptr;
+  }
 
-  RenderFrame* render_frame = RenderFrame::FromWebFrame(frame);
-  if (!render_frame)
-    return false;
-
-  bool webui_enabled =
-      (render_frame->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi)) &&
-      (frame_url.SchemeIs(kChromeUIScheme) ||
-       frame_url.SchemeIs(url::kDataScheme));
-
-  if (!webui_enabled)
-    return false;
-
-  *frame_ptr = frame;
-  *render_frame_ptr = render_frame;
-  return true;
+  return render_frame;
 }
 
 // Get or create a `child_name` object in the `parent` object.
@@ -221,11 +210,11 @@ void ResolvePresentationTime(v8::Isolate* isolate,
 v8::Local<v8::Value> WebUIExtension::RequestPresentationTime(
     gin::Arguments* args) {
   v8::Isolate* isolate = args->isolate();
-  blink::WebLocalFrame* frame;
-  RenderFrame* render_frame;
-  if (!ShouldRespondToRequest(&frame, &render_frame)) {
+  RenderFrameImpl* render_frame = GetWebUIFrameForCurrentContext();
+  if (!render_frame) {
     return v8::Undefined(isolate);
   }
+  blink::WebLocalFrame* frame = render_frame->GetWebFrame();
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Promise::Resolver> resolver;
@@ -250,7 +239,7 @@ v8::Local<v8::Value> WebUIExtension::RequestPresentationTime(
   blink::WebFrameWidget* widget = frame->LocalRoot()->FrameWidget();
   const bool page_visible = frame->View()->GetVisibilityState() ==
                             blink::mojom::PageVisibilityState::kVisible;
-  if (!widget || !page_visible || !widget->RequestedMainFramePending()) {
+  if (!page_visible || !widget->RequestedMainFramePending()) {
     resolver->Resolve(context, v8::Null(isolate)).Check();
     return resolver->GetPromise();
   }
@@ -268,10 +257,11 @@ v8::Local<v8::Value> WebUIExtension::RequestPresentationTime(
 
 // static
 void WebUIExtension::Send(gin::Arguments* args) {
-  blink::WebLocalFrame* frame;
-  RenderFrame* render_frame;
-  if (!ShouldRespondToRequest(&frame, &render_frame))
+  RenderFrameImpl* frame = GetWebUIFrameForCurrentContext();
+  if (!frame) {
     return;
+  }
+  base::WeakPtr<RenderFrameImpl> render_frame = frame->GetWeakPtr();
 
   std::string message;
   if (!args->GetNext(&message)) {
@@ -291,19 +281,19 @@ void WebUIExtension::Send(gin::Arguments* args) {
 
     std::unique_ptr<base::Value> value =
         V8ValueConverter::Create()->FromV8Value(
-            obj, frame->MainWorldScriptContext());
+            obj, frame->GetWebFrame()->MainWorldScriptContext());
     DCHECK(value->is_list());
     content = std::move(*value).TakeList();
 
-    // The conversion of |obj| could have triggered arbitrary JavaScript code,
-    // so check that the frame is still valid to avoid dereferencing a stale
-    // pointer.
-    if (frame != blink::WebLocalFrame::FrameForCurrentContext()) {
-      NOTREACHED();
+    // The conversion of `obj` can run arbitrary script (getters, toJSON), which
+    // may detach the frame. Drop the message in that case rather than touching
+    // a destroyed RenderFrame.
+    if (!render_frame) {
+      return;
     }
   }
 
-  auto* webui = WebUIExtensionData::Get(render_frame);
+  auto* webui = WebUIExtensionData::Get(render_frame.get());
   if (!webui)
     return;
 
@@ -313,10 +303,10 @@ void WebUIExtension::Send(gin::Arguments* args) {
 
 // static
 std::string WebUIExtension::GetVariableValue(const std::string& name) {
-  blink::WebLocalFrame* frame;
-  RenderFrame* render_frame;
-  if (!ShouldRespondToRequest(&frame, &render_frame))
+  RenderFrameImpl* render_frame = GetWebUIFrameForCurrentContext();
+  if (!render_frame) {
     return std::string();
+  }
 
   auto* webui = WebUIExtensionData::Get(render_frame);
   if (!webui)
