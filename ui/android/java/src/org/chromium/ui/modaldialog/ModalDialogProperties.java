@@ -346,11 +346,23 @@ public class ModalDialogProperties {
             new ReadableIntDefPropertyKey<>(DialogStyles.NORMAL);
 
     /**
-     * The handler for back presses done on a {@link ModalDialogType.APP}. By default, a back press
-     * dismisses the dialog.
+     * The handler for back presses done on a modal dialog (both {@link ModalDialogType.APP} and
+     * {@link ModalDialogType.TAB}). While it is set and enabled, a back press runs it instead of
+     * dismissing the dialog. By default, a back press dismisses the dialog. For tab modal dialogs,
+     * the escape key is not affected; see {@link #TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE}.
      */
+    public static final WritableObjectPropertyKey<OnBackPressedCallback> BACK_PRESS_HANDLER =
+            new WritableObjectPropertyKey<>();
+
+    /**
+     * Alias for {@link #BACK_PRESS_HANDLER}.
+     *
+     * @deprecated Use {@link #BACK_PRESS_HANDLER} instead.
+     */
+    // TODO(crbug.com/589840486): Remove after migrating existing callers to BACK_PRESS_HANDLER.
+    @Deprecated
     public static final WritableObjectPropertyKey<OnBackPressedCallback>
-            APP_MODAL_DIALOG_BACK_PRESS_HANDLER = new WritableObjectPropertyKey<>();
+            APP_MODAL_DIALOG_BACK_PRESS_HANDLER = BACK_PRESS_HANDLER;
 
     /**
      * Duration of initial tap protection period after dialog is displayed to user. During this
@@ -433,7 +445,7 @@ public class ModalDialogProperties {
                 TITLE_CLOSE_BUTTON_VISIBLE,
                 BUTTON_STYLES,
                 DIALOG_STYLES,
-                APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                BACK_PRESS_HANDLER,
                 BUTTON_TAP_PROTECTION_PERIOD_MS,
                 TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE,
                 HORIZONTAL_MARGIN,

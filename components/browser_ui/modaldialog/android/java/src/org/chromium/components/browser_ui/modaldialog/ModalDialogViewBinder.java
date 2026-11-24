@@ -186,6 +186,9 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS == propertyKey) {
             // Intentionally left empty since this is a property used for switching button group to
             // default buttons, or switching custom view.
+        } else if (ModalDialogProperties.BACK_PRESS_HANDLER == propertyKey) {
+            // Intentionally left empty since this is a property handled by AppModalPresenter or
+            // read when a back press is handled for a tab modal dialog.
         } else if (ModalDialogProperties.DISABLE_SCRIM == propertyKey) {
             // Intentionally left empty since this is a property used for the dialog container.
         } else if (ModalDialogProperties.MAX_HEIGHT == propertyKey) {

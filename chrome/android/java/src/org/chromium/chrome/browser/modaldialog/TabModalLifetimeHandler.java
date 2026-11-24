@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 
+import androidx.activity.OnBackPressedCallback;
+
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -37,6 +39,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
@@ -168,12 +171,38 @@ public class TabModalLifetimeHandler
 
     @Override
     public @BackPressResult int handleBackPress() {
-        int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
-        if (result == BackPressResult.SUCCESS) {
-            assumeNonNull(mPresenter); // shouldInterceptBackPress checks if mPresenter is null.
+        if (!shouldInterceptBackPress()) return BackPressResult.FAILURE;
+
+        // shouldInterceptBackPress checks that mPresenter and its dialog model are not null.
+        assumeNonNull(mPresenter);
+        PropertyModel model = assumeNonNull(mPresenter.getDialogModel());
+        OnBackPressedCallback backPressHandler =
+                model.get(ModalDialogProperties.BACK_PRESS_HANDLER);
+        if (backPressHandler != null && backPressHandler.isEnabled()) {
+            backPressHandler.handleOnBackPressed();
+        } else {
             mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
         }
-        return result;
+        return BackPressResult.SUCCESS;
+    }
+
+    @Override
+    public boolean invokeBackActionOnEscape() {
+        return false;
+    }
+
+    @Override
+    public Boolean handleEscPress() {
+        if (!shouldInterceptBackPress()) return false;
+
+        // shouldInterceptBackPress checks that mPresenter and its dialog model are not null.
+        assumeNonNull(mPresenter);
+        PropertyModel model = assumeNonNull(mPresenter.getDialogModel());
+        if (!model.get(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE)) {
+            return false;
+        }
+        mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
+        return true;
     }
 
     @Override

@@ -80,12 +80,10 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 assumeNonNull(mDialog)
                         .setCanceledOnTouchOutside(
                                 model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-            } else if (ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER == propertyKey) {
+            } else if (ModalDialogProperties.BACK_PRESS_HANDLER == propertyKey) {
                 assumeNonNull(mDialog)
                         .getOnBackPressedDispatcher()
-                        .addCallback(
-                                model.get(
-                                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
+                        .addCallback(model.get(ModalDialogProperties.BACK_PRESS_HANDLER));
             } else {
                 super.bind(model, view, propertyKey);
             }
@@ -231,8 +229,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     @Override
     protected void removeDialogView(@Nullable PropertyModel model) {
         if (model != null) {
-            OnBackPressedCallback callback =
-                    model.get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER);
+            OnBackPressedCallback callback = model.get(ModalDialogProperties.BACK_PRESS_HANDLER);
             if (callback != null) {
                 callback.remove();
             }

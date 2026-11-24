@@ -25,9 +25,11 @@ import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtil
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialog;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
 
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
@@ -75,6 +77,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link ChromeTabModalPresenter}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -502,6 +506,76 @@ public class ChromeTabModalPresenterTest {
                                         not(hasDescendant(withText("1"))),
                                         not(hasDescendant(withText("2"))))));
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
+        checkCurrentPresenter(mManager, null);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testBackPressed_BackPressHandler() {
+        PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
+        AtomicInteger handledBackPresses = new AtomicInteger();
+        OnBackPressedCallback backPressHandler =
+                new OnBackPressedCallback(/* enabled= */ true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        handledBackPresses.incrementAndGet();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> dialog1.set(ModalDialogProperties.BACK_PRESS_HANDLER, backPressHandler));
+
+        showDialog(mManager, dialog1, ModalDialogType.TAB);
+        waitForView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(hasDescendant(withText("1"))));
+        checkCurrentPresenter(mManager, ModalDialogType.TAB);
+
+        // Perform a back press. The enabled handler runs and the dialog stays.
+        pressBack();
+        Assert.assertEquals(1, handledBackPresses.get());
+        onView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(hasDescendant(withText("1"))));
+        checkCurrentPresenter(mManager, ModalDialogType.TAB);
+
+        // Disable the handler and perform a second back press. The dialog should be dismissed.
+        ThreadUtils.runOnUiThreadBlocking(() -> backPressHandler.setEnabled(false));
+        pressBack();
+        Assert.assertEquals(1, handledBackPresses.get());
+        onView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(not(hasDescendant(withText("1")))));
+        checkCurrentPresenter(mManager, null);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testEscapePressed_BackPressHandler() {
+        PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
+        AtomicInteger handledBackPresses = new AtomicInteger();
+        OnBackPressedCallback backPressHandler =
+                new OnBackPressedCallback(/* enabled= */ true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        handledBackPresses.incrementAndGet();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> dialog1.set(ModalDialogProperties.BACK_PRESS_HANDLER, backPressHandler));
+
+        showDialog(mManager, dialog1, ModalDialogType.TAB);
+        waitForView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(hasDescendant(withText("1"))));
+        checkCurrentPresenter(mManager, ModalDialogType.TAB);
+
+        // Perform an Escape key press. The dialog should be dismissed without running the back
+        // press handler.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivity.dispatchKeyEvent(
+                                new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE)));
+        Assert.assertEquals(0, handledBackPresses.get());
+        onView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(not(hasDescendant(withText("1")))));
         checkCurrentPresenter(mManager, null);
     }
 
