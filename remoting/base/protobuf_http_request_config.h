@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -40,7 +40,7 @@ struct ProtobufHttpRequestConfig {
     base::TimeDelta retry_timeout;
 
     // The list of error codes that trigger a retry.
-    base::flat_set<HttpStatus::Code> retriable_error_codes = {
+    base::EnumSet<HttpStatus::Code> retriable_error_codes = {
         HttpStatus::Code::ABORTED, HttpStatus::Code::INTERNAL,
         HttpStatus::Code::UNAVAILABLE, HttpStatus::Code::NETWORK_ERROR};
 

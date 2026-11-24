@@ -1049,7 +1049,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_SessionAcceptRequestsNotFoundRetry) {
                     scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy>
                         retry_policy) {
         ASSERT_TRUE(retry_policy);
-        EXPECT_TRUE(retry_policy->retriable_error_codes.contains(
+        EXPECT_TRUE(retry_policy->retriable_error_codes.Has(
             HttpStatus::Code::NOT_FOUND));
         std::move(callback).Run(HttpStatus::OK());
       });
@@ -1073,7 +1073,7 @@ TEST_F(FtlSignalStrategyTest, SendReply_RequestsNotFoundRetry) {
                     scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy>
                         retry_policy) {
         ASSERT_TRUE(retry_policy);
-        EXPECT_TRUE(retry_policy->retriable_error_codes.contains(
+        EXPECT_TRUE(retry_policy->retriable_error_codes.Has(
             HttpStatus::Code::NOT_FOUND));
         std::move(callback).Run(HttpStatus::OK());
       });

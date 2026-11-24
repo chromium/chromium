@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/enum_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -34,7 +34,7 @@ struct ProtobufHttpRequestBase::RetryEntry {
   net::BackoffEntry backoff_entry;
   base::OneShotTimer retry_timer;
   base::TimeTicks retry_deadline;
-  base::flat_set<HttpStatus::Code> retriable_error_codes;
+  base::EnumSet<HttpStatus::Code> retriable_error_codes;
 };
 
 ProtobufHttpRequestBase::ProtobufHttpRequestBase(
@@ -80,7 +80,7 @@ bool ProtobufHttpRequestBase::HandleRetry(HttpStatus::Code code) {
   // SimpleURLLoader supports retries, but it doesn't support retrying on
   // network error, and uses max retries rather than an absolute deadline for
   // setting the limit. Hence we use our own retry logic.
-  if (!retry_entry_ || !retry_entry_->retriable_error_codes.contains(code)) {
+  if (!retry_entry_ || !retry_entry_->retriable_error_codes.Has(code)) {
     return false;
   }
   retry_entry_->backoff_entry.InformOfRequest(false);

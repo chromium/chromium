@@ -21,6 +21,7 @@ class HttpStatus {
   // This is the same as the gRPC status code.
   enum class Code : int {
     OK = 0,
+    kMinValue = OK,
     CANCELLED = 1,
     UNKNOWN = 2,
     INVALID_ARGUMENT = 3,
@@ -38,6 +39,7 @@ class HttpStatus {
     DATA_LOSS = 15,
     UNAUTHENTICATED = 16,
     NETWORK_ERROR = 17,
+    kMaxValue = NETWORK_ERROR,
   };
 
   // An OK pre-defined instance.
