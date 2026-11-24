@@ -106,23 +106,23 @@ ${this.shouldShowSingleTabItem_() ? html`
       </h4>
     ` : ''}
   ` : ''}
-  ${this.tabSuggestions.map((tab, index) => html`
+  ${this.tabSuggestions.map((item, index) => html`
     <div class="suggestion-container" role="presentation">
-      <button class="dropdown-item" ?disabled="${this.isTabDisabled_(tab)}"
-          role="menuitem" title="${tab.title}" data-index="${index}"
-          aria-label="${tab.title}" @click="${this.onTabClick_}">
-        <cr-composebox-tab-favicon .url="${tab.url}" .tabId="${tab.tabId}"
-            .isSubmitted="${this.isTabSelected_(tab)}">
+      <button class="dropdown-item" ?disabled="${this.isTabDisabled_(item)}"
+          role="menuitem" title="${item.title}" data-index="${index}"
+          aria-label="${item.title}" @click="${this.onTabClick_}">
+        <cr-composebox-tab-favicon .url="${item.url}" .tabId="${item.tabId}"
+            .isSubmitted="${this.isTabSelected_(item)}">
         </cr-composebox-tab-favicon>
         <span class="tab-title-group">
-          <span class="tab-title">${tab.title}</span>
-          ${this.isRecentTab_(tab.tabId) ? html`
+          <span class="tab-title">${item.title}</span>
+          ${this.isRecentTab_(item.tabId) ? html`
             <span class="recent-tabs-suffix">
               · ${this.getRecentTabsSuffix_()}
             </span>
           ` : ''}
         </span>
-        ${this.isTabSelected_(tab) ? html`
+        ${this.isTabSelected_(item) ? html`
           <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
         ` : ''}
       </button>

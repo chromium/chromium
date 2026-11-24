@@ -17,31 +17,31 @@ export function getHtml(this: TopicSitesDialogElement) {
   </div>
   <div slot="body">
     <ul id="siteList">
-      ${this.sites_.map((site, index) => html`
-        <li ?rejected="${this.feedbackEnabled_ && this.isRejected_(site)}">
+      ${this.sites_.map((item, index) => html`
+        <li ?rejected="${this.feedbackEnabled_ && this.isRejected_(item)}">
           <button class="site" data-index="${index}"
               @click="${this.onSiteClick_}">
             <span class="favicon"
-                style="background-image: ${this.getFavicon_(site.url)}">
+                style="background-image: ${this.getFavicon_(item.url)}">
             </span>
-            <span class="site-title">${site.title || site.domain}</span>
-            ${site.title ? html`
-              <span class="site-domain">${site.domain}</span>
+            <span class="site-title">${item.title || item.domain}</span>
+            ${item.title ? html`
+              <span class="site-domain">${item.domain}</span>
             ` : ''}
           </button>
           ${this.feedbackEnabled_ ? html`
             <!-- Temporary Fishfood Feedback -->
-            ${this.isRejected_(site) ? html`
+            ${this.isRejected_(item) ? html`
               <span class="rejected-label" aria-hidden="true">
                 Doesn't belong
               </span>
             ` : ''}
             <cr-icon-button class="reject" data-index="${index}"
                 iron-icon="${
-                    this.isRejected_(site) ? 'cr:cancel-filled' : 'cr:close'}"
-                title="${this.isRejected_(site) ? 'Undo' : 'Doesn\'t belong'}"
-                aria-label="${this.getRejectAriaLabel_(site)}"
-                aria-pressed="${this.isRejected_(site)}"
+                    this.isRejected_(item) ? 'cr:cancel-filled' : 'cr:close'}"
+                title="${this.isRejected_(item) ? 'Undo' : 'Doesn\'t belong'}"
+                aria-label="${this.getRejectAriaLabel_(item)}"
+                aria-pressed="${this.isRejected_(item)}"
                 @click="${this.onRejectClick_}">
             </cr-icon-button>
           ` : ''}

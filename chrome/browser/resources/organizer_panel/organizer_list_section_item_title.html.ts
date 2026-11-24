@@ -10,12 +10,12 @@ export function getHtml(this: OrganizerListSectionItemTitleElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="titleParts" class="title-parts">
-  ${this.titleParts.map((titlePart, index) => html`
+  ${this.titleParts.map((item, index) => html`
     ${index > 0 ? html`
       <div class="separator">|</div>
     ` : ''}
-    <div class="title-part" title="${titlePart}">
-      ${this.renderTitlePart_(titlePart, index)}
+    <div class="title-part" title="${item}">
+      ${this.renderTitlePart_(item, index)}
     </div>
   `)}
 </div>

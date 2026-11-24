@@ -9,7 +9,7 @@ import type {IndigoTextOverlayElement} from './text_overlay.js';
 export function getHtml(this: IndigoTextOverlayElement) {
   return html`<!--_html_template_start_-->
 <div id="container">
-  ${repeat(this.showIcon_ ? [this.sequenceId_] : [], id => id, () => html`
+  ${repeat(this.showIcon_ ? [this.sequenceId_] : [], item => item, () => html`
     <div id="iconStack" aria-hidden="true">
       <div id="icon" class="${this.useLottie_ ? 'hidden' : ''}"></div>
       <cr-lottie id="lottie" class="${this.useLottie_ ? 'visible' : ''}"

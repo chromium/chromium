@@ -48,10 +48,9 @@ export function getHtml(this: OmniboxEverywhereDebugAppElement) {
   <select id="sourceSelect" class="invoke-select"
       .value="${String(this.selectedInvocationSource)}"
       @change="${this.onInvocationSourceChange}">
-    ${this.computeInvocationSourceOptions().map(option => html`
-      <option value="${option.value}"
-          ?selected="${this.isSource(option.value)}">
-        ${option.name} (${option.value})
+    ${this.computeInvocationSourceOptions().map(item => html`
+      <option value="${item.value}" ?selected="${this.isSource(item.value)}">
+        ${item.name} (${item.value})
       </option>
     `)}
   </select>

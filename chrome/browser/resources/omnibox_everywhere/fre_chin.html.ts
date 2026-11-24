@@ -21,8 +21,8 @@ export function getHtml(this: FreChinElement) {
               @click="${this.onDropdownClick_}">
             ${this.hasHotkeyTokens_() ? html`
               <div class="keys-container">
-                ${this.hotkeyTokens.map(token => html`
-                  <span class="key-badge">${token}</span>
+                ${this.hotkeyTokens.map(item => html`
+                  <span class="key-badge">${item}</span>
                 `)}
               </div>
             ` : html`
@@ -44,8 +44,8 @@ export function getHtml(this: FreChinElement) {
       <div class="text-container">
         <div class="hotkey-container">
           <div class="keys-container">
-            ${this.hotkeyTokens.map(token => html`
-              <span class="key-badge">${token}</span>
+            ${this.hotkeyTokens.map(item => html`
+              <span class="key-badge">${item}</span>
             `)}
           </div>
         </div>

@@ -78,24 +78,24 @@ ${this.app.subApps.length > 0 ? html`
     </button>
     ${this.subAppsExpanded_ ? html`
       <div id="sub-apps-list" role="list">
-        ${this.app.subApps.map(subApp => html`
+        ${this.app.subApps.map(item => html`
           <div class="sub-app-item" role="listitem">
             <div class="icon-circle sub-app-icon-circle"
-                title="Launch ${subApp.name}" data-app-id="${subApp.appId}"
+                title="Launch ${item.name}" data-app-id="${item.appId}"
                 @click="${this.onLaunchClick}">
               <img class="app-icon" draggable="false"
-                  src="chrome://app-icon/${subApp.appId}/32" alt="">
+                  src="chrome://app-icon/${item.appId}/32" alt="">
               <div class="launch-overlay">
                 <cr-icon icon="cr:open-in-new"></cr-icon>
               </div>
             </div>
-            <span class="app-name sub-app-name" title="Launch ${subApp.name}"
-                data-app-id="${subApp.appId}" @click="${this.onLaunchClick}">
-              ${subApp.name}
+            <span class="app-name sub-app-name" title="Launch ${item.name}"
+                data-app-id="${item.appId}" @click="${this.onLaunchClick}">
+              ${item.name}
               <cr-icon class="icon-16" icon="cr:open-in-new"></cr-icon>
             </span>
-            <cr-button class="sub-app-uninstall-btn"
-                data-app-id="${subApp.appId}" @click="${this.onUninstallClick}">
+            <cr-button class="sub-app-uninstall-btn" data-app-id="${item.appId}"
+                @click="${this.onUninstallClick}">
               Uninstall
             </cr-button>
           </div>

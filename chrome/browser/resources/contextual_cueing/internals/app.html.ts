@@ -15,39 +15,39 @@ export function getHtml(this: ContextualCueingInternalsAppElement) {
     ${this.shownCues_.length === 0 ? html`
       <div class="empty-state">No cues shown yet.</div>
     ` : html`
-      ${this.shownCues_.map((cue, index) => html`
+      ${this.shownCues_.map((item, index) => html`
         <div class="cue-item">
           <div class="cue-details">
-            ${cue.cuj ? html`
+            ${item.cuj ? html`
               <div class="cue-field">
                 <strong>CUJ:</strong>
-                <span>${cue.cuj}</span>
+                <span>${item.cuj}</span>
               </div>
             ` : ''}
-            ${cue.anchoredMessageText ? html`
+            ${item.anchoredMessageText ? html`
               <div class="cue-field">
                 <strong>Message:</strong>
-                <span>${cue.anchoredMessageText}</span>
+                <span>${item.anchoredMessageText}</span>
               </div>
             ` : ''}
-            ${cue.actionText ? html`
+            ${item.actionText ? html`
               <div class="cue-field">
                 <strong>Action:</strong>
-                <span>${cue.actionText}</span>
+                <span>${item.actionText}</span>
               </div>
             ` : ''}
-            ${cue.url ? html`
+            ${item.url ? html`
               <div class="cue-field">
                 <strong>URL:</strong>
-                <a class="url-text" href="${cue.url}" target="_blank">
-                  ${cue.url}
+                <a class="url-text" href="${item.url}" target="_blank">
+                  ${item.url}
                 </a>
               </div>
             ` : ''}
-            ${cue.prompt ? html`
+            ${item.prompt ? html`
               <div class="cue-field">
                 <strong>Prompt:</strong>
-                <span>${cue.prompt}</span>
+                <span>${item.prompt}</span>
               </div>
             ` : ''}
           </div>

@@ -10,18 +10,18 @@ export function getHtml(this: OrganizerListSectionItemDescriptionElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="descriptionParts" class="description-parts">
-  ${this.descriptionParts.map((descriptionPart, index) => html`
+  ${this.descriptionParts.map((item, index) => html`
     ${index > 0 ? html`
       <div class="separator">•</div>
     ` : ''}
-    <div class="description-part" title="${descriptionPart.text}">
-      ${descriptionPart.prefixElement ? html`
-        <div class="prefix">${descriptionPart.prefixElement}</div>
+    <div class="description-part" title="${item.text}">
+      ${item.prefixElement ? html`
+        <div class="prefix">${item.prefixElement}</div>
       ` : ''}
       <div
           class="description-text ${
-              descriptionPart.elideFromStart ? 'elide-from-start' : ''}">
-        <bdi>${this.renderDescriptionPart_(descriptionPart.text, index)}</bdi>
+              item.elideFromStart ? 'elide-from-start' : ''}">
+        <bdi>${this.renderDescriptionPart_(item.text, index)}</bdi>
       </div>
     </div>
   `)}

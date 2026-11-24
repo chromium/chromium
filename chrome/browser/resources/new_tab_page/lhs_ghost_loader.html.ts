@@ -12,8 +12,8 @@ export function getHtml(this: LhsGhostLoaderElement) {
 <div class="ghost-header">
   <div class="ghost-logo" aria-hidden="true">
     <div class="ghost-wordmark">
-      ${this.shimmerDelaysMs_.logo.map(delay => html`
-        <div class="ghost-shimmer" style="--loading-bar-delay: ${delay}ms;">
+      ${this.shimmerDelaysMs_.logo.map(item => html`
+        <div class="ghost-shimmer" style="--loading-bar-delay: ${item}ms;">
         </div>
       `)}
     </div>
@@ -24,28 +24,28 @@ export function getHtml(this: LhsGhostLoaderElement) {
   <div class="ghost-actions" aria-hidden="true">
     <div class="ghost-button">
       <div class="ghost-icon">
-        ${this.shimmerDelaysMs_.newThread.map(delay => html`
-          <div class="ghost-shimmer" style="--loading-bar-delay: ${delay}ms;">
+        ${this.shimmerDelaysMs_.newThread.map(item => html`
+          <div class="ghost-shimmer" style="--loading-bar-delay: ${item}ms;">
           </div>
         `)}
       </div>
       <div class="ghost-label new-thread">
-        ${this.shimmerDelaysMs_.newThread.map(delay => html`
-          <div class="ghost-shimmer" style="--loading-bar-delay: ${delay}ms;">
+        ${this.shimmerDelaysMs_.newThread.map(item => html`
+          <div class="ghost-shimmer" style="--loading-bar-delay: ${item}ms;">
           </div>
         `)}
       </div>
     </div>
     <div class="ghost-button">
       <div class="ghost-icon">
-        ${this.shimmerDelaysMs_.searchThreads.map(delay => html`
-          <div class="ghost-shimmer" style="--loading-bar-delay: ${delay}ms;">
+        ${this.shimmerDelaysMs_.searchThreads.map(item => html`
+          <div class="ghost-shimmer" style="--loading-bar-delay: ${item}ms;">
           </div>
         `)}
       </div>
       <div class="ghost-label search-threads">
-        ${this.shimmerDelaysMs_.searchThreads.map(delay => html`
-          <div class="ghost-shimmer" style="--loading-bar-delay: ${delay}ms;">
+        ${this.shimmerDelaysMs_.searchThreads.map(item => html`
+          <div class="ghost-shimmer" style="--loading-bar-delay: ${item}ms;">
           </div>
         `)}
       </div>
@@ -70,14 +70,14 @@ export function getHtml(this: LhsGhostLoaderElement) {
 <div class="ghost-footer" aria-hidden="true">
   <div class="ghost-button">
     <div class="ghost-icon">
-      ${this.shimmerDelaysMs_.settings.map(delay => html`
-        <div class="ghost-shimmer" style="--loading-bar-delay: ${delay}ms;">
+      ${this.shimmerDelaysMs_.settings.map(item => html`
+        <div class="ghost-shimmer" style="--loading-bar-delay: ${item}ms;">
         </div>
       `)}
     </div>
     <div class="ghost-label settings">
-      ${this.shimmerDelaysMs_.settings.map(delay => html`
-        <div class="ghost-shimmer" style="--loading-bar-delay: ${delay}ms;">
+      ${this.shimmerDelaysMs_.settings.map(item => html`
+        <div class="ghost-shimmer" style="--loading-bar-delay: ${item}ms;">
         </div>
       `)}
     </div>

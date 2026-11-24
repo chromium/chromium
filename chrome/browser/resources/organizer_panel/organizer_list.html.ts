@@ -10,11 +10,11 @@ export function getHtml(this: OrganizerListElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="sections" ?hidden="${this.allSectionsHidden_}">
-  ${this.sectionDelegates.map((delegate, index) => html`
+  ${this.sectionDelegates.map((item, index) => html`
     ${index > 0 ? html`
       <div class="divider" role="separator" aria-orientation="horizontal"></div>
     ` : ''}
-    <organizer-list-section .delegate="${delegate}"
+    <organizer-list-section .delegate="${item}"
         .searchQuery="${this.searchQuery}"
         @hidden-changed="${this.onSectionHiddenChanged_}"
         @expanded-changed="${this.onSectionExpandedChanged_}">

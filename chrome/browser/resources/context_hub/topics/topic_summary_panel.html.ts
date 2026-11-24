@@ -16,9 +16,9 @@ export function getHtml(this: TopicSummaryPanelElement) {
     @click="${this.onOpenRelatedTabsClick_}">
   Open related tabs
 </cr-button>
-${this.topic?.collections.map(collection => html`
-  <topic-collection-carousel .collection="${collection}"
-      .feedback="${this.getCollectionFeedback_(collection)}"
+${this.topic?.collections.map(item => html`
+  <topic-collection-carousel .collection="${item}"
+      .feedback="${this.getCollectionFeedback_(item)}"
       @collection-feedback-change="${this.onCollectionFeedbackChange_}">
   </topic-collection-carousel>
 `)}
@@ -32,27 +32,27 @@ ${this.feedbackEnabled_ && this.queries_.length > 0 ? html`
     </p>
     <h2 id="queryRatingsTitle">Is this suggestion useful for this topic?</h2>
     <ul>
-      ${this.queries_.map(query => html`
+      ${this.queries_.map(item => html`
         <li class="query">
-          <span class="query-text">${query.text}</span>
-          <cr-icon-button class="query-like" data-index="${query.index}"
+          <span class="query-text">${item.text}</span>
+          <cr-icon-button class="query-like" data-index="${item.index}"
               data-liked="true"
-              iron-icon="${this.isQueryRated_(query.index, true) ?
+              iron-icon="${this.isQueryRated_(item.index, true) ?
                   'cr:thumb-up-filled' :
                   'cr:thumb-up'}"
               title="Useful"
-              aria-label="${this.getQueryAriaLabel_('Useful', query)}"
-              aria-pressed="${this.isQueryRated_(query.index, true)}"
+              aria-label="${this.getQueryAriaLabel_('Useful', item)}"
+              aria-pressed="${this.isQueryRated_(item.index, true)}"
               @click="${this.onQueryRatingClick_}">
           </cr-icon-button>
-          <cr-icon-button class="query-dislike" data-index="${query.index}"
+          <cr-icon-button class="query-dislike" data-index="${item.index}"
               data-liked="false"
-              iron-icon="${this.isQueryRated_(query.index, false) ?
+              iron-icon="${this.isQueryRated_(item.index, false) ?
                   'cr:thumb-down-filled' :
                   'cr:thumb-down'}"
               title="Not useful"
-              aria-label="${this.getQueryAriaLabel_('Not useful', query)}"
-              aria-pressed="${this.isQueryRated_(query.index, false)}"
+              aria-label="${this.getQueryAriaLabel_('Not useful', item)}"
+              aria-pressed="${this.isQueryRated_(item.index, false)}"
               @click="${this.onQueryRatingClick_}">
           </cr-icon-button>
         </li>

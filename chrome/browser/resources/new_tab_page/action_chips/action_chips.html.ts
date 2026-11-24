@@ -14,36 +14,36 @@ export function getHtml(this: ActionChipsElement) {
 <div class="action-chips-wrapper">
   ${this.actionChips_.length ? html`
     <div class="action-chips-container">
-      ${this.actionChips_.map((chip: ActionChip, index: number) => html`
+      ${this.actionChips_.map((item: ActionChip, index: number) => html`
         <div class="chip-button-wrapper">
           <button class="action-chip" data-index="${index}"
-              title="${this.getChipTitle_(chip)}" @click="${this.onClick_}"
+              title="${this.getChipTitle_(item)}" @click="${this.onClick_}"
               @auxclick="${this.onAuxclick_}"
               @contextmenu="${this.disablementContextMenuEnabled_ ?
                   this.onContextmenu_ :
                   nothing}">
             <div
                 class="action-chip-icon-container ${
-                    this.getAdditionalIconClasses_(chip)}">
-              ${chip.suggestTemplateInfo.typeIcon === IconType.kFavicon ?
+                    this.getAdditionalIconClasses_(item)}">
+              ${item.suggestTemplateInfo.typeIcon === IconType.kFavicon ?
                   html`
                 <img class="action-chip-recent-tab-favicon"
-                    src="${this.getMostRecentTabFaviconUrl_(chip)}">
+                    src="${this.getMostRecentTabFaviconUrl_(item)}">
               ` : ''}
-              ${this.getIcon_(chip) ? html`
-                <cr-icon icon="${this.getIcon_(chip)}"></cr-icon>
+              ${this.getIcon_(item) ? html`
+                <cr-icon icon="${this.getIcon_(item)}"></cr-icon>
               ` : ''}
             </div>
             <div class="action-chip-text-container" dir="auto">
-              ${chip.suggestTemplateInfo.primaryText.text ? html`
+              ${item.suggestTemplateInfo.primaryText.text ? html`
                 <span class="chip-title">
-                  ${chip.suggestTemplateInfo.primaryText.text}
+                  ${item.suggestTemplateInfo.primaryText.text}
                 </span>
               ` : ''}
-              ${!this.smallChipsEnabled_ && this.getChipSubtitle_(chip) ?
+              ${!this.smallChipsEnabled_ && this.getChipSubtitle_(item) ?
                   html`
-                <span title="${this.getChipTitle_(chip)}" class="chip-body">
-                  ${this.getChipSubtitle_(chip)}
+                <span title="${this.getChipTitle_(item)}" class="chip-body">
+                  ${this.getChipSubtitle_(item)}
                 </span>
               ` : ''}
             </div>

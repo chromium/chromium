@@ -90,15 +90,15 @@ ${this.enableSelectionOverlayPrompt || this.enableSelectionOverlayPromptBox ?
     <div class="action-chips-row"
         ?no-prompt-box="${!this.enableSelectionOverlayPromptBox}"
         @pointerdown="${this.onPromptPointerdown}">
-      ${this.suggestedActions.map((action, index) => html`
+      ${this.suggestedActions.map((item, index) => html`
         <cr-button class="action-chip" data-index="${index}"
             @click="${this.onSuggestedActionClick}">
-          ${this.getActionIconClass(action.icon) ? html`
+          ${this.getActionIconClass(item.icon) ? html`
             <div slot="prefix-icon"
-                class="chip-icon ${this.getActionIconClass(action.icon)}">
+                class="chip-icon ${this.getActionIconClass(item.icon)}">
             </div>
           ` : ''}
-          <span class="chip-label">${action.title}</span>
+          <span class="chip-label">${item.title}</span>
         </cr-button>
       `)}
       ${!this.enableSelectionOverlayPromptBox &&

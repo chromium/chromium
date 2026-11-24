@@ -91,8 +91,8 @@ ${!this.isFeatureEnabled_ ? html`
       </tr>
     </thead>
     <tbody>
-      ${this.entries_.map(entry => html`
-        <critical-action-row .item="${entry}"
+      ${this.entries_.map(item => html`
+        <critical-action-row .item="${item}"
             @delete-entry="${this.onDeleteEntry_}">
         </critical-action-row>
       `)}

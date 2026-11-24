@@ -20,28 +20,28 @@ export function getHtml(this: TopicVisitsPanelElement) {
   Mark any visit that doesn't belong to this topic with ✕.
 </p>
 <ul id="visitList">
-  ${this.visits_.map((visit, index) => html`
-    <li class="visit" ?rejected="${this.isRejected_(visit)}">
+  ${this.visits_.map((item, index) => html`
+    <li class="visit" ?rejected="${this.isRejected_(item)}">
       <span class="favicon" aria-hidden="true"
-          style="background-image: ${this.getFavicon_(visit.url)}">
+          style="background-image: ${this.getFavicon_(item.url)}">
       </span>
       <div class="visit-text">
-        <div class="visit-title">${visit.title || visit.domain}</div>
+        <div class="visit-title">${item.title || item.domain}</div>
         <div class="visit-details">
-          <span class="visit-url" title="${visit.url}">${visit.domain}</span>
+          <span class="visit-url" title="${item.url}">${item.domain}</span>
           <span aria-hidden="true">·</span>
-          <span class="visit-time">${visit.time}</span>
+          <span class="visit-time">${item.time}</span>
         </div>
       </div>
-      ${this.isRejected_(visit) ? html`
+      ${this.isRejected_(item) ? html`
         <span class="rejected-label" aria-hidden="true">Doesn't belong</span>
       ` : ''}
       <cr-icon-button class="reject" data-index="${index}"
           iron-icon="${
-              this.isRejected_(visit) ? 'cr:cancel-filled' : 'cr:close'}"
-          title="${this.isRejected_(visit) ? 'Undo' : 'Doesn\'t belong'}"
-          aria-label="${this.getRejectAriaLabel_(visit)}"
-          aria-pressed="${this.isRejected_(visit)}"
+              this.isRejected_(item) ? 'cr:cancel-filled' : 'cr:close'}"
+          title="${this.isRejected_(item) ? 'Undo' : 'Doesn\'t belong'}"
+          aria-label="${this.getRejectAriaLabel_(item)}"
+          aria-pressed="${this.isRejected_(item)}"
           @click="${this.onRejectClick_}">
       </cr-icon-button>
     </li>

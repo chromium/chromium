@@ -54,10 +54,10 @@ export function getHtml(this: HistoryFilterChipsElement) {
           <option value="-1" .selected="${this.clientIds.length === 0}">
             $i18n{deviceFilterAllDevices}
           </option>
-          ${this.devices.map((device, index) => html`
+          ${this.devices.map((item, index) => html`
             <option value="${index}"
-                .selected="${this.isDeviceSelected_(device)}">
-              ${device.name}
+                .selected="${this.isDeviceSelected_(item)}">
+              ${item.name}
             </option>
           `)}
         </select>
@@ -68,10 +68,10 @@ export function getHtml(this: HistoryFilterChipsElement) {
         <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
         <select id="timePeriodSelect" class="md-select"
             @change="${this.onTimePeriodSelectChange_}">
-          ${this.timePeriodOptions.map(option => html`
-            <option value="${option.id}"
-                .selected="${this.isTimePeriodSelected_(option)}">
-              ${option.label}
+          ${this.timePeriodOptions.map(item => html`
+            <option value="${item.id}"
+                .selected="${this.isTimePeriodSelected_(item)}">
+              ${item.label}
             </option>
           `)}
         </select>

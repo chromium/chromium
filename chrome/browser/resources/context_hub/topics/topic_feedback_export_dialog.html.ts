@@ -46,9 +46,9 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
         </div>
         <select id="windowSelect" class="md-select" aria-label="Time window"
             @change="${this.onWindowChange_}">
-          ${EXPORT_WINDOW_DAYS.map(days => html`
-            <option value="${days}" ?selected="${days === this.windowDays_}">
-              ${this.getWindowLabel_(days)}
+          ${EXPORT_WINDOW_DAYS.map(item => html`
+            <option value="${item}" ?selected="${item === this.windowDays_}">
+              ${this.getWindowLabel_(item)}
             </option>
           `)}
         </select>
@@ -123,12 +123,12 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
           these topics are sent without their URL and title.
         </div>
         <ul id="unratedTopics">
-          ${this.getUnratedTopics_().map(topic => html`
+          ${this.getUnratedTopics_().map(item => html`
             <li>
-              <cr-checkbox class="leave-out-checkbox" data-id="${topic.id}"
-                  ?checked="${this.isTopicLeftOut_(topic)}"
+              <cr-checkbox class="leave-out-checkbox" data-id="${item.id}"
+                  ?checked="${this.isTopicLeftOut_(item)}"
                   @checked-changed="${this.onLeaveOutCheckedChanged_}">
-                ${topic.title}
+                ${item.title}
               </cr-checkbox>
             </li>
           `)}
@@ -143,19 +143,19 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
           If you have time, also review these topics on their details page:
         </div>
         <ul id="coverageTopics">
-          ${this.getCoverageTopics_().map(topic => html`
-            <li ?done="${this.isCoverageTopicDone_(topic)}">
+          ${this.getCoverageTopics_().map(item => html`
+            <li ?done="${this.isCoverageTopicDone_(item)}">
               <cr-icon
-                  icon="${this.isCoverageTopicDone_(topic) ?
+                  icon="${this.isCoverageTopicDone_(item) ?
                       'cr:check-circle' :
                       'cr:chevron-right'}"
                   aria-hidden="true">
               </cr-icon>
-              <a href="#" data-id="${topic.id}"
+              <a href="#" data-id="${item.id}"
                   @click="${this.onCoverageTopicClick_}">
-                ${topic.title}
+                ${item.title}
               </a>
-              ${this.isCoverageTopicDone_(topic) ? html`
+              ${this.isCoverageTopicDone_(item) ? html`
                 <span class="secondary">Reviewed</span>
               ` : ''}
             </li>

@@ -548,16 +548,17 @@ export function getHtml(this: GlicInternalsAppElement) {
             ${this.uiLocaleDropdownOpen_ ? html`
               <div id="uiLocaleListbox" class="ui-locale-listbox" role="listbox"
                   aria-labelledby="debug.language">
-                ${this.getFilteredUiLocaleOptions_().map((opt, idx) => html`
-                  <div id="uiLocaleOption-${idx}"
+                ${this.getFilteredUiLocaleOptions_().map(
+                    (item, index) => html`
+                  <div id="uiLocaleOption-${index}"
                       class="ui-locale-option ${
-                          idx === this.uiLocaleActiveIndex_ ? 'active' : ''}"
+                          index === this.uiLocaleActiveIndex_ ? 'active' : ''}"
                       role="option" aria-selected="${
-                          this.isUiLocaleOptionSelected_(opt.code)}"
-                      data-code="${opt.code}"
+                          this.isUiLocaleOptionSelected_(item.code)}"
+                      data-code="${item.code}"
                       @mousedown="${this.onUiLocaleOptionMousedown_}"
                       @click="${this.onUiLocaleOptionClick_}">
-                    ${opt.display}
+                    ${item.display}
                   </div>
                 `)}
               </div>
@@ -621,10 +622,10 @@ export function getHtml(this: GlicInternalsAppElement) {
         ${this.invokePrompts_.length > 1 ? 'Prompts' : 'Prompt'}
       </label>
       <div class="prompts-container">
-        ${this.invokePrompts_.map((prompt, index) => html`
+        ${this.invokePrompts_.map((item, index) => html`
           <div class="prompt-row">
             <input id="invokePromptInput${index}" class="prompt-input"
-                .value="${prompt}" data-index="${index}"
+                .value="${item}" data-index="${index}"
                 aria-label="Prompt ${index + 1}"
                 @input="${this.onInvokePromptInput_}">
             ${this.invokePrompts_.length > 1 ? html`
@@ -703,10 +704,10 @@ export function getHtml(this: GlicInternalsAppElement) {
       <select id="invokeInvocationSourceSelect"
           .value="${this.invokeInvocationSource_.toString()}"
           @change="${this.onInvokeInvocationSourceChange_}">
-        ${this.getInvocationSourceOptions_().map(option => html`
-          <option value="${option.value}"
-              ?selected="${option.value === this.invokeInvocationSource_}">
-            ${option.name}
+        ${this.getInvocationSourceOptions_().map(item => html`
+          <option value="${item.value}"
+              ?selected="${item.value === this.invokeInvocationSource_}">
+            ${item.name}
           </option>
         `)}
       </select>
@@ -821,8 +822,8 @@ export function getHtml(this: GlicInternalsAppElement) {
           <select id="invokeSpecificTabIndexSelect"
               .value="${this.invokeSpecificTabIndex_.toString()}"
               @change="${this.onInvokeSpecificTabIndexChange_}">
-            ${this.availableTabs_.map((tabTitle, index) => html`
-              <option value="${index}">${index}: ${tabTitle}</option>
+            ${this.availableTabs_.map((item, index) => html`
+              <option value="${index}">${index}: ${item}</option>
             `)}
           </select>
           <cr-button @click="${this.onRefreshTabsClick_}">
@@ -908,8 +909,8 @@ export function getHtml(this: GlicInternalsAppElement) {
           style="margin-top: 10px; padding: 5px; border: 1px solid #ccc;
                      max-height: 200px; overflow-y: auto;
                      font-family: monospace;">
-        ${this.invokeLogs_.map(log => html`
-          <pre style="margin: 0;">${log}</pre>
+        ${this.invokeLogs_.map(item => html`
+          <pre style="margin: 0;">${item}</pre>
         `)}
       </div>
     </div>

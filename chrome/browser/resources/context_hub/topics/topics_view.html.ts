@@ -40,9 +40,9 @@ export function getHtml(this: TopicsViewElement) {
     ` : ''}
     ${this.hasTopics_() ? html`
       <div id="cardsList" class="cards-list" role="list" aria-label="Topics">
-        ${repeat(this.topics, topic => topic.id, topic => html`
-          <topic-card role="listitem" .topic="${topic}"
-              .feedback="${this.getFeedback_(topic)}"
+        ${repeat(this.topics, item => item.id, item => html`
+          <topic-card role="listitem" .topic="${item}"
+              .feedback="${this.getFeedback_(item)}"
               @jump-back-in="${this.onJumpBackIn_}"
               @topic-feedback-change="${this.onTopicFeedbackChange_}">
           </topic-card>

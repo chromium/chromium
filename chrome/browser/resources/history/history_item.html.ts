@@ -110,24 +110,24 @@ export function getHtml(this: HistoryItemElement) {
                 </div>
                 <div class="critical-actions-list" role="list"
                     aria-label="$i18n{geminiKeyBrowsingActionsTitle}">
-                  ${this.getCriticalActions_().map((action, index) => html`
+                  ${this.getCriticalActions_().map((item, index) => html`
                     <div
                         class="critical-action-row ${
-                            this.hasLinkout_(action) ? 'with-linkout' : ''}"
+                            this.hasLinkout_(item) ? 'with-linkout' : ''}"
                         role="listitem" data-index="${index}" focus-row-control
                         focus-type="critical-action" tabindex="0"
-                        aria-label="${action.label}"
-                        aria-describedby="${this.hasLinkout_(action) ?
+                        aria-label="${item.label}"
+                        aria-describedby="${this.hasLinkout_(item) ?
                             `critical-action-icon-${index}` :
                             ''}"
                         @click="${this.onCriticalActionClick_}"
                         @keydown="${this.onCriticalActionKeydown_}">
-                      <span class="critical-action-label">${action.label}</span>
-                      ${this.hasLinkout_(action) ? html`
+                      <span class="critical-action-label">${item.label}</span>
+                      ${this.hasLinkout_(item) ? html`
                         <cr-icon id="critical-action-icon-${index}"
                             class="critical-action-button" icon="cr:open-in-new"
-                            role="img" title="${action.tooltip}" aria-label="${
-                                this.getCriticalActionAriaLabel_(action)}">
+                            role="img" title="${item.tooltip}" aria-label="${
+                                this.getCriticalActionAriaLabel_(item)}">
                         </cr-icon>
                       ` : ''}
                     </div>

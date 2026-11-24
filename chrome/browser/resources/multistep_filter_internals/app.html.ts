@@ -66,9 +66,9 @@ export function getHtml(this: MultistepFilterInternalsAppElement) {
     <div class="info-section">
       <h2>Feature Flags</h2>
       <div class="info-grid">
-        ${this.debugInfo.featureFlags?.map(flag => html`
-          <div class="info-label">${flag.name}:</div>
-          <div class="info-value">${flag.enabled ? 'Enabled' : 'Disabled'}</div>
+        ${this.debugInfo.featureFlags?.map(item => html`
+          <div class="info-label">${item.name}:</div>
+          <div class="info-value">${item.enabled ? 'Enabled' : 'Disabled'}</div>
         `)}
       </div>
     </div>

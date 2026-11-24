@@ -55,11 +55,11 @@ export function getHtml(this: InfobarInternalsAppElement) {
           No infobars found matching "${this.searchQuery}"
         </div>
       ` : ''}
-      ${this.getFilteredInfobars().map(infobar => html`
-        <cr-checkbox class="dropdown-item" data-type="${infobar.type}"
-            ?checked="${this.isSelected(infobar.type)}"
+      ${this.getFilteredInfobars().map(item => html`
+        <cr-checkbox class="dropdown-item" data-type="${item.type}"
+            ?checked="${this.isSelected(item.type)}"
             @change="${this.onSelectionChange}">
-          ${infobar.name}
+          ${item.name}
         </cr-checkbox>
       `)}
     </div>

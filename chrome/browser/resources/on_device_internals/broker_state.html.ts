@@ -11,10 +11,10 @@ export function getHtml(this: OnDeviceInternalsBrokerStateElement) {
 <div class="card">
   <h2>Broker Properties</h2>
   <table>
-    ${this.otherProperties.map(property => html`
+    ${this.otherProperties.map(item => html`
       <tr>
-        <td class="property-name">${property.description}</td>
-        <td>${property.value}</td>
+        <td class="property-name">${item.description}</td>
+        <td>${item.value}</td>
       </tr>
     `)}
   </table>
@@ -45,10 +45,10 @@ ${this.state_.modelCrashCount !== null &&
 <div class="card">
   <h2>Manifest Criteria</h2>
   <table>
-    ${this.manifestCriteria.map(property => html`
+    ${this.manifestCriteria.map(item => html`
       <tr>
-        <td class="property-name">${property.description}</td>
-        <td>${property.value}</td>
+        <td class="property-name">${item.description}</td>
+        <td>${item.value}</td>
       </tr>
     `)}
   </table>
@@ -67,20 +67,20 @@ ${this.state_.modelCrashCount !== null &&
       </tr>
     </thead>
     <tbody>
-      ${this.state_.assets.map(asset => html`
+      ${this.state_.assets.map(item => html`
         <tr>
-          <td>${asset.name}</td>
-          <td>${asset.version || 'N/A'}</td>
-          <td>${this.assetStateToString(asset.state)}</td>
+          <td>${item.name}</td>
+          <td>${item.version || 'N/A'}</td>
+          <td>${this.assetStateToString(item.state)}</td>
           <td>
-            <progress value="${this.getProgressValue(asset)}"
-                max="${this.getProgressMax(asset)}">
+            <progress value="${this.getProgressValue(item)}"
+                max="${this.getProgressMax(item)}">
             </progress>
             <span class="progress-text">
-              ${this.getProgressText(asset)}
+              ${this.getProgressText(item)}
             </span>
           </td>
-          <td>${asset.error || 'None'}</td>
+          <td>${item.error || 'None'}</td>
         </tr>
       `)}
     </tbody>
@@ -98,15 +98,15 @@ ${this.state_.modelCrashCount !== null &&
       </tr>
     </thead>
     <tbody>
-      ${this.state_.useCases.map(useCase => html`
+      ${this.state_.useCases.map(item => html`
         <tr>
-          <td>${useCase.name}</td>
+          <td>${item.name}</td>
           <td>
-            <input type="checkbox" .checked="${useCase.assetsRequested}"
-                data-use-case="${useCase.name}"
+            <input type="checkbox" .checked="${item.assetsRequested}"
+                data-use-case="${item.name}"
                 @change="${this.onUseCaseRequestedChange_}">
           </td>
-          <td>${this.unavailableReasonToString(useCase.unavailableReason)}</td>
+          <td>${this.unavailableReasonToString(item.unavailableReason)}</td>
         </tr>
       `)}
     </tbody>
@@ -125,17 +125,16 @@ ${this.state_.modelCrashCount !== null &&
       </tr>
     </thead>
     <tbody>
-      ${this.state_.models.map(model => html`
+      ${this.state_.models.map(item => html`
         <tr>
-          <td>${model.name}</td>
+          <td>${item.name}</td>
           <td>
-            ${(Number(model.folderSize) / 1024 / 1024)
-                .toLocaleString('en-US', {
-                  maximumFractionDigits: 2,
-                })} MiB
+            ${(Number(item.folderSize) / 1024 / 1024).toLocaleString('en-US', {
+              maximumFractionDigits: 2,
+            })} MiB
           </td>
-          <td class="path">${model.weightsPath}</td>
-          <td>${model.backendType}</td>
+          <td class="path">${item.weightsPath}</td>
+          <td>${item.backendType}</td>
         </tr>
       `)}
     </tbody>

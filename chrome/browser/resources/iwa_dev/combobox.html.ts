@@ -40,14 +40,14 @@ export function getHtml(this: IwaDevComboboxElement) {
       <div id="suggestions" class="suggestions-dropdown" role="listbox"
           aria-label="${this.label}" popover="manual"
           @pointerdown="${this.onSuggestionsPointerdown_}">
-        ${this.getFilteredOptions_().map((opt, i) => html`
-          <button id="suggestion-${i}"
+        ${this.getFilteredOptions_().map((item, index) => html`
+          <button id="suggestion-${index}"
               class="suggestion-item ${
-                  i === this.highlightedIndex_ ? 'highlighted' : ''}"
+                  index === this.highlightedIndex_ ? 'highlighted' : ''}"
               role="option" type="button" tabindex="-1" aria-selected="${
-                  i === this.highlightedIndex_ ? 'true' : 'false'}"
-              value="${opt.value}" @pointerdown="${this.onOptionPointerdown_}">
-            ${opt.label || opt.value}
+                  index === this.highlightedIndex_ ? 'true' : 'false'}"
+              value="${item.value}" @pointerdown="${this.onOptionPointerdown_}">
+            ${item.label || item.value}
           </button>
         `)}
       </div>
