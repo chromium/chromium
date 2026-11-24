@@ -213,4 +213,16 @@ public class StatusViewUnitTest {
                 mActivity.getResources().getDimensionPixelSize(R.dimen.status_view_width_narrow),
                 mStatusView.getMinimumWidth());
     }
+
+    @Test
+    public void testGetStatusIconWidth_zeroWhenStatusViewGone() {
+        mStatusModel.set(StatusProperties.USE_WIDE_STATUS_ICON, /* value= */ true);
+        mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, /* value= */ true);
+        performLayout();
+        assertTrue(mStatusView.getStatusIconWidth() > 0);
+
+        mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, /* value= */ false);
+        performLayout();
+        assertEquals(0, mStatusView.getStatusIconWidth());
+    }
 }

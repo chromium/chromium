@@ -628,6 +628,7 @@ public class StatusView extends LinearLayout {
      * @return The width of the status icon including start/end margins.
      */
     int getStatusIconWidth() {
+        if (getVisibility() == GONE) return 0;
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) getLayoutParams();
         return lp.getMarginStart() + getMeasuredWidth() + lp.getMarginEnd();
     }

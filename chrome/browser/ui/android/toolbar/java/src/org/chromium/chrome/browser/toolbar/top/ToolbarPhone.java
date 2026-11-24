@@ -1329,7 +1329,7 @@ public class ToolbarPhone extends ToolbarLayout
         var profile = getToolbarDataProvider().getProfile();
         if (profile == null
                 || SearchEngineService.getForProfile(profile).shouldShowSearchEngineLogo()) {
-            locationBarBaseTranslationX += getLocationBarOffsetForFocusAnimation(hasFocus());
+            locationBarBaseTranslationX += getLocationBarOffsetForFocusAnimation(urlHasFocus());
         }
 
         boolean isLocationBarRtl = isLocationBarRtl();
@@ -3688,8 +3688,7 @@ public class ToolbarPhone extends ToolbarLayout
             return 0;
         }
 
-        // On non-NTP pages, there will always be an icon when unfocused.
-        if (!getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible()) return 0;
+        if (!isLocationBarShownInNtp()) return 0;
 
         // This offset is only required when the focus animation is running.
         if (!hasFocus) return 0;

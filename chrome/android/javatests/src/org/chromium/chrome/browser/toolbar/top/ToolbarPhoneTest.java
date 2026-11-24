@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
@@ -771,6 +772,56 @@ public class ToolbarPhoneTest {
                     assertNotEquals(
                             0,
                             mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ true));
+                });
+
+        // Test pending navigation away from NTP where focus animations are disabled before commit.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NewTabPage ntp = (NewTabPage) tab.getNativePage();
+                    ntp.setUrlFocusAnimationsDisabled(/* disable= */ true);
+                    assertEquals(
+                            0,
+                            mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ true));
+                    ntp.setUrlFocusAnimationsDisabled(/* disable= */ false);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testLocationBarNotShiftedAfterNtpUnfocus() {
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        Tab tab = mActivityTestRule.getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        assertTrue(mToolbar.isLocationBarShownInNtp());
+
+        float baselineTranslationX =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mToolbar.findViewById(R.id.location_bar).getTranslationX());
+
+        mOmnibox.requestFocus();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ true)
+                                    < 0);
+                });
+
+        mOmnibox.clearFocus();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View locationBar = mToolbar.findViewById(R.id.location_bar);
+                    assertTrue(mToolbar.hasFocus());
+                    assertFalse(mToolbar.urlHasFocus());
+
+                    mToolbar.measure(
+                            View.MeasureSpec.makeMeasureSpec(
+                                    mToolbar.getWidth(), View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(
+                                    mToolbar.getHeight(), View.MeasureSpec.EXACTLY));
+                    assertEquals(
+                            baselineTranslationX,
+                            locationBar.getTranslationX(),
+                            /* delta= */ 0.01f);
                 });
     }
 
