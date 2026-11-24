@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "build/android_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/browser/test_event_router.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/test_runtime_api_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -117,10 +119,22 @@ class RestartAfterDelayApiTest : public ApiUnitTest {
 
     ApiUnitTest::SetUp();
 
+    // `EventRouterFactory` and the `RuntimeAPI` factory don't create services
+    // for test contexts, so use testing factories for both. Otherwise, the
+    // test gets these services only when no earlier test in the same process
+    // created the factories, and crashes in batched runs. The `RuntimeAPI`
+    // constructor uses `EventRouter`, so create it first.
+    CreateAndUseTestEventRouter(browser_context());
+
     // The RuntimeAPI should only be accessed (i.e. constructed) after the above
     // ExtensionsBrowserClient has been setup.
     RuntimeAPI* runtime_api =
-        RuntimeAPI::GetFactoryInstance()->Get(browser_context());
+        RuntimeAPI::GetFactoryInstance()->SetTestingSubclassFactoryAndUse(
+            browser_context(),
+            base::BindOnce([](content::BrowserContext* context) {
+              return std::make_unique<RuntimeAPI>(context);
+            }));
+    ASSERT_TRUE(runtime_api);
     runtime_api->set_min_duration_between_restarts_for_testing(
         base::Seconds(2));
     runtime_api->AllowNonKioskAppsInRestartAfterDelayForTesting();
@@ -180,13 +194,7 @@ class RestartAfterDelayApiTest : public ApiUnitTest {
   }
 };
 
-// TODO(crbug.com/587399436): Crashes in batched runs on Desktop Android.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-#define MAYBE_RestartAfterDelayTest DISABLED_RestartAfterDelayTest
-#else
-#define MAYBE_RestartAfterDelayTest RestartAfterDelayTest
-#endif
-TEST_F(RestartAfterDelayApiTest, MAYBE_RestartAfterDelayTest) {
+TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
   RunRestartAfterDelayFunction("[-1]", "");
   ASSERT_FALSE(IsDelayedRestartTimerRunning());
 
