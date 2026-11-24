@@ -30,6 +30,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
@@ -56,6 +57,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
@@ -2066,10 +2068,11 @@ class MediaStreamManagerTestWithWebContents : public MediaStreamManagerTest {
       GlobalRenderFrameHostId render_frame_host_id,
       const blink::StreamControls& controls,
       MediaDeviceSaltAndOrigin salt_and_origin,
-      MediaStreamManager::GenerateStreamsCallback generate_stream_cb) {
+      MediaStreamManager::GenerateStreamsCallback generate_stream_cb,
+      int page_request_id = 0) {
     media_stream_manager_->GenerateStreams(
-        render_frame_host_id, /*requester_id=*/0, /*page_request_id=*/0,
-        controls, salt_and_origin,
+        render_frame_host_id, /*requester_id=*/0, page_request_id, controls,
+        salt_and_origin,
         /*user_gesture=*/false,
         /*audio_stream_selection_info_ptr=*/
         NewSearchBySessionId({}), std::move(generate_stream_cb),
@@ -2088,6 +2091,53 @@ class MediaStreamManagerTestWithWebContents : public MediaStreamManagerTest {
     media_stream_manager_->GetRawDeviceIdsOpenedForFrame(
         render_frame_host, type, future.GetCallback());
     return future.Take();
+  }
+
+  struct SharedPageRequestIdLabels {
+    std::string audio_label;
+    std::string video_label;
+  };
+
+  // Opens an audio-only request followed by a video-only request on
+  // `render_frame_host_id_`, both using `page_request_id`, and returns their
+  // labels. Sets up a single fake video capture device.
+  SharedPageRequestIdLabels GenerateAudioAndVideoStreamsWithSharedPageRequestId(
+      const MediaDeviceSaltAndOrigin& salt_and_origin,
+      int page_request_id) {
+    const std::string kAudioRawId = GetAudioInputDeviceId(0);
+    const char kVideoRawId[] = "video_device_1";
+    SetVideoCaptureDevices({media::VideoCaptureDeviceInfo{
+        media::VideoCaptureDeviceDescriptor{/*display_name=*/"Camera",
+                                            /*device_id=*/kVideoRawId}}});
+    const std::string kAudioHmacId =
+        GetHMACForRawMediaDeviceID(salt_and_origin, kAudioRawId);
+    const std::string kVideoHmacId =
+        GetHMACForRawMediaDeviceID(salt_and_origin, kVideoRawId);
+
+    SharedPageRequestIdLabels labels;
+    using StreamsGeneratedFuture =
+        base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
+                               const std::string&,
+                               blink::mojom::StreamDevicesSetPtr, bool>;
+    {
+      StreamsGeneratedFuture audio_future;
+      GenerateStreams(render_frame_host_id_,
+                      GetAudioStreamControls(kAudioHmacId), salt_and_origin,
+                      audio_future.GetCallback(), page_request_id);
+      auto [result, label, devices, ptz] = audio_future.Take();
+      EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
+      labels.audio_label = label;
+    }
+    {
+      StreamsGeneratedFuture video_future;
+      GenerateStreams(render_frame_host_id_,
+                      GetVideoStreamControls(kVideoHmacId), salt_and_origin,
+                      video_future.GetCallback(), page_request_id);
+      auto [result, label, devices, ptz] = video_future.Take();
+      EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
+      labels.video_label = label;
+    }
+    return labels;
   }
 
   RenderViewHostTestEnabler rvh_test_enabler_;
@@ -2203,6 +2253,100 @@ TEST_F(MediaStreamManagerTestWithWebContents,
                   render_frame_host_,
                   blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
                   .empty());
+}
+
+TEST_F(MediaStreamManagerTestWithWebContents,
+       PermissionRevocationCancelsMatchingRequestWithSharedPageRequestId) {
+  const GURL kUrl("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+  web_contents_->NavigateAndCommit(kUrl);
+  render_frame_host_ = web_contents_->GetPrimaryMainFrame();
+  render_frame_host_id_ = render_frame_host_->GetGlobalId();
+
+  PermissionControllerImpl* permission_controller =
+      PermissionControllerImpl::FromBrowserContext(&browser_context_);
+  ASSERT_TRUE(permission_controller);
+  for (blink::PermissionType permission :
+       {blink::PermissionType::AUDIO_CAPTURE,
+        blink::PermissionType::VIDEO_CAPTURE}) {
+    base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+    permission_controller->SetPermissionOverride(
+        kOrigin, kOrigin, permission, blink::mojom::PermissionStatus::GRANTED,
+        future.GetCallback());
+    ASSERT_EQ(future.Get(),
+              PermissionControllerImpl::OverrideStatus::kOverrideSet);
+  }
+
+  // Register an audio request first and a video request second with the same
+  // page_request_id.
+  constexpr int kSharedPageRequestId = 7;
+  const auto [audio_label, video_label] =
+      GenerateAudioAndVideoStreamsWithSharedPageRequestId(
+          MediaDeviceSaltAndOrigin("salt", kOrigin), kSharedPageRequestId);
+
+  // Wait for UI-thread subscription and IO-thread SetPermissionSubscriptionIDs.
+  {
+    base::RunLoop subscribe_loop;
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::OnceClosure quit) {
+                         GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                             std::move(quit));
+                       },
+                       subscribe_loop.QuitClosure()));
+    subscribe_loop.Run();
+  }
+  ASSERT_EQ(
+      media_stream_manager_->GetDevicesOpenedByRequest(audio_label).size(), 1u);
+  ASSERT_EQ(
+      media_stream_manager_->GetDevicesOpenedByRequest(video_label).size(), 1u);
+
+  // Revoke camera permission only. This must cancel the video request, not the
+  // audio request sharing the same page_request_id.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus>
+      revoke_future;
+  permission_controller->SetPermissionOverride(
+      kOrigin, kOrigin, blink::PermissionType::VIDEO_CAPTURE,
+      blink::mojom::PermissionStatus::DENIED, revoke_future.GetCallback());
+  ASSERT_EQ(revoke_future.Get(),
+            PermissionControllerImpl::OverrideStatus::kOverrideSet);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return media_stream_manager_->GetDevicesOpenedByRequest(video_label)
+        .empty();
+  }));
+  // Flush the IO thread to verify the audio request is not cancelled.
+  {
+    base::RunLoop flush_loop;
+    GetIOThreadTaskRunner({})->PostTask(FROM_HERE, flush_loop.QuitClosure());
+    flush_loop.Run();
+  }
+  EXPECT_EQ(
+      media_stream_manager_->GetDevicesOpenedByRequest(audio_label).size(), 1u);
+
+  media_stream_manager_->CancelRequest(audio_label);
+}
+
+TEST_F(MediaStreamManagerTestWithWebContents,
+       CancelRequestByPageRequestIdCancelsAllMatchingRequests) {
+  constexpr int kSharedPageRequestId = 7;
+  const auto [audio_label, video_label] =
+      GenerateAudioAndVideoStreamsWithSharedPageRequestId(
+          MediaDeviceSaltAndOrigin::Empty(), kSharedPageRequestId);
+
+  ASSERT_EQ(
+      media_stream_manager_->GetDevicesOpenedByRequest(audio_label).size(), 1u);
+  ASSERT_EQ(
+      media_stream_manager_->GetDevicesOpenedByRequest(video_label).size(), 1u);
+
+  media_stream_manager_->CancelRequest(render_frame_host_id_,
+                                       /*requester_id=*/0,
+                                       kSharedPageRequestId);
+
+  EXPECT_TRUE(
+      media_stream_manager_->GetDevicesOpenedByRequest(audio_label).empty());
+  EXPECT_TRUE(
+      media_stream_manager_->GetDevicesOpenedByRequest(video_label).empty());
 }
 
 class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {

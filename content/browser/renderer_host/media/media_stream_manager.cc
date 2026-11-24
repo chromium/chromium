@@ -1797,17 +1797,11 @@ void MediaStreamManager::CancelRequest(
     GlobalRenderFrameHostId render_frame_host_id,
     int requester_id,
     int page_request_id) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
-  for (auto request_it = requests_.begin(); request_it != requests_.end();
-       ++request_it) {
-    const DeviceRequest* const request = request_it->second.get();
-    if (request->requesting_render_frame_host_id == render_frame_host_id &&
-        request->requester_id == requester_id &&
-        request->page_request_id == page_request_id) {
-      CancelRequest(request_it);
-      return;
-    }
-  }
+  CancelRequestsIf([&](const DeviceRequest& request) {
+    return request.requesting_render_frame_host_id == render_frame_host_id &&
+           request.requester_id == requester_id &&
+           request.page_request_id == page_request_id;
+  });
 }
 
 void MediaStreamManager::CancelRequest(const std::string& label) {
@@ -1827,13 +1821,19 @@ void MediaStreamManager::CancelRequest(const std::string& label) {
 void MediaStreamManager::CancelAllRequests(
     GlobalRenderFrameHostId render_frame_host_id,
     int requester_id) {
+  CancelRequestsIf([&](const DeviceRequest& request) {
+    return request.requesting_render_frame_host_id == render_frame_host_id &&
+           request.requester_id == requester_id;
+  });
+}
+
+void MediaStreamManager::CancelRequestsIf(
+    base::FunctionRef<bool(const DeviceRequest&)> predicate) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   DeviceRequests::const_iterator request_it = requests_.begin();
   while (request_it != requests_.end()) {
-    if (request_it->second->requesting_render_frame_host_id !=
-            render_frame_host_id ||
-        request_it->second->requester_id != requester_id) {
+    if (!predicate(*request_it->second)) {
       ++request_it;
       continue;
     }
@@ -4509,8 +4509,7 @@ void MediaStreamManager::SubscribeToPermissionController(
       base::BindOnce(
           &MediaStreamManager::SubscribeToPermissionControllerOnUIThread,
           base::Unretained(this), label,
-          request->requesting_render_frame_host_id, request->requester_id,
-          request->page_request_id,
+          request->requesting_render_frame_host_id,
           blink::IsAudioInputMediaType(request->audio_type()),
           blink::IsVideoInputMediaType(request->video_type()),
           request->salt_and_origin.origin().GetURL()));
@@ -4519,8 +4518,6 @@ void MediaStreamManager::SubscribeToPermissionController(
 void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
     const std::string& label,
     GlobalRenderFrameHostId requesting_render_frame_host_id,
-    int requester_id,
-    int page_request_id,
     bool is_audio_request,
     bool is_video_request,
     const GURL& origin) {
@@ -4557,8 +4554,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
                     /*should_include_device_status=*/false,
                     base::BindRepeating(
                         &MediaStreamManager::PermissionChangedCallback,
-                        base::Unretained(this), requesting_render_frame_host_id,
-                        requester_id, page_request_id))
+                        base::Unretained(this), label))
                 .get())
             ->Release();
   }
@@ -4579,8 +4575,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
                     /*should_include_device_status=*/false,
                     base::BindRepeating(
                         &MediaStreamManager::PermissionChangedCallback,
-                        base::Unretained(this), requesting_render_frame_host_id,
-                        requester_id, page_request_id))
+                        base::Unretained(this), label))
                 .get())
             ->Release();
   }
@@ -4640,9 +4635,7 @@ void MediaStreamManager::UnsubscribeFromPermissionControllerOnUIThread(
 }
 
 void MediaStreamManager::PermissionChangedCallback(
-    GlobalRenderFrameHostId requesting_render_frame_host_id,
-    int requester_id,
-    int page_request_id,
+    const std::string& label,
     PermissionResult permission_result) {
   if (permission_result.status == blink::mojom::PermissionStatus::GRANTED) {
     return;
@@ -4654,13 +4647,15 @@ void MediaStreamManager::PermissionChangedCallback(
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&MediaStreamManager::PermissionChangedCallback,
-                       base::Unretained(this), requesting_render_frame_host_id,
-                       requester_id, page_request_id, permission_result));
+                       base::Unretained(this), label, permission_result));
 
     return;
   }
 
-  CancelRequest(requesting_render_frame_host_id, requester_id, page_request_id);
+  const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it != requests_.end()) {
+    CancelRequest(request_it);
+  }
 }
 
 void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(

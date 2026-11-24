@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -256,8 +257,10 @@ class CONTENT_EXPORT MediaStreamManager
       DeviceCaptureHandleChangeCallback device_capture_handle_change_callback,
       ZoomLevelChangeCallback zoom_level_change_callback);
 
-  // Cancel an open request identified by |page_request_id| for the given frame.
-  // Must be called on the IO thread.
+  // Cancels all requests identified by `page_request_id` for the given
+  // `render_frame_host_id` and `requester_id`. `page_request_id` is chosen by
+  // the renderer and is not guaranteed to be unique, so more than one request
+  // may match. Must be called on the IO thread.
   void CancelRequest(GlobalRenderFrameHostId render_frame_host_id,
                      int requester_id,
                      int page_request_id);
@@ -634,6 +637,8 @@ class CONTENT_EXPORT MediaStreamManager
                                   const base::UnguessableToken& transfer_id,
                                   TransferState transfer_state);
   void CancelRequest(DeviceRequests::const_iterator request_it);
+  void CancelRequestsIf(
+      base::FunctionRef<bool(const DeviceRequest&)> predicate);
   void DeleteRequest(DeviceRequests::const_iterator request_it);
 
   // Prepare the request with label |label| by starting device enumeration if
@@ -781,8 +786,6 @@ class CONTENT_EXPORT MediaStreamManager
   void SubscribeToPermissionControllerOnUIThread(
       const std::string& label,
       GlobalRenderFrameHostId requesting_render_frame_host_id,
-      int requester_id,
-      int page_request_id,
       bool is_audio_request,
       bool is_video_request,
       const GURL& origin);
@@ -803,11 +806,8 @@ class CONTENT_EXPORT MediaStreamManager
       PermissionController::SubscriptionId video_subscription_id);
 
   // Callback that the PermissionController calls when a permission is updated.
-  void PermissionChangedCallback(
-      GlobalRenderFrameHostId requesting_render_frame_host_id,
-      int requester_id,
-      int page_request_id,
-      PermissionResult permission_result);
+  void PermissionChangedCallback(const std::string& label,
+                                 PermissionResult permission_result);
 
   // Start tracking capture-handle changes for tab and window capture.
   void MaybeStartTrackingCaptureHandleConfig(
