@@ -464,6 +464,8 @@ static_library("browser") {
     sources += [
       "actions/omnibox_action_factory_android.cc",
       "actions/omnibox_action_factory_android.h",
+      "android/omnibox_icon_bridge.cc",
+      "android/omnibox_icon_bridge.h",
       "autocomplete_match_android.cc",
       "autocomplete_result_android.cc",
     ]
@@ -683,6 +685,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxFocusReason.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxIconBridge.java",
       "android/java/src/org/chromium/components/omnibox/PageClassificationUtils.java",
       "android/java/src/org/chromium/components/omnibox/TextSelection.java",
       "android/java/src/org/chromium/components/omnibox/ToolModeUtils.java",
@@ -729,6 +732,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteInputUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxIconBridgeUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizerUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/PageClassificationUtilsUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/SecurityStatusIconUnitTest.java",
@@ -746,6 +750,7 @@ if (is_android) {
       "//components/omnibox/common:features_java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
       "//third_party/metrics_proto:metrics_proto_java",
       "//third_party/mockito:mockito_java",
@@ -790,6 +795,7 @@ if (is_android) {
       "//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/suggestions/action/OmniboxActionFactory.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxIconBridge.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
     ]
   }
@@ -1091,7 +1097,10 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    sources += [ "omnibox_word_boundary_unittest.cc" ]
+    sources += [
+      "android/omnibox_icon_bridge_unittest.cc",
+      "omnibox_word_boundary_unittest.cc",
+    ]
     deps += [ "//components/location/android:test_support" ]
   }
 
