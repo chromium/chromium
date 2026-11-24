@@ -855,6 +855,7 @@
 <translation id="1921544956190977703">नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचने के लिए, आपके पास Chrome की सबसे मज़बूत सुरक्षा है</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" सिर्फ़ इस डिवाइस में सेव है. अपने अन्य डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने खाते में सेव करें.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">इसके साथ खोलें</translation>
 <translation id="1925017091976104802">चिपकाने के लिए <ph name="MODIFIER_KEY_DESCRIPTION" /> दबाएं</translation>
 <translation id="1925021887439448749">पसंद के मुताबिक वेब पता डालें</translation>
@@ -1404,6 +1405,7 @@
 <translation id="2528487766183344810">क्लाइंट सर्टिफ़िकेट एक्सपोर्ट करने के लिए, कृपया <ph name="TOKEN_NAME" /> को अनलॉक करें.</translation>
 <translation id="2532198298278778531">ChromeOS Flex की सेटिंग में सुरक्षित डीएनएस को मैनेज करें</translation>
 <translation id="253434972992662860">&amp;रोकें</translation>
+<translation id="2534439599863644240">सीरियल पोर्ट</translation>
 <translation id="253498598929009420">साइट, आपकी स्क्रीन पर मौजूद कॉन्टेंट देख पाएगी</translation>
 <translation id="253557089021624350">कीपअलाइव की गणना</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर को देख सकती है और उनमें बदलाव कर सकती है</translation>

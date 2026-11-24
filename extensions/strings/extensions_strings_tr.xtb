@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" eklensin mi?</translation>
 <translation id="2159915644201199628">Resmin kodu çözülemedi: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">Anne veya babanız bu uzantıyı onaylamadı</translation>
+<translation id="2207866393056347613">Tüm sitelerdeki verilerinize kalıcı erişim izni verir</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ek izinler istedi.</translation>
 <translation id="2327492829706409234">Uygulamayı etkinleştir</translation>
 <translation id="2350172092385603347">Yerelleştirme kullanıldı, ancak bildiride default_locale belirtilmedi.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Tekrar etkinleştir</translation>
 <translation id="2743583586211388067">Bu uzantıya erişim, kuruluşunuzun uzantı risk politikası kapsamında engellendi.</translation>
 <translation id="2766161002040448006">Ebeveyninize sorun</translation>
+<translation id="2775557057525247505">Tüm siteleri göster</translation>
 <translation id="2785530881066938471">İçerik komut dosyası için '<ph name="RELATIVE_PATH" />' dosyası yüklenemedi. Dosya UTF-8 olarak kodlanmamış.</translation>
 <translation id="2850541429955027218">Tema ekle</translation>
 <translation id="2883143988769190738">Bu uzantı şu izinleri istiyor:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> kimliğine sahip üretici firma tarafından sağlanan <ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Özel anahtara ilişkin giriş değeri geçerli bir yol olmalıdır.</translation>
+<translation id="3769470010314114481">Sitedeki verilerinize geçici erişim izni verir</translation>
 <translation id="3788401245189148511">Şunları yapabilecek:</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" uygulaması, zaten yüklenmiş olan "<ph name="INSTALLED_APP_NAME" />" uygulamasıyla çakıştığından eklenemedi.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' seçenekler sayfası yüklenemedi.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Uzantıyı etkinleştir</translation>
 <translation id="3927932062596804919">Reddet</translation>
 <translation id="3984413272403535372">Uzantı imzalanırken hata oluştu.</translation>
+<translation id="3990894032742690314">Listelenen sitelerde her zaman</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" onarılsın mı?</translation>
 <translation id="4061696872429826774">Bilgisayarınızdaki başka bir program, Chromium'un çalışma şeklini değiştirebilecek bir uzantı ekledi.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Hakkında sayfası ("<ph name="ABOUT_PAGE" />") yüklenemedi.</translation>
 <translation id="424963718355121712">Uygulamalar etkiledikleri ana makineden yayınlanmalıdır</translation>
 <translation id="4306119971288449206">Uygulamalar "<ph name="CONTENT_TYPE" />" içerik türüyle yayınlanmalıdır</translation>
+<translation id="4307774243840254737">Aşağıda listelenen sitelerdeki verilerinize kalıcı erişim izni verir</translation>
 <translation id="4349181963619779233">Bu web sitesinden uzantı ve uygulama eklenemez</translation>
 <translation id="4625078469366263107">Uygulamayı Etkinleştir</translation>
 <translation id="4633003931260532286">Uzantı en az "<ph name="IMPORT_NAME" />" "<ph name="IMPORT_VERSION" />" sürümünü gerektiriyor ancak sadece "<ph name="INSTALLED_VERSION" />" sürümü yüklü</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" adlı uzantının en yeni sürümü daha fazla izin gerektirdiğinden devre dışı bırakıldı.</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" etkinleştirilsin mi?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Yalnızca uzantıyı tıkladığınızda</translation>
 <translation id="5405650547142096840">Chromium'dan kaldır</translation>
 <translation id="5456409301717116725">Bu uzantıda '<ph name="KEY_PATH" />' anahtar dosyası var. Muhtemelen istediğiniz bu değil.</translation>
 <translation id="5485102783864353244">Uygulama ekle</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Bu uzantı, kendisini yeniden yükleme işlemini çok sık yaptı.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
+<translation id="7017635639223148413">Listelenen siteler</translation>
 <translation id="7068383018033524534">Manifest dosyası geçersiz</translation>
 <translation id="7217838517480956708">Bu makinenin yöneticisi <ph name="EXTENSION_NAME" /> yüklenmesini gerektiriyor. Kaldırılamaz veya değiştirilemez.</translation>
 <translation id="7287143125007575591">Erişim reddedildi.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Ön kamera</translation>
 <translation id="8047248493720652249">Başka bir uzantı (<ph name="EXTENSION_NAME" />) farklı bir dosya adı ("<ph name="ACTUAL_FILENAME" />") belirlediğinden, uzantı indirilen dosyayı "<ph name="ATTEMPTED_FILENAME" />" olarak adlandıramadı.</translation>
 <translation id="8049705080247101012">Google <ph name="EXTENSION_NAME" /> uzantısını kötü amaçlı olarak işaretledi ve yükleme işlemi engellendi</translation>
+<translation id="823691536304079791">Verilerinizi okuma ve değiştirme</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> adlı firmadan <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">Şunları yapabilir:</translation>
 <translation id="8517576857589387417">Manifest dosyası eksik veya okunamıyor</translation>

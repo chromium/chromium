@@ -845,6 +845,7 @@
 <translation id="1921544956190977703">‏يتوفّر لك أعلى مستوى من الأمان في متصفِّح Chrome لحمايتك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> نقطة لكل بوصة</translation>
 <translation id="1921600948984918136">تم حفظ "<ph name="NAME" />" على هذا الجهاز فقط. لاستخدام تلك الإضافة على أجهزتك الأخرى، يجب حفظها في حسابك.</translation>
+<translation id="1924725605995508501">‏‫<ph name="PORT_NAME" /> ‎(‏<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">فتح باستخدام</translation>
 <translation id="1925017091976104802">اضغط على <ph name="MODIFIER_KEY_DESCRIPTION" /> للصق.</translation>
 <translation id="1925021887439448749">إدخال عنوان الويب المُخصص</translation>
@@ -1391,6 +1392,7 @@
 <translation id="2528487766183344810">يُرجى فتح قفل "<ph name="TOKEN_NAME" />" لتصدير شهادة العميل.</translation>
 <translation id="2532198298278778531">‏إدارة "نظام أسماء النطاقات" (DNS) الآمن من خلال إعدادات ChromeOS Flex</translation>
 <translation id="253434972992662860">إي&amp;قاف مؤقت</translation>
+<translation id="2534439599863644240">منفذ تسلسلي</translation>
 <translation id="253498598929009420">سيتمكّن الموقع الإلكتروني من الاطّلاع على محتوى شاشتك.</translation>
 <translation id="253557089021624350">عدد مرات التحقق من الاتصال</translation>
 <translation id="2537395079978992874">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية وتعديلها:</translation>

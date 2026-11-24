@@ -308,6 +308,7 @@
 <translation id="1308105352527684175">Et välttämättä voi käyttää tiettyä sisältöä</translation>
 <translation id="1311092170520822848">Tämä sivusto hallitsee laitteeseen yhdistettyjä älykortinlukijoita ja mahdollisesti niille saatavilla olevia älykortteja</translation>
 <translation id="131112695174432497">Mainosten personointiin vaikuttava data poistetaan</translation>
+<translation id="13115907161008983">Kopioi linkit</translation>
 <translation id="131188242279372879">Tutustu parannettuun suojaukseen, jolla saat Chromen korkeimman suojaustason latauksille</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Selainta hidastavan välilehden korjaaminen}other{Selainta hidastavien välilehtien korjaaminen}}</translation>
 <translation id="1312721752506309252">Parannettu suojaus on päällä</translation>
@@ -444,6 +445,7 @@
 <translation id="1482626744466814421">Lisää tämä välilehti kirjanmerkiksi…</translation>
 <translation id="1482772681918035149">muokkaa salasanoja</translation>
 <translation id="1483137792530497944">Joki</translation>
+<translation id="1483148302144576204">Kopioi linkit</translation>
 <translation id="1483151333977672176">Lähetetty!</translation>
 <translation id="1483431819520123112">Julkisesti näkyvä nimi kopioitu leikepöydälle</translation>
 <translation id="1483493594462132177">Lähetä</translation>
@@ -1067,6 +1069,7 @@
 <translation id="2168036794078614559">Ilmoitus lähetetty</translation>
 <translation id="2168735174585029637">Valitse välilehdille uusi läpinäkyvä ulkoasu</translation>
 <translation id="217120844667431680">Tee enemmän tekoälytilassa</translation>
+<translation id="2172046302886074612">"<ph name="MODEL_CATEGORY" />" poistettu</translation>
 <translation id="2173302385160625112">Tarkista internetyhteytesi</translation>
 <translation id="2175384018164129879">&amp;Hallitse hakukoneita ja sivustojen hakua</translation>
 <translation id="2175773164573457310">Valitse teksti tai kuva, josta haluat kysyä Geminiltä</translation>
@@ -2094,6 +2097,7 @@
 <translation id="3270965368676314374">Lukea, muokata ja poistaa kuvia, musiikkia ja muuta tietokoneellasi olevaa mediaa</translation>
 <translation id="3275464924531706548">Tiivistä <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Avaa ikkunana</translation>
+<translation id="3277325180914877290">Suurenna tekstiä</translation>
 <translation id="3280237271814976245">Tallenna &amp;nimellä...</translation>
 <translation id="3280243678470289153">Pysy Chromessa</translation>
 <translation id="3282210178675490297">Välilehti jaetaan: <ph name="APP_NAME" /></translation>
@@ -2602,6 +2606,7 @@
 <translation id="3786890785076278600">Staattinen viiva</translation>
 <translation id="3787434344076711519">Odottaa käännöstä</translation>
 <translation id="3789432704615470433">SharePoint- ja OneDrive-tiedostot</translation>
+<translation id="3789493399245366422">koko näyttö, koko näytön tila, suurenna, immersiivinen, piilota työkalupalkki, esitys, F11</translation>
 <translation id="3789841737615482174">Asenna</translation>
 <translation id="3790417903123637354">Jotain meni pieleen. Yritä myöhemmin uudelleen.</translation>
 <translation id="379082410132524484">Korttisi on vanhentunut.</translation>
@@ -3369,6 +3374,7 @@
 <translation id="4665035764476941598">Klikkaa tästä, jos haluat palauttaa muut välilehdet</translation>
 <translation id="4665446389743427678">Kaikki data, jonka <ph name="SITE" /> tallentaa, poistetaan.</translation>
 <translation id="4666483368282673356">Ylläpidä Gemini-historiaa</translation>
+<translation id="4667646546186544608">loitonna, kutista, pienempi, vähennä, pienennä, sivun zoomaus</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Onnittelut! <ph name="APP_NAME" /> on asennettu laitteellesi</translation>
 <translation id="4672759829555593783">Avaa <ph name="FILE_NAME" /> nyt</translation>
@@ -4772,6 +4778,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6255253900817321392">Hae nopeammin mistä tahansa Macilla avaamatta uutta välilehteä</translation>
 <translation id="6257602895346497974">Ota synkronointi käyttöön…</translation>
 <translation id="6258818697161346451">Käytä avainkoodeja tällä laitteella</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopioi linkki}other{Kopioi linkit}}</translation>
 <translation id="6261688934280090835">ChromeOS-kioskisovelluslokit</translation>
 <translation id="6263082573641595914">Microsoftin varmenteen myöntäjän versio</translation>
 <translation id="6264060420924719834">Sovellus sisältää verkkosisältöä muilta sivustoilta</translation>
@@ -4900,6 +4907,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Kuvatiedostot </translation>
 <translation id="6410390304316730527">Selaussuoja parantaa suojaustasi, jos hyökkääjä yrittää huijata sinua tekemään jotain vaarallista, kuten asentamaan haittaohjelmia tai paljastamaan henkilötietoja (esimerkiksi salasanoja, puhelinnumeroita tai credit-kortin tietoja). Jos laitat sen pois päältä, ole varovainen tuntemattomilla tai huonomaineisilla sivustoilla.</translation>
+<translation id="6411490324917773403">Pienennä tekstiä</translation>
 <translation id="6416743254476733475">Salli tai estä tietokoneellasi.</translation>
 <translation id="6416856063840710198">Jotta sivustot voivat parantaa kokemustasi, ne tallentavat usein toimintaasi – usein laitteellesi. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Oletustoiminta</translation>
@@ -6390,6 +6398,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8041093619605951337">Iloinen</translation>
 <translation id="8042142357103597104">Tekstin läpinäkyvyys</translation>
 <translation id="8042331986490021244">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon</translation>
+<translation id="8042441076562098746">lähennä, suurenna, isompi, suurempi, lisää, skaalaa, sivun zoomaus</translation>
 <translation id="8045253504249021590">Synkronointi on keskeytetty Google Hallintapaneelin kautta.</translation>
 <translation id="8045752459073395242">Lue lisää generatiivisen tekoälyn käytöstä työssä</translation>
 <translation id="8045923671629973368">Anna sovellustunnus tai verkkokaupan URL-osoite.</translation>
@@ -6744,6 +6753,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="844059392176531372">Jaa välilehtiryhmä "<ph name="GROUP_NAME" />"</translation>
 <translation id="844063558976952706">Aina tässä sivustossa</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleen.}other{Profiileissa on auki # incognito- ja eristetty selainikkuna. Niitä ei avata uudelleen.}}</translation>
+<translation id="84426883520448311">teema, väri, tausta, taustakuva, vaalea, tumma, tila, vaalea tila, tumma tila, henkilökohtainen, tyyli, estetiikka</translation>
 <translation id="8443986842926457191">URL-osoitteessa on yli 2 048 merkkiä</translation>
 <translation id="8445281870900174108">Tämä välilehti käyttää kameraasi</translation>
 <translation id="8446884382197647889">Lisätietoja</translation>
@@ -7334,6 +7344,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9076821103818989526">Sivupaneeli</translation>
 <translation id="907779190626433918">Käytä jokaisella sivustolla ja jokaisessa sovelluksessa eri salasanaa. Jos käytät samaa salasanaa monella eri tilillä ja joku saa sen selville, hän voi saada sen avulla pääsyn myös muihin tileihisi.</translation>
 <translation id="9078546160009814724">Käyttäjätunnus: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopioi linkki}other{Kopioi linkit}}</translation>
 <translation id="907972398081911688">Vaihda vaarantunut salasana automaattisesti</translation>
 <translation id="9081543426177426948">Avaamiasi sivustoja ei tallenneta incognito-tilassa</translation>
 <translation id="9082750838489080452">Sovellus: <ph name="APP_NAME" /></translation>

@@ -71,6 +71,7 @@
 <translation id="1792680680989393197">तुम्ही ती कधीही काढून टाकू शकता. साइटला किंवा वैशिष्ट्याला त्यांची आवश्यकता असेल, तेव्हा Chromium ते पुन्हा आपोआप डाउनलोड करू शकते.</translation>
 <translation id="1793486931176048546">झटपट अ‍ॅक्सेस करण्याकरिता Chrome तुमच्या टास्कबारवर पिन करण्यासाठी Windows नोटिफिकेशनमध्ये <ph name="BEGIN_BOLD" />होय<ph name="END_BOLD" /> वर क्लिक करा.</translation>
 <translation id="1808667845054772817">Chromium पुनर्स्थापित करा</translation>
+<translation id="1814482312667514397">तुमच्या फोनवरील Chromium अ‍ॅप वापरून फिरतीवर असताना Chromium ची सर्वोत्तम सुरक्षितता वैशिष्ट्ये मिळवा</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> याचा प्रयत्न करत आहे</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला <ph name="DEVICE" /> कडून तुमची एक्स्टेंशन आणि आणखी बऱ्याच गोष्टीदेखील मिळतील.</translation>
 <translation id="183031085822326697">तुम्ही पुढील वेळी तुमच्या <ph name="DEVICE_TYPE" /> वर Chromium उघडल्यावर, तुम्हाला Google Password Manager वापरण्यासाठी प्रॉम्प्ट दिसेल.</translation>
@@ -135,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{१ HID डिव्हाइस हे एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# HID डिव्हाइस ही एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="2401032172288869980">Chromium ला या साइटसाठी कॅमेरा आणि मायक्रोफोनची परवानगी आवश्यक आहे</translation>
 <translation id="2403703063067034158">स्टार्टअप एरर: सेटअपचे दुसरे इंस्टन्स सध्या सुरू आहे, कृपया नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="241044568699443215">तुमच्या <ph name="DEVICE_TYPE" /> वरील Chromium अ‍ॅप वापरून फिरतीवर असताना Chromium ची सुरक्षितता मिळवा</translation>
 <translation id="2418322681019544463">कोणत्याही अ‍ॅपवरून Chromium मध्ये लिंक उघडा आणि तुमच्या टास्कबारवर ब्राउझर अ‍ॅक्सेस करण्यायोग्य ठेवा</translation>
 <translation id="2425157128016763890">त्वरित अवलोकन मिळवण्यासाठी आणि फॉलो-अप प्रश्न विचारण्यासाठी हा दस्तऐवज Chromium मधील Gemini सोबत शेअर करण्याकरिता सारांश द्या बटणावर क्लिक करा</translation>
 <translation id="2440750600860946460">तुम्ही <ph name="BEGIN_LINK" />Chromium ची टूल<ph name="END_LINK" /> वापरून सुरक्षितरीत्या ब्राउझ करू शकता आणि तुमचा डेटा नियंत्रित करू शकता</translation>
@@ -757,6 +759,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="8910309838319708610">यशस्वी! तुम्ही आता Search AI मोड वापरून ब्राउझ करत असताना सहजपणे प्रश्न विचारू शकता</translation>
 <translation id="8915682436012075700">हा व्यवस्थापित ब्राउझर <ph name="DOMAIN" /> द्वारे कामासाठी सेट केलेला Gemini असिस्टंट वापरू शकतो. ते संस्थेच्या फाइल आणि मंजूर केलेल्या सेवांवर आधारित माहिती शोधू शकते व उत्तरे देऊ शकते. वैयक्तिक प्रोफाइलसह ते वापरण्याची शिफारस केली जात नाही. चॅट इतिहास पुढे कॅरी ओव्हर केला जाणार नाही. स्विच करण्यासाठी Chromium पुन्हा लाँच करणे आवश्यक आहे.</translation>
 <translation id="8932992523185907506">Chromium आता तुमचा डीफॉल्ट ब्राउझर नाही. Chromium ला डीफॉल्‍ट ब्राउझर बनवायचे आहे का?</translation>
+<translation id="8940844567350264767">Chromium वापरून फिरतीवर असताना Chromium ची सर्वोत्तम सुरक्षितता वैशिष्ट्ये मिळवा</translation>
 <translation id="8941642502866065432">Chromium अपडेट करू शकत नाही</translation>
 <translation id="8944232836376404813">या कृतीमुळे:
           <ph name="LINE_BREAKS" />

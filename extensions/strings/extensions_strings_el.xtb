@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Να γίνει προσθήκη του "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="2159915644201199628">Δεν ήταν δυνατή η αποκωδικοποίηση της εικόνας: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Ο γονέας σου δεν ενέκρινε αυτή την επέκταση</translation>
+<translation id="2207866393056347613">Εκχωρεί μόνιμη πρόσβαση στα δεδομένα σας σε όλους τους ιστοτόπους</translation>
 <translation id="23030561267973084">Η επέκταση "<ph name="EXTENSION_NAME" />" έχει ζητήσει πρόσθετες άδειες.</translation>
 <translation id="2327492829706409234">Ενεργοποίηση εφαρμογής</translation>
 <translation id="2350172092385603347">Χρησιμοποιήθηκε τοπική προσαρμογή, όμως δεν καθορίστηκε η τιμή "default_locale" στη δήλωση.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Εκ νέου ενεργοποίηση</translation>
 <translation id="2743583586211388067">Η πρόσβαση σε αυτή την επέκταση έχει αποκλειστεί σύμφωνα με την πολιτική κινδύνου του οργανισμού σας για τις επεκτάσεις.</translation>
 <translation id="2766161002040448006">Άδεια γονέα</translation>
+<translation id="2775557057525247505">Εμφάνιση όλων των ιστοτόπων</translation>
 <translation id="2785530881066938471">Δεν ήταν δυνατή η φόρτωση του αρχείου "<ph name="RELATIVE_PATH" />" για το σενάριο περιεχομένου. Δεν έχει κωδικοποίηση UTF-8.</translation>
 <translation id="2850541429955027218">Προσθήκη θέματος</translation>
 <translation id="2883143988769190738">Αυτή η επέκταση ζητά τις ακόλουθες άδειες:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (σειριακός ρυθμός <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> από τον πάροχο υπηρεσιών <ph name="VENDOR_ID" /> (σειριακός ρυθμός <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Η τιμή εισαγωγής για το ιδιωτικό κλειδί πρέπει να είναι έγκυρη διαδρομή.</translation>
+<translation id="3769470010314114481">Παραχωρεί προσωρινή πρόσβαση στα δεδομένα σας στον ιστότοπο</translation>
 <translation id="3788401245189148511">Θα μπορούσε να εκτελέσει τις εξής ενέργειες:</translation>
 <translation id="3834775135533257713">Δεν ήταν δυνατή η προσθήκη της εφαρμογής "<ph name="TO_INSTALL_APP_NAME" />", επειδή προκαλείται διένεξη με την εφαρμογή "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Δεν ήταν δυνατή η φόρτωση της σελίδας επιλογών "<ph name="OPTIONS_PAGE" />".</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Ενεργοποίηση επέκτασης</translation>
 <translation id="3927932062596804919">Άρνηση</translation>
 <translation id="3984413272403535372">Σφάλμα κατά την υπογραφή επέκτασης.</translation>
+<translation id="3990894032742690314">Πάντα στους ιστοτόπους που αναφέρονται</translation>
 <translation id="4014432863917027322">Να γίνει επιδιόρθωση του "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="4061696872429826774">Κάποιο άλλο πρόγραμμα στον υπολογιστή σας πρόσθεσε μια επέκταση, η οποία ενδέχεται να αλλάξει τον τρόπο λειτουργίας του Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Δεν ήταν δυνατή η φόρτωση της σελίδας πληροφοριών "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Οι εφαρμογές θα πρέπει να προβάλλονται από τον κεντρικό υπολογιστή που επηρεάζουν</translation>
 <translation id="4306119971288449206">Οι εφαρμογές θα πρέπει να προβάλλονται με τον τύπο περιεχομένου "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4307774243840254737">Εκχωρεί μόνιμη πρόσβαση στα δεδομένα σας στους ιστοτόπους που αναφέρονται παρακάτω</translation>
 <translation id="4349181963619779233">Δεν είναι δυνατή η προσθήκη επεκτάσεων και εφαρμογών από αυτόν τον ιστότοπο</translation>
 <translation id="4625078469366263107">Ενεργοποίηση εφαρμογής</translation>
 <translation id="4633003931260532286">Η επέκταση απαιτεί "<ph name="IMPORT_NAME" />" με ελάχιστη έκδοση "<ph name="IMPORT_VERSION" />", αλλά είναι εγκατεστημένη μόνο η έκδοση "<ph name="INSTALLED_VERSION" />"</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Η τελευταία έκδοση του " <ph name="EXTENSION_NAME" /> "έχει απενεργοποιηθεί, επειδή απαιτούνται περισσότερα δικαιώματα.</translation>
 <translation id="5242724311594467048">Ενεργοποίηση "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Μόνο όταν κάνετε κλικ στην επέκταση</translation>
 <translation id="5405650547142096840">Κατάργηση από το Chromium</translation>
 <translation id="5456409301717116725">Αυτή η επέκταση περιλαμβάνει το αρχείο κλειδιού "<ph name="KEY_PATH" />". Πιθανότατα δεν θέλετε να προβείτε σε αυτή την ενέργεια.</translation>
 <translation id="5485102783864353244">Προσθήκη εφαρμογής</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Χειρισμός mime: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Αυτή η επέκταση επαναφορτώνεται πολύ συχνά.</translation>
 <translation id="7003844668372540529">Άγνωστο προϊόν <ph name="PRODUCT_ID" /> από <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Ιστότοποι που αναφέρονται</translation>
 <translation id="7068383018033524534">Το αρχείο μανιφέστου δεν είναι έγκυρο</translation>
 <translation id="7217838517480956708">Ο διαχειριστής αυτού του υπολογιστή απαιτεί την εγκατάσταση της επέκτασης <ph name="EXTENSION_NAME" />. Δεν είναι δυνατή η κατάργηση ή η τροποποίησή της.</translation>
 <translation id="7287143125007575591">Δεν επιτρέπεται η πρόσβαση.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Μπροστινή κάμερα</translation>
 <translation id="8047248493720652249">Η επέκταση δεν κατόρθωσε να ονομάσει τη λήψη "<ph name="ATTEMPTED_FILENAME" />" επειδή μια άλλη επέκταση (<ph name="EXTENSION_NAME" />) καθόρισε ένα διαφορετικό όνομα "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Η Google έχει επισημάνει την επέκταση "<ph name="EXTENSION_NAME" />" ως κακόβουλη και η εγκατάσταση έχει εμποδιστεί</translation>
+<translation id="823691536304079791">Ανάγνωση και αλλαγή των δεδομένων σας</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> της <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Έχει τις εξής δυνατότητες:</translation>
 <translation id="8517576857589387417">Το αρχείο μανιφέστου λείπει ή δεν είναι δυνατή η ανάγνωσή του</translation>

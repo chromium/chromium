@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">నిష్క్రియ స్థితి డేటా</translation>
 <translation id="2058456167109518507">పరికరం కనుగొనబడింది</translation>
 <translation id="2064048859448024834">కెమెరా ప్రివ్యూ ఆన్‌లో ఉంది</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 లింక్}other{# లింక్‌లు}}</translation>
 <translation id="2067220651560163985">టెంపరేచర్‌ను సెల్సియస్‌లో చూపండి</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" />‌కు ప్రింటింగ్‌ను పూర్తి చేసింది</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />ను టోగుల్ చేయండి. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />లో ఉంది</translation>

@@ -308,6 +308,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1308105352527684175">Możesz nie mieć dostępu do niektórych treści</translation>
 <translation id="1311092170520822848">Ta strona steruje czytnikami kart inteligentnych podłączonymi do Twojego urządzenia i może odczytywać karty inteligentne</translation>
 <translation id="131112695174432497">Dane, które mają wpływ na personalizację reklam, są usuwane</translation>
+<translation id="13115907161008983">Kopiuj linki</translation>
 <translation id="131188242279372879">Poznaj silniejszą ochronę, która zapewnia najwyższy poziom bezpieczeństwa pobierania w Chrome</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Rozwiąż problem z kartą, która spowalnia przeglądarkę}few{Rozwiąż problem z kartami, które spowalniają przeglądarkę}many{Rozwiąż problem z kartami, które spowalniają przeglądarkę}other{Rozwiąż problem z kartami, które spowalniają przeglądarkę}}</translation>
 <translation id="1312721752506309252">Włączona jest silniejsza ochrona</translation>
@@ -443,6 +444,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1482626744466814421">Dodaj tę kartę do zakładek...</translation>
 <translation id="1482772681918035149">edytować hasła</translation>
 <translation id="1483137792530497944">Rzeka</translation>
+<translation id="1483148302144576204">Kopiuj linki</translation>
 <translation id="1483151333977672176">Wysłane</translation>
 <translation id="1483431819520123112">Wyświetlana nazwa została skopiowana do schowka</translation>
 <translation id="1483493594462132177">Wyślij</translation>
@@ -1057,6 +1059,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="2168036794078614559">Zgłoszenie zostało wysłane</translation>
 <translation id="2168735174585029637">Zmień wygląd kart na przezroczysty</translation>
 <translation id="217120844667431680">Zrób więcej w Trybie AI</translation>
+<translation id="2172046302886074612">Usunięto model „<ph name="MODEL_CATEGORY" />”</translation>
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
 <translation id="2175384018164129879">&amp;Zarządzanie wyszukiwarkami i wyszukiwaniem w witrynach</translation>
 <translation id="2175773164573457310">Wybierz dowolny tekst lub obraz, aby zapytać Gemini</translation>
@@ -2075,6 +2078,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="3270965368676314374">Odczyt, zmiana i usuwanie zdjęć, muzyki oraz innych multimediów na komputerze</translation>
 <translation id="3275464924531706548">Zwiń: <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Otwórz jako okno</translation>
+<translation id="3277325180914877290">Powiększ tekst</translation>
 <translation id="3280237271814976245">Zapisz &amp;jako...</translation>
 <translation id="3280243678470289153">Zostań w Chrome</translation>
 <translation id="3282210178675490297">Udostępniam kartę aplikacji <ph name="APP_NAME" /></translation>
@@ -2581,6 +2585,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="3786890785076278600">Wiersz statyczny</translation>
 <translation id="3787434344076711519">Czekam na tłumaczenie</translation>
 <translation id="3789432704615470433">Pliki SharePoint i OneDrive</translation>
+<translation id="3789493399245366422">pełny ekran, tryb pełnoekranowy, maksymalizuj, immersyjny, ukryj pasek narzędzi, prezentacja, F11</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3790417903123637354">Coś poszło nie tak. Spróbuj ponownie później</translation>
 <translation id="379082410132524484">Twoja karta straciła ważność</translation>
@@ -3349,6 +3354,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="4665035764476941598">Kliknij tutaj, aby przywrócić inne karty</translation>
 <translation id="4665446389743427678">Wszystkie dane przechowywane przez stronę <ph name="SITE" /> zostaną usunięte.</translation>
 <translation id="4666483368282673356">Zarządzaj historią z Gemini</translation>
+<translation id="4667646546186544608">pomniejsz, zmniejsz, mniejszy, redukuj, zmniejszanie, skaluj w dół, powiększenie strony</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Gratulujemy! Aplikacja <ph name="APP_NAME" /> została zainstalowana na Twoim urządzeniu</translation>
 <translation id="4672759829555593783">Otwórz plik <ph name="FILE_NAME" /></translation>
@@ -4750,6 +4756,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="6255253900817321392">Szybciej wyszukuj informacje z dowolnego miejsca na Macu bez otwierania nowej karty</translation>
 <translation id="6257602895346497974">Włącz synchronizację…</translation>
 <translation id="6258818697161346451">Używaj kluczy dostępu na tym urządzeniu</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopiuj link}few{Kopiuj linki}many{Kopiuj linki}other{Kopiuj linki}}</translation>
 <translation id="6261688934280090835">Logi aplikacji kiosku ChromeOS</translation>
 <translation id="6263082573641595914">Wersja urzędu certyfikacji firmy Microsoft</translation>
 <translation id="6264060420924719834">Ta aplikacja zawiera treści z internetu z innych witryn</translation>
@@ -4878,6 +4885,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Pliki graficzne</translation>
 <translation id="6410390304316730527">Bezpieczne przeglądanie chroni Cię przed osobami przeprowadzającymi ataki, które mogą podstępem nakłonić Cię do wykonania niebezpiecznych czynności, takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). Gdy wyłączasz tę funkcję, zachowaj ostrożność, przeglądając nieznane lub cieszące się złą sławą strony.</translation>
+<translation id="6411490324917773403">Pomniejsz tekst</translation>
 <translation id="6416743254476733475">Zezwól lub zablokuj na komputerze.</translation>
 <translation id="6416856063840710198">Aby zwiększyć wygodę przeglądania, witryny często zapisują Twoją aktywność – i często na Twoim urządzeniu. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Działanie domyślne</translation>
@@ -6370,6 +6378,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8041093619605951337">Radosny</translation>
 <translation id="8042142357103597104">Przezroczystość tekstu</translation>
 <translation id="8042331986490021244">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu</translation>
+<translation id="8042441076562098746">powiększ, powiększenie, powiększanie, większy, zwiększ, powiększ stronę</translation>
 <translation id="8045253504249021590">Synchronizacja została zatrzymana przez Panel Google.</translation>
 <translation id="8045752459073395242">Więcej informacji o korzystaniu z generatywnej AI w pracy</translation>
 <translation id="8045923671629973368">Wpisz identyfikator aplikacji lub URL sklepu internetowego</translation>
@@ -6724,6 +6733,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="844059392176531372">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="844063558976952706">Zawsze w tej witrynie</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Masz otwarte okno incognito lub przeglądania prywatnego. Nie otworzy się ono ponownie.}few{W profilach są otwarte # okna incognito lub przeglądania prywatnego. Nie otworzą się one ponownie.}many{W profilach jest otwartych # okien incognito lub przeglądania prywatnego. Nie otworzą się one ponownie.}other{W profilach jest otwarte # okna incognito lub przeglądania prywatnego. Te okna nie otworzą się ponownie.}}</translation>
+<translation id="84426883520448311">motyw, kolor, tło, tapeta, jasny, ciemny, tryb, tryb jasny, tryb ciemny, personalizacja, styl, estetyka</translation>
 <translation id="8443986842926457191">URL zawiera więcej niż 2048 znaków</translation>
 <translation id="8445281870900174108">Ta karta używa Twojej kamery</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
@@ -7307,6 +7317,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="9076821103818989526">Panel boczny</translation>
 <translation id="907779190626433918">Na każdej stronie i w każdej aplikacji używaj innego, unikalnego hasła. Gdyby ktoś zdobył użyte wielokrotnie hasło, mógłby je wykorzystać do zalogowania się również na inne Twoje konta.</translation>
 <translation id="9078546160009814724">Nazwa użytkownika: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopiuj link}few{Kopiuj linki}many{Kopiuj linki}other{Kopiuj linki}}</translation>
 <translation id="907972398081911688">Automatycznie zmień hasło, które zostało przejęte</translation>
 <translation id="9081543426177426948">W trybie incognito otwierane strony nie są zapisywane</translation>
 <translation id="9082750838489080452">Aplikacja: <ph name="APP_NAME" /></translation>

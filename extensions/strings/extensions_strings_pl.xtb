@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Dodać „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2159915644201199628">Nie można odkodować obrazu: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2193567467390483943">Twój rodzic nie zatwierdził tego rozszerzenia</translation>
+<translation id="2207866393056347613">Przyznaje stały dostęp do Twoich danych we wszystkich witrynach</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” prosi o dodatkowe uprawnienia.</translation>
 <translation id="2327492829706409234">Włącz aplikację</translation>
 <translation id="2350172092385603347">Lokalizacja została użyta, ale nie określono języka default_locale w pliku manifestu.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Włącz ponownie</translation>
 <translation id="2743583586211388067">Dostęp do tego rozszerzenia jest zablokowany zgodnie z zasadami Twojej organizacji dotyczącymi ryzyka związanego z rozszerzeniami.</translation>
 <translation id="2766161002040448006">Poproś rodzica</translation>
+<translation id="2775557057525247505">Pokaż wszystkie witryny</translation>
 <translation id="2785530881066938471">Nie można wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu dotyczącego treści. Plik nie ma kodowania UTF-8.</translation>
 <translation id="2850541429955027218">Dodaj motyw</translation>
 <translation id="2883143988769190738">To rozszerzenie wymaga tych uprawnień:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> wyprodukowany przez <ph name="VENDOR_ID" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Wartość wejściowa klucza prywatnego musi być prawidłową ścieżką.</translation>
+<translation id="3769470010314114481">Przyznaje tymczasowy dostęp do Twoich danych w witrynie</translation>
 <translation id="3788401245189148511">Uprawnienia, o które prosi, to:</translation>
 <translation id="3834775135533257713">Nie udało się dodać aplikacji „<ph name="TO_INSTALL_APP_NAME" />”, bo występuje konflikt z aplikacją „<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="388442998277590542">Nie można wczytać strony opcji „<ph name="OPTIONS_PAGE" />”.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Włącz rozszerzenie</translation>
 <translation id="3927932062596804919">Odmawiaj</translation>
 <translation id="3984413272403535372">Błąd podczas podpisywania rozszerzenia.</translation>
+<translation id="3990894032742690314">Zawsze w wymienionych witrynach</translation>
 <translation id="4014432863917027322">Naprawić „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4061696872429826774">Inny program na Twoim komputerze dodał rozszerzenie, które może zmieniać sposób działania Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Nie udało się załadować strony z informacjami: „<ph name="ABOUT_PAGE" />”.</translation>
 <translation id="424963718355121712">Aplikacje muszą być udostępniane z hosta, którego dotyczą</translation>
 <translation id="4306119971288449206">Aplikacje muszą być udostępniane z parametrem content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4307774243840254737">Przyznaje stały dostęp do Twoich danych w witrynach wymienionych poniżej</translation>
 <translation id="4349181963619779233">Nie można dodawać rozszerzeń ani aplikacji z tej witryny</translation>
 <translation id="4625078469366263107">Włącz aplikację</translation>
 <translation id="4633003931260532286">Rozszerzenie wymaga: „<ph name="IMPORT_NAME" />” przynajmniej w wersji „<ph name="IMPORT_VERSION" />”, ale zainstalowana jest tylko wersja „<ph name="INSTALLED_VERSION" />”</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Najnowsza wersja rozszerzenia „<ph name="EXTENSION_NAME" />” została wyłączona, ponieważ wymaga więcej uprawnień.</translation>
 <translation id="5242724311594467048">Włączyć rozszerzenie „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5356315618422219272">Tag appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Tylko wtedy, gdy klikniesz rozszerzenie</translation>
 <translation id="5405650547142096840">Usuń z Chromium</translation>
 <translation id="5456409301717116725">To rozszerzenie zawiera plik klucza „<ph name="KEY_PATH" />”. Prawdopodobnie nie powinno tak być.</translation>
 <translation id="5485102783864353244">Dodaj aplikację</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Moduł obsługi MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">To rozszerzenie zbyt często ładowało się ponownie.</translation>
 <translation id="7003844668372540529">Nieznany produkt <ph name="PRODUCT_ID" /> firmy <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Wymienione witryny</translation>
 <translation id="7068383018033524534">Plik manifestu jest nieprawidłowy</translation>
 <translation id="7217838517480956708">Administrator tego komputera wymaga zainstalowanego rozszerzenia <ph name="EXTENSION_NAME" />. Nie można go usunąć ani modyfikować.</translation>
 <translation id="7287143125007575591">Odmowa dostępu.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Przedni</translation>
 <translation id="8047248493720652249">Rozszerzenie nie może odczytać nazwy pobieranego pliku „<ph name="ATTEMPTED_FILENAME" />”, ponieważ inne rozszerzenie (<ph name="EXTENSION_NAME" />) odczytało odmienną jego nazwę „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8049705080247101012">Google uznaje rozszerzenie „<ph name="EXTENSION_NAME" />” za złośliwe, dlatego nie dopuściliśmy do jego zainstalowania</translation>
+<translation id="823691536304079791">Odczytywanie i zmienianie Twoich danych</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Będzie mieć te uprawnienia:</translation>
 <translation id="8517576857589387417">Brak pliku manifestu lub nie można go odczytać</translation>

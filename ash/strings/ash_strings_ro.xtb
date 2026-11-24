@@ -447,6 +447,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2053312383184521053">Date pentru starea inactivă</translation>
 <translation id="2058456167109518507">S-a detectat un dispozitiv</translation>
 <translation id="2064048859448024834">Previzualizarea camerei este activată</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{Un link}few{# linkuri}other{# de linkuri}}</translation>
 <translation id="2067220651560163985">Afișează temperatura în grade Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> a finalizat printarea pe <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Activează / dezactivează <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> este <ph name="CAPTURE_STATE" /></translation>

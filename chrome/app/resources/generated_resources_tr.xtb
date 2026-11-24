@@ -308,6 +308,7 @@
 <translation id="1308105352527684175">Belirli içeriklere erişemeyebilirsiniz</translation>
 <translation id="1311092170520822848">Bu site, cihazınıza bağlı akıllı kart okuyucularını ve bu okuyucuların erişebileceği akıllı kartları kontrol ediyor</translation>
 <translation id="131112695174432497">Reklam kişiselleştirmeyi etkileyen veriler silinir</translation>
+<translation id="13115907161008983">Bağlantıları Kopyala</translation>
 <translation id="131188242279372879">İndirme işlemlerinde Chrome'un en yüksek güvenlik düzeyinden yararlanmak için gelişmiş korumayı keşfedin</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Tarayıcınızı Yavaşlatan Sekmeyle İlgili Sorunu Düzeltin}other{Tarayıcınızı Yavaşlatan Sekmelerle İlgili Sorunu Düzeltin}}</translation>
 <translation id="1312721752506309252">Gelişmiş Koruma açık</translation>
@@ -443,6 +444,7 @@
 <translation id="1482626744466814421">Bu Sekmeye Yer İşareti Koy...</translation>
 <translation id="1482772681918035149">şifreleri düzenlemek</translation>
 <translation id="1483137792530497944">Nehir</translation>
+<translation id="1483148302144576204">Bağlantıları kopyala</translation>
 <translation id="1483151333977672176">Gönderildi!</translation>
 <translation id="1483431819520123112">Görünen ad panoya kopyalandı</translation>
 <translation id="1483493594462132177">Gönder</translation>
@@ -1058,6 +1060,7 @@
 <translation id="2168036794078614559">Rapor gönderildi</translation>
 <translation id="2168735174585029637">Sekmelerinize yeni bir şeffaf görünüm kazandırın</translation>
 <translation id="217120844667431680">AI Modu ile daha fazlası</translation>
+<translation id="2172046302886074612">"<ph name="MODEL_CATEGORY" />" kaldırıldı</translation>
 <translation id="2173302385160625112">İnternet bağlantınızı kontrol edin</translation>
 <translation id="2175384018164129879">Arama &amp;Motorlarını ve Site Aramalarını Yönet</translation>
 <translation id="2175773164573457310">Gemini'a sormak istediğiniz metni veya resmi seçin</translation>
@@ -2080,6 +2083,7 @@
 <translation id="3270965368676314374">Bilgisayarınızdan fotoğrafları, müzikleri ve başka medyayı okuma, değiştirme ve silme</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> panelini daralt</translation>
 <translation id="3275778913554317645">Pencere olarak aç</translation>
+<translation id="3277325180914877290">Metni büyüt</translation>
 <translation id="3280237271814976245">Farklı k&amp;aydet...</translation>
 <translation id="3280243678470289153">Chrome'da Kal</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> ile bir sekme paylaşılıyor</translation>
@@ -2588,6 +2592,7 @@
 <translation id="3786890785076278600">Sabit satır</translation>
 <translation id="3787434344076711519">Çeviri bekleniyor</translation>
 <translation id="3789432704615470433">SharePoint ve OneDrive dosyaları</translation>
+<translation id="3789493399245366422">tam ekran, ekranın tamamı, ekranı kapla, ekran kaplama, sürükleyici, araç çubuğunu gizle, sunu, F11</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="3790417903123637354">Bir sorun oldu. Daha sonra tekrar deneyin</translation>
 <translation id="379082410132524484">Kartınızın süresi doldu</translation>
@@ -3358,6 +3363,7 @@
 <translation id="4665035764476941598">Diğer sekmelerinizi geri getirmek için burayı tıklayın</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> web sitesinin depoladığı tüm veriler silinecektir.</translation>
 <translation id="4666483368282673356">Gemini geçmişinizi yönetin</translation>
+<translation id="4667646546186544608">uzaklaştır, küçült, daha küçük, azalt, düşür, ölçeği azalt, sayfayı yakınlaştır</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Tebrikler! <ph name="APP_NAME" />, cihazınıza başarıyla yüklendi</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> dosyasını şimdi aç</translation>
@@ -4761,6 +4767,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6255253900817321392">Mac'inizde dilediğiniz yerden yeni sekme açmadan daha hızlı arama yapın</translation>
 <translation id="6257602895346497974">Senkronizasyonu aç...</translation>
 <translation id="6258818697161346451">Geçiş anahtarlarınızı bu cihazda kullanın</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Bağlantıyı kopyala}other{Bağlantıları kopyala}}</translation>
 <translation id="6261688934280090835">ChromeOS Kiosk Uygulaması Günlükleri</translation>
 <translation id="6263082573641595914">Microsoft CA Sürümü</translation>
 <translation id="6264060420924719834">Bu uygulama, diğer sitelerden alınmış web içeriği barındırıyor</translation>
@@ -4889,6 +4896,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Resim Dosyaları</translation>
 <translation id="6410390304316730527">Güvenli Tarama, sizi yanıltarak kötü amaçlı yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanıza neden olabilecek saldırganlara karşı korur. Bu özelliği kapatırsanız tanıdık olmayan veya saygınlığı şüpheli sitelere göz atarken dikkatli olun.</translation>
+<translation id="6411490324917773403">Metni küçült</translation>
 <translation id="6416743254476733475">Bilgisayarınızda izin verin veya engelleyin.</translation>
 <translation id="6416856063840710198">Siteler, ziyaretinizi iyileştirmek için etkinliklerinizi genellikle cihazınıza kaydeder. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Varsayılan davranış</translation>
@@ -6379,6 +6387,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8041093619605951337">Mutlu</translation>
 <translation id="8042142357103597104">Metin opaklığı</translation>
 <translation id="8042331986490021244">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir</translation>
+<translation id="8042441076562098746">yakınlaştır, büyüt, genişlet, daha büyük, daha geniş, artır, ölçeği artır, sayfayı yakınlaştır</translation>
 <translation id="8045253504249021590">Senkronizasyon Google Hesap Özeti tarafından durduruldu.</translation>
 <translation id="8045752459073395242">Üretken yapay zekayı iş yerinde kullanma hakkında daha fazla bilgi</translation>
 <translation id="8045923671629973368">Uygulama kimliğini veya web mağazası URL'sini girin</translation>
@@ -6733,6 +6742,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="844059392176531372">"<ph name="GROUP_NAME" />" sekme grubunu paylaşın</translation>
 <translation id="844063558976952706">Bu sitede her zaman</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Gizli veya yalıtılmış pencere açık. Bu pencere yeniden açılmaz.}other{Profiller genelinde # gizli ve yalıtılmış pencere açık. Bu pencereler yeniden açılmaz.}}</translation>
+<translation id="84426883520448311">tema, renk, arka plan, duvar kağıdı, açık, koyu, mod, açık mod, koyu mod, kişisel, stil, estetik</translation>
 <translation id="8443986842926457191">URL 2.048 karakterden fazlasını içeriyor</translation>
 <translation id="8445281870900174108">Bu sekme, kameranızı kullanıyor</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
@@ -7323,6 +7333,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9076821103818989526">Yan panel</translation>
 <translation id="907779190626433918">Her site veya uygulama için benzersiz bir şifre kullanın. Birisi yeniden kullandığınız şifreyi ele geçirirse bu şifre diğer hesaplarınıza erişmek için kullanılabilir.</translation>
 <translation id="9078546160009814724">Kullanıcı adı: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Bağlantıyı Kopyala}other{Bağlantıları Kopyala}}</translation>
 <translation id="907972398081911688">Ele geçirilmiş şifrenizi otomatik olarak değiştirin</translation>
 <translation id="9081543426177426948">Ziyaret ettiğiniz siteler Gizli modda kaydedilmez</translation>
 <translation id="9082750838489080452">Uygulama: <ph name="APP_NAME" /></translation>

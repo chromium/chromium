@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">Δεδομένα κατάστασης αδράνειας</translation>
 <translation id="2058456167109518507">Εντοπίστηκε συσκευή</translation>
 <translation id="2064048859448024834">Η προεπισκόπηση κάμερας είναι ενεργή</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 σύνδεσμος}other{# σύνδεσμοι}}</translation>
 <translation id="2067220651560163985">Εμφάνιση θερμοκρασίας σε βαθμούς Κελσίου</translation>
 <translation id="206960706005837784">Η εφαρμογή <ph name="APP_NAME" /> έχει ολοκληρώσει την εκτύπωση στον εκτυπωτή <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Εναλλαγή <ph name="CAPTURE_MEDIUM" />. Το κουμπί <ph name="CAPTURE_MEDIUM" /> είναι <ph name="CAPTURE_STATE" /></translation>

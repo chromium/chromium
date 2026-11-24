@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">معطل صورتحال کا ڈیٹا</translation>
 <translation id="2058456167109518507">آلہ کا پتا چلا</translation>
 <translation id="2064048859448024834">کیمرا کا پیش منظر آن ہے</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{‫1 لنک}other{‫# لنکس}}</translation>
 <translation id="2067220651560163985">درجۂ حرارت سیلسیئس میں دکھائیں</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> نے <ph name="PRINTER_NAME" /> پر پرنٹ کا عمل مکمل کر لیا ہے</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> کو ٹوگل کریں۔ <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ہے</translation>

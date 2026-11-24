@@ -447,6 +447,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2053312383184521053">Jõudeoleku andmed</translation>
 <translation id="2058456167109518507">Tuvastati seade</translation>
 <translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}other{# linki}}</translation>
 <translation id="2067220651560163985">Näita temperatuuri Celsiuse järgi</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> lõpetas printimise printerisse <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Lülitage <ph name="CAPTURE_MEDIUM" /> sisse/välja. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" />.</translation>

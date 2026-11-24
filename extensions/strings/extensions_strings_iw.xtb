@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">להוסיף את "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">לא ניתן לפענח תמונה: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">ההורה שלך לא אישר את התוסף הזה</translation>
+<translation id="2207866393056347613">מתן הרשאת גישה קבועה לנתונים שלך בכל האתרים</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ביקש אישורים נוספים.</translation>
 <translation id="2327492829706409234">הפעלת האפליקציה</translation>
 <translation id="2350172092385603347">‏נעשה שימוש בהתאמה למקום, אך default_locale לא צוין במניפסט.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">הפעלה מחדש</translation>
 <translation id="2743583586211388067">הגישה לתוסף הזה נחסמה בהתאם למדיניות הסיכונים של הארגון שלך בנוגע לתוספים.</translation>
 <translation id="2766161002040448006">בקשת רשות מההורים</translation>
+<translation id="2775557057525247505">צפייה בכל האתרים</translation>
 <translation id="2785530881066938471">‏אין אפשרות לטעון את הקובץ '<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן. הוא לא בקידוד UTF-8.</translation>
 <translation id="2850541429955027218">הוספת העיצוב</translation>
 <translation id="2883143988769190738">התוסף מבקש את ההרשאות הבאות:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ערך קלט עבור מפתח פרטי חייב להיות נתיב חוקי.</translation>
+<translation id="3769470010314114481">מתן גישה זמנית לנתונים שלך באתר</translation>
 <translation id="3788401245189148511">מעוניינים:</translation>
 <translation id="3834775135533257713">לא ניתן היה להוסיף את היישום "<ph name="TO_INSTALL_APP_NAME" />" מפני שהוא מתנגש עם "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">לא היתה אפשרות לטעון את דף האפשרויות '<ph name="OPTIONS_PAGE" />'.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">הפעלת תוסף</translation>
 <translation id="3927932062596804919">דחייה</translation>
 <translation id="3984413272403535372">שגיאה בחתימה על התוסף.</translation>
+<translation id="3990894032742690314">תמיד יש גישה באתרים שברשימה</translation>
 <translation id="4014432863917027322">לתקן את '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="4061696872429826774">‏תוכנה אחרת במחשב שלך הוסיפה תוסף שעלול לשנות את אופן הפעולה של Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">לא ניתן לטעון את דף המידע '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">הפעלת אפליקציות חייבת להתבצע מהמארח שעליו הן משפיעות</translation>
 <translation id="4306119971288449206">הפעלת אפליקציות חייבת להתבצע עם סוג תוכן "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4307774243840254737">ההרשאה הזו נותנת גישה קבועה לנתונים שלך באתרים שמפורטים בהמשך</translation>
 <translation id="4349181963619779233">אי אפשר להוסיף תוספים ואפליקציות מהאתר הזה</translation>
 <translation id="4625078469366263107">הפעלת האפליקציה</translation>
 <translation id="4633003931260532286">כדי להשתמש בתוסף יש צורך ב-"<ph name="IMPORT_NAME" />" בגרסה "<ph name="IMPORT_VERSION" />" לפחות, אך הגרסה המותקנת היא רק "<ph name="INSTALLED_VERSION" />"</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">הגרסה החדשה ביותר של "<ph name="EXTENSION_NAME" />" הושבתה מכיוון שהיא דורשת הרשאות נרחבות יותר.</translation>
 <translation id="5242724311594467048">האם להפעיל את "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">‏Appview‏: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">רק בלחיצה על התוסף</translation>
 <translation id="5405650547142096840">‏להסיר מ-‏Chromium‏</translation>
 <translation id="5456409301717116725">תוסף זה כולל את קובץ המפתח "<ph name="KEY_PATH" />". מומלץ לא לעשות זאת.</translation>
 <translation id="5485102783864353244">התקנת האפליקציה</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">‏מטפל MIME:‏ <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">התוסף הזה טען את עצמו מחדש בתדירות גבוהה מדי.</translation>
 <translation id="7003844668372540529">מוצר לא ידוע <ph name="PRODUCT_ID" /> מאת <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">אתרים שברשימה</translation>
 <translation id="7068383018033524534">קובץ המניספט לא חוקי</translation>
 <translation id="7217838517480956708">מנהל המערכת של מחשב זה דורש התקנת <ph name="EXTENSION_NAME" />. לא ניתן להסיר או לשנות אותו.</translation>
 <translation id="7287143125007575591">אין גישה</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">מצלמה קדמית</translation>
 <translation id="8047248493720652249">תוסף זה לא הצליח לתת שם לקובץ "<ph name="ATTEMPTED_FILENAME" />" שהורד, משום שתוסף אחר (<ph name="EXTENSION_NAME" />) קבע שם קובץ אחר - "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">‏Google סימנה את "<ph name="EXTENSION_NAME" />" כזדוני, וההתקנה נמנעה</translation>
+<translation id="823691536304079791">קריאה ושינוי של הנתונים</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> מאת <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">יכול:</translation>
 <translation id="8517576857589387417">אין קובץ מניפסט, או שהוא אינו קריא</translation>

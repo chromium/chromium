@@ -447,6 +447,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2053312383184521053">Tiedot käyttämätön-tilassa</translation>
 <translation id="2058456167109518507">Laite havaittu</translation>
 <translation id="2064048859448024834">Kameran esikatselu päällä</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 linkki}other{# linkkiä}}</translation>
 <translation id="2067220651560163985">Näytä lämpötila celsiusasteina</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> on tulostanut tänne: <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> päälle/pois. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" /></translation>

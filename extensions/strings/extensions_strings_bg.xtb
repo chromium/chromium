@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Да се добави ли „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2159915644201199628">Изображението не можа да се декодира: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2193567467390483943">Родителят ви не одобри това разширение</translation>
+<translation id="2207866393056347613">Предоставя постоянен достъп до данните ви на всички сайтове</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> поиска допълнителни разрешения.</translation>
 <translation id="2327492829706409234">Активиране на приложението</translation>
 <translation id="2350172092385603347">Беше използвана локализация, но променливата „default_locale“ не беше посочена в манифеста.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Повторно активиране</translation>
 <translation id="2743583586211388067">Достъпът до това разширение е блокиран съгласно правилата на организацията ви за риска от разширения.</translation>
 <translation id="2766161002040448006">Питане на родител</translation>
+<translation id="2775557057525247505">Показване на всички сайтове</translation>
 <translation id="2785530881066938471">Файлът „<ph name="RELATIVE_PATH" />“ за скрипта за съдържание не можа да бъде зареден. Не е кодиран в UTF-8.</translation>
 <translation id="2850541429955027218">Добавяне на темата</translation>
 <translation id="2883143988769190738">Това разширение иска следните разрешения:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> от доставчик <ph name="VENDOR_ID" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Въведената стойност за личен ключ трябва да бъде валиден път.</translation>
+<translation id="3769470010314114481">Предоставя на сайта временен достъп до данните ви</translation>
 <translation id="3788401245189148511">То би имало възможност за:</translation>
 <translation id="3834775135533257713">Приложението „<ph name="TO_INSTALL_APP_NAME" />“ не можа да бъде добавено поради несъвместимост с/ъс „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="388442998277590542">Страницата за опции „<ph name="OPTIONS_PAGE" />“ не можа да се зареди.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Активиране на разширението</translation>
 <translation id="3927932062596804919">Отказ</translation>
 <translation id="3984413272403535372">Грешка при подписването на разширението.</translation>
+<translation id="3990894032742690314">Винаги на посочените сайтове</translation>
 <translation id="4014432863917027322">Да се поправи ли <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4061696872429826774">Друга програма на компютъра ви добави разширение, което може да промени начина на работа на Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Страницата с информация <ph name="ABOUT_PAGE" /> не можа да се зареди.</translation>
 <translation id="424963718355121712">Приложенията трябва да се показват от хоста, който засягат</translation>
 <translation id="4306119971288449206">Приложенията трябва да се показват с тип съдържание „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4307774243840254737">Предоставя постоянен достъп до данните ви на посочените по-долу сайтове</translation>
 <translation id="4349181963619779233">От този уебсайт не могат да се добавят разширения и приложения</translation>
 <translation id="4625078469366263107">Активиране на приложението</translation>
 <translation id="4633003931260532286">Разширението изисква <ph name="IMPORT_VERSION" /> или по-нова версия на <ph name="IMPORT_NAME" />, но само <ph name="INSTALLED_VERSION" /> е инсталирана</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Най-новата версия на „<ph name="EXTENSION_NAME" />“ бе деактивирана, тъй като изисква повече разрешения.</translation>
 <translation id="5242724311594467048">Да се активира ли <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5356315618422219272">Изглед за приложението: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Само когато кликнете върху разширението</translation>
 <translation id="5405650547142096840">Премахване от Chromium</translation>
 <translation id="5456409301717116725">Разширението включва файла с ключ „<ph name="KEY_PATH" />“. Вероятно не искате да направите това.</translation>
 <translation id="5485102783864353244">Добавяне на приложението</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Манипулатор на MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Това разширение се презарежда твърде често.</translation>
 <translation id="7003844668372540529">Неизвестен продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Изброените сайтове</translation>
 <translation id="7068383018033524534">Файлът на манифеста е невалиден</translation>
 <translation id="7217838517480956708">Администраторът на тази машина изисква разширението <ph name="EXTENSION_NAME" /> да е инсталирано. То не може да бъде премахнато или променено.</translation>
 <translation id="7287143125007575591">Достъпът е отказан.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Предна</translation>
 <translation id="8047248493720652249">Това разширение не успя да наименува изтеглянето „<ph name="ATTEMPTED_FILENAME" />“, защото друго разширение (<ph name="EXTENSION_NAME" />) определи различно файлово име – „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8049705080247101012">Google сигнализира, че разширението <ph name="EXTENSION_NAME" /> е злонамерено, и инсталирането бе предотвратено</translation>
+<translation id="823691536304079791">Четене и промяна на данните ви</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> от <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">То има възможност за:</translation>
 <translation id="8517576857589387417">Файлът на манифеста липсва или не може да бъде прочетен</translation>

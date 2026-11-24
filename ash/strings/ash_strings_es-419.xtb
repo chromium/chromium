@@ -447,6 +447,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2053312383184521053">Datos de estado de inactividad</translation>
 <translation id="2058456167109518507">Se detectó un dispositivo</translation>
 <translation id="2064048859448024834">Se muestra la vista previa de la cámara</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 vínculo}other{# vínculos}}</translation>
 <translation id="2067220651560163985">Mostrar la temperatura en grados Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> terminó de imprimirse en <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Activar o desactivar <ph name="CAPTURE_MEDIUM" /> (estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />)</translation>

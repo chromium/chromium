@@ -308,6 +308,7 @@
 <translation id="1308105352527684175">ہو سکتا ہے آپ کچھ مواد تک رسائی حاصل نہ کر سکیں</translation>
 <translation id="1311092170520822848">یہ سائٹ آپ کے آلے سے منسلک اسمارٹ کارڈ ریڈرز اور ممکنہ طور پر ان کیلئے دستیاب اسمارٹ کارڈز کو کنٹرول کر رہی ہے</translation>
 <translation id="131112695174432497">اشتہارات کی ذاتی نوعیت سازی کو متاثر کرنے والا ڈیٹا حذف کر دیا جاتا ہے</translation>
+<translation id="13115907161008983">لنکس کاپی کریں</translation>
 <translation id="131188242279372879">‏ڈاؤن لوڈز کی خاطر Chrome کی اعلی ترین سطح کی سیکیورٹی حاصل کرنے کے لیے بہتر کردہ حفاظت دریافت کریں</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو ٹھیک کریں}other{آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو ٹھیک کریں}}</translation>
 <translation id="1312721752506309252">بہتر کردہ تحفظ آن ہے</translation>
@@ -443,6 +444,7 @@
 <translation id="1482626744466814421">اس ٹیب کو بُک مارک کریں...</translation>
 <translation id="1482772681918035149">پاس ورڈز میں ترمیم کریں</translation>
 <translation id="1483137792530497944">دریا</translation>
+<translation id="1483148302144576204">لنکس کاپی کریں</translation>
 <translation id="1483151333977672176">بھیج دیا گیا!</translation>
 <translation id="1483431819520123112">ڈسپلے کا نام کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="1483493594462132177">بھیجیں</translation>
@@ -1058,6 +1060,7 @@
 <translation id="2168036794078614559">رپورٹ بھیج دی گئی</translation>
 <translation id="2168735174585029637">اپنے ٹیبز کو ایک نیا شفاف انداز دیں</translation>
 <translation id="217120844667431680">‏‫AI وضع کے ساتھ مزید بہت کچھ کریں</translation>
+<translation id="2172046302886074612">‫‘<ph name="MODEL_CATEGORY" />' کو ہٹا دیا گیا</translation>
 <translation id="2173302385160625112">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="2175384018164129879">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="2175773164573457310">‏‫Gemini سے پوچھنے کے لیے کوئی بھی ٹیکسٹ یا تصویر منتخب کریں</translation>
@@ -2080,6 +2083,7 @@
 <translation id="3270965368676314374">اپنے کمپیوٹر سے تصاویر، موسیقی اور دیگر میڈیا پڑھیں، تبدیل اور حذف کریں</translation>
 <translation id="3275464924531706548">‫<ph name="HEADER" /> کو سکیڑیں</translation>
 <translation id="3275778913554317645">بطور ونڈو کھولیں</translation>
+<translation id="3277325180914877290">ٹیکسٹ کو اور بڑا بنائیں</translation>
 <translation id="3280237271814976245">محفوظ کریں &amp;بطور…</translation>
 <translation id="3280243678470289153">‏Chrome میں رہیں</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> کے ساتھ ایک ٹیب کا اشتراک کیا جا رہا ہے</translation>
@@ -2588,6 +2592,7 @@
 <translation id="3786890785076278600">جامد لائن</translation>
 <translation id="3787434344076711519">ترجمہ کا منتظر</translation>
 <translation id="3789432704615470433">‏‫SharePoint اور OneDrive فائلز</translation>
+<translation id="3789493399245366422">‏مکمل اسکرین، پوری اسکرین، زیادہ سے زیادہ، زیادہ سے زیادہ، عمیق، ٹول بار چھپائیں، پیشکش، F11</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="3790417903123637354">کچھ غلط ہو گیا۔ بعد میں دوبارہ کوشش کریں</translation>
 <translation id="379082410132524484">آپ کے کارڈ کی معیاد ختم ہو گئی ہے</translation>
@@ -3358,6 +3363,7 @@
 <translation id="4665035764476941598">اپنے دوسرے ٹیبز کو واپس لانے کے لیے یہاں کلک کریں</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> کا اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="4666483368282673356">‏اپنی Gemini کی سرگزشت کا نظم کریں</translation>
+<translation id="4667646546186544608">زوم آؤٹ کریں، چھوٹا کریں، قدرے چھوٹا، کم کریں، گھٹائیں، اسکیل ڈاؤن کریں، صفحہ زوم کریں</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4670909875730475086">مبارک ہو! <ph name="APP_NAME" /> کامیابی کے ساتھ آپ کے آلے پر انسٹال ہو گئی ہے</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> ابھی کھولیں</translation>
@@ -4759,6 +4765,7 @@
 <translation id="6255253900817321392">‏نیا ٹیب کھولے بغیر اپنے Mac پر کہیں سے بھی تیزی سے تلاش کریں</translation>
 <translation id="6257602895346497974">مطابقت پذیری آن کریں…</translation>
 <translation id="6258818697161346451">اس آلے پر اپنی پاس کیز استعمال کریں</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{لنک کاپی کریں}other{لنکس کاپی کریں}}</translation>
 <translation id="6261688934280090835">‏‫ChromeOS کیوسک ایپ لاگز</translation>
 <translation id="6263082573641595914">‏Microsoft CA ورژن</translation>
 <translation id="6264060420924719834">اس ایپ میں دوسری سائٹس کا ویب مواد شامل ہے</translation>
@@ -4887,6 +4894,7 @@
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">تصویری فائلیں</translation>
 <translation id="6410390304316730527">محفوظ براؤزنگ ان حملہ آوروں سے آپ کی حفاظت کرتی ہے جو نقصان دہ سافٹ ویئر انسٹال کرنے یا پاس ورڈز، فون نمبرز یا کریڈٹ کارڈز جیسی ذاتی معلومات افشاء کرنے جیسے کچھ خطرناک کام انجام دینے میں آپ کو پھنسا سکتے ہیں۔ اگر آپ اسے آف کرتے ہیں تو غیر مانوس یا غیر معروف سائٹس کو براؤز کرتے وقت محتاط رہیں۔</translation>
+<translation id="6411490324917773403">ٹیکسٹ کو اور چھوٹا بنائیں</translation>
 <translation id="6416743254476733475">اپنے کمپیوٹر پر کارروائی کرنے کی اجازت دیں یا مسدود کريں۔</translation>
 <translation id="6416856063840710198">آپ کے ملاحظہ کو بہتر بنانے کے لیے، سائٹس اکثر آپ کی سرگرمی کو محفوظ کرتی ہیں – اکثر آپ کے آلے پر۔ <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">ڈیفالٹ رویہ</translation>
@@ -6376,6 +6384,7 @@
 <translation id="8041093619605951337">خوش</translation>
 <translation id="8042142357103597104">متن کا دھندلا پن</translation>
 <translation id="8042331986490021244">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو جاتے ہیں</translation>
+<translation id="8042441076562098746">زوم ان کریں، بڑا کریں، پھیلائیں، بڑا، مزید بڑا، اضافہ کریں، اسکیل اپ کریں، صفحہ زوم کریں</translation>
 <translation id="8045253504249021590">‏مطابقت پذیری کو Google ڈیش بورڈ کے ذریعے روک دیا گیا ہے۔</translation>
 <translation id="8045752459073395242">‏کام پر تخلیق کر سکنے والا AI استعمال کرنے کے بارے میں مزید جانیں</translation>
 <translation id="8045923671629973368">‏ایپلیکیشن ID یا ویب اسٹور URL درج کریں</translation>
@@ -6730,6 +6739,7 @@
 <translation id="844059392176531372">‫"<ph name="GROUP_NAME" />" ٹیب گروپ کا اشتراک کریں</translation>
 <translation id="844063558976952706">ہمیشہ اس سائٹ پر</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{پوشیدگی یا الگ تھلگ ونڈو کھلی ہے۔ یہ دوبارہ نہیں کھلے گا۔}other{تمام پروفائلز میں # پوشیدگی اور الگ تھلگ ونڈوز کھلی ہیں۔ وہ دوبارہ نہیں کھلیں گی۔}}</translation>
+<translation id="84426883520448311">تھیم، رنگ، پس منظر، وال پیپر، ہلکا، گہرا، موڈ، لائٹ موڈ، تاریک وضع، ذاتی، اسٹائلنگ، جمالیاتی</translation>
 <translation id="8443986842926457191">‏URL ‏2048 حروف سے زیادہ ہے</translation>
 <translation id="8445281870900174108">یہ ٹیب آپ کا کیمرا استعمال کر رہا ہے</translation>
 <translation id="8446884382197647889">مزید جانیں</translation>
@@ -7320,6 +7330,7 @@
 <translation id="9076821103818989526">سائیڈ پینل</translation>
 <translation id="907779190626433918">ہر سائٹ یا ایپ کیلئے ایک منفرد پاس ورڈ استعمال کریں۔ اگر کسی شخص کو دوبارہ استعمال کردہ پاس ورڈ کا پتا چلتا ہے تو آپ کے دیگر اکاؤنٹس تک رسائی کیلئے اس کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="9078546160009814724">صارف نام: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{لنک کاپی کریں}other{لنکس کاپی کریں}}</translation>
 <translation id="907972398081911688">اپنا خلاف ورزی شدہ پاس ورڈ خودکار طور پر تبدیل کریں</translation>
 <translation id="9081543426177426948">جو سائٹس آپ ملاحظہ کرتے ہیں وہ پوشیدگی وضع میں محفوظ نہیں ہوتی ہیں</translation>
 <translation id="9082750838489080452">ایپلیکیشن: <ph name="APP_NAME" /></translation>

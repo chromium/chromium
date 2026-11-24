@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ను జోడించాలా?</translation>
 <translation id="2159915644201199628">ఈ చిత్రం డీకోడ్ చేయబడదు: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">మీ తల్లి/తండ్రి ఈ ఎక్స్‌టెన్షన్‌ను ఆమోదించలేదు</translation>
+<translation id="2207866393056347613">అన్ని సైట్‌లలో మీ డేటాకు పర్మనెంట్ యాక్సెస్‌ను మంజూరు చేస్తుంది</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" అదనపు అనుమతులను అభ్యర్థించింది.</translation>
 <translation id="2327492829706409234">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="2350172092385603347">స్థానికీకరణ ఉపయోగించబడుతుంది, అయితే మానిఫెస్ట్‌లో default_localeను పేర్కొనలేదు.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">మ‌ళ్లీ-ప్రారంభించండి</translation>
 <translation id="2743583586211388067">మీ సంస్థ ఎక్స్‌టెన్షన్ రిస్క్ పాలసీ ప్రకారం ఈ ఎక్స్‌టెన్షన్‌కు యాక్సెస్ బ్లాక్ చేయబడింది.</translation>
 <translation id="2766161002040448006">తల్లి/తండ్రిని అడగండి</translation>
+<translation id="2775557057525247505">అన్ని సైట్లను చూడండి</translation>
 <translation id="2785530881066938471">కంటెంట్ స్క్రిప్ట్‌కు '<ph name="RELATIVE_PATH" />' ఫైల్‌ను లోడ్ చేయలేకపోయింది. ఈ ఫైల్ UTF-8లో ఎన్‌కోడ్ కాలేదు.</translation>
 <translation id="2850541429955027218">థీమ్‌ను జోడించండి</translation>
 <translation id="2883143988769190738">ఈ ఎక్స్‌టెన్షన్ కింది అనుమతులను రిక్వెస్ట్ చేస్తుంది:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> విక్రేత నుండి <ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా చెల్లుబాటు అయ్యే పాథ్‌గా ఉండాలి.</translation>
+<translation id="3769470010314114481">సైట్‌లో మీ డేటాకు తాత్కాలిక యాక్సెస్‌ను మంజూరు చేస్తుంది</translation>
 <translation id="3788401245189148511">ఇది వీటిని చేయాలనుకుంటోంది:</translation>
 <translation id="3834775135533257713"><ph name="TO_INSTALL_APP_NAME" /> యాప్ "<ph name="INSTALLED_APP_NAME" />"కి వైరుధ్యంగా ఉన్నందున దాన్ని జోడించలేరు.</translation>
 <translation id="388442998277590542">ఎంపికల పేజీ '<ph name="OPTIONS_PAGE" />'ను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించండి</translation>
 <translation id="3927932062596804919">తిరస్కరించు</translation>
 <translation id="3984413272403535372">ఎక్స్‌టెన్షన్‌కు సంతకం చేసేటప్పుడు ఎర్రర్.</translation>
+<translation id="3990894032742690314">లిస్ట్ చేసిన సైట్‌లలో ఎల్లప్పుడూ అనుమతించండి</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />"ని సరి చేయాలా?</translation>
 <translation id="4061696872429826774">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన ఎక్స్‌టెన్షన్ కారణంగా Chromium పని చేసే విధానం మారవచ్చు.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' పరిచయ పేజీని లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="424963718355121712">యాప్‌లు తప్పనిసరిగా అవి ప్రభావితమయ్యే హోస్ట్ నుండి అందించబడాలి</translation>
 <translation id="4306119971288449206">యాప్‌లు తప్పనిసరిగా "<ph name="CONTENT_TYPE" />" కంటెంట్-రకంతో అందించబడాలి</translation>
+<translation id="4307774243840254737">దిగువున లిస్ట్ చేసిన సైట్‌లలో మీ డేటాకు పర్మనెంట్ యాక్సెస్‌ను మంజూరు చేస్తుంది</translation>
 <translation id="4349181963619779233">ఈ వెబ్‌సైట్ నుండి ఎక్స్‌టెన్షన్‌లు, యాప్‌లను జోడించడం సాధ్యపడదు</translation>
 <translation id="4625078469366263107">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="4633003931260532286">"<ph name="IMPORT_NAME" />" యొక్క వెర్షన్ కనీసం "<ph name="IMPORT_VERSION" />" ఉండాలని ఎక్స్‌టెన్షన్ కోరుతోంది, కానీ "<ph name="INSTALLED_VERSION" />" వెర్షన్ మాత్రమే ఇన్‌స్టాల్ చేయబడి ఉంది</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" కొత్త వెర్షన్ నిలిపివేయబడింది ఎందుకంటే దానికి మరిన్ని అనుమతులు అవసరం.</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ను ప్రారంభించాలా?</translation>
 <translation id="5356315618422219272">యాప్‌ వీక్షణ: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">మీరు ఎక్స్‌టెన్షన్‌ను క్లిక్ చేసినప్పుడు మాత్రమే</translation>
 <translation id="5405650547142096840">Chromium నుండి తీసివేయండి</translation>
 <translation id="5456409301717116725">ఈ ఎక్స్‌టెన్షన్‌ '<ph name="KEY_PATH" />' కీ ఫైల్‌ను కలిగి ఉంది. బహుశా మీరు దాన్ని చేయకూడదు.</translation>
 <translation id="5485102783864353244">యాప్‌ను జోడించండి</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mime హ్యాండ్లర్: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">ఈ ఎక్స్‌టెన్షన్‌ దానికదే చాలా తరచుగా రీలోడ్ అయ్యింది.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /></translation>
+<translation id="7017635639223148413">లిస్ట్ చేసిన సైట్‌లు</translation>
 <translation id="7068383018033524534">మానిఫెస్ట్ ఫైల్ చెల్లదు</translation>
 <translation id="7217838517480956708">ఈ మెషిన్‌ యొక్క నిర్వాహకుడికి <ph name="EXTENSION_NAME" /> ఇన్‌స్టాల్ చేయబడి ఉండటం అవసరం. దీన్ని తీసివేయడం లేదా ఎడిట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="7287143125007575591">యాక్సెస్ నిరాకరించబడింది.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">వినియోగదారు వైపుగా</translation>
 <translation id="8047248493720652249">ఈ ఎక్స్‌టెన్ష‌న్‌ డౌన్‌లోడ్ యొక్క పేరును "<ph name="ATTEMPTED_FILENAME" />"గా పేర్కొనడంలో విఫలమైంది. ఎందుకంటే మరో ఎక్స్‌టెన్ష‌న్‌ (<ph name="EXTENSION_NAME" />) "<ph name="ACTUAL_FILENAME" />" అనే వేరే ఫైల్ పేరును నిశ్చయించింది.</translation>
 <translation id="8049705080247101012">Google "<ph name="EXTENSION_NAME" />"ను హానికరమైనదిగా ఫ్లాగ్ చేసినందున ఇన్‌స్టాలేషన్ నిరోధించబడింది</translation>
+<translation id="823691536304079791">మీ డేటాను చదివి, మార్చండి</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> నుండి <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">ఇది వీటిని చేయగలదు:</translation>
 <translation id="8517576857589387417">మానిఫెస్ట్ ఫైల్ లేదు లేదా చదవడం సాధ్యం కాదు</translation>

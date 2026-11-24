@@ -2650,6 +2650,7 @@ Neuinstallation</translation>
 <translation id="7385490373498027129">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> werden dauerhaft gelöscht.</translation>
 <translation id="7386767620098596324">Netzwerkverbindung aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
 <translation id="7395163818609347230">Fenstergröße nach rechts angepasst</translation>
+<translation id="7398756591282764096">Fenster anpinnen</translation>
 <translation id="7400839060291901923">Verbindung auf <ph name="PHONE_NAME" /> einrichten</translation>
 <translation id="7401222354741467707">Screenshot oder Bildschirmaufzeichnung in voller Größe erstellen</translation>
 <translation id="7401559588859088661">Verschieben und öffnen</translation>
@@ -2736,6 +2737,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7576976045740938453">Ein Problem mit dem Konto für den Demomodus ist aufgetreten.</translation>
 <translation id="7578692661782707876">Gib deinen Bestätigungscode ein.</translation>
 <translation id="7579778809502851308">Screenshot</translation>
+<translation id="7585952961050741338">Fenster loslösen</translation>
 <translation id="7588317312481506627">In Zwischenablage kopiert.</translation>
 <translation id="7594725637786616550">Durch einen Powerwash wird dein <ph name="DEVICE_TYPE" /> auf den Werkszustand zurückgesetzt.</translation>
 <translation id="7595453277607160340">Melde dich noch einmal an und aktualisiere die Verschlüsselung, damit du Android-Apps verwenden kannst und das <ph name="DEVICE_TYPE" /> weiter richtig funktioniert.</translation>

@@ -305,6 +305,7 @@
 <translation id="1308105352527684175">יכול להיות שלא תהיה לך גישה לתוכן מסוים</translation>
 <translation id="1311092170520822848">האתר הזה שולט בקוראי הכרטיסים החכמים שמחוברים למכשיר, וייתכן שגם על הכרטיסים שאליהם הקוראים יכולים לגשת</translation>
 <translation id="131112695174432497">יימחקו הנתונים שמשפיעים על ההתאמה האישית של מודעות</translation>
+<translation id="13115907161008983">העתקת הקישורים</translation>
 <translation id="131188242279372879">‏כדאי להכיר את ההגנה המשופרת כדי ליהנות מרמת האבטחה הגבוהה ביותר ב-Chrome להורדות</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{תיקון הכרטיסייה שמאטה את הדפדפן}one{תיקון הכרטיסיות שמאטות את הדפדפן}two{תיקון הכרטיסיות שמאטות את הדפדפן}other{תיקון הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
@@ -441,6 +442,7 @@
 <translation id="1482626744466814421">הוספת הכרטיסייה הזו לסימניות...</translation>
 <translation id="1482772681918035149">לערוך את הסיסמאות</translation>
 <translation id="1483137792530497944">נהר</translation>
+<translation id="1483148302144576204">העתקת הקישורים</translation>
 <translation id="1483151333977672176">נשלח!</translation>
 <translation id="1483431819520123112">השם המוצג הועתק ללוח</translation>
 <translation id="1483493594462132177">שליחה</translation>
@@ -1065,6 +1067,7 @@
 <translation id="2168036794078614559">הדוח נשלח</translation>
 <translation id="2168735174585029637">רוצה לתת לכרטיסיות מראה חדש ושקוף?</translation>
 <translation id="217120844667431680">‏עושים יותר עם מצב AI</translation>
+<translation id="2172046302886074612">מצב "<ph name="MODEL_CATEGORY" />" הוסר</translation>
 <translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
 <translation id="2175384018164129879">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
 <translation id="2175773164573457310">‏אפשר לבחור טקסט או תמונה כדי לשאול את Gemini שאלות</translation>
@@ -2087,6 +2090,7 @@
 <translation id="3270965368676314374">קריאה, שינוי ומחיקה של קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
 <translation id="3275464924531706548">כיווץ של <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">פתיחה כחלון</translation>
+<translation id="3277325180914877290">הגדלת הטקסט</translation>
 <translation id="3280237271814976245">שמירה &amp;בשם...</translation>
 <translation id="3280243678470289153">‏להישאר ב-Chrome</translation>
 <translation id="3282210178675490297">המערכת משתפת כרטיסייה עם האפליקציה <ph name="APP_NAME" /></translation>
@@ -2593,6 +2597,7 @@
 <translation id="3786890785076278600">קו סטטי</translation>
 <translation id="3787434344076711519">בהמתנה לתרגום</translation>
 <translation id="3789432704615470433">‏קבצים ב-SharePoint וב-OneDrive</translation>
+<translation id="3789493399245366422">‏מסך מלא, מסך-מלא, להגדיל, הגדלה, כל המסך, הסתרת סרגל כלים, מצגת, F11</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="3790417903123637354">משהו השתבש. יש לנסות שוב בהמשך</translation>
 <translation id="379082410132524484">תוקף הכרטיס שלך פג</translation>
@@ -3365,6 +3370,7 @@
 <translation id="4665035764476941598">כדי לראות שוב את הכרטיסיות האחרות, צריך ללחוץ כאן</translation>
 <translation id="4665446389743427678">כל הנתונים שמאוחסנים על ידי <ph name="SITE" /> יימחקו.</translation>
 <translation id="4666483368282673356">‏שליטה בהיסטוריה של Gemini</translation>
+<translation id="4667646546186544608">להתרחק, כיווץ, קטן יותר, הקטנה, הפחתה, צמצום, שינוי מרחק התצוגה של הדף</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">הכול מוכן. האפליקציה <ph name="APP_NAME" /> הותקנה בהצלחה במכשיר שלך</translation>
 <translation id="4672759829555593783">לפתיחה של <ph name="FILE_NAME" /></translation>
@@ -4773,6 +4779,7 @@
 <translation id="6255253900817321392">‏רוצה לחפש מהר יותר מכל מקום ב-Mac בלי לפתוח כרטיסייה חדשה?</translation>
 <translation id="6257602895346497974">הפעלת סנכרון...</translation>
 <translation id="6258818697161346451">רוצה להשתמש במפתחות הגישה שלך במכשיר הזה?</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{העתקת הקישור}one{העתקת הקישורים}two{העתקת הקישורים}other{העתקת הקישורים}}</translation>
 <translation id="6261688934280090835">‏רישומים של אפליקציות קיוסק של ChromeOS</translation>
 <translation id="6263082573641595914">‏גרסת רשות אישורים של Microsoft</translation>
 <translation id="6264060420924719834">האפליקציה הזו מכילה תוכן מאתרים אחרים באינטרנט</translation>
@@ -4902,6 +4909,7 @@
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">קובצי תמונה</translation>
 <translation id="6410390304316730527">גלישה בטוחה מגינה עליך מפני תוקפים שעשויים להטעות אותך כדי לגרום לך לבצע פעולה מסוכנת. למשל, התקנה של תוכנה זדונית או חשיפת מידע אישי, כמו סיסמאות, מספרי טלפון או כרטיסי אשראי. אם תשביתו את הגלישה הבטוחה, יש לנקוט זהירות בעת הגלישה באתרים לא מוכרים או בעלי מוניטין בעייתי.</translation>
+<translation id="6411490324917773403">הקטנת הטקסט</translation>
 <translation id="6416743254476733475">צריך להתיר או לחסום במחשב.</translation>
 <translation id="6416856063840710198">כדי לשפר את הביקור, אתרים שומרים לעיתים קרובות את הפעילות שלך במכשיר. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">התנהגות ברירת מחדל</translation>
@@ -6397,6 +6405,7 @@
 <translation id="8041093619605951337">שמחה</translation>
 <translation id="8042142357103597104">שקיפות טקסט</translation>
 <translation id="8042331986490021244">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
+<translation id="8042441076562098746">לעשות זום, להגדיל, להתקרב, להפוך לגדול יותר, יותר גדול, הגדלה, הרחבה, זום לדף</translation>
 <translation id="8045253504249021590">‏הסנכרון הושבת באמצעות מרכז השליטה של Google.</translation>
 <translation id="8045752459073395242">‏מידע נוסף על השימוש ב-AI גנרטיבי בעבודה</translation>
 <translation id="8045923671629973368">‏יש להזין מזהה אפליקציה או כתובת URL של חנות אינטרנט</translation>
@@ -6750,6 +6759,7 @@
 <translation id="844059392176531372">שיתוף קבוצת הכרטיסיות '<ph name="GROUP_NAME" />'</translation>
 <translation id="844063558976952706">תמיד באתר זה</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{יש חלון פרטי או חלון מבודד פתוח. הוא לא ייפתח מחדש.}one{יש # חלונות פרטיים וחלונות מבודדים פתוחים בפרופילים שונים. הם לא ייפתחו מחדש.}two{יש # חלונות פרטיים וחלונות מבודדים פתוחים בפרופילים שונים. הם לא ייפתחו מחדש.}other{יש # חלונות פרטיים וחלונות מבודדים פתוחים בפרופילים שונים. הם לא ייפתחו מחדש.}}</translation>
+<translation id="84426883520448311">עיצוב, צבע, רקע, טפט, בהיר, כהה, מצב, מצב בהיר, מצב כהה, אישי, שינוי הסגנון, אסתטיקה</translation>
 <translation id="8443986842926457191">‏כתובת ה-URL מכילה יותר מ-2048 תווים</translation>
 <translation id="8445281870900174108">הכרטיסייה הזו ניגשת למצלמה שלך</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
@@ -7338,6 +7348,7 @@
 <translation id="9076821103818989526">חלונית צדדית</translation>
 <translation id="907779190626433918">יש להשתמש בסיסמה ייחודית לכל אתר או אפליקציה. אם מישהו יגלה סיסמה שהשתמשת בה במקומות שונים, הוא יוכל להשתמש בה כדי להיכנס גם לשאר החשבונות שלך.</translation>
 <translation id="9078546160009814724">שם המשתמש: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{העתקת הקישור}one{העתקת הקישורים}two{העתקת הקישורים}other{העתקת הקישורים}}</translation>
 <translation id="907972398081911688">שינוי אוטומטי של הסיסמה שנפרצה</translation>
 <translation id="9081543426177426948">אתרים שנכנסים אליהם לא נשמרים במצב אנונימי</translation>
 <translation id="9082750838489080452">אפליקציה: <ph name="APP_NAME" /></translation>

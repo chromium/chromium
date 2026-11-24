@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Adăugați „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2159915644201199628">Imaginea nu a putut fi decodificată: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2193567467390483943">Părintele tău nu a aprobat această extensie</translation>
+<translation id="2207866393056347613">Acordă acces permanent la datele tale de pe toate site-urile</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” a solicitat permisiuni suplimentare.</translation>
 <translation id="2327492829706409234">Activați aplicația</translation>
 <translation id="2350172092385603347">A fost utilizată localizarea, dar nu s-a specificat default_locale în manifest.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Reactivează</translation>
 <translation id="2743583586211388067">Accesul la această extensie este blocat conform politicii organizației privind riscurile extensiilor.</translation>
 <translation id="2766161002040448006">Cere unui părinte</translation>
+<translation id="2775557057525247505">Afișează toate site-urile</translation>
 <translation id="2785530881066938471">Nu se poate încărca fișierul „<ph name="RELATIVE_PATH" />” pentru scriptul de conținut. Fișierul nu are codificare UTF-8.</translation>
 <translation id="2850541429955027218">Adaugă o temă</translation>
 <translation id="2883143988769190738">Această extensie solicită următoarele permisiuni:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> de la furnizorul <ph name="VENDOR_ID" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Valoarea introdusă pentru cheia privată trebuie să fie o cale validă.</translation>
+<translation id="3769470010314114481">Acordă acces temporar la datele tale de pe site</translation>
 <translation id="3788401245189148511">Aceasta ar putea să:</translation>
 <translation id="3834775135533257713">Aplicația „<ph name="TO_INSTALL_APP_NAME" />” nu a putut fi adăugată, deoarece se află în conflict cu „<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="388442998277590542">Nu se poate încărca pagina cu opțiuni „<ph name="OPTIONS_PAGE" />”.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Activați extensia</translation>
 <translation id="3927932062596804919">Refuză</translation>
 <translation id="3984413272403535372">Eroare la semnarea extensiei.</translation>
+<translation id="3990894032742690314">Întotdeauna pe site-urile listate</translation>
 <translation id="4014432863917027322">Repari „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4061696872429826774">Un alt program de pe computerul tău a adăugat o extensie care poate schimba modul în care funcționează Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Pagina informativă „<ph name="ABOUT_PAGE" />” nu s-a putut încărca.</translation>
 <translation id="424963718355121712">Aplicațiile trebuie să fie difuzate de gazda pe care o afectează</translation>
 <translation id="4306119971288449206">Aplicațiile trebuie să fie difuzate utilizând antetul content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4307774243840254737">Acordă acces permanent la datele tale de pe site-urile de mai jos</translation>
 <translation id="4349181963619779233">Nu pot fi adăugate extensii și aplicații de pe acest site</translation>
 <translation id="4625078469366263107">Activează aplicația</translation>
 <translation id="4633003931260532286">Extensia necesită „<ph name="IMPORT_NAME" />” cu versiunea minimă „<ph name="IMPORT_VERSION" />”, dar numai versiunea „<ph name="INSTALLED_VERSION" />” este instalată</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Cea mai nouă versiune a „<ph name="EXTENSION_NAME" />” a fost dezactivată, deoarece necesită permisiuni suplimentare.</translation>
 <translation id="5242724311594467048">Activați extensia „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5356315618422219272">Eticheta appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Numai când dai clic pe extensie</translation>
 <translation id="5405650547142096840">Eliminați din Chromium</translation>
 <translation id="5456409301717116725">Această extensie include fișierul cheie „<ph name="KEY_PATH" />”. Probabil că nu doriți să faceți asta.</translation>
 <translation id="5485102783864353244">Adaugă o aplicație</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Handler MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Această extensie s-a reîncărcat automat prea frecvent.</translation>
 <translation id="7003844668372540529">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Site-uri afișate</translation>
 <translation id="7068383018033524534">Fișierul manifest este nevalid</translation>
 <translation id="7217838517480956708">Administratorul acestui dispozitiv solicită instalarea extensiei <ph name="EXTENSION_NAME" />. Aceasta nu poate fi eliminată sau modificată.</translation>
 <translation id="7287143125007575591">Acces refuzat.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Camera foto frontală</translation>
 <translation id="8047248493720652249">Această extensie nu a reușit să denumească fișierul descărcat „<ph name="ATTEMPTED_FILENAME" />”, deoarece altă extensie (<ph name="EXTENSION_NAME" />) a stabilit alt nume de fișier, „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8049705080247101012">Google a semnalat „<ph name="EXTENSION_NAME" />” ca extensie rău intenționată și instalarea nu a fost permisă</translation>
+<translation id="823691536304079791">Citește și modifică datele tale</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de la <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Permisiuni:</translation>
 <translation id="8517576857589387417">Fișierul manifest lipsește sau nu poate fi citit</translation>

@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">เพิ่ม "<ph name="EXTENSION_NAME" />" หรือไม่</translation>
 <translation id="2159915644201199628">ไม่สามารถถอดรหัสภาพ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">ผู้ปกครองของคุณไม่อนุมัติส่วนขยายนี้</translation>
+<translation id="2207866393056347613">ให้สิทธิ์เข้าถึงข้อมูลของคุณในทุกเว็บไซต์อย่างถาวร</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ขออนุญาตเพิ่มเติม</translation>
 <translation id="2327492829706409234">เปิดใช้งานแอปพลิเคชัน</translation>
 <translation id="2350172092385603347">ใช้การแปลภาษาท้องถิ่นแล้ว แต่ไม่ได้ระบุ default_locale ในมานิเฟสต์</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">เปิดการใช้งานอีกครั้ง</translation>
 <translation id="2743583586211388067">การเข้าถึงส่วนขยายนี้ถูกบล็อกภายใต้นโยบายความเสี่ยงของส่วนขยายขององค์กร</translation>
 <translation id="2766161002040448006">ถามผู้ปกครอง</translation>
+<translation id="2775557057525247505">แสดงเว็บไซต์ทั้งหมด</translation>
 <translation id="2785530881066938471">ไม่สามารถโหลดไฟล์ "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์เนื้อหา ไม่ใช่การเข้ารหัส UTF-8</translation>
 <translation id="2850541429955027218">เพิ่มธีม</translation>
 <translation id="2883143988769190738">ส่วนขยายนี้ขอสิทธิ์ต่อไปนี้</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> จากผู้ขาย <ph name="VENDOR_ID" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ค่าที่ป้อนสำหรับคีย์ส่วนตัวจะต้องเป็นเส้นทางที่ถูกต้อง</translation>
+<translation id="3769470010314114481">ให้สิทธิ์เข้าถึงข้อมูลของคุณในเว็บไซต์ชั่วคราว</translation>
 <translation id="3788401245189148511">ส่วนขยายต้องการจะ:</translation>
 <translation id="3834775135533257713">ไม่สามารถเพิ่มแอปพลิเคชัน "<ph name="TO_INSTALL_APP_NAME" />" เนื่องจากขัดแย้งกับ "<ph name="INSTALLED_APP_NAME" />"</translation>
 <translation id="388442998277590542">ไม่สามารถโหลดหน้าตัวเลือก "<ph name="OPTIONS_PAGE" />"</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">เปิดใช้งานส่วนขยาย</translation>
 <translation id="3927932062596804919">ปฏิเสธ</translation>
 <translation id="3984413272403535372">พบข้อผิดพลาดขณะเซ็นชื่อบนส่วนขยาย</translation>
+<translation id="3990894032742690314">ตลอดเวลาในเว็บไซต์ที่ระบุ</translation>
 <translation id="4014432863917027322">ต้องการซ่อม "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="4061696872429826774">โปรแกรมอื่นในคอมพิวเตอร์เพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chromium
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">ไม่สามารถโหลดหน้าเกี่ยวกับ "<ph name="ABOUT_PAGE" />"</translation>
 <translation id="424963718355121712">แอปต้องได้รับบริการจากโฮสต์ที่แอปนั้นมีผลกระทบ</translation>
 <translation id="4306119971288449206">แอปต้องได้รับบริการจากประเภทเนื้อหา "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4307774243840254737">ให้สิทธิ์เข้าถึงข้อมูลของคุณอย่างถาวรในเว็บไซต์ที่ระบุไว้ด้านล่าง</translation>
 <translation id="4349181963619779233">เพิ่มส่วนขยายและแอปจากเว็บไซต์นี้ไม่ได้</translation>
 <translation id="4625078469366263107">เปิดใช้แอป</translation>
 <translation id="4633003931260532286">ส่วนขยายต้องใช้ "<ph name="IMPORT_NAME" />" เวอร์ชัน "<ph name="IMPORT_VERSION" />" เป็นอย่างน้อย แต่ที่ติดตั้งอยู่เป็นเวอร์ชัน "<ph name="INSTALLED_VERSION" />"</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">รุ่นใหม่ล่าสุดของ "<ph name="EXTENSION_NAME" />" ถูกปิดใช้งาน เนื่องจากต้องได้รับการอนุญาตมากกว่านี้</translation>
 <translation id="5242724311594467048">เปิดใช้งาน "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="5356315618422219272">การดูแอป: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">เฉพาะเมื่อคุณคลิกส่วนขยาย</translation>
 <translation id="5405650547142096840">ลบจาก Chromium</translation>
 <translation id="5456409301717116725">ส่วนขยายนี้มีไฟล์คีย์ "<ph name="KEY_PATH" />" คุณอาจจะไม่ต้องการดำเนินการนั้น</translation>
 <translation id="5485102783864353244">เพิ่มแอป</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">เครื่องจัดการ MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">ส่วนขยายนี้โหลดตัวเองซ้ำบ่อยเกินไป</translation>
 <translation id="7003844668372540529">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จาก <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">เว็บไซต์ที่ระบุ</translation>
 <translation id="7068383018033524534">ไฟล์ Manifest ไม่ถูกต้อง</translation>
 <translation id="7217838517480956708">ผู้ดูแลระบบของเครื่องนี้ต้องการให้มีการติดตั้ง <ph name="EXTENSION_NAME" /> โดยไม่สามารถลบหรือแก้ไขได้</translation>
 <translation id="7287143125007575591">ปฏิเสธการเข้าถึง</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">กล้องหน้า</translation>
 <translation id="8047248493720652249">ส่วนขยายนี้ล้มเหลวในการตั้งชื่อการดาวน์โหลดว่า "<ph name="ATTEMPTED_FILENAME" />" เนื่องจากอีกส่วนขยายหนึ่ง (<ph name="EXTENSION_NAME" />) ได้กำหนดชื่อไฟล์ที่แตกต่างไว้ว่า "<ph name="ACTUAL_FILENAME" />"</translation>
 <translation id="8049705080247101012">Google ได้ตั้งค่าสถานะ "<ph name="EXTENSION_NAME" />" ว่าเป็นอันตราย และป้องกันไม่ให้มีการติดตั้งแล้ว</translation>
+<translation id="823691536304079791">อ่านและเปลี่ยนแปลงข้อมูลของคุณ</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">ส่วนขยายหรือแอปพลิเคชันสามารถ:</translation>
 <translation id="8517576857589387417">ไฟล์ Manifest หายไปหรืออ่านไม่ได้</translation>

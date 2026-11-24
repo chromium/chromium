@@ -447,6 +447,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2053312383184521053">Boşta Kalma Durumu Verileri</translation>
 <translation id="2058456167109518507">Cihaz algılandı</translation>
 <translation id="2064048859448024834">Kamera önizlemesi açık</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 bağlantı}other{# bağlantı}}</translation>
 <translation id="2067220651560163985">Sıcaklığı santigrat olarak göster</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" /> adlı yazıcıda yazdırma işlemini tamamladı</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> özelliğini aç/kapat. <ph name="CAPTURE_MEDIUM" /> özelliği <ph name="CAPTURE_STATE" /> durumda</translation>

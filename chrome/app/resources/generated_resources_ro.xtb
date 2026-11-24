@@ -308,6 +308,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1308105352527684175">Este posibil să nu poți accesa un anumit conținut</translation>
 <translation id="1311092170520822848">Acest site controlează cititoarele de carduri inteligente conectate la dispozitivul tău și, eventual, cardurile inteligente disponibile pentru acestea.</translation>
 <translation id="131112695174432497">Datele care influențează personalizarea anunțurilor sunt șterse</translation>
+<translation id="13115907161008983">Copiază linkurile</translation>
 <translation id="131188242279372879">Descoperă protecția îmbunătățită pentru a beneficia de cel mai înalt nivel de securitate pentru descărcări din Chrome</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Remediază problemele filei care încetinește browserul}few{Remediază problemele filelor care încetinesc browserul}other{Remediază problemele filelor care încetinesc browserul}}</translation>
 <translation id="1312721752506309252">Protecția îmbunătățită este activată</translation>
@@ -443,6 +444,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1482626744466814421">Marchează această filă...</translation>
 <translation id="1482772681918035149">editează parolele</translation>
 <translation id="1483137792530497944">Râu</translation>
+<translation id="1483148302144576204">Copiază linkurile</translation>
 <translation id="1483151333977672176">S-a trimis!</translation>
 <translation id="1483431819520123112">Numele afișat s-a copiat în clipboard</translation>
 <translation id="1483493594462132177">Trimite</translation>
@@ -1058,6 +1060,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="2168036794078614559">Raportul a fost trimis</translation>
 <translation id="2168735174585029637">Oferă-le filelor un nou aspect transparent</translation>
 <translation id="217120844667431680">Fă mai multe cu Modul AI</translation>
+<translation id="2172046302886074612"><ph name="MODEL_CATEGORY" /> a fost eliminat</translation>
 <translation id="2173302385160625112">Verifică-ți conexiunea la internet</translation>
 <translation id="2175384018164129879">&amp;Gestionează motoarele de căutare și Căutarea pe site</translation>
 <translation id="2175773164573457310">Selectează orice text sau imagine pentru a întreba Gemini</translation>
@@ -2081,6 +2084,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3270965368676314374">Citește, modifică și șterge fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
 <translation id="3275464924531706548">Restrânge <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Deschide ca fereastră</translation>
+<translation id="3277325180914877290">Mărește textul</translation>
 <translation id="3280237271814976245">Salvează c&amp;a...</translation>
 <translation id="3280243678470289153">Rămâi în Chrome</translation>
 <translation id="3282210178675490297">Se distribuie o filă către <ph name="APP_NAME" /></translation>
@@ -2589,6 +2593,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3786890785076278600">Rând static</translation>
 <translation id="3787434344076711519">Se așteaptă traducerea</translation>
 <translation id="3789432704615470433">Fișiere SharePoint și OneDrive</translation>
+<translation id="3789493399245366422">ecran complet, maximizează, captivant, ascunde bara de instrumente, prezentare, F11</translation>
 <translation id="3789841737615482174">Instalează</translation>
 <translation id="3790417903123637354">A apărut o eroare. Încearcă din nou mai târziu.</translation>
 <translation id="379082410132524484">Cardul a expirat</translation>
@@ -3359,6 +3364,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4665035764476941598">Dă clic aici pentru a readuce celelalte file</translation>
 <translation id="4665446389743427678">Toate datele stocate de <ph name="SITE" /> vor fi șterse.</translation>
 <translation id="4666483368282673356">Gestionează istoricul Gemini</translation>
+<translation id="4667646546186544608">micșorează, mai mic, redu, scade, redu dimensiunea, zoom în pagină</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Felicitări! <ph name="APP_NAME" /> s-a instalat pe dispozitiv</translation>
 <translation id="4672759829555593783">Deschide <ph name="FILE_NAME" /> acum</translation>
@@ -4760,6 +4766,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="6255253900817321392">Caută mai rapid de oriunde pe Mac fără să deschizi o filă nouă</translation>
 <translation id="6257602895346497974">Activează sincronizarea...</translation>
 <translation id="6258818697161346451">Folosește cheile de acces pe acest dispozitiv</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Copiază linkul}few{Copiază linkurile}other{Copiază linkurile}}</translation>
 <translation id="6261688934280090835">Jurnalele aplicației chioșc pentru ChromeOS</translation>
 <translation id="6263082573641595914">Versiune CA Microsoft</translation>
 <translation id="6264060420924719834">Aplicația include conținut web de pe alte site-uri</translation>
@@ -4888,6 +4895,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Fișiere imagine</translation>
 <translation id="6410390304316730527">Navigarea sigură te protejează împotriva atacatorilor care ar putea să te păcălească să faci lucruri periculoase, cum ar fi să instalezi software rău intenționat sau să dezvălui informații cu caracter personal, cum ar fi parole, numere de telefon sau carduri de credit. Dacă o dezactivezi, ai grijă atunci când navighezi pe site-uri nefamiliare sau nelegitime.</translation>
+<translation id="6411490324917773403">Micșorează textul</translation>
 <translation id="6416743254476733475">Permite sau blochează pe computer.</translation>
 <translation id="6416856063840710198">Pentru a-ți îmbunătăți vizita, site-urile îți salvează adesea activitatea pe dispozitiv. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Comportament prestabilit</translation>
@@ -6380,6 +6388,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8041093619605951337">Fericit</translation>
 <translation id="8042142357103597104">Opacitatea textului</translation>
 <translation id="8042331986490021244">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google</translation>
+<translation id="8042441076562098746">mărește, amplifică, mai mare, crește, zoom în pagină</translation>
 <translation id="8045253504249021590">Sincronizarea a fost oprită prin Tabloul de bord Google.</translation>
 <translation id="8045752459073395242">Află mai multe despre folosirea AI-ului generativ la locul de muncă</translation>
 <translation id="8045923671629973368">Introdu ID-ul aplicației sau adresa URL din magazinul web</translation>
@@ -6734,6 +6743,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="844059392176531372">Trimite grupul de file <ph name="GROUP_NAME" /></translation>
 <translation id="844063558976952706">Întotdeauna pe acest site</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Există o fereastră incognito sau izolată deschisă. Nu se va redeschide.}few{Există # ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide.}other{Există # de ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide.}}</translation>
+<translation id="84426883520448311">temă, culoare, fundal, imagine de fundal, luminos, întunecat, mod, mod luminos, mod întunecat, personal, stil, estetică</translation>
 <translation id="8443986842926457191">Adresa URL are peste 2.048 de caractere.</translation>
 <translation id="8445281870900174108">Această filă folosește camera foto</translation>
 <translation id="8446884382197647889">Află mai multe</translation>
@@ -7324,6 +7334,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9076821103818989526">Panou lateral</translation>
 <translation id="907779190626433918">Folosește o parolă unică pentru fiecare site sau aplicație. Dacă cineva află o parolă refolosită, o poate folosi pentru a-ți accesa celelalte conturi.</translation>
 <translation id="9078546160009814724">Nume de utilizator: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Copiază linkul}few{Copiază linkurile}other{Copiază linkurile}}</translation>
 <translation id="907972398081911688">Schimbă automat parola compromisă</translation>
 <translation id="9081543426177426948">Site-urile pe care le accesezi nu sunt salvate în modul incognito</translation>
 <translation id="9082750838489080452">Aplicație: <ph name="APP_NAME" /></translation>

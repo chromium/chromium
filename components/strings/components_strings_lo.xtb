@@ -78,6 +78,7 @@
 <translation id="112840717907525620">ແຄຊ໌ນະໂຍບາຍໃຊ້ໄດ້</translation>
 <translation id="1131264053432022307">ຮູບພາບທີ່ທ່ານສຳເນົາ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ເພື່ອອອກຈາກໂໝດເຕັມຈໍ, ໃຫ້ລາກຈາກເທິງສຸດແລ້ວແຕະປຸ່ມກັບຄືນ</translation>
+<translation id="11370190534773372">ຕື່ມລາຍລະອຽດບັດແລ້ວ</translation>
 <translation id="1138458427267715730">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນທຸກເວັບໄຊທົ່ວເວັບ</translation>
 <translation id="1142713751288681188">ປະເພດເຈ້ຍ</translation>
 <translation id="1142965388643537393">ຂໍ້ມູນທ່ອງທ່ຽວ</translation>
@@ -4549,6 +4550,7 @@
 <translation id="8577348305244205642">ບໍ່ສາມາດໃຊ້ບັດສະເໝືອນໄດ້</translation>
 <translation id="8579000896558714521">ຍົກເລີກແປ້ນພິມ</translation>
 <translation id="8579561564816585231">ເຂົ້າສູ່ລະບົບໂດຍໃຊ້ບໍລິການ Google ເຊັ່ນ: ຕົວຈັດການລະຫັດຜ່ານ</translation>
+<translation id="8580478010934016252">ເຂົ້າໄປວິທີການຈ່າຍເງິນ</translation>
 <translation id="8581064022803799721">ໜ້ານີ້ຖືກບັນທຶກໄວ້ໃນ <ph name="LAST_BOOKMARKS_FOLDER" /> ແລ້ວ.</translation>
 <translation id="858637041960032120">ເພີ່ມ​ເບີໂທລະ​ສັບ</translation>
 <translation id="8587100480629037893">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ການຕິດຕາມການເຄື່ອນໄຫວຂອງມື</translation>
@@ -4762,6 +4764,7 @@
 <translation id="8975263830901772334">ຊື່ໄຟລ໌ທີ່ທ່ານພິມ</translation>
 <translation id="8982884016487650216">ການໂຫຼດ PDF ສິ້ນສຸດແລ້ວ</translation>
 <translation id="8983369100812962543">ຕອນນີ້ທ່ານສາມາດປັບຂະໜາດແອັບໄດ້ແລ້ວ</translation>
+<translation id="8984453891367472218">ຈັດຮຽງຕາມກຸ່ມ</translation>
 <translation id="8984785270737450103">ການແບ່ງປັນປິດຢູ່ໃນຕອນນີ້</translation>
 <translation id="8985112471026018799">ບັນທຶກບັດເພື່ອການຈ່າຍເງິນທີ່ໄວຂຶ້ນ</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອເບິ່ງປະຫວັດການທ່ອງເວັບຂອງທ່ານໃນ Chrome</translation>

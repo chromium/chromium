@@ -447,6 +447,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2053312383184521053">Data for inaktiv tilstand</translation>
 <translation id="2058456167109518507">Der blev registreret en enhed</translation>
 <translation id="2064048859448024834">Forhåndsvisning af kamera er slået til</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}one{# link}other{# links}}</translation>
 <translation id="2067220651560163985">Vis temperaturen i celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> er blevet udskrevet til <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Slå <ph name="CAPTURE_MEDIUM" /> til/fra. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>

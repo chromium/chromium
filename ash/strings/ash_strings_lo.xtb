@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">ຂໍ້ມູນສະພາວະຢູ່ຊື່ໆ</translation>
 <translation id="2058456167109518507">ກວດພົບອຸປະກອນ</translation>
 <translation id="2064048859448024834">ເປີດຕົວຢ່າງກ້ອງຖ່າຍຮູບແລ້ວ</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ລິ້ງ}other{# ລິ້ງ}}</translation>
 <translation id="2067220651560163985">ສະແດງອຸນຫະພູມເປັນເຊວຊຽສ</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ສຳເລັດການພິມຈາກ <ph name="PRINTER_NAME" /> ແລ້ວ</translation>
 <translation id="2075520525463668108">ສະຫຼັບ <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> ແມ່ນ <ph name="CAPTURE_STATE" /></translation>

@@ -141,6 +141,7 @@
 <translation id="2295218613066132598">ສະແດງທາງລັດເວັບໄຊ Chrome</translation>
 <translation id="2301513536169703857">ເພື່ອເຂົ້າເຖິງລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="2307973900865360088">ເກັບໄວ້ໃນດັອກ</translation>
+<translation id="2308558013860776484">ແບ່ງປັນຮູບໜ້າຈໍຂອງເນື້ອຫາພາຍນອກ Chrome ເຊັ່ນ: ແອັບ ຫຼື ໄຟລ໌ອື່ນໆ</translation>
 <translation id="2309047409763057870">ນີ້ແມ່ນການຕິດຕັ້ງສຳຮອງຂອງ Google Chrome ແລະ ບໍ່ສາມາດຕັ້ງໃຫ້ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານໄດ້.</translation>
 <translation id="2345992953227471816">Chrome ພົບວ່າສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ມີເມົາແວ:</translation>
 <translation id="2350411688004301551">ສະຫຼັບໄປໃຊ້ Gemini Enterprise</translation>
@@ -252,6 +253,7 @@
 <translation id="3294686910656423119">ສະຖິຕິການນຳໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງ</translation>
 <translation id="3327226547491422998">ຕໍ່ມາ, Chrome ຈະສາມາດຖາມວ່າທ່ານຕ້ອງການໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໄວ້ເພື່ອຕື່ມແບບຟອມໃຫ້ທ່ານຫຼືບໍ່</translation>
 <translation id="3352986031709923790">ມຸມຂວາເທິງຂອງພື້ນທີ່ຊອກຫາ: ຂວາ <ph name="RIGHT" />%, ເທິງ <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">ເວັບໄຊ ແລະ Chrome ສາມາດໃຊ້ AI ທີ່ເຮັດວຽກຢູ່ອຸປະກອນຂອງທ່ານໄດ້ໂດຍກົງສຳລັບຄຸນສົມບັດຕ່າງໆ ເຊັ່ນ: ສະຫຼຸບ, ການພິສູດອັກສອນ, ຄຳບັນຍາຍ ແລະ ອື່ນໆ. ເຊິ່ງຄຸນສົມບັດນີ້ແຍກຕ່າງຫາກຈາກ Gemini ໃນ Chrome. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ AI ຢູ່ອຸປະກອນ<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">ຄຸນສົມບັດ ແລະ ສ່ວນຂະຫຍາຍບາງຢ່າງຂອງ Chrome ມາພ້ອມກັບທາງລັດ. ທ່ານສາມາດເລືອກທີ່ຈະເປີດໃຊ້ອີກຄັ້ງໄດ້.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ຈະເປີດຄືນໃໝ່ດຽວນີ້}=1{Chrome ຈະເປີດຄືນໃໝ່ໃນ 1 ວິນາທີ}other{Chrome ຈະເປີດຄືນໃໝ່ໃນ # ວິນາທີ}}</translation>
 <translation id="3380249972812870825">ເພື່ອເປີດ Gemini ໃນ Chrome, ໃຫ້ກົດ <ph name="GLOBAL_HOTKEY" /></translation>
@@ -351,6 +353,7 @@
 <translation id="4427306783828095590">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເຮັດໄດ້ຫຼາຍກວ່າໃນການບລັອກການຫຼອກເອົາຂໍ້ມູນ ແລະ ເມົາແວ</translation>
 <translation id="4434353761996769206">ຕົວຕິດຕັ້ງຜິດພາດ: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">ແບ່ງປັນເອກະສານນີ້ກັບ Gemini ໃນ Chrome ເພື່ອຮັບພາບຮວມໂດຍຫຍໍ້ ແລະ ຖາມຄຳຖາມຕິດຕາມຜົນ</translation>
+<translation id="4440999670272408191">ທ່ານສາມາດລຶບໂມເດວເຫຼົ່ານີ້ອອກໄດ້ທຸກເວລາ. Chrome ອາດດາວໂຫຼດໂມເດວອີກຄັ້ງໂດຍອັດຕະໂນມັດເມື່ອເວັບໄຊ ຫຼື ຄຸນສົມບັດຕ້ອງການໃຊ້.</translation>
 <translation id="4450664632294415862">Chrome - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">ກຳລັງມີການດຳເນີນການອື່ນຢູ່ໃນ Google Chrome. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="4493028449971051158">ຂໍ້ຜິດພາດໃນການເລີ່ມຕົ້ນ: ກະລຸນາເອີ້ນໃຊ້ຕົວຕິດຕັ້ງໃນຖານະຜູ້ເບິ່ງແຍງລະບົບ.</translation>
@@ -358,6 +361,7 @@
 <translation id="4501839397124711198">ທ່ານສາມາດປັກໝຸດ Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງເພື່ອຖາມຄຳຖາມໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບໄດ້</translation>
 <translation id="4571503333518166079">ໄປຫາການຕັ້ງຄ່າການແຈ້ງເຕືອນຂອງ Chrome</translation>
 <translation id="4580939929828762295">ປອດໄພຢູ່ສະເໝີດ້ວຍຕົວຈັດການລະຫັດຜ່ານ Google</translation>
+<translation id="4589544932092381064">ສະແດງການຊອກຫາດ້ວຍ Chrome ໃນແຖບໜ້າວຽກຂອງ Windows ແລະ ເປີດຄີລັດ</translation>
 <translation id="459622048091363950">ເມື່ອ Chrome ມີການເຂົ້າເຖິງ, ເວັບໄຊຈະສາມາດຮ້ອງຂໍການເຂົ້າເຖິງນຳທ່ານ.</translation>
 <translation id="4598116752460667024">ຊອກຫາຂະບວນການໃດໆຈາກລາຍຊື່.</translation>
 <translation id="4600710005438004015">Chrome ບໍ່ສາມາດອັບເດດເປັນເວີຊັນຫຼ້າສຸດໄດ້, ສະນັ້ນທ່ານກຳລັງພາດຄຸນສົມບັດ ແລະ ການແກ້ໄຂດ້ານຄວາມປອດໄພໃໝ່ໆຢູ່.</translation>
@@ -373,6 +377,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">ເພີ່ມຄວາມໄວເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chrome ແຕ່ເຮັດໃຫ້ Chrome ມີຄວາມທົນທານຕໍ່ການໂຈມຕີໜ້ອຍລົງເລັກນ້ອຍ</translation>
 <translation id="4768676935374695498">ຊອກຫາວິດີໂອນີ້ດ້ວຍ Google Lens</translation>
+<translation id="4783580253728290203">ເມື່ອປິດ, Chrome ຈະລຶບໂມເດວ AI ຢູ່ອຸປະກອນອອກ ແລະ ຈະບໍ່ດາວໂຫຼດອີກ. ບາງເວັບໄຊ ແລະ ຄຸນສົມບັດຂອງ Chrome ອາດບໍ່ເຮັດວຽກ.</translation>
 <translation id="479167709087336770">ນີ້ໃຊ້ຕົວກວດການສະກົດຄໍາດຽວກັນກັບທີ່ໃຊ້ໃນ Google ຊອກຫາ. ຂໍ້ຄວາມທີ່ທ່ານພິມໃນໂປຣແກຣມທ່ອງເວັບຖືກສົ່ງໃຫ້ Google. ທ່ານສາມາດປ່ຽນລັກສະນະການນໍາໃຊ້ນີ້ໄດ້ສະເໝີໃນການຕັ້ງຄ່າ.</translation>
 <translation id="4793679854893018356">ສຶກສາວິທີການທີ່ Chrome ຮັກສາຄວາມປອດໄພໃຫ້ທ່ານ</translation>
 <translation id="4803313124144656665">ປິດ Google ຊອກຫາໃນ Chrome</translation>
@@ -459,6 +464,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. ພຣັອກຊີເຊີບເວີຕ້ອງມີການພິສູດຢືນຢັນ.</translation>
 <translation id="5709557627224531708">ຕັ້ງຄ່າ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
+<translation id="5715427327524421317">Chrome ຈະດາວໂຫຼດ ແລະ ອັບເດດໂມເດວ AI ເຫຼົ່ານີ້ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{ການປົກປ້ອງຂັ້ນສູງກຳນົດໃຫ້ທ່ານຕ້ອງເລີ່ມເປີດໃຊ້ Chrome ໃໝ່ເພື່ອນຳໃຊ້ການອັບເດດ. ໜ້າຈໍແຍກຂອງທ່ານຈະບໍ່ເປີດຄືນໃໝ່.}other{ການປົກປ້ອງຂັ້ນສູງກຳນົດໃຫ້ທ່ານຕ້ອງເລີ່ມເປີດໃຊ້ Chrome ໃໝ່ເພື່ອນຳໃຊ້ການອັບເດດ. ໜ້າຈໍແຍກ # ລາຍການຂອງທ່ານຈະບໍ່ເປີດຄືນໃໝ່.}}</translation>
 <translation id="5719246646468301581">ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມຂອງ Google Chrome ແລະ ChromeOS</translation>
 <translation id="5736850870166430177">ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing ນຳ</translation>
@@ -551,6 +557,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6491330562720922580">ລະຫັດ QR ເພື່ອດາວໂຫຼດໂປຣແກຣມທ່ອງເວັບ Chrome ຢູ່ອຸປະກອນມືຖື</translation>
 <translation id="6493527311031785448">Google Chrome ກຳລັງພະຍາຍາມ <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome ຖືກປິດໂດຍອັດຕະໂນມັດ</translation>
+<translation id="650039555447046671">Chrome ຈະລຶບໂມເດວ AI ອອກຈາກອຸປະກອນນີ້. ບາງເວັບໄຊ ແລະ ຄຸນສົມບັດຂອງ Chrome ອາດບໍ່ເຮັດວຽກ.</translation>
 <translation id="6506909944137591434">Chrome ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງອ້ອມຕົວທ່ານ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">ເພື່ອໃຊ້ສະຖານທີ່ຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
@@ -589,6 +596,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6877155553248388166">ມຸມຂວາລຸ່ມຂອງພື້ນທີ່ຊອກຫາ: ຂວາ <ph name="RIGHT" />%, ລຸ່ມ <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">ເປີດການຊອກຫາດ້ວຍ Chrome</translation>
 <translation id="6881299373831449287">ກຳລັງອັບເດດ Chrome</translation>
+<translation id="6881997500528805781">ໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນອຸປະກອນ. Chrome ຈະລຶບໂມເດວ AI ທີ່ບໍ່ໄດ້ໃຊ້ອອກຫຼັງຈາກຜ່ານໄປ 45 ມື້ ຫຼື ເມື່ອບ່ອນຈັດເກັບຂໍ້ມູນເຫຼືອໜ້ອຍ</translation>
 <translation id="6885412569789873916">ແອັບ Chrome Beta</translation>
 <translation id="6893363893008038481">ລຶບບັນຊີອອກຈາກ Chrome</translation>
 <translation id="6896758677409633944">ສຳເນົາ</translation>

@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">נתוני מצב של חוסר פעילות</translation>
 <translation id="2058456167109518507">אותר מכשיר</translation>
 <translation id="2064048859448024834">התצוגה המקדימה של המצלמה מופעלת</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{קישור אחד}one{‫# קישורים}two{‫# קישורים}other{‫# קישורים}}</translation>
 <translation id="2067220651560163985">הצגת הטמפרטורה במעלות צלזיוס</translation>
 <translation id="206960706005837784">האפליקציה <ph name="APP_NAME" /> סיימה להדפיס במדפסת <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">החלפת המצב של ה<ph name="CAPTURE_MEDIUM" />. ה<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>

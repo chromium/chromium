@@ -446,6 +446,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2053312383184521053">Dane o stanie bezczynności</translation>
 <translation id="2058456167109518507">Wykryto urządzenie</translation>
 <translation id="2064048859448024834">Podgląd z aparatu jest włączony</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 link}few{# linki}many{# linków}other{# linku}}</translation>
 <translation id="2067220651560163985">Pokazuj temperaturę w stopniach Celsjusza</translation>
 <translation id="206960706005837784">Aplikacja <ph name="APP_NAME" /> zakończyła drukowanie na drukarce <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Przełącz: <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> – <ph name="CAPTURE_STATE" /></translation>

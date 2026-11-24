@@ -308,6 +308,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1308105352527684175">Du kan muligvis ikke få adgang til visse typer indhold</translation>
 <translation id="1311092170520822848">Dette website styrer chipkortlæsere, der er knyttet til din enhed, og muligvis chipkort, der er tilgængelige for dem</translation>
 <translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
+<translation id="13115907161008983">Kopiér links</translation>
 <translation id="131188242279372879">Prøv forbedret beskyttelse for at få Chromes højeste sikkerhedsniveau for downloads</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Løs problemet med den fane, der gør din browser langsom}one{Løs problemet med den fane, der gør din browser langsom}other{Løs problemet med de faner, der gør din browser langsom}}</translation>
 <translation id="1312721752506309252">Forbedret beskyttelse er aktiveret</translation>
@@ -444,6 +445,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1482626744466814421">TIlføj denne fane som bogmærke...</translation>
 <translation id="1482772681918035149">redigere adgangskoder</translation>
 <translation id="1483137792530497944">Flod</translation>
+<translation id="1483148302144576204">Kopiér links</translation>
 <translation id="1483151333977672176">Sendt!</translation>
 <translation id="1483431819520123112">Det viste navn er kopieret til udklipsholderen</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -856,6 +858,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1921544956190977703">Du har Chromes stærkeste beskyttelse mod farlige websites, downloads og udvidelser</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Åbn med</translation>
 <translation id="1925017091976104802">Tryk på <ph name="MODIFIER_KEY_DESCRIPTION" /> for at indsætte</translation>
 <translation id="1925021887439448749">Angiv tilpasset webadresse</translation>
@@ -1069,6 +1072,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2168036794078614559">Rapporteringen er sendt</translation>
 <translation id="2168735174585029637">Giv dine faner et nyt gennemsigtigt udseende</translation>
 <translation id="217120844667431680">Nå mere med AI-tilstand</translation>
+<translation id="2172046302886074612">"<ph name="MODEL_CATEGORY" />" er fjernet</translation>
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2175384018164129879">&amp;Administrer søgemaskiner og Site Search</translation>
 <translation id="2175773164573457310">Vælg en tekst eller et billede for at spørge Gemini</translation>
@@ -1405,6 +1409,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2528487766183344810">Lås <ph name="TOKEN_NAME" /> op for at eksportere klientcertifikatet.</translation>
 <translation id="2532198298278778531">Administrer Sikkert DNS i indstillingerne for ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;Pause</translation>
+<translation id="2534439599863644240">Serieport</translation>
 <translation id="253498598929009420">Websitet vil kunne se indholdet på din skærm</translation>
 <translation id="253557089021624350">Antal aktiviteter, der bruger udvidelsen</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> kan se og redigere følgende filer og mapper</translation>
@@ -2096,6 +2101,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3270965368676314374">Læs, rediger og slet billeder, musik og andre medier på din computer</translation>
 <translation id="3275464924531706548">Skjul <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Åbn som vindue</translation>
+<translation id="3277325180914877290">Gør teksten større</translation>
 <translation id="3280237271814976245">Gem &amp;som...</translation>
 <translation id="3280243678470289153">Bliv i Chrome</translation>
 <translation id="3282210178675490297">Deler en fane med <ph name="APP_NAME" /></translation>
@@ -2604,6 +2610,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3786890785076278600">Statisk linje</translation>
 <translation id="3787434344076711519">Venter på oversættelse</translation>
 <translation id="3789432704615470433">SharePoint- og OneDrive-filer</translation>
+<translation id="3789493399245366422">fuld skærm, maksimér, medrivende, skjul værktøjslinje, præsentation, F11</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3790417903123637354">Noget gik galt. Prøv igen</translation>
 <translation id="379082410132524484">Dit kort er udløbet</translation>
@@ -3374,6 +3381,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4665035764476941598">Klik her for at få dine andre faner tilbage</translation>
 <translation id="4665446389743427678">Alle data, der gemmes af <ph name="SITE" />, slettes.</translation>
 <translation id="4666483368282673356">Administrer din Gemini-historik</translation>
+<translation id="4667646546186544608">zoom ud, formindsk, mindre, reducer, formindsk, nedskaler, sidezoom</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Tillykke! <ph name="APP_NAME" /> er blevet installeret på din enhed</translation>
 <translation id="4672759829555593783">Åbn <ph name="FILE_NAME" /> nu</translation>
@@ -4777,6 +4785,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6255253900817321392">Søg hurtigere overalt på din Mac uden at åbne en ny fane</translation>
 <translation id="6257602895346497974">Aktivér synkronisering...</translation>
 <translation id="6258818697161346451">Brug dine adgangsnøgler på denne enhed</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Kopiér link}one{Kopiér link}other{Kopiér links}}</translation>
 <translation id="6261688934280090835">Terminalapplogs for ChromeOS</translation>
 <translation id="6263082573641595914">Version af Microsoft-nøglecenter</translation>
 <translation id="6264060420924719834">Denne app har webindhold fra andre websites</translation>
@@ -4905,6 +4914,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Billedfiler</translation>
 <translation id="6410390304316730527">Beskyttet browsing beskytter dig mod hackere, som kan narre dig til at gøre uhensigtsmæssige ting, f.eks. at installere skadelig software eller afsløre personlige oplysninger som adgangskoder, telefonnumre eller kreditkortnumre. Hvis du deaktivere funktionen, skal du være ekstra forsigtig, når du besøger websites, du ikke kender eller har tillid til.</translation>
+<translation id="6411490324917773403">Gør teksten mindre</translation>
 <translation id="6416743254476733475">Tillad eller bloker på din computer.</translation>
 <translation id="6416856063840710198">Websites gemmer ofte din aktivitet på din enhed for at forbedre dit besøg. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Standardadfærd</translation>
@@ -6397,6 +6407,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8041093619605951337">Glad</translation>
 <translation id="8042142357103597104">Tekstens gennemsigtighed</translation>
 <translation id="8042331986490021244">Dine adgangskoder krypteres på din enhed, før de gemmes i Google Adgangs­kode­admin­istrator</translation>
+<translation id="8042441076562098746">zoom ind, forstør, gør større, øg, skaler op, sidezoom</translation>
 <translation id="8045253504249021590">Synkronisering er blevet stoppet via Google Kontrolpanel.</translation>
 <translation id="8045752459073395242">Få flere oplysninger om, hvordan du bruger generativ AI på arbejdet</translation>
 <translation id="8045923671629973368">Angiv et app-id eller webadressen til Chrome Webshop</translation>
@@ -6751,6 +6762,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="844059392176531372">Del fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="844063558976952706">Altid på dette website</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Der er et åbent inkognitovindue eller isoleret vindue. Det åbnes ikke igen.}one{Der er # inkognitovindue og isoleret vindue åbent på tværs af profilerne. De åbnes ikke igen.}other{Der er # inkognitovinduer og isolerede vinduer åbne på tværs af profilerne. De åbnes ikke igen.}}</translation>
+<translation id="84426883520448311">tema, farve, baggrund, lys, mørk, tilstand, lys tilstand, mørk tilstand, personlig, styling, æstetik</translation>
 <translation id="8443986842926457191">Webadressen indeholder mere end 2.048 tegn</translation>
 <translation id="8445281870900174108">Denne fane anvender dit kamera</translation>
 <translation id="8446884382197647889">Få flere oplysninger</translation>
@@ -7342,6 +7354,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9076821103818989526">Sidepanel</translation>
 <translation id="907779190626433918">Du bør bruge en unik adgangskode til hvert website og hver app. Hvis nogen får kendskab til en genbrugt adgangskode, kan vedkommende bruge den til at få adgang til dine andre konti.</translation>
 <translation id="9078546160009814724">Brugernavn: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Kopiér link}one{Kopiér link}other{Kopiér links}}</translation>
 <translation id="907972398081911688">Skift automatisk din kompromitterede adgangskode</translation>
 <translation id="9081543426177426948">De websites, du besøger, gemmes ikke i inkognitotilstand</translation>
 <translation id="9082750838489080452">App: <ph name="APP_NAME" /></translation>

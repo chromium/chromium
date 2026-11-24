@@ -141,6 +141,7 @@
 <translation id="2295218613066132598">Chrome ସାଇଟ ସର୍ଟକଟଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="2301513536169703857">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2307973900865360088">ଡକରେ ରଖନ୍ତୁ</translation>
+<translation id="2308558013860776484">ଅନ୍ୟ ଆପ୍ସ କିମ୍ବା ଫାଇଲ ପରି Chrome ବାହାରର ବିଷୟବସ୍ତୁର ଏକ ସ୍କ୍ରିନସଟ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="2309047409763057870">ଏହା Google Chromeର ଏକ ସେକେଣ୍ଡାରୀ ଇନ୍‍ଷ୍ଟଲେସନ୍‌ ଏବଂ ଏହାକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2345992953227471816">ଏହି ଏକ୍ସଟେନସନଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chrome ଜାଣିବାକୁ ପାଇଛି:</translation>
 <translation id="2350411688004301551">Gemini Enterpriseକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
@@ -252,6 +253,7 @@
 <translation id="3294686910656423119">ବ୍ୟବହାର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାସ୍ ରିପୋର୍ଟଗୁଡ଼ିକ</translation>
 <translation id="3327226547491422998">ପରେ, ଆପଣଙ୍କ ପାଇଁ ଫର୍ମଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରିବାକୁ ଆପଣ ସେଭ କରାଯାଇଥିବା ସୂଚନାକୁ ବ୍ୟବହାର କରିବାକୁ ଚାହାଁନ୍ତି ନା ନାହିଁ, ତାହା Chrome ପଚାରିବ</translation>
 <translation id="3352986031709923790">ସର୍ଚ୍ଚ ଏରିଆର ଶୀର୍ଷ ଡାହାଣପଟ କୋଣ: ଡାହାଣପଟୁ <ph name="RIGHT" />%, ଶୀର୍ଷରୁ <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">ସାଇଟ ଏବଂ Chrome ସାରାଂଶ, ପ୍ରୁଫରିଡିଂ, କେପ୍ସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ ସିଧାସଳଖ ଚାଲୁଥିବା AIକୁ ବ୍ୟବହାର କରିପାରିବ। ଏହା Chromeରେ Geminiଠାରୁ ଅଲଗା ଅଟେ। <ph name="BEGIN_LINK" />ଅନ-ଡିଭାଇସ AI ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">କିଛି Chrome ଫିଚର ଏବଂ ଏକ୍ସଟେନସନ ସର୍ଟକଟଗୁଡ଼ିକ ସହ ଆସିଥାଏ। ଆପଣ ସେଗୁଡ଼ିକୁ ପୁଣି ଚାଲୁ କରିବାକୁ ବାଛିପାରିବେ।</translation>
 <translation id="3379938682270551431">{0,plural, =0{ବର୍ତ୍ତମାନ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}=1{1 ସେକେଣ୍ଡରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}other{# ସେକେଣ୍ଡରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
 <translation id="3380249972812870825">Chromeରେ Gemini ଖୋଲିବା ପାଇଁ <ph name="GLOBAL_HOTKEY" /> ଦବାନ୍ତୁ</translation>
@@ -350,6 +352,7 @@
 <translation id="4427306783828095590">ଉନ୍ନତ ସୁରକ୍ଷା ଫିସିଂ ଓ ମାଲୱେୟାରକୁ ବ୍ଲକ୍ କରିବାକୁ ଅନେକ କିଛି କରେ</translation>
 <translation id="4434353761996769206">ଇନଷ୍ଟଲର ତ୍ରୁଟି: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">ଏକ କୁଇକ ଓଭରଭ୍ୟୁ ପାଇବା ଏବଂ ଫଲୋ-ଅପ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ Chromeରେ Gemini ସହ ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସେୟାର କରନ୍ତୁ</translation>
+<translation id="4440999670272408191">ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇପାରିବେ। ଏକ ସାଇଟ କିମ୍ବା ଫିଚର ସେଗୁଡ଼ିକୁ ଆବଶ୍ୟକ କଲେ Chrome ସେଗୁଡ଼ିକୁ ସ୍ୱତଃ ପୁଣି ଡାଉନଲୋଡ କରିପାରେ।</translation>
 <translation id="4450664632294415862">Chrome - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chromeରେ ଅନ୍ୟ ଏକ କାର୍ଯ୍ୟ ପ୍ରକ୍ରିୟାରତ ଅଛି। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4493028449971051158">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: ଦୟାକରି ଆଡମିନିଷ୍ଟ୍ରେଟର ଭାବେ ଇନଷ୍ଟଲର ଚଲାନ୍ତୁ।</translation>
@@ -357,6 +360,7 @@
 <translation id="4501839397124711198">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ ସାଇଡ ପେନେଲରେ Google Searchକୁ ପିନ କରିପାରିବେ</translation>
 <translation id="4571503333518166079">Chrome ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍‌କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4580939929828762295">Google Password Manager ସହ ସୁରକ୍ଷିତ ରୁହନ୍ତୁ</translation>
+<translation id="4589544932092381064">Windows ଟାସ୍କବାରରେ Chrome ସହ ସର୍ଚ୍ଚ ଦେଖାନ୍ତୁ ଏବଂ କୀବୋର୍ଡ ସର୍ଟକଟକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="459622048091363950">ଥରେ Chromeକୁ ଆକ୍‌ସେସ୍ ମିଳିଗଲା ପରେ, ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ଆପଣଙ୍କୁ ଆକ୍‌ସେସ୍ ମାଗିବାକୁ ସମର୍ଥ ହେବେ।</translation>
 <translation id="4598116752460667024">ତାଲିକାରୁ ଯେ କୌଣସି ପ୍ରକ୍ରିୟାକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="4600710005438004015">Chrome ନବୀନତମ ସଂସ୍କରଣରେ ଅପ୍‌ଡେଟ୍ କରିପାରିଲା ନାହିଁ, ତେଣୁ ଆପଣ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଏବଂ ସୁରକ୍ଷା ସମସ୍ୟାର ସମାଧାନରୁ ବଞ୍ଚିତ ହେଉଛନ୍ତି।</translation>
@@ -372,6 +376,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Chromeର V8 ଇଞ୍ଜିନ ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକର ସ୍ପିଡ ବଢ଼ାଏ କିନ୍ତୁ Chromeକୁ ଆକ୍ରମଣ ପ୍ରତି ସାମାନ୍ୟ କମ ପ୍ରତିରୋଧୀ କରିଥାଏ</translation>
 <translation id="4768676935374695498">Google Lens ମାଧ୍ୟମରେ ଏହି ଭିଡିଓକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="4783580253728290203">ବନ୍ଦ ଥିବା ସମୟରେ, Chrome ଅନ-ଡିଭାଇସ AI ମଡେଲଗୁଡ଼ିକୁ କାଢ଼ି ଦିଏ ଏବଂ ସେଗୁଡ଼ିକୁ ପୁଣି ଡାଉନଲୋଡ କରିବ ନାହିଁ। କିଛି ସାଇଟ ଏବଂ Chrome ଫିଚର କାମ କରିନପାରେ।</translation>
 <translation id="479167709087336770">ଏହା Google ସନ୍ଧାନରେ ବ୍ୟବହୃତ ହେଉଥିବା ସମାନବନାନ ଯାଞ୍ଚକାରୀ ବ୍ୟବହାର କରେ। ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଯାଏ। ଆପଣ ସର୍ବଦା ସେଟିଂସ୍‌ରେ ଏହି ଆଚରଣ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="4793679854893018356">Chrome ଆପଣଙ୍କୁ କିପରି ସୁରକ୍ଷିତ ରଖେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="4803313124144656665">Chromeରେ Google Searchକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -458,6 +463,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବାରେ ଅସମର୍ଥ। ପ୍ରକ୍ସି ସର୍ଭର ପ୍ରମାଣୀକରଣ ଆବଶ୍ୟକ।</translation>
 <translation id="5709557627224531708">Chromeକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ ଭାବେ ସେଟ୍‌ କରନ୍ତୁ।</translation>
+<translation id="5715427327524421317">Chrome ଏହି AI ମଡେଲଗୁଡ଼ିକୁ ସ୍ୱତଃ ଡାଉନଲୋଡ ଏବଂ ଅପଡେଟ କରେ</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{ଏକ ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ଆପଣ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ ବୋଲି ଉନ୍ନତ ସୁରକ୍ଷା ଆବଶ୍ୟକ କରେ। ଆପଣଙ୍କର ଆଇସୋଲେଟେଡ ୱିଣ୍ଡୋ ପୁଣି ଖୋଲିବ ନାହିଁ।}other{ଏକ ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ଆପଣ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ ବୋଲି ଉନ୍ନତ ସୁରକ୍ଷା ଆବଶ୍ୟକ କରେ। ଆପଣଙ୍କର # ଆଇସୋଲେଟେଡ ୱିଣ୍ଡୋ ପୁଣି ଖୋଲିବ ନାହିଁ।}}</translation>
 <translation id="5719246646468301581">Google Chrome ଏବଂ ChromeOS ସର୍ଭିସର ଅତିରିକ୍ତ ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="5736850870166430177">ଯଦି କୌଣସି ସାଇଟ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଚୋରି କରିବାକୁ ଚେଷ୍ଟା କରେ କିମ୍ବା ଆପଣ ଏକ କ୍ଷତିକାରକ ଫାଇଲ ଡାଉନଲୋଡ କଲେ, ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ସହିତ URLଗୁଡ଼ିକୁ ମଧ୍ୟ Chrome ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଇପାରେ</translation>
@@ -550,6 +556,7 @@
 <translation id="6491330562720922580">ମୋବାଇଲ ଡିଭାଇସଗୁଡ଼ିକରେ Chrome ବ୍ରାଉଜର ଡାଉନଲୋଡ କରିବା ପାଇଁ QR କୋଡ</translation>
 <translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" /> କରିବାକୁ ଚେଷ୍ଟା କରୁଛି</translation>
 <translation id="6497147134301593682">Chrome ସ୍ୱତଃ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
+<translation id="650039555447046671">Chrome ଏହି ଡିଭାଇସରୁ AI ମଡେଲଗୁଡ଼ିକୁ କାଢ଼ି ଦେବ। କିଛି ସାଇଟ ଏବଂ Chrome ଫିଚର କାମ କରିନପାରେ।</translation>
 <translation id="6506909944137591434">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ପାଇଁ Chrome କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">ଆପଣଙ୍କ ଲୋକେସନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ସିଷ୍ଟମ ସେଟିଂସ<ph name="END_LINK" />ରେ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ</translation>
@@ -588,6 +595,7 @@
 <translation id="6877155553248388166">ସର୍ଚ୍ଚ ଏରିଆର ନିମ୍ନ ଡାହାଣପଟ କୋଣ: ଡାହାଣପଟୁ <ph name="RIGHT" />%, ନିମ୍ନରୁ <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Chromeରେ ସର୍ଚ୍ଚ ଖୋଲନ୍ତୁ</translation>
 <translation id="6881299373831449287">Chrome ଅପଡେଟ୍ କରାଯାଉଛି</translation>
+<translation id="6881997500528805781">ଡିଭାଇସ ଷ୍ଟୋରେଜ ବ୍ୟବହାର କରେ। Chrome 45 ଦିନ ପରେ କିମ୍ବା ଷ୍ଟୋରେଜ କମ ଥିବା ସମୟରେ ଅବ୍ୟବହୃତ AI ମଡେଲଗୁଡ଼ିକୁ କାଢ଼ି ଦିଏ</translation>
 <translation id="6885412569789873916">Chrome ବିଟା ଆପ୍ସ</translation>
 <translation id="6893363893008038481">Chromeରୁ ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>

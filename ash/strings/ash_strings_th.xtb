@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">ข้อมูลของสถานะไม่มีการใช้งาน</translation>
 <translation id="2058456167109518507">อุปกรณ์ที่ตรวจพบ</translation>
 <translation id="2064048859448024834">การแสดงตัวอย่างจากกล้องถ่ายรูปเปิดอยู่</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ลิงก์}other{# ลิงก์}}</translation>
 <translation id="2067220651560163985">แสดงอุณหภูมิในหน่วยเซลเซียส</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> เสร็จสิ้นการพิมพ์จาก <ph name="PRINTER_NAME" /> แล้ว</translation>
 <translation id="2075520525463668108">เปิด/ปิด<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
