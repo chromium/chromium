@@ -90,7 +90,7 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   protected getSubheader_(): string {
-    return !this.shouldShowWaa_ ?
+    return !this.shouldShowWaa_ && !this.shouldShowAiSettings_ ?
         this.i18n('privacyGuideCompletionCardSubHeaderNoLinks') :
         this.i18n('privacyGuideCompletionCardSubHeader');
   }

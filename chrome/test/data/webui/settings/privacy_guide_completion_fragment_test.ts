@@ -144,4 +144,79 @@ suite('CompletionFragment', function() {
 
     assertFalse(isChildVisible(fragment, '#aiRow'));
   });
+
+  test('subheaderReflectsVisibleLinkRows', async function() {
+    const subheaderWithLinks =
+        loadTimeData.getString('privacyGuideCompletionCardSubHeader');
+    const subheaderNoLinks =
+        loadTimeData.getString('privacyGuideCompletionCardSubHeaderNoLinks');
+
+    function getSubheaderText(): string {
+      const subheader = fragment.shadowRoot.querySelector<HTMLElement>(
+          '.welcome-completion-header .cr-secondary-text');
+      assertTrue(!!subheader);
+      return subheader.textContent.trim();
+    }
+
+    interface LinkRowDimension {
+      selector: string;
+      beforeCreate?: (visible: boolean) => void;
+      afterCreate?: (visible: boolean) => Promise<void>;
+    }
+
+    interface DimensionState {
+      dimension: LinkRowDimension;
+      visible: boolean;
+    }
+
+    const dimensions: LinkRowDimension[] = [
+      {
+        selector: '#aiRow',
+        beforeCreate: (visible: boolean) => {
+          loadTimeData.overrideValues({showAiPage: visible});
+        },
+      },
+      {
+        selector: '#waaRow',
+        afterCreate: (visible: boolean) => setSignInState(visible),
+      },
+    ];
+
+    let permutations: DimensionState[][] = [[]];
+    for (const dimension of dimensions) {
+      const nextPermutations: DimensionState[][] = [];
+      for (const permutation of permutations) {
+        for (const visible of [true, false]) {
+          nextPermutations.push([...permutation, {dimension, visible}]);
+        }
+      }
+      permutations = nextPermutations;
+    }
+
+    for (const permutation of permutations) {
+      for (const {dimension, visible} of permutation) {
+        if (dimension.beforeCreate) {
+          dimension.beforeCreate(visible);
+        }
+      }
+      await createPage();
+      for (const {dimension, visible} of permutation) {
+        if (dimension.afterCreate) {
+          await dimension.afterCreate(visible);
+        }
+      }
+
+      for (const {dimension, visible} of permutation) {
+        assertEquals(visible, isChildVisible(fragment, dimension.selector));
+      }
+      const anyLinkRowVisible =
+          permutation.some((state: DimensionState) => state.visible);
+      assertEquals(
+          anyLinkRowVisible ? subheaderWithLinks : subheaderNoLinks,
+          getSubheaderText());
+    }
+
+    // Restore default suiteSetup value for subsequent tests.
+    loadTimeData.overrideValues({showAiPage: true});
+  });
 });
