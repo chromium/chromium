@@ -9,7 +9,6 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/ui/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -163,9 +162,6 @@ UILabel* CreateSubtitleLabel() {
   // Relying party identifier of the passkey request.
   NSString* _rpId;
 
-  // The passkey creation handler for user actions.
-  __weak id<IOSPasskeyClientCommands> _handler;
-
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
 }
@@ -174,14 +170,16 @@ UILabel* CreateSubtitleLabel() {
 
 @implementation PasskeyCreationBottomSheetViewController
 
-- (instancetype)initWithHandler:(id<IOSPasskeyClientCommands>)handler
-                  faviconLoader:(FaviconLoader*)faviconLoader {
+- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader {
   self = [super initWithConfiguration:SetUpButtons()];
   if (self) {
-    _handler = handler;
     _faviconLoader = faviconLoader;
   }
   return self;
+}
+
+- (void)disconnect {
+  _faviconLoader = nullptr;
 }
 
 - (void)viewDidLoad {
@@ -206,13 +204,6 @@ UILabel* CreateSubtitleLabel() {
   self.underTitleView = [self createUnderTitleView];
 
   [super viewDidLoad];
-}
-
-- (void)didMoveToParentViewController:(UIViewController*)parent {
-  [super didMoveToParentViewController:parent];
-  if (!parent) {
-    [_handler dismissPasskeyCreation];
-  }
 }
 
 #pragma mark - PasskeyCreationBottomSheetConsumer

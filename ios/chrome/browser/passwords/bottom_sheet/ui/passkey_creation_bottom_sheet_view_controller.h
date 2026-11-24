@@ -9,16 +9,16 @@
 #import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
 
 class FaviconLoader;
-@protocol IOSPasskeyClientCommands;
 
 // View controller for the passkey creation bottom sheet.
 @interface PasskeyCreationBottomSheetViewController
     : BottomSheetViewController <PasskeyCreationBottomSheetConsumer>
 
-// Initializes the view controller with the `handler` for user actions and
-// `faviconLoader` for loading favicons.
-- (instancetype)initWithHandler:(id<IOSPasskeyClientCommands>)handler
-                  faviconLoader:(FaviconLoader*)faviconLoader;
+// Initializes the view controller with `faviconLoader` for loading favicons.
+- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader;
+
+// Disconnects the view controller from C++ dependencies.
+- (void)disconnect;
 
 @end
 

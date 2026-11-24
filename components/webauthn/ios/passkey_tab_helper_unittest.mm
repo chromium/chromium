@@ -15,6 +15,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_view_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -2443,6 +2444,41 @@ TEST_F(PasskeyTabHelperTest,
   EXPECT_FALSE(passkey_tab_helper()
                    ->ShouldPerformUserVerification(kFakeRequestId)
                    .has_value());
+}
+
+// Tests that `HandleCancelRequestEvent()` removes pending request state before
+// notifying `IOSPasskeyClient::CancelPasskeyRequest()`, so reentrant
+// `RejectPendingRequest()` calls from synchronous UI dismissal are no-ops.
+TEST_F(PasskeyTabHelperTest,
+       HandleCancelRequestEventErasesRequestBeforeNotifyingClient) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  RegistrationRequestParams params = BuildRegistrationRequestParams({});
+  std::string request_id = params.RequestId();
+  passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
+  ASSERT_TRUE(passkey_tab_helper()
+                  ->ShouldPerformUserVerification(request_id)
+                  .has_value());
+
+  bool cancel_callback_called = false;
+  client_->SetCancelPasskeyRequestCallback(base::BindLambdaForTesting(
+      [this, &cancel_callback_called,
+       request_id](IOSPasskeyClient::RequestInfo request_info) {
+        cancel_callback_called = true;
+        EXPECT_FALSE(passkey_tab_helper()
+                         ->ShouldPerformUserVerification(request_id)
+                         .has_value());
+        // Simulate synchronous coordinator `-stop` calling
+        // `RejectPendingRequest()` inside `CancelPasskeyRequest()`.
+        passkey_tab_helper()->RejectPendingRequest(request_info.request_id);
+      }));
+
+  passkey_tab_helper()->HandleCancelRequestEvent(
+      {web::kMainFakeFrameId, request_id});
+  client_->SetCancelPasskeyRequestCallback({});
+
+  EXPECT_TRUE(cancel_callback_called);
+  EXPECT_TRUE(GetLastJavaScriptCall().empty());
 }
 
 // Tests that device authorization keys aren't fetched for passkeys in the

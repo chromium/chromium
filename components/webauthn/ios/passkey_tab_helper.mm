@@ -201,7 +201,6 @@ void PasskeyTabHelper::HandleCancelRequestEvent(
   }
 
   const std::string request_id = request_info.request_id;
-  client_->CancelPasskeyRequest(std::move(request_info));
 
   loaders_.erase(request_id);
   // `PendingRequest` is not assignable due to const members in
@@ -236,6 +235,11 @@ void PasskeyTabHelper::HandleCancelRequestEvent(
   ClearAssertionDelegateCredentials(request_id);
   assertion_requests_.erase(request_id);
   registration_requests_.erase(request_id);
+
+  // Notify the client only after removing internal request state so that
+  // synchronous dismissal (which may call `RejectPendingRequest()`) sees the
+  // request as already cancelled.
+  client_->CancelPasskeyRequest(std::move(request_info));
 }
 
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {

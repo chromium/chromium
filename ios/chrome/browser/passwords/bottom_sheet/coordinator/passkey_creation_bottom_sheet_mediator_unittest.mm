@@ -276,3 +276,239 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthNotPossible) {
   EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"deferToRenderer"),
             std::u16string::npos);
 }
+
+// Tests that switching to another WebState cancels the pending passkey request
+// on the originating WebState and ends presentation.
+TEST_F(PasskeyCreationBottomSheetMediatorTest,
+       WebStateChangeCancelsPendingRequest) {
+  webauthn::PasskeyTabHelper* helper =
+      webauthn::PasskeyTabHelper::FromWebState(web_state_);
+
+  webauthn::RegistrationRequestParams params =
+      webauthn::BuildRegistrationRequestParams({});
+  std::string request_id = params.RequestId();
+
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:webauthn::IOSPasskeyClient::RequestInfo(
+                               web::kMainFakeFrameId, request_id)
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  helper->HandleCreateRequestedEvent(std::move(params));
+  ASSERT_TRUE(helper->ShouldPerformUserVerification(request_id).has_value());
+
+  [[mock_delegate_ expect] endPresentation];
+
+  // Insert and activate a second WebState to trigger an active WebState change.
+  auto second_web_state = std::make_unique<web::FakeWebState>();
+  second_web_state->SetBrowserState(&fake_browser_state_);
+  web_state_list_.InsertWebState(
+      std::move(second_web_state),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+
+  [(OCMockObject*)mock_delegate_ verify];
+  EXPECT_FALSE(helper->ShouldPerformUserVerification(request_id).has_value());
+
+  web::WebFramesManager* frames_manager =
+      webauthn::PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_);
+  web::FakeWebFrame* main_frame =
+      static_cast<web::FakeWebFrame*>(frames_manager->GetMainWebFrame());
+  EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"rejectPasskeyRequest"),
+            std::u16string::npos);
+}
+
+// Tests that cancelling passkey creation while reauthentication is in flight
+// consumes the request and causes a subsequent reauthentication success to be
+// ignored.
+TEST_F(PasskeyCreationBottomSheetMediatorTest,
+       CancelDuringInFlightReauthIgnoresReauthSuccess) {
+  webauthn::PasskeyTabHelper* helper =
+      webauthn::PasskeyTabHelper::FromWebState(web_state_);
+
+  webauthn::RegistrationRequestParams params =
+      webauthn::BuildRegistrationRequestParams({});
+  webauthn::IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                                       params.RequestId());
+
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:request_info
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  helper->HandleCreateRequestedEvent(std::move(params));
+  OCMStub([mock_reauth_module_ canAttemptReauthWithBiometrics]).andReturn(YES);
+
+  __block void (^completion_handler)(ReauthenticationResult);
+  OCMExpect([mock_reauth_module_
+      attemptReauthWithLocalizedReason:[OCMArg any]
+                  canReusePreviousAuth:NO
+                               handler:[OCMArg checkWithBlock:^BOOL(id obj) {
+                                 completion_handler = [obj copy];
+                                 return YES;
+                               }]]);
+
+  [mediator_ createPasskey];
+  [(OCMockObject*)mock_reauth_module_ verify];
+  ASSERT_TRUE(completion_handler != nil);
+  EXPECT_TRUE([mediator_ hasPendingRequest:request_info]);
+
+  // Cancel while reauthentication is still pending.
+  [mediator_ cancelPasskeyCreation];
+  EXPECT_FALSE([mediator_ hasPendingRequest:request_info]);
+
+  web::WebFramesManager* frames_manager =
+      webauthn::PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_);
+  web::FakeWebFrame* main_frame =
+      static_cast<web::FakeWebFrame*>(frames_manager->GetMainWebFrame());
+  EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"rejectPasskeyRequest"),
+            std::u16string::npos);
+
+  // Completing reauthentication afterward should be a no-op.
+  [[mock_delegate_ reject] dismissPasskeyCreation];
+  completion_handler(ReauthenticationResult::kSuccess);
+
+  [(OCMockObject*)mock_delegate_ verify];
+  EXPECT_FALSE(fake_client_->DidFetchTrustedVaultKeys());
+}
+
+// Tests that calling `-createPasskey` while reauthentication is already in
+// flight does not start a second reauthentication or consume the request twice.
+TEST_F(PasskeyCreationBottomSheetMediatorTest,
+       DuplicateCreatePasskeyDuringReauthIsIgnored) {
+  webauthn::PasskeyTabHelper* helper =
+      webauthn::PasskeyTabHelper::FromWebState(web_state_);
+
+  webauthn::RegistrationRequestParams params =
+      webauthn::BuildRegistrationRequestParams({});
+  webauthn::IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                                       params.RequestId());
+
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:request_info
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  helper->HandleCreateRequestedEvent(std::move(params));
+  OCMStub([mock_reauth_module_ canAttemptReauthWithBiometrics]).andReturn(YES);
+
+  __block int reauth_call_count = 0;
+  __block void (^completion_handler)(ReauthenticationResult);
+  OCMStub([mock_reauth_module_
+      attemptReauthWithLocalizedReason:[OCMArg any]
+                  canReusePreviousAuth:NO
+                               handler:[OCMArg checkWithBlock:^BOOL(id obj) {
+                                 ++reauth_call_count;
+                                 completion_handler = [obj copy];
+                                 return YES;
+                               }]]);
+
+  [mediator_ createPasskey];
+  [mediator_ createPasskey];
+  EXPECT_EQ(reauth_call_count, 1);
+  ASSERT_TRUE(completion_handler != nil);
+
+  [[mock_delegate_ expect] dismissPasskeyCreation];
+  completion_handler(ReauthenticationResult::kSuccess);
+
+  [(OCMockObject*)mock_delegate_ verify];
+  EXPECT_TRUE(fake_client_->DidFetchTrustedVaultKeys());
+  EXPECT_FALSE([mediator_ hasPendingRequest:request_info]);
+}
+
+// Tests that once `-deferPasskeyCreationToRenderer` consumes the request,
+// subsequent `-cancelPasskeyCreation` and `-deferPasskeyCreationToRenderer`
+// calls are no-ops.
+TEST_F(PasskeyCreationBottomSheetMediatorTest,
+       DeferThenCancelDoesNotRejectRequest) {
+  webauthn::PasskeyTabHelper* helper =
+      webauthn::PasskeyTabHelper::FromWebState(web_state_);
+
+  webauthn::RegistrationRequestParams params =
+      webauthn::BuildRegistrationRequestParams({});
+  webauthn::IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                                       params.RequestId());
+
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:request_info
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  helper->HandleCreateRequestedEvent(std::move(params));
+  ASSERT_TRUE([mediator_ hasPendingRequest:request_info]);
+
+  [mediator_ deferPasskeyCreationToRenderer];
+  EXPECT_FALSE([mediator_ hasPendingRequest:request_info]);
+
+  [mediator_ cancelPasskeyCreation];
+  [mediator_ deferPasskeyCreationToRenderer];
+
+  web::WebFramesManager* frames_manager =
+      webauthn::PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_);
+  web::FakeWebFrame* main_frame =
+      static_cast<web::FakeWebFrame*>(frames_manager->GetMainWebFrame());
+  EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"deferToRenderer"),
+            std::u16string::npos);
+  EXPECT_EQ(main_frame->GetLastJavaScriptCall().find(u"rejectPasskeyRequest"),
+            std::u16string::npos);
+}
+
+// Tests that `-disconnect` clears the pending request state.
+TEST_F(PasskeyCreationBottomSheetMediatorTest, DisconnectClearsPendingRequest) {
+  webauthn::RegistrationRequestParams params =
+      webauthn::BuildRegistrationRequestParams({});
+  webauthn::IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                                       params.RequestId());
+
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:request_info
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  ASSERT_TRUE([mediator_ hasPendingRequest:request_info]);
+  [mediator_ disconnect];
+  EXPECT_FALSE([mediator_ hasPendingRequest:request_info]);
+}
+
+// Tests that `-createPasskey` clears the pending request and dismisses the
+// bottom sheet when `webauthn::PasskeyTabHelper` is unavailable.
+TEST_F(PasskeyCreationBottomSheetMediatorTest,
+       CreatePasskeyWithoutPasskeyTabHelperDismisses) {
+  // Insert and activate a `web::WebState` without a
+  // `webauthn::PasskeyTabHelper`.
+  auto web_state_without_helper = std::make_unique<web::FakeWebState>();
+  web_state_without_helper->SetBrowserState(&fake_browser_state_);
+  web_state_list_.InsertWebState(
+      std::move(web_state_without_helper),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+
+  webauthn::RegistrationRequestParams params =
+      webauthn::BuildRegistrationRequestParams({});
+  webauthn::IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                                       params.RequestId());
+
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:request_info
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  [[mock_delegate_ expect] dismissPasskeyCreation];
+  [mediator_ createPasskey];
+
+  [(OCMockObject*)mock_delegate_ verify];
+  EXPECT_FALSE([mediator_ hasPendingRequest:request_info]);
+}

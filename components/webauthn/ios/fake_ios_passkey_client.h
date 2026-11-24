@@ -9,6 +9,7 @@
 #import <memory>
 #import <optional>
 
+#import "base/functional/callback.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 
@@ -16,6 +17,9 @@ namespace webauthn {
 
 class FakeIOSPasskeyClient : public IOSPasskeyClient {
  public:
+  using CancelPasskeyRequestCallback =
+      base::RepeatingCallback<void(RequestInfo)>;
+
   explicit FakeIOSPasskeyClient();
   ~FakeIOSPasskeyClient() override;
 
@@ -56,9 +60,11 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   bool DidShowInterstitial() const;
   bool DidOnPasskeyCreated() const;
   void SetInterstitialProceeds(bool proceeds);
+  void SetCancelPasskeyRequestCallback(CancelPasskeyRequestCallback callback);
   PasskeyUserVerificationStatus last_user_verification_status() const;
 
  private:
+  CancelPasskeyRequestCallback cancel_passkey_request_callback_;
   bool show_creation_bottom_sheet_called_ = false;
   size_t show_passkey_creation_infobar_count_ = 0;
   std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> last_infobar_passkey_;

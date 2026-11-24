@@ -117,7 +117,16 @@ void FakeIOSPasskeyClient::SetInterstitialProceeds(bool proceeds) {
   interstitial_proceeds_ = proceeds;
 }
 
-void FakeIOSPasskeyClient::CancelPasskeyRequest(RequestInfo request_info) {}
+void FakeIOSPasskeyClient::CancelPasskeyRequest(RequestInfo request_info) {
+  if (cancel_passkey_request_callback_) {
+    cancel_passkey_request_callback_.Run(std::move(request_info));
+  }
+}
+
+void FakeIOSPasskeyClient::SetCancelPasskeyRequestCallback(
+    CancelPasskeyRequestCallback callback) {
+  cancel_passkey_request_callback_ = std::move(callback);
+}
 
 bool FakeIOSPasskeyClient::IsGpmPasskeySavingEnabled() const {
   return gpm_passkey_saving_enabled_;

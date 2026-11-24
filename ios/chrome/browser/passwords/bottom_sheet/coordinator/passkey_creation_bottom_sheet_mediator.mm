@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
@@ -28,6 +29,11 @@
   // The WebStateList observed by this mediator and the observer bridge.
   raw_ptr<WebStateList> _webStateList;
 
+  // The WebState associated with the pending passkey request. Stored as a weak
+  // pointer so cancellation still targets the originating WebState even after
+  // the active WebState changes.
+  base::WeakPtr<web::WebState> _webState;
+
   // Bridge for observing WebStateList events.
   std::optional<WebStateListObserverBridge> _webStateListObserver;
   std::optional<
@@ -42,6 +48,9 @@
 
   // Module containing the reauthentication mechanism.
   id<ReauthenticationProtocol> _reauthModule;
+
+  // Whether a reauthentication request is currently in flight.
+  BOOL _reauthInProgress;
 }
 
 - (instancetype)
@@ -54,6 +63,10 @@
   self = [super init];
   if (self) {
     _webStateList = webStateList;
+    web::WebState* activeWebState = _webStateList->GetActiveWebState();
+    if (activeWebState) {
+      _webState = activeWebState->GetWeakPtr();
+    }
 
     // Create and register the observers.
     _webStateListObserver.emplace(self);
@@ -72,11 +85,20 @@
   _webStateListObservation.reset();
   _webStateListObserver.reset();
   _webStateList = nullptr;
+  _webState.reset();
+  _requestInfo.reset();
+  _reauthInProgress = NO;
 }
 
 - (void)createPasskey {
+  if (_reauthInProgress) {
+    return;
+  }
+
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
   if (!passkeyTabHelper || !_requestInfo.has_value()) {
+    _requestInfo.reset();
+    [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
 
@@ -87,7 +109,7 @@
     // TODO(crbug.com/479249845): This should not happen. The correct behavior
     // is to, optionally, report an error to the user, and cancel the passkey
     // creation. We will discuss to see if this is the best approach.
-    [self cancelPasskeyCreation];
+    _requestInfo.reset();
     [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
@@ -99,6 +121,7 @@
   }
 
   if ([_reauthModule canAttemptReauth]) {
+    _reauthInProgress = YES;
     __weak __typeof(self) weakSelf = self;
     [_reauthModule
         attemptReauthWithLocalizedReason:
@@ -117,6 +140,11 @@
 }
 
 - (void)handleReauthResult:(ReauthenticationResult)result {
+  _reauthInProgress = NO;
+  if (!_requestInfo.has_value()) {
+    return;
+  }
+
   if (result != ReauthenticationResult::kFailure) {
     [self performPasskeyCreationWithUserVerification:
               result == ReauthenticationResult::kSuccess];
@@ -132,32 +160,34 @@
 }
 
 - (void)performPasskeyCreationWithUserVerification:(BOOL)didCompleteUV {
+  std::optional<std::string> requestId = [self takePendingRequestId];
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper || !_requestInfo.has_value()) {
+  if (!passkeyTabHelper || !requestId.has_value()) {
     [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
-  passkeyTabHelper->StartPasskeyCreation(_requestInfo->request_id,
-                                         didCompleteUV);
+  passkeyTabHelper->StartPasskeyCreation(std::move(*requestId), didCompleteUV);
   [_mediatorDelegate dismissPasskeyCreation];
 }
 
 - (void)deferPasskeyCreationToRenderer {
+  std::optional<std::string> requestId = [self takePendingRequestId];
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper || !_requestInfo.has_value()) {
+  if (!passkeyTabHelper || !requestId.has_value()) {
     return;
   }
 
-  passkeyTabHelper->DeferPendingRequestToRenderer(_requestInfo->request_id);
+  passkeyTabHelper->DeferPendingRequestToRenderer(*requestId);
 }
 
 - (void)cancelPasskeyCreation {
+  std::optional<std::string> requestId = [self takePendingRequestId];
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper || !_requestInfo.has_value()) {
+  if (!passkeyTabHelper || !requestId.has_value()) {
     return;
   }
 
-  passkeyTabHelper->RejectPendingRequest(_requestInfo->request_id);
+  passkeyTabHelper->RejectPendingRequest(*requestId);
 }
 
 - (BOOL)hasPendingRequest:
@@ -168,10 +198,15 @@
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<PasskeyCreationBottomSheetConsumer>)consumer {
+  if (!consumer) {
+    _consumer = nil;
+    return;
+  }
+
   NSString* rpId = [self rpId];
   if (!rpId) {
-    // The RP ID should not be empty, dismiss the flow.
-    [_mediatorDelegate dismissPasskeyCreation];
+    // The RP ID should not be empty; leave `_consumer` unset so the coordinator
+    // dismisses without presenting.
     return;
   }
 
@@ -236,6 +271,10 @@
 
 // Closes the currently open bottom sheet when the web state changes.
 - (void)onWebStateChanged {
+  // Reject any pending passkey creation request on the originating WebState
+  // before disconnecting so the page's promise does not hang until timeout.
+  [self cancelPasskeyCreation];
+
   // Disconnect so anything that relies on the webstate behind the mediator can
   // avoid using the mediator's objects once the webstate is destroyed.
   [self disconnect];
@@ -245,19 +284,26 @@
   [_mediatorDelegate endPresentation];
 }
 
-// Returns the webauthn::PasskeyTabHelper for the active webstate or nil if it
-// can't be retrieved.
+// Consumes and returns the pending request ID, or `std::nullopt` if the
+// request has already been handled or cleared.
+- (std::optional<std::string>)takePendingRequestId {
+  if (!_requestInfo.has_value()) {
+    return std::nullopt;
+  }
+
+  std::string requestId = std::move(_requestInfo->request_id);
+  _requestInfo.reset();
+  return requestId;
+}
+
+// Returns the `webauthn::PasskeyTabHelper` for the originating webstate or
+// nullptr if it can't be retrieved.
 - (webauthn::PasskeyTabHelper*)passkeyTabHelper {
-  if (!_webStateList) {
-    return nil;
+  if (!_webState) {
+    return nullptr;
   }
 
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  if (!activeWebState) {
-    return nil;
-  }
-
-  return webauthn::PasskeyTabHelper::FromWebState(activeWebState);
+  return webauthn::PasskeyTabHelper::FromWebState(_webState.get());
 }
 
 @end

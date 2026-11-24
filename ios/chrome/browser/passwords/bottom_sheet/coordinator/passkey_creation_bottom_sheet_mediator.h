@@ -41,6 +41,9 @@ class WebStateList;
 // potentially using a different credential provider.
 - (void)deferPasskeyCreationToRenderer;
 
+// Rejects the pending passkey creation request (e.g. on user dismissal).
+- (void)cancelPasskeyCreation;
+
 // Returns whether this mediator is currently fulfilling the given request.
 - (BOOL)hasPendingRequest:
     (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo;
