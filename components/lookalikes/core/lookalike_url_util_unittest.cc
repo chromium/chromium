@@ -4,9 +4,6 @@
 
 #include "components/lookalikes/core/lookalike_url_util.h"
 
-#include <array>
-#include <string_view>
-
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,13 +30,13 @@ using version_info::Channel;
 namespace {
 // Tests lists for Combo Squatting. Some of these entries are intended to test
 // for various edge cases and aren't realistic for production.
-constexpr std::array<std::string_view, 2> kBrandNames[] = {
+constexpr ComboSquattingParams::BrandAndSkeleton kBrandNames[] = {
     {"google", "google"},
     {"youtube", "youtube"},
     {"sample", "sarnple"},
     {"example", "exarnple"},
     {"vices", "vices"}};
-constexpr std::string_view kPopularKeywords[] = {
+constexpr ComboSquattingParams::PopularKeyword kPopularKeywords[] = {
     "online", "login", "account", "arnple", "services", "test", "security"};
 const ComboSquattingParams kComboSquattingParams{kBrandNames, kPopularKeywords};
 

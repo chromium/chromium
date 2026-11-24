@@ -5,7 +5,6 @@
 #include "components/lookalikes/core/lookalike_url_util.h"
 
 #include <algorithm>
-#include <array>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -110,7 +109,7 @@ const int kDefaultLaunchPercentageOnBeta = 50;
 // (components/url_formatter/tools/format_url.cc)
 // TODO(crbug.com/40855941): Generate skeletons of hard coded brand names in
 // Chrome initialization and remove manual adding of skeletons to this list.
-constexpr std::array<std::string_view, 2> kBrandNamesForCSQ[] = {
+constexpr ComboSquattingParams::BrandAndSkeleton kBrandNamesForCSQ[] = {
     {"adobe", "adobe"},
     {"airbnb", "airbnb"},
     {"alibaba", "alibaba"},
@@ -168,10 +167,12 @@ constexpr std::array<std::string_view, 2> kBrandNamesForCSQ[] = {
 // used to generate the matched domain, and original keywords are not needed for
 // that process. If you are adding a keyword here, you can generate its skeleton
 // using the format_url binary (components/url_formatter/tools/format_url.cc)
-constexpr std::string_view kSkeletonsOfPopularKeywordsForCSQ[] = {
-    // Security
-    "account",  "activate", "adrnin",   "coin",   "crypto",  "login", "logout",
-    "password", "secure",   "security", "signin", "signout", "wallet"};
+constexpr ComboSquattingParams::PopularKeyword
+    kSkeletonsOfPopularKeywordsForCSQ[] = {
+        // Security
+        "account", "activate", "adrnin",   "coin",   "crypto",
+        "login",   "logout",   "password", "secure", "security",
+        "signin",  "signout",  "wallet"};
 
 // Minimum length of brand to be checked for Combo Squatting.
 const size_t kMinBrandNameLengthForComboSquatting = 4;
@@ -708,7 +709,8 @@ bool IsComboSquatting(
         continue;
       }
 
-      for (auto keyword : combo_squatting_params.popular_keywords) {
+      for (const auto& entry : combo_squatting_params.popular_keywords) {
+        std::string_view keyword(entry);
         size_t keyword_pos = skeleton.find(keyword);
         if (keyword_pos == std::string::npos) {
           // Keyword not found, ignore.

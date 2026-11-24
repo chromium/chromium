@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_
 #define COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_
 
-#include <array>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -146,14 +144,22 @@ struct TopBucketDomainsParams {
 };
 
 struct ComboSquattingParams {
-  // An array of brand names (such as "google", "youtube") and their skeletons
-  // (in pairs). The first item in each pair is the brand name and the second
-  // item is its skeleton. Brand names should be usable in domain names (i.e.
-  // lower case, no punctuation except for - etc.)
-  base::raw_span<const std::array<std::string_view, 2>> brand_names;
+  // Inline fixed-size arrays keep static tables in .rodata with no dynamic
+  // relocations; all entries must be NUL-terminated.
+  struct BrandAndSkeleton {
+    char brand_name[15];
+    char skeleton[15];
+  };
+
+  using PopularKeyword = char[9];
+
+  // Brand names (such as "google", "youtube") and their skeletons. Brand names
+  // should be usable in domain names (i.e. lower case, no punctuation except
+  // for - etc.).
+  base::raw_span<const BrandAndSkeleton> brand_names;
 
   // List of popular keywords such as "login", "online".
-  base::raw_span<const std::string_view> popular_keywords;
+  base::raw_span<const PopularKeyword> popular_keywords;
 
   // Needed to provide a non-trivial destructor so NoDestructor can be used.
   ~ComboSquattingParams() {}
