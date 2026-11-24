@@ -4,9 +4,12 @@
 
 #include "base/location.h"
 
+#include <stddef.h>
+
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -53,6 +56,14 @@ constexpr bool StrEndsWith(std::string_view name,
 
 static_assert(StrEndsWith(__FILE__, kStrippedPrefixLength, kThisFilePath),
               "The file name does not match the expected prefix format.");
+
+// The layout of `RustLocation` must match `Location` in base/location.rs, which
+// checks the same things.
+static_assert(sizeof(RustLocation) == 3 * sizeof(uintptr_t));
+static_assert(alignof(RustLocation) == alignof(uintptr_t));
+static_assert(offsetof(RustLocation, file_name) == 0);
+static_assert(offsetof(RustLocation, line_number) == sizeof(uintptr_t));
+static_assert(offsetof(RustLocation, program_counter) == 2 * sizeof(uintptr_t));
 
 }  // namespace
 
@@ -115,6 +126,15 @@ NOINLINE Location Location::CurrentWithoutFunctionName(const char* file_name,
                                                        int line_number) {
   return Location(nullptr, UNSAFE_TODO(file_name + kStrippedPrefixLength),
                   line_number, reinterpret_cast<uintptr_t>(RETURN_ADDRESS()));
+}
+
+// static
+Location Location::CreateForRust(const RustLocation& location) {
+  return Location(nullptr, location.file_name,
+                  // Rust line numbers are u32, but C++ uses int; use
+                  // checked_cast accordingly
+                  checked_cast<int>(location.line_number),
+                  location.program_counter);
 }
 
 //------------------------------------------------------------------------------

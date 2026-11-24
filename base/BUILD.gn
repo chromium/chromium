@@ -2718,6 +2718,7 @@ group("base_rust") {
     ":feature",
     ":file_path",
     ":histogram",
+    ":location",
     ":run_loop",
     ":sequenced",
     ":sequenced_task_runner",
@@ -2874,6 +2875,14 @@ rust_static_library("unguessable_token") {
   ]
 }
 
+rust_static_library("location") {
+  sources = [ "location.rs" ]
+  crate_root = "location.rs"
+  cxx_bindings = [ "location.rs" ]
+  allow_unsafe = true
+  deps = [ "//base" ]
+}
+
 rust_static_library("histogram") {
   sources = [ "metrics/histogram.rs" ]
   crate_root = "metrics/histogram.rs"
@@ -2988,6 +2997,7 @@ rust_static_library("base_rust_unittests") {
     "base_rust_unittests.rs",
     "command_line_unittest.rs",
     "files/file_path_unittest.rs",
+    "location_unittest.rs",
     "metrics/histogram_unittest.rs",
     "task/sequenced_task_runner_unittest.rs",
     "task/thread_lock_unittest.rs",
@@ -2997,6 +3007,7 @@ rust_static_library("base_rust_unittests") {
     ":command_line",
     ":file_path",
     ":histogram",
+    ":location",
     ":scoped_refptr",
     ":sequenced",
     ":sequenced_task_runner",

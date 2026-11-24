@@ -16,6 +16,20 @@
 
 namespace base {
 
+// A call site in Rust code, as captured by `from_here!()` or
+// `Location::current()` in //base/location.rs.
+// Rust can then pass it to C++ as needed, and C++ converts it with
+// `Location::CreateForRust()`.
+//
+// The layout is identical on each sides & checked with static assertions.
+struct RustLocation {
+  // A NUL-terminated string with static storage duration, relative to the
+  // source root (the Rust side has already stripped the build folder prefix).
+  const char* file_name;
+  uint32_t line_number;
+  uintptr_t program_counter;
+};
+
 // Location provides basic info where of an object was constructed, or was
 // significantly brought to life.
 class BASE_EXPORT Location {
@@ -89,6 +103,15 @@ class BASE_EXPORT Location {
   static Location CurrentWithoutFunctionName(
       const char* file_name = __builtin_FILE(),
       int line_number = __builtin_LINE());
+
+  // Converts a Rust `Location` (//base/location.rs) to a `Location`.
+  //
+  // Rust code can't use `Current()`, so it captures the relevant Location
+  // information and passes it in here (see `RustLocation`).
+  //
+  // Rust has no equivalent of `__builtin_FUNCTION()`, so the function name is
+  // null, as with `CurrentWithoutFunctionName()`.
+  static Location CreateForRust(const RustLocation& location);
 
  private:
   // Only initializes the file name and program counter, the source information

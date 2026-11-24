@@ -16,5 +16,8 @@ mod file_path_unittest;
 #[path = "command_line_unittest.rs"]
 mod command_line_unittest;
 
+#[path = "location_unittest.rs"]
+mod location_unittest;
+
 #[path = "metrics/histogram_unittest.rs"]
 mod histogram_unittest;

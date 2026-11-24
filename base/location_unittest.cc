@@ -31,6 +31,18 @@ TEST(LocationTest, CurrentYieldsCorrectValue) {
   EXPECT_STREQ("TestBody", here.function_name());
 }
 
+TEST(LocationTest, CreateForRust) {
+  Location location = Location::CreateForRust({
+      .file_name = "base/location_unittest.rs",
+      .line_number = 42,
+      .program_counter = 0x1234,
+  });
+  EXPECT_EQ(location.function_name(), nullptr);
+  EXPECT_STREQ(location.file_name(), "base/location_unittest.rs");
+  EXPECT_EQ(location.line_number(), 42);
+  EXPECT_EQ(location.program_counter(), 0x1234u);
+}
+
 TEST(LocationTest, TracingSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(Location::CreateForTesting(
                 "func", "file", 42, WhereAmI().program_counter())),
