@@ -1,9 +1,8 @@
-Tests that Debugger.getGeneratorObjectDetails command returns correct result.
+Tests that Runtime.getProperties returns generator object details.
 
-
-Running: testiterNotStarted
+Running test: testIterNotStarted
 iterNotStarted: type = object, subtype = generator
-lineNumber = 22
+lineNumber = 8
 columnNumber = 19
 script is valid: yes
 [[GeneratorState]] = suspended
@@ -15,9 +14,9 @@ script is valid: yes
       }
 [[GeneratorReceiver]] = Window
 
-Running: testiterSuspended
+Running test: testIterSuspended
 iterSuspended: type = object, subtype = generator
-lineNumber = 24
+lineNumber = 10
 columnNumber = 10
 script is valid: yes
 [[GeneratorState]] = suspended
@@ -29,9 +28,9 @@ script is valid: yes
       }
 [[GeneratorReceiver]] = Window
 
-Running: testiterClosed
+Running test: testIterClosed
 iterClosed: type = object, subtype = generator
-lineNumber = 22
+lineNumber = 8
 columnNumber = 19
 script is valid: yes
 [[GeneratorState]] = closed
@@ -43,9 +42,9 @@ script is valid: yes
       }
 [[GeneratorReceiver]] = Window
 
-Running: testiterObjGenerator
+Running test: testIterObjGenerator
 iterObjGenerator: type = object, subtype = generator
-lineNumber = 33
+lineNumber = 19
 columnNumber = 14
 script is valid: yes
 [[GeneratorState]] = suspended
@@ -57,9 +56,9 @@ script is valid: yes
           }
 [[GeneratorReceiver]] = Object
 
-Running: testanonymousGenIter
+Running test: testAnonymousGenIter
 anonymousGenIter: type = object, subtype = generator
-lineNumber = 47
+lineNumber = 33
 columnNumber = 10
 script is valid: yes
 [[GeneratorState]] = suspended
