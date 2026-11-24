@@ -52,6 +52,9 @@ class DbusMenu {
   void MenuItemsPropertiesUpdated(
       const std::vector<MenuItemReference>& menu_items);
 
+  // Like MenuItemsPropertiesUpdated(), but for every item in the menu.
+  void AllMenuItemsPropertiesUpdated();
+
  private:
   struct MenuItem {
    public:
@@ -151,6 +154,9 @@ class DbusMenu {
   void DeleteItemChildren(MenuItem* item);
 
   void SendLayoutChangedSignal(int32_t id);
+
+  // Recomputes the properties of `items` and sends a signal with the changes.
+  void SendPropertiesUpdated(const std::vector<MenuItem*>& items);
 
   raw_ptr<dbus::ExportedObject> menu_ = nullptr;
 

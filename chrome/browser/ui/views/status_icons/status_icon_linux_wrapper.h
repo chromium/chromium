@@ -51,6 +51,7 @@ class StatusIconLinuxWrapper : public StatusIcon,
 
   // StatusIconMenuModel::Observer overrides:
   void OnMenuStateChanged() override;
+  void OnMenuItemsChanged() override;
 
   static std::unique_ptr<StatusIconLinuxWrapper> CreateWrappedStatusIcon(
       const gfx::ImageSkia& image,

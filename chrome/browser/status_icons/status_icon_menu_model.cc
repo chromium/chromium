@@ -25,6 +25,13 @@ struct StatusIconMenuModel::ItemState {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// StatusIconMenuModel::Observer:
+
+void StatusIconMenuModel::Observer::OnMenuItemsChanged() {
+  OnMenuStateChanged();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // StatusIconMenuModel, public:
 
 StatusIconMenuModel::StatusIconMenuModel(Delegate* delegate)
@@ -139,7 +146,9 @@ void StatusIconMenuModel::ExecuteCommand(int command_id, int event_flags) {
 // StatusIconMenuModel, protected:
 
 void StatusIconMenuModel::MenuItemsChanged() {
-  NotifyMenuStateChanged();
+  for (Observer& observer : observer_list_) {
+    observer.OnMenuItemsChanged();
+  }
 }
 
 void StatusIconMenuModel::NotifyMenuStateChanged() {

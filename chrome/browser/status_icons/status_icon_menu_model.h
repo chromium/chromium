@@ -37,8 +37,15 @@ class StatusIconMenuModel : public ui::SimpleMenuModel,
 
   class Observer {
    public:
-    // Invoked when the menu model has changed.
+    // Invoked when properties of existing items (checked, enabled, visible,
+    // accelerator, label or icon) have changed.
     virtual void OnMenuStateChanged() {}
+
+    // Invoked when the items themselves changed: items were added, removed or
+    // reordered, or modified through ui::SimpleMenuModel setters. Observers
+    // should rebuild the menu. Defaults to OnMenuStateChanged() for observers
+    // that rebuild the whole menu anyway.
+    virtual void OnMenuItemsChanged();
 
    protected:
     virtual ~Observer() = default;

@@ -222,12 +222,7 @@ void DbusMenu::MenuLayoutUpdated(ui::MenuModel* model) {
 
 void DbusMenu::MenuItemsPropertiesUpdated(
     const std::vector<MenuItemReference>& menu_items) {
-  if (menu_items.empty()) {
-    return;
-  }
-
-  MenuPropertyChanges updated_props;
-  MenuPropertyChanges removed_props;
+  std::vector<MenuItem*> items;
   for (const auto& menu_item : menu_items) {
     ui::MenuModel* menu = menu_item.first;
     size_t index = menu_item.second;
@@ -242,9 +237,28 @@ void DbusMenu::MenuItemsPropertiesUpdated(
       }
     }
     DCHECK(item);
+    items.push_back(item);
+  }
+  SendPropertiesUpdated(items);
+}
 
+void DbusMenu::AllMenuItemsPropertiesUpdated() {
+  std::vector<MenuItem*> items;
+  for (const auto& [id, item] : items_) {
+    if (item->containing_menu) {
+      items.push_back(item.get());
+    }
+  }
+  SendPropertiesUpdated(items);
+}
+
+void DbusMenu::SendPropertiesUpdated(const std::vector<MenuItem*>& items) {
+  MenuPropertyChanges updated_props;
+  MenuPropertyChanges removed_props;
+  for (MenuItem* item : items) {
     auto old_properties = std::move(item->properties);
-    item->properties = ComputeMenuPropertiesForMenuItem(menu, index);
+    item->properties = ComputeMenuPropertiesForMenuItem(
+        item->containing_menu, item->containing_menu_index);
     MenuPropertyList item_updated_props;
     MenuPropertyList item_removed_props;
     ComputeMenuPropertyChanges(old_properties, item->properties,
@@ -255,6 +269,9 @@ void DbusMenu::MenuItemsPropertiesUpdated(
     if (!item_removed_props.empty()) {
       removed_props[item->id] = std::move(item_removed_props);
     }
+  }
+  if (updated_props.empty() && removed_props.empty()) {
+    return;
   }
 
   dbus::Signal signal(kInterfaceDbusMenu, kSignalItemsPropertiesUpdated);

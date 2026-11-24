@@ -326,11 +326,15 @@ void StatusIconLinuxDbus::UpdatePlatformContextMenu(ui::MenuModel* model) {
 
 void StatusIconLinuxDbus::RefreshPlatformContextMenu() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  // This codepath gets called for property changes like changed labels or
-  // icons, but also for layout changes like deleted items.
-  // TODO(thomasanderson): Split this into two methods so we can avoid
-  // rebuilding the menu for simple property changes.
-  UpdateMenuImpl(delegate_->GetMenuModel(), true);
+  // Only properties of existing items changed (other changes go through
+  // UpdatePlatformContextMenu()), so send the new properties instead of
+  // rebuilding the menu.
+  if (!menu_) {
+    return;
+  }
+  menu_->AllMenuItemsPropertiesUpdated();
+  // The views fallback menu caches item state, so recreate it on next use.
+  menu_runner_.reset();
 }
 
 void StatusIconLinuxDbus::ExecuteCommand(int command_id, int event_flags) {

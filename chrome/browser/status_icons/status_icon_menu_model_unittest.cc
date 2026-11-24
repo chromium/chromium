@@ -28,14 +28,17 @@ class StatusIconMenuModelTest : public testing::Test,
   void TearDown() override { menu_->RemoveObserver(this); }
 
   int changed_count() const { return changed_count_; }
+  int items_changed_count() const { return items_changed_count_; }
 
   StatusIconMenuModel* menu_model() { return menu_.get(); }
 
  private:
   void OnMenuStateChanged() override { ++changed_count_; }
+  void OnMenuItemsChanged() override { ++items_changed_count_; }
 
   std::unique_ptr<StatusIconMenuModel> menu_;
   int changed_count_ = 0;
+  int items_changed_count_ = 0;
 };
 
 TEST_F(StatusIconMenuModelTest, ToggleBooleanProperties) {
@@ -56,8 +59,10 @@ TEST_F(StatusIconMenuModelTest, ToggleBooleanProperties) {
   menu_model()->SetCommandIdVisible(0, false);
   EXPECT_FALSE(menu_model()->IsCommandIdVisible(0));
 
-  // Menu state should have changed 7 times in this test.
-  EXPECT_EQ(7, changed_count());
+  // Menu state should have changed 6 times in this test, and the items once
+  // (for AddItem()).
+  EXPECT_EQ(6, changed_count());
+  EXPECT_EQ(1, items_changed_count());
 }
 
 TEST_F(StatusIconMenuModelTest, SetProperties) {
@@ -98,6 +103,8 @@ TEST_F(StatusIconMenuModelTest, SetProperties) {
   EXPECT_EQ(std::u16string(), menu_model()->GetLabelForCommandId(1));
   EXPECT_TRUE(menu_model()->GetIconForCommandId(0).IsEmpty());
 
-  // Menu state should have changed 6 times in this test.
-  EXPECT_EQ(6, changed_count());
+  // Menu state should have changed 4 times in this test, and the items twice
+  // (for AddItem()).
+  EXPECT_EQ(4, changed_count());
+  EXPECT_EQ(2, items_changed_count());
 }

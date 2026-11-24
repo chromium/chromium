@@ -210,6 +210,12 @@ void StatusIconLinuxWrapper::OnMenuStateChanged() {
   }
 }
 
+void StatusIconLinuxWrapper::OnMenuItemsChanged() {
+  if (auto* status_icon = GetStatusIcon()) {
+    status_icon->UpdatePlatformContextMenu(menu_model_);
+  }
+}
+
 std::unique_ptr<StatusIconLinuxWrapper>
 StatusIconLinuxWrapper::CreateWrappedStatusIcon(
     const gfx::ImageSkia& image,

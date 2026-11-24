@@ -8,8 +8,10 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/linux/status_icon_linux.h"
+#include "ui/menus/simple_menu_model.h"
 
 using testing::_;
 
@@ -40,7 +43,7 @@ class TestDelegate : public ui::StatusIconLinux::Delegate {
   const gfx::ImageSkia& GetImage() const override { return image_; }
   const gfx::VectorIcon* GetIcon() const override { return nullptr; }
   const std::u16string& GetToolTip() const override { return tool_tip_; }
-  ui::MenuModel* GetMenuModel() const override { return nullptr; }
+  ui::MenuModel* GetMenuModel() const override { return menu_model_; }
   void OnImplInitializationFailed() override { failed_count_++; }
   void OnImplInitializationDelayed() override { delayed_count_++; }
   void OnImplInitialized() override { initialized_count_++; }
@@ -49,12 +52,15 @@ class TestDelegate : public ui::StatusIconLinux::Delegate {
   int delayed_count() const { return delayed_count_; }
   int initialized_count() const { return initialized_count_; }
 
+  void set_menu_model(ui::MenuModel* menu_model) { menu_model_ = menu_model; }
+
  private:
   int failed_count_ = 0;
   int delayed_count_ = 0;
   int initialized_count_ = 0;
   gfx::ImageSkia image_;
   std::u16string tool_tip_;
+  raw_ptr<ui::MenuModel> menu_model_ = nullptr;
 };
 
 void OnBusProxyCall(bool watcher_has_owner,
@@ -542,4 +548,68 @@ TEST_F(StatusIconLinuxDbusTest, RegisterWhenHostRegistersLater) {
   EXPECT_EQ(registered_service, ":1.100");
   EXPECT_EQ(delegate.initialized_count(), 1);
   EXPECT_EQ(delegate.failed_count(), 0);
+}
+
+TEST_F(StatusIconLinuxDbusTest, RefreshSendsPropertiesNotLayout) {
+  EXPECT_CALL(*exported_item_object_, ExportMethod(_, _, _, _))
+      .WillRepeatedly(
+          [](const std::string& interface_name, const std::string& method_name,
+             dbus::ExportedObject::MethodCallCallback callback,
+             dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+            std::move(on_exported_callback)
+                .Run(interface_name, method_name, true);
+          });
+
+  ui::SimpleMenuModel submenu(nullptr);
+  submenu.AddItem(5, u"Sub item");
+  ui::SimpleMenuModel menu_model(nullptr);
+  menu_model.AddItem(1, u"Item 1");
+  menu_model.AddItem(2, u"Item 2");
+
+  TestDelegate delegate;
+  delegate.set_menu_model(&menu_model);
+  auto status_icon = base::MakeRefCounted<StatusIconLinuxDbus>(bus_);
+  status_icon->SetDelegate(&delegate);
+  task_environment_.RunUntilIdle();
+
+  std::vector<std::string> menu_signals;
+  std::string last_signal;
+  EXPECT_CALL(*exported_menu_object_, SendSignal(_))
+      .WillRepeatedly([&](dbus::Signal* signal) {
+        menu_signals.push_back(signal->GetMember());
+        last_signal = signal->ToString();
+      });
+
+  // A property change is sent as an ItemsPropertiesUpdated signal.
+  menu_model.SetEnabledAt(1, false);
+  status_icon->RefreshPlatformContextMenu();
+  EXPECT_EQ(menu_signals, std::vector<std::string>{"ItemsPropertiesUpdated"});
+  EXPECT_NE(last_signal.find("enabled"), std::string::npos);
+
+  // A new model is sent as a LayoutUpdated signal.
+  menu_signals.clear();
+  menu_model.AddItem(3, u"Item 3");
+  status_icon->UpdatePlatformContextMenu(&menu_model);
+  EXPECT_EQ(menu_signals, std::vector<std::string>{"LayoutUpdated"});
+
+  // Properties of the new item can be updated too.
+  menu_signals.clear();
+  menu_model.SetLabel(2, u"New item 3");
+  status_icon->RefreshPlatformContextMenu();
+  EXPECT_EQ(menu_signals, std::vector<std::string>{"ItemsPropertiesUpdated"});
+  EXPECT_NE(last_signal.find("New item 3"), std::string::npos);
+
+  // A refresh without property changes sends nothing.
+  menu_signals.clear();
+  status_icon->RefreshPlatformContextMenu();
+  EXPECT_TRUE(menu_signals.empty());
+
+  // Properties of submenu items are updated too.
+  menu_model.AddSubMenu(4, u"Submenu", &submenu);
+  status_icon->UpdatePlatformContextMenu(&menu_model);
+  menu_signals.clear();
+  submenu.SetLabel(0, u"New sub item");
+  status_icon->RefreshPlatformContextMenu();
+  EXPECT_EQ(menu_signals, std::vector<std::string>{"ItemsPropertiesUpdated"});
+  EXPECT_NE(last_signal.find("New sub item"), std::string::npos);
 }
