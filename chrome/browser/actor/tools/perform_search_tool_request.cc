@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
-#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
@@ -28,9 +27,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace actor {
 
@@ -133,29 +130,6 @@ ToolRequest::CreateToolResult PerformSearchToolRequest::CreateTool(
 
   return NavigateToolRequest(GetActorSurfaceHandle(), std::move(*search_url))
       .CreateTool(task_id, tool_delegate);
-}
-
-std::optional<url::Origin> PerformSearchToolRequest::AssociatedOriginGrant()
-    const {
-  const ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
-  if (!actor_surface) {
-    return std::nullopt;
-  }
-
-  const base::expected<GURL, mojom::ActionResultPtr> search_url =
-      ResolveSearchUrl(
-          *Profile::FromBrowserContext(
-              actor_surface->GetWebContents()->GetBrowserContext()),
-          query_);
-  if (!search_url.has_value()) {
-    return std::nullopt;
-  }
-
-  url::Origin origin = url::Origin::Create(*search_url);
-  if (origin.opaque()) {
-    return std::nullopt;
-  }
-  return origin;
 }
 
 std::string_view PerformSearchToolRequest::Name() const {

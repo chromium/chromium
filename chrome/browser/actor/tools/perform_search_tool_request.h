@@ -12,7 +12,6 @@
 
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "url/origin.h"
 
 namespace actor {
 class ToolRequestVisitorFunctor;
@@ -41,7 +40,6 @@ class PerformSearchToolRequest : public TabToolRequest {
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
-  std::optional<url::Origin> AssociatedOriginGrant() const override;
   std::string_view Name() const override;
 
   const std::string& query() const { return query_; }

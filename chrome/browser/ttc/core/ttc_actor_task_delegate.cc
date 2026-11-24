@@ -53,6 +53,10 @@ void TtcActorTaskDelegate::RequestToConfirmNavigation(
     actor::TaskId task_id,
     const url::Origin& navigation_origin,
     NavigationConfirmationCallback callback) {
+  // Note: Cross-origin TTC tool navigations that do not pass an explicit
+  // `ActorTaskMetadata` origin grant (such as `PerformSearchToolRequest`,
+  // which resolves the default search provider URL on the client) rely on this
+  // fail-open response to allow navigation to the destination origin.
   auto response = webui_mojom::NavigationConfirmationResponse::New();
   response->result =
       webui_mojom::ConfirmationRequestResult::NewPermissionGranted(true);

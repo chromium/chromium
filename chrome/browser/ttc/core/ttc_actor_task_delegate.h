@@ -55,8 +55,13 @@ class TtcActorTaskDelegate : public actor::ActorTaskDelegate {
   // only when `confirm_navigation_to_new_origins` is enabled. Glic answers this
   // by asking its server whether the navigation fits the user's task; TTC has
   // no such check, so without this the actor framework would deny every such
-  // navigation, e.g. following a search result.
-  // TODO(b/578062960): Decide how TTC should confirm these navigations.
+  // navigation, e.g. following a search result or navigating to the user's
+  // default search engine via `PerformSearchToolRequest` (which resolves the
+  // search provider origin on the client without an `ActorTaskMetadata` origin
+  // grant).
+  // TODO(b/578062960): Decide how TTC should confirm these navigations (and
+  // ensure `perform_search` still grants the default search provider origin if
+  // this stops failing open).
   void RequestToConfirmNavigation(
       actor::TaskId task_id,
       const url::Origin& navigation_origin,

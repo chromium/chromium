@@ -23,7 +23,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -185,7 +184,6 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
                        WhitespaceOnlyQueryFails) {
   std::unique_ptr<ToolRequest> action =
       MakePerformSearchRequest(*active_tab(), "   ");
-  EXPECT_EQ(action->AssociatedOriginGrant(), std::nullopt);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
@@ -241,7 +239,6 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
 
   std::unique_ptr<ToolRequest> action =
       MakePerformSearchRequest(*active_tab(), kQuery);
-  EXPECT_EQ(action->AssociatedOriginGrant(), std::nullopt);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(result,
