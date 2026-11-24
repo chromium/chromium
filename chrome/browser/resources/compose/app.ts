@@ -157,7 +157,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       selectedInputMode_: {type: Number},
       selectedModifier_: {type: String},
       textSelected_: {type: Boolean},
-      enterprise_: {type: Boolean},
       showMainAppDialog_: {type: Boolean},
       submitted_: {
         type: Boolean,
@@ -172,7 +171,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       outputComplete_: {type: Boolean},
       hasOutput_: {type: Boolean},
       modifierOptions_: {type: Array},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -200,7 +198,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private accessor selectedInputMode_: InputMode = InputMode.kPolish;
   protected accessor selectedModifier_: string = '';
   private accessor textSelected_: boolean = false;
-  protected accessor enterprise_: boolean =
+  protected readonly enterprise_: boolean =
       loadTimeData.getBoolean('useEnterpriseWithoutLoggingPolicy');
   protected accessor showMainAppDialog_: boolean = false;
   protected accessor submitted_: boolean = false;
@@ -240,7 +238,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   ];
   protected accessor responseText_:
       TextInput = {text: '', isPartial: false, streamingEnabled: false};
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private animator_: ComposeAppAnimator;
@@ -374,7 +372,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return {text: '', isPartial: false, streamingEnabled: false};
     }
   }
-
 
   private getInitialState_() {
     this.apiProxy_.requestInitialState().then(initialState => {
@@ -1024,7 +1021,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 }
-
 
 function userFeedbackToFeedbackOption(userFeedback: UserFeedback):
     CrFeedbackOption {

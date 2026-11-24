@@ -53,13 +53,12 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
        * displayed.
        */
       selectedPath_: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor enableEnhancedSiteControls: boolean = false;
   protected accessor selectedPath_: Page = Page.LIST;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   accessor inDevMode: boolean = false;
 

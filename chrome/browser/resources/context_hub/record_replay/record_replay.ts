@@ -45,7 +45,6 @@ export class RecordReplayElement extends CrLitElement {
       isCompiling_: {type: Boolean, state: true},
       isRecording_: {type: Boolean},
       mesResponse_: {type: String, state: true},
-      recordReplayEnabled_: {type: Boolean},
       sessionData_: {type: Object},
       transcripts_: {type: Array},
     };
@@ -54,7 +53,7 @@ export class RecordReplayElement extends CrLitElement {
   protected accessor isCompiling_: boolean = false;
   protected accessor isRecording_: boolean = false;
   protected accessor mesResponse_: string = '';
-  protected accessor recordReplayEnabled_: boolean =
+  protected readonly recordReplayEnabled_: boolean =
       loadTimeData.getBoolean('kRecordReplay');
   protected accessor sessionData_: SkillRecordingSessionData|null = null;
   protected accessor transcripts_: TranscriptEntry[] = [];

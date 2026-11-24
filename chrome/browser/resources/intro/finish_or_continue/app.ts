@@ -47,12 +47,11 @@ export class FinishOrContinueAppElement extends CrLitElement {
   static override get properties() {
     return {
       isDarkMode_: {type: Boolean},
-      disableAnimations_: {type: Boolean},
     };
   }
 
   private accessor isDarkMode_: boolean = false;
-  protected accessor disableAnimations_: boolean =
+  protected readonly disableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations');
 
   private isFeatureShowcaseEligible_: boolean = false;

@@ -43,7 +43,6 @@ export class ContextualTasksToolbarAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      isUserSignedIn_: {type: Boolean},
       onboardingTooltipShowing_: {type: Boolean},
     };
   }
@@ -52,7 +51,7 @@ export class ContextualTasksToolbarAppElement extends CrLitElement {
   protected accessor isAiPage_: boolean = loadTimeData.getBoolean('isAiPage');
   protected accessor isAimEligible_: boolean =
       loadTimeData.getBoolean('isAimEligible');
-  protected accessor isUserSignedIn_: boolean =
+  protected readonly isUserSignedIn_: boolean =
       loadTimeData.getBoolean('isSignedIn');
   protected accessor onboardingTooltipShowing_: boolean = false;
 

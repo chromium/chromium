@@ -20,7 +20,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './bypass_warning_confirmation_dialog.css.js';
 import {getHtml} from './bypass_warning_confirmation_dialog.html.js';
 
-
 export interface DownloadsBypassWarningConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
@@ -44,11 +43,10 @@ export class DownloadsBypassWarningConfirmationDialogElement extends
   static override get properties() {
     return {
       fileName: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   accessor fileName: string = '';
 

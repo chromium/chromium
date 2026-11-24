@@ -78,7 +78,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   static override get properties() {
     return {
-      webuiRoundedIconsEnabled_: {type: Boolean},
       data: {type: Object},
       completelyOnDisk_: {type: Boolean},
       shouldLinkFilename_: {type: Boolean},
@@ -119,7 +118,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private accessor displayType_: DisplayType = DisplayType.NORMAL;
   private accessor completelyOnDisk_: boolean = true;
   protected accessor shouldLinkFilename_: boolean = true;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   override overrideCustomEquivalent: boolean = true;
 

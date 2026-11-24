@@ -136,7 +136,6 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
       showSearch_: {type: Boolean},
 
       numPlatformClientCertsString_: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -241,7 +240,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   ];
   // </if>
   protected accessor numPlatformClientCertsString_: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private passwordEntryResolver_: PromiseResolver<PasswordResult>|null = null;
@@ -421,7 +420,6 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   protected generateHrefForPage_(p: Page): string {
     return '/' + p;
   }
-
 
   protected onClientPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();

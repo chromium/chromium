@@ -95,11 +95,6 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: Boolean,
         state: true,
       },
-
-      showExtensionsPinnedByDefault_: {
-        type: Boolean,
-        state: true,
-      },
     };
   }
 
@@ -110,7 +105,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   accessor isMv2DeprecationNoticeDismissed: boolean = false;
   accessor extensionsPinnedByDefault: boolean = false;
   accessor filter: string = '';
-  protected accessor showExtensionsPinnedByDefault_: boolean =
+  protected readonly showExtensionsPinnedByDefault_: boolean =
       loadTimeData.getBoolean('enableExtensionsPinnedByDefault');
   protected accessor filteredExtensions_:
       chrome.developerPrivate.ExtensionInfo[] = [];
@@ -259,7 +254,6 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     // none left after the user finished reviewing the extensions.
     return this.unsafeExtensions_.length !== 0 || this.reviewPanelShown_;
   }
-
 
   /*
    * Indicates whether the mv2 deprecation panel is shown.

@@ -78,8 +78,6 @@ export class GlicSelectionOverlayElement extends
       ...super.properties,
       screenshotDataUri: {type: String},
       enableRegionSelectedGlow: {type: Boolean},
-      enableBorderGlow: {type: Boolean},
-      disableShimmer: {type: Boolean},
       showFloatingPrompt: {type: Boolean},
       promptAboveSelection: {type: Boolean},
       floatingPromptStyle: {type: String},
@@ -99,8 +97,8 @@ export class GlicSelectionOverlayElement extends
 
   accessor screenshotDataUri: string = '';
   accessor enableRegionSelectedGlow: boolean = true;
-  override accessor enableBorderGlow: boolean = true;
-  override accessor disableShimmer: boolean = false;
+  override readonly enableBorderGlow: boolean = true;
+  override readonly disableShimmer: boolean = false;
   accessor showFloatingPrompt: boolean = false;
   accessor promptAboveSelection: boolean = false;
   accessor floatingPromptStyle: string = '';

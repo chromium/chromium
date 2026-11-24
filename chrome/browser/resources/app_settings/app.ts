@@ -53,7 +53,6 @@ export class AppElement extends AppElementBase {
       iconUrl_: {type: String},
       showSearch_: {type: Boolean},
       apps_: {type: Object},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -61,7 +60,7 @@ export class AppElement extends AppElementBase {
   protected accessor apps_: AppMap = {};
   protected accessor iconUrl_: string = '';
   protected accessor showSearch_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override connectedCallback() {

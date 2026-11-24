@@ -46,13 +46,12 @@ export class SignInCelebrationAppElement extends
   static override get properties() {
     return {
       isDarkMode_: {type: Boolean},
-      disableAnimations_: {type: Boolean},
       userInfo_: {type: Object},
     };
   }
 
   private accessor isDarkMode_: boolean = false;
-  protected accessor disableAnimations_: boolean =
+  protected readonly disableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations');
   protected accessor userInfo_: SignInCelebrationUserInfo = {
     avatarUrl: loadTimeData.getString('accountPicturePlaceholderUrl'),

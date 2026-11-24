@@ -133,7 +133,6 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
       audioError_: {type: String},
       performanceHint_: {type: String},
       loadedPerformanceHint_: {type: Number},
-      showPlatformModelCheckbox_: {type: Boolean},
     };
   }
 
@@ -149,7 +148,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   private accessor modelPath_: string = '';
   protected accessor model_: OnDeviceModelRemote|null = null;
   protected accessor performanceClassText_: string = 'Loading...';
-  protected accessor showPlatformModelCheckbox_: boolean =
+  protected readonly showPlatformModelCheckbox_: boolean =
       loadTimeData.getBoolean('useChromeOSModelService');
   protected accessor usePlatformModel_: boolean = false;
   protected accessor responses_: Response[] = [];
@@ -242,7 +241,6 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.audioFile_ = null;
     this.$.audioInput.value = '';
   }
-
 
   protected onPerformanceHintChange_() {
     this.performanceHint_ = this.$.performanceHintSelect.value;

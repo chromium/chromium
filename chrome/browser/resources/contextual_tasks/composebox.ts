@@ -142,13 +142,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       selectedMatchIndex_: {type: Number},
-      enableFileHint_: {type: Boolean},
       lensButtonDisabled_: {type: Boolean},
-      caretAnimationsEnabled_: {type: Boolean},
-      usePecApi_: {type: Boolean},
-      smartTabSharingVisible_: {type: Boolean},
-      contextManagementInComposeboxEnabled_: {type: Boolean},
-      clearAllInputsWhenSubmittingQuery_: {type: Boolean},
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
       glifAnimationState_: {type: String},
@@ -188,7 +182,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor showSuggestionsActivityLink_: boolean = false;
   protected accessor inVoiceSearchMode_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
-  protected accessor enableFileHint_: boolean =
+  protected readonly enableFileHint_: boolean =
       loadTimeData.getBoolean('enableFileHint');
   protected accessor lensButtonDisabled_: boolean = false;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -207,15 +201,15 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   //   non-zero state
   // - User clicks on a suggestion
   private forceSkipSubmitGlifAnimation_: boolean = false;
-  protected accessor caretAnimationsEnabled_: boolean =
+  protected readonly caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
-  protected accessor usePecApi_: boolean =
+  protected readonly usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
-  protected accessor smartTabSharingVisible_: boolean =
+  protected readonly smartTabSharingVisible_: boolean =
       loadTimeData.getBoolean('composeboxSmartTabSharingVisible');
-  protected accessor contextManagementInComposeboxEnabled_: boolean =
+  protected readonly contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
-  protected accessor clearAllInputsWhenSubmittingQuery_: boolean =
+  protected readonly clearAllInputsWhenSubmittingQuery_: boolean =
       loadTimeData.getBoolean('clearAllInputsWhenSubmittingQuery');
   protected accessor energyEffectEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');

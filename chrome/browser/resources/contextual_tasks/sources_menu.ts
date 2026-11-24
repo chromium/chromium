@@ -40,12 +40,11 @@ export class SourcesMenuElement extends CrLitElement {
   static override get properties() {
     return {
       contextInfos: {type: Array},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
   accessor contextInfos: ContextInfo[] = [];
 
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private toolbarBrowserProxy_: ToolbarBrowserProxy =
       ToolbarBrowserProxyImpl.getInstance();

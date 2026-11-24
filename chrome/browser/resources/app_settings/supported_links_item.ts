@@ -82,7 +82,6 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
       apps: {type: Object},
 
       overlappingAppIds_: {type: Array},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -95,7 +94,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
   protected accessor showOverlappingAppsDialog_: boolean = false;
   protected accessor showOverlappingAppsWarning_: boolean = false;
   protected accessor showSupportedLinksDialog_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {

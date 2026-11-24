@@ -41,12 +41,11 @@ export class ExtensionsSitePermissionsElement extends
   static override get properties() {
     return {
       extensions: {type: Array},
-      showPermittedSites_: {type: Boolean},
     };
   }
 
   accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  protected accessor showPermittedSites_: boolean =
+  protected readonly showPermittedSites_: boolean =
       loadTimeData.getBoolean('enableUserPermittedSites');
 
   protected onAllSitesLinkClick_() {

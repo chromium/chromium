@@ -164,11 +164,9 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       // bindings.
       data: {type: Object},
 
-
       // First inspectable view after sorting.
       firstInspectView_: {type: Object},
       enableToggleTooltipPosition_: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -180,7 +178,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   private accessor firstInspectView_: chrome.developerPrivate.ExtensionView|
       undefined;
   private accessor enableToggleTooltipPosition_ = TooltipPosition.LEFT;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -318,7 +316,6 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   protected showRepairButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.REPAIR;
   }
-
 
   /** @return Whether the enable toggle should be shown. */
   protected showEnableToggle_(): boolean {

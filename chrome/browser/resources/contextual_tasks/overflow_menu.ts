@@ -62,7 +62,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
           {type: Boolean},
       isAimEligible: {type: Boolean},
       isCobrowseEligible: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -88,7 +87,7 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
       loadTimeData.valueExists('isCobrowseEligible') &&
       loadTimeData.getBoolean('isCobrowseEligible');
 
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private isUnboundedMenuEnabled_: boolean =
       loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
@@ -215,7 +214,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
     recordAction('ContextualTasks.WebUI.UserAction.OpenHelp');
     this.toolbarBrowserProxy_.handler.openOverflowMenuHelpUi();
   }
-
 
   protected onFeedbackClick_() {
     this.close();

@@ -73,7 +73,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       // <if expr="_google_chrome">
       firstDangerousItemId_: {type: String},
       isEligibleForEsbPromo_: {type: Boolean},
-      esbDownloadRowPromo_: {type: Boolean},
       // </if>
 
       lastFocused_: {type: Object},
@@ -94,7 +93,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private accessor bypassPromptItemId_: string = '';
   // <if expr="_google_chrome">
   private accessor firstDangerousItemId_: string = '';
-  private accessor esbDownloadRowPromo_: boolean =
+  private readonly esbDownloadRowPromo_: boolean =
       loadTimeData.getBoolean('esbDownloadRowPromo');
   private accessor isEligibleForEsbPromo_: boolean = false;
   // </if>

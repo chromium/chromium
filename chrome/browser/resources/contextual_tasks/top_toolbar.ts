@@ -94,7 +94,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
       isExpandButtonEnabled: {type: Boolean},
       isPinButtonEnabled: {type: Boolean},
       isPinned: {type: Boolean},
-      contextManagementInComposeboxEnabled_: {type: Boolean},
       isAimEligible: {
         type: Boolean,
         reflect: true,
@@ -102,17 +101,12 @@ export class TopToolbarElement extends TopToolbarElementBase {
       isCobrowseEligible: {type: Boolean},
       isUserSignedIn: {type: Boolean},
       onboardingTooltipShowing: {type: Boolean},
-      contextualTasksEnableSpatialModelToolbarLayout_: {type: Boolean},
-      contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_:
-          {type: Boolean},
       overflowMenuOpen_: {type: Boolean},
       isSidePanelRearchitectureEnabled_: {
         type: Boolean,
         reflect: true,
         attribute: 'is-side-panel-rearchitecture-enabled',
       },
-      webuiRoundedIconsEnabled_: {type: Boolean},
-      dogfoodFeedbackEnabled_: {type: Boolean},
       // <if expr="not is_android">
       permissionDashboardState: {type: Object},
       permissionChipDelegate_: {type: Object},
@@ -160,22 +154,22 @@ export class TopToolbarElement extends TopToolbarElementBase {
       loadTimeData.getBoolean('enablePinButton');
   private hideOverflowMenuOnAiPageEnabled_: boolean =
       loadTimeData.getBoolean('hideMenuOnAiPageEnabled');
-  protected accessor contextualTasksEnableSpatialModelToolbarLayout_: boolean =
+  protected readonly contextualTasksEnableSpatialModelToolbarLayout_: boolean =
       loadTimeData.getBoolean('contextualTasksEnableSpatialModelToolbarLayout');
-  protected accessor contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_:
-          boolean = loadTimeData.getBoolean(
-              'contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow');
+  protected readonly contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_:
+      boolean = loadTimeData.getBoolean(
+          'contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow');
   accessor hideOverflowMenuButton_: boolean =
       this.hideOverflowMenuOnAiPageEnabled_ && this.isAiPage;
   protected accessor isPinned: boolean =
       loadTimeData.getBoolean('isSidePanelPinned');
-  protected accessor contextManagementInComposeboxEnabled_: boolean =
+  protected readonly contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
   protected accessor overflowMenuOpen_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private wasProfileIndicatorShown_: boolean = false;
-  protected accessor dogfoodFeedbackEnabled_: boolean =
+  protected readonly dogfoodFeedbackEnabled_: boolean =
       loadTimeData.getBoolean('contextualTasksDogfoodFeedbackEnabled');
   private boundOnWindowBlur_: () => void = this.onWindowBlur_.bind(this);
 

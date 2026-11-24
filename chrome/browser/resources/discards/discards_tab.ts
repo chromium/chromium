@@ -153,12 +153,11 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
   static override get properties() {
     return {
       tabInfos_: {type: Array},
-      isPerformanceInterventionDemoModeEnabled_: {type: Boolean},
     };
   }
 
   private accessor tabInfos_: TabDiscardsInfo[] = [];
-  protected accessor isPerformanceInterventionDemoModeEnabled_: boolean =
+  protected readonly isPerformanceInterventionDemoModeEnabled_: boolean =
       loadTimeData.getBoolean('isPerformanceInterventionDemoModeEnabled');
 
   /** The current update timer if any. */

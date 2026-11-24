@@ -60,7 +60,6 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       isFolder_: {type: Boolean},
       lastTouchPoints_: {type: Number},
       canUploadAsAccountBookmark_: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -73,7 +72,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   private accessor lastTouchPoints_: number = -1;
   // This is always false if `SyncEnableBookmarksInTransportMode` is disabled.
   protected accessor canUploadAsAccountBookmark_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override connectedCallback() {
@@ -129,7 +128,6 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     this.isSelectedItem_ = state.selection.items.has(this.itemId);
     this.isMultiSelect_ = state.selection.items.size > 1;
   }
-
 
   setIsSelectedItemForTesting(selected: boolean) {
     this.isSelectedItem_ = selected;

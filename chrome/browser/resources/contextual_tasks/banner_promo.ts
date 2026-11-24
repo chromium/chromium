@@ -28,13 +28,12 @@ export class BannerPromoElement extends CrLitElement {
     return {
       acceptButtonText: {type: String},
       dismissButtonText: {type: String},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor acceptButtonText: string = '';
   accessor dismissButtonText: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   protected onNotNowClick_() {

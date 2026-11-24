@@ -34,14 +34,13 @@ export class ContextualTasksFaviconGroupElement extends CrLitElement {
       contextInfos: {type: Array},
       visibleItems_: {type: Array},
       remainingCount_: {type: Number},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor contextInfos: ContextInfo[] = [];
   protected accessor visibleItems_: ContextInfo[] = [];
   protected accessor remainingCount_: number = 0;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {

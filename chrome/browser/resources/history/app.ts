@@ -132,7 +132,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   static override get properties() {
     return {
       // <if expr="not is_chromeos">
-      unoPhase2FollowUpEnabled_: {type: Boolean},
       shouldShowHistorySyncPromo_: {type: Boolean},
       // </if>
       // <if expr="not is_chromeos and not is_android">
@@ -150,7 +149,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       // True if the window is narrow enough for the page to have a drawer.
       hasDrawer_: {type: Boolean},
       footerInfo: {type: Object},
-      historyClustersEnabled_: {type: Boolean},
       historyClustersVisible_: {type: Boolean},
       lastSelectedTab_: {type: Number},
       showHistoryClusters_: {
@@ -168,10 +166,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       includeActorVisits_: {type: Boolean},
       includeUserVisits_: {type: Boolean},
       clientIds_: {type: Array},
-      isGlicWebActuationAvailable_: {type: Boolean},
-      isBrowsingHistoryFilterByDeviceEnabled_: {type: Boolean},
-      isBrowsingHistoryFilterByDomainEnabled_: {type: Boolean},
-      isBrowsingHistoryFilterByTimePeriodEnabled_: {type: Boolean},
       timePeriodOptions_: {type: Array},
       selectedTimePeriodOptionId_: {type: Number},
       historyPageRefreshEnabled_: {type: Boolean},
@@ -184,7 +178,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     geminiAppsActivity: loadTimeData.getBoolean('isGlicEnabled'),
   };
   // <if expr="not is_chromeos">
-  private accessor unoPhase2FollowUpEnabled_: boolean =
+  private readonly unoPhase2FollowUpEnabled_: boolean =
       loadTimeData.getBoolean('unoPhase2FollowUp');
   private accessor shouldShowHistorySyncPromo_: boolean = false;
   // </if>
@@ -192,7 +186,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor shouldShowHistoryCrossDeviceSigninPromo_: boolean = false;
   // </if>
   protected accessor hasDrawer_: boolean = false;
-  protected accessor historyClustersEnabled_: boolean =
+  protected readonly historyClustersEnabled_: boolean =
       loadTimeData.getBoolean('isHistoryClustersEnabled');
   protected accessor historyClustersVisible_: boolean =
       loadTimeData.getBoolean('isHistoryClustersVisible');
@@ -245,13 +239,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor includeActorVisits_: boolean = true;
   protected accessor includeUserVisits_: boolean = true;
   protected accessor clientIds_: string[] = [];
-  private accessor isGlicWebActuationAvailable_: boolean =
+  private readonly isGlicWebActuationAvailable_: boolean =
       loadTimeData.getBoolean('isGlicWebActuationAvailable');
-  private accessor isBrowsingHistoryFilterByDeviceEnabled_: boolean =
+  private readonly isBrowsingHistoryFilterByDeviceEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled');
-  private accessor isBrowsingHistoryFilterByDomainEnabled_: boolean =
+  private readonly isBrowsingHistoryFilterByDomainEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByDomainEnabled');
-  private accessor isBrowsingHistoryFilterByTimePeriodEnabled_: boolean =
+  private readonly isBrowsingHistoryFilterByTimePeriodEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled');
   protected accessor timePeriodOptions_: TimePeriodOption[] = [];
   protected accessor selectedTimePeriodOptionId_: TimePeriodOptionId =
@@ -371,8 +365,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     super.willUpdate(changedProperties);
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('historyClustersEnabled_') ||
-        changedPrivateProperties.has('historyClustersVisible_')) {
+    if (changedPrivateProperties.has('historyClustersVisible_')) {
       this.showHistoryClusters_ =
           this.historyClustersEnabled_ && this.historyClustersVisible_;
     }

@@ -103,7 +103,6 @@ export class SitePermissionsEditPermissionsDialogElement extends
       siteSet_: {type: String},
 
       extensionSiteAccessData_: {type: Array},
-      showPermittedOption_: {type: Boolean},
     };
   }
 
@@ -117,7 +116,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
   private extensionsIdToInfo_:
       Map<string, chrome.developerPrivate.ExtensionInfo> = new Map();
   protected accessor extensionSiteAccessData_: ExtensionSiteAccessInfo[] = [];
-  protected accessor showPermittedOption_: boolean =
+  protected readonly showPermittedOption_: boolean =
       loadTimeData.getBoolean('enableUserPermittedSites');
 
   // Tracks any unsaved changes to HostAccess for each extension made by

@@ -109,8 +109,6 @@ export class ExtensionsDetailViewElement extends
 
       /** Whether the extensions safety check warning is shown. */
       showSafetyCheck_: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
-      isolatedModeEnabled_: {type: Boolean},
     };
   }
 
@@ -126,9 +124,9 @@ export class ExtensionsDetailViewElement extends
   protected accessor showSafetyCheck_: boolean = false;
   protected accessor size_: string = '';
   protected accessor sortedViews_: chrome.developerPrivate.ExtensionView[] = [];
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
-  private accessor isolatedModeEnabled_: boolean =
+  private readonly isolatedModeEnabled_: boolean =
       loadTimeData.getBoolean('isolatedModeEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {

@@ -75,7 +75,6 @@ export class ExtensionsMv2DeprecationPanelElement extends
        * Extension which has its action menu opened.
        */
       extensionWithActionMenuOpened_: {type: Object},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -83,7 +82,7 @@ export class ExtensionsMv2DeprecationPanelElement extends
   accessor delegate: ItemDelegate&Mv2DeprecationDelegate|undefined;
   accessor showTitle: boolean = false;
   protected accessor headerString_: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private accessor subtitleString_: string = '';
   private accessor extensionWithActionMenuOpened_:

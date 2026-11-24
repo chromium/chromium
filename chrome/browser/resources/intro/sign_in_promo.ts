@@ -60,7 +60,6 @@ export class SignInPromoElement extends SignInPromoElementBase {
       benefitCards_: {type: Array},
 
       managedDeviceDisclaimer_: {type: String},
-      isDeviceManaged_: {type: Boolean},
       anyButtonClicked_: {type: Boolean},
     };
   }
@@ -91,7 +90,7 @@ export class SignInPromoElement extends SignInPromoElementBase {
   protected accessor benefitCards_: BenefitCard[];
   private divisionLineResizeObserver_: ResizeObserver|null = null;
   protected accessor managedDeviceDisclaimer_: string = '';
-  protected accessor isDeviceManaged_: boolean =
+  protected readonly isDeviceManaged_: boolean =
       loadTimeData.getBoolean('isDeviceManaged');
   private accessor anyButtonClicked_: boolean = false;
 

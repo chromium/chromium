@@ -34,14 +34,13 @@ export class ExtensionsKeyboardShortcutsElement extends
     return {
       delegate: {type: Object},
       items: {type: Array},
-      showGlobalScopeOption_: {type: Boolean},
     };
   }
 
   accessor delegate: KeyboardShortcutDelegate =
       createDummyKeyboardShortcutDelegate();
   accessor items: chrome.developerPrivate.ExtensionInfo[] = [];
-  protected accessor showGlobalScopeOption_: boolean =
+  protected readonly showGlobalScopeOption_: boolean =
       loadTimeData.getBoolean('enableGlobalScopedShortcuts');
 
   override firstUpdated() {

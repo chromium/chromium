@@ -40,7 +40,6 @@ export class SmartSearchElement extends CrLitElement {
       selectedIds_: {type: Object},
       isSearching_: {type: Boolean},
       hasSearched_: {type: Boolean},
-      smartSearchEnabled_: {type: Boolean},
     };
   }
 
@@ -49,7 +48,7 @@ export class SmartSearchElement extends CrLitElement {
   protected accessor selectedIds_: Set<string> = new Set();
   protected accessor isSearching_: boolean = false;
   protected accessor hasSearched_: boolean = false;
-  protected accessor smartSearchEnabled_: boolean =
+  protected readonly smartSearchEnabled_: boolean =
       loadTimeData.getBoolean('kSmartSearch');
 
   protected getFilteredResults_(): SmartSearchResult[] {

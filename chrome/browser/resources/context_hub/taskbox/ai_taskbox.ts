@@ -72,7 +72,6 @@ export class AiTaskboxElement extends CrLitElement {
 
   static override get properties() {
     return {
-      autoTodosEnabled_: {type: Boolean},
       feedbackModeEnabled_: {type: Boolean},
       todos: {type: Array},
       completedTodos: {type: Array},
@@ -91,7 +90,7 @@ export class AiTaskboxElement extends CrLitElement {
   accessor completedTodos: LaunchpadTask[]|null = null;
   accessor dismissedTodos: LaunchpadTask[]|null = null;
   protected accessor feedbacks_: Map<string, boolean> = new Map();
-  protected accessor autoTodosEnabled_: boolean =
+  protected readonly autoTodosEnabled_: boolean =
       loadTimeData.valueExists('kAutoTodos') &&
       loadTimeData.getBoolean('kAutoTodos');
   protected accessor feedbackModeEnabled_: boolean = true;

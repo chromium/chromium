@@ -28,8 +28,6 @@ import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip
 // </if>
 // clang-format on
 
-
-
 import '//resources/cr_elements/cr_button/cr_button.js';
 import './error_dialog.js';
 import './error_page.js';
@@ -59,7 +57,6 @@ import {getNonOccludedClipPath} from './utils/clip_path.js';
 import {isFullWebView} from './web_view_type.js';
 import type {WebViewType} from './web_view_type.js';
 import {WindowManager} from './window_manager.js';
-
 
 // <if expr="is_android and not enable_webui_contextual_tasks_composebox">
 // ContextualTasksComposeboxElement and ContextualTasksOnboardingTooltipElement
@@ -226,7 +223,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         reflect: true,
       },
       isAiPage_: {type: Boolean, reflect: true},
-      isUserSignedIn_: {type: Boolean},
       // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
       isLensOverlayShowing_: {type: Boolean},
       isOverlayOpenForAimVisualSearch_: {type: Boolean},
@@ -261,9 +257,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       friendlyZeroStateTitle: {type: String},
       friendlyZeroStateSubtitle: {type: String},
       occluders_: {type: Array},
-      // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
-      showOnboardingTooltip_: {type: Boolean},
-      // </if>
       // <if expr="not is_android">
       askGTooltipTarget_: {type: Object},
       composeboxElement_: {type: Object},
@@ -301,7 +294,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   protected accessor energyEffectEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
   // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
-  protected accessor showOnboardingTooltip_: boolean =
+  protected readonly showOnboardingTooltip_: boolean =
       loadTimeData.getBoolean('showOnboardingTooltip');
   // </if>
   // <if expr="not is_android">
@@ -344,7 +337,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // though top-level navigation could fail for numerous reasons.
   protected accessor isLoadError_: boolean = !window.navigator.onLine;
   protected accessor isAiPage_: boolean = loadTimeData.getBoolean('isAiPage');
-  protected accessor isUserSignedIn_: boolean =
+  protected readonly isUserSignedIn_: boolean =
       loadTimeData.getBoolean('isSignedIn');
   protected accessor isAimEligible_: boolean =
       loadTimeData.getBoolean('isAimEligible');
@@ -1024,7 +1017,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
   // </if>
 
-
   private playZeroStateAnimations_() {
     this.clearZeroStateAnimations_();
     this.classList.add('play-zero-state');
@@ -1202,7 +1194,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.isFrameLoading = true;
     const wasAiPage = this.isAiPage_;
     const wasZeroState = this.isZeroState_;
-
 
     const {isAiPage} = await this.browserProxy_.handler.isAiPage(ev.url);
     const {isZeroState} = await this.browserProxy_.handler.isZeroState(ev.url);
@@ -1644,7 +1635,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   get isLoadErrorForTesting() {
     return this.isLoadError_;
   }
-
 
   getEnableNativeZeroStateSuggestionsForTesting() {
     return this.enableNativeZeroStateSuggestions_;

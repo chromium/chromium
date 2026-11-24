@@ -87,8 +87,6 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
        */
       actionMenuModel_: {type: String},
 
-      enableDeviceTabVisibilitySettings_: {type: Boolean},
-
       // <if expr="not is_chromeos">
       accountInfo_: {type: Object},
       // </if>
@@ -110,7 +108,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
       loadTimeData.getBoolean('isGuestSession');
   private accessor signInAllowed_: boolean =
       loadTimeData.getBoolean('isSignInAllowed');
-  protected accessor enableDeviceTabVisibilitySettings_: boolean =
+  protected readonly enableDeviceTabVisibilitySettings_: boolean =
       loadTimeData.getBoolean('enableDeviceTabVisibilitySettings');
   private signinPausedImpressionRecorded_: boolean = false;
   private onIdentityStateChangedListenerId_: number|null = null;
@@ -342,7 +340,6 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
   private clearDisplayedSyncedDevices_() {
     this.syncedDevices_ = [];
   }
-
 
   // <if expr="not is_chromeos">
   protected isSignInState_(state: HistorySignInState): boolean {

@@ -67,12 +67,6 @@ export abstract class SelectionOverlayBaseLitElement extends
       canvasWidth: {type: Number},
       isPointerInside: {type: Boolean},
       currentGesture: {type: Object},
-      disableShimmer: {
-        type: Boolean,
-      },
-      enableBorderGlow: {
-        type: Boolean,
-      },
       isClosing: {
         type: Boolean,
         reflect: true,
@@ -121,9 +115,9 @@ export abstract class SelectionOverlayBaseLitElement extends
   // The current gesture event. The coordinate values are only accurate if a
   // gesture has started.
   protected accessor currentGesture: GestureEvent = emptyGestureEvent();
-  protected accessor disableShimmer: boolean =
+  protected readonly disableShimmer: boolean =
       !loadTimeData.getBoolean('enableShimmer');
-  protected accessor enableBorderGlow: boolean =
+  protected readonly enableBorderGlow: boolean =
       loadTimeData.getBoolean('enableBorderGlow');
   // Whether the overlay is being shut down.
   protected accessor isClosing: boolean = false;
@@ -467,7 +461,6 @@ export abstract class SelectionOverlayBaseLitElement extends
     return 'url("lens.svg")';
   }
   // LINT.ThenChange(//chrome/browser/resources/lens/overlay/cursor_tooltip.ts:CursorOffsetValues)
-
 
   private onImageRendered() {
     // Let the parent know it is safe to blur the background.

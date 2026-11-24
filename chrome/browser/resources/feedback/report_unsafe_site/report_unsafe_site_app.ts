@@ -43,7 +43,6 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
       includeScreenshot_: {type: Boolean},
       screenshotDataUri_: {type: String},
       isSendingCsdPing_: {type: Boolean},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -51,7 +50,7 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
   protected accessor includeScreenshot_: boolean = false;
   protected accessor screenshotDataUri_: string = '';
   protected accessor isSendingCsdPing_: boolean = false;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override async connectedCallback() {
