@@ -35,6 +35,7 @@ enum FailureType {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringErrorType)
 
 const TRANSITION_DURATION_MS = 250;
+const ACCOUNTS_ORIGIN = 'https://accounts.google.com';
 // Setup target height and width custom properties immediately at load to
 // prevent layout shifts.
 // <if expr="not is_android">
@@ -154,7 +155,8 @@ export class ExperimentalOptInApp {
               return {};
             }
             if (url.protocol === 'http:' || url.protocol === 'https:') {
-              if (url.origin !== this.optInOrigin_) {
+              if (url.origin !== this.optInOrigin_ &&
+                  url.origin !== ACCOUNTS_ORIGIN) {
                 return {cancel: true};
               }
             }
@@ -218,6 +220,10 @@ export class ExperimentalOptInApp {
                           return;
                         }
                         const urlObj = new URL(loadCommitEvent.url);
+                        if (!loadTimeData.getBoolean('glicDevEnabled') &&
+                            urlObj.origin !== this.optInOrigin_) {
+                          return;
+                        }
                         const urlHash = urlObj.hash;
 
                         if (urlHash === '#continue') {
@@ -413,7 +419,10 @@ function getAllowedOriginsParams(optInOrigin: string): OriginCheckParams|null {
   if (loadTimeData.getBoolean('glicDevEnabled')) {
     return null;
   }
-  return new OriginCheckParams(['main_frame'], [optInOrigin]);
+  const allowedOrigins = optInOrigin === ACCOUNTS_ORIGIN ?
+      [optInOrigin] :
+      [optInOrigin, ACCOUNTS_ORIGIN];
+  return new OriginCheckParams(['main_frame'], allowedOrigins);
 }
 // </if>
 

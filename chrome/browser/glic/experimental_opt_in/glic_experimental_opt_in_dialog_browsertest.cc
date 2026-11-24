@@ -1049,6 +1049,71 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   service()->opt_in_controller().CloseDialog(false);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       AllowsNavigationToAccountsOrigin) {
+  service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
+  ASSERT_TRUE(widget);
+
+  content::WebContents* dialog_contents = GetDialogWebContents();
+  ASSERT_TRUE(dialog_contents);
+  content::WebContents* guest_contents = WaitForGuestContents();
+  ASSERT_TRUE(guest_contents);
+
+  GURL initial_url = guest_contents->GetLastCommittedURL();
+  GURL accounts_url("https://accounts.google.com/FakeSAMLContinue");
+  {
+    content::TestNavigationObserver nav_observer(guest_contents);
+    ASSERT_TRUE(ExecJs(
+        guest_contents,
+        content::JsReplace("window.location.href = $1;", accounts_url.spec())));
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  }
+  EXPECT_EQ(guest_contents->GetLastCommittedURL(), accounts_url);
+
+  // Hash navigations on accounts.google.com must not accept or reject opt-in.
+  for (const char* hash : {"#continue", "#noThanks"}) {
+    ASSERT_TRUE(ExecJs(dialog_contents, content::JsReplace(
+                                            R"js(
+              window.__testHashCommit = new Promise(resolve => {
+                const wv = getWebview();
+                const onCommit = (e) => {
+                  if (e.isTopLevel && e.url.endsWith($1)) {
+                    wv.removeEventListener('loadcommit', onCommit);
+                    resolve(true);
+                  }
+                };
+                wv.addEventListener('loadcommit', onCommit);
+              });
+              true;
+            )js",
+                                            hash)));
+    ASSERT_TRUE(ExecJs(guest_contents,
+                       content::JsReplace("window.location.hash = $1;", hash)));
+    ASSERT_EQ(true, EvalJs(dialog_contents, "window.__testHashCommit"));
+  }
+
+  // Navigating back to the opt-in origin leaves the dialog open and `#continue`
+  // still accepts opt-in.
+  {
+    content::TestNavigationObserver nav_observer(guest_contents);
+    ASSERT_TRUE(ExecJs(
+        guest_contents,
+        content::JsReplace("window.location.href = $1;", initial_url.spec())));
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  }
+  EXPECT_FALSE(opt_in_result.IsReady());
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  ASSERT_TRUE(ExecJs(guest_contents, "window.location.hash = '#continue';"));
+  waiter.Wait();
+  EXPECT_TRUE(opt_in_result.Get());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInOfflineTest,
                        OfflinePageLoadFailureAndDismissal) {
   base::test::TestFuture<bool> opt_in_result;
