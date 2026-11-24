@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/overlay_plane_data.h"
+#include "ui/gfx/switches.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
@@ -289,7 +290,8 @@ void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id,
                                                            bool force_update) {
-  if (base::FeatureList::IsEnabled(features::kForceMacVSyncTimerForDebugging)) {
+  if (base::FeatureList::IsEnabled(features::kForceMacVSyncTimerForDebugging) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
     return;
   }
 

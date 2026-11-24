@@ -48,8 +48,10 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
+#include "ui/gfx/switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -220,13 +222,15 @@ RootCompositorFrameSinkImpl::Create(
       }
 #elif BUILDFLAG(IS_MAC)
       // ExternalBeginFrameSourceMac is utilized for both CVDisplayLink
-      // instances (originating in the GPU process) and CADisplayLink instances
-      // (originating in the Browser process).
-      external_begin_frame_source =
-          std::make_unique<ExternalBeginFrameSourceMac>(
-              restart_id, params->renderer_settings.display_id,
-              params->refresh_rate);
-      created_external_begin_frame_source_mac = true;
+      // and CADisplayLink in the GPU process.
+      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kHeadless)) {
+        external_begin_frame_source =
+            std::make_unique<ExternalBeginFrameSourceMac>(
+                restart_id, params->renderer_settings.display_id,
+                params->refresh_rate);
+        created_external_begin_frame_source_mac = true;
+      }
 #endif
       if (!external_begin_frame_source && !synthetic_begin_frame_source) {
         auto time_source = std::make_unique<DelayBasedTimeSource>(
