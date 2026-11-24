@@ -335,23 +335,27 @@ bool ProgramInfoManager::Program::GetUniformsiv(
   if (!params) {
     return true;
   }
+  // These ES2 parameters are read from `uniform_infos_`, but `indices` may have
+  // been validated against the ES3 uniform count if no ES2 info is cached. The
+  // two counts can only differ if the ES2 info is missing or came from a
+  // different link, which would make the reads below go out of bounds.
   switch (pname) {
     case GL_UNIFORM_SIZE:
-      DCHECK_EQ(num_uniforms, uniform_infos_.size());
+      CHECK_EQ(num_uniforms, uniform_infos_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         UNSAFE_TODO(params[ii]) =
             static_cast<GLint>(uniform_infos_[UNSAFE_TODO(indices[ii])].size);
       }
       return true;
     case GL_UNIFORM_TYPE:
-      DCHECK_EQ(num_uniforms, uniform_infos_.size());
+      CHECK_EQ(num_uniforms, uniform_infos_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         UNSAFE_TODO(params[ii]) =
             static_cast<GLint>(uniform_infos_[UNSAFE_TODO(indices[ii])].type);
       }
       return true;
     case GL_UNIFORM_NAME_LENGTH:
-      DCHECK_EQ(num_uniforms, uniform_infos_.size());
+      CHECK_EQ(num_uniforms, uniform_infos_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         UNSAFE_TODO(params[ii]) = static_cast<GLint>(
             uniform_infos_[UNSAFE_TODO(indices[ii])].name.length() + 1);

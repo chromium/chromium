@@ -110,6 +110,8 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
   FRIEND_TEST_ALL_PREFIXES(ProgramInfoManagerTest,
                            GetActiveUniformsivCached);
   FRIEND_TEST_ALL_PREFIXES(ProgramInfoManagerTest,
+                           GetUniformsivChecksES2MatchesES3Count);
+  FRIEND_TEST_ALL_PREFIXES(ProgramInfoManagerTest,
                            UpdateProgramInfoIgnoresStaleLinkCount);
 
   // Need GLES2_IMPL_EXPORT for tests.
