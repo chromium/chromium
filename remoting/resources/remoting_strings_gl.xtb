@@ -126,7 +126,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="6542902059648396432">Informar dun problema...</translation>
 <translation id="6583902294974160967">Asistencia</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Supr</translation>
-<translation id="6625262630437221505">{0,plural, =1{Se non tomas medidas, o teu dispositivo comezará a compartir contido automaticamente dentro de # segundo.}many{If you don’t take action, your device will automatically start sharing in # seconds.}other{Se non tomas medidas, o teu dispositivo comezará a compartir contido automaticamente dentro de # segundos.}}</translation>
+<translation id="6625262630437221505">{0,plural, =1{Se non tomas medidas, o teu dispositivo comezará a compartir contido automaticamente dentro de # segundo.}other{Se non tomas medidas, o teu dispositivo comezará a compartir contido automaticamente dentro de # segundos.}}</translation>
 <translation id="6654753848497929428">Compartir</translation>
 <translation id="677755392401385740">Host iniciado para o usuario: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicación de asistencia para abrir os URL no cliente de <ph name="PRODUCT_NAME" /></translation>
