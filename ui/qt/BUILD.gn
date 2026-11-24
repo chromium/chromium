@@ -73,6 +73,7 @@ template("qt_shim") {
   pkg_config("qt" + invoker.qt_version + "_config") {
     packages = [
       "Qt" + invoker.qt_version + "Core",
+      "Qt" + invoker.qt_version + "Gui",
       "Qt" + invoker.qt_version + "Widgets",
     ]
   }
