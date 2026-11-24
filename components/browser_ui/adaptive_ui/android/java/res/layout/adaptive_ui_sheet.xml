@@ -7,49 +7,68 @@ found in the LICENSE file.
 <!-- TODO(crbug.com/580967946): Confirm sheet layout and dimensions with UX. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="@dimen/adaptive_ui_sheet_vertical_margin">
 
-    <LinearLayout
+    <!-- The close button floats at the top end, beside the first view. -->
+    <FrameLayout
         android:id="@+id/adaptive_ui_sheet_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|end"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/adaptive_ui_sheet_vertical_margin"
         android:visibility="gone">
 
-        <ImageView
-            android:id="@+id/adaptive_ui_sheet_icon"
-            android:layout_width="@dimen/adaptive_ui_sheet_icon_size"
-            android:layout_height="@dimen/adaptive_ui_sheet_icon_size"
-            android:layout_marginStart=
-                "@dimen/adaptive_ui_sheet_horizontal_margin"
-            android:importantForAccessibility="no"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/adaptive_ui_sheet_title"
-            android:layout_width="0dp"
+        <!--
+        The icon and title are bound, shown and spaced separately, so they
+        can't be one TextView with a compound drawable.
+        -->
+        <LinearLayout
+            android:id="@+id/adaptive_ui_sheet_header_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginHorizontal=
-                "@dimen/adaptive_ui_sheet_horizontal_margin"
-            android:accessibilityHeading="true"
-            android:textAppearance="@style/TextAppearance.Headline.Primary"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            android:paddingTop="@dimen/adaptive_ui_sheet_vertical_margin"
+            tools:ignore="UseCompoundDrawables">
 
+            <!-- The bottom margin is only kept while the title is visible. -->
+            <ImageView
+                android:id="@+id/adaptive_ui_sheet_icon"
+                android:layout_width="@dimen/adaptive_ui_sheet_icon_size"
+                android:layout_height="@dimen/adaptive_ui_sheet_icon_size"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom=
+                    "@dimen/adaptive_ui_sheet_vertical_margin"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+
+            <!--
+            Inset by the close button width on both sides so it stays centered.
+            -->
+            <TextView
+                android:id="@+id/adaptive_ui_sheet_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/min_touch_target_size"
+                android:gravity="center"
+                android:accessibilityHeading="true"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- The top margin is adjusted to center it on the icon when shown. -->
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/adaptive_ui_sheet_close_button"
             android:layout_width="@dimen/min_touch_target_size"
             android:layout_height="@dimen/min_touch_target_size"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="@dimen/adaptive_ui_sheet_vertical_margin"
             android:background="@drawable/default_icon_background"
             android:contentDescription="@string/close"
             android:src="@drawable/btn_close"
             android:visibility="gone" />
-    </LinearLayout>
+    </FrameLayout>
 
     <!--
     Replaced by adaptive_ui_sheet_body, or by

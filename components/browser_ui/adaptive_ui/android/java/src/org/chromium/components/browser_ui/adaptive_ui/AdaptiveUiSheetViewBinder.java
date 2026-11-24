@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.adaptive_ui;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -135,13 +136,35 @@ final class AdaptiveUiSheetViewBinder {
 
     private static void updateHeaderVisibility(View root) {
         View header = root.findViewById(R.id.adaptive_ui_sheet_header);
-        boolean visible =
-                root.findViewById(R.id.adaptive_ui_sheet_icon).getVisibility() == View.VISIBLE
-                        || root.findViewById(R.id.adaptive_ui_sheet_title).getVisibility()
-                                == View.VISIBLE
-                        || root.findViewById(R.id.adaptive_ui_sheet_close_button).getVisibility()
-                                == View.VISIBLE;
-        header.setVisibility(visible ? View.VISIBLE : View.GONE);
+        View icon = root.findViewById(R.id.adaptive_ui_sheet_icon);
+        TextView title = root.findViewById(R.id.adaptive_ui_sheet_title);
+        View close = root.findViewById(R.id.adaptive_ui_sheet_close_button);
+        boolean iconVisible = icon.getVisibility() == View.VISIBLE;
+        boolean titleVisible = title.getVisibility() == View.VISIBLE;
+        boolean closeVisible = close.getVisibility() == View.VISIBLE;
+        header.setVisibility(
+                iconVisible || titleVisible || closeVisible ? View.VISIBLE : View.GONE);
+
+        Resources res = root.getResources();
+        int verticalMargin = res.getDimensionPixelSize(R.dimen.adaptive_ui_sheet_vertical_margin);
+        int touchTarget = res.getDimensionPixelSize(R.dimen.min_touch_target_size);
+        int iconSize = res.getDimensionPixelSize(R.dimen.adaptive_ui_sheet_icon_size);
+
+        // Keep the icon-to-title gap only when the title is below the icon, so an icon-only
+        // header adds no space above the body.
+        ViewGroup.MarginLayoutParams iconParams =
+                (ViewGroup.MarginLayoutParams) icon.getLayoutParams();
+        iconParams.bottomMargin = titleVisible ? verticalMargin : 0;
+        icon.setLayoutParams(iconParams);
+
+        // The close button sits on the first line: centered on the icon when it is shown,
+        // otherwise on the title, which is then made as tall as the button.
+        title.setMinHeight(closeVisible && !iconVisible ? touchTarget : 0);
+        ViewGroup.MarginLayoutParams closeParams =
+                (ViewGroup.MarginLayoutParams) close.getLayoutParams();
+        closeParams.topMargin =
+                iconVisible ? verticalMargin - (touchTarget - iconSize) / 2 : verticalMargin;
+        close.setLayoutParams(closeParams);
     }
 
     private static void bindText(TextView textView, @Nullable CharSequence text) {

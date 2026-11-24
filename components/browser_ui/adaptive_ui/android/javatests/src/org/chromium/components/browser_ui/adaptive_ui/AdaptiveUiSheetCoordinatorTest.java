@@ -671,7 +671,7 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         // Header and button bar collapse because all of their children are gone.
         assertEquals(View.GONE, find(content, R.id.adaptive_ui_sheet_header).getVisibility());
-        assertAllChildrenGone(find(content, R.id.adaptive_ui_sheet_header));
+        assertAllChildrenGone(find(content, R.id.adaptive_ui_sheet_header_content));
         assertAllChildrenGone(find(content, R.id.adaptive_ui_sheet_button_bar));
         content.getContentView()
                 .measure(
@@ -702,10 +702,92 @@ public class AdaptiveUiSheetCoordinatorTest {
         View close = find(content, R.id.adaptive_ui_sheet_close_button);
 
         assertEquals(View.VISIBLE, header.getVisibility());
-        assertTrue(title.getBottom() <= header.getHeight());
-        int titleCenter = title.getTop() + title.getBottom();
-        int closeCenter = close.getTop() + close.getBottom();
+        assertTrue(topIn(header, title) + title.getHeight() <= header.getHeight());
+        // Without an icon, the close button is on the title's line, vertically centered with it.
+        int titleCenter = 2 * topIn(header, title) + title.getHeight();
+        int closeCenter = 2 * topIn(header, close) + close.getHeight();
         assertTrue(Math.abs(titleCenter - closeCenter) <= 1);
+        // The title stays horizontally centered in the sheet even with the close button shown.
+        int titleHorizontalCenter = 2 * leftIn(header, title) + title.getWidth();
+        assertTrue(Math.abs(titleHorizontalCenter - header.getWidth()) <= 1);
+    }
+
+    @Test
+    public void testHeader_IconTitleAndCloseButton_CloseAtTopAndTitleCentered() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.HEADER_ICON, new ColorDrawable(Color.RED))
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        View root = content.getContentView();
+        root.measure(
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY));
+        root.layout(0, 0, 1000, 600);
+
+        View header = find(content, R.id.adaptive_ui_sheet_header);
+        View icon = find(content, R.id.adaptive_ui_sheet_icon);
+        View title = find(content, R.id.adaptive_ui_sheet_title);
+        View close = find(content, R.id.adaptive_ui_sheet_close_button);
+
+        // The close button is vertically centered on the icon's line, and the icon stays centered
+        // on the full width.
+        int iconCenter = 2 * topIn(header, icon) + icon.getHeight();
+        int closeCenter = 2 * topIn(header, close) + close.getHeight();
+        assertTrue(Math.abs(iconCenter - closeCenter) <= 1);
+        int iconHorizontalCenter = 2 * leftIn(header, icon) + icon.getWidth();
+        assertTrue(Math.abs(iconHorizontalCenter - header.getWidth()) <= 1);
+        assertEquals(
+                topIn(header, icon) + icon.getHeight() + getVerticalMargin(), topIn(header, title));
+        // With an icon, the title only needs its text height, so the gap stays 16dp.
+        assertEquals(0, ((TextView) title).getMinHeight());
+        int titleHorizontalCenter = 2 * leftIn(header, title) + title.getWidth();
+        assertTrue(Math.abs(titleHorizontalCenter - header.getWidth()) <= 1);
+
+        // Removing the title later also removes the gap below the icon.
+        model.set(AdaptiveUiProperties.TITLE, null);
+        assertEquals(0, ((ViewGroup.MarginLayoutParams) icon.getLayoutParams()).bottomMargin);
+    }
+
+    @Test
+    public void testHeader_IconWithoutTitle_AddsNoGapBelowIcon() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.HEADER_ICON, new ColorDrawable(Color.RED))
+                        .with(AdaptiveUiProperties.DESCRIPTION, "Description")
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        View root = content.getContentView();
+        root.measure(
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY));
+        root.layout(0, 0, 1000, 600);
+
+        View header = find(content, R.id.adaptive_ui_sheet_header);
+        View icon = find(content, R.id.adaptive_ui_sheet_icon);
+        View description = find(content, R.id.adaptive_ui_sheet_description);
+
+        // The header ends right below the icon, and only the description's own top margin follows.
+        assertEquals(topIn(header, icon) + icon.getHeight(), header.getHeight());
+        assertEquals(header.getBottom() + getVerticalMargin(), topIn(root, description));
+    }
+
+    /** Returns the top of {@code view} relative to its ancestor {@code ancestor}. */
+    private static int topIn(View ancestor, View view) {
+        int top = 0;
+        for (View v = view; v != ancestor; v = (View) v.getParent()) top += v.getTop();
+        return top;
+    }
+
+    /** Returns the left of {@code view} relative to its ancestor {@code ancestor}. */
+    private static int leftIn(View ancestor, View view) {
+        int left = 0;
+        for (View v = view; v != ancestor; v = (View) v.getParent()) left += v.getLeft();
+        return left;
     }
 
     @Test
