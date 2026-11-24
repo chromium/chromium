@@ -8,12 +8,14 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/byte_size.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -49,6 +51,7 @@
 #include "net/base/network_delegate.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/scheduler/task_runner.h"
 #include "net/base/schemeful_site.h"
@@ -113,8 +116,11 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/base/upload_data_stream.h"
+#include "net/device_bound_sessions/dbsc_request.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
@@ -507,6 +513,14 @@ void URLRequestHttpJob::Start() {
 
 void URLRequestHttpJob::Kill() {
   weak_factory_.InvalidateWeakPtrs();
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  if (std::exchange(waiting_for_key_binding_, false)) {
+    // `OnKeyBindingReady()` can no longer run, so the wait ends here.
+    request_->net_log().EndEvent(NetLogEventType::DBSC_GENERATE_KEY, [] {
+      return base::DictValue().Set("restart", false);
+    });
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (transaction_) {
     DestroyTransaction();
   }
@@ -584,9 +598,17 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
 
   ProcessStrictTransportSecurityHeader();
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  if (MaybeWaitForKeyBinding()) {
+    // `OnKeyBindingReady()` continues from here.
+    return;
+  }
   ProcessDeviceBoundSessionsHeader();
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+  FinishNotifyHeadersComplete();
+}
+
+void URLRequestHttpJob::FinishNotifyHeadersComplete() {
   // Clear |set_cookie_access_result_list_| after any processing in case
   // SaveCookiesAndNotifyHeadersComplete is called again.
   request_->set_maybe_stored_cookies(std::move(set_cookie_access_result_list_));
@@ -607,9 +629,12 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
 }
 
 void URLRequestHttpJob::DestroyTransaction() {
-  DCHECK(transaction_.get());
-
   DoneWithRequest(ABORTED);
+  ResetTransaction();
+}
+
+void URLRequestHttpJob::ResetTransaction() {
+  CHECK(transaction_);
 
   total_received_bytes_from_previous_transactions_ +=
       transaction_->GetTotalReceivedBytes();
@@ -745,7 +770,11 @@ void URLRequestHttpJob::StartTransactionInternal() {
           base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
                          base::Unretained(this)),
           request_->net_log());
-      start_time_ = base::TimeTicks::Now();
+      // A restart for Secure-Session-GenerateKey creates a second transaction.
+      // `start_time_` still covers the whole job then.
+      if (start_time_.is_null()) {
+        start_time_ = base::TimeTicks::Now();
+      }
     }
   }
 
@@ -1164,22 +1193,74 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 }
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
+device_bound_sessions::SessionService*
+URLRequestHttpJob::GetSessionServiceForResponse() {
   DCHECK(response_info_);
   const SSLInfo& ssl_info = response_info_->ssl_info;
   // Do not process DBSC headers on connections with certificate errors.
   if (!ssl_info.is_valid() || IsCertStatusError(ssl_info.cert_status)) {
-    return;
+    return nullptr;
   }
 
+  return request_->context()->device_bound_session_service();
+}
+
+void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
   device_bound_sessions::SessionService* service =
-      request_->context()->device_bound_session_service();
+      GetSessionServiceForResponse();
   if (!service) {
     return;
   }
 
   device_bound_sessions::DbscRequest request(request_);
   service->HandleResponseHeaders(request, GetResponseHeaders());
+}
+
+bool URLRequestHttpJob::MaybeWaitForKeyBinding() {
+  // A job sends its request again at most once, so a server that keeps asking
+  // for a key can't cause a loop.
+  if (restarted_for_key_binding_) {
+    return false;
+  }
+
+  // An identity provider asks for a key with a 401. The HTTP cache never stores
+  // a 401, and no other request can use the cache entry while this job holds
+  // the response, so no other request reads the response that
+  // `OnKeyBindingReady()` drops.
+  if (GetResponseHeaders()->response_code() != HTTP_UNAUTHORIZED) {
+    return false;
+  }
+
+  // Key generation is for HTTP requests to an identity provider. A WebSocket
+  // handshake is not sent again with a key.
+  if (request_info_.url.SchemeIsWSOrWSS()) {
+    return false;
+  }
+
+  // Sending the request again replays the upload body, which a streaming body
+  // can't do.
+  if (request_info_.upload_data_stream &&
+      request_info_.upload_data_stream->has_null_source()) {
+    return false;
+  }
+
+  device_bound_sessions::SessionService* service =
+      GetSessionServiceForResponse();
+  if (!service) {
+    return false;
+  }
+
+  device_bound_sessions::DbscRequest request(request_);
+  if (!service->HandleGenerateKeyHeader(
+          request, *GetResponseHeaders(),
+          base::BindOnce(&URLRequestHttpJob::OnKeyBindingReady,
+                         weak_factory_.GetWeakPtr()))) {
+    return false;
+  }
+
+  waiting_for_key_binding_ = true;
+  request_->net_log().BeginEvent(NetLogEventType::DBSC_GENERATE_KEY);
+  return true;
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
@@ -1409,6 +1490,54 @@ void URLRequestHttpJob::RestartTransactionForRefresh(
         result);
   }
 
+  RestartTransaction();
+}
+
+void URLRequestHttpJob::OnKeyBindingReady(
+    device_bound_sessions::SessionErrorOr<std::string> binding_statement) {
+  // The service never replies before `HandleGenerateKeyHeader()` returns.
+  CHECK(std::exchange(waiting_for_key_binding_, false));
+  request_->net_log().EndEvent(NetLogEventType::DBSC_GENERATE_KEY, [&] {
+    return base::DictValue().Set("restart", binding_statement.has_value());
+  });
+
+  if (!binding_statement) {
+    // There is no key to send, so deliver the response as if it hadn't asked
+    // for one.
+    ProcessDeviceBoundSessionsHeader();
+    FinishNotifyHeadersComplete();
+    return;
+  }
+
+  // Send the request again with the key binding. The response that asked for
+  // the key is dropped: it never reaches the `URLRequest`, and its body isn't
+  // read. Like on an auth restart, its cookies are already stored and are sent
+  // with the new request. Unlike on an auth restart, its other DBSC headers are
+  // not processed. A Secure-Session-Challenge on it is lost, for example.
+  //
+  // The header, the cache bypass and `restarted_for_key_binding_` all live on
+  // this job, so they end with this hop and a redirect doesn't inherit them.
+  restarted_for_key_binding_ = true;
+  // TODO(crbug.com/481629977): DevTools shows the first request's raw headers,
+  // which lack this header, because `URLLoader` reports raw request headers
+  // only once per hop.
+  request_info_.extra_headers.SetHeader("Secure-Session-KeyBinding",
+                                        std::move(*binding_statement));
+  request_info_.load_flags |= LOAD_BYPASS_CACHE;
+
+  // This needs a new transaction. `HttpTransaction::RestartWithAuth()` only
+  // works after an auth challenge, and `DestroyTransaction()` would also end
+  // the job.
+  ResetTransaction();
+  // As in `URLRequest::PrepareToRestart()`, the request reports no proxy until
+  // the new transaction has a response.
+  SetProxyChain(ProxyChain());
+  // Nothing reports the dropped response's Set-Cookie results.
+  set_cookie_access_result_list_.clear();
+  // The new request counts its own deferrals for session refreshes.
+  device_bound_session_deferral_count_ = 0;
+  device_bound_session_first_deferral_ = base::TimeTicks();
+  ResetTimer();
   RestartTransaction();
 }
 #endif

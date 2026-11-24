@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string_view>
 #include <utility>
@@ -15,6 +16,7 @@
 
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -26,12 +28,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -58,6 +62,9 @@
 #include "net/socket/socket_test_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
@@ -80,8 +87,26 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "base/containers/map_util.h"
+#include "base/containers/span.h"
+#include "base/location.h"
+#include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/test_future.h"
+#include "base/thread_annotations.h"
+#include "base/types/expected.h"
+#include "net/base/chunked_upload_data_stream.h"
+#include "net/base/elements_upload_data_stream.h"
+#include "net/base/schemeful_site.h"
+#include "net/base/upload_bytes_element_reader.h"
 #include "net/device_bound_sessions/mock_session_service.h"
+#include "net/device_bound_sessions/refresh_result.h"
+#include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/session_usage.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #endif
 
 using net::test::IsError;
@@ -92,10 +117,14 @@ namespace net {
 namespace {
 
 using ::testing::_;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
+using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Return;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::Unused;
 
@@ -1689,7 +1718,10 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTS) {
 class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
     : public TestWithTaskEnvironment {
  protected:
-  URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest() {
+  explicit URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : TestWithTaskEnvironment(time_source) {
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_client_socket_factory_for_testing(&socket_factory_);
     context_builder->set_device_bound_session_service(
@@ -1701,6 +1733,8 @@ class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
         TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     request_->set_device_bound_session_mode(
         net::DeviceBoundSessionMode::kAllowed);
+    EXPECT_CALL(GetMockService(), HandleGenerateKeyHeader)
+        .WillRepeatedly(Return(false));
   }
 
   device_bound_sessions::SessionServiceMock& GetMockService() {
@@ -2388,6 +2422,642 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
       "Net.DeviceBoundSessions.InScopeNavigationRequestWasDeferred",
       /*sample=*/false,
       /*expected_bucket_count=*/1);
+}
+
+constexpr char kGenerateKeyHeaderValue[] =
+    R"((ES256); target_origin="https://example.com"; )"
+    R"(provider_session_id="session1"; challenge="chal1")";
+
+// Answers a request without Secure-Session-KeyBinding with a `status` response
+// that asks for a key, carries `extra_headers` and has the body "Needs key". A
+// 401 also carries a Basic auth challenge, which the key must take precedence
+// over. Answers a request with the key binding with a 200 that echoes it as the
+// body.
+std::unique_ptr<test_server::HttpResponse> HandleGenerateKeyRequest(
+    HttpStatusCode status,
+    const base::StringPairs& extra_headers,
+    const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  const std::string* key_binding =
+      base::FindOrNull(request.headers, "Secure-Session-KeyBinding");
+  if (!key_binding) {
+    response->set_code(status);
+    response->AddCustomHeader("Secure-Session-GenerateKey",
+                              kGenerateKeyHeaderValue);
+    if (status == HTTP_UNAUTHORIZED) {
+      response->AddCustomHeader("WWW-Authenticate", "Basic realm=\"test\"");
+    }
+    for (const auto& [name, value] : extra_headers) {
+      response->AddCustomHeader(name, value);
+    }
+    response->set_content("Needs key");
+    return response;
+  }
+  response->set_code(HTTP_OK);
+  response->set_content(*key_binding);
+  return response;
+}
+
+using KeyBindingCallback =
+    device_bound_sessions::SessionService::KeyBindingCallback;
+
+// Expects one `HandleGenerateKeyHeader()` call on `service`, which accepts the
+// header and posts `result` to the callback. Like the real service, it never
+// replies before returning.
+void ExpectGenerateKey(
+    device_bound_sessions::SessionServiceMock& service,
+    device_bound_sessions::SessionErrorOr<std::string> result) {
+  EXPECT_CALL(service, HandleGenerateKeyHeader)
+      .WillOnce([result = std::move(result)](
+                    device_bound_sessions::DbscRequest& request,
+                    const HttpResponseHeaders& headers,
+                    KeyBindingCallback callback) mutable {
+        EXPECT_TRUE(headers.HasHeader("Secure-Session-GenerateKey"));
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+        return true;
+      });
+}
+
+// Expects one `HandleGenerateKeyHeader()` call on `service`, which accepts the
+// header and hands its callback to `held`, so the test decides when to reply.
+void HoldGenerateKey(device_bound_sessions::SessionServiceMock& service,
+                     base::test::TestFuture<KeyBindingCallback>& held) {
+  EXPECT_CALL(service, HandleGenerateKeyHeader)
+      .WillOnce([&held](device_bound_sessions::DbscRequest& request,
+                        const HttpResponseHeaders& headers,
+                        KeyBindingCallback callback) {
+        EXPECT_TRUE(headers.HasHeader("Secure-Session-GenerateKey"));
+        held.SetValue(std::move(callback));
+        return true;
+      });
+}
+
+class URLRequestHttpJobGenerateKeyTest : public TestWithTaskEnvironment {
+ protected:
+  URLRequestHttpJobGenerateKeyTest() {
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->set_device_bound_session_service(
+        std::make_unique<
+            NiceMock<device_bound_sessions::SessionServiceMock>>());
+    context_ = context_builder->Build();
+    https_test_.RegisterRequestMonitor(base::BindLambdaForTesting(
+        [this](const test_server::HttpRequest& request) {
+          base::AutoLock lock(requests_lock_);
+          seen_requests_.push_back(request);
+        }));
+  }
+
+  // Starts the server with `HandleGenerateKeyRequest()` as its handler.
+  void StartServer(HttpStatusCode status,
+                   base::StringPairs extra_headers = {}) {
+    https_test_.RegisterRequestHandler(base::BindRepeating(
+        &HandleGenerateKeyRequest, status, std::move(extra_headers)));
+    ASSERT_TRUE(https_test_.Start());
+  }
+
+  // Expects that `request` logged a DBSC_GENERATE_KEY event whose END phase
+  // reports `expected_restart`.
+  void ExpectGenerateKeyNetLog(const URLRequest& request,
+                               bool expected_restart) {
+    std::vector<NetLogEntry> entries =
+        net_log_observer_.GetEntriesForSource(request.net_log().source());
+    size_t pos = ExpectLogContainsSomewhere(entries, 0,
+                                            NetLogEventType::DBSC_GENERATE_KEY,
+                                            NetLogEventPhase::BEGIN);
+    pos = ExpectLogContainsSomewhereAfter(entries, pos + 1,
+                                          NetLogEventType::DBSC_GENERATE_KEY,
+                                          NetLogEventPhase::END);
+    ASSERT_LT(pos, entries.size());
+    EXPECT_EQ(GetBooleanValueFromParams(entries[pos], "restart"),
+              expected_restart);
+  }
+
+  // Returns the requests the server has received so far, in order.
+  std::vector<test_server::HttpRequest> GetSeenRequests() {
+    base::AutoLock lock(requests_lock_);
+    return seen_requests_;
+  }
+
+  // Creates a first-party request to the server that may use DBSC.
+  std::unique_ptr<URLRequest> CreateRequest() {
+    const GURL url = https_test_.GetURL("/test");
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        url, DEFAULT_PRIORITY, &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
+    request->set_site_for_cookies(SiteForCookies::FromUrl(url));
+    request->set_device_bound_session_mode(
+        net::DeviceBoundSessionMode::kAllowed);
+    return request;
+  }
+
+  // Runs `request` to completion and expects it to succeed with
+  // `expected_body`.
+  void RunRequest(URLRequest& request, std::string_view expected_body) {
+    request.Start();
+    delegate_.RunUntilComplete();
+    EXPECT_THAT(delegate_.request_status(), IsOk());
+    EXPECT_EQ(delegate_.data_received(), expected_body);
+  }
+
+  // Same, for a new request from `CreateRequest()`.
+  std::unique_ptr<URLRequest> RunRequest(std::string_view expected_body) {
+    std::unique_ptr<URLRequest> request = CreateRequest();
+    RunRequest(*request, expected_body);
+    return request;
+  }
+
+  device_bound_sessions::SessionServiceMock& mock_service() {
+    return *static_cast<device_bound_sessions::SessionServiceMock*>(
+        context_->device_bound_session_service());
+  }
+
+  // The request monitor writes to these on the IO thread of `https_test_`.
+  // They are declared before it, so that they outlive that thread.
+  base::Lock requests_lock_;
+  std::vector<test_server::HttpRequest> seen_requests_
+      GUARDED_BY(requests_lock_);
+
+  EmbeddedTestServer https_test_{EmbeddedTestServer::TYPE_HTTPS};
+  std::unique_ptr<URLRequestContext> context_;
+  RecordingNetLogObserver net_log_observer_;
+  TestDelegate delegate_;
+};
+
+// The job holds a 401 that asks for a key. Once the service returns a key
+// binding, it sends the request again with Secure-Session-KeyBinding, and only
+// the second response reaches the `URLRequest`.
+TEST_F(URLRequestHttpJobGenerateKeyTest, RestartsWithKeyBinding) {
+  StartServer(HTTP_UNAUTHORIZED);
+  ExpectGenerateKey(mock_service(), "mock_binding_statement");
+  // DBSC response headers are processed for the final response only, not for
+  // the dropped 401.
+  EXPECT_CALL(mock_service(), HandleResponseHeaders).Times(1);
+
+  // The server's 200 echoes the key binding.
+  std::unique_ptr<URLRequest> request = RunRequest("mock_binding_statement");
+  ASSERT_TRUE(request->response_headers());
+  EXPECT_EQ(request->response_headers()->response_code(), HTTP_OK);
+
+  std::vector<test_server::HttpRequest> requests = GetSeenRequests();
+  ASSERT_THAT(requests, SizeIs(2));
+  EXPECT_FALSE(requests[0].headers.contains("Secure-Session-KeyBinding"));
+  EXPECT_THAT(requests[1].headers, Contains(Pair("Secure-Session-KeyBinding",
+                                                 "mock_binding_statement")));
+  // The key restart comes before the 401's Basic auth challenge, so the
+  // delegate is never asked for credentials.
+  EXPECT_FALSE(delegate_.auth_required_called());
+  ExpectGenerateKeyNetLog(*request, /*expected_restart=*/true);
+}
+
+// A server that asks for a key again on the restarted request gets its second
+// 401 delivered. The job restarts at most once, so it can't loop.
+TEST_F(URLRequestHttpJobGenerateKeyTest, RestartsOnlyOnce) {
+  // Unlike `HandleGenerateKeyRequest()`, this server never accepts the key: it
+  // answers every request with a 401 asking for one. The body echoes the key
+  // binding, if any.
+  https_test_.RegisterRequestHandler(
+      base::BindRepeating([](const test_server::HttpRequest& request)
+                              -> std::unique_ptr<test_server::HttpResponse> {
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        response->set_code(HTTP_UNAUTHORIZED);
+        response->AddCustomHeader("Secure-Session-GenerateKey",
+                                  kGenerateKeyHeaderValue);
+        const std::string* key_binding =
+            base::FindOrNull(request.headers, "Secure-Session-KeyBinding");
+        response->set_content(key_binding ? *key_binding : "Needs key");
+        return response;
+      }));
+  ASSERT_TRUE(https_test_.Start());
+
+  // Expects one call, so the test fails if the job asks the service again.
+  ExpectGenerateKey(mock_service(), "mock_binding_statement");
+
+  std::unique_ptr<URLRequest> request = RunRequest("mock_binding_statement");
+  ASSERT_TRUE(request->response_headers());
+  EXPECT_EQ(request->response_headers()->response_code(), HTTP_UNAUTHORIZED);
+  EXPECT_THAT(GetSeenRequests(), SizeIs(2));
+}
+
+// The restart sends the same method and body again. The new transaction reads
+// the upload stream again from the start.
+TEST_F(URLRequestHttpJobGenerateKeyTest, RestartResendsPostBody) {
+  StartServer(HTTP_UNAUTHORIZED);
+  ExpectGenerateKey(mock_service(), "mock_binding_statement");
+
+  std::unique_ptr<URLRequest> request = CreateRequest();
+  request->set_method("POST");
+  request->set_upload(ElementsUploadDataStream::CreateWithReader(
+      std::make_unique<UploadBytesElementReader>(
+          base::byte_span_from_cstring("test_post_body"))));
+  RunRequest(*request, "mock_binding_statement");
+
+  std::vector<test_server::HttpRequest> requests = GetSeenRequests();
+  ASSERT_THAT(requests, SizeIs(2));
+  EXPECT_EQ(requests[0].method, test_server::METHOD_POST);
+  EXPECT_EQ(requests[0].content, "test_post_body");
+  EXPECT_EQ(requests[1].method, test_server::METHOD_POST);
+  EXPECT_EQ(requests[1].content, "test_post_body");
+}
+
+// A chunked body that can be read again is sent again too. Only a body with a
+// null source can't be, see `SkippedForUnrewindableUploadStream`.
+TEST_F(URLRequestHttpJobGenerateKeyTest, RestartResendsRewindableChunkedBody) {
+  StartServer(HTTP_UNAUTHORIZED);
+  ExpectGenerateKey(mock_service(), "mock_binding_statement");
+
+  std::unique_ptr<URLRequest> request = CreateRequest();
+  request->set_method("POST");
+  auto upload_stream = std::make_unique<ChunkedUploadDataStream>(
+      /*identifier=*/0, /*has_null_source=*/false);
+  upload_stream->AppendData(base::byte_span_from_cstring("chunked_body"),
+                            /*is_done=*/true);
+  request->set_upload(std::move(upload_stream));
+  RunRequest(*request, "mock_binding_statement");
+
+  std::vector<test_server::HttpRequest> requests = GetSeenRequests();
+  ASSERT_THAT(requests, SizeIs(2));
+  EXPECT_EQ(requests[0].content, "chunked_body");
+  EXPECT_EQ(requests[1].content, "chunked_body");
+}
+
+// A body with a null source can't be sent twice, so the job doesn't ask for a
+// key, and no signing quota is charged. The 401 is delivered as usual.
+TEST_F(URLRequestHttpJobGenerateKeyTest, SkippedForUnrewindableUploadStream) {
+  StartServer(HTTP_UNAUTHORIZED);
+  EXPECT_CALL(mock_service(), HandleGenerateKeyHeader).Times(0);
+
+  std::unique_ptr<URLRequest> request = CreateRequest();
+  request->set_method("POST");
+  // Stands in for a fetch() ReadableStream body. The job goes by the flag
+  // alone, even though this data is in memory.
+  auto upload_stream = std::make_unique<ChunkedUploadDataStream>(
+      /*identifier=*/0, /*has_null_source=*/true);
+  upload_stream->AppendData(base::byte_span_from_cstring("streaming_body"),
+                            /*is_done=*/true);
+  request->set_upload(std::move(upload_stream));
+  RunRequest(*request, "Needs key");
+  EXPECT_THAT(GetSeenRequests(), SizeIs(1));
+}
+
+// If the service refuses the header, the job delivers the 401 right away.
+TEST_F(URLRequestHttpJobGenerateKeyTest, DeliversResponseWhenServiceRefuses) {
+  StartServer(HTTP_UNAUTHORIZED);
+  EXPECT_CALL(mock_service(), HandleGenerateKeyHeader).WillOnce(Return(false));
+  EXPECT_CALL(mock_service(), HandleResponseHeaders).Times(1);
+
+  std::unique_ptr<URLRequest> request = RunRequest("Needs key");
+  ASSERT_TRUE(request->response_headers());
+  EXPECT_EQ(request->response_headers()->response_code(), HTTP_UNAUTHORIZED);
+  EXPECT_THAT(GetSeenRequests(), SizeIs(1));
+}
+
+// If key generation fails after the service took the header, the job delivers
+// the 401 it was holding, with the usual DBSC header processing.
+TEST_F(URLRequestHttpJobGenerateKeyTest, FailureDeliversOriginalResponse) {
+  StartServer(HTTP_UNAUTHORIZED);
+  ExpectGenerateKey(
+      mock_service(),
+      base::unexpected(
+          device_bound_sessions::SessionError::kSigningKeyGenerationError));
+  EXPECT_CALL(mock_service(), HandleResponseHeaders).Times(1);
+
+  std::unique_ptr<URLRequest> request = RunRequest("Needs key");
+  ASSERT_TRUE(request->response_headers());
+  EXPECT_EQ(request->response_headers()->response_code(), HTTP_UNAUTHORIZED);
+  EXPECT_THAT(GetSeenRequests(), SizeIs(1));
+  ExpectGenerateKeyNetLog(*request, /*expected_restart=*/false);
+}
+
+// The dropped 401's cookies are stored before the job waits, so the restarted
+// request sends them, as after an auth restart.
+TEST_F(URLRequestHttpJobGenerateKeyTest,
+       RestartSendsCookiesFromDroppedResponse) {
+  // Only the 401 sets the cookie.
+  StartServer(HTTP_UNAUTHORIZED,
+              {{"Set-Cookie", "test_cookie=val; Secure; Path=/"}});
+  ExpectGenerateKey(mock_service(), "mock_binding_statement");
+
+  std::unique_ptr<URLRequest> request = RunRequest("mock_binding_statement");
+  // The request reports only the 200's Set-Cookie results, and the 200 sets no
+  // cookies.
+  EXPECT_THAT(request->maybe_stored_cookies(), IsEmpty());
+
+  std::vector<test_server::HttpRequest> requests = GetSeenRequests();
+  ASSERT_THAT(requests, SizeIs(2));
+  EXPECT_FALSE(requests[0].headers.contains("Cookie"));
+  EXPECT_THAT(requests[1].headers, Contains(Pair("Cookie", "test_cookie=val")));
+}
+
+// Cancelling the request while the job waits for a key cancels the callback and
+// ends the NetLog event. Running the callback after the request is gone does
+// nothing.
+TEST_F(URLRequestHttpJobGenerateKeyTest,
+       CancelAndDestroyRequestWhileWaitingForKey) {
+  StartServer(HTTP_UNAUTHORIZED);
+
+  base::test::TestFuture<KeyBindingCallback> callback_future;
+  HoldGenerateKey(mock_service(), callback_future);
+
+  std::unique_ptr<URLRequest> request = CreateRequest();
+  request->Start();
+  // Runs until the job holds the 401 and waits for a key.
+  KeyBindingCallback callback = callback_future.Take();
+
+  request->Cancel();
+  EXPECT_TRUE(callback.IsCancelled());
+  ExpectGenerateKeyNetLog(*request, /*expected_restart=*/false);
+  request.reset();
+  std::move(callback).Run("mock_binding_statement");
+}
+
+// Only a 401 can ask for a key. The job delivers other responses that carry
+// Secure-Session-GenerateKey without asking the service.
+TEST_F(URLRequestHttpJobGenerateKeyTest, SkippedUnlessUnauthorized) {
+  // A 200 with Secure-Session-GenerateKey and the body "Needs key".
+  StartServer(HTTP_OK);
+  EXPECT_CALL(mock_service(), HandleGenerateKeyHeader).Times(0);
+
+  RunRequest("Needs key");
+  EXPECT_THAT(GetSeenRequests(), SizeIs(1));
+}
+
+// DBSC headers are ignored on connections with certificate errors, even if the
+// request proceeds despite the error.
+TEST_F(URLRequestHttpJobGenerateKeyTest, SkippedOnCertError) {
+  https_test_.SetSSLConfig(EmbeddedTestServer::CERT_EXPIRED);
+  StartServer(HTTP_UNAUTHORIZED);
+  // Proceed despite the expired certificate, as if the user clicked through
+  // the warning.
+  delegate_.set_allow_certificate_errors(true);
+  EXPECT_CALL(mock_service(), HandleGenerateKeyHeader).Times(0);
+
+  std::unique_ptr<URLRequest> request = RunRequest("Needs key");
+  EXPECT_TRUE(IsCertStatusError(request->ssl_info().cert_status));
+}
+
+// The restarted request bypasses the HTTP cache. On the wire, LOAD_BYPASS_CACHE
+// shows as the no-cache headers that `HttpNetworkTransaction` adds for it.
+TEST_F(URLRequestHttpJobGenerateKeyTest, RestartBypassesCache) {
+  StartServer(HTTP_UNAUTHORIZED);
+  ExpectGenerateKey(mock_service(), "mock_binding_statement");
+
+  RunRequest("mock_binding_statement");
+
+  std::vector<test_server::HttpRequest> requests = GetSeenRequests();
+  ASSERT_THAT(requests, SizeIs(2));
+  EXPECT_FALSE(requests[0].headers.contains("Cache-Control"));
+  EXPECT_FALSE(requests[0].headers.contains("Pragma"));
+  EXPECT_THAT(requests[1].headers, Contains(Pair("Cache-Control", "no-cache")));
+  EXPECT_THAT(requests[1].headers, Contains(Pair("Pragma", "no-cache")));
+}
+
+// The key binding, the cache bypass and the restart-once guard all belong to
+// the job, so they end with the first hop. The redirect target gets neither
+// header, and its own 401 asking for a key goes to the service again.
+TEST_F(URLRequestHttpJobGenerateKeyTest, KeyBindingNotSentAfterRedirect) {
+  https_test_.RegisterRequestHandler(
+      base::BindRepeating([](const test_server::HttpRequest& request)
+                              -> std::unique_ptr<test_server::HttpResponse> {
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        if (request.relative_url != "/redirected") {
+          if (!request.headers.contains("Secure-Session-KeyBinding")) {
+            // 1. The first request gets a 401 asking for a key.
+            response->set_code(HTTP_UNAUTHORIZED);
+            response->AddCustomHeader("Secure-Session-GenerateKey",
+                                      kGenerateKeyHeaderValue);
+            return response;
+          }
+          // 2. The restarted request, with the key binding, is redirected.
+          response->set_code(HTTP_FOUND);
+          response->AddCustomHeader("Location", "/redirected");
+          return response;
+        }
+        // 3. The redirect target asks for a key too.
+        response->set_code(HTTP_UNAUTHORIZED);
+        response->AddCustomHeader("Secure-Session-GenerateKey",
+                                  kGenerateKeyHeaderValue);
+        response->set_content("redirected_body");
+        return response;
+      }));
+  ASSERT_TRUE(https_test_.Start());
+
+  {
+    InSequence s;
+    // The service returns a key for the first request.
+    ExpectGenerateKey(mock_service(), "mock_binding_statement");
+    // The redirect target's job asks again. Refusing delivers its 401.
+    EXPECT_CALL(mock_service(), HandleGenerateKeyHeader)
+        .WillOnce(Return(false));
+  }
+  // For the 302 and the redirect target's 401, but not the dropped 401.
+  EXPECT_CALL(mock_service(), HandleResponseHeaders).Times(2);
+
+  RunRequest("redirected_body");
+  EXPECT_EQ(delegate_.received_redirect_count(), 1);
+
+  std::vector<test_server::HttpRequest> requests = GetSeenRequests();
+  ASSERT_THAT(requests, SizeIs(3));
+  EXPECT_EQ(requests[2].relative_url, "/redirected");
+  EXPECT_FALSE(requests[2].headers.contains("Secure-Session-KeyBinding"));
+  EXPECT_FALSE(requests[2].headers.contains("Cache-Control"));
+  EXPECT_FALSE(requests[2].headers.contains("Pragma"));
+}
+
+// The restarted request counts its own deferrals for session refreshes. Each
+// transaction start records how often it was deferred, and only a deferred
+// start records the time it waited.
+TEST_F(URLRequestHttpJobGenerateKeyTest, RestartCountsDeferralsSeparately) {
+  StartServer(HTTP_UNAUTHORIZED);
+  base::HistogramTester histograms;
+
+  // The first transaction is deferred once, for a refresh that ends right away.
+  EXPECT_CALL(mock_service(), ShouldDefer)
+      .WillOnce(Return(device_bound_sessions::SessionService::DeferralParams()))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(mock_service(), DeferRequestForRefresh)
+      .WillOnce(base::test::RunOnceCallback<2>(
+          device_bound_sessions::RefreshResult::kRefreshed));
+  ExpectGenerateKey(mock_service(), "mock_binding_statement");
+
+  RunRequest("mock_binding_statement");
+
+  // One deferral before the first transaction, none before the restart.
+  EXPECT_THAT(
+      histograms.GetAllSamples("Net.DeviceBoundSessions.RequestDeferralCount"),
+      base::BucketsAre(base::Bucket(1, 1), base::Bucket(0, 1)));
+  histograms.ExpectTotalCount(
+      "Net.DeviceBoundSessions.TotalRequestDeferredDuration", 1);
+}
+
+// When the job restarts, the request stops reporting the dropped response's
+// proxy chain until the new transaction has a response, as after
+// `URLRequest::PrepareToRestart()`.
+TEST_F(URLRequestHttpJobGenerateKeyTest, RestartClearsProxyChain) {
+  StartServer(HTTP_UNAUTHORIZED);
+
+  base::test::TestFuture<KeyBindingCallback> callback_future;
+  HoldGenerateKey(mock_service(), callback_future);
+
+  std::unique_ptr<URLRequest> request = CreateRequest();
+  request->Start();
+  // Runs until the job holds the 401 and waits for a key.
+  KeyBindingCallback callback = callback_future.Take();
+  ASSERT_EQ(request->proxy_chain(), ProxyChain::Direct());
+
+  // Restarts the job right away.
+  std::move(callback).Run("mock_binding_statement");
+  EXPECT_FALSE(request->proxy_chain().IsValid());
+
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+  EXPECT_EQ(request->proxy_chain(), ProxyChain::Direct());
+}
+
+// A 401 that asks for a key. It has no body, so the restarted request can reuse
+// its connection. The mock service doesn't parse the header value.
+constexpr std::string_view kGenerateKeyMockRead =
+    "HTTP/1.1 401 Unauthorized\r\n"
+    "Secure-Session-GenerateKey: (ES256)\r\n"
+    "Content-Length: 0\r\n\r\n";
+
+// `kSimpleGetMockWrite` sent again with the cache bypass and the key binding.
+constexpr std::string_view kKeyBindingRestartMockWrite =
+    "GET / HTTP/1.1\r\n"
+    "Host: www.example.com\r\n"
+    "Connection: keep-alive\r\n"
+    "Pragma: no-cache\r\n"
+    "Cache-Control: no-cache\r\n"
+    "User-Agent: \r\n"
+    "Accept-Encoding: gzip, deflate\r\n"
+    "Accept-Language: en-us,fr\r\n"
+    "Secure-Session-KeyBinding: mock_binding_statement\r\n\r\n";
+
+// Mock sockets give exact byte counts, and mock time exact durations.
+class URLRequestHttpJobGenerateKeyMockSocketsTest
+    : public URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest {
+ protected:
+  URLRequestHttpJobGenerateKeyMockSocketsTest()
+      : URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  // Adds one connection. It answers the first request with
+  // `kGenerateKeyMockRead`, and the restarted request with a 200 and the body
+  // "Test Content".
+  const MockSocketData& AddKeyBindingRestartResponses() {
+    auto data = std::make_unique<MockSocketData>();
+    data->ssl_data = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+    data->ssl_data->ssl_info.cert =
+        ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+    socket_factory_.AddSSLSocketDataProvider(data->ssl_data.get());
+    data->writes = {MockWrite(kSimpleGetMockWrite),
+                    MockWrite(kKeyBindingRestartMockWrite)};
+    data->reads = {MockRead(kGenerateKeyMockRead),
+                   MockRead("HTTP/1.1 200 OK\r\n"
+                            "Content-Length: 12\r\n\r\n"),
+                   MockRead("Test Content")};
+    data->socket_data =
+        std::make_unique<StaticSocketDataProvider>(data->reads, data->writes);
+    socket_factory_.AddSocketDataProvider(data->socket_data.get());
+    return *mock_socket_data_.emplace_back(std::move(data));
+  }
+};
+
+// The restart stays inside the job, so unlike after a redirect, the job's byte
+// counts include the dropped 401 and both requests.
+TEST_F(URLRequestHttpJobGenerateKeyMockSocketsTest,
+       ByteCountsIncludeDroppedResponse) {
+  const MockSocketData& socket_data = AddKeyBindingRestartResponses();
+  EXPECT_CALL(GetMockService(), ShouldDefer)
+      .Times(2)
+      .WillRepeatedly(Return(std::nullopt));
+  ExpectGenerateKey(GetMockService(), "mock_binding_statement");
+  EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
+
+  request_->Start();
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+
+  EXPECT_EQ(request_->GetTotalSentBytes(),
+            CountWriteByteSize(socket_data.writes));
+  EXPECT_EQ(request_->GetTotalReceivedBytes(),
+            CountReadByteSize(socket_data.reads));
+}
+
+// Net.HttpJob.TotalTime starts with the first transaction, so it includes the
+// wait for the key.
+TEST_F(URLRequestHttpJobGenerateKeyMockSocketsTest,
+       TotalTimeIncludesKeyGeneration) {
+  AddKeyBindingRestartResponses();
+
+  base::test::TestFuture<KeyBindingCallback> callback_future;
+  EXPECT_CALL(GetMockService(), ShouldDefer)
+      .Times(2)
+      .WillRepeatedly(Return(std::nullopt));
+  HoldGenerateKey(GetMockService(), callback_future);
+  EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
+
+  base::HistogramTester histograms;
+  request_->Start();
+  KeyBindingCallback callback = callback_future.Take();
+  // Generating the key takes one second. The mock sockets take no time.
+  AdvanceClock(base::Seconds(1));
+  std::move(callback).Run("mock_binding_statement");
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+  EXPECT_EQ(delegate_.data_received(), "Test Content");
+
+  histograms.ExpectUniqueTimeSample("Net.HttpJob.TotalTime", base::Seconds(1),
+                                    1);
+}
+
+// A WebSocket handshake is not sent again with a key, so the job delivers its
+// 401 without asking the service.
+TEST_F(URLRequestHttpJobGenerateKeyMockSocketsTest,
+       SkippedForWebSocketHandshake) {
+  const MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: Upgrade\r\n"
+                "Pragma: no-cache\r\n"
+                "Cache-Control: no-cache\r\n"
+                "Upgrade: websocket\r\n"
+                "Origin: http://origin.example.org\r\n"
+                "Sec-WebSocket-Version: 13\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n"
+                "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"
+                "Sec-WebSocket-Extensions: permessage-deflate; "
+                "client_max_window_bits\r\n\r\n")};
+  const MockRead reads[] = {MockRead(kGenerateKeyMockRead)};
+
+  SSLSocketDataProvider ssl_socket_data_provider(ASYNC, OK);
+  ssl_socket_data_provider.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
+  EXPECT_CALL(GetMockService(), HandleGenerateKeyHeader).Times(0);
+  EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
+
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("wss://www.example.com"), DEFAULT_PRIORITY, &delegate_,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle,
+      /*is_for_websockets=*/true);
+  request->set_device_bound_session_mode(net::DeviceBoundSessionMode::kAllowed);
+  request->SetExtraRequestHeaders(WebSocketCommonTestHeaders());
+  request->SetUserData(
+      kWebSocketHandshakeUserDataKey,
+      std::make_unique<TestWebSocketHandshakeStreamCreateHelper>());
+
+  request->Start();
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+  ASSERT_TRUE(request->response_headers());
+  EXPECT_EQ(request->response_headers()->response_code(), HTTP_UNAUTHORIZED);
 }
 
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

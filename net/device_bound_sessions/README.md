@@ -42,7 +42,13 @@ in with the `SessionService` to handle any DBSC headers on the
 response - in particular, the `Secure-Session-Registration` header,
 which triggers new session registration, and the
 `Secure-Session-Challenge` header, which sets the challenge for an
-existing session.
+existing session. For a `Secure-Session-GenerateKey` header on a 401
+response from an identity provider,
+`SessionService::HandleGenerateKeyHeader` generates a key for the
+relying party, and the `URLRequestHttpJob` holds the response until it
+can restart the request once with the resulting
+`Secure-Session-KeyBinding` header, or delivers the response if key
+generation fails.
 
 Any usage of DBSC is noted on the `URLRequest` in
 `device_bound_session_usage_`. This includes DevTools data and Use

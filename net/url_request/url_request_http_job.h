@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_error_details.h"
@@ -27,10 +28,12 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_info.h"
+#include "net/net_buildflags.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
@@ -111,8 +114,16 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
 
   // Shadows URLRequestJob's version of this method so we can grab cookies.
   void NotifyHeadersComplete();
+  // The second half of `NotifyHeadersComplete()`: reports the Set-Cookie
+  // results, then restarts the transaction for auth or passes the headers on
+  // to `URLRequestJob`.
+  void FinishNotifyHeadersComplete();
 
+  // Marks the job aborted and calls `ResetTransaction()`.
   void DestroyTransaction();
+  // Resets `transaction_`, which must be non-null, and the state of its
+  // response. Keeps its byte counts and doesn't end the job.
+  void ResetTransaction();
 
   // Computes the PrivacyMode that should be associated with this leg of the
   // request. Must be recomputed on redirects.
@@ -126,8 +137,18 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void SaveCookiesAndNotifyHeadersComplete(int result);
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Returns the session service if this response's DBSC headers may be
+  // processed. Returns nullptr if there is no service, or if the connection
+  // doesn't use TLS or has certificate errors.
+  device_bound_sessions::SessionService* GetSessionServiceForResponse();
+
   // Process the DBSC header, if one exists.
   void ProcessDeviceBoundSessionsHeader();
+
+  // Asks the session service to generate a key if the response is a 401 that
+  // carries Secure-Session-GenerateKey. Returns true if the job now waits for
+  // `OnKeyBindingReady()`. In that case `NotifyHeadersComplete()` must stop.
+  bool MaybeWaitForKeyBinding();
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Processes the Strict-Transport-Security header, if one exists.
@@ -154,6 +175,13 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
       const device_bound_sessions::SessionService::DeferralParams&
           deferral_params,
       device_bound_sessions::RefreshResult result);
+
+  // Runs once the session service is done with the key that
+  // `MaybeWaitForKeyBinding()` asked for. With a binding statement, sends the
+  // request again on a new transaction, with Secure-Session-KeyBinding added.
+  // Without one, delivers the response it was holding back.
+  void OnKeyBindingReady(
+      device_bound_sessions::SessionErrorOr<std::string> binding_statement);
 #endif
   void RestartTransactionWithAuth(const AuthCredentials& credentials);
 
@@ -326,6 +354,14 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // is used to measure the total delay of Device Bound Session
   // Deferral.
   base::TimeTicks device_bound_session_first_deferral_;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Whether this job already sent its request again with a key binding.
+  bool restarted_for_key_binding_ = false;
+
+  // Whether the job holds a response until `OnKeyBindingReady()` runs.
+  bool waiting_for_key_binding_ = false;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // The content encoding types that need to be handled in the client side.
   std::vector<net::SourceStreamType> client_side_content_decoding_types_;

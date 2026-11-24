@@ -69,12 +69,17 @@ header's provider parameters (`ProviderRegistrationParams`), and
   `registering_origins`.
 - **DBSC-SSO** (`provider_key` only; `kDeviceBoundSessionsForSingleSignOn`): an
   identity provider (IdP) first has the browser generate a key for a relying
-  party (RP) (`Secure-Session-GenerateKey`), certified by the IdP session's
-  attestation key and charged to the IdP site's signing quota. The browser
-  ignores a request it refuses (for example no matching IdP session, no cookie
-  access or no quota left) and doesn't reply. `SingleSignOnKeyManager` tracks
-  these pre-provisioned keys in memory, never in the session store (on macOS the
-  key itself is a Keychain item), keyed by RP origin and a browser-computed JWK
+  party (RP) (`Secure-Session-GenerateKey`, honored only on a 401 response),
+  certified by the IdP session's attestation key and charged to the IdP site's
+  signing quota. If the browser refuses the `Secure-Session-GenerateKey` header
+  (for example no matching IdP session, no cookie access or no quota left), it
+  ignores the header without replying to the IdP and delivers the original
+  response as usual. Otherwise `URLRequestHttpJob` holds the IdP's response
+  until the key is ready, then restarts the transaction once with
+  `Secure-Session-KeyBinding` (bypassing the HTTP cache), or delivers the
+  original response if generation fails. `SingleSignOnKeyManager` tracks these
+  pre-provisioned keys in memory, never in the session store (on macOS the key
+  itself is a Keychain item), keyed by RP origin and a browser-computed JWK
   thumbprint, and usable only while the IdP can access its cookies on the RP.
   The RP's registration looks the key up by `provider_key` instead of generating
   one, and a successful registration consumes it.
