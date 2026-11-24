@@ -83,6 +83,15 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="UNAUTHENTICATED"/>
 </enum>
 
+<!-- LINT.IfChange(ReadAloudHighlightingTimingError) -->
+
+<enum name="ReadAloudHighlightingTimingError">
+  <int value="0" label="Correction Applied (Non-monotonic or clamped)"/>
+  <int value="1" label="Missing (No Timings)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/services/readaloud/synthesis_response_parser.h:HighlightingTimingError) -->
+
 <enum name="ReadAloudIneligibilityReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Feature flag disabled"/>
@@ -163,6 +172,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h:SpeechSynthesisServerResult) -->
+
+<!-- LINT.IfChange(ReadAloudSynthesisParseError) -->
+
+<enum name="ReadAloudSynthesisParseError">
+  <int value="0" label="Empty response buffer"/>
+  <int value="1" label="Payload exceeds size limit"/>
+  <int value="2" label="Protobuf deserialization failed"/>
+  <int value="3" label="Empty audio bytes"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/services/readaloud/synthesis_response_parser.h:SynthesisParseError) -->
 
 <enum name="RejectionReason">
   <int value="0" label="UNKNOWN_REJECTION_REASON"/>

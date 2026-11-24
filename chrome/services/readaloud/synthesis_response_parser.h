@@ -19,6 +19,30 @@
 
 namespace readaloud {
 
+// Error categories when parsing speech synthesis response in the utility
+// process. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+// LINT.IfChange(SynthesisParseError)
+enum class SynthesisParseError {
+  kEmptyBuffer = 0,
+  kPayloadTooLarge = 1,
+  kParseFailed = 2,
+  kEmptyAudio = 3,
+  kMaxValue = kEmptyAudio,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudSynthesisParseError)
+
+// Error categories when validating word timings from speech synthesis in the
+// utility process. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(HighlightingTimingError)
+enum class HighlightingTimingError {
+  kCorrectionApplied = 0,
+  kMissing = 1,
+  kMaxValue = kMissing,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudHighlightingTimingError)
+
 struct ParsedSynthesisResult {
   bool success = false;
   scoped_refptr<media::DecoderBuffer> audio_buffer;

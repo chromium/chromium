@@ -8,6 +8,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/common/readaloud/read_aloud_constants.h"
 #include "chrome/services/readaloud/chunking/text_chunker.h"
 #include "chrome/services/readaloud/word_timing.h"
 #include "components/optimization_guide/proto/features/read_aloud_synthesize.pb.h"
@@ -119,7 +121,51 @@ TEST(SynthesisResponseParserTest, ParseWordTimingsExceedingChunkLengthClamped) {
   EXPECT_EQ(result.timings[0].end_character_offset, 15u);
 }
 
+TEST(SynthesisResponseParserTest, ParseEmptyBuffer) {
+  base::HistogramTester histograms;
+  mojo_base::BigBuffer buffer;
+  TextChunk chunk{u"Hello world", /*start_code_unit_offset=*/0};
+  ParsedSynthesisResult result =
+      ParseAndValidateSynthesisResponse(std::move(buffer), chunk);
+
+  EXPECT_FALSE(result.success);
+  histograms.ExpectUniqueSample("ReadAloud.Synthesis.ParseError",
+                                SynthesisParseError::kEmptyBuffer, 1);
+}
+
+TEST(SynthesisResponseParserTest, ParsePayloadTooLarge) {
+  base::HistogramTester histograms;
+  std::string oversized(kMaxMojoPayloadSizeBytes + 1, 'a');
+  mojo_base::BigBuffer buffer(base::as_byte_span(oversized));
+  TextChunk chunk{u"Hello world", /*start_code_unit_offset=*/0};
+  ParsedSynthesisResult result =
+      ParseAndValidateSynthesisResponse(std::move(buffer), chunk);
+
+  EXPECT_FALSE(result.success);
+  histograms.ExpectUniqueSample("ReadAloud.Synthesis.ParseError",
+                                SynthesisParseError::kPayloadTooLarge, 1);
+}
+
+TEST(SynthesisResponseParserTest, ParseEmptyAudioBytes) {
+  base::HistogramTester histograms;
+  optimization_guide::proto::ReadAloudSynthesizeResponse response;
+  response.set_audio_bytes("");
+
+  std::string serialized;
+  ASSERT_TRUE(response.SerializeToString(&serialized));
+
+  mojo_base::BigBuffer buffer(base::as_byte_span(serialized));
+  TextChunk chunk{u"Hello world", /*start_code_unit_offset=*/0};
+  ParsedSynthesisResult result =
+      ParseAndValidateSynthesisResponse(std::move(buffer), chunk);
+
+  EXPECT_FALSE(result.success);
+  histograms.ExpectUniqueSample("ReadAloud.Synthesis.ParseError",
+                                SynthesisParseError::kEmptyAudio, 1);
+}
+
 TEST(SynthesisResponseParserTest, ParseValidProtobuf) {
+  base::HistogramTester histograms;
   optimization_guide::proto::ReadAloudSynthesizeResponse response;
   response.set_audio_bytes("valid_opus_bytes");
 
@@ -143,9 +189,58 @@ TEST(SynthesisResponseParserTest, ParseValidProtobuf) {
   ASSERT_EQ(result.timings.size(), 1u);
   EXPECT_EQ(result.timings[0].start_character_offset, 0u);
   EXPECT_EQ(result.timings[0].end_character_offset, 5u);
+
+  // Success must not emit to the error histogram (zero bloat).
+  histograms.ExpectTotalCount("ReadAloud.Synthesis.ParseError", 0);
+  histograms.ExpectTotalCount("ReadAloud.Highlighting.TimingError", 0);
+}
+
+TEST(SynthesisResponseParserTest, ParseValidProtobufWithoutTimings) {
+  base::HistogramTester histograms;
+  optimization_guide::proto::ReadAloudSynthesizeResponse response;
+  response.set_audio_bytes("valid_opus_bytes");
+
+  std::string serialized;
+  ASSERT_TRUE(response.SerializeToString(&serialized));
+
+  mojo_base::BigBuffer buffer(base::as_byte_span(serialized));
+  TextChunk chunk{u"Hello world", /*start_code_unit_offset=*/0};
+  ParsedSynthesisResult result =
+      ParseAndValidateSynthesisResponse(std::move(buffer), chunk);
+
+  EXPECT_TRUE(result.success);
+  ASSERT_NE(result.audio_buffer, nullptr);
+  EXPECT_TRUE(result.timings.empty());
+
+  histograms.ExpectUniqueSample("ReadAloud.Highlighting.TimingError",
+                                HighlightingTimingError::kMissing, 1);
+}
+
+TEST(SynthesisResponseParserTest, ParseWordTimingsNeedingCorrection) {
+  base::HistogramTester histograms;
+  optimization_guide::proto::ReadAloudSynthesizeResponse response;
+  response.set_audio_bytes("valid_opus_bytes");
+
+  optimization_guide::proto::WordTiming* timing1 = response.add_timings();
+  timing1->set_start_offset(0);
+  timing1->set_end_offset(5);
+  timing1->set_time_offset_ms(-10);  // Negative offset requires correction
+
+  std::string serialized;
+  ASSERT_TRUE(response.SerializeToString(&serialized));
+
+  mojo_base::BigBuffer buffer(base::as_byte_span(serialized));
+  TextChunk chunk{u"Hello world", /*start_code_unit_offset=*/0};
+  ParsedSynthesisResult result =
+      ParseAndValidateSynthesisResponse(std::move(buffer), chunk);
+
+  EXPECT_TRUE(result.success);
+  histograms.ExpectUniqueSample("ReadAloud.Highlighting.TimingError",
+                                HighlightingTimingError::kCorrectionApplied, 1);
 }
 
 TEST(SynthesisResponseParserTest, ParseMalformedProtobuf) {
+  base::HistogramTester histograms;
   std::string malformed = "not_a_valid_protobuf_payload";
   mojo_base::BigBuffer buffer(base::as_byte_span(malformed));
 
@@ -156,6 +251,8 @@ TEST(SynthesisResponseParserTest, ParseMalformedProtobuf) {
   EXPECT_FALSE(result.success);
   EXPECT_EQ(result.audio_buffer, nullptr);
   EXPECT_TRUE(result.timings.empty());
+  histograms.ExpectUniqueSample("ReadAloud.Synthesis.ParseError",
+                                SynthesisParseError::kParseFailed, 1);
 }
 
 }  // namespace readaloud

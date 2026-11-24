@@ -151,6 +151,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.Highlighting.TimingError"
+    enum="ReadAloudHighlightingTimingError" expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records errors encountered when validating speech synthesis word timings in
+    ParseAndValidateSynthesisResponse (missing timestamps or non-monotonic
+    timestamps requiring sanitization). Emitted only when timing validation
+    fails (zero telemetry on valid timings).
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.HighlightingEnabled" enum="BooleanEnabled"
     expires_after="2027-08-09">
   <owner>andresmolina@google.com</owner>
@@ -278,6 +290,30 @@ chromium-metrics-reviews@google.com.
     and metadata are parsed and ready for playback. Recorded only on successful
     overview loading (i.e., when the histogram ReadAloud.Overview.Outcome
     reports a value of &quot;Success&quot;).
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Playback.StallCount" units="stalls"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Recorded at the end of a Read Aloud playback session in
+    ReadAloudPlaybackController. Measures the total number of mid-stream
+    starvation stalls experienced after playback initially started (i.e.,
+    transitions from kPlaying back to kBuffering due to an empty segment queue).
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Playback.StallDuration" units="ms"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Measures the duration (in milliseconds) spent stalled in kBuffering state
+    before audio is replenished and kPlaying resumes in
+    ReadAloudPlaybackController. Emitted each time playback recovers from a
+    mid-stream stall.
   </summary>
 </histogram>
 
@@ -452,6 +488,18 @@ chromium-metrics-reviews@google.com.
     Recorded per synthesis text chunk to track backend/model RPC reliability,
     root-cause failure attribution, and server request volume independently of
     client session lifecycle.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Synthesis.ParseError"
+    enum="ReadAloudSynthesisParseError" expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records errors encountered when parsing a speech synthesis response in
+    ParseAndValidateSynthesisResponse (empty response buffer, payload exceeds
+    size limit, protobuf deserialization failure, or empty audio bytes). Emitted
+    only when parsing fails (zero telemetry on successful responses).
   </summary>
 </histogram>
 

@@ -64,6 +64,13 @@ class ReadAloudPlaybackController
 
   float playback_rate() const { return playback_rate_; }
 
+  // Simulates decoder pump state changes (e.g. kStarved -> kBuffering,
+  // kFlowing -> kPlaying) for testing stall and recovery telemetry.
+  void OnPumpStatusChangedForTesting(
+      ReadAloudDecoderSequencer::PumpStatus status) {
+    OnPumpStatusChanged(status);
+  }
+
  private:
   // read_aloud::mojom::ReadAloudPlaybackControllerFactory:
   void CreateController(
@@ -181,6 +188,16 @@ class ReadAloudPlaybackController
   // stream, stops the decoder pump and reports `state`.
   void HaltPlayback(read_aloud::mojom::PlaybackState state);
 
+  // Records stall start/end transitions and duration telemetry when playback
+  // state changes (e.g. entering kBuffering or recovering to kPlaying).
+  void MaybeRecordStallTelemetry(
+      std::optional<read_aloud::mojom::PlaybackState> previous_state,
+      read_aloud::mojom::PlaybackState new_state);
+
+  // Records the total session stall count to UMA if playback ever occurred,
+  // and resets stall tracking state.
+  void RecordSessionStallCountAndReset();
+
   // Starts or stops progress reporting when entering or exiting active playback
   // states (kPlaying or kBuffering), and reports final progress upon exit.
   void MaybeToggleProgressReporting(
@@ -261,6 +278,12 @@ class ReadAloudPlaybackController
   // audio_segment_queue.
   ReadAloudDecoderSequencer decoder_sequencer_{&prefetch_manager_,
                                                &decoder_helper_};
+
+  // Telemetry: tracks mid-stream rebuffering stalls during an active session.
+  bool has_ever_played_ = false;
+  bool is_seeking_ = false;
+  int playback_stall_count_ = 0;
+  base::TimeTicks stall_start_time_;
 
   struct AudioResources {
     AudioResources();

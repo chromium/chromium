@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/sync_socket.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -293,6 +294,10 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
     }
     held_synthesis_callbacks_.clear();
     ResetRemotes();
+  }
+
+  void SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus status) {
+    controller_impl_->OnPumpStatusChangedForTesting(status);
   }
 
   void ResetRemotes() {
@@ -2918,4 +2923,223 @@ TEST_F(ReadAloudPlaybackControllerTest,
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
+TEST_F(ReadAloudPlaybackControllerTest, PlaybackStallsLoggedOnSessionHalt) {
+  base::HistogramTester histograms;
+  CreateSession();
+
+  // Initially in stopped/setup state. Simulate entering Playing state via pump.
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // Simulate a stall (starvation while playing).
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+
+  // Simulate returning to playing after 250ms of buffering.
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 1);
+  histograms.ExpectTimeBucketCount("ReadAloud.Playback.StallDuration",
+                                   base::Milliseconds(250), 1);
+
+  // Another stall of 150ms.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 2);
+
+  // Pausing playback does NOT log or reset session stall count.
+  controller_remote_->Pause();
+  controller_remote_.FlushForTesting();
+
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallCount", 0);
+
+  // Resume playback and simulate a third stall.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 3);
+
+  // Ending the session via ResetSession/disconnect emits cumulative stalls.
+  ResetRemotes();
+
+  histograms.ExpectUniqueSample("ReadAloud.Playback.StallCount", 3, 1);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, PlaybackStallsLoggedOnEndOfStream) {
+  base::HistogramTester histograms;
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(2));
+
+  controller_remote_->Play();
+  FlushAll();
+
+  // Enter playing state and trigger one stall.
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 1);
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallCount", 0);
+
+  // Playout completes in end of stream.
+  mock_renderer->ReadAloudAudioRenderer::MarkEndOfStream();
+  FlushAll();
+
+  histograms.ExpectUniqueSample("ReadAloud.Playback.StallCount", 1, 1);
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       PauseWhileStalledDoesNotLogStallDurationOnResume) {
+  base::HistogramTester histograms;
+  CreateSession();
+
+  // Enter playing state.
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // Playback starves and transitions to buffering (stall begins).
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+
+  // While stalled in kBuffering, the user pauses.
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  controller_remote_->Pause();
+  controller_remote_.FlushForTesting();
+
+  // User remains paused for 10 seconds.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // User resumes playback and pump becomes flowing.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // The pause duration must not be recorded to StallDuration telemetry.
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 0);
+
+  // Subsequent stall recovers naturally and logs its duration.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 1);
+  histograms.ExpectTimeBucketCount("ReadAloud.Playback.StallDuration",
+                                   base::Milliseconds(300), 1);
+
+  // Ending the session logs the stall count (2 stalls occurred).
+  ResetRemotes();
+  histograms.ExpectUniqueSample("ReadAloud.Playback.StallCount", 2, 1);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       NoStallsLoggedWhenPlaybackNeverStarted) {
+  base::HistogramTester histograms;
+  CreateSession();
+
+  controller_remote_->Pause();
+  controller_remote_.FlushForTesting();
+  ResetRemotes();
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallCount", 0);
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 0);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       ResumeFromPauseBufferingDoesNotLogStall) {
+  base::HistogramTester histograms;
+  CreateSession();
+
+  // Start playback.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // Pause playback.
+  controller_remote_->Pause();
+  controller_remote_.FlushForTesting();
+
+  // Resume playback into starved / buffering before flowing.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // Normal unpause buffering must not be recorded as a stall.
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 0);
+
+  ResetRemotes();
+  histograms.ExpectUniqueSample("ReadAloud.Playback.StallCount", 0, 1);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SeekDuringPlaybackDoesNotLogStall) {
+  base::HistogramTester histograms;
+  CreateSession();
+  SetSingleTextSegment(u"First sentence is here. Second sentence is here.");
+
+  // Start playback.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // Seek mid-playback while playing.
+  controller_remote_->SeekToTime(base::Seconds(2));
+  controller_remote_.FlushForTesting();
+
+  // The seek clears the queue and enters buffering, then recovers to playing.
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // Seek re-buffering must not be recorded as an unexpected mid-stream stall.
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallDuration", 0);
+
+  ResetRemotes();
+  histograms.ExpectUniqueSample("ReadAloud.Playback.StallCount", 0, 1);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SetTextContentResetsSessionStallCount) {
+  base::HistogramTester histograms;
+  CreateSession();
+
+  // Play document 1 and encounter a stall.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kStarved);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  // Pause and switch documents via SetTextContent, which must emit document 1's
+  // stalls.
+  controller_remote_->Pause();
+  controller_remote_.FlushForTesting();
+  SetSingleTextSegment(u"Second document text content.");
+
+  histograms.ExpectUniqueSample("ReadAloud.Playback.StallCount", 1, 1);
+
+  // Document 2 plays cleanly without stalls.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+  SimulatePumpStatus(ReadAloudDecoderSequencer::PumpStatus::kFlowing);
+
+  ResetRemotes();
+  // Document 2 emits its own clean 0 stall sample.
+  histograms.ExpectBucketCount("ReadAloud.Playback.StallCount", 0, 1);
+  histograms.ExpectTotalCount("ReadAloud.Playback.StallCount", 2);
+}
 }  // namespace readaloud

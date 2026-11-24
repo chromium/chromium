@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
@@ -25,6 +26,14 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace readaloud {
+
+namespace {
+
+constexpr char kPlaybackStallCountHistogram[] = "ReadAloud.Playback.StallCount";
+constexpr char kPlaybackStallDurationHistogram[] =
+    "ReadAloud.Playback.StallDuration";
+
+}  // namespace
 
 ReadAloudPlaybackController::AudioResources::AudioResources() = default;
 ReadAloudPlaybackController::AudioResources::AudioResources(AudioResources&&) =
@@ -55,6 +64,7 @@ ReadAloudPlaybackController::ReadAloudPlaybackController(
 
 ReadAloudPlaybackController::~ReadAloudPlaybackController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordSessionStallCountAndReset();
   decoder_sequencer_.SetAudioQueue(nullptr);
 }
 
@@ -219,8 +229,9 @@ void ReadAloudPlaybackController::SetTextContent(
   }
 
   // Setting new text content invalidates pending audio synthesis buffers from
-  // the previous document segment, so FlushBuffers() and ResetSession() reset
-  // internal queues before `timeline_.Clear()` resets the canonical timeline.
+  // the previous document segment. Emit the prior document's stall telemetry
+  // before FlushBuffers() and ResetSession() reset internal queues.
+  RecordSessionStallCountAndReset();
   FlushBuffers();
   prefetch_manager_.ResetSession();
   timeline_.Clear();
@@ -349,6 +360,9 @@ void ReadAloudPlaybackController::SetPlaybackState(
   }
   const auto previous_state = playback_state_;
   playback_state_ = state;
+
+  MaybeRecordStallTelemetry(previous_state, state);
+
   if (client_.is_bound()) {
     client_->OnPlaybackStateChanged(state);
   }
@@ -408,9 +422,49 @@ void ReadAloudPlaybackController::OnPumpStatusChanged(
     case ReadAloudDecoderSequencer::PumpStatus::kFailed:
       // The entire timeline was consumed without ever yielding a single audio
       // segment, so this session can no longer produce sound.
+      RecordSessionStallCountAndReset();
       HaltPlayback(read_aloud::mojom::PlaybackState::kError);
       return;
   }
+}
+
+void ReadAloudPlaybackController::MaybeRecordStallTelemetry(
+    std::optional<read_aloud::mojom::PlaybackState> previous_state,
+    read_aloud::mojom::PlaybackState new_state) {
+  if (new_state == read_aloud::mojom::PlaybackState::kPlaying) {
+    has_ever_played_ = true;
+    is_seeking_ = false;
+    if (!stall_start_time_.is_null()) {
+      base::UmaHistogramMediumTimes(kPlaybackStallDurationHistogram,
+                                    base::TimeTicks::Now() - stall_start_time_);
+      stall_start_time_ = base::TimeTicks();
+    }
+  } else if (previous_state == read_aloud::mojom::PlaybackState::kPlaying &&
+             new_state == read_aloud::mojom::PlaybackState::kBuffering &&
+             !is_seeking_) {
+    // Only record mid-stream stalls transitioning directly from active
+    // playback. Unpause buffering and intentional user seeks are excluded.
+    playback_stall_count_++;
+    stall_start_time_ = base::TimeTicks::Now();
+  } else {
+    // If playback transitions out of buffering into paused, stopped, or error,
+    // clear the stall timer so pause duration isn't recorded as stall latency.
+    stall_start_time_ = base::TimeTicks();
+    if (new_state != read_aloud::mojom::PlaybackState::kBuffering) {
+      is_seeking_ = false;
+    }
+  }
+}
+
+void ReadAloudPlaybackController::RecordSessionStallCountAndReset() {
+  if (has_ever_played_) {
+    base::UmaHistogramCounts100(kPlaybackStallCountHistogram,
+                                playback_stall_count_);
+    has_ever_played_ = false;
+    playback_stall_count_ = 0;
+  }
+  stall_start_time_ = base::TimeTicks();
+  is_seeking_ = false;
 }
 
 void ReadAloudPlaybackController::HaltPlayback(
@@ -536,6 +590,8 @@ void ReadAloudPlaybackController::SeekRelative(base::TimeDelta offset) {
 
 void ReadAloudPlaybackController::ExecuteSeek(const TimelinePosition& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_seeking_ = true;
+  stall_start_time_ = base::TimeTicks();
   prefetch_manager_.CancelInflightRequests();
 
   if (audio_resources_) {
@@ -667,6 +723,7 @@ void ReadAloudPlaybackController::OnClientDisconnected() {
 
 void ReadAloudPlaybackController::ResetSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordSessionStallCountAndReset();
   controller_receiver_.reset();
   client_.reset();
   prefetch_manager_.ResetSession();
@@ -793,6 +850,7 @@ void ReadAloudPlaybackController::OnWordBoundaryReached(
 void ReadAloudPlaybackController::OnAudioEndOfStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (decoder_sequencer_.is_pumping()) {
+    RecordSessionStallCountAndReset();
     HaltPlayback(read_aloud::mojom::PlaybackState::kEndOfStream);
   }
 }
