@@ -700,10 +700,10 @@ void LocalFrameMojoHandler::StopLoading() {
   if (!frame_->IsAttached())
     return;
 
-  // Notify RenderFrame observers.
-  WebLocalFrameClient* client = frame_->Client()->GetWebFrame()->Client();
-  if (client)
-    client->OnStopLoading();
+  // Notify WebLocalFrame observers.
+  if (WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame_)) {
+    web_frame->OnStop();
+  }
 }
 
 void LocalFrameMojoHandler::Collapse(bool collapsed) {

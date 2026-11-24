@@ -639,8 +639,6 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting();
 
-  virtual void OnStopLoading() {}
-
   // WebSocket -----------------------------------------------------------
   virtual std::unique_ptr<WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle() {

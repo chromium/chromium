@@ -1039,6 +1039,7 @@ class CORE_EXPORT LocalFrame final
   friend class LocalFrameMojoHandler;
 
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
+  FRIEND_TEST_ALL_PREFIXES(WebFrameTest, OnStop);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, SmartClipData);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, SmartClipDataWithPinchZoom);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest,

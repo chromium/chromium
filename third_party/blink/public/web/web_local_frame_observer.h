@@ -64,6 +64,9 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
                                       unsigned source_line,
                                       const WebString& stack_trace) {}
 
+  // Called when a load is explicitly stopped by the user or browser.
+  virtual void OnStop() {}
+
   // Retrieves the WebLocalFrame that is being observed. Can be null.
   WebLocalFrame* GetWebLocalFrame() const;
 

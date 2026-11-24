@@ -3860,6 +3860,12 @@ void WebLocalFrameImpl::DidAddMessageToConsole(const WebConsoleMessage& message,
   }
 }
 
+void WebLocalFrameImpl::OnStop() {
+  for (auto& observer : observers_) {
+    observer.OnStop();
+  }
+}
+
 bool WebLocalFrameImpl::AllowStorageAccessSyncAndNotify(
     WebContentSettingsClient::StorageType storage_type) {
   return GetFrame()->AllowStorageAccessSyncAndNotify(storage_type);

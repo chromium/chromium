@@ -639,6 +639,7 @@ class CORE_EXPORT WebLocalFrameImpl final
                               const WebString& source_name,
                               unsigned source_line,
                               const WebString& stack_trace);
+  void OnStop();
 
  protected:
   // WebLocalFrame protected overrides:

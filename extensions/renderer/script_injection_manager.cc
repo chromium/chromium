@@ -37,6 +37,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "url/gurl.h"
 
@@ -68,7 +69,8 @@ std::optional<mojom::RunLocation> NextRunLocation(
 
 }  // namespace
 
-class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
+class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver,
+                                          public blink::WebLocalFrameObserver {
  public:
   RFOHelper(content::RenderFrame* render_frame,
             ScriptInjectionManager* manager);
@@ -84,6 +86,9 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void DidDispatchDOMContentLoadedEvent() override;
   void WillDetach(blink::DetachReason detach_reason) override;
   void OnDestruct() override;
+
+  // blink::WebLocalFrameObserver implementation.
+  void OnFrameDetached() override {}
   void OnStop() override;
 
   // Tells the ScriptInjectionManager to run tasks associated with
@@ -106,7 +111,9 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
 
 ScriptInjectionManager::RFOHelper::RFOHelper(content::RenderFrame* render_frame,
                                              ScriptInjectionManager* manager)
-    : content::RenderFrameObserver(render_frame), manager_(manager) {}
+    : content::RenderFrameObserver(render_frame),
+      blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
+      manager_(manager) {}
 
 ScriptInjectionManager::RFOHelper::~RFOHelper() {
 }

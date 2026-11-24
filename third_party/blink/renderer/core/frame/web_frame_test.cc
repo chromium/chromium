@@ -169,6 +169,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
@@ -16518,6 +16519,44 @@ TEST_F(WebFrameTest, DidLoadResourceFromMemoryCache) {
                                              ResourceResponse(sub_url));
   EXPECT_EQ(observer.memory_cache_count(), 1);
   EXPECT_EQ(observer.last_memory_cache_url(), "http://example.com/sub.js");
+
+  web_view_helper.Reset();
+}
+
+namespace {
+
+class StopObserver : public WebLocalFrameObserver {
+ public:
+  explicit StopObserver(WebLocalFrame* frame) : WebLocalFrameObserver(frame) {}
+
+  void OnStop() override { ++stop_count_; }
+  void OnFrameDetached() override {}
+
+  int stop_count() const { return stop_count_; }
+
+ private:
+  int stop_count_ = 0;
+};
+
+}  // namespace
+
+TEST_F(WebFrameTest, OnStop) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+  StopObserver observer(main_frame);
+  frame_test_helpers::LoadHTMLString(
+      main_frame, "<html><body></body></html>",
+      url_test_helpers::ToKURL("http://example.com/"));
+  RunPendingTasks();
+
+  EXPECT_EQ(0, observer.stop_count());
+
+  static_cast<mojom::blink::LocalFrame*>(
+      main_frame->GetFrame()->mojo_handler_.Get())
+      ->StopLoading();
+  EXPECT_EQ(1, observer.stop_count());
 
   web_view_helper.Reset();
 }

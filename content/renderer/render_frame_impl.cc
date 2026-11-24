@@ -6562,12 +6562,6 @@ RenderFrameImpl::MaybeGetBackgroundResourceFetchAssets() {
   return background_resource_fetch_context_;
 }
 
-void RenderFrameImpl::OnStopLoading() {
-  for (auto& observer : observers_) {
-    observer.OnStop();
-  }
-}
-
 bool RenderFrameImpl::IsRequestingNavigation() {
   return is_requesting_navigation_;
 }

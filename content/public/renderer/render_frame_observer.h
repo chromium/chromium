@@ -69,9 +69,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   // go away at any time.
   virtual void OnDestruct() = 0;
 
-  // Called when a load is explicitly stopped by the user or browser.
-  virtual void OnStop() {}
-
   // Navigation callbacks.
   //
   // Each navigation starts with a DidStartNavigation call. Then it may be

@@ -585,7 +585,6 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::URLLoaderThrottleProvider* GetURLLoaderThrottleProvider() override;
   scoped_refptr<blink::WebBackgroundResourceFetchAssets>
   MaybeGetBackgroundResourceFetchAssets() override;
-  void OnStopLoading() override;
   const blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
       override;
   blink::WebView* CreateNewWindow(
