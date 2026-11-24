@@ -94,6 +94,8 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
     private @Px int mLastObservedBottomInsetPx = -1;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
+    // Set when attaching a ThinWebView so its first non-zero layout always resizes WebContents.
+    private boolean mNeedsThinWebViewResize;
     private boolean mIsViewportSizeFixed;
     private boolean mPauseInsetUpdates;
     private @Nullable TimeoutRunnable mPendingTimeoutRunnable;
@@ -232,7 +234,6 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
         mLastSafeAreaInsets.set(0, 0, 0, -1);
         mBottomSafeAreaInsetObserver = null;
         resetInternal(/* reattachPlaceholder= */ false);
-        mWebContents = null;
         if (mInsetObserver != null) {
             mInsetObserver.removeWindowInsetsAnimationListener(mInsetAnimationListener);
             mInsetObserver.removeObserver(mWindowInsetObserver);
@@ -247,7 +248,9 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
         mResizingContainer.removeOnLayoutChangeListener(mOnLayoutChangeListener);
     }
 
-    /** Resets the helper to its initial state without resetting the WebContents. */
+    /**
+     * Resets the helper to its initial state and clears its ThinWebView and WebContents references.
+     */
     public void reset() {
         resetInternal(/* reattachPlaceholder= */ true);
         updateSafeAreaInsets(/* ignoreCache= */ false);
@@ -275,6 +278,8 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
         }
         mAwaitingDeferredFadeIn = false;
         mThinWebView = null;
+        mWebContents = null;
+        mNeedsThinWebViewResize = false;
         mIsViewportSizeFixed = false;
         mPauseInsetUpdates = false;
     }
@@ -298,6 +303,7 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
         mLastSafeAreaInsets.set(0, 0, 0, -1);
         mWebContents = webContents;
         mThinWebView = thinWebView;
+        mNeedsThinWebViewResize = thinWebView != null;
 
         updateBounds();
     }
@@ -610,7 +616,8 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
      *     use measured container height.
      * @param bottomSafeAreaOverridePx Explicit bottom safe area inset override in pixels, or {@link
      *     #NO_SAFE_AREA_OVERRIDE} to use the default inset from window insets.
-     * @return True if container dimensions changed, false otherwise.
+     * @return True if container dimensions changed or an initial ThinWebView resize was forced,
+     *     false otherwise.
      */
     @Override
     public boolean updateBounds(
@@ -673,18 +680,20 @@ public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
         boolean sizeChanged =
                 !isApproxEqual(resizingContainerWidth, currentWidth, EPSILON_PX)
                         || !isApproxEqual(resizingContainerHeight, currentHeight, EPSILON_PX);
+        boolean forceThinWebViewResize = mThinWebView != null && mNeedsThinWebViewResize;
 
-        if (!ignoreCache && !sizeChanged) {
+        if (!ignoreCache && !sizeChanged && !forceThinWebViewResize) {
             return false;
         }
 
         if (mThinWebView != null) {
             mThinWebView.resizeWebContents(resizingContainerWidth, resizingContainerHeight);
+            mNeedsThinWebViewResize = false;
         } else {
             mWebContents.setSize(resizingContainerWidth, resizingContainerHeight);
         }
 
-        return sizeChanged;
+        return sizeChanged || forceThinWebViewResize;
     }
 
     private boolean hasWebContentsFocus() {

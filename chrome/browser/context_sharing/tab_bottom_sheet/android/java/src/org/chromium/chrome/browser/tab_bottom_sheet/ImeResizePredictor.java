@@ -50,14 +50,14 @@ class ImeResizePredictor {
         boolean isViewportSizeFixed();
 
         /**
-         * Updates container bounds and returns whether dimensions changed.
+         * Updates container bounds and returns whether a resize occurred.
          *
          * @param ignoreCache Whether to ignore the previous dimension cache.
          * @param targetHeight Target height in pixels, or {@link #NO_HEIGHT_OVERRIDE} to use
          *     measured height.
          * @param bottomSafeAreaInsetPx Target bottom safe-area inset in pixels, or {@link
          *     #NO_SAFE_AREA_OVERRIDE}.
-         * @return True if dimensions changed, false otherwise.
+         * @return True if dimensions changed or a resize was forced, false otherwise.
          */
         boolean updateBounds(
                 boolean ignoreCache, @Px int targetHeight, @Px int bottomSafeAreaInsetPx);
@@ -73,7 +73,7 @@ class ImeResizePredictor {
         /**
          * Notifies that post-IME bounds reconciliation completed.
          *
-         * @param sizeChanged Whether container bounds changed during reconciliation.
+         * @param sizeChanged Whether container bounds changed or a resize was forced.
          */
         void onPostResizeReconciled(boolean sizeChanged);
 

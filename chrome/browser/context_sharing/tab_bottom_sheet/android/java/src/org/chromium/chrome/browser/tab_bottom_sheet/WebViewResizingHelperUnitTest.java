@@ -365,6 +365,7 @@ public class WebViewResizingHelperUnitTest {
     public void testUpdateBounds_EarlyReturn() {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        layoutResizingContainer(100, 200);
 
         clearInvocations(mMockWebContents);
         clearInvocations(mMockThinWebView);
@@ -907,6 +908,7 @@ public class WebViewResizingHelperUnitTest {
 
         when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 100));
         when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 200));
+        layoutResizingContainer(100, 200);
 
         clearInvocations(mMockThinWebView);
 
@@ -3311,5 +3313,89 @@ public class WebViewResizingHelperUnitTest {
         // Reconciliation after lock.unlock()
         lock.unlock();
         verify(mMockThinWebView).resizeWebContents(500, 800);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testReset_ClearsWebContents_DoesNotResizeDetachedWebContents() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        layoutResizingContainer(1080, 532);
+
+        clearInvocations(mMockThinWebView, mMockWebContents);
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+        mHelper.reset();
+
+        layoutResizingContainer(1080, 789);
+
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
+        verify(mMockWebContents, never()).setDisplayCutoutSafeArea(any());
+    }
+
+    @Test
+    public void testSetThinWebView_ForcesInitialResize_WhenWebContentsSizeMatches() {
+        layoutResizingContainer(100, 200);
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 100));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 200));
+
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+
+        verify(mMockThinWebView, times(1)).resizeWebContents(100, 200);
+
+        clearInvocations(mMockThinWebView);
+        layoutResizingContainer(101, 201);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testSetThinWebView_DeferredLayout_ForcesInitialResize_WhenWebContentsSizeMatches() {
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 100));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 200));
+
+        // Container is 0x0 during setThinWebView(), so initial resize is deferred.
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        layoutResizingContainer(100, 200);
+        verify(mMockThinWebView, times(1)).resizeWebContents(100, 200);
+
+        clearInvocations(mMockThinWebView);
+        layoutResizingContainer(101, 201);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testSetThinWebView_SplitScreenCollapseAndReattach_ForcesResize() {
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 1080));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 532));
+
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        layoutResizingContainer(1080, 532);
+        verify(mMockThinWebView).resizeWebContents(1080, 532);
+
+        // Collapse to PEEK destroys the ThinWebView and resets the helper.
+        mHelper.reset();
+        clearInvocations(mMockWebContents);
+
+        // While detached (e.g., split-screen IME dismissal), container expands to 789px without
+        // mutating the detached WebContents.
+        layoutResizingContainer(1080, 789);
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
+
+        // Re-expanding attaches a new ThinWebView; even if WebContents already reports 789px,
+        // resizeWebContents() must still be called to sync the new physical backing size.
+        ThinWebView newThinWebView = mock(ThinWebView.class);
+        View newView = new View(mContext);
+        when(newThinWebView.getView()).thenReturn(newView);
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 789));
+
+        mHelper.setThinWebView(newThinWebView, mMockWebContents);
+
+        verify(newThinWebView).resizeWebContents(1080, 789);
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
     }
 }
