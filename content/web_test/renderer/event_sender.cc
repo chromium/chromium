@@ -16,8 +16,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -447,9 +445,8 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
   // These constants are based on Safari's context menu because tests are made
   // for it.
   static const char* kNonEditableMenuStrings[] = {
-      "Back",        "Reload Page",     "Open in Dashboard",
-      "<separator>", "View Source",     "Save Page As",
-      "Print Page",  "Inspect Element", nullptr};
+      "Back",        "Reload Page",  "Open in Dashboard", "<separator>",
+      "View Source", "Save Page As", "Print Page",        "Inspect Element"};
   static const char* kEditableMenuStrings[] = {"Cut",
                                                "Copy",
                                                "<separator>",
@@ -459,8 +456,7 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
                                                "Font",
                                                "Speech",
                                                "Paragraph Direction",
-                                               "<separator>",
-                                               nullptr};
+                                               "<separator>"};
 
   // This is possible because mouse events are cancelleable.
   if (!context_menu)
@@ -472,9 +468,8 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
   PopulateCustomItems(context_menu->custom_items, "", &strings);
 
   if (context_menu->is_editable) {
-    for (base::span<const char*> item = kEditableMenuStrings; item[0];
-         base::PreIncrementSpan(item)) {
-      strings.push_back(item[0]);
+    for (const char* item : kEditableMenuStrings) {
+      strings.push_back(item);
     }
     std::vector<WebString> suggestions;
     WebTestSpellChecker::FillSuggestionList(
@@ -482,9 +477,8 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
     for (const WebString& suggestion : suggestions)
       strings.push_back(suggestion.Utf8());
   } else {
-    for (base::span<const char*> item = kNonEditableMenuStrings; item[0];
-         base::PreIncrementSpan(item)) {
-      strings.push_back(item[0]);
+    for (const char* item : kNonEditableMenuStrings) {
+      strings.push_back(item);
     }
   }
 
