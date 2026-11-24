@@ -132,7 +132,7 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
   } else {
     // For non syncing users, simply show the bubble.
     SigninViewController::From(browser)->ShowModalProfileCustomizationDialog(
-        ProfileCustomizationStyle::kDefault);
+        ProfileCustomizationStyle::kSignedInProfileCreation);
   }
 }
 
@@ -456,7 +456,7 @@ void ShowLocalProfileCustomization(
   }
 
   SigninViewController::From(browser)->ShowModalProfileCustomizationDialog(
-      ProfileCustomizationStyle::kLocalProfileCreation);
+      ProfileCustomizationStyle::kSignedOutProfileCreation);
 }
 
 void MaybeOpenPageInBrowser(BrowserWindowInterface* browser,

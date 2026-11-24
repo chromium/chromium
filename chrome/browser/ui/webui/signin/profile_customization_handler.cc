@@ -154,13 +154,13 @@ void ProfileCustomizationHandler::HandleDone(const base::ListValue& args) {
 
   const GURL& url = web_ui()->GetWebContents()->GetVisibleURL();
   switch (GetProfileCustomizationStyle(url)) {
-    case ProfileCustomizationStyle::kLocalProfileCreation:
-      // The local profile is created at first as ephemeral and its creation is
-      // finalized when customization is successfully completed.
+    case ProfileCustomizationStyle::kSignedOutProfileCreation:
+      // The signed-out profile is created at first as ephemeral and its
+      // creation is finalized when customization is successfully completed.
       FinalizeNewProfileSetup(profile_, profile_name,
                               /*is_default_name=*/false);
       break;
-    case ProfileCustomizationStyle::kDefault:
+    case ProfileCustomizationStyle::kSignedInProfileCreation:
       // TODO(crbug.com/40264199): Look into whether this branch should be also
       // covered by calling FinalizeNewProfileSetup().
       GetProfileEntry()->SetLocalProfileName(profile_name,

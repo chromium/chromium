@@ -107,7 +107,7 @@ export class ProfileCustomizationAppElement extends
     ColorChangeUpdater.forDocument().start();
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
-    if (!this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION)) {
+    if (!this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION)) {
       this.profileName_ = loadTimeData.getString('profileName');
     }
     this.addWebUiListener(
@@ -118,7 +118,7 @@ export class ProfileCustomizationAppElement extends
         (icons: AvatarIcon[]) => this.setAvailableIcons_(icons));
     this.profileCustomizationBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
-    if (this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION)) {
+    if (this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION)) {
       this.profileCustomizationBrowserProxy_.getAvailableIcons().then(
           icons => this.setAvailableIcons_(icons));
     }
@@ -148,8 +148,8 @@ export class ProfileCustomizationAppElement extends
     this.isManaged_ = profileInfo.isManaged;
     this.hasEnterpriseLabel = profileInfo.hasEnterpriseLabel;
     this.welcomeTitle_ =
-        this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION) ?
-        this.i18n('localProfileCreationTitle') :
+        this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION) ?
+        this.i18n('signedOutProfileCreationTitle') :
         this.i18n('profileCustomizationTitle');
   }
 
@@ -163,9 +163,9 @@ export class ProfileCustomizationAppElement extends
   // on the style.
   protected getSecondaryButtonLabel_(): string {
     switch (this.style_) {
-      case ProfileCustomizationStyle.DEFAULT:
+      case ProfileCustomizationStyle.SIGNED_IN_PROFILE_CREATION:
         return this.i18n('profileCustomizationSkipLabel');
-      case ProfileCustomizationStyle.LOCAL_PROFILE_CREATION:
+      case ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION:
         return this.i18n('profileCustomizationDeleteProfileLabel');
       case ProfileCustomizationStyle.EDIT_PROFILE:
         return this.i18n('profileCustomizationCancelLabel');
@@ -174,10 +174,11 @@ export class ProfileCustomizationAppElement extends
     }
   }
 
-  // In local profile creation, the secondary button deletes the profile being
-  // created. Otherwise, it closes the page without saving the profile name.
+  // In signed-out profile creation, the secondary button deletes the profile
+  // being created. Otherwise, it closes the page without saving the profile
+  // name.
   protected onSecondaryButtonClick_() {
-    if (this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION)) {
+    if (this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION)) {
       this.profileCustomizationBrowserProxy_.deleteProfile();
       return;
     }
@@ -185,7 +186,8 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected onCustomizeAvatarClick_() {
-    assert(this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION));
+    assert(
+        this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION));
     this.$.viewManager.switchView('selectAvatarDialog');
   }
 
@@ -207,7 +209,8 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected onSelectAvatarConfirmClick_() {
-    assert(this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION));
+    assert(
+        this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION));
     assert(this.selectedAvatar_);
     if (this.selectedAvatar_.isGaiaAvatar) {
       // The Google Account picture (offered to signed-in profiles) is not a
@@ -222,7 +225,8 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected onSelectAvatarBackClick_() {
-    assert(this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION));
+    assert(
+        this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION));
     this.closeSelectAvatar_();
     this.selectedAvatar_ = this.confirmedAvatar_;
   }

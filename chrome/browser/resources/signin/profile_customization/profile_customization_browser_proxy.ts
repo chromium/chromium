@@ -13,8 +13,8 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // Version of the page, passed by C++ through `loadTimeData`.
 // LINT.IfChange(ProfileCustomizationStyle)
 export enum ProfileCustomizationStyle {
-  DEFAULT = 0,
-  LOCAL_PROFILE_CREATION = 1,
+  SIGNED_IN_PROFILE_CREATION = 0,
+  SIGNED_OUT_PROFILE_CREATION = 1,
   EDIT_PROFILE = 2,
 }
 // LINT.ThenChange(//chrome/browser/ui/webui/signin/signin_url_utils.h:ProfileCustomizationStyle)

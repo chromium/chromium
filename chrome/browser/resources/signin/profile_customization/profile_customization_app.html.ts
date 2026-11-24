@@ -18,14 +18,16 @@ export function getHtml(this: ProfileCustomizationAppElement) {
       <div id="header">
         <div id="avatarContainer">
           <img id="avatar" alt="" src="${this.pictureUrl_}">
-          ${!this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION) ?
+          ${!this.isStyle_(
+              ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION) ?
               html`
             <div class="avatar-badge" id="workBadge"
                 ?hidden="${!this.isManaged_}">
               <cr-icon class="icon" icon="cr:domain"></cr-icon>
             </div>
           ` : ''}
-          ${this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION) ?
+          ${this.isStyle_(
+              ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION) ?
               html`
             <div class="avatar-badge">
               <cr-icon-button id="customizeAvatarIcon"
@@ -81,7 +83,8 @@ export function getHtml(this: ProfileCustomizationAppElement) {
     </div>
   </div>
 
-  ${this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION) ? html`
+  ${this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION) ?
+      html`
     <div id="selectAvatarDialog" slot="view">
       <div class="select-avatar-header">
         <cr-icon-button iron-icon="cr:arrow-back" id="selectAvatarBackButton"

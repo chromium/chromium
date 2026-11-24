@@ -9675,7 +9675,7 @@ class FullWebUIOmniboxWelcomeDialogInteractiveTest
     new_browser->GetWindow()->Show();
     SigninViewController::From(new_browser)
         ->ShowModalProfileCustomizationDialog(
-            ProfileCustomizationStyle::kLocalProfileCreation);
+            ProfileCustomizationStyle::kSignedOutProfileCreation);
     SetBrowser(new_browser);
   }
 

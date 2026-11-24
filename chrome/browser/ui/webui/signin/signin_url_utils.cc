@@ -20,8 +20,9 @@ constexpr char kStyleParamKey[] = "style";
 ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url) {
   std::string style_str;
   int style_int;
-  // Default style if the parameter is missing.
-  ProfileCustomizationStyle style = ProfileCustomizationStyle::kDefault;
+  // Use the signed-in profile creation style if the parameter is missing.
+  ProfileCustomizationStyle style =
+      ProfileCustomizationStyle::kSignedInProfileCreation;
   if (net::GetValueForKeyInQuery(url, kStyleParamKey, &style_str) &&
       base::StringToInt(style_str, &style_int)) {
     style = static_cast<ProfileCustomizationStyle>(style_int);
@@ -31,8 +32,8 @@ ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url) {
 
 bool IsProfileCreationStyle(ProfileCustomizationStyle style) {
   switch (style) {
-    case ProfileCustomizationStyle::kDefault:
-    case ProfileCustomizationStyle::kLocalProfileCreation:
+    case ProfileCustomizationStyle::kSignedInProfileCreation:
+    case ProfileCustomizationStyle::kSignedOutProfileCreation:
       return true;
     case ProfileCustomizationStyle::kEditProfile:
       return false;

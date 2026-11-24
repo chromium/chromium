@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   // Show the profile customization dialog.
   SigninViewController::From(browser())->ShowModalProfileCustomizationDialog(
-      ProfileCustomizationStyle::kLocalProfileCreation);
+      ProfileCustomizationStyle::kSignedOutProfileCreation);
 
   // Navigate to a URL
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(

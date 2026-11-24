@@ -2224,8 +2224,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
 }
 
 // Tests the profile customization dialog for the existing (signed-in or
-// signed-out) profile. The default (post sign-in) and edit profile versions of
-// the dialog behave the same: "Done" saves the name and the secondary button
+// signed-out) profile. The signed-in profile creation and edit profile versions
+// of the dialog behave the same: "Done" saves the name and the secondary button
 // ("Skip" or "Cancel") closes the dialog without saving it.
 class SigninViewControllerProfileCustomizationBrowserTest
     : public SigninViewControllerBrowserTest,
@@ -2300,12 +2300,12 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerProfileCustomizationBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     SigninViewControllerProfileCustomizationBrowserTest,
-    testing::Values(ProfileCustomizationStyle::kDefault,
+    testing::Values(ProfileCustomizationStyle::kSignedInProfileCreation,
                     ProfileCustomizationStyle::kEditProfile),
     [](const testing::TestParamInfo<ProfileCustomizationStyle>& info) {
       return info.param == ProfileCustomizationStyle::kEditProfile
                  ? "EditProfile"
-                 : "Default";
+                 : "SignedInProfileCreation";
     });
 
 // Selecting the Google Account picture in the edit profile dialog uses the

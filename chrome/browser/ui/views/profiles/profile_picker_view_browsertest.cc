@@ -918,7 +918,7 @@ class ProfilePickerCreationFlowBrowserTest
  protected:
   const GURL kLocalProfileCreationUrl = AppendProfileCustomizationQueryParams(
       GURL("chrome://profile-customization"),
-      ProfileCustomizationStyle::kLocalProfileCreation);
+      ProfileCustomizationStyle::kSignedOutProfileCreation);
   const std::string kLocalProfileName = "LocalProfile";
 
  private:

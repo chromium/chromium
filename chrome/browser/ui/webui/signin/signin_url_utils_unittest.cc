@@ -12,7 +12,7 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(SigninURLUtilsTest, ParseParameterlessProfileCustomizationURL) {
   GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
-  EXPECT_EQ(ProfileCustomizationStyle::kDefault,
+  EXPECT_EQ(ProfileCustomizationStyle::kSignedInProfileCreation,
             GetProfileCustomizationStyle(url));
 }
 
@@ -20,19 +20,19 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
   // Default version.
   GURL url = AppendProfileCustomizationQueryParams(
       GURL(chrome::kChromeUIProfileCustomizationURL),
-      ProfileCustomizationStyle::kDefault);
+      ProfileCustomizationStyle::kSignedInProfileCreation);
   EXPECT_TRUE(url.is_valid());
   EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
-  EXPECT_EQ(ProfileCustomizationStyle::kDefault,
+  EXPECT_EQ(ProfileCustomizationStyle::kSignedInProfileCreation,
             GetProfileCustomizationStyle(url));
 
   // Profile Creation version.
   url = AppendProfileCustomizationQueryParams(
       GURL(chrome::kChromeUIProfileCustomizationURL),
-      ProfileCustomizationStyle::kLocalProfileCreation);
+      ProfileCustomizationStyle::kSignedOutProfileCreation);
   EXPECT_TRUE(url.is_valid());
   EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
-  EXPECT_EQ(ProfileCustomizationStyle::kLocalProfileCreation,
+  EXPECT_EQ(ProfileCustomizationStyle::kSignedOutProfileCreation,
             GetProfileCustomizationStyle(url));
 
   // Edit profile version.

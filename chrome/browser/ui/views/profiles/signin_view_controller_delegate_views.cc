@@ -186,10 +186,10 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     bool show_supervised_user_iph) {
   GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
   switch (style) {
-    case ProfileCustomizationStyle::kDefault:
-      // The default style uses the URL without query parameters.
+    case ProfileCustomizationStyle::kSignedInProfileCreation:
+      // The signed-in profile creation uses the URL without query parameters.
       break;
-    case ProfileCustomizationStyle::kLocalProfileCreation:
+    case ProfileCustomizationStyle::kSignedOutProfileCreation:
     case ProfileCustomizationStyle::kEditProfile:
       url = AppendProfileCustomizationQueryParams(url, style);
       break;
@@ -419,8 +419,8 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // On the local profile creation dialog, cancelling the dialog (for instance
-  // through the VKEY_ESCAPE accelerator) should delete the profile.
+  // On the signed-out profile creation dialog, cancelling the dialog (for
+  // instance through the VKEY_ESCAPE accelerator) should delete the profile.
   if (delete_profile_on_cancel) {
     SetCancelCallback(base::BindOnce(
         &SigninViewControllerDelegateViews::DeleteProfileOnCancel,
@@ -605,10 +605,10 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
     bool show_supervised_user_iph) {
   const bool delete_profile_on_cancel = [style] {
     switch (style) {
-      case ProfileCustomizationStyle::kLocalProfileCreation:
+      case ProfileCustomizationStyle::kSignedOutProfileCreation:
         // The ephemeral profile being created is deleted on cancel.
         return true;
-      case ProfileCustomizationStyle::kDefault:
+      case ProfileCustomizationStyle::kSignedInProfileCreation:
       case ProfileCustomizationStyle::kEditProfile:
         return false;
     }

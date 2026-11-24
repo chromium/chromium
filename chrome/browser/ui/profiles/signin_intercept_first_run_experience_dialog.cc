@@ -398,7 +398,7 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
     // pass it to `ProfileCustomizationUI::Initialize()`.
     SetDialogDelegate(
         SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-            browser_, ProfileCustomizationStyle::kDefault,
+            browser_, ProfileCustomizationStyle::kSignedInProfileCreation,
             // TODO(crbug.com/351333491) Clarify if we want the IPH when a new
             // profile is created following a context-signin.
             /*show_supervised_user_iph=*/false));

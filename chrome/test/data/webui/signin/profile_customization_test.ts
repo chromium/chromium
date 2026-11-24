@@ -26,7 +26,8 @@ suite('ProfileCustomizationTest', function() {
   setup(function() {
     loadTimeData.overrideValues({
       profileName: 'TestName',
-      profileCustomizationStyle: ProfileCustomizationStyle.DEFAULT,
+      profileCustomizationStyle:
+          ProfileCustomizationStyle.SIGNED_IN_PROFILE_CREATION,
     });
     browserProxy = new TestProfileCustomizationBrowserProxy();
     browserProxy.setProfileInfo({
@@ -182,7 +183,7 @@ suite('ProfileCustomizationTest', function() {
   });
 });
 
-suite('LocalProfileCreationTest', function() {
+suite('SignedOutProfileCreationTest', function() {
   let app: ProfileCustomizationAppElement;
   let browserProxy: TestProfileCustomizationBrowserProxy;
 
@@ -193,7 +194,7 @@ suite('LocalProfileCreationTest', function() {
     loadTimeData.overrideValues({
       profileName: 'TestName',
       profileCustomizationStyle:
-          ProfileCustomizationStyle.LOCAL_PROFILE_CREATION,
+          ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION,
     });
     browserProxy = new TestProfileCustomizationBrowserProxy();
     browserProxy.setProfileInfo({
@@ -211,7 +212,7 @@ suite('LocalProfileCreationTest', function() {
     return microtasksFinished();
   });
 
-  test('LocalProfileCreationDialog', function() {
+  test('SignedOutProfileCreationDialog', function() {
     assertEquals(WELCOME_TITLE, app.$.title.innerText);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertTrue(isChildVisible(app, '#customizeAvatarIcon'));

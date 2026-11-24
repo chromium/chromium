@@ -80,7 +80,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"profileCustomizationThemePickerLabel",
        IDS_PROFILE_CUSTOMIZATION_THEME_PICKER_LABEL},
       {"profileCustomizationTitle", IDS_PROFILE_CUSTOMIZATION_TITLE_V2},
-      {"localProfileCreationTitle",
+      {"signedOutProfileCreationTitle",
        IDS_PROFILE_CUSTOMIZATION_LOCAL_PROFILE_CREATION_TITLE},
       {"profileCustomizationDeleteProfileLabel",
        IDS_PROFILE_CUSTOMIZATION_DELETE_PROFILE_BUTTON_LABEL},
