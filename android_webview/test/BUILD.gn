@@ -1009,6 +1009,7 @@ robolectric_binary("android_webview_junit_tests") {
     "//android_webview/nonembedded:services_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
+    "//android_webview/support_library/boundary_interfaces/web:web_boundary_interface_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",

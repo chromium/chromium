@@ -15,11 +15,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
 import org.chromium.support_lib_boundary.util.Features;
+import org.chromium.support_lib_boundary.web.util.WebFeatures;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +43,33 @@ public class SupportLibTest {
         Assert.assertTrue(supportedFeaturesList.contains(Features.USER_AGENT_METADATA));
         Assert.assertTrue(
                 supportedFeaturesList.contains(Features.USER_AGENT_METADATA_FORM_FACTORS));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    public void testNoDuplicateSupportedFeatures() {
+        WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
+        List<String> supportedFeaturesList =
+                Arrays.asList(SupportLibWebViewChromiumFactory.assembleSupportedFeatures());
+        Set<String> supportedFeaturesSet = new HashSet<>(supportedFeaturesList);
+        Assert.assertEquals(
+                "Supported features list contains duplicate entries",
+                supportedFeaturesSet.size(),
+                supportedFeaturesList.size());
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    public void testNoDuplicateDeclaredFeatureConstants() throws IllegalAccessException {
+        Set<String> seen = new HashSet<>();
+        for (Class<?> clazz : List.of(Features.class, WebFeatures.class)) {
+            for (Field field : clazz.getFields()) {
+                if (field.getType() == String.class && !"DEV_SUFFIX".equals(field.getName())) {
+                    String value = (String) field.get(null);
+                    Assert.assertTrue("Duplicate feature constant: " + value, seen.add(value));
+                }
+            }
+        }
     }
 
     @Test
