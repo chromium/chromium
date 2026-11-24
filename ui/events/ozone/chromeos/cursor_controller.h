@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "ui/display/display.h"
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
  private:
   CursorController();
   ~CursorController();
-  friend struct base::DefaultSingletonTraits<CursorController>;
+  friend class base::NoDestructor<CursorController>;
 
   struct PerWindowCursorConfiguration {
     display::Display::Rotation rotation;

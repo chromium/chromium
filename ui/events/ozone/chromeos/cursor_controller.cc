@@ -5,6 +5,7 @@
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 
 namespace ui {
 
@@ -43,7 +44,8 @@ void TransformCursorMove(display::Display::Rotation rotation,
 
 // static
 CursorController* CursorController::GetInstance() {
-  return base::Singleton<CursorController>::get();
+  static base::NoDestructor<CursorController> instance;
+  return instance.get();
 }
 
 void CursorController::SetCursorConfigForWindow(
