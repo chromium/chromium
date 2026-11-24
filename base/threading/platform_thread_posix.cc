@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/thread.h>
+#include <locale.h>
 
 #include "base/fuchsia/koid.h"
 #else
@@ -70,6 +71,18 @@ struct ThreadParams {
 };
 
 void* ThreadFunc(void* params) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia's libc leaves the per-thread locale unset on threads other than
+  // the main thread, so `MB_CUR_MAX` and the multibyte/wide conversion
+  // functions dereference null on them. libc++ used to hide this by calling
+  // uselocale() around its uses of those functions, but stopped doing so in
+  // https://github.com/llvm/llvm-project/pull/239100. Point this thread at the
+  // global locale so that those functions are safe to call.
+  // TODO(crbug.com/534049474): Remove once the Fuchsia SDK's libc initializes
+  // the locale of new threads.
+  uselocale(LC_GLOBAL_LOCALE);
+#endif
+
   PlatformThread::Delegate* delegate = nullptr;
 
   {

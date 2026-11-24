@@ -80,6 +80,11 @@ std::ostream& operator<<(std::ostream& os, MessagePumpType type) {
 #include "base/system/sys_info.h"
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include <locale.h>
+#include <stdlib.h>
+#endif
+
 using ::testing::_;
 using ::testing::InSequence;
 
@@ -294,6 +299,44 @@ TEST(PlatformThreadTest, FunctionTimesTen) {
   // Make sure that the thread ID is the same across calls.
   EXPECT_EQ(main_thread_id, PlatformThread::CurrentId());
 }
+
+#if BUILDFLAG(IS_FUCHSIA)
+namespace {
+
+class LocaleTestThread : public PlatformThread::Delegate {
+ public:
+  void ThreadMain() override {
+    has_locale_ = uselocale(nullptr) != nullptr;
+    if (has_locale_) {
+      // `MB_CUR_MAX` dereferences the thread's locale.
+      mb_cur_max_ = MB_CUR_MAX;
+    }
+  }
+
+  bool has_locale() const { return has_locale_; }
+  size_t mb_cur_max() const { return mb_cur_max_; }
+
+ private:
+  bool has_locale_ = false;
+  size_t mb_cur_max_ = 0;
+};
+
+}  // namespace
+
+// Threads must start with a locale, since libc functions such as `MB_CUR_MAX`
+// dereference it unconditionally. See the comment in ThreadFunc() in
+// platform_thread_posix.cc.
+TEST(PlatformThreadTest, NewThreadHasLocale) {
+  LocaleTestThread thread;
+  PlatformThreadHandle handle;
+
+  ASSERT_TRUE(PlatformThread::Create(0, &thread, &handle));
+  PlatformThread::Join(handle);
+
+  EXPECT_TRUE(thread.has_locale());
+  EXPECT_GT(thread.mb_cur_max(), 0u);
+}
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 

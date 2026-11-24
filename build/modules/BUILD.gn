@@ -263,6 +263,7 @@ if (use_unified_system_module) {
         # enum align_val_t { ... }
         # #endif
         "--append-module=std.new.align_val_t:export vcruntime_new",
+        "--append-module=std.new.nothrow_t:export vcruntime_new",
         "--append-module=std.std_mbstate_t:export corecrt",
         "--append-module=std.exception.exception:export vcruntime_exception",
 
