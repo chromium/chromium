@@ -10,62 +10,54 @@ import org.objectweb.asm.Opcodes;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 /** Java application that removes all calls to System.loadLibrary() from all classes in a jar. */
 public class SystemLoadLibraryRemover extends ByteCodeRewriter {
 
-    static ClassLoader loadJars(Collection<String> paths) {
-        URL[] jarUrls = new URL[paths.size()];
-        int i = 0;
-        for (String path : paths) {
-            try {
-                jarUrls[i++] = new File(path).toURI().toURL();
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return new URLClassLoader(jarUrls);
-    }
-
     public static void main(String[] args) throws IOException {
-        args = ByteCodeRewriter.expandArgs(args);
+        ClassHierarchy.ParsedArgs parsed = ClassHierarchy.ParsedArgs.parse(args);
+        String[] positionalArgs = parsed.positionalArgs;
 
-        if (args.length < 2) {
+        if (positionalArgs.length < 2) {
             System.err.println(
-                    "Expected arguments: <':' separated list of input jar paths> "
-                            + "<':' separated list of output jar paths>");
+                    "Expected arguments: [--classpath <cp>]"
+                            + " <':' separated list of input jar paths>"
+                            + " <':' separated list of output jar paths>");
             System.exit(1);
         }
 
-        String[] inputJars = args[0].split(":");
-        String[] outputJars = args[1].split(":");
+        String[] inputJars = positionalArgs[0].split(":");
+        String[] outputJars = positionalArgs[1].split(":");
 
-        assert inputJars.length >= outputJars.length
-                : "Input list must be a superset of the output list, where the "
-                        + "first N entries match, and N is the length of the output list.";
+        if (inputJars.length < outputJars.length) {
+            throw new IllegalArgumentException(
+                    "Input list must be a superset of the output list, where the "
+                            + "first N entries match, and N is the length of the output list. "
+                            + "Inputs: "
+                            + inputJars.length
+                            + " Outputs: "
+                            + outputJars.length);
+        }
 
-        ArrayList<String> classPathJarsPaths = new ArrayList<>();
+        ArrayList<String> classPathJarsPaths = new ArrayList<>(parsed.classpath);
         classPathJarsPaths.addAll(Arrays.asList(inputJars));
-        ClassLoader classPathJarsClassLoader = loadJars(classPathJarsPaths);
 
-        String initializerClass = args.length > 2 ? args[2] : null;
-        SystemLoadLibraryRemover remover =
-                new SystemLoadLibraryRemover(classPathJarsClassLoader, initializerClass);
-        for (int i = 0; i < outputJars.length; i++) {
-            remover.rewrite(new File(inputJars[i]), new File(outputJars[i]));
+        String initializerClass = positionalArgs.length > 2 ? positionalArgs[2] : null;
+        try (ClassHierarchy classHierarchy = new ClassHierarchy(classPathJarsPaths)) {
+            SystemLoadLibraryRemover remover =
+                    new SystemLoadLibraryRemover(classHierarchy, initializerClass);
+            for (int i = 0; i < outputJars.length; i++) {
+                remover.rewrite(new File(inputJars[i]), new File(outputJars[i]));
+            }
         }
     }
 
     private final String mInitializerClass;
 
-    SystemLoadLibraryRemover(ClassLoader classLoader, String initializerClass) {
-        super(classLoader);
+    SystemLoadLibraryRemover(ClassHierarchy classHierarchy, String initializerClass) {
+        super(classHierarchy);
         mInitializerClass = initializerClass != null ? initializerClass.replace('.', '/') : null;
     }
 

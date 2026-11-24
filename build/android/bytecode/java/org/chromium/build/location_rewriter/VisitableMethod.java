@@ -4,7 +4,7 @@
 
 package org.chromium.build.location_rewriter;
 
-import org.objectweb.asm.commons.AdviceAdapter;
+import org.objectweb.asm.MethodVisitor;
 
 import java.util.Objects;
 
@@ -40,7 +40,7 @@ public final class VisitableMethod {
         return Objects.hash(opcode, owner, name, descriptor, isInterface);
     }
 
-    public void visit(AdviceAdapter visitor) {
+    public void visit(MethodVisitor visitor) {
         visitor.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
 }

@@ -9,9 +9,16 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.commons.AdviceAdapter;
+
+import org.chromium.bytecode.ClassHierarchy;
 
 public class LocationRewriterImpl {
+    private final ClassHierarchy mClassHierarchy;
+
+    public LocationRewriterImpl(ClassHierarchy classHierarchy) {
+        mClassHierarchy = classHierarchy;
+    }
+
     /**
      * Rewrite the contents of the input class by replacing invocations of methods listed in {@link
      * org.chromium.build.location_rewriter.LocationRewriterTargetMethods} with the corresponding
@@ -35,7 +42,9 @@ public class LocationRewriterImpl {
     }
 
     private byte[] rewriteClass(ClassReader classReader) {
-        ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES);
+        mClassHierarchy.registerClass(classReader);
+        ClassWriter classWriter =
+                mClassHierarchy.createClassWriter(classReader, ClassWriter.COMPUTE_FRAMES);
         ClassVisitor transformer = new RewritingClassVisitor(classWriter);
         classReader.accept(transformer, ClassReader.EXPAND_FRAMES);
         return classWriter.toByteArray();
@@ -43,7 +52,7 @@ public class LocationRewriterImpl {
 
     /** Class visitor that scans for method invocations that require rewriting. */
     private static class ScanningClassVisitor extends ClassVisitor {
-        private boolean mNeedsRewriting = false;
+        private boolean mNeedsRewriting;
 
         public ScanningClassVisitor() {
             super(Opcodes.ASM9);
@@ -130,24 +139,18 @@ public class LocationRewriterImpl {
             } else {
                 sourceFileName = "(unknown).java";
             }
-            return new RewritingMethodVisitor(
-                    methodVisitor, access, name, descriptor, sourceFileName);
+            return new RewritingMethodVisitor(methodVisitor, name, sourceFileName);
         }
     }
 
     /** Method visitor that rewrites method invocations. */
-    private static class RewritingMethodVisitor extends AdviceAdapter {
+    private static class RewritingMethodVisitor extends MethodVisitor {
         private final String mMethodName;
         private final String mSourceFileName;
         private int mCurrentLineNumber;
 
-        RewritingMethodVisitor(
-                MethodVisitor methodVisitor,
-                int access,
-                String name,
-                String descriptor,
-                String sourceFileName) {
-            super(Opcodes.ASM9, methodVisitor, access, name, descriptor);
+        RewritingMethodVisitor(MethodVisitor methodVisitor, String name, String sourceFileName) {
+            super(Opcodes.ASM9, methodVisitor);
             this.mMethodName = name;
             this.mSourceFileName = sourceFileName;
             this.mCurrentLineNumber = 0;

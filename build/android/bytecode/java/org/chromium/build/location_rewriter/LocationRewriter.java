@@ -4,7 +4,10 @@
 
 package org.chromium.build.location_rewriter;
 
+import org.chromium.bytecode.ClassHierarchy;
+
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,6 +15,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -25,13 +30,14 @@ import java.util.zip.ZipOutputStream;
 public class LocationRewriter {
     LocationRewriterImpl mRewriterImpl;
 
-    public LocationRewriter() {
-        mRewriterImpl = new LocationRewriterImpl();
+    public LocationRewriter(ClassHierarchy classHierarchy) {
+        mRewriterImpl = new LocationRewriterImpl(classHierarchy);
     }
 
     private void rewriteJarFile(File inputJar, File outputJar) throws IOException {
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(inputJar));
-                OutputStream outputStream = new FileOutputStream(outputJar)) {
+                OutputStream outputStream =
+                        new BufferedOutputStream(new FileOutputStream(outputJar))) {
             rewriteZipFile(inputStream, outputStream);
         }
     }
@@ -69,19 +75,25 @@ public class LocationRewriter {
 
     public static void main(String[] args) {
         try {
-            if (args.length != 2) {
+            ClassHierarchy.ParsedArgs parsed = ClassHierarchy.ParsedArgs.parse(args);
+            String[] positionalArgs = parsed.positionalArgs;
+            if (positionalArgs.length != 2) {
                 throw new IllegalArgumentException(
-                        "Usage: bin/helper/location_rewriter <input jar> <output jar>");
+                        "Usage: location_rewriter [--classpath <cp>] <input jar> <output jar>");
             }
 
-            File inputJar = new File(args[0]);
-            File outputJar = new File(args[1]);
+            File inputJar = new File(positionalArgs[0]);
+            File outputJar = new File(positionalArgs[1]);
             if (!inputJar.exists()) {
                 throw new FileNotFoundException("Input jar not found: " + inputJar.getPath());
             }
 
-            LocationRewriter rewriter = new LocationRewriter();
-            rewriter.rewriteJarFile(inputJar, outputJar);
+            List<String> classPathJars = new ArrayList<>(parsed.classpath);
+            classPathJars.add(positionalArgs[0]);
+            try (ClassHierarchy classHierarchy = new ClassHierarchy(classPathJars)) {
+                LocationRewriter rewriter = new LocationRewriter(classHierarchy);
+                rewriter.rewriteJarFile(inputJar, outputJar);
+            }
         } catch (Exception e) {
             System.err.println("Failed to rewrite location (" + e + ")");
             System.exit(1);

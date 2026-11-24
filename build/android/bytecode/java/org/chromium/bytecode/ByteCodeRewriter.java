@@ -9,6 +9,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,9 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -28,22 +26,14 @@ import java.util.zip.ZipOutputStream;
 /** Base class for scripts that perform bytecode modifications on a jar file. */
 public abstract class ByteCodeRewriter {
     private static final String CLASS_FILE_SUFFIX = ".class";
-    private final ClassLoader mClassPathJarsClassLoader;
+    private final ClassHierarchy mClassHierarchy;
 
-    public ByteCodeRewriter(ClassLoader classPathJarsClassLoader) {
-        mClassPathJarsClassLoader = classPathJarsClassLoader;
+    public ByteCodeRewriter(ClassHierarchy classHierarchy) {
+        mClassHierarchy = classHierarchy;
     }
 
-    public ClassLoader getClassLoader() {
-        return mClassPathJarsClassLoader;
-    }
-
-    static String[] expandArgs(String[] args) throws IOException {
-        if (args.length == 1 && args[0].startsWith("@")) {
-            Path path = Paths.get(args[0].substring(1));
-            args = Files.readAllLines(path).toArray(new String[0]);
-        }
-        return args;
+    public ClassHierarchy getClassHierarchy() {
+        return mClassHierarchy;
     }
 
     public void rewrite(File inputJar, File outputJar) throws IOException {
@@ -52,7 +42,8 @@ public abstract class ByteCodeRewriter {
         }
 
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(inputJar));
-                OutputStream outputStream = new FileOutputStream(outputJar)) {
+                OutputStream outputStream =
+                        new BufferedOutputStream(new FileOutputStream(outputJar))) {
             processZip(inputStream, outputStream);
         }
     }
@@ -114,12 +105,12 @@ public abstract class ByteCodeRewriter {
         }
         try {
             ClassReader reader = new ClassReader(inputStream);
+            mClassHierarchy.registerClass(reader);
             if (!shouldRewriteClass(reader)) {
                 return false;
             }
             ClassWriter writer =
-                    new CustomClassLoaderClassWriter(
-                            reader, ClassWriter.COMPUTE_FRAMES, getClassLoader());
+                    mClassHierarchy.createClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
             ClassVisitor classVisitor = getClassVisitorForClass(entry.getName(), writer);
             reader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
 
@@ -129,21 +120,6 @@ public abstract class ByteCodeRewriter {
             return true;
         } catch (Throwable e) {
             throw new RuntimeException("Failed when processing " + entry.getName(), e);
-        }
-    }
-
-    private static class CustomClassLoaderClassWriter extends ClassWriter {
-        private final ClassLoader mClassLoader;
-
-        public CustomClassLoaderClassWriter(
-                ClassReader reader, int flags, ClassLoader classLoader) {
-            super(reader, flags);
-            mClassLoader = classLoader;
-        }
-
-        @Override
-        protected ClassLoader getClassLoader() {
-            return mClassLoader;
         }
     }
 }

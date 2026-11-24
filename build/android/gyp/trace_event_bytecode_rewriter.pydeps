@@ -3,6 +3,7 @@
 ../../action_helpers.py
 ../../gn_helpers.py
 ../java_home.py
+bytecode_rewriter.py
 trace_event_bytecode_rewriter.py
 util/__init__.py
 util/build_utils.py

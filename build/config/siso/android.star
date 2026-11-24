@@ -454,13 +454,11 @@ def __android_trace_event_bytecode_rewriter(ctx, cmd):
     # python3 ../../build/android/gyp/trace_event_bytecode_rewriter.py \
     #   --stamp obj/chrome/android/trichrome_chrome_bundle.trace_event_rewrite.stamp \
     #   --depfile gen/chrome/android/trichrome_chrome_bundle__trace_event_rewritten.d \
-    #   --script bin/helper/trace_event_adder \
     #   --classpath @FileArg\(gen/chrome/android/trichrome_chrome_bundle.build_config.json:android:sdk_jars\) \
     #   --input-jars @FileArg\(gen/chrome/android/trichrome_chrome_bundle.build_config.json:deps_info:device_classpath\) \
     #   --output-jars @FileArg\(gen/chrome/android/trichrome_chrome_bundle.build_config.json:deps_info:trace_event_rewritten_device_classpath\)
     inputs = []
     outputs = []
-    script = ""
     for i, arg in enumerate(cmd.args):
         if arg in ["--input-jars", "--classpath"]:
             fn, v = __filearg(ctx, cmd.args[i + 1])
@@ -478,17 +476,6 @@ def __android_trace_event_bytecode_rewriter(ctx, cmd):
                 f, _, _ = f.partition(":")
                 outputs.append(ctx.fs.canonpath(f))
             continue
-        if arg == "--script":
-            script = cmd.args[i + 1]
-            continue
-
-    # Find runtime jars for trace_event_adder
-    if script == "bin/helper/trace_event_adder":
-        trace_event_adder_json = json.decode(
-            str(ctx.fs.read(ctx.fs.canonpath("gen/build/android/bytecode/trace_event_adder.build_config.json"))),
-        )
-        for path in trace_event_adder_json.get("processed_classpath", []):
-            inputs.append(ctx.fs.canonpath(path))
 
     ctx.actions.fix(
         inputs = cmd.inputs + inputs,

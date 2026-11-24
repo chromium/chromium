@@ -147,23 +147,16 @@ _manifest_merger_jar_path =
 # the error message about why non-existent dependencies are there.
 build_config_target_suffix = "__build_config_crbug_908819"
 
-# Paths for Java location rewriter
-_asm_deps = [
-  "//third_party/android_deps:org_ow2_asm_asm_commons_java",
-  "//third_party/android_deps:org_ow2_asm_asm_java",
-]
-
-rebased_asm_params_path = []
-foreach(_asm_dep, _asm_deps) {
-  _asm_dep_gen_dir = get_label_info(_asm_dep, "target_gen_dir")
-  _asm_dep_name = get_label_info(_asm_dep, "name")
-  rebased_asm_params_path +=
-      [ rebase_path("$_asm_dep_gen_dir/$_asm_dep_name.params.json",
-                    root_build_dir) ]
-}
-
-rebased_location_rewriter_path =
-    rebase_path("$root_build_dir/bin/helper/location_rewriter", root_build_dir)
+# Unified fat jar bundling location_rewriter, trace_event_adder, and
+# system_load_library_remover.
+_bytecode_rewriter_target =
+    "//build/android/bytecode:bytecode_rewriter($default_toolchain)"
+bytecode_rewriter_jar_path =
+    get_label_info(_bytecode_rewriter_target, "target_out_dir") +
+    "/bytecode_rewriter.jar"
+bytecode_rewriter_inputs =
+    java_paths_for_inputs + [ bytecode_rewriter_jar_path ]
+bytecode_rewriter_deps = [ _bytecode_rewriter_target ]
 
 # Write the target's .build_config.json file. This is a json file that contains
 # a dictionary of information about how to build this target (things that
@@ -473,7 +466,6 @@ template("write_build_config") {
                              [
                                "assets",
                                "bypass_platform_checks",
-                               "bytecode_rewriter_target",
                                "chromium_code",
                                "create_locales_java_list",
                                "dex_needs_classpath",
@@ -3947,14 +3939,14 @@ if (enable_java_templates) {
           }
         }
       } else if (_is_prebuilt && _build_host_jar) {
-        if (defined(invoker.bytecode_rewriter_target)) {
+        if (defined(invoker.bytecode_rewriter)) {
           _processed_jar_path = "$target_out_dir/$target_name.rewritten.jar"
         } else {
           # Skip "process device" step if the step would be just a copy.
           _processed_jar_path = invoker.jar_path
         }
       } else if (_has_sources) {
-        if (defined(invoker.bytecode_rewriter_target)) {
+        if (defined(invoker.bytecode_rewriter)) {
           _processed_jar_path = "$target_out_dir/$target_name.rewritten.jar"
         } else {
           # Filter directly in compile_java.py when no other processing is
@@ -4120,7 +4112,6 @@ if (enable_java_templates) {
                              [
                                "aar_path",
                                "annotation_processor_deps",
-                               "bytecode_rewriter_target",
                                "create_locales_java_list",
                                "direct_deps_only",
                                "enable_lint",
@@ -4192,7 +4183,7 @@ if (enable_java_templates) {
       }
       if (defined(_dex_needs_classpath)) {
         dex_needs_classpath = _dex_needs_classpath
-      } else if (defined(invoker.bytecode_rewriter_target)) {
+      } else if (defined(invoker.bytecode_rewriter)) {
         needs_full_javac_classpath = true
       }
       if (defined(_enable_bytecode_checks) && _enable_bytecode_checks) {
@@ -4598,20 +4589,17 @@ if (enable_java_templates) {
       }
     }
 
-    if (defined(invoker.bytecode_rewriter_target)) {
+    if (defined(invoker.bytecode_rewriter)) {
       assert(_build_host_jar || _build_device_jar,
              "A host or device jar must be created to use bytecode rewriting")
 
       _rewritten_jar = "$target_out_dir/${target_name}.rewritten.jar"
       _rewritten_jar_target_name = "${target_name}__rewritten"
-      _rewriter_path = root_build_dir + "/bin/helper/" +
-                       get_label_info(invoker.bytecode_rewriter_target, "name")
       _rebased_build_config = rebase_path(_build_config, root_build_dir)
 
       python_action(_rewritten_jar_target_name) {
         python_binary = "//build/android:bytecode_rewriter"
-        inputs = java_paths_for_inputs + [
-                   _rewriter_path,
+        inputs = bytecode_rewriter_inputs + [
                    _build_config,
                    _unprocessed_jar_path,
                  ]
@@ -4620,8 +4608,10 @@ if (enable_java_templates) {
         args = [
           "--depfile",
           rebase_path(depfile, root_build_dir),
-          "--script",
-          rebase_path(_rewriter_path, root_build_dir),
+          "--jar-path",
+          rebase_path(bytecode_rewriter_jar_path, root_build_dir),
+          "--tool",
+          invoker.bytecode_rewriter,
           "--classpath",
           "@FileArg($_rebased_build_config:javac_full_classpath)",
           "--classpath",
@@ -4635,7 +4625,7 @@ if (enable_java_templates) {
           args += invoker.bytecode_rewriter_args
         }
         deps = _unprocessed_jar_deps + _javac_classpath_deps +
-               [ invoker.bytecode_rewriter_target ]
+               bytecode_rewriter_deps
       }
 
       _unprocessed_jar_deps += [ ":$_rewritten_jar_target_name" ]

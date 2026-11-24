@@ -10,12 +10,8 @@ import org.objectweb.asm.Opcodes;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Java application that modifies all implementations of "draw", "onMeasure" and "onLayout" on all
@@ -24,69 +20,66 @@ import java.util.Collection;
 public class TraceEventAdder extends ByteCodeRewriter {
     private ArrayList<MethodDescription> mMethodsToTrace;
 
-    /**
-     * Loads a list of jars and returns a ClassLoader capable of loading all classes found in the
-     * given jars.
-     */
-    static ClassLoader loadJars(Collection<String> paths) {
-        URL[] jarUrls = new URL[paths.size()];
-        int i = 0;
-        for (String path : paths) {
-            try {
-                jarUrls[i++] = new File(path).toURI().toURL();
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return new URLClassLoader(jarUrls);
-    }
-
     public static void main(String[] args) throws IOException {
         // Invoke this script using //build/android/gyp/trace_event_bytecode_rewriter.py
-        args = ByteCodeRewriter.expandArgs(args);
+        ClassHierarchy.ParsedArgs parsed = ClassHierarchy.ParsedArgs.parse(args);
+        String[] positionalArgs = parsed.positionalArgs;
 
-        if (args.length < 2) {
+        if (positionalArgs.length < 2) {
             System.err.println(
-                    "Expected arguments: <':' separated list of input jar paths> "
-                            + "<':' separated list of output jar paths>");
+                    "Expected arguments: [--classpath <cp>]"
+                            + " <':' separated list of input jar paths>"
+                            + " <':' separated list of output jar paths>");
             System.exit(1);
         }
 
-        String[] inputJars = args[0].split(":");
-        String[] outputJars = args[1].split(":");
+        String[] inputJars = positionalArgs[0].split(":");
+        String[] outputJars = positionalArgs[1].split(":");
 
-        assert inputJars.length >= outputJars.length
-                : "Input list must be a superset of the output list, where the "
-                        + "first N entries match, and N is the length of the output list."
-                        + inputJars.length
-                        + " Outputs: "
-                        + outputJars.length;
+        if (inputJars.length < outputJars.length) {
+            throw new IllegalArgumentException(
+                    "Input list must be a superset of the output list, where the "
+                            + "first N entries match, and N is the length of the output list. "
+                            + "Inputs: "
+                            + inputJars.length
+                            + " Outputs: "
+                            + outputJars.length);
+        }
 
         // outputJars[n] must be the same as inputJars[n] but with a suffix, validate this.
         for (int i = 0; i < outputJars.length; i++) {
-            File inputJarPath = new File(inputJars[i]);
-            String inputJarFilename = inputJarPath.getName();
-            File outputJarPath = new File(outputJars[i]);
-
-            String inputFilenameNoExtension =
-                    inputJarFilename.substring(0, inputJarFilename.lastIndexOf(".jar"));
+            String inputJarFilename = new File(inputJars[i]).getName();
+            String outputJarFilename = new File(outputJars[i]).getName();
+            int jarExtIdx = inputJarFilename.lastIndexOf(".jar");
+            if (jarExtIdx < 0) {
+                throw new IllegalArgumentException(
+                        "Expected .jar input path, got: " + inputJars[i]);
+            }
+            String inputFilenameNoExtension = inputJarFilename.substring(0, jarExtIdx);
 
             // Ensuring that for every output, we have the matching input.
-            assert outputJarPath.getName().startsWith(inputFilenameNoExtension);
+            if (!outputJarFilename.startsWith(inputFilenameNoExtension)) {
+                throw new IllegalArgumentException(
+                        "Output jar "
+                                + outputJarFilename
+                                + " does not start with "
+                                + inputFilenameNoExtension);
+            }
         }
 
-        ArrayList<String> classPathJarsPaths = new ArrayList<>();
+        ArrayList<String> classPathJarsPaths = new ArrayList<>(parsed.classpath);
         classPathJarsPaths.addAll(Arrays.asList(inputJars));
-        ClassLoader classPathJarsClassLoader = loadJars(classPathJarsPaths);
 
-        TraceEventAdder adder = new TraceEventAdder(classPathJarsClassLoader);
-        for (int i = 0; i < outputJars.length; i++) {
-            adder.rewrite(new File(inputJars[i]), new File(outputJars[i]));
+        try (ClassHierarchy classHierarchy = new ClassHierarchy(classPathJarsPaths)) {
+            TraceEventAdder adder = new TraceEventAdder(classHierarchy);
+            for (int i = 0; i < outputJars.length; i++) {
+                adder.rewrite(new File(inputJars[i]), new File(outputJars[i]));
+            }
         }
     }
 
-    TraceEventAdder(ClassLoader classLoader) {
-        super(classLoader);
+    TraceEventAdder(ClassHierarchy classHierarchy) {
+        super(classHierarchy);
     }
 
     @Override
@@ -130,7 +123,7 @@ public class TraceEventAdder extends ByteCodeRewriter {
         // class and which ones need to be overridden. In case the class is not an Android view
         // we'll clear the list and skip rewriting.
         MethodCheckerClassAdapter methodChecker =
-                new MethodCheckerClassAdapter(mMethodsToTrace, getClassLoader());
+                new MethodCheckerClassAdapter(mMethodsToTrace, getClassHierarchy());
 
         classReader.accept(methodChecker, ClassReader.EXPAND_FRAMES);
 

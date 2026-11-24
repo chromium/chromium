@@ -21,18 +21,15 @@ import java.util.ArrayList;
  * methods remain then we recurse on the class's superclass.
  */
 class ParentMethodCheckerClassAdapter extends ClassVisitor {
-    private static final String OBJECT_CLASS_DESCRIPTOR = "java/lang/Object";
-
     private final ArrayList<MethodDescription> mMethodsToCheck;
-    private final ClassLoader mJarClassLoader;
+    private final ClassHierarchy mClassHierarchy;
     private String mSuperName;
-    private boolean mIsCheckingObjectClass;
 
     public ParentMethodCheckerClassAdapter(
-            ArrayList<MethodDescription> methodsToCheck, ClassLoader jarClassLoader) {
+            ArrayList<MethodDescription> methodsToCheck, ClassHierarchy classHierarchy) {
         super(ASM9);
         mMethodsToCheck = methodsToCheck;
-        mJarClassLoader = jarClassLoader;
+        mClassHierarchy = classHierarchy;
     }
 
     @Override
@@ -44,22 +41,12 @@ class ParentMethodCheckerClassAdapter extends ClassVisitor {
             String superName,
             String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
-
-        if (name.equals(OBJECT_CLASS_DESCRIPTOR)) {
-            mIsCheckingObjectClass = true;
-            return;
-        }
-
         mSuperName = superName;
     }
 
     @Override
     public MethodVisitor visitMethod(
             int access, String name, String descriptor, String signature, String[] exceptions) {
-        if (mIsCheckingObjectClass) {
-            return super.visitMethod(access, name, descriptor, signature, exceptions);
-        }
-
         for (MethodDescription methodToCheck : mMethodsToCheck) {
             if (methodToCheck.shouldCreateOverride != null
                     || !methodToCheck.methodName.equals(name)
@@ -83,19 +70,6 @@ class ParentMethodCheckerClassAdapter extends ClassVisitor {
 
     @Override
     public void visitEnd() {
-        if (mIsCheckingObjectClass) {
-            // We support tracing methods that are defined in classes that are derived from View,
-            // but are not defined in View itself. If we've reached the Object class in the
-            // hierarchy, it means the method doesn't exist in this hierarchy, so don't override it,
-            // and stop looking for it.
-            for (MethodDescription method : mMethodsToCheck) {
-                if (method.shouldCreateOverride == null) {
-                    method.shouldCreateOverride = false;
-                }
-            }
-            return;
-        }
-
         boolean areAnyUncheckedMethods = false;
 
         for (MethodDescription method : mMethodsToCheck) {
@@ -107,7 +81,7 @@ class ParentMethodCheckerClassAdapter extends ClassVisitor {
 
         if (areAnyUncheckedMethods) {
             MethodCheckerClassAdapter.checkParentClass(
-                    mSuperName, mMethodsToCheck, mJarClassLoader);
+                    mSuperName, mMethodsToCheck, mClassHierarchy);
         }
 
         super.visitEnd();

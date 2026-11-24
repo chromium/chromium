@@ -433,9 +433,7 @@ class ParamsJson(dict):
         """Returns True if the target type has a classpath."""
         if self.is_library():
             return bool(
-                self.get('dex_needs_classpath')
-                or self.get('bytecode_rewriter_target')
-                or not self.is_prebuilt()
+                self.get('needs_full_javac_classpath') or not self.is_prebuilt()
             )
         return self.type in _CLASSPATH_TYPES
 

@@ -2,21 +2,15 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Wrapper script around TraceEventAdder script."""
+"""Wrapper script around TraceEventAdder."""
 
 import argparse
-import logging
-import sys
-import tempfile
 import os
+import sys
 
+import bytecode_rewriter
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
-
-
-# The real limit is generally >100kb, but 10k seems like a reasonable "it's big"
-# threshold.
-_MAX_CMDLINE = 10000
 
 
 def main(argv):
@@ -25,9 +19,9 @@ def main(argv):
     parser = argparse.ArgumentParser()
     action_helpers.add_depfile_arg(parser)
     parser.add_argument(
-        '--script',
+        '--jar-path',
         required=True,
-        help='Path to the java binary wrapper script.',
+        help='Path to the bytecode_rewriter fat jar.',
     )
     parser.add_argument('--stamp', help='Path to stamp to mark when finished.')
     parser.add_argument('--classpath', action='append', nargs='+')
@@ -44,25 +38,13 @@ def main(argv):
         if not os.path.exists(jar_dir):
             os.makedirs(jar_dir)
 
-    cmd = [
-        args.script,
+    tool_args = [
         '--classpath',
         ':'.join(args.classpath),
         ':'.join(args.input_jars),
         ':'.join(args.output_jars),
     ]
-    if sum(len(x) for x in cmd) > _MAX_CMDLINE:
-        # Cannot put --classpath in the args file because that is consumed by the
-        # wrapper script. Keep the args file on disk when debugging.
-        is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
-        args_file = tempfile.NamedTemporaryFile(mode='w', delete=not is_debug)
-        args_file.write('\n'.join(cmd[3:]))
-        args_file.flush()
-        cmd[3:] = ['@' + args_file.name]
-
-    logging.debug(' '.join(cmd))
-
-    build_utils.CheckOutput(cmd, print_stdout=True)
+    bytecode_rewriter.RunRewriter(args.jar_path, 'trace_event_adder', tool_args)
 
     build_utils.Touch(args.stamp)
 

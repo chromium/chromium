@@ -2122,9 +2122,8 @@ if (!is_robolectric && enable_java_templates) {
 
       if ((defined(force_java_location_rewrite) &&
            force_java_location_rewrite) || enable_java_location_rewrite) {
-        assert(!defined(invoker.bytecode_rewriter_target))
-        bytecode_rewriter_target =
-            "//build/android/location_rewriter:location_rewriter"
+        assert(!defined(invoker.bytecode_rewriter))
+        bytecode_rewriter = "location_rewriter"
       }
     }
   }
@@ -2897,7 +2896,7 @@ if (!is_robolectric && enable_java_templates) {
                                "apk_under_test",
                                "asset_deps",
                                "base_module_target",
-                               "bytecode_rewriter_target",
+                               "bytecode_rewriter",
                                "chromium_code",
                                "deps",
                                "errorprone_args",
@@ -3396,7 +3395,7 @@ if (!is_robolectric && enable_java_templates) {
                                "assert_no_native_deps",
                                "asset_deps",
                                "bundles_supported",
-                               "bytecode_rewriter_target",
+                               "bytecode_rewriter",
                                "chromium_code",
                                "command_line_flags_file",
                                "create_apk_script",
@@ -4527,8 +4526,8 @@ if (!is_robolectric && enable_java_templates) {
     if (_scanned_files.has_classes_jar) {
       _java_library_vars = [
         "alternative_android_sdk_dep",
+        "bytecode_rewriter",
         "bytecode_rewriter_args",
-        "bytecode_rewriter_target",
         "enable_bytecode_checks",
         "jar_excluded_patterns",
         "jar_included_patterns",
@@ -4852,27 +4851,21 @@ if (!is_robolectric && enable_java_templates) {
 
     if (_proguard_enabled) {
       if (_add_view_trace_events) {
-        _trace_event_rewriter_target =
-            "//build/android/bytecode:trace_event_adder"
         _rewritten_jar_target_name = "${target_name}__trace_event_rewritten"
-        _rewriter_path = root_build_dir + "/bin/helper/trace_event_adder"
         _stamp = "${target_out_dir}/${target_name}.trace_event_rewrite.stamp"
 
         python_action(_rewritten_jar_target_name) {
           python_binary = "//build/android:trace_event_bytecode_rewriter"
-          inputs = java_paths_for_inputs + [
-                     _rewriter_path,
-                     _build_config,
-                   ]
+          inputs = bytecode_rewriter_inputs + [ _build_config ]
           outputs = [ _stamp ]
           depfile = "$target_gen_dir/$_rewritten_jar_target_name.d"
           args = [
+            "--jar-path",
+            rebase_path(bytecode_rewriter_jar_path, root_build_dir),
             "--stamp",
             rebase_path(_stamp, root_build_dir),
             "--depfile",
             rebase_path(depfile, root_build_dir),
-            "--script",
-            rebase_path(_rewriter_path, root_build_dir),
             "--classpath",
             "@FileArg($_rebased_build_config:sdk_jars)",
             "--input-jars",
@@ -4880,10 +4873,8 @@ if (!is_robolectric && enable_java_templates) {
             "--output-jars",
             "@FileArg($_rebased_build_config:trace_event_rewritten_classpath)",
           ]
-          deps = [
-                   _build_config_target,
-                   _trace_event_rewriter_target,
-                 ] + _module_java_targets
+          deps = [ _build_config_target ] + _module_java_targets +
+                 bytecode_rewriter_deps
         }
       }
 
