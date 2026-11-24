@@ -10,8 +10,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -19,6 +22,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/base/socket_stream.h"
 #include "google_apis/gcm/engine/connection_factory.h"
@@ -159,6 +163,11 @@ MCSClient::MCSClient(const std::string& version_string,
       heartbeat_manager_(
           std::move(base::SingleThreadTaskRunner::GetCurrentDefault()),
           std::move(io_task_runner)),
+      initial_connection_readiness_state_(
+          base::FeatureList::IsEnabled(
+              features::kGCMWaitForInitialConnectionReady)
+              ? InitialConnectionReadinessState::kWaitingForLogin
+              : InitialConnectionReadinessState::kReady),
       recorder_(recorder) {
   DCHECK(io_task_runner_);
 }
@@ -349,6 +358,17 @@ void MCSClient::SendMessage(const MCSMessage& message) {
   MaybeSendMessage();
 }
 
+void MCSClient::WaitForInitialConnectionReady(base::OnceClosure callback) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(callback);
+  if (initial_connection_readiness_state_ ==
+      InitialConnectionReadinessState::kReady) {
+    std::move(callback).Run();
+    return;
+  }
+  initial_connection_ready_callbacks_.push_back(std::move(callback));
+}
+
 void MCSClient::ResetStateAndBuildLoginRequest(
     mcs_proto::LoginRequest* request) {
   DCHECK(android_id_);
@@ -431,10 +451,26 @@ void MCSClient::ResetStateAndBuildLoginRequest(
            << " pending outgoing messages.";
 
   state_ = CONNECTING;
+  if (initial_connection_readiness_state_ ==
+      InitialConnectionReadinessState::kWaitingForPostLoginHeartbeatAck) {
+    initial_connection_readiness_state_ =
+        InitialConnectionReadinessState::kWaitingForLogin;
+  }
 }
 
 void MCSClient::SendHeartbeat() {
-  SendMessage(MCSMessage(kHeartbeatPingTag, mcs_proto::HeartbeatPing()));
+  // Enqueue directly onto `to_send_` instead of calling `SendMessage()`, which
+  // drops `ttl == 0` packets whenever `ConnectionHandlerImpl::CanSendMessage()`
+  // is temporarily false while `SocketOutputStream` is `FLUSHING` an earlier
+  // packet. `ResetStateAndBuildLoginRequest()` already drops `ttl == 0` packets
+  // on disconnect.
+  auto packet_info = std::make_unique<ReliablePacketInfo>();
+  packet_info->tag = kHeartbeatPingTag;
+  packet_info->protobuf = std::make_unique<mcs_proto::HeartbeatPing>();
+  to_send_.push_back(std::move(packet_info));
+  io_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&MCSClient::MaybeSendMessage,
+                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void MCSClient::OnGCMUpdateFinished(bool success) {
@@ -602,8 +638,15 @@ void MCSClient::HandlePacketFromWire(
     SendMessage(MCSMessage(kIqStanzaTag, BuildStreamAck()));
   }
 
-  // The connection is alive, treat this message as a heartbeat ack.
-  heartbeat_manager_.OnHeartbeatAcked();
+  // The connection is alive, treat this message as a heartbeat ack unless
+  // waiting for the post-login `HeartbeatAck`, in which case keep the ack
+  // timeout armed until the explicit `HeartbeatAck` arrives after any queued
+  // server messages.
+  if (initial_connection_readiness_state_ !=
+          InitialConnectionReadinessState::kWaitingForPostLoginHeartbeatAck ||
+      tag == kHeartbeatAckTag) {
+    heartbeat_manager_.OnHeartbeatAcked();
+  }
 
   switch (tag) {
     case kLoginResponseTag: {
@@ -650,6 +693,14 @@ void MCSClient::HandlePacketFromWire(
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&MCSClient::OnConnectionResetByHeartbeat,
                               weak_ptr_factory_.GetWeakPtr()));
+      if (initial_connection_readiness_state_ ==
+          InitialConnectionReadinessState::kWaitingForLogin) {
+        // Send an immediate `HeartbeatPing` so the server's `HeartbeatAck`
+        // follows any messages already queued for this client at login time.
+        initial_connection_readiness_state_ =
+            InitialConnectionReadinessState::kWaitingForPostLoginHeartbeatAck;
+        heartbeat_manager_.SendImmediateHeartbeat();
+      }
       return;
     }
     case kHeartbeatPingTag:
@@ -660,11 +711,19 @@ void MCSClient::HandlePacketFromWire(
     case kHeartbeatAckTag:
       DCHECK_GE(stream_id_in_, 1U);
       DVLOG(1) << "Received heartbeat ack.";
-      // Do nothing else, all messages act as heartbeat acks.
+      if (initial_connection_readiness_state_ ==
+          InitialConnectionReadinessState::kWaitingForPostLoginHeartbeatAck) {
+        NotifyInitialConnectionReady();
+      }
       return;
     case kCloseTag:
       LOG(ERROR) << "Received close command, resetting connection.";
       state_ = LOADED;
+      if (initial_connection_readiness_state_ ==
+          InitialConnectionReadinessState::kWaitingForPostLoginHeartbeatAck) {
+        initial_connection_readiness_state_ =
+            InitialConnectionReadinessState::kWaitingForLogin;
+      }
       connection_factory_->SignalConnectionReset(
           ConnectionFactory::CLOSE_COMMAND);
       return;
@@ -842,6 +901,27 @@ void MCSClient::OnConnectionResetByHeartbeat(
 
 void MCSClient::DeliverMessageToDelegate(const MCSMessage& message) {
   delegate_->OnMessageReceivedFromMCS(message);
+}
+
+void MCSClient::NotifyInitialConnectionReady() {
+  CHECK_EQ(initial_connection_readiness_state_,
+           InitialConnectionReadinessState::kWaitingForPostLoginHeartbeatAck);
+  initial_connection_readiness_state_ =
+      InitialConnectionReadinessState::kReadyPendingDelivery;
+  // Post to `io_task_runner_` so any `DeliverMessageToDelegate()` tasks posted
+  // for queued `DataMessageStanza` packets received ahead of `HeartbeatAck` run
+  // strictly before readiness callbacks are invoked.
+  io_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&MCSClient::DeliverInitialConnectionReady,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void MCSClient::DeliverInitialConnectionReady() {
+  initial_connection_readiness_state_ = InitialConnectionReadinessState::kReady;
+  for (base::OnceClosure& callback :
+       std::exchange(initial_connection_ready_callbacks_, {})) {
+    std::move(callback).Run();
+  }
 }
 
 void MCSClient::NotifyMessageSendStatus(

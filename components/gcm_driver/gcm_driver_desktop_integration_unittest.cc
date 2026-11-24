@@ -165,6 +165,7 @@ class GCMDriverDesktopIntegrationTest : public testing::Test {
     return instance_id_driver_.get();
   }
   FakeGCMServer* fake_gcm_server() { return fake_gcm_server_.get(); }
+  GCMDriverDesktop* driver() { return driver_.get(); }
   FakeGCMAppHandler* app_handler1() { return app_handler1_.get(); }
   FakeGCMAppHandler* app_handler2() { return app_handler2_.get(); }
 
@@ -406,6 +407,42 @@ TEST_F(GCMDriverDesktopIntegrationTest,
       [&]() { return app_handler1()->received_messages().size() == 1u; }));
   EXPECT_EQ(app_handler1()->received_event(), FakeGCMAppHandler::MESSAGE_EVENT);
   EXPECT_EQ(app_handler1()->message().raw_data, "after_restart");
+}
+
+TEST_F(GCMDriverDesktopIntegrationTest,
+       QueuedMessageDeliveredBeforeInitialConnectionReady) {
+  auto [token, result] = GetToken(kTestAppId1, kAuthorizedEntity, kScope);
+  ASSERT_EQ(result, instance_id::InstanceID::SUCCESS);
+  base::test::TestFuture<void> initial_ready_future;
+  driver()->WaitForInitialConnectionReady(initial_ready_future.GetCallback());
+  ASSERT_TRUE(initial_ready_future.Wait());
+
+  DestroyClient();
+  ASSERT_TRUE(fake_gcm_server()->SendMessage(token, "queued_before_startup"));
+
+  CreateClient();
+  base::test::TestFuture<void> restart_ready_future;
+  driver()->WaitForInitialConnectionReady(restart_ready_future.GetCallback());
+  ASSERT_TRUE(restart_ready_future.Wait());
+
+  ASSERT_EQ(app_handler1()->received_messages().size(), 1u);
+  EXPECT_EQ(app_handler1()->message().raw_data, "queued_before_startup");
+
+  // Stopping GCM via removing all app handlers and re-adding one starts a fresh
+  // `MCSClient` session and waits for its post-login heartbeat ack again.
+  driver()->RemoveAppHandler(kTestAppId1);
+  driver()->RemoveAppHandler(kTestAppId2);
+  ASSERT_TRUE(fake_gcm_server()->SendMessage(token, "queued_while_stopped"));
+
+  driver()->AddAppHandler(kTestAppId1, app_handler1());
+  driver()->AddAppHandler(kTestAppId2, app_handler2());
+  base::test::TestFuture<void> restart_after_stop_future;
+  driver()->WaitForInitialConnectionReady(
+      restart_after_stop_future.GetCallback());
+  ASSERT_TRUE(restart_after_stop_future.Wait());
+
+  ASSERT_EQ(app_handler1()->received_messages().size(), 2u);
+  EXPECT_EQ(app_handler1()->message().raw_data, "queued_while_stopped");
 }
 
 }  // namespace

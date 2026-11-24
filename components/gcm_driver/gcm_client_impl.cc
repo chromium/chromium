@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -372,6 +373,17 @@ void GCMClientImpl::GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   CHECK(registration_manager_);
   registration_manager_->GetToken(std::move(token_info), std::move(callback));
+}
+
+void GCMClientImpl::WaitForInitialConnectionReady(base::OnceClosure callback) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  // TODO(crbug.com/589587357): Upgrade to `CHECK_EQ(state_, READY)` once
+  // `GCMDriverDesktop::OnStoreReset()` re-gates `delayed_task_controller_`.
+  if (state_ != READY) {
+    return;
+  }
+  CHECK(mcs_client_);
+  mcs_client_->WaitForInitialConnectionReady(std::move(callback));
 }
 
 void GCMClientImpl::StartCheckin() {

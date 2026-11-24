@@ -135,6 +135,7 @@ class GCMClientImpl : public GCMClient,
                          std::string* extra_data) override;
   void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                 GetTokenCallback callback) override;
+  void WaitForInitialConnectionReady(base::OnceClosure callback) override;
 
   // GCMStatsRecorder::Delegate implemenation.
   void OnActivityRecorded() override;

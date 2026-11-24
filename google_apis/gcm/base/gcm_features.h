@@ -15,6 +15,11 @@ namespace gcm::features {
 // Enabled by default in November 2026; remove after November 2027.
 GCM_EXPORT BASE_DECLARE_FEATURE(kGCMRemoveDeprecatedStoreData);
 
+// Kill switch for waiting for the initial MCS push connection to log in and
+// complete a post-login heartbeat round-trip before reporting readiness.
+// Enabled by default in November 2026; remove after November 2027.
+GCM_EXPORT BASE_DECLARE_FEATURE(kGCMWaitForInitialConnectionReady);
+
 }  // namespace gcm::features
 
 #endif  // GOOGLE_APIS_GCM_BASE_GCM_FEATURES_H_

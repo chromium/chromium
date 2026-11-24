@@ -4,8 +4,12 @@
 
 #include "components/gcm_driver/fake_gcm_driver.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
@@ -28,6 +32,11 @@ void FakeGCMDriver::ValidateRegistration(
     ValidateRegistrationCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true /* is_valid */));
+}
+
+void FakeGCMDriver::WaitForInitialConnectionReady(base::OnceClosure callback) {
+  CHECK(callback);
+  std::move(callback).Run();
 }
 
 GCMClient* FakeGCMDriver::GetGCMClientForTesting() const {

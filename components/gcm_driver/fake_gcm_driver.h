@@ -6,6 +6,7 @@
 #define COMPONENTS_GCM_DRIVER_FAKE_GCM_DRIVER_H_
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/gcm_driver/gcm_driver.h"
 
@@ -33,6 +34,7 @@ class FakeGCMDriver : public GCMDriver {
                             const std::vector<std::string>& sender_ids,
                             const std::string& registration_id,
                             ValidateRegistrationCallback callback) override;
+  void WaitForInitialConnectionReady(base::OnceClosure callback) override;
   GCMClient* GetGCMClientForTesting() const override;
   void GetGCMStatistics(GetGCMStatisticsCallback callback,
                         ClearActivityLogs clear_logs) override;

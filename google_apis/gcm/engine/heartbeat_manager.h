@@ -53,6 +53,10 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
   void Start(const base::RepeatingClosure& send_heartbeat_callback,
              const ReconnectCallback& trigger_reconnect_callback);
 
+  // Immediately sends a heartbeat and starts the ack timeout timer if no
+  // heartbeat ack is already pending. Must only be called after `Start()`.
+  void SendImmediateHeartbeat();
+
   // Stop the timer. Start(..) must be called again to begin sending heartbeats
   // afterwards.
   void Stop();

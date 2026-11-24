@@ -7,8 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -110,6 +112,7 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Observer {
 
   void RecordDecryptionFailure(const std::string& app_id,
                                fcm::FcmDecryptionResult result);
+  void WaitForInitialConnectionReady(base::OnceClosure callback);
 
   // For testing purpose. Can be called from UI thread. Use with care.
   GCMClient* gcm_client_for_testing() const { return gcm_client_.get(); }
@@ -438,6 +441,12 @@ void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(
   gcm_client_->RecordDecryptionFailure(app_id, result);
 }
 
+void GCMDriverDesktop::IOWorker::WaitForInitialConnectionReady(
+    base::OnceClosure callback) {
+  DCHECK(io_thread_->RunsTasksInCurrentSequence());
+  gcm_client_->WaitForInitialConnectionReady(std::move(callback));
+}
+
 GCMDriverDesktop::GCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
     const fcm::ChromeBuildInfo& chrome_build_info,
@@ -557,6 +566,47 @@ void GCMDriverDesktop::RemoveAppHandler(const std::string& app_id) {
     DVLOG(1) << "Removed last app handler, calling GCMDriverDesktop::Stop now.";
     Stop();
   }
+}
+
+void GCMDriverDesktop::WaitForInitialConnectionReady(
+    base::OnceClosure callback) {
+  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
+  CHECK(callback);
+
+  GCMClient::Result result = EnsureStarted(GCMClient::IMMEDIATE_START);
+  if (result != GCMClient::SUCCESS) {
+    return;
+  }
+
+  if (!delayed_task_controller_->CanRunTaskWithoutDelay()) {
+    delayed_task_controller_->AddTask(
+        base::BindOnce(&GCMDriverDesktop::DoWaitForInitialConnectionReady,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  DoWaitForInitialConnectionReady(std::move(callback));
+}
+
+void GCMDriverDesktop::DoWaitForInitialConnectionReady(
+    base::OnceClosure callback) {
+  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
+  io_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &GCMDriverDesktop::IOWorker::WaitForInitialConnectionReady,
+          base::Unretained(io_worker_.get()),
+          base::BindPostTask(
+              ui_thread_,
+              base::BindOnce(&GCMDriverDesktop::OnInitialConnectionReady,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(callback)))));
+}
+
+void GCMDriverDesktop::OnInitialConnectionReady(base::OnceClosure callback) {
+  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
+  CHECK(gcm_started_);
+  std::move(callback).Run();
 }
 
 void GCMDriverDesktop::Stop() {

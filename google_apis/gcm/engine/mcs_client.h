@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -132,6 +133,14 @@ class GCM_EXPORT MCSClient {
   // `Delegate::OnMessageSentToMCS()` is invoked with a TTL expiration error.
   virtual void SendMessage(const MCSMessage& message);
 
+  // Invokes `callback` once the initial MCS session has logged in and
+  // completed a post-login heartbeat round-trip (ensuring any messages queued
+  // on the server prior to login have been delivered first), or immediately if
+  // that milestone was already reached during `this` instance's lifetime.
+  // `callback` is not invoked if `this` is destroyed before readiness is
+  // reached (or while login/heartbeat has not yet succeeded).
+  void WaitForInitialConnectionReady(base::OnceClosure callback);
+
   // Returns the current state of the client.
   State state() const { return state_; }
 
@@ -148,6 +157,20 @@ class GCM_EXPORT MCSClient {
   using PersistentIdList = std::vector<PersistentId>;
   using StreamIdToPersistentIdMap = std::map<StreamId, PersistentId>;
   using MCSPacketInternal = std::unique_ptr<ReliablePacketInfo>;
+
+  enum class InitialConnectionReadinessState {
+    // Initial state before the first `LoginResponse` is received.
+    kWaitingForLogin,
+    // Post-login `HeartbeatPing` has been queued/sent; waiting for its
+    // `HeartbeatAck` (reverts to `kWaitingForLogin` if disconnected first).
+    kWaitingForPostLoginHeartbeatAck,
+    // `HeartbeatAck` has arrived and `DeliverInitialConnectionReady()` is
+    // posted behind any pending `DeliverMessageToDelegate()` tasks.
+    kReadyPendingDelivery,
+    // Initial startup messages have been delivered (or the feature kill switch
+    // is disabled); subsequent readiness callbacks run immediately.
+    kReady,
+  };
 
   // Resets the internal state and builds a new login request, acknowledging
   // any pending server-to-device messages and rebuilding the send queue
@@ -197,6 +220,11 @@ class GCM_EXPORT MCSClient {
 
   // Delivers `message` to `delegate_`.
   void DeliverMessageToDelegate(const MCSMessage& message);
+
+  // Schedules `DeliverInitialConnectionReady()` behind any pending message
+  // deliveries on `io_task_runner_`, then runs queued readiness callbacks.
+  void NotifyInitialConnectionReady();
+  void DeliverInitialConnectionReady();
 
   // Notifies `delegate_` of the send `status` of `protobuf`.
   void NotifyMessageSendStatus(const google::protobuf::MessageLite& protobuf,
@@ -273,6 +301,12 @@ class GCM_EXPORT MCSClient {
 
   // Manager to handle triggering/detecting heartbeats.
   HeartbeatManager heartbeat_manager_;
+
+  // Tracks whether the initial MCS session has logged in and drained queued
+  // server messages via a post-login heartbeat round-trip, along with any
+  // callbacks waiting for that milestone.
+  InitialConnectionReadinessState initial_connection_readiness_state_;
+  std::vector<base::OnceClosure> initial_connection_ready_callbacks_;
 
   // Recorder that records GCM activities for debugging purpose. Not owned.
   raw_ptr<GCMStatsRecorder> recorder_;

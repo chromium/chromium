@@ -99,8 +99,10 @@ class MCSClientIntegrationTest : public testing::Test,
 
   // Initializes `GCMStoreImpl`, `ConnectionFactoryImpl`, and `MCSClient` and
   // logs in with `kAndroidId` and `kSecurityToken`, waiting for the server's
-  // `LoginResponse`.
-  void InitializeAndLoginClient() {
+  // `LoginResponse` (or `WaitForInitialConnectionReady()` when
+  // `wait_for_initial_connection_ready` is true).
+  void InitializeAndLoginClient(
+      bool wait_for_initial_connection_ready = false) {
     gcm_store_ = std::make_unique<GCMStoreImpl>(
         client_store_dir_.GetPath(),
         task_environment_.GetMainThreadTaskRunner(),
@@ -123,6 +125,14 @@ class MCSClientIntegrationTest : public testing::Test,
     load_result->device_android_id = kAndroidId;
     load_result->device_security_token = kSecurityToken;
     mcs_client_->Initialize(/*delegate=*/this, std::move(load_result));
+
+    if (wait_for_initial_connection_ready) {
+      base::RunLoop ready_loop;
+      mcs_client_->WaitForInitialConnectionReady(ready_loop.QuitClosure());
+      mcs_client_->Login(kAndroidId, kSecurityToken);
+      ready_loop.Run();
+      return;
+    }
 
     base::RunLoop login_loop;
     wait_for_login_closure_ = login_loop.QuitClosure();
@@ -401,6 +411,25 @@ TEST_F(MCSClientIntegrationTest, SendClientToServerDataMessage) {
             std::make_pair(std::string("upstream-msg-1"), MCSClient::QUEUED));
   EXPECT_EQ(sent_statuses()[1],
             std::make_pair(std::string("upstream-msg-1"), MCSClient::SENT));
+}
+
+TEST_F(MCSClientIntegrationTest,
+       QueuedMessagesDeliveredBeforeInitialConnectionReady) {
+  mcs_proto::DataMessageStanza msg1;
+  msg1.set_from("sender-1");
+  msg1.set_category("com.chrome.test");
+  fake_mcs_server().SendDataMessage(kAndroidId, msg1);
+
+  mcs_proto::DataMessageStanza msg2;
+  msg2.set_from("sender-2");
+  msg2.set_category("com.chrome.test");
+  fake_mcs_server().SendDataMessage(kAndroidId, msg2);
+
+  InitializeAndLoginClient(/*wait_for_initial_connection_ready=*/true);
+
+  ASSERT_EQ(received_data_messages().size(), 2u);
+  EXPECT_EQ(received_data_messages()[0].from(), "sender-1");
+  EXPECT_EQ(received_data_messages()[1].from(), "sender-2");
 }
 
 }  // namespace

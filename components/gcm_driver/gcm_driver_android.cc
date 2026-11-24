@@ -7,12 +7,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
@@ -129,6 +132,14 @@ void GCMDriverAndroid::AddAppHandler(const std::string& app_id,
   // TODO(melandory, mamir): check if messages were persisted
   // and only then go to java.
   Java_GCMDriver_replayPersistedMessages(env, java_ref_, app_id);
+}
+
+void GCMDriverAndroid::WaitForInitialConnectionReady(
+    base::OnceClosure callback) {
+  CHECK(callback);
+  // On Android, the push connection is managed out-of-process by Google Play
+  // services and any persisted messages are replayed in `AddAppHandler()`.
+  std::move(callback).Run();
 }
 
 GCMClient* GCMDriverAndroid::GetGCMClientForTesting() const {

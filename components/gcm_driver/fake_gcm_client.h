@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/fcm/engine/fcm_stats_recorder_impl.h"
@@ -89,6 +90,7 @@ class FakeGCMClient : public GCMClient {
                          std::string* extra_data) override;
   void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                 GetTokenCallback callback) override;
+  void WaitForInitialConnectionReady(base::OnceClosure callback) override;
 
   // Initiate the start that has been delayed.
   // Called on UI thread.

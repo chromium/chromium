@@ -10,4 +10,7 @@ namespace gcm::features {
 
 BASE_FEATURE(kGCMRemoveDeprecatedStoreData, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGCMWaitForInitialConnectionReady,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace gcm::features

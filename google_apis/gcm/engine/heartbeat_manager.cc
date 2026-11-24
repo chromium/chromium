@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -78,6 +80,16 @@ void HeartbeatManager::Start(
   // Kicks off the timer.
   waiting_for_ack_ = false;
   RestartTimer();
+}
+
+void HeartbeatManager::SendImmediateHeartbeat() {
+  CHECK_GT(heartbeat_interval_ms_, 0);
+  CHECK(send_heartbeat_callback_);
+  CHECK(trigger_reconnect_callback_);
+  if (!heartbeat_timer_->IsRunning() || waiting_for_ack_) {
+    return;
+  }
+  OnHeartbeatTriggered();
 }
 
 void HeartbeatManager::Stop() {

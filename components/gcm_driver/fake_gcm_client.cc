@@ -10,7 +10,9 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -219,6 +221,10 @@ void FakeGCMClient::GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
   Result result = token.empty() ? SERVER_ERROR : SUCCESS;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(token), result));
+}
+
+void FakeGCMClient::WaitForInitialConnectionReady(base::OnceClosure callback) {
+  NOTIMPLEMENTED();
 }
 
 void FakeGCMClient::PerformDelayedStart() {

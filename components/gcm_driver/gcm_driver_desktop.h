@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -79,6 +80,7 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
   void AddAppHandler(const std::string& app_id,
                      GCMAppHandler* handler) override;
   void RemoveAppHandler(const std::string& app_id) override;
+  void WaitForInitialConnectionReady(base::OnceClosure callback) override;
   GCMClient* GetGCMClientForTesting() const override;
   void GetGCMStatistics(GetGCMStatisticsCallback callback,
                         ClearActivityLogs clear_logs) override;
@@ -160,6 +162,7 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
   void DoDeleteToken(const std::string& app_id,
                      const std::string& authorized_entity,
                      const std::string& scope);
+  void DoWaitForInitialConnectionReady(base::OnceClosure callback);
 
   // Callbacks posted from IO thread to UI thread.
   void MessageReceived(const std::string& app_id,
@@ -168,6 +171,7 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
   void MessageSendError(const std::string& app_id,
                         const GCMClient::SendErrorDetails& send_error_details);
   void GCMClientReady();
+  void OnInitialConnectionReady(base::OnceClosure callback);
   void OnStoreReset();
   void OnActivityRecorded(const GCMClient::GCMStatistics& stats);
 

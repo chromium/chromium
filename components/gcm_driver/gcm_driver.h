@@ -224,6 +224,15 @@ class GCMDriver {
   // could be found for the |app_id|.
   GCMAppHandler* GetAppHandler(const std::string& app_id);
 
+  // Invokes `callback` once the driver has established its initial push
+  // connection and dispatched any queued startup messages (prior to any
+  // asynchronous payload decryption), or immediately for implementations
+  // without an in-process push connection. `callback` is not invoked if GCM
+  // cannot be started (e.g. no `GCMAppHandler` is registered), if GCM is
+  // stopped, reset, or shut down before readiness is reached, or if the
+  // connection never succeeds.
+  virtual void WaitForInitialConnectionReady(base::OnceClosure callback) = 0;
+
   // For testing purpose. Always NULL on Android.
   virtual GCMClient* GetGCMClientForTesting() const = 0;
 

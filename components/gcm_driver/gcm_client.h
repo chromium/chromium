@@ -285,6 +285,15 @@ class GCMClient {
   // synchronously (on a cache hit) or asynchronously.
   virtual void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                         GetTokenCallback callback) = 0;
+
+  // Invokes `callback` once the initial push connection for the current
+  // `Start()` cycle has logged in and completed a post-login heartbeat
+  // round-trip (ensuring any server-to-device messages queued before login
+  // have been dispatched to observers first), or immediately if that has
+  // already happened. `callback` is not invoked if the client is stopped,
+  // reset, or destroyed before readiness is reached, or if the connection
+  // never succeeds.
+  virtual void WaitForInitialConnectionReady(base::OnceClosure callback) = 0;
 };
 
 }  // namespace gcm
