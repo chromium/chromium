@@ -108,17 +108,6 @@ template <typename T>
       AlignUp(reinterpret_cast<uintptr_t>(ptr), alignment));
 }
 
-// Returns the integer i such as 2^i <= n < 2^(i+1).
-//
-// A common use for this function is to measure the number of bits required to
-// contain a value; for that case use std::bit_width().
-//
-// A common use for this function is to take its result and use it to left-shift
-// a bit; instead of doing so, use std::bit_floor().
-[[nodiscard]] constexpr int Log2Floor(uint32_t n) {
-  return 31 - std::countl_zero(n);
-}
-
 // Returns the integer i such as 2^(i-1) < n <= 2^i.
 //
 // A common use for this function is to measure the number of bits required to

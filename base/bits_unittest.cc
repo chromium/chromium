@@ -16,23 +16,6 @@
 
 namespace base::bits {
 
-TEST(BitsTest, Log2Floor) {
-  EXPECT_EQ(-1, Log2Floor(0));
-  EXPECT_EQ(0, Log2Floor(1));
-  EXPECT_EQ(1, Log2Floor(2));
-  EXPECT_EQ(1, Log2Floor(3));
-  EXPECT_EQ(2, Log2Floor(4));
-  for (int i = 3; i < 31; ++i) {
-    unsigned int value = 1U << i;
-    EXPECT_EQ(i, Log2Floor(value));
-    EXPECT_EQ(i, Log2Floor(value + 1));
-    EXPECT_EQ(i, Log2Floor(value + 2));
-    EXPECT_EQ(i - 1, Log2Floor(value - 1));
-    EXPECT_EQ(i - 1, Log2Floor(value - 2));
-  }
-  EXPECT_EQ(31, Log2Floor(0xffffffffU));
-}
-
 TEST(BitsTest, Log2Ceiling) {
   EXPECT_EQ(-1, Log2Ceiling(0));
   EXPECT_EQ(0, Log2Ceiling(1));
