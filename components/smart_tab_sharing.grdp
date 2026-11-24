@@ -61,6 +61,21 @@
   <message name="IDS_STS_MEGAPLUS_MANUALLY_ADD_TABS_HEADER" desc="Header for the manually add tabs section in the composebox context menu.">
     Manually add tabs
   </message>
+  <message name="IDS_STS_MEGAPLUS_CHECKED_MENU_ITEM_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader name for the checked automatic tab sharing item in the omnibox context menu: the item's visible label, its checked state and menu item role, and what selecting it does.">
+    <ph name="ITEM_LABEL">$1<ex>Share relevant tabs</ex></ph>, checked, menu item. Select to turn off sharing
+  </message>
+  <message name="IDS_STS_MEGAPLUS_UNCHECKED_MENU_ITEM_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader name for the unchecked automatic tab sharing item in the omnibox context menu: the item's visible label, its menu item role, and what selecting it does.">
+    <ph name="ITEM_LABEL">$1<ex>Share relevant tabs</ex></ph>, menu item. Select to turn on sharing
+  </message>
+  <message name="IDS_STS_MEGAPLUS_CHECKED_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader name for the checked automatic tab sharing item in the composebox context menu: the item's visible label followed by its checked state. Screen readers announce the menu item role after it.">
+    <ph name="ITEM_LABEL">$1<ex>Share relevant tabs</ex></ph>, checked
+  </message>
+  <message name="IDS_STS_MEGAPLUS_TURN_OFF_SHARING_HINT" is_accessibility_with_no_ui="true" desc="Screen reader hint for the checked automatic tab sharing item in the composebox context menu, saying what selecting it does.">
+    Select to turn off sharing
+  </message>
+  <message name="IDS_STS_MEGAPLUS_TURN_ON_SHARING_HINT" is_accessibility_with_no_ui="true" desc="Screen reader hint for the unchecked automatic tab sharing item in the composebox context menu, saying what selecting it does.">
+    Select to turn on sharing
+  </message>
 
   <!-- SmartTabSharingTryIt custom IPH promo -->
   <message name="IDS_STS_IPH_TRY_IT_HEADER" desc="Header for the custom IPH promoting smart tab sharing.">
