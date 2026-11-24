@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 
 class GURL;
@@ -55,6 +56,11 @@ bool ContainsForbiddenSecurityHeader(
 COMPONENT_EXPORT(NETWORK_CPP)
 bool ValidateRemovedHeaders(const std::vector<std::string>& removed_headers,
                             std::string* out_forbidden_header_name = nullptr);
+
+// Returns whether `header_names` contains the User-Agent header name, compared
+// case-insensitively.
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ContainsUserAgentHeaderName(base::span<const std::string> header_names);
 
 // Parses the referrer policy header if present. Returns
 // mojom::ReferrerPolicy::kDefault if the header is absent.

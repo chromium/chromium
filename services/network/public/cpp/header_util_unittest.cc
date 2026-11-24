@@ -419,4 +419,12 @@ TEST(HeaderUtilTest, ValidateRemovedHeaders) {
   EXPECT_EQ(forbidden_header, "Sec-Fetch-Dest");
 }
 
+TEST(HeaderUtilTest, ContainsUserAgentHeaderName) {
+  EXPECT_FALSE(ContainsUserAgentHeaderName({}));
+  EXPECT_FALSE(ContainsUserAgentHeaderName({"Accept", "User-Agentx", ""}));
+  EXPECT_TRUE(ContainsUserAgentHeaderName({"User-Agent"}));
+  EXPECT_TRUE(ContainsUserAgentHeaderName({"Accept", "user-agent"}));
+  EXPECT_TRUE(ContainsUserAgentHeaderName({"uSeR-aGeNt"}));
+}
+
 }  // namespace network

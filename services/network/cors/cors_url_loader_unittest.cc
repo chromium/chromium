@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -17,7 +18,9 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -31,9 +34,11 @@
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/test/mock_devtools_observer.h"
@@ -84,6 +89,154 @@ class ParameterizedCorsURLLoaderTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ParameterizedCorsURLLoaderTest, testing::Bool());
+
+// Like ParameterizedCorsURLLoaderTest, with the AllowUserAgentHeaderFromScript
+// feature enabled, without which CorsURLLoaderFactory rejects requests that set
+// `content_user_agent`.
+class ParameterizedCorsURLLoaderUserAgentTest
+    : public CorsURLLoaderTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ParameterizedCorsURLLoaderUserAgentTest()
+      : ParameterizedCorsURLLoaderUserAgentTest(
+            /*extra_cors_exempt_headers=*/std::vector<std::string>()) {}
+
+  explicit ParameterizedCorsURLLoaderUserAgentTest(
+      std::vector<std::string> extra_cors_exempt_headers)
+      : CorsURLLoaderTestBase(/*shared_dictionary_enabled=*/false,
+                              std::move(extra_cors_exempt_headers)) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kAvoidCorsURLLoaderRestartOnRedirect, GetParam()},
+         {net::features::kAllowUserAgentHeaderFromScript, true}});
+  }
+
+  bool IsAvoidCorsURLLoaderRestartOnRedirectEnabled() const {
+    return GetParam();
+  }
+
+  // Returns a CORS GET request from https://example.com to
+  // https://example.com/foo.png, with `content_user_agent` set.
+  static ResourceRequest CreateContentUserAgentRequest() {
+    ResourceRequest request;
+    request.mode = mojom::RequestMode::kCors;
+    request.redirect_mode = mojom::RedirectMode::kFollow;
+    request.credentials_mode = mojom::CredentialsMode::kOmit;
+    request.method = net::HttpRequestHeaders::kGetMethod;
+    request.url = GURL("https://example.com/foo.png");
+    request.request_initiator =
+        url::Origin::Create(GURL("https://example.com"));
+    request.content_user_agent = "ContentAgent/1.0";
+    return request;
+  }
+
+  // Completes the current request with a response that passes the CORS check.
+  void CompleteWithCorsResponse() {
+    NotifyLoaderClientOnReceiveResponse(
+        {{"Access-Control-Allow-Origin", "https://example.com"}});
+    NotifyLoaderClientOnComplete(net::OK);
+    RunUntilComplete();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ParameterizedCorsURLLoaderUserAgentTest,
+                         testing::Bool());
+
+// With User-Agent in the CORS-exempt list, so that a redirect can set it in
+// `modified_cors_exempt_headers`. The allowlist match in
+// `IsValidCorsExemptHeaders` is exact-case, hence the lowercase name.
+class ParameterizedCorsURLLoaderUserAgentCorsExemptTest
+    : public ParameterizedCorsURLLoaderUserAgentTest {
+ public:
+  ParameterizedCorsURLLoaderUserAgentCorsExemptTest()
+      : ParameterizedCorsURLLoaderUserAgentTest(
+            /*extra_cors_exempt_headers=*/{"user-agent"}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ParameterizedCorsURLLoaderUserAgentCorsExemptTest,
+                         testing::Bool());
+
+// A User-Agent that a redirect both removes and sets in
+// `modified_cors_exempt_headers` keeps `content_user_agent`: the CORS-exempt
+// value wins for the request, and later requests can still fall back to the
+// browser-supplied User-Agent.
+TEST_P(ParameterizedCorsURLLoaderUserAgentCorsExemptTest,
+       RemoveAndModifyCorsExemptUserAgentOnRedirect) {
+  const GURL new_url("https://other.example.com/bar.png");
+  CreateLoaderAndStart(CreateContentUserAgentRequest());
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"user-agent"};
+  headers_update_params.modified_cors_exempt_headers.SetHeader(
+      "user-agent", "ExemptAgent/1.0");
+  FollowRedirect(std::move(headers_update_params));
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_EQ("ExemptAgent/1.0", current_loader()
+                                     ->last_headers_update_params()
+                                     .modified_cors_exempt_headers.GetHeader(
+                                         net::HttpRequestHeaders::kUserAgent));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ("ExemptAgent/1.0", GetRequest().cors_exempt_headers.GetHeader(
+                                     net::HttpRequestHeaders::kUserAgent));
+    // Kept, so later requests can still fall back to the browser-supplied
+    // User-Agent.
+    EXPECT_EQ("ContentAgent/1.0", GetRequest().content_user_agent);
+  }
+
+  CompleteWithCorsResponse();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+// A User-Agent in `cors_exempt_headers` and `content_user_agent` that a
+// redirect removes is gone from the restarted request.
+TEST_P(ParameterizedCorsURLLoaderUserAgentCorsExemptTest,
+       RemoveCorsExemptUserAgentOnRedirect) {
+  const GURL new_url("https://other.example.com/bar.png");
+  ResourceRequest request = CreateContentUserAgentRequest();
+  // Lowercase, to match the exact-case entry in the cors-exempt allowlist.
+  request.cors_exempt_headers.SetHeader("user-agent", "ExemptAgent/1.0");
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"user-agent"};
+  FollowRedirect(std::move(headers_update_params));
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_THAT(current_loader()->last_headers_update_params().removed_headers,
+                ElementsAre("user-agent"));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(std::nullopt, GetRequest().cors_exempt_headers.GetHeader(
+                                net::HttpRequestHeaders::kUserAgent));
+    EXPECT_EQ(std::nullopt, GetRequest().content_user_agent);
+  }
+
+  CompleteWithCorsResponse();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
 
 class CorsURLLoaderTestWithSafeRevalidation
     : public CorsURLLoaderTestBase,
@@ -1328,6 +1481,306 @@ TEST_P(ParameterizedCorsURLLoaderTest, SameOriginToCrossOriginRedirect) {
         first_loader()->last_headers_update_params().modified_headers.GetHeader(
             net::HttpRequestHeaders::kOrigin));
   }
+}
+
+// A User-Agent that `content_user_agent` supplied and that a redirect removes
+// stays removed when following the redirect restarts the request: the
+// restarted request no longer has `content_user_agent`, which the network
+// service would otherwise send again.
+TEST_P(ParameterizedCorsURLLoaderUserAgentTest,
+       SameOriginToCrossOriginRedirectRemoveUserAgent) {
+  const GURL new_url("https://other.example.com/bar.png");
+  CreateLoaderAndStart(CreateContentUserAgentRequest());
+  RunUntilCreateLoaderAndStartCalled();
+  EXPECT_EQ("ContentAgent/1.0", GetRequest().content_user_agent);
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"user-agent"};
+  FollowRedirect(std::move(headers_update_params));
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    // The network loader handles the removal; see `URLLoaderTest`.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_THAT(current_loader()->last_headers_update_params().removed_headers,
+                ElementsAre("user-agent"));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ(std::nullopt, GetRequest().content_user_agent);
+  }
+
+  CompleteWithCorsResponse();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+// Removing an explicit User-Agent on a redirect removes the effective
+// User-Agent: `content_user_agent`, which it was overriding, does not take its
+// place on the restarted request.
+TEST_P(ParameterizedCorsURLLoaderUserAgentTest,
+       SameOriginToCrossOriginRedirectRemoveAuthorUserAgent) {
+  const GURL new_url("https://other.example.com/bar.png");
+  ResourceRequest request = CreateContentUserAgentRequest();
+  request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                            "AuthorAgent/1.0");
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"user-agent"};
+  FollowRedirect(std::move(headers_update_params));
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    // The network loader handles the removal; see `URLLoaderTest`.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ(std::nullopt, GetRequest().headers.GetHeader(
+                                net::HttpRequestHeaders::kUserAgent));
+    EXPECT_EQ(std::nullopt, GetRequest().content_user_agent);
+  }
+
+  CompleteWithCorsResponse();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+// A User-Agent removed on a redirect that the network loader follows stays
+// removed on a later redirect that needs a CORS preflight, regardless of
+// whether `features::kAvoidCorsURLLoaderRestartOnRedirect` is enabled: the
+// preflight does not send `content_user_agent`.
+TEST_P(ParameterizedCorsURLLoaderUserAgentTest,
+       RemoveUserAgentThenPreflightOnLaterRedirect) {
+  const struct {
+    const char* name;
+    std::optional<std::string> explicit_user_agent;
+  } kCases[] = {
+      {"ContentUserAgent", std::nullopt},
+      {"ExplicitUserAgent", "AuthorAgent/1.0"},
+  };
+  const GURL same_origin_url("https://example.com/bar.png");
+  const GURL cross_origin_url("https://other.example.com/baz.png");
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    ResetFactory(url::Origin::Create(GURL("https://example.com")),
+                 kRendererProcessId);
+    ResourceRequest request = CreateContentUserAgentRequest();
+    // Not CORS-safelisted, so a cross-origin request needs a preflight.
+    request.headers.SetHeader("X-Custom-Header", "1");
+    if (test_case.explicit_user_agent) {
+      request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                *test_case.explicit_user_agent);
+    }
+    CreateLoaderAndStart(request);
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ("GET", GetRequest().method);
+
+    // A same-origin redirect is followed without a restart or a preflight.
+    NotifyLoaderClientOnReceiveRedirect(
+        CreateRedirectInfo(301, "GET", same_origin_url));
+    RunUntilRedirectReceived();
+    ClearHasReceivedRedirect();
+    network::HttpRequestHeadersUpdateParams headers_update_params;
+    headers_update_params.removed_headers = {"user-agent"};
+    FollowRedirect(std::move(headers_update_params));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+
+    NotifyLoaderClientOnReceiveRedirect(
+        CreateRedirectInfo(301, "GET", cross_origin_url));
+    RunUntilRedirectReceived();
+    ClearHasReceivedRedirect();
+    FollowRedirect();
+    RunUntilCreateLoaderAndStartCalled();
+
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ("OPTIONS", GetRequest().method);
+    EXPECT_EQ(cross_origin_url, GetRequest().url);
+    EXPECT_EQ(std::nullopt, GetRequest().headers.GetHeader(
+                                net::HttpRequestHeaders::kUserAgent));
+
+    // Fail the preflight to end the load.
+    NotifyLoaderClientOnComplete(net::ERR_FAILED);
+    RunUntilComplete();
+    EXPECT_NE(net::OK, client().completion_status().error_code);
+  }
+}
+
+// A User-Agent that a redirect both removes and sets is sent with the new
+// value, and `content_user_agent` is kept so that a later preflight still uses
+// the browser-supplied User-Agent.
+TEST_P(ParameterizedCorsURLLoaderUserAgentTest,
+       RemoveAndModifyUserAgentOnRedirect) {
+  const GURL new_url("https://other.example.com/bar.png");
+  CreateLoaderAndStart(CreateContentUserAgentRequest());
+  RunUntilCreateLoaderAndStartCalled();
+  EXPECT_EQ("ContentAgent/1.0", GetRequest().content_user_agent);
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"user-agent"};
+  headers_update_params.modified_headers.SetHeader(
+      net::HttpRequestHeaders::kUserAgent, "ModifiedAgent/1.0");
+  FollowRedirect(std::move(headers_update_params));
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_THAT(current_loader()->last_headers_update_params().removed_headers,
+                ElementsAre("user-agent"));
+    EXPECT_EQ(
+        "ModifiedAgent/1.0",
+        current_loader()
+            ->last_headers_update_params()
+            .modified_headers.GetHeader(net::HttpRequestHeaders::kUserAgent));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ("ModifiedAgent/1.0", GetRequest().headers.GetHeader(
+                                       net::HttpRequestHeaders::kUserAgent));
+    // Kept, so that a later preflight does not lose the browser-supplied
+    // User-Agent.
+    EXPECT_EQ("ContentAgent/1.0", GetRequest().content_user_agent);
+  }
+
+  // A later cross-origin redirect that adds a header which is not
+  // CORS-safelisted needs a preflight, which keeps using the browser-supplied
+  // User-Agent.
+  const GURL cross_origin_url("https://other.example.com/baz.png");
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", cross_origin_url),
+      {{"Access-Control-Allow-Origin", "https://example.com"}});
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams preflight_params;
+  preflight_params.modified_headers.SetHeader("Content-Type",
+                                              "application/json");
+  FollowRedirect(std::move(preflight_params));
+  RunUntilCreateLoaderAndStartCalled();
+  EXPECT_EQ("OPTIONS", GetRequest().method);
+  EXPECT_EQ(cross_origin_url, GetRequest().url);
+  EXPECT_EQ("ContentAgent/1.0", GetRequest().headers.GetHeader(
+                                    net::HttpRequestHeaders::kUserAgent));
+
+  // Fail the preflight to end the load.
+  NotifyLoaderClientOnComplete(net::ERR_FAILED);
+  RunUntilComplete();
+  EXPECT_NE(net::OK, client().completion_status().error_code);
+}
+
+// A User-Agent removed on the first redirect to a cross-origin URL is not sent
+// on the preflight that the same FollowRedirect starts.
+TEST_P(ParameterizedCorsURLLoaderUserAgentTest,
+       FirstRedirectToCrossOriginRemoveUserAgent) {
+  const GURL cross_origin_url("https://other.example.com/bar.png");
+  ResourceRequest request = CreateContentUserAgentRequest();
+  // Not CORS-safelisted, so the cross-origin redirect needs a preflight.
+  request.headers.SetHeader("X-Custom-Header", "1");
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", cross_origin_url),
+      {{"Access-Control-Allow-Origin", "https://example.com"}});
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"user-agent"};
+  FollowRedirect(std::move(headers_update_params));
+
+  RunUntilCreateLoaderAndStartCalled();
+  EXPECT_EQ(2, num_created_loaders());
+  EXPECT_EQ("OPTIONS", GetRequest().method);
+  EXPECT_EQ(cross_origin_url, GetRequest().url);
+  EXPECT_EQ(std::nullopt, GetRequest().headers.GetHeader(
+                              net::HttpRequestHeaders::kUserAgent));
+
+  // Fail the preflight to end the load.
+  NotifyLoaderClientOnComplete(net::ERR_FAILED);
+  RunUntilComplete();
+  EXPECT_NE(net::OK, client().completion_status().error_code);
+}
+
+// A User-Agent set in `modified_headers` without a removal becomes the
+// explicit User-Agent, and `content_user_agent` is kept.
+TEST_P(ParameterizedCorsURLLoaderUserAgentTest, ModifyUserAgentWithoutRemoval) {
+  const GURL new_url("https://other.example.com/bar.png");
+  CreateLoaderAndStart(CreateContentUserAgentRequest());
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader(
+      net::HttpRequestHeaders::kUserAgent, "ModifiedAgent/1.0");
+  FollowRedirect(std::move(headers_update_params));
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_EQ(
+        "ModifiedAgent/1.0",
+        current_loader()
+            ->last_headers_update_params()
+            .modified_headers.GetHeader(net::HttpRequestHeaders::kUserAgent));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ("ModifiedAgent/1.0", GetRequest().headers.GetHeader(
+                                       net::HttpRequestHeaders::kUserAgent));
+    // Kept: the removal path is what clears it.
+    EXPECT_EQ("ContentAgent/1.0", GetRequest().content_user_agent);
+  }
+
+  CompleteWithCorsResponse();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+// An empty `content_user_agent` is removed like any other value.
+TEST_P(ParameterizedCorsURLLoaderUserAgentTest, RemoveEmptyContentUserAgent) {
+  const GURL new_url("https://other.example.com/bar.png");
+  ResourceRequest request = CreateContentUserAgentRequest();
+  request.content_user_agent = "";
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = {"user-agent"};
+  FollowRedirect(std::move(headers_update_params));
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return current_loader()->follow_redirect_called(); }));
+    EXPECT_EQ(1, num_created_loaders());
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(std::nullopt, GetRequest().content_user_agent);
+  }
+
+  CompleteWithCorsResponse();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
 
 TEST_F(CorsURLLoaderTest, CrossOriginToCrossOriginRedirect) {

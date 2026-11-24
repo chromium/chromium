@@ -216,7 +216,9 @@ const OriginatingProcessId CorsURLLoaderTestBase::kRendererProcessId =
 // CORS URL LOADER TEST BASE
 // =========================
 
-CorsURLLoaderTestBase::CorsURLLoaderTestBase(bool shared_dictionary_enabled)
+CorsURLLoaderTestBase::CorsURLLoaderTestBase(
+    bool shared_dictionary_enabled,
+    std::vector<std::string> extra_cors_exempt_headers)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
   net::URLRequestContextBuilder context_builder;
   context_builder.set_proxy_resolution_service(
@@ -238,6 +240,9 @@ CorsURLLoaderTestBase::CorsURLLoaderTestBase(bool shared_dictionary_enabled)
       net::ProxyConfigWithAnnotation::CreateDirect();
 
   context_params->cors_exempt_header_list.push_back(kTestCorsExemptHeader);
+  for (const std::string& header : extra_cors_exempt_headers) {
+    context_params->cors_exempt_header_list.push_back(header);
+  }
 
   context_params->shared_dictionary_enabled = shared_dictionary_enabled;
 

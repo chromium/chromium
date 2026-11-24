@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/header_util.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -226,6 +227,13 @@ bool ValidateRemovedHeaders(const std::vector<std::string>& removed_headers,
   }
 
   return true;
+}
+
+bool ContainsUserAgentHeaderName(base::span<const std::string> header_names) {
+  return std::ranges::any_of(header_names, [](const std::string& name) {
+    return base::EqualsCaseInsensitiveASCII(
+        name, net::HttpRequestHeaders::kUserAgent);
+  });
 }
 
 mojom::ReferrerPolicy ParseReferrerPolicy(

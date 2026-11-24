@@ -662,6 +662,19 @@ void CorsURLLoader::FollowRedirect(
     request_.cors_exempt_headers.RemoveHeader(name);
   }
 
+  // A User-Agent removed on a redirect must not be sent again when this loader
+  // restarts the request below, or in a later preflight, which reads
+  // `content_user_agent`. A User-Agent set in the same call wins over the
+  // removal, as it does in `URLLoader`, and the preflight keeps using the
+  // browser-supplied User-Agent.
+  if (ContainsUserAgentHeaderName(headers_update_params.removed_headers) &&
+      !headers_update_params.modified_headers.HasHeader(
+          net::HttpRequestHeaders::kUserAgent) &&
+      !headers_update_params.modified_cors_exempt_headers.HasHeader(
+          net::HttpRequestHeaders::kUserAgent)) {
+    request_.content_user_agent.reset();
+  }
+
   request_.headers.MergeFrom(headers_update_params.modified_headers);
 
   if (!CorsURLLoaderFactory::IsValidCorsExemptHeaders(

@@ -182,7 +182,9 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
 class CorsURLLoaderTestBase : public testing::Test {
  public:
-  explicit CorsURLLoaderTestBase(bool shared_dictionary_enabled = false);
+  explicit CorsURLLoaderTestBase(
+      bool shared_dictionary_enabled = false,
+      std::vector<std::string> extra_cors_exempt_headers = {});
   ~CorsURLLoaderTestBase() override;
 
   CorsURLLoaderTestBase(const CorsURLLoaderTestBase&) = delete;
