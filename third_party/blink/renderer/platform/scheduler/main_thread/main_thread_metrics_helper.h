@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 
+#include <array>
 #include <optional>
 
 #include "base/time/time.h"
@@ -58,8 +59,9 @@ class PLATFORM_EXPORT MainThreadMetricsHelper {
   static_assert(
       static_cast<size_t>(TaskPriority::kPriorityCount) == 11,
       "Queueing delay histograms must be kept in sync with TaskPriority.");
-  CustomCountHistogram queueing_delay_histograms_[static_cast<size_t>(
-      TaskPriority::kPriorityCount)];
+  std::array<CustomCountHistogram,
+             static_cast<size_t>(TaskPriority::kPriorityCount)>
+      queueing_delay_histograms_;
 
   MainThreadTaskLoadState main_thread_task_load_state_;
   float sampling_ratio_ = .01;

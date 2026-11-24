@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
@@ -71,16 +73,15 @@ TEST_F(ImageFrameTest, BlendRGBARawF16Buffer) {
   ImageFrame::PixelDataF16 blended_f16 = dst_f16;
   ImageFrame::BlendRGBARawF16Buffer(&blended_f16, &src_f16, 1);
 
-  float f32_from_blended_8888[4];
-  ConvertN32ToF32(f32_from_blended_8888, blended_8888);
+  std::array<float, 4> f32_from_blended_8888;
+  ConvertN32ToF32(f32_from_blended_8888.data(), blended_8888);
 
-  float f32_from_blended_f16[4];
-  ConvertF16ToF32(f32_from_blended_f16, blended_f16);
+  std::array<float, 4> f32_from_blended_f16;
+  ConvertF16ToF32(f32_from_blended_f16.data(), blended_f16);
 
   for (int i = 0; i < 4; i++) {
-    UNSAFE_TODO(
-        ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
-                    color_compoenent_tolerance));
+    ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
+                color_compoenent_tolerance);
   }
 }
 
@@ -92,16 +93,15 @@ TEST_F(ImageFrameTest, BlendRGBAPremultipliedF16Buffer) {
   ImageFrame::PixelDataF16 blended_f16 = dst_f16;
   ImageFrame::BlendRGBAPremultipliedF16Buffer(&blended_f16, &src_f16, 1);
 
-  float f32_from_blended_8888[4];
-  ConvertN32ToF32(f32_from_blended_8888, blended_8888);
+  std::array<float, 4> f32_from_blended_8888;
+  ConvertN32ToF32(f32_from_blended_8888.data(), blended_8888);
 
-  float f32_from_blended_f16[4];
-  ConvertF16ToF32(f32_from_blended_f16, blended_f16);
+  std::array<float, 4> f32_from_blended_f16;
+  ConvertF16ToF32(f32_from_blended_f16.data(), blended_f16);
 
   for (int i = 0; i < 4; i++) {
-    UNSAFE_TODO(
-        ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
-                    color_compoenent_tolerance));
+    ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
+                color_compoenent_tolerance);
   }
 }
 

@@ -60,7 +60,7 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(base::TimeTicks now,
               base::Unretained(this)),
           kThreadLoadTrackerReportingInterval),
       // Order here must match TaskPriority (in descending priority order).
-      queueing_delay_histograms_{
+      queueing_delay_histograms_{{
           {QUEUEING_DELAY_HISTOGRAM_INIT("Control")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("Highest")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("ExtremelyHigh")},
@@ -71,7 +71,8 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(base::TimeTicks now,
           {QUEUEING_DELAY_HISTOGRAM_INIT("Normal")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("LowContinuation")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("Low")},
-          {QUEUEING_DELAY_HISTOGRAM_INIT("BestEffort")}},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("BestEffort")},
+      }},
       main_thread_task_load_state_(MainThreadTaskLoadState::kUnknown) {
   if (!in_background) {
     last_foregrounded_time_ = now;
@@ -125,9 +126,8 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
       base::ShouldRecordSubsampledMetric(sampling_ratio_)) {
     base::TimeDelta elapsed =
         task_timing.start_time() - task.GetDesiredExecutionTime();
-    UNSAFE_TODO(queueing_delay_histograms_[static_cast<size_t>(
-                                               queue->GetQueuePriority())]
-                    .CountMicroseconds(elapsed));
+    queueing_delay_histograms_[static_cast<size_t>(queue->GetQueuePriority())]
+        .CountMicroseconds(elapsed);
   }
 }
 

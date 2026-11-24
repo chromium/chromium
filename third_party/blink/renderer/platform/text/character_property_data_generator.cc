@@ -14,6 +14,7 @@
 #include <unicode/unistr.h>
 #include <unicode/utfiterator.h>
 
+#include <array>
 #include <cassert>
 #include <cstring>
 #include <fstream>
@@ -593,10 +594,11 @@ class LineBreakData {
     for (int y = 0; y < kNumChars; ++y) {
       const UChar ch = y + kMinChar;
       fprintf(fp, "/* %02X %c */ {B(", ch, ch < 0x7F ? ch : ' ');
-      const char* prefix = "";
       for (int x = 0; x < kNumCharsRoundUp8; ++x) {
-        UNSAFE_TODO(fprintf(fp, "%s%d", prefix, pair_[y][x]));
-        prefix = (x % 8 == 7) ? "),B(" : ",";
+        if (x > 0) {
+          fprintf(fp, (x % 8 == 0) ? "),B(" : ",");
+        }
+        fprintf(fp, "%d", pair_[y][x]);
       }
       fprintf(fp, ")},\n");
     }
@@ -630,14 +632,14 @@ class LineBreakData {
     CHECK_LE(ch1, kMaxChar);
     CHECK_GE(ch2, kMinChar);
     CHECK_LE(ch2, kMaxChar);
-    UNSAFE_TODO(pair_[ch1 - kMinChar][ch2 - kMinChar]) = value;
+    pair_[ch1 - kMinChar][ch2 - kMinChar] = value;
   }
 
   constexpr static UChar kMinChar = '!';
   constexpr static UChar kMaxChar = 0xFF;
   constexpr static int kNumChars = kMaxChar - kMinChar + 1;
   constexpr static int kNumCharsRoundUp8 = (kNumChars + 7) / 8 * 8;
-  bool pair_[kNumChars][kNumCharsRoundUp8]{};
+  std::array<std::array<bool, kNumCharsRoundUp8>, kNumChars> pair_ = {};
 };
 
 void InvokeGenerator(int index,

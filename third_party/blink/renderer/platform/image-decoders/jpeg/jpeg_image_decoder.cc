@@ -37,6 +37,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
+#include <array>
 #include <limits>
 #include <memory>
 
@@ -1183,8 +1184,8 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
 
   DCHECK_EQ(info->out_color_space, JCS_YCbCr);
 
-  JSAMPARRAY bufferraw[3];
-  JSAMPROW bufferraw2[32];
+  std::array<JSAMPARRAY, 3> bufferraw;
+  std::array<JSAMPROW, 32> bufferraw2;
   bufferraw[0] = &bufferraw2[0];   // Y channel rows (8 or 16)
   bufferraw[1] = &bufferraw2[16];  // U channel rows (8)
   bufferraw[2] = &bufferraw2[24];  // V channel rows (8)
@@ -1210,10 +1211,9 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
     for (int i = 0; i < y_scanlines_to_read; ++i) {
       int scanline = info->output_scanline + i;
       if (scanline < y_height) {
-        UNSAFE_TODO(bufferraw2[i]) =
-            &UNSAFE_TODO(output_y[scanline * row_bytes_y]);
+        bufferraw2[i] = &UNSAFE_TODO(output_y[scanline * row_bytes_y]);
       } else {
-        UNSAFE_TODO(bufferraw2[i]) = dummy_row;
+        bufferraw2[i] = dummy_row;
       }
     }
 
@@ -1222,18 +1222,16 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
     for (int i = 0; i < 8; ++i) {
       int scanline = scaled_scanline + i;
       if (scanline < uv_height) {
-        UNSAFE_TODO(bufferraw2[16 + i]) =
-            &UNSAFE_TODO(output_u[scanline * row_bytes_u]);
-        UNSAFE_TODO(bufferraw2[24 + i]) =
-            &UNSAFE_TODO(output_v[scanline * row_bytes_v]);
+        bufferraw2[16 + i] = &UNSAFE_TODO(output_u[scanline * row_bytes_u]);
+        bufferraw2[24 + i] = &UNSAFE_TODO(output_v[scanline * row_bytes_v]);
       } else {
-        UNSAFE_TODO(bufferraw2[16 + i]) = dummy_row;
-        UNSAFE_TODO(bufferraw2[24 + i]) = dummy_row;
+        bufferraw2[16 + i] = dummy_row;
+        bufferraw2[24 + i] = dummy_row;
       }
     }
 
     JDIMENSION scanlines_read =
-        jpeg_read_raw_data(info, bufferraw, y_scanlines_to_read);
+        jpeg_read_raw_data(info, bufferraw.data(), y_scanlines_to_read);
     if (!scanlines_read) {
       return false;
     }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -140,24 +141,25 @@ struct PublicFrameInfo {
 
 // This is the frame data for the following PNG image:
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
-static PublicFrameInfo g_png_animated_frame_info[] = {
-    {base::Milliseconds(500),
-     {gfx::Point(0, 0), gfx::Size(5, 5)},
-     ImageFrame::kBlendAtopBgcolor,
-     ImageFrame::kDisposeKeep},
-    {base::Milliseconds(900),
-     {gfx::Point(1, 1), gfx::Size(3, 1)},
-     ImageFrame::kBlendAtopBgcolor,
-     ImageFrame::kDisposeOverwriteBgcolor},
-    {base::Milliseconds(2000),
-     {gfx::Point(1, 2), gfx::Size(3, 2)},
-     ImageFrame::kBlendAtopPreviousFrame,
-     ImageFrame::kDisposeKeep},
-    {base::Milliseconds(1500),
-     {gfx::Point(1, 2), gfx::Size(3, 1)},
-     ImageFrame::kBlendAtopBgcolor,
-     ImageFrame::kDisposeKeep},
-};
+static constexpr auto g_png_animated_frame_info =
+    std::to_array<PublicFrameInfo>({
+        {base::Milliseconds(500),
+         {gfx::Point(0, 0), gfx::Size(5, 5)},
+         ImageFrame::kBlendAtopBgcolor,
+         ImageFrame::kDisposeKeep},
+        {base::Milliseconds(900),
+         {gfx::Point(1, 1), gfx::Size(3, 1)},
+         ImageFrame::kBlendAtopBgcolor,
+         ImageFrame::kDisposeOverwriteBgcolor},
+        {base::Milliseconds(2000),
+         {gfx::Point(1, 2), gfx::Size(3, 2)},
+         ImageFrame::kBlendAtopPreviousFrame,
+         ImageFrame::kDisposeKeep},
+        {base::Milliseconds(1500),
+         {gfx::Point(1, 2), gfx::Size(3, 1)},
+         ImageFrame::kBlendAtopBgcolor,
+         ImageFrame::kDisposeKeep},
+    });
 
 void CompareFrameWithExpectation(const PublicFrameInfo& expected,
                                  ImageDecoder* decoder,
@@ -310,8 +312,7 @@ TEST(AnimatedPNGTests, MetaDataTest) {
   auto decoder = CreatePNGDecoderWithPngData(png_file);
   ASSERT_EQ(kExpectedFrameCount, decoder->FrameCount());
   for (size_t i = 0; i < kExpectedFrameCount; i++) {
-    CompareFrameWithExpectation(UNSAFE_TODO(g_png_animated_frame_info[i]),
-                                decoder.get(), i);
+    CompareFrameWithExpectation(g_png_animated_frame_info[i], decoder.get(), i);
   }
 }
 
@@ -351,7 +352,7 @@ TEST(AnimatedPNGTests, ByteByByteMetaData) {
   // It boils down to the offset of the first fcTL / IEND after the last
   // frame data chunk, plus 8 bytes for recognition. The exception on this is
   // the first frame, which is reported when its first framedata is seen.
-  size_t frame_offsets[kExpectedFrameCount] = {141, 218, 287, 360};
+  std::array<size_t, kExpectedFrameCount> frame_offsets = {141, 218, 287, 360};
 
   auto decoder = CreatePNGDecoder();
   Vector<char> data = ReadFile(png_file);
@@ -367,7 +368,7 @@ TEST(AnimatedPNGTests, ByteByByteMetaData) {
     partial_data->Append(single_byte);
     decoder->SetData(partial_data.get(), false);
     EXPECT_FALSE(decoder->Failed());
-    if (length < UNSAFE_TODO(frame_offsets[frames_parsed])) {
+    if (length < frame_offsets[frames_parsed]) {
       EXPECT_EQ(frames_parsed, decoder->FrameCount());
     } else {
       if (frames_parsed > 0) {
@@ -379,9 +380,8 @@ TEST(AnimatedPNGTests, ByteByByteMetaData) {
       }
 
       ASSERT_EQ(frames_parsed + 1, decoder->FrameCount());
-      CompareFrameWithExpectation(
-          UNSAFE_TODO(g_png_animated_frame_info[frames_parsed]), decoder.get(),
-          frames_parsed);
+      CompareFrameWithExpectation(g_png_animated_frame_info[frames_parsed],
+                                  decoder.get(), frames_parsed);
       frames_parsed++;
     }
   }
@@ -1377,20 +1377,20 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
   ASSERT_TRUE(
       image->readPixels(info, decoded_pixels.get(), info.minRowBytes(), 0, 0));
 
-  float decoded_pixels_float_32[16];
+  std::array<float, 16> decoded_pixels_float_32;
   ASSERT_TRUE(skcms_Transform(
       decoded_pixels.get(), skcms_PixelFormat_RGBA_hhhh,
-      skcms_AlphaFormat_Unpremul, nullptr, decoded_pixels_float_32,
+      skcms_AlphaFormat_Unpremul, nullptr, decoded_pixels_float_32.data(),
       skcms_PixelFormat_RGBA_ffff, skcms_AlphaFormat_Unpremul, nullptr, 4));
 
   Vector<float> expected_pixels = png_sample.expected_pixels;
   const float decoding_tolerance = 0.001;
   for (int i = 0; i < 16; i++) {
-    if (fabs(UNSAFE_TODO(decoded_pixels_float_32[i]) - expected_pixels[i]) >
+    if (fabs(decoded_pixels_float_32[i] - expected_pixels[i]) >
         decoding_tolerance) {
       FAIL() << "Pixel comparison failed. File: " << png_sample.filename
              << ", component index: " << i
-             << ", actual: " << UNSAFE_TODO(decoded_pixels_float_32[i])
+             << ", actual: " << decoded_pixels_float_32[i]
              << ", expected: " << expected_pixels[i]
              << ", tolerance: " << decoding_tolerance;
     }
