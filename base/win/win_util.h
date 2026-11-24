@@ -250,24 +250,11 @@ BASE_EXPORT bool IsDeviceRegisteredWithManagement();
 // have the win32k lockdown), USER32 and GDI32 are delayloaded. Attempts to
 // delayload them when unavailable will cause a crash. Any code which uses
 // USER32 or GDI32 and may run where they are unavailable MUST be guarded using
-// this method. When win32k syscalls are allowed, calling this method loads and
-// pins user32.dll (and its static import gdi32.dll) to verify initialization.
+// this method. When win32k syscalls are allowed and the
+// switches::kPinUser32AndGdi32InAvailabilityCheck switch is present, calling
+// this method loads and pins user32.dll (and its static import gdi32.dll) to
+// verify initialization.
 BASE_EXPORT bool IsUser32AndGdi32Available();
-
-// Initializes the PinUser32AndGdi32InAvailabilityCheck synthetic field trial
-// state for the current process based on the machine GUID. Must be called
-// before IsUser32AndGdi32Available().
-BASE_EXPORT void InitPinUser32AndGdi32Trial();
-
-// Returns the group name ("Enabled" or "Control") for the
-// PinUser32AndGdi32InAvailabilityCheck synthetic field trial if the current
-// process is enrolled in the trial, or an empty string_view otherwise.
-BASE_EXPORT std::string_view GetPinUser32AndGdi32TrialGroup();
-
-// Forces IsUser32AndGdi32Available() to load and pin user32.dll (and its
-// static import gdi32.dll) in tests. Must be called before
-// IsUser32AndGdi32Available().
-BASE_EXPORT void EnablePinUser32AndGdi32ForTesting();
 
 // Takes a snapshot of the modules loaded in the |process|. The returned
 // HMODULEs are not add-ref'd, so they should not be closed and may be

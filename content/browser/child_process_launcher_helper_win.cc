@@ -5,6 +5,8 @@
 #include "content/browser/child_process_launcher_helper.h"
 
 #include "base/base_switches.h"
+#include "base/feature.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -27,6 +29,13 @@
 #include "sandbox/policy/win/sandbox_win.h"
 
 namespace {
+
+// When enabled, child processes are launched with a switch instructing
+// base::win::IsUser32AndGdi32Available() to load and pin user32.dll (and its
+// static import gdi32.dll) rather than only checking win32k lockdown
+// mitigation policy. See https://crbug.com/577860802.
+BASE_FEATURE(kPinUser32AndGdi32InAvailabilityCheck,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Helper to avoid marking the log file as non-executable every time we launch a
 // process.
@@ -132,6 +141,13 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   CHECK_EQ(options->elevated, delegate_->ShouldLaunchElevated(),
            base::NotFatalUntil::M159);
+  if (base::FeatureList::IsEnabled(kPinUser32AndGdi32InAvailabilityCheck)) {
+    // Child processes need to act on the state of this feature before field
+    // trials are initialized, so pass a switch on the command line to be read
+    // during early process startup.
+    command_line()->AppendSwitch(
+        switches::kPinUser32AndGdi32InAvailabilityCheck);
+  }
   if (!options->elevated) {
     mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_inherit,
                                                command_line());

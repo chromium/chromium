@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -560,9 +561,10 @@ SBOX_TEST_COMMAND(CheckIsUser32AndGdi32Available) {
     return SBOX_TEST_FIRST_ERROR;
   }
 
-  // Force-enable pinning so this test exercises the user32.dll/gdi32.dll load
-  // path regardless of channel or trial group.
-  base::win::EnablePinUser32AndGdi32ForTesting();
+  // Enable pinning so this test exercises the user32.dll/gdi32.dll load path
+  // in IsUser32AndGdi32Available().
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kPinUser32AndGdi32InAvailabilityCheck);
 
   if (base::win::IsUser32AndGdi32Available() != expect_available) {
     return SBOX_TEST_SECOND_ERROR;

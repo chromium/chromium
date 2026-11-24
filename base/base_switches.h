@@ -143,7 +143,12 @@ inline constexpr char kDisableUsbKeyboardDetect[] =
 // Forces the use of QPC for TimeTicks even if cpuid doesn't report the presence
 // of an invariant TSC.
 inline constexpr char kForceHighResTimeTicks[] = "force-high-res-timeticks";
-#endif
+
+// Instructs base::win::IsUser32AndGdi32Available() to load and pin user32.dll
+// (and its static import gdi32.dll) to verify initialization.
+inline constexpr char kPinUser32AndGdi32InAvailabilityCheck[] =
+    "pin-user32-in-availability-check";
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
 // The /dev/shm partition is too small in certain VM environments, causing

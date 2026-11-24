@@ -15,6 +15,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
@@ -491,7 +492,6 @@ TEST(BaseWinUtilTest, GetAzureADJoinTypeUnknown) {
 }
 
 MULTIPROCESS_TEST_MAIN(IsUser32AndGdi32AvailableDisallowedBlockingChild) {
-  EnablePinUser32AndGdi32ForTesting();
   ScopedDisallowBlocking disallow_blocking;
   if (!IsUser32AndGdi32Available()) {
     return 1;
@@ -504,11 +504,12 @@ MULTIPROCESS_TEST_MAIN(IsUser32AndGdi32AvailableDisallowedBlockingChild) {
 }
 
 TEST(BaseWinUtilTest, IsUser32AndGdi32AvailableAllowsBlocking) {
+  CommandLine cmd_line = GetMultiProcessTestChildBaseCommandLine();
+  cmd_line.AppendSwitch(switches::kPinUser32AndGdi32InAvailabilityCheck);
   LaunchOptions options;
   options.start_hidden = true;
   Process child = SpawnMultiProcessTestChild(
-      "IsUser32AndGdi32AvailableDisallowedBlockingChild",
-      GetMultiProcessTestChildBaseCommandLine(), options);
+      "IsUser32AndGdi32AvailableDisallowedBlockingChild", cmd_line, options);
   ASSERT_TRUE(child.IsValid());
   int exit_code = -1;
   ASSERT_TRUE(WaitForMultiprocessTestChildExit(
