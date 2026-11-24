@@ -763,6 +763,10 @@ TEST_F(OmniboxContextMenuControllerTest,
           ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
           .value();
   EXPECT_FALSE(controller()->menu_model()->GetMinorIconAt(index).IsEmpty());
+  EXPECT_EQ(controller()->menu_model()->GetAccessibleNameAt(index),
+            l10n_util::GetStringFUTF16(
+                IDS_STS_MEGAPLUS_CHECKED_MENU_ITEM_A11Y_LABEL,
+                controller()->menu_model()->GetLabelAt(index)));
 
   // 5. Verify: Left icon has the screensaver auto vector icon
   ui::ImageModel icon = controller()->menu_model()->GetIconAt(index);
@@ -825,6 +829,10 @@ TEST_F(OmniboxContextMenuControllerTest,
           .value();
   EXPECT_TRUE(
       controller()->shared_tabs_menu_model()->GetMinorIconAt(index).IsEmpty());
+  EXPECT_EQ(controller()->shared_tabs_menu_model()->GetAccessibleNameAt(index),
+            l10n_util::GetStringFUTF16(
+                IDS_STS_MEGAPLUS_UNCHECKED_MENU_ITEM_A11Y_LABEL,
+                controller()->shared_tabs_menu_model()->GetLabelAt(index)));
 
   // 6. Verify: Left icon has the screensaver auto vector icon
   ui::ImageModel icon =

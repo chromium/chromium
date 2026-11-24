@@ -467,8 +467,13 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   if (include_tabs_submenu && is_smart_tab_sharing_enabled &&
       is_smart_tab_sharing_active) {
     size_t index = menu_model_->GetItemCount();
-    menu_model_->AddItem(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
-                         GetSmartTabSharingMegaplusMenuLabel());
+    const std::u16string label = GetSmartTabSharingMegaplusMenuLabel();
+    menu_model_->AddItem(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING, label);
+    // VoiceOver reads checked menu items as "Checkmark, <name>", so this row
+    // is a plain item whose name spells out its state and role.
+    menu_model_->SetAccessibleNameAt(
+        index, l10n_util::GetStringFUTF16(
+                   IDS_STS_MEGAPLUS_CHECKED_MENU_ITEM_A11Y_LABEL, label));
     menu_model_->SetIconForCommandId(
         IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
         ui::ImageModel::FromVectorIcon(kScreensaverAutoIcon, ui::kColorMenuIcon,
@@ -519,8 +524,13 @@ void OmniboxContextMenuController::AddRecentTabItems() {
         shared_tabs_menu_model_->AddTitleWithStringId(
             IDS_STS_MEGAPLUS_AUTOMATICALLY_ADD_TABS_HEADER);
       }
+      const std::u16string label = GetSmartTabSharingMegaplusMenuLabel();
       shared_tabs_menu_model_->AddItem(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
-                                       GetSmartTabSharingMegaplusMenuLabel());
+                                       label);
+      shared_tabs_menu_model_->SetAccessibleNameAt(
+          shared_tabs_menu_model_->GetItemCount() - 1,
+          l10n_util::GetStringFUTF16(
+              IDS_STS_MEGAPLUS_UNCHECKED_MENU_ITEM_A11Y_LABEL, label));
       shared_tabs_menu_model_->SetIconForCommandId(
           IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
           ui::ImageModel::FromVectorIcon(
