@@ -628,13 +628,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   // the same place relative to the field after the update.
   const bool prefer_prev_arrow_side_on_suggestions_update = show_tabbed_popup;
 
-  PopupAnchorType anchor_type =
+  const PopupAnchorType anchor_type =
       should_use_caret_bounds ? PopupAnchorType::kCaret : default_anchor_type;
-#if BUILDFLAG(IS_ANDROID)
-  if (is_at_memory) {
-    anchor_type = PopupAnchorType::kAtMemoryBottomSheet;
-  }
-#endif
 
   AutofillClient::PopupOpenArgs open_args(
       last_query_.form_id, trigger_field->global_id(),
@@ -1031,16 +1026,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageOffers:
-    case SuggestionType::kManageEnhancedAutofill: {
+    case SuggestionType::kManageEnhancedAutofill:
       manager_->client().ShowAutofillSettings(suggestion.type);
-      // Keep the bottom sheet open on Android if triggered from AtMemory.
-      if constexpr (BUILDFLAG(IS_ANDROID)) {
-        if (IsAtMemoryTriggerSource(trigger_source_)) {
-          return;
-        }
-      }
       break;
-    }
     case SuggestionType::kUndo:
       manager_->UndoAutofill(mojom::ActionPersistence::kFill, effective_form_id,
                              effective_field_id);

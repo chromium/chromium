@@ -899,19 +899,12 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryUsesCaretAnchorWithValidCaret) {
   IssueOnQuery(form, caret_bounds,
                AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
-  const PopupAnchorType expected_anchor_type =
-#if BUILDFLAG(IS_ANDROID)
-      PopupAnchorType::kAtMemoryBottomSheet;
-#else
-      PopupAnchorType::kCaret;
-#endif
-
   EXPECT_CALL(autofill_client(),
               ShowAutofillSuggestions(
                   AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
                               gfx::RectF(caret_bounds)),
                         Field(&AutofillClient::PopupOpenArgs::anchor_type,
-                              expected_anchor_type)),
+                              PopupAnchorType::kCaret)),
                   _));
 
   OnSuggestionsReturned(
@@ -919,8 +912,9 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryUsesCaretAnchorWithValidCaret) {
       {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
 }
 
-// Tests that AtMemory trigger source uses the bottom sheet anchor type.
-TEST_F(AutofillExternalDelegateTest, AtMemoryUsesBottomSheetAnchor) {
+// Tests that AtMemory trigger source uses the default anchor type when caret
+// bounds are empty.
+TEST_F(AutofillExternalDelegateTest, AtMemoryUsesDefaultAnchorWhenCaretEmpty) {
   gfx::RectF field_bounds(0, 0, 100, 20);
   gfx::Rect empty_caret_bounds;
   FormData form = CreateTestFormWithBounds(field_bounds);
@@ -930,7 +924,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryUsesBottomSheetAnchor) {
 
   const PopupAnchorType expected_anchor_type =
 #if BUILDFLAG(IS_ANDROID)
-      PopupAnchorType::kAtMemoryBottomSheet;
+      PopupAnchorType::kKeyboardAccessory;
 #else
       PopupAnchorType::kField;
 #endif
@@ -958,19 +952,12 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryContextMenuUsesCaretAnchor) {
   IssueOnQuery(form, caret_bounds,
                AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 
-  const PopupAnchorType expected_anchor_type =
-#if BUILDFLAG(IS_ANDROID)
-      PopupAnchorType::kAtMemoryBottomSheet;
-#else
-      PopupAnchorType::kCaret;
-#endif
-
   EXPECT_CALL(autofill_client(),
               ShowAutofillSuggestions(
                   AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
                               gfx::RectF(caret_bounds)),
                         Field(&AutofillClient::PopupOpenArgs::anchor_type,
-                              expected_anchor_type)),
+                              PopupAnchorType::kCaret)),
                   _));
 
   OnSuggestionsReturned(
@@ -2354,25 +2341,6 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateInvalidUniqueId) {
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               Eq(std::nullopt)));
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
-
-  external_delegate().DidAcceptSuggestion(
-      suggestion, SuggestionPosition{.multi_index = {0}});
-}
-
-// Tests that accepting a manage suggestion on Android keeps the bottom sheet
-// open if triggered from AtMemory.
-TEST_F(AutofillExternalDelegateTest,
-       ManageSuggestion_AtMemory_KeepsBottomSheetOpenOnAndroid) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-  const Suggestion suggestion{SuggestionType::kManageAddress};
-
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
-  } else {
-    EXPECT_CALL(autofill_client(),
-                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
-                                Eq(std::nullopt)));
-  }
 
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.multi_index = {0}});

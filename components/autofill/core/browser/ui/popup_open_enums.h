@@ -21,8 +21,6 @@ enum class PopupAnchorType {
   kCaret,
   // Android suggestions are displayed anchored on the keyboard accessory.
   kKeyboardAccessory,
-  // Android suggestions are displayed inside a bottom sheet for AtMemory.
-  kAtMemoryBottomSheet,
 };
 
 }  // namespace autofill
