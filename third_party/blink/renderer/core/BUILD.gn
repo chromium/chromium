@@ -1595,6 +1595,8 @@ source_set("unit_tests") {
   # in the deps section below.
   sources = rebase_path(blink_core_tests_accessibility, "", "accessibility")
   sources += rebase_path(blink_core_tests_animation, "", "animation")
+  sources +=
+      rebase_path(blink_core_tests_animation_frame, "", "animation_frame")
   sources += rebase_path(blink_core_tests_annotation, "", "annotation")
   sources += rebase_path(blink_core_tests_canvas_interventions,
                          "",

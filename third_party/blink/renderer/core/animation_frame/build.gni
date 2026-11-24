@@ -6,3 +6,5 @@ blink_core_sources_animation_frame = [
   "worker_animation_frame_provider.cc",
   "worker_animation_frame_provider.h",
 ]
+
+blink_core_tests_animation_frame = [ "worker_animation_frame_provider_test.cc" ]

@@ -5,9 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_FRAME_WORKER_ANIMATION_FRAME_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_FRAME_WORKER_ANIMATION_FRAME_PROVIDER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -28,7 +31,8 @@ class OffscreenCanvas;
 // OffscreenCanvases when it's time to dispatch frames.
 class CORE_EXPORT WorkerAnimationFrameProvider
     : public GarbageCollected<WorkerAnimationFrameProvider>,
-      public BeginFrameProviderClient {
+      public BeginFrameProviderClient,
+      public ExecutionContextLifecycleStateObserver {
  public:
   WorkerAnimationFrameProvider(
       ExecutionContext* context,
@@ -47,18 +51,30 @@ class CORE_EXPORT WorkerAnimationFrameProvider
   scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner()
       override;
 
+  // ExecutionContextLifecycleStateObserver
+  void ContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) override;
+  void ContextDestroyed() override {}
+
   void RegisterOffscreenCanvas(OffscreenCanvas*);
   void DeregisterOffscreenCanvas(OffscreenCanvas*);
 
   static const int kInvalidCallbackId = -1;
 
  private:
+  // `terminate_flow` controls whether the trace flow for `args.trace_id` ends
+  // at this slice; callers that run synchronously inside the BeginFrame task
+  // pass false so the outer slice keeps the flow alive.
+  void RunBeginFrameCallbacks(const viz::BeginFrameArgs& args,
+                              bool terminate_flow);
+
   const Member<BeginFrameProvider> begin_frame_provider_;
   FrameRequestCallbackCollection callback_collection_;
 
   HeapLinkedHashSet<WeakMember<OffscreenCanvas>> offscreen_canvases_;
 
-  Member<ExecutionContext> context_;
+  FRIEND_TEST_ALL_PREFIXES(WorkerAnimationFrameProviderTest,
+                           DropsBeginFrameWhenPaused);
 };
 
 }  // namespace blink
