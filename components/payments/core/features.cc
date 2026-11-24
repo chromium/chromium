@@ -94,7 +94,7 @@ BASE_FEATURE(kSPCLocaleValidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreeDSecureTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThreeDSecureTelemetryForIos, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kThreeDSecureTelemetryForIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPaymentRequestEnforceLNAWithClientSecurityState,
              base::FEATURE_DISABLED_BY_DEFAULT);
