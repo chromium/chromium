@@ -193,6 +193,10 @@ void WaylandCursorShape::SetCursorShape(uint32_t shape) {
                                       pointer_enter_serial->value, shape);
 }
 
+void WaylandCursorShape::ResetPointerShapeDevice() {
+  wp_cursor_shape_device_v1_.reset();
+}
+
 wl::Object<wp_cursor_shape_device_v1>
 WaylandCursorShape::CreateTabletToolShapeDevice(
     zwp_tablet_tool_v2* tablet_tool) {

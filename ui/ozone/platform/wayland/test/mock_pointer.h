@@ -8,12 +8,15 @@
 #include <wayland-server-protocol.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 struct wl_resource;
 
 namespace wl {
+
+class MockWpCursorShapeDevice;
 
 extern const struct wl_pointer_interface kMockPointerImpl;
 
@@ -30,6 +33,22 @@ class MockPointer : public ServerObject {
                void(wl_resource* surface_resource,
                     int32_t hotspot_x,
                     int32_t hotspot_y));
+
+  // The wp_cursor_shape_device_v1 the client created for this pointer, if any.
+  MockWpCursorShapeDevice* cursor_shape_device() const {
+    return cursor_shape_device_;
+  }
+  void set_cursor_shape_device(MockWpCursorShapeDevice* device) {
+    cursor_shape_device_ = device;
+  }
+
+  base::WeakPtr<MockPointer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  raw_ptr<MockWpCursorShapeDevice> cursor_shape_device_ = nullptr;
+  base::WeakPtrFactory<MockPointer> weak_ptr_factory_{this};
 };
 
 }  // namespace wl

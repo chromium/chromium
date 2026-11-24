@@ -8,6 +8,7 @@
 #include "base/notimplemented.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
@@ -106,6 +107,10 @@ void WaylandSeat::HandleCapabilities(void* data,
     keyboard_.reset();
   }
 
+  // The pointer is released below, so its cursor shape device has to go too.
+  if (auto* cursor_shape = connection_->wayland_cursor_shape()) {
+    cursor_shape->ResetPointerShapeDevice();
+  }
   if (capabilities & WL_SEAT_CAPABILITY_POINTER) {
     if (wl_pointer* pointer = wl_seat_get_pointer(seat)) {
       pointer_ = std::make_unique<WaylandPointer>(pointer, connection_,

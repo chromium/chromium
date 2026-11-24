@@ -41,6 +41,11 @@ class WaylandCursorShape
   // for values for |shape|. Virtual for testing.
   virtual void SetCursorShape(uint32_t shape);
 
+  // Drops the shape device of the current wl_pointer. Must be called before
+  // the seat's wl_pointer is released or replaced: the device becomes inert
+  // and a new one has to be created for the next wl_pointer.
+  void ResetPointerShapeDevice();
+
   // Returns a new shape device for a tablet tool.
   wl::Object<wp_cursor_shape_device_v1> CreateTabletToolShapeDevice(
       zwp_tablet_tool_v2* tablet_tool);

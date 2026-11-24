@@ -8,6 +8,7 @@
 #include <tablet-unstable-v2-server-protocol.h>
 
 #include "base/functional/bind.h"
+#include "ui/ozone/platform/wayland/test/mock_pointer.h"
 
 namespace wl {
 
@@ -148,9 +149,15 @@ void TestWpCursorShapeManager::GetPointer(wl_client* client,
                                           wl_resource* resource,
                                           uint32_t id,
                                           wl_resource* pointer) {
-  CreateResourceWithImpl<NiceMockWpCursorShapeDevice>(
-      client, &wp_cursor_shape_device_v1_interface,
-      wl_resource_get_version(resource), &kMockWpCursorShapeDeviceImpl, id);
+  auto* mock_pointer = GetUserDataAs<MockPointer>(pointer);
+  wl_resource* device_resource =
+      CreateResourceWithImpl<NiceMockWpCursorShapeDevice>(
+          client, &wp_cursor_shape_device_v1_interface,
+          wl_resource_get_version(resource), &kMockWpCursorShapeDeviceImpl, id,
+          base::BindOnce(&MockPointer::set_cursor_shape_device,
+                         mock_pointer->GetWeakPtr(), nullptr));
+  mock_pointer->set_cursor_shape_device(
+      GetUserDataAs<MockWpCursorShapeDevice>(device_resource));
 }
 
 // static
