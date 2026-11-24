@@ -239,14 +239,11 @@ IN_PROC_BROWSER_TEST_P(TtcDebugPipelineBrowserLevelToolTest,
       tabs::TabInterface::GetFromContents(web_contents());
   TabListInterface* tab_list =
       TabListInterface::From(matching_tab->GetBrowserWindowInterface());
-  // Opened in the background and then activated, as in
-  // ToolControllerBrowserTest.
   tabs::TabInterface* other_tab = tab_list->OpenTab(
       embedded_test_server()->GetURL("example.com", "/title1.html"),
-      /*index=*/-1, /*foreground=*/false);
+      /*index=*/-1, /*foreground=*/true);
   ASSERT_TRUE(other_tab);
   ASSERT_TRUE(content::WaitForLoadStop(other_tab->GetContents()));
-  tab_list->ActivateTab(other_tab->GetHandle());
   ASSERT_TRUE(
       base::test::RunUntil([other_tab] { return other_tab->IsActivated(); }));
 

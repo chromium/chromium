@@ -152,26 +152,6 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
   }
 
  protected:
-  tabs::TabInterface* active_tab() {
-    return tabs::TabInterface::GetFromContents(web_contents());
-  }
-
-  TabListInterface* tab_list() {
-    return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
-  }
-
-  void OpenForegroundTab(const GURL& url) {
-    // Open in the background and activate explicitly: on Android, a foreground
-    // open runs the new-tab animation, which can re-select the new tab
-    // asynchronously after a subsequent tab switch.
-    tabs::TabInterface* tab =
-        tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/false);
-    ASSERT_TRUE(tab);
-    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
-    tab_list()->ActivateTab(tab->GetHandle());
-    ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
-  }
-
   // Starts a session and waits for the initial notification, leaving no
   // expectations set on the conversation.
   void StartSession() {

@@ -82,6 +82,7 @@
 #include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/test/base/android/android_ui_test_utils.h"
 #include "ui/android/accelerator_manager_android.h"
 #include "ui/android/window_android.h"
 #else
@@ -776,6 +777,12 @@ class GlicBrowserTestMixin : public T {
     CHECK(tab_list);
     tabs::TabInterface* new_tab = tab_list->OpenTab(url, -1);
     tab_list->ActivateTab(new_tab->GetHandle());
+#if BUILDFLAG(IS_ANDROID)
+    // On phones the new tab animation selects the new tab again when it ends.
+    // Wait for it, so that it can't undo a subsequent tab switch.
+    android_ui_test_utils::WaitForBrowsingLayout(
+        new_tab->GetBrowserWindowInterface());
+#endif
     CHECK(content::WaitForLoadStop(new_tab->GetContents()));
     return new_tab;
   }
@@ -894,6 +901,9 @@ class GlicBrowserTestMixin : public T {
         tab_model->CreateTab(nullptr, std::move(web_contents), -1,
                              TabModel::TabLaunchType::FROM_CHROME_UI, false);
     tab_model->ActivateTab(new_tab->GetHandle());
+    // As in `CreateAndActivateTab()`, wait for the new tab animation to end.
+    android_ui_test_utils::WaitForBrowsingLayout(
+        new_tab->GetBrowserWindowInterface());
     CHECK(content::WaitForLoadStop(new_tab->GetContents()));
     return new_tab;
 #else

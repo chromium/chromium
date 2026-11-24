@@ -7,6 +7,8 @@
 
 #include "url/gurl.h"
 
+class BrowserWindowInterface;
+
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -19,6 +21,14 @@ namespace android_ui_test_utils {
 void OpenUrlInNewTab(content::BrowserContext* context,
                      content::WebContents* parent,
                      const GURL& url);
+
+// Waits until `browser` shows the browsing layout (a tab's contents) and no
+// layout transition is in progress. Returns at once if that is already so.
+//
+// Use it after anything that starts a layout transition, e.g. opening a tab in
+// the foreground. On phones that runs the new tab animation, which selects the
+// new tab again when it ends, so a tab switch made before then is undone.
+void WaitForBrowsingLayout(BrowserWindowInterface* browser);
 
 }  // namespace android_ui_test_utils
 

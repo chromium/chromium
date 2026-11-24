@@ -9,8 +9,10 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/test_utils.h"
@@ -18,10 +20,18 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_ui_test_utils.h"
+#endif
 
 namespace ttc {
 
@@ -72,8 +82,30 @@ content::WebContents* TtcCoreBrowserTestBase::web_contents() {
   return chrome_test_utils::GetActiveWebContents(this);
 }
 
+tabs::TabInterface* TtcCoreBrowserTestBase::active_tab() {
+  return tabs::TabInterface::GetFromContents(web_contents());
+}
+
+TabListInterface* TtcCoreBrowserTestBase::tab_list() {
+  return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
+}
+
 TtcKeyedService& TtcCoreBrowserTestBase::ttc_service() {
   return CHECK_DEREF(TtcKeyedService::Get(profile()));
+}
+
+void TtcCoreBrowserTestBase::OpenForegroundTab(const GURL& url) {
+  tabs::TabInterface* tab =
+      tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/true);
+  ASSERT_TRUE(tab);
+#if BUILDFLAG(IS_ANDROID)
+  // On phones the new tab animation selects the new tab again when it ends.
+  // Wait for it, so that it can't undo a subsequent tab switch.
+  android_ui_test_utils::WaitForBrowsingLayout(
+      tab->GetBrowserWindowInterface());
+#endif
+  ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+  ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
 }
 
 MockConversation* TtcCoreBrowserTestBase::conversation() {

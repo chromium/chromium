@@ -446,12 +446,19 @@ source_set("browser_test_support") {
     ":impl",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_list",
     "//chrome/test/base:chrome_test_utils",
     "//components/keyed_service/core",
+    "//components/tabs:public",
     "//content/public/common",
+    "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",
+    "//url",
   ]
+  if (is_android) {
+    deps += [ "//chrome/test/base:android_ui_test_utils" ]
+  }
 }
 
 source_set("browser_tests") {

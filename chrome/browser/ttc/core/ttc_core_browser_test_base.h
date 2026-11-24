@@ -10,7 +10,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/platform_browser_test.h"
 
+class GURL;
 class Profile;
+class TabListInterface;
 
 namespace base {
 class CommandLine;
@@ -20,6 +22,10 @@ namespace content {
 class BrowserContext;
 class WebContents;
 }  // namespace content
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace ttc {
 
@@ -45,7 +51,14 @@ class TtcCoreBrowserTestBase : public PlatformBrowserTest {
 
   Profile* profile();
   content::WebContents* web_contents();
+  tabs::TabInterface* active_tab();
+  // The tab list of the window containing `active_tab()`.
+  TabListInterface* tab_list();
   TtcKeyedService& ttc_service();
+
+  // Opens `url` in a new tab in the current window, waits for it to load, and
+  // makes it the active tab. Fails the test on error.
+  void OpenForegroundTab(const GURL& url);
 
   // The conversation belonging to the service's current session, or null if
   // there's no session or it has no conversation.

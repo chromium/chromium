@@ -44,6 +44,7 @@
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #else
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "chrome/test/base/android/android_ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #endif
 
@@ -337,16 +338,16 @@ TabListInterface* ActorToolsTest::tab_list() {
 }
 
 void ActorToolsTest::OpenForegroundTab(const GURL& url) {
-  // Open in the background and activate explicitly rather than opening in the
-  // foreground. On Android, a foreground open runs the new tab animation,
-  // which re-selects the new tab again when the animation finishes. That
-  // deferred selection can land after a tool under test has switched tabs
-  // and undo the switch.
   tabs::TabInterface* tab =
-      tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/false);
+      tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/true);
   ASSERT_TRUE(tab);
+#if BUILDFLAG(IS_ANDROID)
+  // On phones the new tab animation selects the new tab again when it ends.
+  // Wait for it, so that it can't undo a tab switch by a tool under test.
+  android_ui_test_utils::WaitForBrowsingLayout(
+      tab->GetBrowserWindowInterface());
+#endif
   ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
-  tab_list()->ActivateTab(tab->GetHandle());
 
   // On Android, TabInterface::IsActivated() can lag the tab list's active
   // index briefly. Tools treat an already activated target as a successful

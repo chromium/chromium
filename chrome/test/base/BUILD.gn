@@ -1414,10 +1414,15 @@ if (is_android) {
     ]
     public_deps = [ "//url" ]
     deps = [
+      "//base",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/test:test_support_jni_headers",
       "//content/public/browser",
       "//content/test:test_support",
+      "//ui/android",
+      "//ui/base",
     ]
   }
 
