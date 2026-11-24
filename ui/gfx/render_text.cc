@@ -166,9 +166,16 @@ SkFontHinting FontRenderParamsHintingToSkFontHinting(
     case FontRenderParams::HINTING_SLIGHT:
       return SkFontHinting::kSlight;
     case FontRenderParams::HINTING_MEDIUM:
-      return SkFontHinting::kNormal;
     case FontRenderParams::HINTING_FULL:
-      return SkFontHinting::kFull;
+      // Skia's MakeCanonicalized() shapes glyphs without SkSurfaceProps
+      // (kUnknown_SkPixelGeometry), which downgrades kFull to kNormal, whereas
+      // opaque LCD surfaces keep kFull (FT_LOAD_TARGET_LCD / SmoothMode::Lcd)
+      // and non-opaque layers or SetSubpixelRenderingSuppressed(true) collapse
+      // back to kNormal. Map HINTING_FULL to kNormal (matching Qt 6's HintFull
+      // -> FT_LOAD_TARGET_NORMAL with LCD mask rasterization); HINTING_FULL
+      // still preserves integer glyph positioning via
+      // params.subpixel_positioning == false at 1x scale (crbug.com/472679086).
+      return SkFontHinting::kNormal;
   }
   return SkFontHinting::kNone;
 }

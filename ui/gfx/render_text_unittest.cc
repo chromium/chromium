@@ -70,6 +70,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/platform_font.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/range/range_f.h"
 #include "ui/gfx/render_text_harfbuzz.h"
@@ -9545,6 +9546,86 @@ TEST_F(SkiaTextRendererTest, DrawUnderlineMinimumThickness) {
   EXPECT_FLOAT_EQ(rects[1].height(), 2.0f);
   EXPECT_FLOAT_EQ(rects[2].height(),
                   11.0f * 2.0f * RenderText::kLineThicknessFactor);
+}
+
+// Ensure HINTING_FULL maps to SkFontHinting::kNormal so LCD surface
+// rasterization matches Skia's canonicalized shaping metrics and does not jump
+// glyph widths when subpixel rendering is suppressed (crbug.com/472679086).
+TEST_F(SkiaTextRendererTest, FullHintingUsesNormalSkiaHinting) {
+  FontRenderParams params_full;
+  params_full.antialiasing = true;
+  params_full.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_RGB;
+  params_full.subpixel_positioning = false;
+  params_full.autohinter = true;
+  params_full.hinting = FontRenderParams::HINTING_FULL;
+
+  renderer()->SetFontRenderParams(params_full,
+                                  /*subpixel_rendering_suppressed=*/false);
+  const SkFont& font = test::RenderTextTestApi::GetRendererFont(renderer());
+  EXPECT_EQ(font.getEdging(), SkFont::Edging::kSubpixelAntiAlias);
+  EXPECT_FALSE(font.isSubpixel());
+  EXPECT_TRUE(font.isForceAutoHinting());
+  EXPECT_EQ(font.getHinting(), SkFontHinting::kNormal);
+
+  renderer()->SetFontRenderParams(params_full,
+                                  /*subpixel_rendering_suppressed=*/true);
+  EXPECT_EQ(font.getEdging(), SkFont::Edging::kAntiAlias);
+  EXPECT_FALSE(font.isSubpixel());
+  EXPECT_EQ(font.getHinting(), SkFontHinting::kNormal);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  sk_sp<SkTypeface> typeface =
+      Font(kTestFontName, 16).platform_font()->GetNativeSkTypeface();
+  ASSERT_TRUE(typeface);
+
+  FontRenderParams params_medium = params_full;
+  params_medium.hinting = FontRenderParams::HINTING_MEDIUM;
+
+  renderer()->SetTypeface(typeface);
+  renderer()->SetTextSize(16);
+  renderer()->SetFontRenderParams(params_full,
+                                  /*subpixel_rendering_suppressed=*/false);
+  const SkFont lcd_full_font = font;
+
+  renderer()->SetFontRenderParams(params_medium,
+                                  /*subpixel_rendering_suppressed=*/false);
+  const SkFont lcd_medium_font = font;
+
+  const SkGlyphID glyph_t = typeface->unicharToGlyph('t');
+  ASSERT_NE(glyph_t, 0u);
+  EXPECT_FLOAT_EQ(lcd_full_font.getWidth(glyph_t),
+                  lcd_medium_font.getWidth(glyph_t));
+
+  const SkSurfaceProps lcd_props(0, kRGB_H_SkPixelGeometry);
+  const SkImageInfo info = SkImageInfo::MakeN32Premul(32, 32);
+  sk_sp<SkSurface> full_surface = SkSurfaces::Raster(info, &lcd_props);
+  sk_sp<SkSurface> medium_surface = SkSurfaces::Raster(info, &lcd_props);
+  ASSERT_TRUE(full_surface);
+  ASSERT_TRUE(medium_surface);
+
+  SkPaint paint;
+  paint.setColor(SK_ColorBLACK);
+  const SkPoint pos = SkPoint::Make(8, 24);
+
+  full_surface->getCanvas()->clear(SK_ColorWHITE);
+  full_surface->getCanvas()->drawGlyphs({&glyph_t, 1}, {&pos, 1}, {0, 0},
+                                        lcd_full_font, paint);
+
+  medium_surface->getCanvas()->clear(SK_ColorWHITE);
+  medium_surface->getCanvas()->drawGlyphs({&glyph_t, 1}, {&pos, 1}, {0, 0},
+                                          lcd_medium_font, paint);
+
+  SkPixmap full_pixmap;
+  SkPixmap medium_pixmap;
+  ASSERT_TRUE(full_surface->peekPixels(&full_pixmap));
+  ASSERT_TRUE(medium_surface->peekPixels(&medium_pixmap));
+  for (int y = 0; y < info.height(); ++y) {
+    for (int x = 0; x < info.width(); ++x) {
+      EXPECT_EQ(full_pixmap.getColor(x, y), medium_pixmap.getColor(x, y))
+          << "LCD pixel mismatch at (" << x << ", " << y << ")";
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 class RenderTextDirectionTest

@@ -92,7 +92,16 @@ void WebFontRenderStyle::OverrideWith(const WebFontRenderStyle& other) {
 
 void WebFontRenderStyle::ApplyToSkFont(SkFont* font) const {
   auto sk_hint_style = static_cast<SkFontHinting>(hint_style);
-  font->setHinting(sk_hint_style);
+  // Skia's MakeCanonicalized() shapes glyphs without SkSurfaceProps
+  // (kUnknown_SkPixelGeometry), which downgrades kFull to kNormal, whereas
+  // opaque LCD surfaces keep kFull (FT_LOAD_TARGET_LCD / SmoothMode::Lcd) and
+  // non-opaque composited layers collapse back to kNormal. Map kFull to kNormal
+  // (matching Qt 6's HintFull -> FT_LOAD_TARGET_NORMAL with LCD mask
+  // rasterization) while still honoring sk_hint_style == kFull below to
+  // preserve integer glyph positioning at 1x scale (crbug.com/472679086).
+  font->setHinting(sk_hint_style == SkFontHinting::kFull
+                       ? SkFontHinting::kNormal
+                       : sk_hint_style);
   font->setEmbeddedBitmaps(use_bitmaps);
   font->setForceAutoHinting(use_auto_hint);
   if (use_anti_alias && use_subpixel_rendering) {

@@ -31,14 +31,26 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_font_render_style.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkPoint.h"
+#include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
 
 using blink::test::CreateTestFont;
 
@@ -115,5 +127,94 @@ TEST_F(FontPlatformDataTest, GeometricPrecision) {
   FontCache::SetDeviceScaleFactor(saved_device_scale_factor);
 }
 #endif
+
+#if !BUILDFLAG(IS_MAC)
+// Ensure full hinting maps to SkFontHinting::kNormal while preserving
+// whole-pixel glyph positioning at 1x scale, so LCD surface rasterization
+// matches Skia's canonicalized shaping metrics (crbug.com/472679086).
+TEST_F(FontPlatformDataTest,
+       WebFontRenderStyleFullHintingUsesNormalSkiaHinting) {
+  ScopedWebTestMode web_test_mode(false);
+
+  WebFontRenderStyle full_style;
+  full_style.use_bitmaps = 0;
+  full_style.use_auto_hint = 1;
+  full_style.use_hinting = 1;
+  full_style.hint_style = static_cast<char>(SkFontHinting::kFull);
+  full_style.use_anti_alias = 1;
+  full_style.use_subpixel_rendering = 1;
+  full_style.use_subpixel_positioning = 0;
+
+  SkFont full_font;
+  full_style.ApplyToSkFont(&full_font);
+  EXPECT_EQ(full_font.getHinting(), SkFontHinting::kNormal);
+  EXPECT_EQ(full_font.getEdging(), SkFont::Edging::kSubpixelAntiAlias);
+  EXPECT_FALSE(full_font.isSubpixel());
+  EXPECT_FALSE(full_font.isLinearMetrics());
+
+  // Contrast with kNormal input, which force-enables subpixel positioning
+  // outside web tests even when use_subpixel_positioning is 0.
+  WebFontRenderStyle normal_style = full_style;
+  normal_style.hint_style = static_cast<char>(SkFontHinting::kNormal);
+  SkFont normal_font;
+  normal_style.ApplyToSkFont(&normal_font);
+  EXPECT_EQ(normal_font.getHinting(), SkFontHinting::kNormal);
+  EXPECT_TRUE(normal_font.isSubpixel());
+
+  Font* roboto = CreateTestFont(
+      AtomicString("Roboto"),
+      test::PlatformTestDataPath("third_party/Roboto/roboto-regular.woff2"),
+      16);
+  sk_sp<SkTypeface> typeface =
+      sk_ref_sp(roboto->PrimaryFont()->PlatformData().Typeface());
+  ASSERT_TRUE(typeface);
+
+  SkFont roboto_full(typeface, 16);
+  full_style.ApplyToSkFont(&roboto_full);
+
+  SkFont roboto_expected(typeface, 16);
+  roboto_expected.setHinting(SkFontHinting::kNormal);
+  roboto_expected.setEmbeddedBitmaps(false);
+  roboto_expected.setForceAutoHinting(true);
+  roboto_expected.setEdging(SkFont::Edging::kSubpixelAntiAlias);
+  roboto_expected.setSubpixel(false);
+  roboto_expected.setLinearMetrics(false);
+
+  const SkGlyphID glyph_t = typeface->unicharToGlyph('t');
+  ASSERT_NE(glyph_t, 0u);
+  EXPECT_FLOAT_EQ(roboto_full.getWidth(glyph_t),
+                  roboto_expected.getWidth(glyph_t));
+
+  const SkSurfaceProps lcd_props(0, kRGB_H_SkPixelGeometry);
+  const SkImageInfo info = SkImageInfo::MakeN32Premul(32, 32);
+  sk_sp<SkSurface> full_surface = SkSurfaces::Raster(info, &lcd_props);
+  sk_sp<SkSurface> expected_surface = SkSurfaces::Raster(info, &lcd_props);
+  ASSERT_TRUE(full_surface);
+  ASSERT_TRUE(expected_surface);
+
+  SkPaint paint;
+  paint.setColor(SK_ColorBLACK);
+  const SkPoint pos = SkPoint::Make(8, 24);
+
+  full_surface->getCanvas()->clear(SK_ColorWHITE);
+  full_surface->getCanvas()->drawGlyphs({&glyph_t, 1}, {&pos, 1}, {0, 0},
+                                        roboto_full, paint);
+
+  expected_surface->getCanvas()->clear(SK_ColorWHITE);
+  expected_surface->getCanvas()->drawGlyphs({&glyph_t, 1}, {&pos, 1}, {0, 0},
+                                            roboto_expected, paint);
+
+  SkPixmap full_pixmap;
+  SkPixmap expected_pixmap;
+  ASSERT_TRUE(full_surface->peekPixels(&full_pixmap));
+  ASSERT_TRUE(expected_surface->peekPixels(&expected_pixmap));
+  for (int y = 0; y < info.height(); ++y) {
+    for (int x = 0; x < info.width(); ++x) {
+      EXPECT_EQ(full_pixmap.getColor(x, y), expected_pixmap.getColor(x, y))
+          << "LCD pixel mismatch at (" << x << ", " << y << ")";
+    }
+  }
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace blink
