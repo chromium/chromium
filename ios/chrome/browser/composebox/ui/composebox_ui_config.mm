@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -117,6 +118,12 @@
 }
 
 - (NSString*)hintTextForTool:(ComposeboxMode)tool {
+  if (tool == ComposeboxMode::kRegularSearch && self.hasAttachments &&
+      self.defaultSearchEngineName.length > 0) {
+    return l10n_util::GetNSStringF(
+        IDS_OMNIBOX_EMPTY_ASK_HINT_SHORT_WITH_DSE_NAME,
+        base::SysNSStringToUTF16(self.defaultSearchEngineName));
+  }
   ComposeboxItemUIConfig* config = [self uiConfigForTool:tool];
   if (config.hintText.length > 0) {
     return config.hintText;

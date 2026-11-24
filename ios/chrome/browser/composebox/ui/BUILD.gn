@@ -110,6 +110,7 @@ source_set("state") {
   deps = [
     ":ui_util",
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
@@ -137,6 +138,7 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/public:entrypoint",
     "//ios/chrome/browser/composebox/public:input_item_source",

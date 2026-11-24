@@ -641,6 +641,31 @@ TEST_F(ComposeboxInputStateManagerTest, ComputeUIInputState) {
   EXPECT_EQ(state.remainingAttachmentCapacity, 5u);
 }
 
+// Tests that the UI state reports whether attachments are present.
+TEST_F(ComposeboxInputStateManagerTest, ComputeUIInputState_HasAttachments) {
+  std::set<web::WebStateID> attached_ids;
+
+  ComposeboxUIInputState* empty_state =
+      [manager_ computeUIInputStateWithFavicon:nil
+                           attachedWebStateIDs:attached_ids];
+  EXPECT_FALSE(empty_state.hasAttachments);
+
+  ComposeboxInputItemCollection* collection =
+      [[ComposeboxInputItemCollection alloc] init];
+  [collection
+      addItem:[[ComposeboxInputItem alloc]
+                  initWithComposeboxInputItemType:
+                      ComposeboxInputItemType::kComposeboxInputItemTypeImage
+                                           source:ComposeboxInputItemSource::
+                                                      kGalleryPicker]];
+  manager_.items = collection;
+
+  ComposeboxUIInputState* attachment_state =
+      [manager_ computeUIInputStateWithFavicon:nil
+                           attachedWebStateIDs:attached_ids];
+  EXPECT_TRUE(attachment_state.hasAttachments);
+}
+
 // Tests that setting a mode results in that mode being active in the UI
 // state.
 TEST_F(ComposeboxInputStateManagerTest,

@@ -56,6 +56,13 @@
 // The title of the attachments section.
 @property(nonatomic, readonly, copy) NSString* attachmentsSectionHeader;
 
+// Whether the composebox currently has attachments.
+@property(nonatomic, assign) BOOL hasAttachments;
+
+// The default search engine name, used for the regular-search placeholder when
+// attachments are present.
+@property(nonatomic, copy) NSString* defaultSearchEngineName;
+
 // Creates a new instance with local fallback strings and icons.
 + (instancetype)localFallbackUIConfig;
 

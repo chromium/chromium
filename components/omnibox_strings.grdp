@@ -186,7 +186,7 @@
       </message>
     </if>
   </if>
-  <if expr="is_android">
+  <if expr="is_android or is_ios">
     <message name="IDS_OMNIBOX_EMPTY_ASK_HINT_SHORT_WITH_DSE_NAME" desc="Alternative text displayed in the omnibox when it is empty, prompting the user to ask. Includes Default Search Engine name." formatter_data="android_java">
       Ask <ph name="ENGINE_NAME">$1<ex>Google</ex></ph>
     </message>

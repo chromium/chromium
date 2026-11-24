@@ -775,12 +775,15 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 - (void)setUIInputState:(ComposeboxUIInputState*)state {
   BOOL activeToolChanged = (_state.activeTool != state.activeTool);
+  // Attachments can change without the tool changing, e.g. when an image is
+  // attached in regular search.
+  BOOL hasAttachmentsChanged = (_state.hasAttachments != state.hasAttachments);
   BOOL uiConfigChanged = (_state.uiConfig != state.uiConfig);
 
   _state = state;
 
   // Trigger updates conditionally
-  if (activeToolChanged || uiConfigChanged) {
+  if (activeToolChanged || hasAttachmentsChanged || uiConfigChanged) {
     [self updatePlaceholderText];
   }
 

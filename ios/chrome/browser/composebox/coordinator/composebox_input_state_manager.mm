@@ -456,6 +456,21 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
   return _aimEligibilityService->IsFuseboxEligible();
 }
 
+/// Returns the locale-adjusted short name of the default search engine, or
+/// `nil` if unavailable.
+- (NSString*)defaultSearchEngineName {
+  if (!_templateURLService) {
+    return nil;
+  }
+  const TemplateURL* searchProvider =
+      _templateURLService->GetDefaultSearchProvider();
+  if (!searchProvider) {
+    return nil;
+  }
+  return base::SysUTF16ToNSString(
+      searchProvider->AdjustedShortNameForLocaleDirection());
+}
+
 - (BOOL)isDSEGoogle {
   if (!_templateURLService) {
     return NO;
@@ -549,7 +564,10 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
 
   state.activeTool = ComposeboxModeForToolMode(self.activeToolMode);
   state.defaultToolActive = self.activeToolMode == [self defaultToolMode];
+  state.hasAttachments = self.items && !self.items.empty;
 
+  _cachedUIConfig.hasAttachments = state.hasAttachments;
+  _cachedUIConfig.defaultSearchEngineName = [self defaultSearchEngineName];
   state.uiConfig = _cachedUIConfig;
 
   NSMutableArray<ComposeboxMenuSharedTab*>* sharedTabs =

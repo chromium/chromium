@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -180,4 +181,29 @@ TEST_F(ComposeboxUIConfigTest,
       [ui_config hintTextForTool:ComposeboxMode::kPTM],
       l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER));
   EXPECT_NE([ui_config iconForTool:ComposeboxMode::kPTM], nil);
+}
+
+// Tests that regular search with attachments shows the "Ask <DSE>" hint.
+TEST_F(ComposeboxUIConfigTest, HintTextUsesDSENameForRegularSearchAttachments) {
+  ComposeboxUIConfig* ui_config = [ComposeboxUIConfig localFallbackUIConfig];
+  ui_config.hasAttachments = YES;
+  ui_config.defaultSearchEngineName = @"TestEngine";
+
+  EXPECT_NSEQ(
+      [ui_config hintTextForTool:ComposeboxMode::kRegularSearch],
+      l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_ASK_HINT_SHORT_WITH_DSE_NAME,
+                              u"TestEngine"));
+  // Non-regular-search tools still use their own hint.
+  EXPECT_NSEQ([ui_config hintTextForTool:ComposeboxMode::kImageGeneration],
+              l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_IMAGE_GEN_PLACEHOLDER));
+}
+
+// Tests that regular search without attachments keeps the regular search hint.
+TEST_F(ComposeboxUIConfigTest,
+       HintTextKeepsRegularSearchHintWithoutAttachments) {
+  ComposeboxUIConfig* ui_config = [ComposeboxUIConfig localFallbackUIConfig];
+  ui_config.hasAttachments = NO;
+  ui_config.defaultSearchEngineName = @"TestEngine";
+
+  EXPECT_NSEQ([ui_config hintTextForTool:ComposeboxMode::kRegularSearch], nil);
 }

@@ -62,6 +62,9 @@
 /// explicitly selected (regular search, or plain AI Mode for Cobrowse).
 @property(nonatomic, assign) BOOL defaultToolActive;
 
+/// Whether the input plate has at least one attachment.
+@property(nonatomic, assign) BOOL hasAttachments;
+
 /// Whether the given attachment option should be hidden.
 - (BOOL)isAttachmentHidden:(ComposeboxAttachmentOption)option;
 
