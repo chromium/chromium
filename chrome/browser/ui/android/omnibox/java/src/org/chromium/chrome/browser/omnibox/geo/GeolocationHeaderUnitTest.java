@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.geo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.Manifest;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -38,6 +40,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -529,6 +533,48 @@ public class GeolocationHeaderUnitTest {
     public void testPrimeLocationPlatformAgnosticXGeoEnabled() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertFalse(GeolocationHeader.isGeolocationPrimedForTesting());
+    }
+
+    @Test
+    public void testHasAppGeolocationPermission_CachesAndInvalidatesOnStop() {
+        GeolocationHeader.clearAppPermissionsForTesting();
+        var shadowApp = Shadows.shadowOf(RuntimeEnvironment.getApplication());
+        shadowApp.grantPermissions(Manifest.permission.ACCESS_COARSE_LOCATION);
+        assertTrue(
+                GeolocationHeader.hasAppGeolocationPermission(
+                        Manifest.permission.ACCESS_COARSE_LOCATION));
+
+        // Revoking without pausing or stopping should still return the cached value.
+        shadowApp.denyPermissions(Manifest.permission.ACCESS_COARSE_LOCATION);
+        assertTrue(
+                GeolocationHeader.hasAppGeolocationPermission(
+                        Manifest.permission.ACCESS_COARSE_LOCATION));
+
+        // Stopping location updates invalidates the cache so the revocation is observed.
+        GeolocationHeader.stopListeningForLocationUpdates();
+        assertFalse(
+                GeolocationHeader.hasAppGeolocationPermission(
+                        Manifest.permission.ACCESS_COARSE_LOCATION));
+    }
+
+    @Test
+    public void testPrimeLocationForGeoHeaderPermissionOff_SkipsJni() {
+        GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ false, /* hasFine= */ false);
+        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
+        verify(mTemplateUrlServiceMock, never()).getUrlForSearchQuery(anyString());
+        verify(mWebsitePreferenceBridgeJniMock, never()).isDseOrigin(any(), any());
+    }
+
+    @Test
+    public void testGetGeoHeader_HttpUrlSkipsDseAndPermissionJni() {
+        assertNull(
+                GeolocationHeader.getGeoHeader(
+                        "http://www.google.com/search?q=potatoes",
+                        mProfileMock,
+                        mTemplateUrlServiceMock));
+        verify(mTemplateUrlServiceMock, never())
+                .isSearchResultsPageFromDefaultSearchProvider(any());
+        verify(mWebsitePreferenceBridgeJniMock, never()).isDseOrigin(any(), any());
     }
 
     private void setSiteGeolocationPermissions(

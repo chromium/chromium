@@ -24,6 +24,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
@@ -117,6 +119,9 @@ public class GeolocationHeader {
     private static boolean sHasCoarsePermissionForTesting;
     private static boolean sHasFinePermissionForTesting;
     private static boolean sUseFakePermissionForTesting;
+    private static @Nullable Boolean sHasCoarseAppPermission;
+    private static @Nullable Boolean sHasFineAppPermission;
+    private static boolean sApplicationStateListenerRegistered;
     private static @Nullable Location sFusedLocation;
     private static @Nullable Runnable sPrimeLocationForGeoHeaderIfEnabledForTesting;
     private static @Nullable Runnable sStopListeningForLocationUpdatesForTesting;
@@ -136,7 +141,8 @@ public class GeolocationHeader {
         }
         if (profile == null) return;
 
-        @HeaderState int headerState = geoHeaderStateForDse(profile, templateService);
+        @HeaderState
+        int headerState = geoHeaderStateForUrl(profile, templateService, /* url= */ null);
         boolean useCoarse;
         if (headerState == HeaderState.HEADER_ENABLED_ONLY_COARSE) {
             useCoarse = true;
@@ -199,6 +205,7 @@ public class GeolocationHeader {
 
     /** Stop requesting and listening for location updates from FusedLocationProvider. */
     public static void stopListeningForLocationUpdates() {
+        invalidateAppPermissionCache();
         if (sStopListeningForLocationUpdatesForTesting != null) {
             sStopListeningForLocationUpdatesForTesting.run();
             return;
@@ -215,14 +222,12 @@ public class GeolocationHeader {
         sFusedLocation = location;
     }
 
-    private static @HeaderState int geoHeaderStateForDse(
-            Profile profile, TemplateUrlService templateService) {
-        return geoHeaderStateForUrl(
-                profile, templateService, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY));
-    }
-
+    /**
+     * Computes the {@link HeaderState} for {@code url}, or for the default search engine's query
+     * URL when {@code url} is {@code null} (deferred until cheap boundary checks pass).
+     */
     private static @HeaderState int geoHeaderStateForUrl(
-            Profile profile, @Nullable TemplateUrlService service, String url) {
+            Profile profile, @Nullable TemplateUrlService service, @Nullable String url) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.geoHeaderStateForUrl")) {
             if (OmniboxFeatures.sPlatformAgnosticXGeo.isEnabled()) {
                 return HeaderState.HEADER_DISABLED;
@@ -234,18 +239,19 @@ public class GeolocationHeader {
             // Only send X-Geo in normal mode.
             if (profile.isOffTheRecord()) return HeaderState.INCOGNITO;
 
-            GURL gurl = new GURL(url);
+            if (!hasAppGeolocationPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                return HeaderState.LOCATION_PERMISSION_BLOCKED;
+            }
+
+            String targetUrl = url != null ? url : service.getUrlForSearchQuery(DUMMY_URL_QUERY);
+            GURL gurl = new GURL(targetUrl);
+            if (!UrlConstants.HTTPS_SCHEME.equals(gurl.getScheme())) return HeaderState.NOT_HTTPS;
+
             // Only send X-Geo header to Search Engines.
             var isDseUrl = service.isSearchResultsPageFromDefaultSearchProvider(gurl);
             var isGoogleDse = service.isDefaultSearchEngineGoogle();
-            if (!(isDseUrl || (isGoogleDse && UrlUtilities.isGoogleSearchUrl(url)))) {
+            if (!(isDseUrl || (isGoogleDse && UrlUtilities.isGoogleSearchUrl(targetUrl)))) {
                 return HeaderState.UNSUITABLE_URL;
-            }
-
-            if (!UrlConstants.HTTPS_SCHEME.equals(gurl.getScheme())) return HeaderState.NOT_HTTPS;
-
-            if (!hasAppGeolocationPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
             // TODO(raymes): The call to isDseOrigin is only needed if this could be called for
@@ -253,7 +259,7 @@ public class GeolocationHeader {
             boolean isDseOrigin = WebsitePreferenceBridge.isDseOrigin(profile, gurl);
             if (!isDseOrigin) return HeaderState.LOCATION_PERMISSION_BLOCKED;
 
-            final GeolocationSetting setting = getGeolocationSettingForUrl(profile, url);
+            final GeolocationSetting setting = getGeolocationSettingForUrl(profile, targetUrl);
             if (setting == null || setting.mApproximate != ContentSetting.ALLOW) {
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
@@ -326,8 +332,30 @@ public class GeolocationHeader {
         }
     }
 
+    private static void ensureApplicationStateListenerRegistered() {
+        if (sApplicationStateListenerRegistered) return;
+        sApplicationStateListenerRegistered = true;
+        // Process-wide static listener; captures no Context/Activity/Profile references and lives
+        // for the lifetime of the process.
+        ApplicationStatus.registerApplicationStateListener(
+                newState -> {
+                    if (newState != ApplicationState.HAS_RUNNING_ACTIVITIES) {
+                        invalidateAppPermissionCache();
+                    }
+                });
+    }
+
+    private static void invalidateAppPermissionCache() {
+        sHasCoarseAppPermission = null;
+        sHasFineAppPermission = null;
+    }
+
     /**
      * Checks whether the app has been granted a specific geolocation permission.
+     *
+     * <p>The result is cached in memory and invalidated when the application leaves the running
+     * state or stops listening for location updates, avoiding repeated Binder IPCs on the UI
+     * thread.
      *
      * <p>This can be overridden for testing purposes.
      *
@@ -342,11 +370,28 @@ public class GeolocationHeader {
                     : sHasCoarsePermissionForTesting;
         }
 
+        ensureApplicationStateListenerRegistered();
+        boolean isFine = Manifest.permission.ACCESS_FINE_LOCATION.equals(permission);
+        boolean isCoarse = Manifest.permission.ACCESS_COARSE_LOCATION.equals(permission);
+        if (isFine && sHasFineAppPermission != null) {
+            return sHasFineAppPermission;
+        }
+        if (isCoarse && sHasCoarseAppPermission != null) {
+            return sHasCoarseAppPermission;
+        }
+
         int pid = Process.myPid();
         int uid = Process.myUid();
-        return ApiCompatibilityUtils.checkPermission(
-                        ContextUtils.getApplicationContext(), permission, pid, uid)
-                == PackageManager.PERMISSION_GRANTED;
+        boolean granted =
+                ApiCompatibilityUtils.checkPermission(
+                                ContextUtils.getApplicationContext(), permission, pid, uid)
+                        == PackageManager.PERMISSION_GRANTED;
+        if (isFine) {
+            sHasFineAppPermission = granted;
+        } else if (isCoarse) {
+            sHasCoarseAppPermission = granted;
+        }
+        return granted;
     }
 
     /**
@@ -460,6 +505,11 @@ public class GeolocationHeader {
                 });
     }
 
+    /* package */ static void clearAppPermissionsForTesting() {
+        sUseFakePermissionForTesting = false;
+        invalidateAppPermissionCache();
+    }
+
     /* package */ static boolean isGeolocationPrimedForTesting() {
         return sGeolocationPrimed;
     }
@@ -468,5 +518,6 @@ public class GeolocationHeader {
         sGeolocationPrimed = false;
         sCurrentLocationRequested = false;
         sFusedLocation = null;
+        invalidateAppPermissionCache();
     }
 }
