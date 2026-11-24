@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -17,9 +18,12 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -106,13 +110,26 @@ void WebUIGlicControl::HandleContextMenu(const gfx::Rect& screen_rect,
 }
 
 void WebUIGlicControl::SetIsShowingNudge(bool is_showing) {
-  const bool had_visible_nudge = GetIsShowingNudge();
-  if (!is_showing) {
-    nudge_label_.clear();
-  } else if (is_split_) {
+  // A nudge needs a label. `nudge_label_` is empty until SetNudgeLabel() runs
+  // and after the button becomes invisible.
+  //
+  // ToolbarView is also told about nudges while its Glic button is hidden,
+  // e.g. while the tab strip shows the Glic button. A hidden button does not
+  // show or announce a nudge.
+  if (is_showing && (nudge_label_.empty() || !IsVisible())) {
     return;
   }
+  // Hiding a nudge keeps `nudge_label_`, like GlicButton's pending text, so a
+  // deferred SetIsShowingNudge(true) can still show it.
+  const bool had_visible_nudge = GetIsShowingNudge();
   is_showing_nudge_ = is_showing;
+  if (is_showing) {
+    // Matches GlicButton::AnnounceNudgeShown(), which runs every time the nudge
+    // is shown.
+    delegate_->AnnounceAlert(l10n_util::GetStringFUTF16(
+        IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT,
+        glic::GlicLauncherConfiguration::GetToggleHotkey().GetShortcutText()));
+  }
   if (had_visible_nudge != GetIsShowingNudge()) {
     UpdateState();
   }
@@ -158,19 +175,26 @@ void WebUIGlicControl::SetGlicPanelIsOpen(bool open) {
 }
 
 void WebUIGlicControl::SetIsSplit(bool is_split) {
-  if (is_split_ == is_split) {
+  // SetIsSplit(true) hides a showing nudge even when already split, like
+  // GlicButton::Collapse() in ToolbarView::ShowGlicSecondaryButton().
+  const bool hides_nudge = is_split && GetIsShowingNudge();
+  const bool split_changed = is_split_ != is_split;
+  if (!split_changed && !hides_nudge) {
     return;
   }
   const bool was_visible = IsVisible();
   is_split_ = is_split;
-  if (is_split_ || !IsVisible()) {
+  if (hides_nudge) {
+    is_showing_nudge_ = false;
+  }
+  if (!IsVisible()) {
     is_showing_nudge_ = false;
     nudge_label_.clear();
   }
   UpdateState();
   // Splitting changes the button width, and its visibility while unpinned, so
   // the preferred size changes unless the button stays hidden.
-  if (was_visible || IsVisible()) {
+  if (split_changed && (was_visible || IsVisible())) {
     delegate_->OnPreferredSizeChanged();
   }
 }

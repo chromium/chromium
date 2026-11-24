@@ -12,10 +12,13 @@
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
 WebUIGlicActorTaskIconControl::WebUIGlicActorTaskIconControl(
@@ -44,7 +47,7 @@ void WebUIGlicActorTaskIconControl::OnClicked() {
   }
 
   // Only show the bubble if the button is not currently pressed, matching
-  // ToolbarView::OnGlicActorTaskIconClicked().
+  // ToolbarView::OnGlicSecondaryButtonClicked().
   if (auto* controller =
           glic::GlicActivityListBubbleController::From(browser)) {
     if (!is_pressed_) {
@@ -68,6 +71,7 @@ void WebUIGlicActorTaskIconControl::SetVisible(bool visible) {
   if (!is_visible_) {
     is_showing_nudge_ = false;
     nudge_label_.clear();
+    CancelPendingBubbleAnchorRequest();
   }
   UpdateState();
   if (was_showing != ShouldShow()) {
@@ -84,10 +88,17 @@ void WebUIGlicActorTaskIconControl::SetCanShow(bool can_show) {
   // `is_visible_` is true. Compare before and after to notify only on a change.
   const bool was_showing = ShouldShow();
   can_show_ = can_show;
+  if (!can_show_) {
+    CancelPendingBubbleAnchorRequest();
+  }
   UpdateState();
   if (was_showing != ShouldShow()) {
     delegate_->OnPreferredSizeChanged();
   }
+}
+
+bool WebUIGlicActorTaskIconControl::IsVisible() const {
+  return is_visible_;
 }
 
 void WebUIGlicActorTaskIconControl::ShowNudgeLabel(
@@ -123,12 +134,51 @@ void WebUIGlicActorTaskIconControl::SetIsShowingNudge(bool is_showing) {
   }
 }
 
+bool WebUIGlicActorTaskIconControl::GetIsShowingNudge() const {
+  return is_showing_nudge_ && !nudge_label_.empty();
+}
+
 void WebUIGlicActorTaskIconControl::SetPressedState(bool is_pressed) {
   if (is_pressed_ == is_pressed) {
     return;
   }
   is_pressed_ = is_pressed;
   UpdateState();
+}
+
+void WebUIGlicActorTaskIconControl::GetBubbleAnchorAsync(
+    base::OnceCallback<void(views::BubbleAnchor)> callback) {
+  CancelPendingBubbleAnchorRequest();
+  // A hidden icon never reports its element.
+  if (!ShouldShow()) {
+    return;
+  }
+  BrowserElements* const elements =
+      BrowserElements::From(delegate_->GetBrowser());
+  CHECK(elements);
+  if (ui::TrackedElement* const element =
+          elements->GetElement(kGlicActorTaskIconElementId)) {
+    std::move(callback).Run(views::BubbleAnchor(element));
+    return;
+  }
+  pending_bubble_anchor_callback_ = std::move(callback);
+  anchor_element_shown_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kGlicActorTaskIconElementId, elements->GetContext(),
+          base::BindRepeating(
+              &WebUIGlicActorTaskIconControl::OnAnchorElementShown,
+              base::Unretained(this)));
+}
+
+void WebUIGlicActorTaskIconControl::OnAnchorElementShown(
+    ui::TrackedElement* element) {
+  anchor_element_shown_subscription_ = {};
+  std::move(pending_bubble_anchor_callback_).Run(views::BubbleAnchor(element));
+}
+
+void WebUIGlicActorTaskIconControl::CancelPendingBubbleAnchorRequest() {
+  anchor_element_shown_subscription_ = {};
+  pending_bubble_anchor_callback_.Reset();
 }
 
 void WebUIGlicActorTaskIconControl::UpdateState() {

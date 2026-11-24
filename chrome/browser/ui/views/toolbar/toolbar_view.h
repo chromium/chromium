@@ -431,7 +431,8 @@ class ToolbarView : public views::AccessiblePaneView,
   // An alias for `glic_button_view_` or `toolbar_webview_->GetGlicControl()`.
   raw_ptr<glic::ToolbarGlicButtonInterface> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_secondary_button_view_ = nullptr;
-  // An alias for `glic_secondary_button_view_`.
+  // An alias for `glic_secondary_button_view_` or
+  // `toolbar_webview_->GetGlicActorTaskIconControl()`.
   raw_ptr<glic::ToolbarGlicActorTaskIconInterface> glic_secondary_button_ =
       nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
@@ -498,7 +499,10 @@ class ToolbarView : public views::AccessiblePaneView,
 
   bool was_mouse_down_ = false;
 
-  base::WeakPtrFactory<ToolbarView> weak_ptr_factory_{this};
+  // Bound to the activity list bubble's request for its anchor. Invalidated to
+  // drop a request that is still waiting when the bubble is closed.
+  base::WeakPtrFactory<ToolbarView>
+      activity_list_bubble_anchor_weak_ptr_factory_{this};
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;

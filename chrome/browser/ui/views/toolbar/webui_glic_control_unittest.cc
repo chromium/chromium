@@ -201,6 +201,7 @@ TEST_F(WebUIGlicControlTest,
 }
 
 TEST_F(WebUIGlicControlTest, NudgeStateTrackedAndClearedOnClick) {
+  control_->SetVisible(true);
   EXPECT_FALSE(control_->GetIsShowingNudge());
 
   control_->SetNudgeLabel("Summarize this page");
@@ -217,6 +218,22 @@ TEST_F(WebUIGlicControlTest, NudgeStateTrackedAndClearedOnClick) {
                   std::optional<std::string>(std::nullopt)))));
   control_->OnClicked();
   EXPECT_FALSE(control_->GetIsShowingNudge());
+}
+
+TEST_F(WebUIGlicControlTest, ClickKeepsStagedNudgeLabel) {
+  control_->SetVisible(true);
+  // ToolbarView stages the label and defers SetIsShowingNudge(true) while the
+  // toolbar is hovered. Like Views, a click in between does not drop it.
+  control_->SetNudgeLabel("Summarize this page");
+  control_->OnClicked();
+  EXPECT_FALSE(control_->GetIsShowingNudge());
+
+  EXPECT_CALL(*delegate_,
+              OnGlicButtonStateChanged(testing::Pointee(testing::Field(
+                  &toolbar_ui_api::mojom::GlicButtonState::nudge_label,
+                  std::optional<std::string>("Summarize this page")))));
+  control_->SetIsShowingNudge(true);
+  EXPECT_TRUE(control_->GetIsShowingNudge());
 }
 
 TEST_F(WebUIGlicControlTest, UpdateStyleNotifiesDelegate) {
@@ -308,8 +325,8 @@ TEST_F(WebUIGlicControlTest, SplitShowsUnpinnedControlAndUnsplitHidesIt) {
   EXPECT_FALSE(control_->IsVisible());
   testing::Mock::VerifyAndClearExpectations(delegate_.get());
 
-  // Mirroring ToolbarView::ShowGlicActorTaskIcon(), an active split actor task
-  // forces the Glic button visible even when unpinned.
+  // Mirroring ToolbarView::ShowGlicSecondaryButton(), an active split actor
+  // task forces the Glic button visible even when unpinned.
   EXPECT_CALL(
       *delegate_,
       OnGlicButtonStateChanged(testing::Pointee(testing::AllOf(
@@ -363,14 +380,14 @@ TEST_F(WebUIGlicControlTest, SetIsSplitNotifiesPreferredSizeWhileVisible) {
   EXPECT_FALSE(control_->IsVisible());
 }
 
-TEST_F(WebUIGlicControlTest, SetIsSplitTrueClearsActiveNudge) {
+TEST_F(WebUIGlicControlTest, SetIsSplitTrueHidesActiveNudge) {
   control_->SetVisible(true);
   control_->SetNudgeLabel("Summarize this page");
   control_->SetIsShowingNudge(true);
   ASSERT_TRUE(control_->GetIsShowingNudge());
   testing::Mock::VerifyAndClearExpectations(delegate_.get());
 
-  // Entering split mode clears any active Glic nudge in a single state update,
+  // Entering split mode hides an active Glic nudge in a single state update,
   // mirroring `glic_button_view_->Collapse()` in Views.
   EXPECT_CALL(
       *delegate_,
@@ -384,45 +401,91 @@ TEST_F(WebUIGlicControlTest, SetIsSplitTrueClearsActiveNudge) {
   EXPECT_FALSE(control_->GetIsShowingNudge());
   testing::Mock::VerifyAndClearExpectations(delegate_.get());
 
-  // Exiting split mode leaves the cleared nudge dismissed, and re-enabling
-  // `is_showing_nudge` without a new label does not resurrect the old label.
+  // The label is kept, so a SetIsShowingNudge(true) that ToolbarView deferred
+  // while the toolbar was hovered shows it on the split Glic half.
+  control_->SetIsShowingNudge(true);
+  ASSERT_TRUE(control_->GetIsShowingNudge());
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  // ToolbarView::ShowGlicSecondaryButton() calls SetIsSplit(true) while the
+  // button is already split. This hides the nudge without a size change.
   EXPECT_CALL(
       *delegate_,
       OnGlicButtonStateChanged(testing::Pointee(testing::AllOf(
           testing::Field(&toolbar_ui_api::mojom::GlicButtonState::is_split,
-                         false),
+                         true),
           testing::Field(&toolbar_ui_api::mojom::GlicButtonState::nudge_label,
                          std::optional<std::string>(std::nullopt))))));
-  control_->SetIsSplit(false);
-  testing::Mock::VerifyAndClearExpectations(delegate_.get());
-
-  EXPECT_CALL(*delegate_, OnGlicButtonStateChanged).Times(0);
-  control_->SetIsShowingNudge(true);
+  EXPECT_CALL(*delegate_, OnPreferredSizeChanged()).Times(0);
+  control_->SetIsSplit(true);
   EXPECT_FALSE(control_->GetIsShowingNudge());
 }
 
 TEST_F(WebUIGlicControlTest,
-       SetIsShowingNudgeTrueIgnoredWhenLabelEmptyOrSplit) {
-  EXPECT_CALL(*delegate_, OnGlicButtonStateChanged).Times(0);
-  control_->SetIsShowingNudge(true);
-  EXPECT_FALSE(control_->GetIsShowingNudge());
-  control_->SetIsShowingNudge(false);
-
-  // Simulate hover-lock staging a label, then click clearing it before
-  // mouse-out runs SetIsShowingNudge(true).
+       SetIsShowingNudgeTrueIgnoredWhenLabelEmptyOrHidden) {
+  control_->SetVisible(true);
+  // Hiding the button clears a label that ToolbarView staged while the toolbar
+  // was hovered, before the deferred SetIsShowingNudge(true) runs.
   control_->SetNudgeLabel("Summarize this page");
-  control_->OnClicked();
-  control_->SetIsShowingNudge(true);
-  EXPECT_FALSE(control_->GetIsShowingNudge());
-
-  // While split, SetIsShowingNudge(true) is also ignored even if a label was
-  // staged.
-  EXPECT_CALL(*delegate_, OnGlicButtonStateChanged).Times(1);
-  control_->SetIsSplit(true);
+  control_->SetVisible(false);
   testing::Mock::VerifyAndClearExpectations(delegate_.get());
 
   EXPECT_CALL(*delegate_, OnGlicButtonStateChanged).Times(0);
-  control_->SetNudgeLabel("Summarize this page");
+  EXPECT_CALL(*delegate_, AnnounceAlert).Times(0);
   control_->SetIsShowingNudge(true);
   EXPECT_FALSE(control_->GetIsShowingNudge());
+
+  // ToolbarView also forwards nudges while the button is hidden. A hidden
+  // button does not show or announce them.
+  control_->SetNudgeLabel("Ask about this page");
+  control_->SetIsShowingNudge(true);
+  EXPECT_FALSE(control_->GetIsShowingNudge());
+}
+
+TEST_F(WebUIGlicControlTest, SetIsShowingNudgeAnnouncesNudge) {
+  control_->SetVisible(true);
+  control_->SetNudgeLabel("Summarize this page");
+  EXPECT_CALL(*delegate_, AnnounceAlert(testing::Not(testing::IsEmpty())));
+  control_->SetIsShowingNudge(true);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  // Showing a nudge that is already showing announces it again.
+  EXPECT_CALL(*delegate_, AnnounceAlert(testing::Not(testing::IsEmpty())));
+  control_->SetIsShowingNudge(true);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  EXPECT_CALL(*delegate_, AnnounceAlert).Times(0);
+  control_->SetIsShowingNudge(false);
+}
+
+TEST_F(WebUIGlicControlTest, NudgeShowsWhileSplit) {
+  control_->SetVisible(true);
+  control_->SetIsSplit(true);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  // Like Views GlicButton::ShowNudge(), a nudge widens the split Glic half to
+  // show its label. The button stays split.
+  EXPECT_CALL(
+      *delegate_,
+      OnGlicButtonStateChanged(testing::Pointee(testing::AllOf(
+          testing::Field(&toolbar_ui_api::mojom::GlicButtonState::is_split,
+                         true),
+          testing::Field(&toolbar_ui_api::mojom::GlicButtonState::nudge_label,
+                         std::optional<std::string>("Summarize this page"))))));
+  control_->SetNudgeLabel("Summarize this page");
+  control_->SetIsShowingNudge(true);
+  EXPECT_TRUE(control_->GetIsShowingNudge());
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  // Hiding the nudge returns to the icon-only split half.
+  EXPECT_CALL(
+      *delegate_,
+      OnGlicButtonStateChanged(testing::Pointee(testing::AllOf(
+          testing::Field(&toolbar_ui_api::mojom::GlicButtonState::is_split,
+                         true),
+          testing::Field(&toolbar_ui_api::mojom::GlicButtonState::nudge_label,
+                         std::optional<std::string>(std::nullopt))))));
+  control_->SetIsShowingNudge(false);
+  EXPECT_FALSE(control_->GetIsShowingNudge());
+  EXPECT_TRUE(control_->GetIsSplit());
 }

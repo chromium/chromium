@@ -475,6 +475,13 @@ void ToolbarView::Init() {
     location_bar_ = toolbar_webview_->GetLocationBar();
   }
 
+  if (features::IsWebUIGlicButtonEnabled() && toolbar_webview_ &&
+      glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile()) &&
+      base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiTaskIcon.Get()) {
+    glic_secondary_button_ = toolbar_webview_->GetGlicActorTaskIconControl();
+  }
+
   bool is_glic_left_of_profile =
       features::kGlicToolbarButtonLocationParam.Get() ==
           features::GlicToolbarButtonLocation::kLeftOfProfileChip ||
@@ -889,19 +896,13 @@ void ToolbarView::OnTriggerGlicNudgeUI(glic::NudgeParams params) {
   }
   if (!params.label.empty()) {
     glic_button_->SetNudgeLabel(std::move(params.label));
-    if (glic_button_view_) {
-      ShowToolbarNudge(GlicNudgeTarget::kGlicButton);
-    } else {
-      glic_button_->SetIsShowingNudge(true);
-    }
+    ShowToolbarNudge(GlicNudgeTarget::kGlicButton);
   }
 }
 
 void ToolbarView::OnHideGlicNudgeUI() {
-  if (glic_button_view_) {
+  if (glic_button_) {
     HideToolbarNudge(GlicNudgeTarget::kGlicButton);
-  } else if (glic_button_) {
-    glic_button_->SetIsShowingNudge(false);
   }
 }
 
@@ -913,7 +914,7 @@ void ToolbarView::SetGlicSecondaryNudgeLabel(
 }
 
 void ToolbarView::TriggerGlicSecondaryNudge(const std::u16string& nudge_label) {
-  if (!glic_button_view_ || !glic_secondary_button_) {
+  if (!glic_button_ || !glic_secondary_button_) {
     return;
   }
   if (GetIsShowingGlicNudge()) {
@@ -926,19 +927,20 @@ void ToolbarView::TriggerGlicSecondaryNudge(const std::u16string& nudge_label) {
 }
 
 void ToolbarView::ShowGlicSecondaryNudge(const std::u16string nudge_label) {
-  if (!glic_button_view_ || !glic_secondary_button_) {
+  if (!glic_button_ || !glic_secondary_button_) {
     return;
   }
-  // Start animation for minimizing the glic button.
-  glic_button_view_->Collapse();
+  if (glic_button_view_) {
+    // Start animation for minimizing the glic button.
+    glic_button_view_->Collapse();
+  }
   ShowGlicSecondaryButton();
   glic_secondary_button_->ShowNudgeLabel(nudge_label);
   ShowToolbarNudge(GlicNudgeTarget::kActorTaskIcon);
 }
 
 void ToolbarView::ShowGlicSecondaryButton() {
-  if (!glic_button_view_ || !glic_secondary_button_ ||
-      !glic_actor_button_container_) {
+  if (!glic_button_ || !glic_secondary_button_) {
     return;
   }
   // If the nudge is showing (ex: previous state was CheckTasks), hide the
@@ -947,19 +949,24 @@ void ToolbarView::ShowGlicSecondaryButton() {
     HideToolbarNudge(GlicNudgeTarget::kActorTaskIcon);
     return;
   }
-  glic_button_view_ =
-      glic_actor_button_container_->InsertGlicButton(glic_button_view_.get());
-  glic_button_ = glic_button_view_;
+  if (glic_button_view_) {
+    CHECK(glic_actor_button_container_);
+    glic_button_view_ =
+        glic_actor_button_container_->InsertGlicButton(glic_button_view_.get());
+    glic_button_ = glic_button_view_;
+  }
   SetGlicSecondaryButtonShowState(true);
   SetGlicShowState(true);
-  if (!base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+  if (glic_button_view_ &&
+      !base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
     glic_button_view_->Collapse();
   }
   glic_button_->SetIsSplit(true);
   UpdateGlicActorButtonContainerBorders();
 
-  if (glic_secondary_button_view_->GetAnimationMode() ==
-      glic::AnimationMode::kEntry) {
+  if (glic_secondary_button_view_ &&
+      glic_secondary_button_view_->GetAnimationMode() ==
+          glic::AnimationMode::kEntry) {
     // TODO(crbug.com/484389669): Create animation session to being animation of
     // nudge.
     glic_secondary_button_view_->SetAnimationMode(glic::AnimationMode::kNudge);
@@ -972,16 +979,19 @@ void ToolbarView::HideGlicSecondaryButton() {
     return;
   }
 
-  // If it's already hidden, do nothing.
-  if (!glic_secondary_button_->IsVisible() &&
+  // If no task is showing the icon, do nothing. The icon can be hidden while
+  // `should_show_glic_secondary_button_` is true, e.g. with horizontal tabs
+  // while the tab strip shows the Glic button.
+  if (!should_show_glic_secondary_button_ &&
       !glic_secondary_button_->GetIsShowingNudge()) {
     return;
   }
   glic_secondary_button_->SetIsShowingNudge(false);
 
   // TODO(crbug.com/484389669): Toolbar glic actor animations
-  if (glic_secondary_button_view_->GetAnimationMode() ==
-      glic::AnimationMode::kNudge) {
+  if (glic_secondary_button_view_ &&
+      glic_secondary_button_view_->GetAnimationMode() ==
+          glic::AnimationMode::kNudge) {
     // TODO(crbug.com/484389669): Create animation session to being animation of
     // nudge.
     glic_secondary_button_view_->SetAnimationMode(glic::AnimationMode::kEntry);
@@ -1012,11 +1022,13 @@ void ToolbarView::ShowActivityListBubble() {
     return;
   }
   if (activity_list_bubble_) {
+    // The closed bubble is kept until another one replaces it. It reports its
+    // widget's destruction if the actor task icon drops the anchor request.
     activity_list_bubble_->Close();
-    activity_list_bubble_.reset();
   }
   glic_secondary_button_->GetBubbleAnchorAsync(base::BindOnce(
-      &ToolbarView::ShowActivityListBubbleAt, weak_ptr_factory_.GetWeakPtr()));
+      &ToolbarView::ShowActivityListBubbleAt,
+      activity_list_bubble_anchor_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ToolbarView::ShowActivityListBubbleAt(views::BubbleAnchor anchor) {
@@ -1036,6 +1048,9 @@ void ToolbarView::ShowActivityListBubbleAt(views::BubbleAnchor anchor) {
 }
 
 void ToolbarView::CloseActivityListBubble() {
+  // Drops a request that is still waiting for its anchor, so the bubble does
+  // not open after it was closed.
+  activity_list_bubble_anchor_weak_ptr_factory_.InvalidateWeakPtrs();
   if (activity_list_bubble_) {
     activity_list_bubble_->Close();
   }
@@ -1046,8 +1061,7 @@ bool ToolbarView::IsActivityListBubbleShowing() {
 }
 
 void ToolbarView::FinalizeHideGlicSecondaryButton() {
-  if (!glic_button_view_ || !glic_secondary_button_ ||
-      !glic_actor_button_container_) {
+  if (!glic_button_ || !glic_secondary_button_) {
     return;
   }
   // Reset Nudge State
@@ -1055,28 +1069,35 @@ void ToolbarView::FinalizeHideGlicSecondaryButton() {
     // TODO(crbug.com/484389669): Glic actor nudge animation
     glic_secondary_button_->SetIsShowingNudge(false);
   }
-  glic_secondary_button_->SetVisible(false);
+  // Hides the icon and keeps UpdateGlicSecondaryButtonVisibility() from showing
+  // it again when the tab strip orientation changes.
+  SetGlicSecondaryButtonShowState(false);
   glic_secondary_button_->SetTaskIconToDefault();
 
-  if (glic_button_view_->parent() != this) {
-    size_t insertion_index = 0;
-    if (glic_button_divider_) {
-      insertion_index = GetIndexOf(glic_button_divider_.get()).value();
-    } else if (avatar_) {
-      insertion_index = GetIndexOf(avatar_.get()).value();
-    } else {
-      CHECK(overflow_button_);
-      insertion_index = GetIndexOf(overflow_button_.get()).value();
+  if (glic_button_view_) {
+    CHECK(glic_actor_button_container_);
+    if (glic_button_view_->parent() != this) {
+      size_t insertion_index = 0;
+      if (glic_button_divider_) {
+        insertion_index = GetIndexOf(glic_button_divider_.get()).value();
+      } else if (avatar_) {
+        insertion_index = GetIndexOf(avatar_.get()).value();
+      } else {
+        CHECK(overflow_button_);
+        insertion_index = GetIndexOf(overflow_button_.get()).value();
+      }
+      glic_button_view_ =
+          AddChildViewAt(glic_button_view_.get(), insertion_index);
+      glic_button_ = glic_button_view_;
     }
-    glic_button_view_ =
-        AddChildViewAt(glic_button_view_.get(), insertion_index);
-    glic_button_ = glic_button_view_;
+    glic_actor_button_container_->SetVisible(false);
+    glic_button_view_->Expand();
   }
-  glic_actor_button_container_->SetVisible(false);
-  glic_button_view_->Expand();
   glic_button_->SetIsSplit(false);
-  // Reset the animation mode for the next time the icon is shown.
-  glic_secondary_button_view_->SetAnimationMode(glic::AnimationMode::kEntry);
+  if (glic_secondary_button_view_) {
+    // Reset the animation mode for the next time the icon is shown.
+    glic_secondary_button_view_->SetAnimationMode(glic::AnimationMode::kEntry);
+  }
   UpdateGlicActorButtonContainerBorders();
 }
 
@@ -1098,14 +1119,18 @@ void ToolbarView::ExecuteShowToolbarNudge(GlicNudgeTarget target) {
   switch (target) {
     case GlicNudgeTarget::kGlicButton:
       glic_button_->SetIsShowingNudge(true);
-      // Reset the margins.
-      glic_button_view_->SetProperty(views::kMarginsKey, gfx::Insets());
+      if (glic_button_view_) {
+        // Reset the margins.
+        glic_button_view_->SetProperty(views::kMarginsKey, gfx::Insets());
+      }
       return;
     case GlicNudgeTarget::kActorTaskIcon:
       glic_secondary_button_->SetIsShowingNudge(true);
-      // Reset the margins.
-      glic_secondary_button_view_->SetProperty(views::kMarginsKey,
-                                              gfx::Insets());
+      if (glic_secondary_button_view_) {
+        // Reset the margins.
+        glic_secondary_button_view_->SetProperty(views::kMarginsKey,
+                                                 gfx::Insets());
+      }
       return;
   }
 }
@@ -1118,7 +1143,7 @@ void ToolbarView::ExecuteHideToolbarNudge(GlicNudgeTarget target) {
       }
       // Since the glic button is still visible in its hidden state we need to
       // have a special case to query if it's in its Hide state.
-      if (glic_button_view_->GetWidthFactor() == 0.0) {
+      if (glic_button_view_ && glic_button_view_->GetWidthFactor() == 0.0) {
         return;
       }
       glic_button_->SetIsShowingNudge(false);
@@ -1177,6 +1202,12 @@ void ToolbarView::UpdateGlicButtonVisibility() {
     // glic_actor_button_container_ should only be visible at the same time as
     // glic_button_.
     glic_actor_button_container_->SetVisible(is_glic_visible);
+  } else if (glic_secondary_button_) {
+    // The WebUI toolbar has no container, so the actor task icon is told
+    // directly whether it can show.
+    CHECK(toolbar_webview_);
+    toolbar_webview_->GetGlicActorTaskIconControl()->SetCanShow(
+        is_glic_visible);
   }
   bool is_glic_left_of_profile =
       base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&

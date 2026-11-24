@@ -13,8 +13,9 @@
 namespace glic {
 
 // Abstract interface for controlling the toolbar Glic actor task icon (the
-// autobrowse task indicator), implemented by the Views
-// (`ToolbarGlicActorTaskIcon`) control.
+// autobrowse task indicator), implemented by both the Views
+// (`ToolbarGlicActorTaskIcon`) and WebUI (`WebUIGlicActorTaskIconControl`)
+// controls.
 class ToolbarGlicActorTaskIconInterface {
  public:
   virtual void SetVisible(bool visible) = 0;
@@ -28,8 +29,11 @@ class ToolbarGlicActorTaskIconInterface {
   virtual void SetTaskIconToDefault() = 0;
   // Sets whether the icon is pressed, i.e. while the task list bubble is open.
   virtual void SetPressedState(bool is_pressed) = 0;
-  // Runs `callback` with the anchor for the actor task list bubble. `callback`
-  // may run before this method returns.
+  // Runs `callback` with the anchor for the actor task list bubble. Runs
+  // synchronously if the anchor is available, otherwise once it becomes
+  // available. `callback` never runs with a null anchor. An implementation
+  // that waits drops `callback` without running it if the icon is hidden,
+  // becomes hidden first, or a new request is made.
   virtual void GetBubbleAnchorAsync(
       base::OnceCallback<void(views::BubbleAnchor)> callback) = 0;
 

@@ -8,8 +8,11 @@
 #include <optional>
 #include <string>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,12 +20,34 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/view.h"
 
 namespace {
 
 using toolbar_ui_api::mojom::GlicActorTaskIconState;
+
+class TestBrowserElements : public BrowserElements {
+ public:
+  DECLARE_SAFE_CAST_TARGET()
+
+  TestBrowserElements(BrowserWindowInterface& browser,
+                      ui::ElementContext context)
+      : BrowserElements(browser), context_(context) {}
+  ~TestBrowserElements() override = default;
+
+  ui::ElementContext GetContext() override { return context_; }
+
+ private:
+  const ui::ElementContext context_;
+};
+
+DEFINE_SAFE_CAST_TARGET(TestBrowserElements)
 
 auto StateMatches(bool should_show,
                   std::optional<std::string> nudge_label,
@@ -153,7 +178,7 @@ TEST_F(WebUIGlicActorTaskIconControlTest,
   control_->ShowNudgeLabel(u"2 tasks complete");
   testing::Mock::VerifyAndClearExpectations(delegate_.get());
 
-  // ToolbarView::ShowGlicActorTaskIcon() hides an active nudge via
+  // ToolbarView::ShowGlicSecondaryButton() hides an active nudge via
   // `ExecuteHideToolbarNudge()` -> `SetIsShowingNudge(false)` without calling
   // `SetTaskIconToDefault()`, which must clear the nudge label and restore the
   // default tooltip while keeping the icon visible.
@@ -220,6 +245,135 @@ TEST_F(WebUIGlicActorTaskIconControlTest, PressedState) {
                               DefaultTooltip(), /*is_pressed=*/false)));
   control_->SetPressedState(false);
   EXPECT_FALSE(control_->GetIsPressed());
+}
+
+TEST_F(WebUIGlicActorTaskIconControlTest,
+       GetBubbleAnchorAsyncRunsImmediatelyWhenActorTaskIconElementExists) {
+  const ui::ElementContext context =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  TestBrowserElements browser_elements(*browser_interface_, context);
+  control_->Init();
+  control_->SetVisible(true);
+  ui::test::TestElement actor_element(kGlicActorTaskIconElementId, context);
+  actor_element.Show();
+
+  std::optional<views::BubbleAnchor> anchor;
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { anchor = result; }));
+  ASSERT_TRUE(anchor);
+  EXPECT_EQ(&actor_element, anchor->GetIfElement());
+}
+
+TEST_F(WebUIGlicActorTaskIconControlTest,
+       GetBubbleAnchorAsyncWaitsForActorTaskIconElement) {
+  const ui::ElementContext context =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  TestBrowserElements browser_elements(*browser_interface_, context);
+  control_->Init();
+  control_->SetVisible(true);
+
+  std::optional<views::BubbleAnchor> anchor;
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { anchor = result; }));
+  EXPECT_FALSE(anchor);
+
+  ui::test::TestElement actor_element(kGlicActorTaskIconElementId, context);
+  actor_element.Show();
+  ASSERT_TRUE(anchor);
+  EXPECT_EQ(&actor_element, anchor->GetIfElement());
+}
+
+TEST_F(WebUIGlicActorTaskIconControlTest,
+       GetBubbleAnchorAsyncDropsRequestWhileHidden) {
+  const ui::ElementContext context =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  TestBrowserElements browser_elements(*browser_interface_, context);
+  control_->Init();
+
+  // Not visible. The request does not run once the icon shows and its element
+  // appears.
+  std::optional<views::BubbleAnchor> anchor;
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { anchor = result; }));
+  control_->SetVisible(true);
+  ui::test::TestElement actor_element(kGlicActorTaskIconElementId, context);
+  actor_element.Show();
+  EXPECT_FALSE(anchor);
+
+  // Visible but not allowed to show. The request does not run even though the
+  // element exists, nor once the icon is allowed to show.
+  control_->SetCanShow(false);
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { anchor = result; }));
+  EXPECT_FALSE(anchor);
+  control_->SetCanShow(true);
+  EXPECT_FALSE(anchor);
+}
+
+TEST_F(WebUIGlicActorTaskIconControlTest,
+       GetBubbleAnchorAsyncDropsWaitingRequestOnSetCanShowFalse) {
+  const ui::ElementContext context =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  TestBrowserElements browser_elements(*browser_interface_, context);
+  control_->Init();
+  control_->SetVisible(true);
+
+  std::optional<views::BubbleAnchor> anchor;
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { anchor = result; }));
+  control_->SetCanShow(false);
+  EXPECT_FALSE(anchor);
+
+  // The request does not run once the element appears.
+  control_->SetCanShow(true);
+  ui::test::TestElement actor_element(kGlicActorTaskIconElementId, context);
+  actor_element.Show();
+  EXPECT_FALSE(anchor);
+}
+
+TEST_F(WebUIGlicActorTaskIconControlTest,
+       GetBubbleAnchorAsyncDropsWaitingRequestWhenActorTaskIconHidden) {
+  const ui::ElementContext context =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  TestBrowserElements browser_elements(*browser_interface_, context);
+  control_->Init();
+  control_->SetVisible(true);
+
+  std::optional<views::BubbleAnchor> anchor;
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { anchor = result; }));
+  control_->SetVisible(false);
+  EXPECT_FALSE(anchor);
+
+  // The request does not run once the element appears.
+  ui::test::TestElement actor_element(kGlicActorTaskIconElementId, context);
+  actor_element.Show();
+  EXPECT_FALSE(anchor);
+}
+
+TEST_F(WebUIGlicActorTaskIconControlTest,
+       GetBubbleAnchorAsyncNewRequestReplacesWaitingRequest) {
+  const ui::ElementContext context =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  TestBrowserElements browser_elements(*browser_interface_, context);
+  control_->Init();
+  control_->SetVisible(true);
+
+  std::optional<views::BubbleAnchor> first_anchor;
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { first_anchor = result; }));
+  std::optional<views::BubbleAnchor> second_anchor;
+  control_->GetBubbleAnchorAsync(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor result) { second_anchor = result; }));
+  EXPECT_FALSE(first_anchor);
+  EXPECT_FALSE(second_anchor);
+
+  // Only the latest request runs once the element appears.
+  ui::test::TestElement actor_element(kGlicActorTaskIconElementId, context);
+  actor_element.Show();
+  EXPECT_FALSE(first_anchor);
+  ASSERT_TRUE(second_anchor);
+  EXPECT_EQ(&actor_element, second_anchor->GetIfElement());
 }
 
 TEST_F(WebUIGlicActorTaskIconControlTest,
