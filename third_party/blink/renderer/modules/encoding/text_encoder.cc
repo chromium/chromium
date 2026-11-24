@@ -37,6 +37,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "partition_alloc/oom.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -90,29 +91,16 @@ v8::MaybeLocal<v8::Uint8Array> CreateV8Uint8Array(
     ExceptionState& exception_state) {
   DCHECK(isolate->InContext());
 
-  v8::Local<v8::ArrayBuffer> v8_buffer;
-  if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
-    if (!v8::ArrayBuffer::MaybeNew(
-             isolate, bytes.size(),
-             v8::BackingStoreInitializationMode::kUninitialized)
-             .ToLocal(&v8_buffer)) [[unlikely]] {
+  v8::Local<v8::Uint8Array> v8_array;
+  if (!v8::Uint8Array::MaybeNew(isolate, bytes).ToLocal(&v8_array)) [[unlikely]] {
+    if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
                                         "Failed to allocate buffer.");
       return {};
     }
-  } else {
-    v8_buffer = v8::ArrayBuffer::New(
-        isolate, bytes.size(),
-        v8::BackingStoreInitializationMode::kUninitialized);
+    OOM_CRASH(bytes.size());
   }
-
-  if (!bytes.empty()) {
-    // SAFETY: `v8_buffer` was just allocated with `bytes.size()` bytes.
-    UNSAFE_BUFFERS(
-        base::span(static_cast<uint8_t*>(v8_buffer->Data()), bytes.size()))
-        .copy_from(bytes);
-  }
-  return v8::Uint8Array::New(v8_buffer, 0, bytes.size());
+  return v8_array;
 }
 
 }  // namespace
