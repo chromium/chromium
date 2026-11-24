@@ -3374,6 +3374,10 @@ void Node::MoveMutationObserversToNewDocument(Document& new_document) {
           MutationObserverRegistry()) {
     for (const auto& registration : *registry) {
       new_document.AddMutationObserverTypes(registration->MutationTypes());
+      if (registration->DeliveryOptions() &
+          MutationObserver::kActiveTemplateAttributeFilter) {
+        new_document.SetMayHaveActiveTemplateMutationObservers();
+      }
     }
   }
 
@@ -3381,6 +3385,10 @@ void Node::MoveMutationObserversToNewDocument(Document& new_document) {
           transient_registry = TransientMutationObserverRegistry()) {
     for (const auto& registration : *transient_registry) {
       new_document.AddMutationObserverTypes(registration->MutationTypes());
+      if (registration->DeliveryOptions() &
+          MutationObserver::kActiveTemplateAttributeFilter) {
+        new_document.SetMayHaveActiveTemplateMutationObservers();
+      }
     }
   }
 }
@@ -3434,27 +3442,78 @@ void Node::GetRegisteredMutationObserversOfType(
   }
 }
 
+template <typename Registry>
+static inline void CollectMatchingActiveTemplateFilter(
+    const MutationObserver& observer,
+    HashSet<AtomicString>& filter,
+    Registry* registry,
+    Node& target) {
+  if (!registry) {
+    return;
+  }
+  for (const auto& registration : *registry) {
+    if (&registration->Observer() != &observer) {
+      continue;
+    }
+    if (!(registration->DeliveryOptions() &
+          MutationObserver::kActiveTemplateAttributeFilter)) {
+      continue;
+    }
+    if (registration->RegistrationNode() != &target &&
+        !registration->IsSubtree()) {
+      continue;
+    }
+    for (const AtomicString& attr :
+         registration->ActiveTemplateAttributeFilter()) {
+      filter.insert(attr);
+    }
+  }
+}
+
+void Node::CollectActiveTemplateAttributeFilter(
+    const MutationObserver& observer,
+    HashSet<AtomicString>& filter) {
+  CollectMatchingActiveTemplateFilter(observer, filter,
+                                      MutationObserverRegistry(), *this);
+  CollectMatchingActiveTemplateFilter(
+      observer, filter, TransientMutationObserverRegistry(), *this);
+  ScriptForbiddenScope forbid_script_during_raw_iteration;
+  for (Node* node = parentNode(); node; node = node->parentNode()) {
+    CollectMatchingActiveTemplateFilter(
+        observer, filter, node->MutationObserverRegistry(), *this);
+    CollectMatchingActiveTemplateFilter(
+        observer, filter, node->TransientMutationObserverRegistry(), *this);
+  }
+}
+
 void Node::RegisterMutationObserver(
     MutationObserver& observer,
     MutationObserverOptions options,
-    const HashSet<AtomicString>& attribute_filter) {
+    const HashSet<AtomicString>& attribute_filter,
+    const HashSet<AtomicString>& active_template_attribute_filter) {
   MutationObserverRegistration* registration = nullptr;
   auto& mutation_observer_data =
       EnsureRareData().EnsureMutationObserverData().RefreshNodeAndUnwrap(*this);
   for (const auto& item : mutation_observer_data.Registry()) {
     if (&item->Observer() == &observer) {
       registration = item.Get();
-      registration->ResetObservation(options, attribute_filter);
+      registration->ResetObservation(options, attribute_filter,
+                                     active_template_attribute_filter);
     }
   }
 
   if (!registration) {
     registration = MakeGarbageCollected<MutationObserverRegistration>(
-        observer, this, options, attribute_filter);
+        observer, this, options, attribute_filter,
+        active_template_attribute_filter);
     mutation_observer_data.AddRegistration(registration);
   }
 
   GetDocument().AddMutationObserverTypes(registration->MutationTypes());
+  if (registration->DeliveryOptions() &
+      MutationObserver::kActiveTemplateAttributeFilter) {
+    GetDocument().SetMayHaveActiveTemplateMutationObservers();
+  }
 }
 
 void Node::UnregisterMutationObserver(

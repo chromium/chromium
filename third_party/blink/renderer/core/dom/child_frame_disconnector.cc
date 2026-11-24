@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -102,6 +103,7 @@ void ChildFrameDisconnector::CollectFrameOwners(Node& root) {
 }
 
 void ChildFrameDisconnector::DisconnectCollectedFrameOwners() {
+  ActiveTemplateMutationScope::SuspendScope suspend_active_template;
   // Must disable frame loading in the subtree so an unload handler cannot
   // insert more frames and create loaded frames in detached subtrees.
   SubframeLoadingDisabler disabler(Root());

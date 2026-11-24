@@ -280,8 +280,19 @@ void MutationObserver::observe(Node* node,
                          observer_init->hasCharacterDataOldValue()))
     options |= kMutationTypeCharacterData;
 
-  if (observer_init->childList())
+  HashSet<AtomicString> active_template_attribute_filter;
+  if (observer_init->hasActiveTemplateAttributeFilter()) {
+    for (const auto& name : observer_init->activeTemplateAttributeFilter()) {
+      active_template_attribute_filter.insert(AtomicString(name));
+    }
+    options |= kActiveTemplateAttributeFilter;
+  }
+
+  bool child_list = observer_init->hasChildList() && observer_init->childList();
+  if (child_list || (!observer_init->hasChildList() &&
+                     observer_init->hasActiveTemplateAttributeFilter())) {
     options |= kMutationTypeChildList;
+  }
 
   if (observer_init->subtree())
     options |= kSubtree;
@@ -307,6 +318,13 @@ void MutationObserver::observe(Node* node,
         "'characterData' is true or not present.");
     return;
   }
+  if (!(options & kMutationTypeChildList) &&
+      (options & kActiveTemplateAttributeFilter)) {
+    exception_state.ThrowTypeError(
+        "The options object may only set 'activeTemplateAttributeFilter' when "
+        "'childList' is true or not present.");
+    return;
+  }
 
   if (!(options & kMutationTypeAll)) {
     exception_state.ThrowTypeError(
@@ -315,7 +333,8 @@ void MutationObserver::observe(Node* node,
     return;
   }
 
-  node->RegisterMutationObserver(*this, options, attribute_filter);
+  node->RegisterMutationObserver(*this, options, attribute_filter,
+                                 active_template_attribute_filter);
 }
 
 MutationRecordVector MutationObserver::takeRecords() {
@@ -396,6 +415,19 @@ void MutationObserver::EnqueueMutationRecord(MutationRecord* mutation) {
 void MutationObserver::SetHasTransientRegistration() {
   DCHECK(IsMainThread());
   ActivateObserver(this);
+}
+
+const HashSet<AtomicString>*
+MutationObserver::GetSingleActiveTemplateAttributeFilter() const {
+  if (registrations_.size() != 1) {
+    return nullptr;
+  }
+  const MutationObserverRegistration* registration =
+      registrations_.begin()->Get();
+  if (!(registration->DeliveryOptions() & kActiveTemplateAttributeFilter)) {
+    return nullptr;
+  }
+  return &registration->ActiveTemplateAttributeFilter();
 }
 
 void MutationObserver::ContextLifecycleStateChanged(

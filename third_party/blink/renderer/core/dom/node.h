@@ -1107,9 +1107,14 @@ class CORE_EXPORT Node : public EventTarget {
       HeapHashMap<Member<MutationObserver>, MutationRecordDeliveryOptions>&,
       MutationType,
       const QualifiedName* attribute_name);
-  void RegisterMutationObserver(MutationObserver&,
-                                MutationObserverOptions,
-                                const HashSet<AtomicString>& attribute_filter);
+  void CollectActiveTemplateAttributeFilter(const MutationObserver&,
+                                            HashSet<AtomicString>& filter);
+  void RegisterMutationObserver(
+      MutationObserver&,
+      MutationObserverOptions,
+      const HashSet<AtomicString>& attribute_filter,
+      const HashSet<AtomicString>& active_template_attribute_filter =
+          HashSet<AtomicString>());
   void UnregisterMutationObserver(MutationObserverRegistration*);
   void RegisterTransientMutationObserver(MutationObserverRegistration*);
   void UnregisterTransientMutationObserver(MutationObserverRegistration*);

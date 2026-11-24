@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/class_collection.h"
@@ -443,9 +444,13 @@ void ContainerNode::DidInsertNodeVector(
     SoftNavigationHeuristics::InsertedNode(target_node,
                                            /*container_node=*/this);
   }
-  for (const auto& descendant : post_insertion_notification_targets) {
-    if (descendant->isConnected())
-      descendant->DidNotifySubtreeInsertionsToDocument();
+  if (!post_insertion_notification_targets.empty()) {
+    ActiveTemplateMutationScope::SuspendScope suspend_template_scope;
+    for (const auto& descendant : post_insertion_notification_targets) {
+      if (descendant->isConnected()) {
+        descendant->DidNotifySubtreeInsertionsToDocument();
+      }
+    }
   }
 }
 
@@ -1418,9 +1423,13 @@ void ContainerNode::NotifyNodeInserted(Node& root,
   ChildrenChanged(ChildrenChange::ForInsertion(root, root.previousSibling(),
                                                root.nextSibling(), source));
 
-  for (const auto& target_node : post_insertion_notification_targets) {
-    if (target_node->isConnected())
-      target_node->DidNotifySubtreeInsertionsToDocument();
+  if (!post_insertion_notification_targets.empty()) {
+    ActiveTemplateMutationScope::SuspendScope suspend_template_scope;
+    for (const auto& target_node : post_insertion_notification_targets) {
+      if (target_node->isConnected()) {
+        target_node->DidNotifySubtreeInsertionsToDocument();
+      }
+    }
   }
 }
 

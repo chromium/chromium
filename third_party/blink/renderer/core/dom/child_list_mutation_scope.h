@@ -31,7 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 
+#include <optional>
+
 #include "base/check_op.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_record_active_template_status.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
@@ -40,6 +43,7 @@
 
 namespace blink {
 
+class ActiveTemplateInvocation;
 class MutationObserverInterestGroup;
 
 // ChildListMutationAccumulator is not meant to be used directly;
@@ -57,6 +61,7 @@ class CORE_EXPORT ChildListMutationAccumulator final
   // one if needed, or nullptr if no MutationObserver is interested in child
   // list mutations of the node.
   static ChildListMutationAccumulator* GetOrCreate(Node&);
+  static void FlushIfNeeded(Node&);
 
   ChildListMutationAccumulator(Node*, MutationObserverInterestGroup*);
 
@@ -87,6 +92,9 @@ class CORE_EXPORT ChildListMutationAccumulator final
   Member<Node> last_added_;
 
   Member<MutationObserverInterestGroup> observers_;
+  std::optional<V8MutationRecordActiveTemplateStatus::Enum>
+      active_template_status_;
+  Member<ActiveTemplateInvocation> active_template_invocation_;
 
   unsigned mutation_scopes_;
 };

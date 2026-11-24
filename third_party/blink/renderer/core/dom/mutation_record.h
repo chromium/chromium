@@ -31,6 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_MUTATION_RECORD_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_MUTATION_RECORD_H_
 
+#include <optional>
+
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_record_active_template_status.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -39,8 +43,10 @@
 
 namespace blink {
 
+class ActiveTemplateFilterEntry;
 class Node;
 class QualifiedName;
+class ScriptState;
 
 using StaticNodeList = StaticNodeTypeList<Node>;
 
@@ -59,6 +65,10 @@ class CORE_EXPORT MutationRecord : public ScriptWrappable {
   static MutationRecord* CreateCharacterData(Node* target,
                                              const String& old_value);
   static MutationRecord* CreateWithNullOldValue(MutationRecord*);
+  static MutationRecord* CreateWithActiveTemplate(
+      MutationRecord*,
+      V8MutationRecordActiveTemplateStatus::Enum,
+      ActiveTemplateFilterEntry*);
 
   MutationRecord() = default;
 
@@ -76,6 +86,11 @@ class CORE_EXPORT MutationRecord : public ScriptWrappable {
   virtual const AtomicString& attributeNamespace() { return g_null_atom; }
 
   virtual String oldValue() { return String(); }
+  virtual std::optional<V8MutationRecordActiveTemplateStatus>
+  activeTemplateStatus() {
+    return std::nullopt;
+  }
+  virtual ScriptObject activeTemplateAttributes(ScriptState*);
 };
 
 }  // namespace blink

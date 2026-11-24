@@ -48,14 +48,18 @@ class CORE_EXPORT MutationObserverRegistration final
     : public GarbageCollected<MutationObserverRegistration>,
       public NameClient {
  public:
-  MutationObserverRegistration(MutationObserver&,
-                               Node*,
-                               MutationObserverOptions,
-                               const HashSet<AtomicString>& attribute_filter);
+  MutationObserverRegistration(
+      MutationObserver&,
+      Node*,
+      MutationObserverOptions,
+      const HashSet<AtomicString>& attribute_filter,
+      const HashSet<AtomicString>& active_template_attribute_filter);
   ~MutationObserverRegistration() override;
 
-  void ResetObservation(MutationObserverOptions,
-                        const HashSet<AtomicString>& attribute_filter);
+  void ResetObservation(
+      MutationObserverOptions,
+      const HashSet<AtomicString>& attribute_filter,
+      const HashSet<AtomicString>& active_template_attribute_filter);
   void ObservedSubtreeNodeWillDetach(Node&);
   void ClearTransientRegistrations();
   bool HasTransientRegistrations() const {
@@ -70,12 +74,17 @@ class CORE_EXPORT MutationObserverRegistration final
   bool IsSubtree() const { return options_ & MutationObserver::kSubtree; }
 
   MutationObserver& Observer() const { return *observer_; }
+  Node* RegistrationNode() const { return registration_node_.Get(); }
   MutationRecordDeliveryOptions DeliveryOptions() const {
     return options_ & (MutationObserver::kAttributeOldValue |
-                       MutationObserver::kCharacterDataOldValue);
+                       MutationObserver::kCharacterDataOldValue |
+                       MutationObserver::kActiveTemplateAttributeFilter);
   }
   MutationType MutationTypes() const {
     return static_cast<MutationType>(options_ & kMutationTypeAll);
+  }
+  const HashSet<AtomicString>& ActiveTemplateAttributeFilter() const {
+    return active_template_attribute_filter_;
   }
 
   void Dispose();
@@ -94,6 +103,7 @@ class CORE_EXPORT MutationObserverRegistration final
 
   MutationObserverOptions options_;
   HashSet<AtomicString> attribute_filter_;
+  HashSet<AtomicString> active_template_attribute_filter_;
 };
 
 }  // namespace blink

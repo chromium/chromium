@@ -4778,6 +4778,11 @@
       status: "stable",
     },
     {
+      // https://github.com/WICG/declarative-partial-updates/blob/main/template-mutation-observer-explainer.md
+      name: "MutationObserverActiveTemplate",
+      status: "experimental",
+    },
+    {
       // Support Nastaliq script. crbug.com/569667449
       name: "NastaliqScript",
       status: "stable",

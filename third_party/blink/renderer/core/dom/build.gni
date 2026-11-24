@@ -38,6 +38,8 @@ blink_core_sources_dom = [
   "abort_signal_registry.h",
   "abstract_range.cc",
   "abstract_range.h",
+  "active_template_mutation_scope.cc",
+  "active_template_mutation_scope.h",
   "attr.cc",
   "attr.h",
   "attribute.h",

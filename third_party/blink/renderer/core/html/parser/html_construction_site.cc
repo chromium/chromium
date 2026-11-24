@@ -30,6 +30,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -190,8 +191,12 @@ static String TryCanonicalizeString(const StringView& string,
                                            RecomputeMode::kRecomputeIfNeeded);
 }
 
-static inline void Insert(HTMLConstructionSite::InsertionLocation location,
-                          Node* child) {
+void HTMLConstructionSite::Insert(
+    InsertionLocation location,
+    Node* child,
+    std::optional<V8MutationRecordActiveTemplateStatus::Enum>
+        active_template_status,
+    ActiveTemplateInvocation* active_template_invocation) {
   if (!location.IsValid()) {
     return;
   }
@@ -215,13 +220,23 @@ static inline void Insert(HTMLConstructionSite::InsertionLocation location,
     }
   }
 
+  V8MutationRecordActiveTemplateStatus::Enum status =
+      active_template_status.value_or(
+          V8MutationRecordActiveTemplateStatus::Enum::kUpdate);
+  ActiveTemplateInvocation* invocation =
+      active_template_status ? active_template_invocation
+                             : CurrentActiveTemplateInvocation(child);
+
   // https://html.spec.whatwg.org/C/#insert-a-foreign-element
   // 3.1, (3) Push (pop) an element queue
   CEReactionsScope reactions(child->GetDocument().GetAgent().isolate());
-  if (location.next_child) {
-    location.parent->ParserInsertBefore(child, *location.next_child);
-  } else {
-    location.parent->ParserAppendChild(child);
+  {
+    ActiveTemplateMutationScope template_scope(status, invocation);
+    if (location.next_child) {
+      location.parent->ParserInsertBefore(child, *location.next_child);
+    } else {
+      location.parent->ParserAppendChild(child);
+    }
   }
 }
 
@@ -267,6 +282,9 @@ void HTMLConstructionSite::FlushPendingText() {
                              ? location.next_child->previousSibling()
                              : location.parent->lastChild();
   if (auto* previous_text = DynamicTo<Text>(previous_child)) {
+    ActiveTemplateMutationScope template_scope(
+        V8MutationRecordActiveTemplateStatus::Enum::kUpdate,
+        CurrentActiveTemplateInvocation());
     previous_text->ParserAppendData(child->data());
   } else {
     Insert(location, child);
@@ -300,9 +318,42 @@ Sanitizer::Action HTMLConstructionSite::SanitizeAndReturnAction(
   return sanitizer_->SanitizeAndReturnAction(node);
 }
 
-void HTMLConstructionSite::Attach(InsertionLocation location,
-                                  Node* child,
-                                  bool self_closing) {
+ActiveTemplateInvocation* HTMLConstructionSite::CurrentActiveTemplateInvocation(
+    Node* node_being_inserted) const {
+  if (!RuntimeEnabledFeatures::MutationObserverActiveTemplateEnabled()) {
+    return nullptr;
+  }
+  if (!IsEmpty()) {
+    HTMLStackItem* item = open_elements_.TopStackItem();
+    if (item && node_being_inserted && item->GetNode() == node_being_inserted) {
+      item = item->NextItemInStack();
+    }
+    for (; item; item = item->NextItemInStack()) {
+      auto* template_element = DynamicTo<HTMLTemplateElement>(item->GetNode());
+      if (!template_element) {
+        continue;
+      }
+      if (Patch* patch = template_element->GetPatch()) {
+        if (!patch->IsExternal()) {
+          return patch->invocation();
+        }
+        return nullptr;
+      }
+      if (!template_element->IsShadowRootModeTemplate()) {
+        return nullptr;
+      }
+    }
+  }
+  return nullptr;
+}
+
+void HTMLConstructionSite::Attach(
+    InsertionLocation location,
+    Node* child,
+    bool self_closing,
+    std::optional<V8MutationRecordActiveTemplateStatus::Enum>
+        active_template_status,
+    ActiveTemplateInvocation* active_template_invocation) {
   auto* element = DynamicTo<Element>(child);
   DCHECK(is_scripting_content_allowed_ || !element ||
          !element->IsScriptElement());
@@ -325,7 +376,8 @@ void HTMLConstructionSite::Attach(InsertionLocation location,
   }
 
   FlushPendingText();
-  Insert(adjusted_location, child);
+  Insert(adjusted_location, child, active_template_status,
+         active_template_invocation);
 
   if (auto* element_child = DynamicTo<Element>(child)) {
     element_child->BeginParsingChildren();
@@ -916,6 +968,9 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
 
   HTMLStackItem* stack_item = HTMLStackItem::Create(template_element, token);
 
+  if (should_attach_template && !patch_target.IsNull()) {
+    FlushPendingText();
+  }
   auto current_insertion_location = CurrentInsertionLocation();
   open_elements_.Push(stack_item);
   if (!should_attach_template) {
@@ -945,6 +1000,30 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
 
     CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
+    Attach(current_insertion_location, template_element);
+    return;
+  }
+
+  const bool has_external_src =
+      RuntimeEnabledFeatures::DeclarativeFragmentEnabled() &&
+      !template_element->FastGetAttribute(html_names::kSrcAttr).empty();
+  if (!patch_target.empty() && !has_external_src &&
+      RuntimeEnabledFeatures::MutationObserverActiveTemplateEnabled()) {
+    ContainerNode* target_parent =
+        AdjustInsertionLocation(current_insertion_location).parent;
+    while (auto* tmpl = DynamicTo<HTMLTemplateElement>(target_parent)) {
+      Patch* outer_patch = tmpl->GetPatch();
+      target_parent = (outer_patch && !outer_patch->IsExternal())
+                          ? outer_patch->parent()
+                          : tmpl->InsertionTarget();
+    }
+    ActiveTemplateInvocation* abort_invocation =
+        ActiveTemplateInvocation::Create(template_element, target_parent);
+    Attach(current_insertion_location, template_element,
+           /*self_closing=*/false,
+           V8MutationRecordActiveTemplateStatus::Enum::kAbort,
+           abort_invocation);
+    return;
   }
 
   Attach(current_insertion_location, template_element);
@@ -1129,6 +1208,9 @@ void HTMLConstructionSite::TakeAllChildren(HTMLStackItem* new_parent,
   if (!location.IsValid()) {
     return;
   }
+  ActiveTemplateMutationScope template_scope(
+      V8MutationRecordActiveTemplateStatus::Enum::kUpdate,
+      CurrentActiveTemplateInvocation());
   location.parent->ParserTakeAllChildrenFrom(
       *To<ContainerNode>(old_parent->GetNode()));
 }
@@ -1136,6 +1218,9 @@ void HTMLConstructionSite::TakeAllChildren(HTMLStackItem* new_parent,
 void HTMLConstructionSite::RemoveNode(HTMLStackItem* child) {
   if (Node* node = child->GetNode()) {
     if (node->parentNode()) {
+      ActiveTemplateMutationScope template_scope(
+          V8MutationRecordActiveTemplateStatus::Enum::kUpdate,
+          CurrentActiveTemplateInvocation());
       node->parentNode()->ParserRemoveChild(*node);
     }
   }

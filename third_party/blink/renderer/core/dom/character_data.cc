@@ -22,7 +22,10 @@
 
 #include "third_party/blink/renderer/core/dom/character_data.h"
 
+#include <optional>
+
 #include "base/numerics/checked_math.h"
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
@@ -222,9 +225,15 @@ void CharacterData::SetDataFromAttributeChange(const String& data) {
 
 void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
   if (MutationObserverInterestGroup* mutation_recipients =
-          MutationObserverInterestGroup::CreateForCharacterDataMutation(*this))
+          MutationObserverInterestGroup::CreateForCharacterDataMutation(
+              *this)) {
+    std::optional<ActiveTemplateMutationScope::SuspendScope> suspend_scope;
+    if (source != kUpdateFromParser) {
+      suspend_scope.emplace();
+    }
     mutation_recipients->EnqueueMutationRecord(
         MutationRecord::CreateCharacterData(this, old_data));
+  }
 
   if (parentNode()) {
     ContainerNode::ChildrenChange change = {

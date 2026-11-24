@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
@@ -120,6 +121,7 @@ DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
 #endif
   SlotAssignmentRecalcInProgressScope::CheckNotActive(
       SlotAssignmentInvariant::kNoScriptOrEventDispatch);
+  ActiveTemplateMutationScope::SuspendScope suspend_active_template;
   EventDispatcher dispatcher(node, event);
   return event.DispatchEvent(dispatcher);
 }

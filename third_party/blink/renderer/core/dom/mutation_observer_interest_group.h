@@ -31,6 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_MUTATION_OBSERVER_INTEREST_GROUP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_MUTATION_OBSERVER_INTEREST_GROUP_H_
 
+#include <optional>
+
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_record_active_template_status.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -39,6 +42,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+class ActiveTemplateInvocation;
 
 class MutationObserverInterestGroup final
     : public GarbageCollected<MutationObserverInterestGroup> {
@@ -82,6 +87,18 @@ class MutationObserverInterestGroup final
 
   bool IsOldValueRequested();
   void EnqueueMutationRecord(MutationRecord*);
+  void EnqueueMutationRecord(
+      MutationRecord*,
+      std::optional<V8MutationRecordActiveTemplateStatus::Enum>
+          active_template_status,
+      ActiveTemplateInvocation* active_template_invocation);
+
+  static void EnqueueActiveTemplateRecord(
+      Node& target,
+      V8MutationRecordActiveTemplateStatus::Enum status,
+      ActiveTemplateInvocation* invocation,
+      Node* previous_sibling = nullptr,
+      Node* next_sibling = nullptr);
 
   void Trace(Visitor*) const;
 

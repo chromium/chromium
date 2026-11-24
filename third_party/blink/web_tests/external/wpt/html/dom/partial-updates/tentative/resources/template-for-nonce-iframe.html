@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<div id="host"><?start name="r"?>fallback<?end?></div>
+<script nonce="secret">
+  window.runNonceTest = async () => {
+    const host = document.getElementById("host");
+    const records = [];
+    const observer = new MutationObserver((list) => records.push(...list));
+    observer.observe(host, {
+      subtree: true,
+      activeTemplateAttributeFilter: ["for", "nonce", "data-id"],
+    });
+    const writer = host.streamAppendHTMLUnsafe().getWriter();
+    await writer.write('<template for="r" nonce="secret" data-id="42">ok</template>');
+    await writer.close();
+    await new Promise((r) => queueMicrotask(r));
+    records.push(...observer.takeRecords());
+    observer.disconnect();
+    return records.map((r) => ({
+      status: r.activeTemplateStatus,
+      attrs: r.activeTemplateAttributes,
+    }));
+  };
+</script>

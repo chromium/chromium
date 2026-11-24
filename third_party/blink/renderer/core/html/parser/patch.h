@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+class ActiveTemplateInvocation;
 class ContainerNode;
 class ExternalPatchLoader;
 class HTMLTemplateElement;
@@ -38,6 +39,7 @@ class Patch : public GarbageCollected<Patch> {
 
   ContainerNode* parent() const { return parent_.Get(); }
   Node* end_marker() const { return end_marker_.Get(); }
+  ActiveTemplateInvocation* invocation() const { return invocation_.Get(); }
   bool IsExternal() const { return !!loader_; }
 
   virtual void Trace(Visitor* visitor) const;
@@ -46,7 +48,9 @@ class Patch : public GarbageCollected<Patch> {
         ContainerNode* parent,
         Node* start_marker,
         Node* end_marker,
+        bool had_end_marker,
         HTMLTemplateElement* template_element,
+        ActiveTemplateInvocation* invocation,
         StreamingSanitizer* parent_sanitizer,
         ParserContentPolicy content_policy);
 
@@ -54,6 +58,9 @@ class Patch : public GarbageCollected<Patch> {
   Member<ContainerNode> parent_;
   Member<Node> start_marker_;
   Member<Node> end_marker_;
+  Member<ActiveTemplateInvocation> invocation_;
+  bool had_end_marker_;
+  bool was_connected_;
 
   Member<ExternalPatchLoader> loader_;
 };

@@ -2495,6 +2495,7 @@
     "bases": [
       "editing/execCommand/insertHTML-aborted.html",
       "external/wpt/dom/nodes/insertion-removing-steps/insertion-removing-steps-iframe.window.js",
+      "external/wpt/html/dom/partial-updates/tentative/template-for-mutation-observer.html",
       "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-invokes-pagehide-with-end.html",
       "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-invokes-pagehide-without-end.html",
       "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-pagehide-dynamic-markup-insertion.html",

@@ -6958,6 +6958,8 @@ interface MutationObserver
     method takeRecords
 interface MutationRecord
     attribute @@toStringTag
+    getter activeTemplateAttributes
+    getter activeTemplateStatus
     getter addedNodes
     getter attributeName
     getter attributeNamespace

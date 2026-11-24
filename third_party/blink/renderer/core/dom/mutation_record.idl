@@ -30,6 +30,8 @@
 
 // https://dom.spec.whatwg.org/#interface-mutationrecord
 
+enum MutationRecordActiveTemplateStatus { "start", "update", "end", "abort" };
+
 [
     Exposed=Window
 ] interface MutationRecord {
@@ -42,4 +44,6 @@
     readonly attribute DOMString? attributeName;
     readonly attribute DOMString? attributeNamespace;
     readonly attribute DOMString? oldValue;
+    [RuntimeEnabled=MutationObserverActiveTemplate] readonly attribute MutationRecordActiveTemplateStatus? activeTemplateStatus;
+    [RuntimeEnabled=MutationObserverActiveTemplate, CallWith=ScriptState] readonly attribute object? activeTemplateAttributes;
 };

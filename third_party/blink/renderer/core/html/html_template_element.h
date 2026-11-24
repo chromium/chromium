@@ -81,6 +81,9 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   void SetPatch(Patch* patch);
   Patch* GetPatch() const { return patch_; }
 
+  void SetClosedNormally() { closed_normally_ = true; }
+  bool ClosedNormally() const { return closed_normally_; }
+
  private:
   void CloneNonAttributePropertiesFrom(const Element&,
                                        NodeCloningData&) override;
@@ -91,6 +94,7 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
 
   Member<ContainerNode> override_insertion_target_;
   Member<Patch> patch_;
+  bool closed_normally_ = false;
 };
 
 }  // namespace blink

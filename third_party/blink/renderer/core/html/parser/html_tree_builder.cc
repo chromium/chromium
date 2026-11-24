@@ -1296,7 +1296,8 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   SetInsertionMode(kTemplateContentsMode);
 }
 
-bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
+bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token,
+                                            bool is_eof) {
   DCHECK_EQ(token->GetName(), html_names::kTemplateTag.LocalName());
   if (!tree_.OpenElements()->HasTemplateInHTMLScope()) {
     DCHECK(template_insertion_modes_.empty() ||
@@ -1310,6 +1311,12 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
     ParseError(token);
   tree_.OpenElements()->PopUntil(HTMLTag::kTemplate);
   HTMLStackItem* template_stack_item = tree_.OpenElements()->TopStackItem();
+  if (!is_eof && template_stack_item) {
+    if (auto* template_element =
+            DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement())) {
+      template_element->SetClosedNormally();
+    }
+  }
   tree_.OpenElements()->Pop();
   tree_.ActiveFormattingElements()->ClearToLastMarker();
   template_insertion_modes_.pop_back();
@@ -1323,8 +1330,9 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
 bool HTMLTreeBuilder::ProcessEndOfFileForInTemplateContents(
     AtomicHTMLToken* token) {
   AtomicHTMLToken end_template(HTMLToken::kEndTag, HTMLTag::kTemplate);
-  if (!ProcessTemplateEndTag(&end_template))
+  if (!ProcessTemplateEndTag(&end_template, /*is_eof=*/true)) {
     return false;
+  }
 
   ProcessEndOfFile(token);
   return true;

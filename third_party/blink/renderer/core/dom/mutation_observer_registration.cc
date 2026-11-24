@@ -39,11 +39,13 @@ MutationObserverRegistration::MutationObserverRegistration(
     MutationObserver& observer,
     Node* registration_node,
     MutationObserverOptions options,
-    const HashSet<AtomicString>& attribute_filter)
+    const HashSet<AtomicString>& attribute_filter,
+    const HashSet<AtomicString>& active_template_attribute_filter)
     : observer_(&observer),
       registration_node_(registration_node),
       options_(options),
-      attribute_filter_(attribute_filter) {
+      attribute_filter_(attribute_filter),
+      active_template_attribute_filter_(active_template_attribute_filter) {
   observer_->ObservationStarted(this);
 }
 
@@ -57,10 +59,12 @@ void MutationObserverRegistration::Dispose() {
 
 void MutationObserverRegistration::ResetObservation(
     MutationObserverOptions options,
-    const HashSet<AtomicString>& attribute_filter) {
+    const HashSet<AtomicString>& attribute_filter,
+    const HashSet<AtomicString>& active_template_attribute_filter) {
   ClearTransientRegistrations();
   options_ = options;
   attribute_filter_ = attribute_filter;
+  active_template_attribute_filter_ = active_template_attribute_filter;
 }
 
 void MutationObserverRegistration::ObservedSubtreeNodeWillDetach(Node& node) {

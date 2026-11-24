@@ -27,7 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 
+#include <optional>
+
 #include "base/check_op.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_record_active_template_status.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
@@ -50,6 +53,7 @@ enum class WhitespaceMode {
   kNewlineThenWhitespace,
 };
 
+class ActiveTemplateInvocation;
 class AtomicHTMLToken;
 class CustomElementDefinition;
 class Document;
@@ -217,9 +221,17 @@ class HTMLConstructionSite final {
                                        const String& public_id,
                                        const String& system_id);
 
+  void Insert(InsertionLocation location,
+              Node* child,
+              std::optional<V8MutationRecordActiveTemplateStatus::Enum>
+                  active_template_status = std::nullopt,
+              ActiveTemplateInvocation* active_template_invocation = nullptr);
   void Attach(InsertionLocation location,
               Node* child,
-              bool self_closing = false);
+              bool self_closing = false,
+              std::optional<V8MutationRecordActiveTemplateStatus::Enum>
+                  active_template_status = std::nullopt,
+              ActiveTemplateInvocation* active_template_invocation = nullptr);
   void Attach(ContainerNode* parent, Node* child, bool self_closing = false) {
     Attach({parent, nullptr}, child, self_closing);
   }
@@ -241,6 +253,8 @@ class HTMLConstructionSite final {
   void MergeAttributesFromTokenIntoElement(AtomicHTMLToken*, Element*);
 
   bool ShouldInsertChild(const InsertionLocation& location, Node* child);
+  ActiveTemplateInvocation* CurrentActiveTemplateInvocation(
+      Node* node_being_inserted = nullptr) const;
   void SetAttributes(Element* element, AtomicHTMLToken* token);
 
   Member<HTMLParserReentryPermit> reentry_permit_;

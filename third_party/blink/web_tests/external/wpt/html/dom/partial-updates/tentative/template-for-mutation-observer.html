@@ -1,0 +1,760 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>MutationObserver activeTemplateAttributeFilter for &lt;template for&gt;</title>
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates/blob/main/template-mutation-observer-explainer.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function flushMicrotasks() {
+  return new Promise((resolve) => step_timeout(resolve, 0));
+}
+
+function makeContainer(t, html = "") {
+  const el = document.createElement("div");
+  if (html) {
+    el.setHTMLUnsafe(html);
+  }
+  document.body.appendChild(el);
+  t.add_cleanup(() => el.remove());
+  return el;
+}
+
+test((t) => {
+  const target = makeContainer(t);
+  const observer = new MutationObserver(() => {});
+  t.add_cleanup(() => observer.disconnect());
+
+  // Implies childList: true when childList is omitted.
+  observer.observe(target, { activeTemplateAttributeFilter: ["for"] });
+  observer.observe(target, { activeTemplateAttributeFilter: [] });
+
+  // Explicit childList: false throws TypeError.
+  assert_throws_js(TypeError, () => {
+    observer.observe(target, {
+      childList: false,
+      activeTemplateAttributeFilter: ["for"],
+    });
+  });
+  assert_throws_js(TypeError, () => {
+    observer.observe(target, {
+      childList: false,
+      attributes: true,
+      activeTemplateAttributeFilter: ["for"],
+    });
+  });
+}, "MutationObserver.observe() activeTemplateAttributeFilter option validation");
+
+promise_test(async (t) => {
+  const section = makeContainer(t, '<?start name="r">Loading\u2026<?end>');
+  const records = [];
+  const summary = [];
+  const observer = new MutationObserver((list) => {
+    for (const r of list) {
+      records.push(r);
+      summary.push({
+        type: r.type,
+        target: r.target.nodeName,
+        removed: Array.from(r.removedNodes, (n) =>
+          n.nodeType === Node.PROCESSING_INSTRUCTION_NODE
+            ? `?${n.target}`
+            : n.textContent
+        ),
+        added: Array.from(r.addedNodes, (n) =>
+          n.nodeType === Node.ELEMENT_NODE ? n.localName : n.textContent
+        ),
+        status: r.activeTemplateStatus,
+      });
+    }
+  });
+  t.add_cleanup(() => observer.disconnect());
+  observer.observe(section, {
+    characterData: true,
+    subtree: true,
+    activeTemplateAttributeFilter: ["for", "data-turn", "missing"],
+  });
+
+  const writer = section.streamAppendHTMLUnsafe().getWriter();
+  await writer.write('<template for="r" data-turn="3" data-unlisted="x"><p>H');
+  await flushMicrotasks();
+  await writer.write("i<span>!</span></p></template>");
+  await writer.close();
+  await flushMicrotasks();
+
+  assert_equals(records.length, 8);
+  assert_object_equals(summary[0], {
+    type: "childList",
+    target: "DIV",
+    removed: ["Loading\u2026"],
+    added: [],
+    status: "start",
+  });
+  assert_object_equals(summary[1], {
+    type: "childList",
+    target: "DIV",
+    removed: [],
+    added: ["p"],
+    status: "update",
+  });
+  assert_object_equals(summary[2], {
+    type: "childList",
+    target: "P",
+    removed: [],
+    added: ["H"],
+    status: "update",
+  });
+  assert_object_equals(summary[3], {
+    type: "characterData",
+    target: "#text",
+    removed: [],
+    added: [],
+    status: "update",
+  });
+  assert_equals(records[3].target.data, "Hi");
+  assert_object_equals(summary[4], {
+    type: "childList",
+    target: "P",
+    removed: [],
+    added: ["span"],
+    status: "update",
+  });
+  assert_object_equals(summary[5], {
+    type: "childList",
+    target: "SPAN",
+    removed: [],
+    added: ["!"],
+    status: "update",
+  });
+  assert_object_equals(summary[6], {
+    type: "childList",
+    target: "DIV",
+    removed: ["?start"],
+    added: [],
+    status: "end",
+  });
+  assert_object_equals(summary[7], {
+    type: "childList",
+    target: "DIV",
+    removed: ["?end"],
+    added: [],
+    status: "end",
+  });
+
+  const attrs = records[0].activeTemplateAttributes;
+  assert_equals(Object.getPrototypeOf(attrs), null, "null prototype");
+  assert_true(Object.isFrozen(attrs), "frozen object");
+  assert_false("toString" in attrs);
+  assert_array_equals(Object.keys(attrs), ["for", "data-turn"]);
+  assert_equals(attrs.for, "r");
+  assert_equals(attrs["data-turn"], "3");
+  assert_equals(attrs["data-unlisted"], undefined);
+
+  for (const r of records) {
+    assert_equals(
+      r.activeTemplateAttributes,
+      attrs,
+      "all records from one invocation share the exact same frozen object"
+    );
+  }
+}, "<template for> across two chunks with multi-chunk text and correlation identity");
+
+promise_test(async (t) => {
+  const section = makeContainer(t, '<?marker name="r">');
+  const marker = section.firstChild;
+
+  const activeRecords = [];
+  const plainRecords = [];
+  const activeObserver = new MutationObserver((l) => activeRecords.push(...l));
+  const plainObserver = new MutationObserver((l) => plainRecords.push(...l));
+  t.add_cleanup(() => {
+    activeObserver.disconnect();
+    plainObserver.disconnect();
+  });
+
+  activeObserver.observe(section, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for", "data-turn"],
+  });
+  plainObserver.observe(section, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+
+  const writer = section.streamAppendHTMLUnsafe().getWriter();
+  await writer.write('<template for="r" data-turn="3"><p>Hi</p></template>');
+  await writer.close();
+  await flushMicrotasks();
+
+  assert_equals(activeRecords.length, 4);
+  assert_equals(activeRecords[0].activeTemplateStatus, "start");
+  assert_equals(activeRecords[0].addedNodes.length, 0);
+  assert_equals(activeRecords[0].removedNodes.length, 0);
+  assert_equals(activeRecords[0].nextSibling, marker);
+
+  assert_equals(activeRecords[1].activeTemplateStatus, "update");
+  assert_equals(activeRecords[1].addedNodes[0].localName, "p");
+  assert_equals(activeRecords[1].nextSibling, marker);
+
+  assert_equals(activeRecords[2].activeTemplateStatus, "update");
+  assert_equals(activeRecords[2].target.localName, "p");
+  assert_equals(activeRecords[2].addedNodes[0].data, "Hi");
+
+  assert_equals(activeRecords[3].activeTemplateStatus, "end");
+  assert_equals(activeRecords[3].removedNodes.length, 1);
+  assert_equals(activeRecords[3].removedNodes[0], marker);
+
+  // Non-opted-in observer never sees empty childList records or activeTemplate metadata.
+  assert_equals(plainRecords.length, 3);
+  for (const r of plainRecords) {
+    assert_equals(r.activeTemplateStatus, null);
+    assert_equals(r.activeTemplateAttributes, null);
+    assert_greater_than(r.addedNodes.length + r.removedNodes.length, 0);
+  }
+}, "<?marker> emits empty childList start record only to opted-in observers");
+
+promise_test(async (t) => {
+  const main = makeContainer(t);
+  const activeRecords = [];
+  const plainRecords = [];
+  const activeObserver = new MutationObserver((l) => activeRecords.push(...l));
+  const plainObserver = new MutationObserver((l) => plainRecords.push(...l));
+  t.add_cleanup(() => {
+    activeObserver.disconnect();
+    plainObserver.disconnect();
+  });
+
+  activeObserver.observe(main, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for", "data-turn"],
+  });
+  plainObserver.observe(main, { childList: true, subtree: true });
+
+  const writer = main.streamAppendHTMLUnsafe().getWriter();
+  await writer.write('<template for="r" data-turn="3"><p>Hi</p></template>');
+  await writer.close();
+  await flushMicrotasks();
+
+  assert_equals(activeRecords.length, 1);
+  assert_equals(activeRecords[0].type, "childList");
+  assert_equals(activeRecords[0].target, main);
+  assert_equals(activeRecords[0].addedNodes.length, 1);
+  assert_equals(activeRecords[0].addedNodes[0].localName, "template");
+  assert_equals(activeRecords[0].activeTemplateStatus, "abort");
+  assert_equals(activeRecords[0].activeTemplateAttributes.for, "r");
+  assert_equals(activeRecords[0].activeTemplateAttributes["data-turn"], "3");
+
+  assert_equals(plainRecords.length, 1);
+  assert_equals(plainRecords[0].activeTemplateStatus, null);
+  assert_equals(plainRecords[0].activeTemplateAttributes, null);
+}, "missing target inserts inert <template> with abort status");
+
+promise_test(async (t) => {
+  const host = makeContainer(
+    t,
+    '<div id="a"><?start name="a">fallback<?end></div>' +
+      '<div id="b"><?marker name="b"></div>' +
+      '<div id="c"><?start name="c">unclosed</div>' +
+      '<div id="d"><?start name="d"><?end></div>' +
+      '<div id="e"><?start name="e">one<span>two</span><?end></div>'
+  );
+  const records = [];
+  const plainRecords = [];
+  const observer = new MutationObserver((l) => records.push(...l));
+  const plainObserver = new MutationObserver((l) => plainRecords.push(...l));
+  t.add_cleanup(() => {
+    observer.disconnect();
+    plainObserver.disconnect();
+  });
+  observer.observe(host, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+  plainObserver.observe(host, { childList: true, subtree: true });
+
+  const writer = host.streamAppendHTMLUnsafe().getWriter();
+  await writer.write(
+    '<template for="a"></template>' +
+      '<template for="b"></template>' +
+      '<template for="c"><span>ok</span></template>' +
+      '<template for="d"></template>' +
+      '<template for="e"></template>'
+  );
+  await writer.close();
+  await flushMicrotasks();
+
+  const byFor = (name) =>
+    records
+      .filter((r) => r.activeTemplateAttributes?.for === name)
+      .map((r) => r.activeTemplateStatus);
+
+  assert_array_equals(byFor("a"), ["start", "end", "end"]);
+  assert_array_equals(byFor("b"), ["start", "end"]);
+  assert_array_equals(byFor("c"), ["start", "update", "update", "end"]);
+  assert_array_equals(byFor("d"), ["start", "end", "end"]);
+  assert_array_equals(byFor("e"), ["start", "start", "end", "end"]);
+
+  for (const r of plainRecords) {
+    assert_greater_than(
+      r.addedNodes.length + r.removedNodes.length,
+      0,
+      "plain observer never receives empty childList records"
+    );
+  }
+}, "Empty patches, multi-node fallback, and unclosed <?start> ranges emit balanced start and end records");
+
+promise_test(async (t) => {
+  const eofHost = makeContainer(t, '<?start name="r">fallback<?end>');
+  const eofRecords = [];
+  const eofObserver = new MutationObserver((l) => eofRecords.push(...l));
+  t.add_cleanup(() => eofObserver.disconnect());
+  eofObserver.observe(eofHost, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+
+  const eofWriter = eofHost.streamAppendHTMLUnsafe().getWriter();
+  await eofWriter.write('<template for="r"><p>partial</p>');
+  await eofWriter.close();
+  await flushMicrotasks();
+  assert_array_equals(
+    eofRecords.map((r) => r.activeTemplateStatus),
+    ["start", "update", "update", "abort", "abort"]
+  );
+  assert_equals(
+    eofRecords[0].activeTemplateAttributes,
+    eofRecords.at(-1).activeTemplateAttributes
+  );
+
+  const abortHost = makeContainer(t, '<?start name="r">fallback<?end>');
+  const abortRecords = [];
+  const abortObserver = new MutationObserver((l) => abortRecords.push(...l));
+  t.add_cleanup(() => abortObserver.disconnect());
+  abortObserver.observe(abortHost, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+
+  const abortWriter = abortHost.streamAppendHTMLUnsafe().getWriter();
+  await abortWriter.write('<template for="r"><p>partial</p>');
+  await abortWriter.abort(new Error("cancelled"));
+  await flushMicrotasks();
+  assert_array_equals(
+    abortRecords.map((r) => r.activeTemplateStatus),
+    ["start", "update", "update", "abort", "abort"]
+  );
+}, "EOF before </template> and writer.abort() emit abort status");
+
+promise_test(async (t) => {
+  const endHost = makeContainer(t, '<?start name="r">fallback<?end>');
+  const endRecords = [];
+  const endObserver = new MutationObserver((l) => endRecords.push(...l));
+  t.add_cleanup(() => endObserver.disconnect());
+  endObserver.observe(endHost, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+
+  window.removeEndMarker = () => {
+    for (const child of Array.from(endHost.childNodes)) {
+      if (
+        child.nodeType === Node.PROCESSING_INSTRUCTION_NODE &&
+        child.target === "end"
+      ) {
+        child.remove();
+      }
+    }
+  };
+  t.add_cleanup(() => {
+    delete window.removeEndMarker;
+  });
+
+  const writer1 = endHost.streamAppendHTMLUnsafe({ runScripts: true }).getWriter();
+  await writer1.write(
+    '<template for="r"><span>1</span><script>window.removeEndMarker();<\/script><span>2</span></template>'
+  );
+  await writer1.close();
+  await flushMicrotasks();
+
+  const statuses1 = endRecords.map((r) => r.activeTemplateStatus);
+  assert_equals(statuses1[0], "start");
+  assert_true(
+    statuses1.includes(null),
+    "imperative removal of <?end> has null activeTemplateStatus"
+  );
+  assert_equals(statuses1.at(-1), "abort");
+
+  const markerHost = makeContainer(t, '<?marker name="m">');
+  const markerHolder = makeContainer(t);
+  const markerRecords = [];
+  const markerObserver = new MutationObserver((l) => markerRecords.push(...l));
+  t.add_cleanup(() => markerObserver.disconnect());
+  markerObserver.observe(markerHost, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+
+  window.moveMarker = () => {
+    markerHolder.appendChild(markerHost.lastChild);
+  };
+  t.add_cleanup(() => {
+    delete window.moveMarker;
+  });
+
+  const writer2 = markerHost.streamAppendHTMLUnsafe({ runScripts: true }).getWriter();
+  await writer2.write(
+    '<template for="m"><span>1</span><script>window.moveMarker();<\/script></template>'
+  );
+  await writer2.close();
+  await flushMicrotasks();
+
+  assert_equals(markerRecords[0].activeTemplateStatus, "start");
+  assert_equals(markerRecords.at(-1).activeTemplateStatus, "abort");
+  assert_equals(markerRecords.at(-1).addedNodes.length, 0);
+  assert_equals(markerRecords.at(-1).removedNodes.length, 0);
+}, "Removing <?end> or moving <?marker> mid-stream emits abort on the original target parent");
+
+promise_test(async (t) => {
+  const outer = makeContainer(
+    t,
+    '<section id="sec"><?start name="r">fallback<?end></section>'
+  );
+  const section = outer.querySelector("#sec");
+
+  const docRecords = [];
+  const sectionRecords = [];
+  const docObserver = new MutationObserver((l) => docRecords.push(...l));
+  const sectionObserver = new MutationObserver((l) => sectionRecords.push(...l));
+  t.add_cleanup(() => {
+    docObserver.disconnect();
+    sectionObserver.disconnect();
+  });
+
+  docObserver.observe(outer, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+  sectionObserver.observe(section, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+
+  const writer = outer.streamAppendHTMLUnsafe().getWriter();
+  await writer.write('<template for="r"><p>before-detach</p>');
+  await flushMicrotasks();
+
+  section.remove();
+  await flushMicrotasks();
+  docRecords.length = 0;
+  sectionRecords.length = 0;
+
+  await writer.write("<p>after-detach</p></template>");
+  await writer.close();
+  await flushMicrotasks();
+
+  assert_equals(
+    docRecords.length,
+    0,
+    "ancestor observer does not receive records once target container is detached"
+  );
+  assert_equals(
+    sectionRecords.at(-1).activeTemplateStatus,
+    "abort",
+    "observer on detached target container receives abort"
+  );
+}, "Detaching the target container mid-stream delivers abort to container observer but not ancestor observer");
+
+let ceCounter = 0;
+promise_test(async (t) => {
+  const tagName = `x-mo-ce-${++ceCounter}`;
+  customElements.define(
+    tagName,
+    class extends HTMLElement {
+      connectedCallback() {
+        const badge = document.createElement("b");
+        badge.textContent = "ce";
+        this.appendChild(badge);
+      }
+    }
+  );
+
+  const host = makeContainer(
+    t,
+    '<section id="sec"><?start name="r"><iframe></iframe><?end></section>'
+  );
+  const section = host.querySelector("#sec");
+  let pagehideFired = false;
+  section.querySelector("iframe").contentWindow.onpagehide = () => {
+    pagehideFired = true;
+    const note = document.createElement("i");
+    section.appendChild(note);
+  };
+
+  window.imperativeMutate = () => {
+    const imp = document.createElement("em");
+    section.appendChild(imp);
+    section.querySelector("p").firstChild.data = "mutated";
+  };
+  t.add_cleanup(() => {
+    delete window.imperativeMutate;
+  });
+
+  const records = [];
+  const observer = new MutationObserver((l) => records.push(...l));
+  t.add_cleanup(() => observer.disconnect());
+  observer.observe(host, {
+    characterData: true,
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+
+  const writer = host.streamAppendHTMLUnsafe({ runScripts: true }).getWriter();
+  await writer.write(
+    `outside-before<template for="r"><p>orig</p><${tagName}></${tagName}><template><hr></template><script>window.imperativeMutate();<\/script></template>outside-after`
+  );
+  await writer.close();
+  await flushMicrotasks();
+
+  // Pending text before <template for="r"> is flushed with null status before "start".
+  assert_equals(records[0].type, "childList");
+  assert_equals(records[0].target, host);
+  assert_equals(records[0].addedNodes.length, 1);
+  assert_equals(records[0].activeTemplateStatus, null);
+  assert_equals(records[0].activeTemplateAttributes, null);
+
+  assert_equals(records[1].activeTemplateStatus, "start");
+
+  // If synchronous pagehide fires on iframe removal, its mutation on section
+  // must have null status; otherwise no pagehide mutation occurs.
+  const pagehideRec = records.find(
+    (r) => r.addedNodes.length === 1 && r.addedNodes[0].localName === "i"
+  );
+  if (pagehideFired) {
+    assert_not_equals(pagehideRec, undefined);
+    assert_equals(pagehideRec.activeTemplateStatus, null);
+    assert_equals(pagehideRec.activeTemplateAttributes, null);
+  } else {
+    assert_equals(pagehideRec, undefined);
+  }
+
+  // Custom element connectedCallback mutation has null status.
+  const ceRec = records.find(
+    (r) => r.addedNodes.length === 1 && r.addedNodes[0].localName === "b"
+  );
+  assert_not_equals(ceRec, undefined);
+  assert_equals(ceRec.activeTemplateStatus, null);
+  assert_equals(ceRec.activeTemplateAttributes, null);
+
+  // Inert nested <template> insertion itself is "update", and its <hr> does not leak.
+  const inertTplRec = records.find(
+    (r) => r.addedNodes.length === 1 && r.addedNodes[0].localName === "template"
+  );
+  assert_not_equals(inertTplRec, undefined);
+  assert_equals(inertTplRec.activeTemplateStatus, "update");
+  assert_equals(
+    records.find(
+      (r) => r.addedNodes.length === 1 && r.addedNodes[0].localName === "hr"
+    ),
+    undefined
+  );
+
+  // Imperative script childList & characterData mutations have null status.
+  const impRec = records.find(
+    (r) => r.addedNodes.length === 1 && r.addedNodes[0].localName === "em"
+  );
+  assert_not_equals(impRec, undefined);
+  assert_equals(impRec.activeTemplateStatus, null);
+  assert_equals(impRec.activeTemplateAttributes, null);
+
+  const charRec = records.find(
+    (r) => r.type === "characterData" && r.target.data === "mutated"
+  );
+  assert_not_equals(charRec, undefined);
+  assert_equals(charRec.activeTemplateStatus, null);
+  assert_equals(charRec.activeTemplateAttributes, null);
+
+  // Trailing text outside </template> appends onto the outside Text node with null status.
+  assert_equals(records.at(-1).type, "characterData");
+  assert_equals(records.at(-1).target, records[0].addedNodes[0]);
+  assert_equals(records.at(-1).target.data, "outside-beforeoutside-after");
+  assert_equals(records.at(-1).activeTemplateStatus, null);
+  assert_equals(records.at(-1).activeTemplateAttributes, null);
+}, "Attribution boundaries: pending text, pagehide, custom elements, imperative script, and inert <template>");
+
+promise_test(async (t) => {
+  const outer = makeContainer(
+    t,
+    '<section id="sec"><?start name="r">fallback<?end></section>'
+  );
+  const section = outer.querySelector("#sec");
+  const records = [];
+  const observer = new MutationObserver((l) => records.push(...l));
+  t.add_cleanup(() => observer.disconnect());
+
+  observer.observe(outer, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+  observer.observe(section, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["data-extra"],
+  });
+
+  const writer = outer.streamAppendHTMLUnsafe().getWriter();
+  await writer.write(
+    '<template for="r" data-extra="yes" data-ignored="no"><p>hi</p></template>'
+  );
+  await writer.close();
+  await flushMicrotasks();
+
+  assert_greater_than(records.length, 0);
+  const attrs = records[0].activeTemplateAttributes;
+  assert_equals(attrs.for, "r");
+  assert_equals(attrs["data-extra"], "yes");
+  assert_equals(attrs["data-ignored"], undefined);
+  for (const r of records) {
+    assert_equals(r.activeTemplateAttributes, attrs);
+  }
+}, "Multiple observe() registrations on the same MutationObserver combine activeTemplateAttributeFilter");
+
+promise_test(async (t) => {
+  const host = makeContainer(t, '<?start name="outer">fallback<?end>');
+  const obs1Records = [];
+  const obs2Records = [];
+  const obs1 = new MutationObserver((l) => obs1Records.push(...l));
+  const obs2 = new MutationObserver((l) => obs2Records.push(...l));
+  t.add_cleanup(() => {
+    obs1.disconnect();
+    obs2.disconnect();
+  });
+
+  obs1.observe(host, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for", "data-id"],
+  });
+  obs2.observe(host, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+
+  const writer = host.streamAppendHTMLUnsafe().getWriter();
+  await writer.write(
+    '<template for="outer" data-id="1">' +
+      '<div id="inner-box"><?start name="inner">old<?end></div>' +
+      '<template for="inner" data-id="2"><span>in</span></template>' +
+      '<template for="missing" data-id="3">x</template>' +
+      "<b>after</b>" +
+      "</template>"
+  );
+  await writer.close();
+  await flushMicrotasks();
+
+  const outerAttrs = obs1Records[0].activeTemplateAttributes;
+  assert_equals(outerAttrs.for, "outer");
+  assert_equals(outerAttrs["data-id"], "1");
+  assert_not_equals(
+    outerAttrs,
+    obs2Records[0].activeTemplateAttributes,
+    "different observers get distinct filtered attribute objects"
+  );
+  assert_equals(obs2Records[0].activeTemplateAttributes["data-id"], undefined);
+
+  const innerRecs = obs1Records.filter(
+    (r) => r.activeTemplateAttributes?.for === "inner"
+  );
+  assert_array_equals(
+    innerRecs.map((r) => r.activeTemplateStatus),
+    ["start", "update", "update", "end", "end"]
+  );
+  for (const r of innerRecs) {
+    assert_equals(r.activeTemplateAttributes["data-id"], "2");
+    assert_equals(r.activeTemplateAttributes, innerRecs[0].activeTemplateAttributes);
+  }
+
+  const missingRecs = obs1Records.filter(
+    (r) => r.activeTemplateAttributes?.for === "missing"
+  );
+  assert_equals(missingRecs.length, 1);
+  assert_equals(missingRecs[0].activeTemplateStatus, "abort");
+  assert_equals(missingRecs[0].activeTemplateAttributes["data-id"], "3");
+
+  // Outer resumes with the exact same outerAttrs object after inner templates complete/abort.
+  const bRec = obs1Records.find(
+    (r) => r.addedNodes.length === 1 && r.addedNodes[0].localName === "b"
+  );
+  assert_equals(bRec.activeTemplateStatus, "update");
+  assert_equals(bRec.activeTemplateAttributes, outerAttrs);
+  assert_equals(obs1Records.at(-1).activeTemplateStatus, "end");
+  assert_equals(obs1Records.at(-1).activeTemplateAttributes, outerAttrs);
+}, "Nested <template for> invocations attribute records to the innermost active template");
+
+promise_test(async (t) => {
+  const host = makeContainer(t, '<?start name="r">fallback<?end>');
+  const records = [];
+  const observer = new MutationObserver((l) => records.push(...l));
+  t.add_cleanup(() => observer.disconnect());
+  observer.observe(host, {
+    subtree: true,
+    activeTemplateAttributeFilter: ["for", "data-safe", "data-blocked"],
+  });
+
+  const sanitizer = new Sanitizer({
+    elements: [
+      { name: "template", attributes: ["for", "data-safe"] },
+      "p",
+    ],
+  });
+  const writer = host.streamAppendHTML({ sanitizer }).getWriter();
+  await writer.write(
+    '<template for="r" data-safe="kept" data-blocked="removed"><p>clean</p></template>'
+  );
+  await writer.close();
+  await flushMicrotasks();
+
+  assert_greater_than(records.length, 0);
+  const attrs = records[0].activeTemplateAttributes;
+  assert_equals(attrs.for, "r");
+  assert_equals(attrs["data-safe"], "kept");
+  assert_equals(attrs["data-blocked"], undefined);
+
+  // When sanitizer strips `for` from <template>, it becomes an ordinary inert <template>.
+  records.length = 0;
+  const sanitizerNoFor = new Sanitizer({
+    elements: [{ name: "template", attributes: ["data-safe"] }, "p"],
+  });
+  const writer2 = host.streamAppendHTML({ sanitizer: sanitizerNoFor }).getWriter();
+  await writer2.write('<template for="r" data-safe="kept"><p>inert</p></template>');
+  await writer2.close();
+  await flushMicrotasks();
+
+  assert_equals(records.length, 1);
+  assert_equals(records[0].addedNodes[0].localName, "template");
+  assert_equals(records[0].activeTemplateStatus, null);
+  assert_equals(records[0].activeTemplateAttributes, null);
+}, "Sanitization: activeTemplateAttributes only exposes attributes that survived sanitization");
+
+promise_test(async (t) => {
+  const iframe = document.createElement("iframe");
+  iframe.src = "resources/template-for-nonce-iframe.html";
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+
+  await new Promise((resolve) => {
+    iframe.onload = resolve;
+  });
+
+  const results = await iframe.contentWindow.runNonceTest();
+  assert_array_equals(
+    results.map((r) => r.status),
+    ["start", "update", "end", "end"]
+  );
+  assert_equals(results[0].attrs.for, "r");
+  assert_equals(results[0].attrs["data-id"], "42");
+  assert_equals(
+    results[0].attrs.nonce,
+    "",
+    "header-delivered CSP hides nonce attribute value to empty string"
+  );
+}, "CSP nonce hiding: activeTemplateAttributes hides nonce under header-delivered CSP");
+</script>
+</body>

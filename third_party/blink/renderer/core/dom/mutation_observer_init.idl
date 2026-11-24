@@ -5,11 +5,12 @@
 // Spec: https://dom.spec.whatwg.org/#interface-mutationobserver
 
 dictionary MutationObserverInit {
-    boolean childList = false;
+    boolean childList;
     boolean attributes;
     boolean characterData;
     boolean subtree = false;
     boolean attributeOldValue;
     boolean characterDataOldValue;
     sequence<DOMString> attributeFilter;
+    [RuntimeEnabled=MutationObserverActiveTemplate] sequence<DOMString> activeTemplateAttributeFilter;
 };

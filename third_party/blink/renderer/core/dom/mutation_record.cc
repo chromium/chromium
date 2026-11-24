@@ -31,10 +31,12 @@
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 
 #include "base/no_destructor.h"
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -169,6 +171,48 @@ class MutationRecordWithNullOldValue : public MutationRecord {
   Member<MutationRecord> record_;
 };
 
+class MutationRecordWithActiveTemplate : public MutationRecord {
+ public:
+  MutationRecordWithActiveTemplate(
+      MutationRecord* record,
+      V8MutationRecordActiveTemplateStatus::Enum status,
+      ActiveTemplateFilterEntry* filter_entry)
+      : record_(record), status_(status), filter_entry_(filter_entry) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(record_);
+    visitor->Trace(filter_entry_);
+    MutationRecord::Trace(visitor);
+  }
+
+ private:
+  const AtomicString& type() override { return record_->type(); }
+  Node* target() override { return record_->target(); }
+  StaticNodeList* addedNodes() override { return record_->addedNodes(); }
+  StaticNodeList* removedNodes() override { return record_->removedNodes(); }
+  Node* previousSibling() override { return record_->previousSibling(); }
+  Node* nextSibling() override { return record_->nextSibling(); }
+  const AtomicString& attributeName() override {
+    return record_->attributeName();
+  }
+  const AtomicString& attributeNamespace() override {
+    return record_->attributeNamespace();
+  }
+  String oldValue() override { return record_->oldValue(); }
+  std::optional<V8MutationRecordActiveTemplateStatus> activeTemplateStatus()
+      override {
+    return V8MutationRecordActiveTemplateStatus(status_);
+  }
+  ScriptObject activeTemplateAttributes(ScriptState* script_state) override {
+    return filter_entry_ ? filter_entry_->GetOrCreateObject(script_state)
+                         : ScriptObject::CreateNull(script_state->GetIsolate());
+  }
+
+  Member<MutationRecord> record_;
+  V8MutationRecordActiveTemplateStatus::Enum status_;
+  Member<ActiveTemplateFilterEntry> filter_entry_;
+};
+
 const AtomicString& ChildListRecord::type() {
   static base::NoDestructor<AtomicString> child_list(
       AtomicString::FromLiteral<"childList">());
@@ -212,6 +256,19 @@ MutationRecord* MutationRecord::CreateCharacterData(Node* target,
 
 MutationRecord* MutationRecord::CreateWithNullOldValue(MutationRecord* record) {
   return MakeGarbageCollected<MutationRecordWithNullOldValue>(record);
+}
+
+MutationRecord* MutationRecord::CreateWithActiveTemplate(
+    MutationRecord* record,
+    V8MutationRecordActiveTemplateStatus::Enum status,
+    ActiveTemplateFilterEntry* filter_entry) {
+  return MakeGarbageCollected<MutationRecordWithActiveTemplate>(record, status,
+                                                                filter_entry);
+}
+
+ScriptObject MutationRecord::activeTemplateAttributes(
+    ScriptState* script_state) {
+  return ScriptObject::CreateNull(script_state->GetIsolate());
 }
 
 MutationRecord::~MutationRecord() = default;

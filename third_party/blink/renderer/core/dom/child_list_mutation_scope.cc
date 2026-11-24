@@ -33,6 +33,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -100,6 +101,17 @@ ChildListMutationAccumulator* ChildListMutationAccumulator::GetOrCreate(
   return accumulator;
 }
 
+void ChildListMutationAccumulator::FlushIfNeeded(Node& target) {
+  AccumulatorMap& map = GetAccumulatorMap();
+  if (map.empty()) {
+    return;
+  }
+  auto it = map.find(&target);
+  if (it != map.end() && !it->value->IsEmpty()) {
+    it->value->EnqueueMutationRecord();
+  }
+}
+
 inline bool ChildListMutationAccumulator::IsAddedNodeInOrder(Node& child) {
   return IsEmpty() || (last_added_ == child.previousSibling() &&
                        next_sibling_ == child.nextSibling());
@@ -107,12 +119,27 @@ inline bool ChildListMutationAccumulator::IsAddedNodeInOrder(Node& child) {
 
 void ChildListMutationAccumulator::ChildAdded(Node& child) {
   DCHECK(observers_);
-  if (!IsAddedNodeInOrder(child))
+  ActiveTemplateMutationScope* active_scope =
+      ActiveTemplateMutationScope::Current();
+  std::optional<V8MutationRecordActiveTemplateStatus::Enum> cur_status =
+      active_scope ? std::optional(active_scope->status()) : std::nullopt;
+  ActiveTemplateInvocation* cur_invocation =
+      active_scope ? active_scope->invocation() : nullptr;
+  if (cur_invocation) {
+    active_scope->MarkUsed();
+  }
+
+  if (!IsEmpty() &&
+      (!IsAddedNodeInOrder(child) || active_template_status_ != cur_status ||
+       active_template_invocation_ != cur_invocation)) {
     EnqueueMutationRecord();
+  }
 
   if (IsEmpty()) {
     previous_sibling_ = child.previousSibling();
     next_sibling_ = child.nextSibling();
+    active_template_status_ = cur_status;
+    active_template_invocation_ = cur_invocation;
   }
 
   last_added_ = &child;
@@ -125,13 +152,28 @@ inline bool ChildListMutationAccumulator::IsRemovedNodeInOrder(Node& child) {
 
 void ChildListMutationAccumulator::WillRemoveChild(Node& child) {
   DCHECK(observers_);
-  if (!added_nodes_.empty() || !IsRemovedNodeInOrder(child))
+  ActiveTemplateMutationScope* active_scope =
+      ActiveTemplateMutationScope::Current();
+  std::optional<V8MutationRecordActiveTemplateStatus::Enum> cur_status =
+      active_scope ? std::optional(active_scope->status()) : std::nullopt;
+  ActiveTemplateInvocation* cur_invocation =
+      active_scope ? active_scope->invocation() : nullptr;
+  if (cur_invocation) {
+    active_scope->MarkUsed();
+  }
+
+  if (!IsEmpty() && (!added_nodes_.empty() || !IsRemovedNodeInOrder(child) ||
+                     active_template_status_ != cur_status ||
+                     active_template_invocation_ != cur_invocation)) {
     EnqueueMutationRecord();
+  }
 
   if (IsEmpty()) {
     previous_sibling_ = child.previousSibling();
     next_sibling_ = child.nextSibling();
     last_added_ = child.previousSibling();
+    active_template_status_ = cur_status;
+    active_template_invocation_ = cur_invocation;
   } else {
     next_sibling_ = child.nextSibling();
   }
@@ -148,7 +190,11 @@ void ChildListMutationAccumulator::EnqueueMutationRecord() {
   MutationRecord* record = MutationRecord::CreateChildList(
       target_, added_nodes, removed_nodes, previous_sibling_.Release(),
       next_sibling_.Release());
-  observers_->EnqueueMutationRecord(record);
+  std::optional<V8MutationRecordActiveTemplateStatus::Enum> status =
+      active_template_status_;
+  active_template_status_ = std::nullopt;
+  ActiveTemplateInvocation* invocation = active_template_invocation_.Release();
+  observers_->EnqueueMutationRecord(record, status, invocation);
   last_added_ = nullptr;
   DCHECK(IsEmpty());
 }
@@ -160,6 +206,8 @@ bool ChildListMutationAccumulator::IsEmpty() {
     DCHECK(!previous_sibling_);
     DCHECK(!next_sibling_);
     DCHECK(!last_added_);
+    DCHECK(!active_template_status_);
+    DCHECK(!active_template_invocation_);
   }
 #endif
   return result;
@@ -173,6 +221,7 @@ void ChildListMutationAccumulator::Trace(Visitor* visitor) const {
   visitor->Trace(next_sibling_);
   visitor->Trace(last_added_);
   visitor->Trace(observers_);
+  visitor->Trace(active_template_invocation_);
 }
 
 }  // namespace blink

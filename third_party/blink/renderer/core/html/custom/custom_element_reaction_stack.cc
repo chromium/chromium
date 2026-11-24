@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -47,6 +48,7 @@ void CustomElementReactionStack::PopInvokingReactions() {
 }
 
 void CustomElementReactionStack::InvokeReactions(ElementQueue& queue) {
+  ActiveTemplateMutationScope::SuspendScope suspend_active_template;
   for (wtf_size_t i = 0; i < queue.size(); ++i) {
     Element* element = queue[i];
     const auto it = map_.find(element);

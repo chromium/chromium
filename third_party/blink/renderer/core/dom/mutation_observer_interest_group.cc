@@ -30,7 +30,10 @@
 
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 
+#include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
+#include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
+#include "third_party/blink/renderer/core/dom/static_node_list.h"
 
 namespace blink {
 
@@ -70,22 +73,86 @@ bool MutationObserverInterestGroup::IsOldValueRequested() {
 
 void MutationObserverInterestGroup::EnqueueMutationRecord(
     MutationRecord* mutation) {
+  if (ActiveTemplateMutationScope* active_scope =
+          ActiveTemplateMutationScope::Current()) {
+    EnqueueMutationRecord(mutation, active_scope->status(),
+                          active_scope->invocation());
+    return;
+  }
+  EnqueueMutationRecord(mutation, std::nullopt, nullptr);
+}
+
+void MutationObserverInterestGroup::EnqueueMutationRecord(
+    MutationRecord* mutation,
+    std::optional<V8MutationRecordActiveTemplateStatus::Enum>
+        active_template_status,
+    ActiveTemplateInvocation* active_template_invocation) {
   MutationRecord* mutation_with_null_old_value = nullptr;
 
   for (auto& iter : observers_) {
     MutationObserver* observer = iter.key.Get();
-    if (HasOldValue(iter.value)) {
-      observer->EnqueueMutationRecord(mutation);
+    MutationRecordDeliveryOptions delivery_options = iter.value;
+
+    MutationRecord* base_record = nullptr;
+    if (HasOldValue(delivery_options)) {
+      base_record = mutation;
+    } else {
+      if (!mutation_with_null_old_value) {
+        if (mutation->oldValue().IsNull()) {
+          mutation_with_null_old_value = mutation;
+        } else {
+          mutation_with_null_old_value =
+              MutationRecord::CreateWithNullOldValue(mutation);
+        }
+      }
+      base_record = mutation_with_null_old_value;
+    }
+
+    if (active_template_status && active_template_invocation &&
+        (delivery_options & MutationObserver::kActiveTemplateAttributeFilter)) {
+      ActiveTemplateFilterEntry* entry =
+          active_template_invocation->GetOrCreateEntry(*observer,
+                                                       *mutation->target());
+      observer->EnqueueMutationRecord(MutationRecord::CreateWithActiveTemplate(
+          base_record, *active_template_status, entry));
+    } else {
+      observer->EnqueueMutationRecord(base_record);
+    }
+  }
+}
+
+// static
+void MutationObserverInterestGroup::EnqueueActiveTemplateRecord(
+    Node& target,
+    V8MutationRecordActiveTemplateStatus::Enum status,
+    ActiveTemplateInvocation* invocation,
+    Node* previous_sibling,
+    Node* next_sibling) {
+  if (!invocation ||
+      !target.GetDocument().MayHaveActiveTemplateMutationObservers()) {
+    return;
+  }
+  ChildListMutationAccumulator::FlushIfNeeded(target);
+  MutationObserverInterestGroup* group = CreateForChildListMutation(target);
+  if (!group) {
+    return;
+  }
+  MutationRecord* empty_record = nullptr;
+  for (auto& iter : group->observers_) {
+    if (!(iter.value & MutationObserver::kActiveTemplateAttributeFilter)) {
       continue;
     }
-    if (!mutation_with_null_old_value) {
-      if (mutation->oldValue().IsNull())
-        mutation_with_null_old_value = mutation;
-      else
-        mutation_with_null_old_value =
-            MutationRecord::CreateWithNullOldValue(mutation);
+    if (!empty_record) {
+      empty_record = MutationRecord::CreateChildList(
+          &target, MakeGarbageCollected<StaticNodeList>(),
+          MakeGarbageCollected<StaticNodeList>(), previous_sibling,
+          next_sibling);
     }
-    observer->EnqueueMutationRecord(mutation_with_null_old_value);
+    MutationObserver* observer = iter.key.Get();
+    ActiveTemplateFilterEntry* entry =
+        invocation->GetOrCreateEntry(*observer, target);
+    observer->EnqueueMutationRecord(
+        MutationRecord::CreateWithActiveTemplate(empty_record, status, entry));
   }
 }
 

@@ -44,6 +44,9 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -80,6 +83,7 @@ class CORE_EXPORT MutationObserver final
   enum DeliveryFlags {
     kAttributeOldValue = 1 << 5,
     kCharacterDataOldValue = 1 << 6,
+    kActiveTemplateAttributeFilter = 1 << 7,
   };
 
   class CORE_EXPORT Delegate : public GarbageCollected<Delegate>,
@@ -117,6 +121,7 @@ class CORE_EXPORT MutationObserver final
   void ObservationEnded(MutationObserverRegistration*);
   void EnqueueMutationRecord(MutationRecord*);
   void SetHasTransientRegistration();
+  const HashSet<AtomicString>* GetSingleActiveTemplateAttributeFilter() const;
 
   bool HasPendingActivity() const override { return !records_.empty(); }
 

@@ -297,7 +297,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   void ResetInsertionModeAppropriately();
 
   void ProcessTemplateStartTag(AtomicHTMLToken*);
-  bool ProcessTemplateEndTag(AtomicHTMLToken*);
+  bool ProcessTemplateEndTag(AtomicHTMLToken*, bool is_eof = false);
   bool ProcessEndOfFileForInTemplateContents(AtomicHTMLToken*);
 
   class FragmentParsingContext {
