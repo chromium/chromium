@@ -427,7 +427,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
         devtools_instrumentation::ScopedImageDecodeTask::DecodeType::kGpu,
         ImageDecodeCache::ToScopedTaskType(task_type_),
         ImageDecodeCache::ToScopedImageType(image_type));
-    cache_->DecodeImageInTask(image_, task_type_);
+    cache_->DecodeImageInTask(image_);
   }
 
   // Overridden from TileTask:
@@ -508,10 +508,9 @@ class ImageUploadTaskImpl : public TileTask {
 GpuImageDecodeCache::ImageDataBase::ImageDataBase() = default;
 GpuImageDecodeCache::ImageDataBase::~ImageDataBase() = default;
 
-void GpuImageDecodeCache::ImageDataBase::OnSetLockedData(bool out_of_raster) {
+void GpuImageDecodeCache::ImageDataBase::OnSetLockedData() {
   DCHECK_EQ(usage_stats_.lock_count, 1);
   DCHECK(!is_locked_);
-  usage_stats_.first_lock_out_of_raster = out_of_raster;
   is_locked_ = true;
 }
 
@@ -698,8 +697,7 @@ void GpuImageDecodeCache::DecodedImageData::Unlock() {
 }
 
 void GpuImageDecodeCache::DecodedImageData::SetLockedData(
-    base::span<DecodedAuxImageData, kAuxImageCount> aux_image_data,
-    bool out_of_raster) {
+    base::span<DecodedAuxImageData, kAuxImageCount> aux_image_data) {
   for (size_t i = 0; i < kAuxImageCount; ++i) {
     DCHECK(aux_image_data_[i].IsEmpty());
     aux_image_data[i].ValidateImagesMatchPixmaps();
@@ -711,7 +709,7 @@ void GpuImageDecodeCache::DecodedImageData::SetLockedData(
   for (size_t i = 0; i < kAuxImageCount; ++i) {
     aux_image_data_[i].ValidateImagesMatchPixmaps();
   }
-  OnSetLockedData(out_of_raster);
+  OnSetLockedData();
 }
 
 void GpuImageDecodeCache::DecodedImageData::SetBitmapImage(
@@ -760,25 +758,10 @@ void GpuImageDecodeCache::ImageData::
 }
 
 void GpuImageDecodeCache::DecodedImageData::ResetData() {
-  if (aux_image_data_[kAuxImageIndexDefault].data) {
-    ReportUsageStats();
-  }
   for (auto& aux_image_data : aux_image_data_) {
     aux_image_data.ResetData();
   }
   OnResetData();
-}
-
-void GpuImageDecodeCache::DecodedImageData::ReportUsageStats() const {
-  UMA_HISTOGRAM_ENUMERATION("Renderer4.GpuImageDecodeState",
-                            static_cast<ImageUsageState>(UsageState()),
-                            IMAGE_USAGE_STATE_COUNT);
-  UMA_HISTOGRAM_BOOLEAN("Renderer4.GpuImageDecodeState.FirstLockWasted",
-                        usage_stats_.first_lock_wasted);
-  if (usage_stats_.first_lock_out_of_raster)
-    UMA_HISTOGRAM_BOOLEAN(
-        "Renderer4.GpuImageDecodeState.FirstLockWasted.OutOfRaster",
-        usage_stats_.first_lock_wasted);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -791,7 +774,7 @@ void GpuImageDecodeCache::UploadedImageData::SetTransferCacheId(uint32_t id) {
   DCHECK(!transfer_cache_id_);
 
   transfer_cache_id_ = id;
-  OnSetLockedData(false /* out_of_raster */);
+  OnSetLockedData();
 }
 
 void GpuImageDecodeCache::UploadedImageData::Reset() {
@@ -1182,8 +1165,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
 
   // We may or may not need to decode and upload the image we've found, the
   // following functions early-out to if we already decoded.
-  DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data,
-                                                  TaskType::kInRaster);
+  DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data);
   UploadImageIfNecessary(draw_image, image_data);
   // Unref the image decode, but not the image. The image ref will be released
   // in DrawWithImageFinished.
@@ -1523,8 +1505,7 @@ bool GpuImageDecodeCache::OnMemoryDump(
   return true;
 }
 
-void GpuImageDecodeCache::DecodeImageInTask(const DrawImage& draw_image,
-                                            TaskType task_type) {
+void GpuImageDecodeCache::DecodeImageInTask(const DrawImage& draw_image) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::DecodeImage");
   base::AutoLock lock(lock_);
@@ -1532,8 +1513,7 @@ void GpuImageDecodeCache::DecodeImageInTask(const DrawImage& draw_image,
       draw_image, InUseCacheKeyFromDrawImage(draw_image));
   DCHECK(image_data);
   DCHECK(image_data->is_budgeted) << "Must budget an image for pre-decoding";
-  DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data,
-                                                  task_type);
+  DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data);
 }
 
 void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
@@ -1552,8 +1532,7 @@ void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
   DCHECK(image_data->is_budgeted) << "Must budget an image for pre-decoding";
 
   if (image_data->is_bitmap_backed)
-    DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data,
-                                                    TaskType::kInRaster);
+    DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data);
   UploadImageIfNecessary(draw_image, image_data);
 }
 
@@ -1927,13 +1906,11 @@ bool GpuImageDecodeCache::NeedsDarkModeFilter(const DrawImage& draw_image,
 
 void GpuImageDecodeCache::DecodeImageAndGenerateDarkModeFilterIfNecessary(
     const DrawImage& draw_image,
-    ImageData* image_data,
-    TaskType task_type) {
+    ImageData* image_data) {
   // Check if image needs dark mode to be applied, based on this image may be
   // decoded again if decoded data is not available.
   bool needs_dark_mode_filter = NeedsDarkModeFilter(draw_image, image_data);
-  DecodeImageIfNecessary(draw_image, image_data, task_type,
-                         needs_dark_mode_filter);
+  DecodeImageIfNecessary(draw_image, image_data, needs_dark_mode_filter);
   if (needs_dark_mode_filter)
     GenerateDarkModeFilter(draw_image, image_data);
 }
@@ -1941,7 +1918,6 @@ void GpuImageDecodeCache::DecodeImageAndGenerateDarkModeFilterIfNecessary(
 void GpuImageDecodeCache::DecodeImageIfNecessary(
     const DrawImage& draw_image,
     ImageData* image_data,
-    TaskType task_type,
     bool needs_decode_for_dark_mode) {
   DCHECK_GT(image_data->decode.ref_count, 0u);
 
@@ -2082,8 +2058,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     return;
   }
 
-  image_data->decode.SetLockedData(aux_image_data,
-                                   task_type == TaskType::kOutOfRaster);
+  image_data->decode.SetLockedData(aux_image_data);
 }
 
 void GpuImageDecodeCache::GenerateDarkModeFilter(const DrawImage& draw_image,
@@ -2150,7 +2125,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
 
   TRACE_EVENT0("cc", "GpuImageDecodeCache::UploadImage");
   DCHECK(image_data->decode.is_locked());
-  image_data->decode.mark_used();
   DCHECK_GT(image_data->decode.ref_count, 0u);
   DCHECK_GT(image_data->upload.ref_count, 0u);
 

@@ -154,7 +154,7 @@ class CC_EXPORT GpuImageDecodeCache
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Called by Decode / Upload tasks.
-  void DecodeImageInTask(const DrawImage& image, TaskType task_type);
+  void DecodeImageInTask(const DrawImage& image);
   void UploadImageInTask(const DrawImage& image);
 
   // Called by Decode / Upload tasks when tasks are finished.
@@ -215,13 +215,13 @@ class CC_EXPORT GpuImageDecodeCache
  private:
   using ImageTaskMap = base::flat_map<ClientId, scoped_refptr<TileTask>>;
 
-  // Stores stats tracked by both DecodedImageData and UploadedImageData.
+  // Stores lock state and usage stats (reported by UploadedImageData).
   struct ImageDataBase {
     ImageDataBase();
     ~ImageDataBase();
 
     bool is_locked() const { return is_locked_; }
-    void OnSetLockedData(bool out_of_raster);
+    void OnSetLockedData();
     void OnResetData();
     void OnLock();
     void OnUnlock();
@@ -240,7 +240,6 @@ class CC_EXPORT GpuImageDecodeCache
     struct UsageStats {
       int lock_count = 1;
       bool used = false;
-      bool first_lock_out_of_raster = false;
       bool first_lock_wasted = false;
     };
 
@@ -294,8 +293,7 @@ class CC_EXPORT GpuImageDecodeCache
     void Unlock();
 
     void SetLockedData(
-        base::span<DecodedAuxImageData, kAuxImageCount> aux_image_data,
-        bool out_of_raster);
+        base::span<DecodedAuxImageData, kAuxImageCount> aux_image_data);
     void ResetData();
     bool HasData() const {
       for (const auto& aux_image_data : aux_image_data_) {
@@ -349,8 +347,6 @@ class CC_EXPORT GpuImageDecodeCache
         dark_mode_color_filter_cache;
 
    private:
-    void ReportUsageStats() const;
-
     const bool is_bitmap_backed_;
     std::array<DecodedAuxImageData, kAuxImageCount> aux_image_data_;
   };
@@ -557,11 +553,9 @@ class CC_EXPORT GpuImageDecodeCache
   bool NeedsDarkModeFilter(const DrawImage& draw_image, ImageData* image_data);
   void DecodeImageAndGenerateDarkModeFilterIfNecessary(
       const DrawImage& draw_image,
-      ImageData* image_data,
-      TaskType task_type) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      ImageData* image_data) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void DecodeImageIfNecessary(const DrawImage& draw_image,
                               ImageData* image_data,
-                              TaskType task_type,
                               bool needs_decode_for_dark_mode)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void GenerateDarkModeFilter(const DrawImage& draw_image,
