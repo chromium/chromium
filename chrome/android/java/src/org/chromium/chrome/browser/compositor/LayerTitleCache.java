@@ -247,7 +247,9 @@ public class LayerTitleCache {
         TabModel tabModel = mTabModelSelector.getModel(incognito);
         if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) return;
 
-        String titleString = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, groupId);
+        String titleString =
+                TabGroupTitleUtils.getDisplayableTitle(
+                        mContext, tabModel, TabGroupId.fromOptionalToken(groupId));
         getUpdatedGroupTitle(groupId, titleString, incognito);
     }
 

@@ -291,7 +291,8 @@ public class StripDragShadowView extends FrameLayout {
 
         // Group title text.
         String defaultGroupTitle =
-                TabGroupTitleUtils.getDisplayableTitle(context, tabModel, tabGroupId);
+                TabGroupTitleUtils.getDisplayableTitle(
+                        context, tabModel, TabGroupId.fromOptionalToken(tabGroupId));
         mTitleView.setText(defaultGroupTitle);
         mTitleView.setTextColor(
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(

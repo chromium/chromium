@@ -125,8 +125,7 @@ class TabModelRemover {
     /*package*/ ActionConfirmationManager getActionConfirmationManager() {
         if (mActionConfirmationManager == null) {
             mActionConfirmationManager =
-                    new ActionConfirmationManager(
-                            getProfile(), mContext, mModalDialogManager);
+                    new ActionConfirmationManager(getProfile(), mContext, mModalDialogManager);
         }
         return mActionConfirmationManager;
     }
@@ -317,7 +316,9 @@ class TabModelRemover {
         if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             return new CollaborationInfo();
         }
-        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, tabGroupId);
+        String title =
+                TabGroupTitleUtils.getDisplayableTitle(
+                        mContext, tabModel, TabGroupId.fromOptionalToken(tabGroupId));
 
         CollaborationService collaborationService = getCollaborationService();
         if (collaborationService == null) {

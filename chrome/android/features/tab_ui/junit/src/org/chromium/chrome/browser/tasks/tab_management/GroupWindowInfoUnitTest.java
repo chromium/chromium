@@ -208,7 +208,9 @@ public class GroupWindowInfoUnitTest {
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
         assertEquals(
-                TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, groupId), info.title);
+                TabGroupTitleUtils.getDisplayableTitle(
+                        mContext, mTabModel, TabGroupId.fromOptionalToken(groupId)),
+                info.title);
         assertEquals(TabGroupColorId.GREY, info.color);
         assertEquals(2, info.tabCount);
         assertEquals(GroupWindowState.IN_CURRENT_CLOSING, info.groupWindowState);

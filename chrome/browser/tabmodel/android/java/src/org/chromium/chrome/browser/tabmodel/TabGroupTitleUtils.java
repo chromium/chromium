@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.content.Context;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -55,8 +54,8 @@ public class TabGroupTitleUtils {
     }
 
     /**
-     * Returns a displayable title for a given tab group by tab group Token. While this function can
-     * help some UI surfaces, sometimes it is difficult to follow MVC with this approach.
+     * Returns a displayable title for a given tab group by {@link TabGroupId}. While this function
+     * can help some UI surfaces, sometimes it is difficult to follow MVC with this approach.
      *
      * @param context To load resources from.
      * @param tabModel To read tab and tab group data from.
@@ -64,15 +63,14 @@ public class TabGroupTitleUtils {
      * @return A non-null string that can be shown to users.
      */
     public static String getDisplayableTitle(
-            Context context, TabModel tabModel, @Nullable Token tabGroupId) {
-        if (tabGroupId == null
-                || !tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
+            Context context, TabModel tabModel, @Nullable TabGroupId tabGroupId) {
+        if (tabGroupId == null || !tabModel.containsTabGroup(tabGroupId)) {
             return getDefaultTitle(context, /* numRelatedTabs= */ 0);
         }
-        String explicitTitle = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
+        String explicitTitle = tabModel.getTabGroupTitle(tabGroupId);
         if (isTitleUnset(explicitTitle)) {
             int tabCount = 0;
-            for (Tab tab : tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
+            for (Tab tab : tabModel.getTabsInGroup(tabGroupId)) {
                 if (!tab.isClosing()) {
                     tabCount++;
                 }

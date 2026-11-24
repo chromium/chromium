@@ -39,7 +39,9 @@ public class TabWindowManagerUtils {
         TabModelSelector tabModelSelector = tabWindowManager.getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
         return TabGroupTitleUtils.getDisplayableTitle(
-                context, tabModelSelector.getModel(isIncognito), tabGroupId);
+                context,
+                tabModelSelector.getModel(isIncognito),
+                TabGroupId.fromOptionalToken(tabGroupId));
     }
 
     /**

@@ -38,6 +38,7 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -219,7 +220,9 @@ public class TabModelNotificationDotManager implements Destroyable {
             if (tab != null && !tab.isClosing()) {
                 String title =
                         TabGroupTitleUtils.getDisplayableTitle(
-                                mContext, mTabModel, tab.getTabGroupId());
+                                mContext,
+                                mTabModel,
+                                TabGroupId.fromOptionalToken(tab.getTabGroupId()));
                 return new TabModelDotInfo(true, title);
             }
         }

@@ -901,7 +901,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 });
 
         setExistingOrDefaultTitle(
-                TabGroupTitleUtils.getDisplayableTitle(context, getTabModel(), mTabGroupId));
+                TabGroupTitleUtils.getDisplayableTitle(
+                        context, getTabModel(), TabGroupId.fromOptionalToken(mTabGroupId)));
 
         final EditText titleEditText = mGroupTitleEditText;
 

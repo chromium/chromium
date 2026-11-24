@@ -151,7 +151,9 @@ public class TabGroupVisualDataDialogManager {
         setDescriptionText(tabModel);
 
         // Set the default or current title to be displayed in the edit text box.
-        mInitialGroupTitle = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, tabGroupId);
+        mInitialGroupTitle =
+                TabGroupTitleUtils.getDisplayableTitle(
+                        mContext, tabModel, TabGroupId.fromOptionalToken(tabGroupId));
         AppCompatEditText editTextView = mCustomView.findViewById(R.id.title_input_text);
         editTextView.setText(mInitialGroupTitle);
         editTextView.setAccessibilityDelegate(

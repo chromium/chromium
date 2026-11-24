@@ -4340,7 +4340,7 @@ public class StripLayoutHelper
         // 1. Update indicator text and width.
         String titleText =
                 TabGroupTitleUtils.getDisplayableTitle(
-                        mContext, mModel, groupTitle.getTabGroupId());
+                        mContext, mModel, TabGroupId.fromOptionalToken(groupTitle.getTabGroupId()));
         int widthPx = mLayerTitleCache.getTitleWidth(mIncognito, titleText);
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
         float oldWidth = groupTitle.getWidth();
