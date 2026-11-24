@@ -283,12 +283,7 @@ void GCMClientImpl::InitializeMCSClient() {
       chrome_build_info_.version, clock_, connection_factory_.get(),
       gcm_store_.get(), io_task_runner_, &recorder_);
 
-  mcs_client_->Initialize(
-      base::BindRepeating(&GCMClientImpl::OnMessageReceivedFromMCS,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&GCMClientImpl::OnMessageSentToMCS,
-                          weak_ptr_factory_.GetWeakPtr()),
-      std::move(load_result_));
+  mcs_client_->Initialize(/*delegate=*/this, std::move(load_result_));
 }
 
 void GCMClientImpl::OnFirstTimeDeviceCheckinCompleted(

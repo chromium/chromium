@@ -5,9 +5,11 @@
 #include "google_apis/gcm/engine/mcs_client.h"
 
 #include <stddef.h>
+
 #include <set>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -163,15 +165,13 @@ MCSClient::MCSClient(const std::string& version_string,
 
 MCSClient::~MCSClient() = default;
 
-void MCSClient::Initialize(
-    const OnMessageReceivedCallback& message_received_callback,
-    const OnMessageSentCallback& message_sent_callback,
-    std::unique_ptr<GCMStore::LoadResult> load_result) {
+void MCSClient::Initialize(Delegate* delegate,
+                           std::unique_ptr<GCMStore::LoadResult> load_result) {
   DCHECK_EQ(state_, UNINITIALIZED);
+  CHECK(delegate);
 
   state_ = LOADED;
-  message_received_callback_ = message_received_callback;
-  message_sent_callback_ = message_sent_callback;
+  delegate_ = delegate;
 
   connection_factory_->Initialize(
       base::BindRepeating(&MCSClient::ResetStateAndBuildLoginRequest,
@@ -634,7 +634,8 @@ void MCSClient::HandlePacketFromWire(
 
       // Pass the login response on up.
       io_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(message_received_callback_,
+          FROM_HERE, base::BindOnce(&MCSClient::DeliverMessageToDelegate,
+                                    weak_ptr_factory_.GetWeakPtr(),
                                     MCSMessage(tag, std::move(protobuf))));
 
       // If there are pending messages, attempt to send one.
@@ -701,7 +702,8 @@ void MCSClient::HandlePacketFromWire(
 
       DCHECK(protobuf.get());
       io_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(message_received_callback_,
+          FROM_HERE, base::BindOnce(&MCSClient::DeliverMessageToDelegate,
+                                    weak_ptr_factory_.GetWeakPtr(),
                                     MCSMessage(tag, std::move(protobuf))));
       return;
     }
@@ -838,6 +840,10 @@ void MCSClient::OnConnectionResetByHeartbeat(
   connection_factory_->SignalConnectionReset(reason);
 }
 
+void MCSClient::DeliverMessageToDelegate(const MCSMessage& message) {
+  delegate_->OnMessageReceivedFromMCS(message);
+}
+
 void MCSClient::NotifyMessageSendStatus(
     const google::protobuf::MessageLite& protobuf,
     MessageSendStatus status) {
@@ -850,8 +856,8 @@ void MCSClient::NotifyMessageSendStatus(
       data_message_stanza->category(), data_message_stanza->to(),
       data_message_stanza->id(), status, protobuf.ByteSizeLong(),
       data_message_stanza->ttl());
-  message_sent_callback_.Run(data_message_stanza->category(),
-                             data_message_stanza->id(), status);
+  delegate_->OnMessageSentToMCS(data_message_stanza->category(),
+                                data_message_stanza->id(), status);
 }
 
 MCSClient::MCSPacketInternal MCSClient::PopMessageForSend() {

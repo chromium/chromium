@@ -58,7 +58,8 @@ constexpr net::BackoffEntry::Policy kFastBackoffPolicy = {
 // End-to-end integration tests exercising `MCSClient`, `ConnectionFactoryImpl`,
 // `ConnectionHandlerImpl`, and `GCMStoreImpl` over a real loopback TCP socket
 // against `FakeMCSServer`.
-class MCSClientIntegrationTest : public testing::Test {
+class MCSClientIntegrationTest : public testing::Test,
+                                 public MCSClient::Delegate {
  public:
   MCSClientIntegrationTest()
       : network_connection_tracker_(
@@ -121,12 +122,7 @@ class MCSClientIntegrationTest : public testing::Test {
     std::unique_ptr<GCMStore::LoadResult> load_result = load_future.Take();
     load_result->device_android_id = kAndroidId;
     load_result->device_security_token = kSecurityToken;
-    mcs_client_->Initialize(
-        base::BindRepeating(&MCSClientIntegrationTest::OnMessageReceived,
-                            base::Unretained(this)),
-        base::BindRepeating(&MCSClientIntegrationTest::OnMessageSent,
-                            base::Unretained(this)),
-        std::move(load_result));
+    mcs_client_->Initialize(/*delegate=*/this, std::move(load_result));
 
     base::RunLoop login_loop;
     wait_for_login_closure_ = login_loop.QuitClosure();
@@ -153,15 +149,16 @@ class MCSClientIntegrationTest : public testing::Test {
 
   mcs_proto::DataMessageStanza WaitForNextDataMessage() {
     if (received_data_messages_.empty()) {
-      // Wait until `OnMessageReceived()` receives a `kDataMessageStanzaTag`
-      // packet, appends it to `received_data_messages_`, and invokes
+      // Wait until `OnMessageReceivedFromMCS()` receives a
+      // `kDataMessageStanzaTag` packet, appends it to
+      // `received_data_messages_`, and invokes
       // `wait_for_data_message_closure_`.
       base::RunLoop loop;
       wait_for_data_message_closure_ = loop.QuitClosure();
       loop.Run();
     }
     CHECK(!received_data_messages_.empty())
-        << "Timed out waiting for OnMessageReceived() to receive a "
+        << "Timed out waiting for OnMessageReceivedFromMCS() to receive a "
            "DataMessageStanza";
     mcs_proto::DataMessageStanza stanza =
         std::move(received_data_messages_.front());
@@ -202,7 +199,7 @@ class MCSClientIntegrationTest : public testing::Test {
     network_context_->CreateProxyResolvingSocketFactory(std::move(receiver));
   }
 
-  void OnMessageReceived(const MCSMessage& message) {
+  void OnMessageReceivedFromMCS(const MCSMessage& message) override {
     if (message.tag() == kLoginResponseTag) {
       if (wait_for_login_closure_) {
         std::move(wait_for_login_closure_).Run();
@@ -219,9 +216,9 @@ class MCSClientIntegrationTest : public testing::Test {
     }
   }
 
-  void OnMessageSent(const std::string& app_id,
-                     const std::string& message_id,
-                     MCSClient::MessageSendStatus status) {
+  void OnMessageSentToMCS(const std::string& app_id,
+                          const std::string& message_id,
+                          MCSClient::MessageSendStatus status) override {
     sent_statuses_.emplace_back(message_id, status);
     if (status == MCSClient::SENT && wait_for_message_sent_closure_) {
       std::move(wait_for_message_sent_closure_).Run();

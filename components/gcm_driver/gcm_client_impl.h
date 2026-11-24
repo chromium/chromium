@@ -68,7 +68,8 @@ class GCMRegistrationManagerImpl;
 // applications that send and receive messages.
 class GCMClientImpl : public GCMClient,
                       public GCMStatsRecorder::Delegate,
-                      public ConnectionFactory::ConnectionListener {
+                      public ConnectionFactory::ConnectionListener,
+                      public MCSClient::Delegate {
  public:
   // State representation of the GCMClient.
   // Any change made to this enum should have corresponding change in the
@@ -143,6 +144,12 @@ class GCMClientImpl : public GCMClient,
                    const net::IPEndPoint& ip_endpoint) override;
   void OnDisconnected() override;
 
+  // MCSClient::Delegate implementation.
+  void OnMessageReceivedFromMCS(const MCSMessage& message) override;
+  void OnMessageSentToMCS(const std::string& app_id,
+                          const std::string& message_id,
+                          MCSClient::MessageSendStatus status) override;
+
  private:
   // Collection of pending unregistration requests. Keys are RegistrationInfo
   // instance, while values are pending unregistration requests to disable the
@@ -157,14 +164,6 @@ class GCMClientImpl : public GCMClient,
 
   // Returns text representation of the enum State.
   std::string GetStateString() const;
-
-  // Callbacks for the MCSClient.
-  // Receives messages and dispatches them to relevant user delegates.
-  void OnMessageReceivedFromMCS(const gcm::MCSMessage& message);
-  // Receives status updates and errors for sent messages.
-  void OnMessageSentToMCS(const std::string& app_id,
-                          const std::string& message_id,
-                          MCSClient::MessageSendStatus status);
 
   // Runs after GCM Store load is done to trigger continuation of the
   // initialization.

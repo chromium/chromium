@@ -81,15 +81,19 @@ class GCM_EXPORT MCSClient {
     SEND_STATUS_COUNT
   };
 
-  // Callback when a message is received.
-  using OnMessageReceivedCallback =
-      base::RepeatingCallback<void(const MCSMessage& message)>;
-  // Callback when a message is sent (and receipt has been acknowledged by
-  // the MCS endpoint).
-  using OnMessageSentCallback =
-      base::RepeatingCallback<void(const std::string& app_id,
-                                   const std::string& message_id,
-                                   MessageSendStatus status)>;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called when a message is received from the MCS endpoint.
+    virtual void OnMessageReceivedFromMCS(const MCSMessage& message) = 0;
+
+    // Called when a message is queued for sending, acknowledged by the MCS
+    // endpoint, or when sending fails.
+    virtual void OnMessageSentToMCS(const std::string& app_id,
+                                    const std::string& message_id,
+                                    MessageSendStatus status) = 0;
+  };
 
   MCSClient(const std::string& version_string,
             base::Clock* clock,
@@ -104,28 +108,28 @@ class GCM_EXPORT MCSClient {
   virtual ~MCSClient();
 
   // Initializes the client from `load_result`, restoring any previous id/token
-  // information and unacknowledged messages. If no device credentials are
-  // present in `load_result`, assumes a fresh client.
-  void Initialize(const OnMessageReceivedCallback& message_received_callback,
-                  const OnMessageSentCallback& message_sent_callback,
+  // information and unacknowledged messages. `delegate` must not be null and
+  // must outlive `this`. If no device credentials are present in `load_result`,
+  // assumes a fresh client.
+  void Initialize(Delegate* delegate,
                   std::unique_ptr<GCMStore::LoadResult> load_result);
 
   // Logs the client into the server. Client must be initialized.
   // `android_id` and `security_token` are optional if this is not a new
   // client, else they must be non-zero.
-  // Successful login will result in `message_received_callback` being invoked
-  // with a valid LoginResponse.
+  // Successful login will result in `Delegate::OnMessageReceivedFromMCS()`
+  // being invoked with a valid `LoginResponse`.
   // Login failure (typically invalid id/token) resets the client state and
   // signals a connection reset.
   virtual void Login(uint64_t android_id, uint64_t security_token);
 
   // Sends a message, with or without reliable message queueing (RMQ) support.
-  // Will asynchronously invoke the OnMessageSent callback regardless.
-  // Whether to use RMQ depends on whether the protobuf has |ttl| set or not.
-  // |ttl == 0| denotes the message should only be sent if the connection is
-  // open. |ttl > 0| will keep the message saved for |ttl| seconds, after which
+  // Asynchronously invokes `Delegate::OnMessageSentToMCS()` regardless.
+  // Whether to use RMQ depends on whether the protobuf has `ttl` set or not.
+  // `ttl == 0` denotes the message should only be sent if the connection is
+  // open. `ttl > 0` will keep the message saved for `ttl` seconds, after which
   // it will be dropped if it was unable to be sent. When a message is dropped,
-  // |message_sent_callback_| is invoked with a TTL expiration error.
+  // `Delegate::OnMessageSentToMCS()` is invoked with a TTL expiration error.
   virtual void SendMessage(const MCSMessage& message);
 
   // Returns the current state of the client.
@@ -191,7 +195,10 @@ class GCM_EXPORT MCSClient {
   void OnConnectionResetByHeartbeat(
       ConnectionFactory::ConnectionResetReason reason);
 
-  // Runs the message_sent_callback_ with send |status| of the |protobuf|.
+  // Delivers `message` to `delegate_`.
+  void DeliverMessageToDelegate(const MCSMessage& message);
+
+  // Notifies `delegate_` of the send `status` of `protobuf`.
   void NotifyMessageSendStatus(const google::protobuf::MessageLite& protobuf,
                                MessageSendStatus status);
 
@@ -208,9 +215,7 @@ class GCM_EXPORT MCSClient {
   // Client state.
   State state_;
 
-  // Callbacks for owner.
-  OnMessageReceivedCallback message_received_callback_;
-  OnMessageSentCallback message_sent_callback_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // The android id and security token in use by this device.
   uint64_t android_id_;

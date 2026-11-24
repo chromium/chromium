@@ -109,7 +109,7 @@ class TestMCSClient : public MCSClient {
   uint32_t next_id_;
 };
 
-class MCSClientTest : public testing::Test {
+class MCSClientTest : public testing::Test, public MCSClient::Delegate {
  public:
   MCSClientTest();
   ~MCSClientTest() override;
@@ -142,12 +142,13 @@ class MCSClientTest : public testing::Test {
   void WaitForMCSEvent();
   void PumpLoop();
 
- private:
-  void MessageReceivedCallback(const MCSMessage& message);
-  void MessageSentCallback(const std::string& app_id,
-                           const std::string& message_id,
-                           MCSClient::MessageSendStatus status);
+  // MCSClient::Delegate implementation.
+  void OnMessageReceivedFromMCS(const MCSMessage& message) override;
+  void OnMessageSentToMCS(const std::string& app_id,
+                          const std::string& message_id,
+                          MCSClient::MessageSendStatus status) override;
 
+ private:
   base::SimpleTestClock clock_;
 
   base::ScopedTempDir temp_directory_;
@@ -185,6 +186,7 @@ void MCSClientTest::SetUp() {
 }
 
 void MCSClientTest::TearDown() {
+  mcs_client_.reset();
   gcm_store_.reset();
   task_environment_.RunUntilIdle();
   testing::Test::TearDown();
@@ -200,14 +202,10 @@ void MCSClientTest::BuildMCSClient() {
 }
 
 void MCSClientTest::InitializeClient() {
-  gcm_store_->Load(
-      GCMStore::CREATE_IF_MISSING,
-      base::BindOnce(
-          &MCSClient::Initialize, base::Unretained(mcs_client_.get()),
-          base::BindRepeating(&MCSClientTest::MessageReceivedCallback,
-                              base::Unretained(this)),
-          base::BindRepeating(&MCSClientTest::MessageSentCallback,
-                              base::Unretained(this))));
+  gcm_store_->Load(GCMStore::CREATE_IF_MISSING,
+                   base::BindOnce(&MCSClient::Initialize,
+                                  base::Unretained(mcs_client_.get()),
+                                  /*delegate=*/base::Unretained(this)));
   run_loop_->RunUntilIdle();
   run_loop_ = std::make_unique<base::RunLoop>();
 }
@@ -248,7 +246,7 @@ void MCSClientTest::PumpLoop() {
   run_loop_ = std::make_unique<base::RunLoop>();
 }
 
-void MCSClientTest::MessageReceivedCallback(const MCSMessage& message) {
+void MCSClientTest::OnMessageReceivedFromMCS(const MCSMessage& message) {
   received_message_ = std::make_unique<MCSMessage>(message);
   if (message.tag() == kLoginResponseTag) {
     return;
@@ -257,9 +255,9 @@ void MCSClientTest::MessageReceivedCallback(const MCSMessage& message) {
   run_loop_->Quit();
 }
 
-void MCSClientTest::MessageSentCallback(const std::string& app_id,
-                                        const std::string& message_id,
-                                        MCSClient::MessageSendStatus status) {
+void MCSClientTest::OnMessageSentToMCS(const std::string& app_id,
+                                       const std::string& message_id,
+                                       MCSClient::MessageSendStatus status) {
   DVLOG(1) << "Message sent callback invoked, killing loop.";
   sent_message_id_ = message_id;
   message_send_status_ = status;

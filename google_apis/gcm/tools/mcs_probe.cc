@@ -117,35 +117,6 @@ const char kIgnoreCertSwitch[] = "ignore-certs";
 const char kServerHostSwitch[] = "host";
 const char kServerPortSwitch[] = "port";
 
-void MessageReceivedCallback(const MCSMessage& message) {
-  LOG(INFO) << "Received message with id "
-            << GetPersistentId(message.GetProtobuf()) << " and tag "
-            << static_cast<int>(message.tag());
-
-  if (message.tag() == kDataMessageStanzaTag) {
-    const mcs_proto::DataMessageStanza& data_message =
-        reinterpret_cast<const mcs_proto::DataMessageStanza&>(
-            message.GetProtobuf());
-    DVLOG(1) << "  to: " << data_message.to();
-    DVLOG(1) << "  from: " << data_message.from();
-    DVLOG(1) << "  category: " << data_message.category();
-    DVLOG(1) << "  sent: " << data_message.sent();
-    for (int i = 0; i < data_message.app_data_size(); ++i) {
-      DVLOG(1) << "  App data " << i << " "
-               << data_message.app_data(i).key() << " : "
-               << data_message.app_data(i).value();
-    }
-  }
-}
-
-void MessageSentCallback(const std::string& app_id,
-                         const std::string& message_id,
-                         MCSClient::MessageSendStatus status) {
-  LOG(INFO) << "Message sent. Application ID: " << app_id
-            << " Message ID: " << message_id
-            << " Message send status: " << status;
-}
-
 // A cert verifier that access all certificates.
 class MyTestCertVerifier : public net::CertVerifier {
  public:
@@ -192,15 +163,21 @@ class MCSProbeAuthPreferences : public net::HttpAuthPreferences {
   }
 };
 
-class MCSProbe {
+class MCSProbe : public MCSClient::Delegate {
  public:
   explicit MCSProbe(const base::CommandLine& command_line);
-  ~MCSProbe();
+  ~MCSProbe() override;
 
   void Start();
 
   uint64_t android_id() const { return android_id_; }
   uint64_t secret() const { return secret_; }
+
+  // MCSClient::Delegate implementation.
+  void OnMessageReceivedFromMCS(const MCSMessage& message) override;
+  void OnMessageSentToMCS(const std::string& app_id,
+                          const std::string& message_id,
+                          MCSClient::MessageSendStatus status) override;
 
  private:
   void RequestProxyResolvingSocketFactory(
@@ -332,9 +309,7 @@ void MCSProbe::LoadCallback(std::unique_ptr<GCMStore::LoadResult> load_result) {
     secret_ = load_result->device_security_token;
     DVLOG(1) << "Loaded MCS id " << android_id_;
   }
-  mcs_client_->Initialize(base::BindRepeating(&MessageReceivedCallback),
-                          base::BindRepeating(&MessageSentCallback),
-                          std::move(load_result));
+  mcs_client_->Initialize(/*delegate=*/this, std::move(load_result));
 
   if (!android_id_ || !secret_) {
     DVLOG(1) << "Checkin to generate new MCS credentials.";
@@ -448,6 +423,33 @@ void MCSProbe::StartMCSLogin() {
   LOG(INFO) << "MCS login initiated.";
 
   mcs_client_->Login(android_id_, secret_);
+}
+
+void MCSProbe::OnMessageReceivedFromMCS(const MCSMessage& message) {
+  LOG(INFO) << "Received message with id "
+            << GetPersistentId(message.GetProtobuf()) << " and tag "
+            << static_cast<int>(message.tag());
+
+  if (message.tag() == kDataMessageStanzaTag) {
+    const auto& data_message =
+        static_cast<const mcs_proto::DataMessageStanza&>(message.GetProtobuf());
+    DVLOG(1) << "  to: " << data_message.to();
+    DVLOG(1) << "  from: " << data_message.from();
+    DVLOG(1) << "  category: " << data_message.category();
+    DVLOG(1) << "  sent: " << data_message.sent();
+    for (int i = 0; i < data_message.app_data_size(); ++i) {
+      DVLOG(1) << "  App data " << i << " " << data_message.app_data(i).key()
+               << " : " << data_message.app_data(i).value();
+    }
+  }
+}
+
+void MCSProbe::OnMessageSentToMCS(const std::string& app_id,
+                                  const std::string& message_id,
+                                  MCSClient::MessageSendStatus status) {
+  LOG(INFO) << "Message sent. Application ID: " << app_id
+            << " Message ID: " << message_id
+            << " Message send status: " << status;
 }
 
 int MCSProbeMain(int argc, char* argv[]) {
