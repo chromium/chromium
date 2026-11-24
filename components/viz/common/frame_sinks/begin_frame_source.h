@@ -482,11 +482,13 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   virtual base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Update the display ID for the source. This can change, e.g, as a window
   // moves across displays.
   virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
+#endif
 
+#if BUILDFLAG(IS_MAC)
   virtual int64_t display_id() const;
 #endif
 

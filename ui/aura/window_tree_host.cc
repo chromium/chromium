@@ -591,6 +591,9 @@ void WindowTreeHost::InitCompositor() {
   compositor_->SetDisplayColorSpaces(display_color_spaces_
                                          ? display_color_spaces_->color_spaces()
                                          : display.GetColorSpaces());
+#if BUILDFLAG(IS_WIN)
+  compositor_->SetVSyncDisplayID(display.id());
+#endif
 }
 
 void WindowTreeHost::OnAcceleratedWidgetAvailable() {
@@ -640,12 +643,19 @@ void WindowTreeHost::OnHostWorkspaceChanged() {
 }
 
 void WindowTreeHost::OnHostDisplayChanged() {
-  if (!compositor_ || display_color_spaces_) {
+  if (!compositor_) {
     return;
   }
   display::Display display =
       display::Screen::Get()->GetDisplayNearestWindow(window());
-  compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
+  if (!display_color_spaces_) {
+    compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
+  }
+#if BUILDFLAG(IS_WIN)
+  // Force an update even if display.id() is unchanged, since the same
+  // monitor's refresh rate may have changed.
+  compositor_->SetVSyncDisplayID(display.id(), /*force_update=*/true);
+#endif
 }
 
 void WindowTreeHost::OnHostCloseRequested() {

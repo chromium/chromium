@@ -218,7 +218,8 @@ RootCompositorFrameSinkImpl::Create(
         wants_vsync_updates = true;
         external_begin_frame_source =
             std::make_unique<ExternalBeginFrameSourceWin>(
-                restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
+                restart_id, base::SingleThreadTaskRunner::GetCurrentDefault(),
+                params->widget);
       }
 #elif BUILDFLAG(IS_MAC)
       // ExternalBeginFrameSourceMac is utilized for both CVDisplayLink
@@ -389,8 +390,9 @@ void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
   display_->SetDisplayColorSpaces(display_color_spaces);
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
+#if BUILDFLAG(IS_MAC)
   if (!is_external_begin_frame_source_mac_) {
     return;
   }
@@ -398,11 +400,16 @@ void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
   // Forward it to output_surface then ImageTransportSurfaceOverlayMacEGL for
   // presentation.
   display_->SetVSyncDisplayID(display_id, /*force_update=*/false);
+#endif
 
-  external_begin_frame_source_->SetVSyncDisplayID(display_id,
-                                                  /*force_update=*/false);
+  if (external_begin_frame_source_) {
+    external_begin_frame_source_->SetVSyncDisplayID(display_id,
+                                                    /*force_update=*/false);
+  }
 }
+#endif
 
+#if BUILDFLAG(IS_MAC)
 // Forces this frame sink to destroy and recreate its DisplayLinkMac. Called by
 // FrameSinkManagerImpl::UpdateVSyncDisplays() in two cases:
 // (1) The browser-side CADisplayLink for `display_id` changed validity (e.g.

@@ -243,11 +243,16 @@ class COMPOSITOR_EXPORT Compositor
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
 
-#if BUILDFLAG(IS_MAC)
-  // Set the current CGDirectDisplayID and update the private client.
-  void SetVSyncDisplayID(const int64_t display_id);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Set the current display ID and update the private client. If
+  // |force_update| is true, always notify the private client even when the
+  // display ID is unchanged (e.g. on Windows when a monitor's refresh rate
+  // changes while keeping the same display ID).
+  void SetVSyncDisplayID(const int64_t display_id, bool force_update = false);
   int64_t display_id() const;
+#endif
 
+#if BUILDFLAG(IS_MAC)
   void UpdateRefreshRate(float refresh_rate);
 #endif
 
@@ -645,8 +650,8 @@ class COMPOSITOR_EXPORT Compositor
 
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
 
-#if BUILDFLAG(IS_MAC)
-  // Current CGDirectDisplayID for the screen.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Current display ID for the screen.
   int64_t display_id_ = display::kInvalidDisplayId;
 #endif
 

@@ -765,6 +765,7 @@ viz_source_set("unit_tests") {
       "display_embedder/software_output_device_win_unittest.cc",
       "display_embedder/test_support/dcomp_mocks.cc",
       "display_embedder/test_support/dcomp_mocks.h",
+      "frame_sinks/external_begin_frame_source_win_unittest.cc",
     ]
 
     deps += [

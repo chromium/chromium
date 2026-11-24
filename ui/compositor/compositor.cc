@@ -369,7 +369,7 @@ void Compositor::SetLayerTreeFrameSink(
     display_private_->SetDisplayColorMatrix(
         gfx::SkM44ToTransform(display_color_matrix_));
     display_private_->SetOutputIsSecure(output_is_secure_);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     display_private_->SetVSyncDisplayID(display_id_);
 #endif
     if (has_vsync_params_) {
@@ -540,9 +540,10 @@ void Compositor::SetDisplayColorSpaces(
     display_private_->SetDisplayColorSpaces(display_color_spaces_);
 }
 
-#if BUILDFLAG(IS_MAC)
-void Compositor::SetVSyncDisplayID(const int64_t display_id) {
-  if (display_id_ == display_id) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+void Compositor::SetVSyncDisplayID(const int64_t display_id,
+                                   bool force_update) {
+  if (display_id_ == display_id && !force_update) {
     return;
   }
 
@@ -556,7 +557,9 @@ void Compositor::SetVSyncDisplayID(const int64_t display_id) {
 int64_t Compositor::display_id() const {
   return display_id_;
 }
+#endif
 
+#if BUILDFLAG(IS_MAC)
 void Compositor::UpdateRefreshRate(float refresh_rate) {
   if (refresh_rate <= 0 ||
       base::IsApproximatelyEqual(refresh_rate_, refresh_rate,

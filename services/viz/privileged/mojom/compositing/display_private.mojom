@@ -59,8 +59,8 @@ interface DisplayPrivate {
   SetDisplayColorSpaces(gfx.mojom.DisplayColorSpaces display_color_spaces);
   SetOutputIsSecure(bool secure);
 
-  // Sets CGDirectDisplayID for GPU begin frame source.
-  [EnableIf=is_mac]
+  // Sets the display ID for GPU begin frame source.
+  [EnableIf=is_mac|is_win]
   SetVSyncDisplayID(int64 display_id);
 
   // Updates vsync parameters used to generate BeginFrames for this display.

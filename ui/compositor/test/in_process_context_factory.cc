@@ -141,7 +141,7 @@ class InProcessContextFactory::PerCompositorData
     vsync_interval_ = interval;
   }
   void SetOutputIsSecure(bool secure) override {}
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void SetVSyncDisplayID(int64_t display_id) override {}
 #endif
   void ForceImmediateDrawAndSwapIfPossible() override {}
