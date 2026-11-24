@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_underlying_sink_wrapper.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_underlying_source_wrapper.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-value.h"
@@ -77,6 +79,72 @@ void HandleSendKeyFrameRequestResult(
   }
   resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
                                    message);
+}
+
+void HandleGenerateKeyFrameResult(
+    RTCEncodedUnderlyingSourceWrapper* underlying_source,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    const RTCRtpScriptTransform::GenerateKeyFrameRequestResult result,
+    Vector<String> selected_rids) {
+  CHECK(!resolver->GetExecutionContext() ||
+        resolver->GetExecutionContext()->IsContextThread());
+  if (!resolver->GetScriptState()->ContextIsValid()) {
+    resolver->Detach();
+    return;
+  }
+  switch (result) {
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kInvalidState:
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Transformer is not attached to a video RTCRtpSender.");
+      return;
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound:
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "No active video encoding matches the key frame request.");
+      return;
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kClosedOrStopped:
+      resolver->Detach();
+      return;
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kSuccess:
+      if (underlying_source) {
+        underlying_source->AddPendingKeyFrameRequest(std::move(selected_rids),
+                                                     resolver);
+      } else {
+        resolver->Detach();
+      }
+      return;
+  }
+}
+
+void CancelPendingKeyFrameRequest(
+    RTCEncodedUnderlyingSourceWrapper* underlying_source,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    const RTCRtpScriptTransform::GenerateKeyFrameRequestResult result) {
+  CHECK(!resolver->GetExecutionContext() ||
+        resolver->GetExecutionContext()->IsContextThread());
+  if (!resolver->GetScriptState()->ContextIsValid()) {
+    resolver->Detach();
+    return;
+  }
+  if (!underlying_source ||
+      !underlying_source->RemovePendingKeyFrameRequest(resolver)) {
+    return;
+  }
+  switch (result) {
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kNotFound:
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "No active video encoding matches the key frame request.");
+      return;
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kInvalidState:
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kSuccess:
+    case RTCRtpScriptTransform::GenerateKeyFrameRequestResult::kClosedOrStopped:
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Transformer is not attached to a video RTCRtpSender.");
+      return;
+  }
 }
 }  // namespace
 
@@ -163,6 +231,50 @@ ScriptValue RTCRtpScriptTransformer::options(ScriptState* script_state) {
   return ScriptValue(isolate, value);
 }
 
+ScriptPromise<IDLUndefined> RTCRtpScriptTransformer::generateKeyFrame(
+    ScriptState* script_state,
+    const String& rid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
+  if (!rid.IsNull() && !IsValidRid(rid)) {
+    resolver->RejectWithTypeError("Invalid rid.");
+    return promise;
+  }
+  // If `RTCRtpScriptTransform` on the main thread is garbage-collected before
+  // the cross-thread task runs, `MakeUnwrappingCrossThreadWeakHandle` drops the
+  // task and destroys the callback (and `resolver`) without settling. Likewise,
+  // an unattached or inactive transformer whose underlying source is collected
+  // while the worker context is still alive may never run `Close()`/`Clear()`.
+  resolver->SuppressDetachCheck();
+
+  // Both `HandleGenerateKeyFrameResult` and incoming encoded frames
+  // (`RTCEncodedVideoUnderlyingSource::OnFrameFromSource`) MUST run on the same
+  // single-threaded FIFO task runner (`rtp_transformer_task_runner_`, i.e. the
+  // worker's `kInternalMediaRealTime` runner; see `SetUpVideo`). On the WebRTC
+  // signaling thread, `HandleGenerateKeyFrameResult` is posted to that runner
+  // strictly before calling `webrtc::RtpSenderInterface::GenerateKeyFrame()`,
+  // so even though WebRTC may start encoding before the worker executes the
+  // registration task, the resulting key frame cannot reach the worker ahead of
+  // registration. If WebRTC rejects the request, `CancelPendingKeyFrameRequest`
+  // is posted to the same runner to remove the pending entry and reject.
+  PostCrossThreadTask(
+      *rtp_transform_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          &RTCRtpScriptTransform::GenerateKeyFrame,
+          MakeUnwrappingCrossThreadWeakHandle(*transform_), rid,
+          CrossThreadBindOnce(&HandleGenerateKeyFrameResult,
+                              WrapCrossThreadWeakPersistent(
+                                  rtc_encoded_underlying_source_.Get()),
+                              MakeUnwrappingCrossThreadHandle(resolver)),
+          CrossThreadBindOnce(&CancelPendingKeyFrameRequest,
+                              WrapCrossThreadWeakPersistent(
+                                  rtc_encoded_underlying_source_.Get()),
+                              MakeUnwrappingCrossThreadWeakHandle(resolver))));
+  return promise;
+}
+
 ScriptPromise<IDLUndefined> RTCRtpScriptTransformer::sendKeyFrameRequest(
     ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -211,6 +323,11 @@ void RTCRtpScriptTransformer::SetUpVideo(
       std::move(disconnect_callback_source), owner_id);
   encoded_video_transformer->SetTransformerCallback(
       rtc_encoded_underlying_source_->GetVideoTransformer());
+  // `generateKeyFrame()` relies on encoded frames being delivered on the same
+  // single-threaded FIFO task runner (`rtp_transformer_task_runner_`) as
+  // `HandleGenerateKeyFrameResult`, so that pending key-frame registration
+  // (posted on the signaling thread before calling WebRTC's GenerateKeyFrame)
+  // is guaranteed to run before any resulting key frame reaches the worker.
   encoded_video_transformer->SetSourceTaskRunner(rtp_transformer_task_runner_);
   rtc_encoded_underlying_sink_->CreateVideoUnderlyingSink(
       std::move(encoded_video_transformer), owner_id);

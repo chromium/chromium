@@ -5953,6 +5953,10 @@
       status: "stable",
     },
     {
+      name: "RTCRtpScriptTransformerGenerateKeyFrame",
+      status: "experimental",
+    },
+    {
       name: "RTCRtpTransport",
       status: "test",
     },

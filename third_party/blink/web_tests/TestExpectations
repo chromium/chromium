@@ -1846,9 +1846,6 @@ crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-052.html 
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-053.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-054.html [ Failure ]
 
-# WebRTC Encoded Transform
-crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform-generateKeyFrame.https.html [ Crash Skip ]
-
 # This test should pass when prefetch behavior in iframe is fixed.
 crbug.com/1371358 external/wpt/navigation-timing/prefetch-transfer-size-iframe.html [ Failure ]
 
@@ -8266,6 +8263,8 @@ crbug.com/441912460 [ Mac ] external/wpt/webrtc/RTCDataChannel-send-close-string
 crbug.com/441912460 [ Mac ] external/wpt/webrtc/RTCDataChannel-id.html [ Skip Timeout ]
 crbug.com/441912460 [ Mac ] external/wpt/webrtc-stats/video-psnr.https.html [ Skip Timeout ]
 crbug.com/441912460 [ Mac ] external/wpt/webrtc-extensions/RTCRtpParameters-encodingComplexity-stream.https.html [ Skip Timeout ]
+crbug.com/441912460 [ Mac ] external/wpt/webrtc-encoded-transform/script-transform-generateKeyFrame.https.html [ Failure Pass Timeout ]
+crbug.com/441912460 [ Mac ] external/wpt/webrtc-encoded-transform/script-transform-generateKeyFrame-simulcast.https.html [ Failure Pass Timeout ]
 
 # Text drag and drop does not work on mac for test_driver.
 crbug.com/440374233 [ Mac ] external/wpt/html/editing/dnd/drop/002.xhtml [ Failure Timeout ]

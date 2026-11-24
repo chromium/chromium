@@ -55,6 +55,8 @@ class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
   ScriptValue options(ScriptState*);
   ReadableStream* readable() { return readable_; }
   WritableStream* writable() { return writable_; }
+  ScriptPromise<IDLUndefined> generateKeyFrame(ScriptState* script_state,
+                                               const String& rid = String());
   ScriptPromise<IDLUndefined> sendKeyFrameRequest(ScriptState* script_state);
 
   // Never invalidates the cache because options is immutable.

@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-value.h"
 
@@ -78,6 +80,40 @@ TEST(RTCRtpScriptTransformerTest, OptionsAsNull) {
           script_state, std::move(options), /*transform_task_runner=*/nullptr,
           CrossThreadWeakHandle<RTCRtpScriptTransform>(nullptr));
   EXPECT_EQ(transformer->options(script_state).V8Value(), v8_null);
+}
+
+TEST(RTCRtpScriptTransformerTest,
+     GenerateKeyFrameInvalidRidRejectsWithTypeError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  RTCRtpScriptTransformer* transformer =
+      MakeGarbageCollected<RTCRtpScriptTransformer>(
+          script_state, CustomEventMessage(),
+          /*transform_task_runner=*/nullptr,
+          CrossThreadWeakHandle<RTCRtpScriptTransform>(nullptr));
+
+  for (const String& invalid_rid :
+       {String(""), String("foo-bar"), String(std::string(17, 'a'))}) {
+    ScriptPromiseTester tester(
+        script_state, transformer->generateKeyFrame(script_state, invalid_rid));
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    v8::Local<v8::Object> error_object;
+    ASSERT_TRUE(tester.Value()
+                    .V8Value()
+                    ->ToObject(script_state->GetContext())
+                    .ToLocal(&error_object));
+    ASSERT_TRUE(error_object->IsNativeError());
+    v8::Local<v8::Value> name_value;
+    ASSERT_TRUE(error_object
+                    ->Get(script_state->GetContext(),
+                          V8AtomicString(v8_scope.GetIsolate(), "name"))
+                    .ToLocal(&name_value));
+    EXPECT_EQ(
+        ToCoreStringWithUndefinedOrNullCheck(v8_scope.GetIsolate(), name_value),
+        "TypeError");
+  }
 }
 
 }  // namespace blink

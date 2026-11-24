@@ -2017,6 +2017,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method constructor
+[Worker]     method generateKeyFrame
 [Worker]     method sendKeyFrameRequest
 [Worker] interface RTCRtpSenderEncodedSource : EventTarget
 [Worker]     attribute @@toStringTag
