@@ -121,7 +121,7 @@ class PathMappingsTest(unittest.TestCase):
               'dts_dir': (
                 f'{out_rel}/chrome/browser/ui/webui/foo/mojo_bindings_webui_tsc'
               ),
-              'url_prefix': 'chrome/browser/ui/webui/foo',
+              'import_path_prefix': 'chrome/browser/ui/webui/foo',
               'files': ['foo.mojom-webui.js'],
             }
           ]

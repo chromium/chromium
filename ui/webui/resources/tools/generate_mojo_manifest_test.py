@@ -30,7 +30,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
             {
               'base_dir': 'gen/foo/mojo_bindings_webui_minified',
               'dts_dir': 'gen/foo/mojo_bindings_webui_tsc',
-              'url_prefix': 'foo',
+              'import_path_prefix': 'foo',
               'files': ['a.mojom-webui.js', 'b.mojom-webui.js'],
             }
           ]
@@ -46,13 +46,13 @@ class GenerateMojoManifestTest(unittest.TestCase):
             {
               'base_dir': 'gen/foo/mojo_bindings_webui_minified',
               'dts_dir': 'gen/foo/mojo_bindings_webui_tsc',
-              'url_prefix': 'foo',
+              'import_path_prefix': 'foo',
               'files': ['b.mojom-webui.js'],
             },
             {
               'base_dir': 'gen/bar/mojom_webui_minified',
               'dts_dir': 'gen/bar/mojom_webui_tsc',
-              'url_prefix': 'bar',
+              'import_path_prefix': 'bar',
               'files': ['c.mojom-webui.js'],
             },
           ]
@@ -67,7 +67,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
         'gen/baz/mojo_bindings_webui_minified',
         '--dts_dir',
         'gen/baz/mojo_bindings_webui_tsc',
-        '--url_prefix',
+        '--import_path_prefix',
         'baz',
         '--out_manifest',
         out_manifest,
@@ -88,19 +88,19 @@ class GenerateMojoManifestTest(unittest.TestCase):
           {
             'base_dir': 'gen/foo/mojo_bindings_webui_minified',
             'dts_dir': 'gen/foo/mojo_bindings_webui_tsc',
-            'url_prefix': 'foo',
+            'import_path_prefix': 'foo',
             'files': ['a.mojom-webui.js', 'b.mojom-webui.js'],
           },
           {
             'base_dir': 'gen/bar/mojom_webui_minified',
             'dts_dir': 'gen/bar/mojom_webui_tsc',
-            'url_prefix': 'bar',
+            'import_path_prefix': 'bar',
             'files': ['c.mojom-webui.js'],
           },
           {
             'base_dir': 'gen/baz/mojo_bindings_webui_minified',
             'dts_dir': 'gen/baz/mojo_bindings_webui_tsc',
-            'url_prefix': 'baz',
+            'import_path_prefix': 'baz',
             'files': ['d.mojom-webui.js'],
           },
         ]
@@ -117,7 +117,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
             {
               'base_dir': 'gen/other_tsc',
               'dts_dir': 'gen/other_tsc',
-              'url_prefix': 'foo',
+              'import_path_prefix': 'foo',
               'files': ['a.mojom-webui.js'],
             }
           ]
@@ -131,7 +131,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
         [
           '--base_dir',
           'gen/foo/mojo_bindings_webui_tsc',
-          '--url_prefix',
+          '--import_path_prefix',
           'foo',
           '--out_manifest',
           out_manifest,
@@ -158,7 +158,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
       [
         '--base_dir',
         'gen/bar/mojo_bindings_webui_tsc',
-        '--url_prefix',
+        '--import_path_prefix',
         'bar',
         '--out_manifest',
         out_manifest,
@@ -183,7 +183,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
           {
             'base_dir': 'gen/bar/mojo_bindings_webui_tsc',
             'dts_dir': 'gen/bar/mojo_bindings_webui_tsc',
-            'url_prefix': 'bar',
+            'import_path_prefix': 'bar',
             'files': ['bar.mojom-webui.js'],
           },
         ]
@@ -191,7 +191,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
       data,
     )
 
-  def testAggregationOnlyAndUrlPrefixNormalization(self):
+  def testAggregationOnlyAndImportPrefixNormalization(self):
     dep_manifest_1 = os.path.join(self._temp_dir, 'dep1.json')
     with open(dep_manifest_1, 'w', encoding='utf-8') as f:
       json.dump(
@@ -200,7 +200,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
             {
               'base_dir': 'gen/foo/tsc/',
               'dts_dir': 'gen/foo/tsc/',
-              'url_prefix': '/foo/bar/',
+              'import_path_prefix': '/foo/bar/',
               'files': ['sub/a.mojom-webui.js'],
             }
           ]
@@ -216,7 +216,7 @@ class GenerateMojoManifestTest(unittest.TestCase):
             {
               'base_dir': 'gen\\foo\\tsc\\',
               'dts_dir': 'gen\\foo\\tsc\\',
-              'url_prefix': '\\foo\\bar\\',
+              'import_path_prefix': '\\foo\\bar\\',
               'files': ['sub\\a.mojom-webui.js'],
             }
           ]
@@ -244,13 +244,64 @@ class GenerateMojoManifestTest(unittest.TestCase):
           {
             'base_dir': 'gen/foo/tsc',
             'dts_dir': 'gen/foo/tsc',
-            'url_prefix': 'foo/bar',
+            'import_path_prefix': 'foo/bar',
             'files': ['sub/a.mojom-webui.js'],
           },
         ]
       },
       data,
     )
+
+  def testServePathPrefix(self):
+    out_manifest = os.path.join(self._temp_dir, 'shared_manifest.json')
+    generate_mojo_manifest.main(
+      [
+        '--base_dir',
+        'gen/ui/webui/resources/tsc/mojo',
+        '--serve_path_prefix',
+        '//resources/mojo/',
+        '--out_manifest',
+        out_manifest,
+        '--in_files',
+        'url/mojom/url.mojom-webui.js',
+      ]
+    )
+
+    with open(out_manifest, 'r', encoding='utf-8') as f:
+      data = json.load(f)
+
+    self.assertEqual(
+      {
+        'entries': [
+          {
+            'base_dir': 'gen/ui/webui/resources/tsc/mojo',
+            'dts_dir': 'gen/ui/webui/resources/tsc/mojo',
+            'serve_path_prefix': '//resources/mojo',
+            'files': ['url/mojom/url.mojom-webui.js'],
+          },
+        ]
+      },
+      data,
+    )
+
+    # Merging a manifest with the same import path but a different
+    # serve_path_prefix must fail.
+    conflicting_manifest = os.path.join(self._temp_dir, 'conflict.json')
+    with self.assertRaisesRegex(AssertionError, 'Conflicting manifest entries'):
+      generate_mojo_manifest.main(
+        [
+          '--base_dir',
+          'gen/ui/webui/resources/tsc/mojo',
+          '--serve_path_prefix',
+          '//resources/other',
+          '--out_manifest',
+          conflicting_manifest,
+          '--dep_manifests',
+          out_manifest,
+          '--in_files',
+          'url/mojom/url.mojom-webui.js',
+        ]
+      )
 
 
 if __name__ == '__main__':

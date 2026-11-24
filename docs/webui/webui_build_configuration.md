@@ -275,9 +275,9 @@ ts_deps: List of ts_library() dependencies to generate path mappings for.
 manifest_files: Optional parameter. List of manifest files (e.g. from
                 generate_mojo_manifest() or ts_library() targets) whose listed
                 .js files should be mapped to their corresponding .d.ts files
-                using the `dts_dir` (or `base_dir`) and optional `url_prefix`
-                recorded in each manifest. Must be specified together with
-                `manifest_deps`.
+                using the `dts_dir` (or `base_dir`) and optional
+                `import_path_prefix` recorded in each manifest. Must be
+                specified together with `manifest_deps`.
 manifest_deps: Optional parameter. Targets generating |manifest_files|. Must be
                specified together with `manifest_files`.
 webui_context_type: What import scheme(s) should be mapped for the UI. Options:
@@ -676,9 +676,9 @@ webui_mojo_library("mojo_bindings_webui") {
 ### **generate_mojo_manifest**
 
 This rule writes a JSON manifest file (`entries` containing `base_dir`,
-`dts_dir`, optional `url_prefix`, and `files`) combining a target's own Mojo JS
-files with the entries from any dependent Mojo manifests (`dep_manifests`).
-Used internally by `webui_mojo_library()` and
+`dts_dir`, optional `import_path_prefix` and `serve_path_prefix`, and `files`)
+combining a target's own Mojo JS files with the entries from any dependent Mojo
+manifests (`dep_manifests`). Used internally by `webui_mojo_library()` and
 `//ui/webui/resources/mojo:mojo_manifest`.
 
 #### **Arguments**
@@ -688,9 +688,18 @@ base_dir: Optional parameter (required when `in_files` is specified). Base
           directory containing files listed in `in_files`.
 dts_dir: Optional parameter. Directory containing the `.d.ts` files emitted by
          `ts_library()` for `in_files`. Defaults to `base_dir`.
-url_prefix: Optional parameter. Import/resource URL prefix prepended to each
-            entry in `in_files` (e.g. the target's repository-relative
-            directory).
+import_path_prefix: Optional parameter. Prefix prepended to each entry in
+                    `in_files` to form the module specifier used in `import`
+                    statements (e.g. the target's repository-relative
+                    directory), as well as the default GRD/served path when
+                    packaged into a WebUI's own GRD.
+serve_path_prefix: Optional parameter. Served URL/path prefix override. Should
+                   only be set when files in `in_files` are served from a
+                   different runtime location than
+                   `/<import_path_prefix>/<file>` (or `/<file>` when
+                   `import_path_prefix` is unset), e.g. `"//resources/mojo"`
+                   for shared Mojo bindings served from
+                   `chrome://resources/mojo/`.
 in_files: Optional parameter. List of `.js` file paths relative to `base_dir`
           and `dts_dir` produced by the current target.
 dep_manifests: Optional parameter. List of manifest files from dependent
@@ -709,7 +718,7 @@ import("//ui/webui/resources/tools/generate_mojo_manifest.gni")
 generate_mojo_manifest("my_mojo_manifest") {
   out_manifest = "$target_gen_dir/my_mojo_manifest.json"
   base_dir = "$target_gen_dir/tsc"
-  url_prefix = rebase_path(target_gen_dir, root_gen_dir)
+  import_path_prefix = rebase_path(target_gen_dir, root_gen_dir)
   in_files = [ "my_webui.mojom-webui.js" ]
   public_deps = [ ":build_ts" ]
 }

@@ -50,10 +50,18 @@ template("generate_mojo_manifest") {
                 "--in_files",
               ] + invoker.in_files
 
-      if (defined(invoker.url_prefix) && invoker.url_prefix != "") {
+      if (defined(invoker.import_path_prefix) &&
+          invoker.import_path_prefix != "") {
         args += [
-          "--url_prefix",
-          invoker.url_prefix,
+          "--import_path_prefix",
+          invoker.import_path_prefix,
+        ]
+      }
+      if (defined(invoker.serve_path_prefix) &&
+          invoker.serve_path_prefix != "") {
+        args += [
+          "--serve_path_prefix",
+          invoker.serve_path_prefix,
         ]
       }
     } else {
@@ -61,7 +69,8 @@ template("generate_mojo_manifest") {
                  [
                    "base_dir",
                    "dts_dir",
-                   "url_prefix",
+                   "import_path_prefix",
+                   "serve_path_prefix",
                  ])
     }
 

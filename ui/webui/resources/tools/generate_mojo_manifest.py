@@ -17,7 +17,8 @@ def main(argv):
   parser.add_argument('--dep_manifests', nargs='*', default=[])
   parser.add_argument('--base_dir')
   parser.add_argument('--dts_dir')
-  parser.add_argument('--url_prefix', default='')
+  parser.add_argument('--import_path_prefix', default='')
+  parser.add_argument('--serve_path_prefix', default='')
   parser.add_argument('--out_manifest', required=True)
   args = parser.parse_args(argv)
 
@@ -29,12 +30,26 @@ def main(argv):
     entry_dts_dir = (
       entry.get('dts_dir', entry_base_dir).replace('\\', '/').rstrip('/')
     )
-    entry_prefix = entry.get('url_prefix', '').replace('\\', '/').strip('/')
+    entry_import_prefix = (
+      entry.get('import_path_prefix', '').replace('\\', '/').strip('/')
+    )
+    entry_serve_prefix = (
+      entry.get('serve_path_prefix', '').replace('\\', '/').rstrip('/')
+    )
     new_files = []
     for file_name in entry['files']:
       file_name = file_name.replace('\\', '/').lstrip('/')
-      import_path = f'{entry_prefix}/{file_name}' if entry_prefix else file_name
-      target_dirs = (entry_base_dir, entry_dts_dir, file_name)
+      import_path = (
+        f'{entry_import_prefix}/{file_name}'
+        if entry_import_prefix
+        else file_name
+      )
+      target_dirs = (
+        entry_base_dir,
+        entry_dts_dir,
+        entry_serve_prefix,
+        file_name,
+      )
       if import_path in seen_imports:
         assert seen_imports[import_path] == target_dirs, (
           f'Conflicting manifest entries for {import_path}: '
@@ -50,8 +65,10 @@ def main(argv):
         'dts_dir': entry_dts_dir,
         'files': new_files,
       }
-      if entry_prefix:
-        normalized['url_prefix'] = entry_prefix
+      if entry_import_prefix:
+        normalized['import_path_prefix'] = entry_import_prefix
+      if entry_serve_prefix:
+        normalized['serve_path_prefix'] = entry_serve_prefix
       entries.append(normalized)
 
   for dep_manifest in args.dep_manifests:
@@ -70,7 +87,8 @@ def main(argv):
       {
         'base_dir': args.base_dir,
         'dts_dir': dts_dir,
-        'url_prefix': args.url_prefix,
+        'import_path_prefix': args.import_path_prefix,
+        'serve_path_prefix': args.serve_path_prefix,
         'files': args.in_files,
       }
     )

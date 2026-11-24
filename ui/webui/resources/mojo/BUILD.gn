@@ -151,6 +151,10 @@ ts_library("build_ts") {
 generate_mojo_manifest("mojo_manifest") {
   out_manifest = "$target_gen_dir/mojo_manifest.json"
   base_dir = tsc_folder
+
+  # Shared Mojo files are served from chrome://resources/mojo/ (or
+  # //resources/mojo/) rather than from each consuming WebUI's own host root.
+  serve_path_prefix = "//resources/mojo"
   in_files = []
   foreach(_file, mojo_ts_files) {
     in_files += [ string_replace(_file, ".ts", ".js") ]

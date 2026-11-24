@@ -136,7 +136,7 @@ template("webui_mojo_library") {
     out_manifest = "$target_gen_dir/${base_target_name}_manifest.json"
     base_dir = js_out_dir
     dts_dir = target_tsc_dir
-    url_prefix = repo_dir
+    import_path_prefix = repo_dir
     in_files = mojo_js_files
     dep_manifests = dep_manifest_files
     public_deps = [ own_target ] + webui_lib_deps

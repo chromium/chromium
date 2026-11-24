@@ -61,9 +61,11 @@ def _get_path_mappings_from_manifest(manifest_path, gen_dir):
     manifest_data = json.load(f)
   for entry in manifest_data.get('entries', [manifest_data]):
     dts_dir = entry.get('dts_dir', entry['base_dir'])
-    url_prefix = entry.get('url_prefix', '')
+    import_path_prefix = entry.get('import_path_prefix', '')
     for file_name in entry['files']:
-      import_path = f'{url_prefix}/{file_name}' if url_prefix else file_name
+      import_path = (
+        f'{import_path_prefix}/{file_name}' if import_path_prefix else file_name
+      )
       dts_file = re.sub(r'\.js$', '.d.ts', file_name)
       rel_dts_path = os.path.relpath(
         os.path.join(dts_dir, dts_file), gen_dir
