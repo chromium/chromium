@@ -187,6 +187,7 @@ source_set("ui_lib_shared_headers") {
     "src/UILib/GREYElementHierarchy.h",
     "src/UILib/GREYScreenshotter.h",
     "src/UILib/Provider/GREYUIWindowProvider.h",
+    "src/UILib/Utils/GREYUILibUtils.h",
     "src/UILib/Visibility/GREYVisibilityChecker.h",
     "src/UILib/Visibility/GREYVisibilityCheckerCacheEntry.h",
   ]
@@ -218,7 +219,6 @@ source_set("ui_lib") {
     "src/UILib/Traversal/GREYTraversalObject.m",
     "src/UILib/Traversal/GREYTraversalProperties.h",
     "src/UILib/Traversal/GREYTraversalProperties.m",
-    "src/UILib/Utils/GREYUILibUtils.h",
     "src/UILib/Utils/GREYUILibUtils.m",
     "src/UILib/Visibility/GREYQuickVisibilityChecker.h",
     "src/UILib/Visibility/GREYQuickVisibilityChecker.m",
