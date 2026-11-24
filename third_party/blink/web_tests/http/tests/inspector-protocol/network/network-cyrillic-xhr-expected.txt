@@ -1,0 +1,13 @@
+Tests cyrillic xhr content is correctly loaded in inspector.
+
+http://127.0.0.1:8000/inspector-protocol/network/resources/cyrillic.html?sync
+resource.content: <!DOCTYPE html>
+The following line contains a word "success" written with cyrillic letters.
+SUССЕSS
+
+http://127.0.0.1:8000/inspector-protocol/network/resources/cyrillic.html?async
+resource.content: <!DOCTYPE html>
+The following line contains a word "success" written with cyrillic letters.
+SUССЕSS
+
+
