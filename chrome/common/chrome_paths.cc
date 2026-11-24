@@ -38,7 +38,20 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <stdint.h>
+
+#include <algorithm>
+
+#include "base/files/file.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
+#elif BUILDFLAG(IS_POSIX)
+#include <errno.h>
+#include <sys/stat.h>
+
+#include "base/files/file.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -522,6 +535,83 @@ bool PathProvider(int key, base::FilePath* result) {
 
   *result = cur;
   return true;
+}
+
+bool IsConfirmedNonDefaultUserDataDirectory(
+    const base::FilePath& user_data_dir,
+    const base::FilePath& default_user_data_dir) {
+  if (user_data_dir.empty() || default_user_data_dir.empty()) {
+    return false;
+  }
+#if BUILDFLAG(IS_WIN)
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  constexpr uint32_t kOpenDirectory =
+      base::File::FLAG_OPEN | base::File::FLAG_READ |
+      base::File::FLAG_WIN_BACKUP_SEMANTICS | base::File::FLAG_WIN_SHARE_DELETE;
+  base::File actual_dir(user_data_dir, kOpenDirectory);
+  if (!actual_dir.IsValid()) {
+    return false;
+  }
+  base::File default_dir(default_user_data_dir, kOpenDirectory);
+  if (!default_dir.IsValid()) {
+    return default_dir.error_details() == base::File::FILE_ERROR_NOT_FOUND;
+  }
+
+  FILE_ID_INFO actual_id = {};
+  FILE_ID_INFO default_id = {};
+  const bool got_actual_id = ::GetFileInformationByHandleEx(
+      actual_dir.GetPlatformFile(), FileIdInfo, &actual_id, sizeof(actual_id));
+  const bool got_default_id =
+      ::GetFileInformationByHandleEx(default_dir.GetPlatformFile(), FileIdInfo,
+                                     &default_id, sizeof(default_id));
+  const auto is_zero_id = [](const FILE_ID_INFO& info) {
+    return std::ranges::all_of(info.FileId.Identifier,
+                               [](uint8_t byte) { return byte == 0; });
+  };
+  if ((got_actual_id && is_zero_id(actual_id)) ||
+      (got_default_id && is_zero_id(default_id))) {
+    return false;
+  }
+  if (got_actual_id && got_default_id) {
+    return actual_id.VolumeSerialNumber != default_id.VolumeSerialNumber ||
+           !std::ranges::equal(actual_id.FileId.Identifier,
+                               default_id.FileId.Identifier);
+  }
+
+  // Some filesystems do not support FileIdInfo. Compare legacy IDs for both
+  // directories rather than mixing the ID formats.
+  BY_HANDLE_FILE_INFORMATION actual_info = {};
+  BY_HANDLE_FILE_INFORMATION default_info = {};
+  if (!::GetFileInformationByHandle(actual_dir.GetPlatformFile(),
+                                    &actual_info) ||
+      !::GetFileInformationByHandle(default_dir.GetPlatformFile(),
+                                    &default_info) ||
+      (actual_info.nFileIndexHigh == 0 && actual_info.nFileIndexLow == 0) ||
+      (default_info.nFileIndexHigh == 0 && default_info.nFileIndexLow == 0)) {
+    return false;
+  }
+  return actual_info.dwVolumeSerialNumber !=
+             default_info.dwVolumeSerialNumber ||
+         actual_info.nFileIndexHigh != default_info.nFileIndexHigh ||
+         actual_info.nFileIndexLow != default_info.nFileIndexLow;
+#elif BUILDFLAG(IS_POSIX)
+  base::stat_wrapper_t actual_info;
+  if (base::File::Stat(user_data_dir, &actual_info) != 0) {
+    return false;
+  }
+  base::stat_wrapper_t default_info;
+  if (base::File::Stat(default_user_data_dir, &default_info) != 0) {
+    return errno == ENOENT;
+  }
+  if (actual_info.st_ino == 0 || default_info.st_ino == 0) {
+    return false;
+  }
+  return actual_info.st_dev != default_info.st_dev ||
+         actual_info.st_ino != default_info.st_ino;
+#else
+  return false;
+#endif
 }
 
 void SetUserDataDirSetByPolicy() {

@@ -9,6 +9,8 @@
 #include "base/base_paths.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -19,6 +21,15 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <string>
+
+#include "base/test/file_path_reparse_point_win.h"
+#include "base/test/test_file_util.h"
+#endif
 
 namespace chrome {
 
@@ -226,6 +237,106 @@ TEST(ChromePaths, DefaultUserDataDirectory) {
   SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
   EXPECT_TRUE(IsUsingDefaultDataDirectory().value());
 }
+
+class UserDataDirectoryIdentityTest : public testing::Test {
+ protected:
+  void SetUp() override { ASSERT_TRUE(temp_.CreateUniqueTempDir()); }
+  base::ScopedTempDir temp_;
+};
+
+TEST_F(UserDataDirectoryIdentityTest, FirstRunWithCustomDirectory) {
+  const base::FilePath custom_dir = temp_.GetPath().AppendASCII("Custom");
+  const base::FilePath default_dir = temp_.GetPath().AppendASCII("Default");
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(custom_dir, default_dir));
+
+  // Use the same create-and-select operation as InitializeUserDataDir().
+  base::ScopedPathOverride override(chrome::DIR_USER_DATA, custom_dir,
+                                    /*is_absolute=*/false, /*create=*/true);
+  const base::FilePath actual_dir =
+      base::PathService::CheckedGet(DIR_USER_DATA);
+  EXPECT_TRUE(IsConfirmedNonDefaultUserDataDirectory(actual_dir, default_dir));
+  EXPECT_FALSE(base::PathExists(default_dir));
+  ASSERT_TRUE(base::CreateDirectory(default_dir));
+  EXPECT_TRUE(IsConfirmedNonDefaultUserDataDirectory(actual_dir, default_dir));
+}
+
+TEST_F(UserDataDirectoryIdentityTest, RelativePath) {
+  base::FilePath cwd;
+  ASSERT_TRUE(base::GetCurrentDirectory(&cwd));
+  const base::FilePath relative(FILE_PATH_LITERAL("."));
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(relative, cwd));
+  EXPECT_TRUE(
+      IsConfirmedNonDefaultUserDataDirectory(relative, temp_.GetPath()));
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(UserDataDirectoryIdentityTest, CaseVariant) {
+  const base::FilePath dir = temp_.GetPath().Append(L"MixedCase");
+  const base::FilePath case_variant = temp_.GetPath().Append(L"MIXEDCASE");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  ASSERT_TRUE(base::DirectoryExists(case_variant));
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(case_variant, dir));
+}
+
+TEST_F(UserDataDirectoryIdentityTest, JunctionToLongDirectory) {
+  const base::FilePath root = temp_.GetPath().Append(L"Tree");
+  base::ScopedTempDir tree;
+  ASSERT_TRUE(tree.Set(base::FilePath(L"\\\\?\\" + root.value())));
+  base::FilePath target = root;
+  while (target.value().size() <= MAX_PATH) {
+    target = target.Append(L"LongDirectoryName");
+  }
+  const base::FilePath long_path(L"\\\\?\\" + target.value());
+  ASSERT_TRUE(base::CreateDirectory(long_path));
+  const base::FilePath alias = temp_.GetPath().Append(L"Alias");
+  ASSERT_TRUE(base::CreateDirectory(alias));
+  auto junction = base::test::FilePathReparsePoint::Create(alias, target);
+  ASSERT_TRUE(junction.has_value());
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(alias, long_path));
+  EXPECT_TRUE(IsConfirmedNonDefaultUserDataDirectory(long_path, root));
+}
+
+TEST_F(UserDataDirectoryIdentityTest, ShortName) {
+  const base::FilePath dir = temp_.GetPath().Append(L"LongDirectoryName");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  const DWORD size = ::GetShortPathNameW(dir.value().c_str(), nullptr, 0);
+  ASSERT_GT(size, 0u);
+  std::wstring name(size, L'\0');
+  const DWORD length =
+      ::GetShortPathNameW(dir.value().c_str(), name.data(), size);
+  ASSERT_GT(length, 0u);
+  ASSERT_LT(length, size);
+  name.resize(length);
+  const base::FilePath short_path(name);
+  if (short_path.BaseName() == dir.BaseName()) {
+    GTEST_SKIP() << "The volume did not assign an 8.3 name.";
+  }
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(short_path, dir));
+}
+
+TEST_F(UserDataDirectoryIdentityTest, InaccessibleDefault) {
+  const base::FilePath dir = temp_.GetPath().Append(L"Default");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  base::FilePermissionRestorer restore_permissions(dir);
+  ASSERT_TRUE(base::MakeFileUnreadable(dir));
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(temp_.GetPath(), dir));
+}
+#elif BUILDFLAG(IS_POSIX)  // BUILDFLAG(IS_WIN)
+TEST_F(UserDataDirectoryIdentityTest, SymbolicLink) {
+  const base::FilePath dir = temp_.GetPath().AppendASCII("Default");
+  const base::FilePath alias = temp_.GetPath().AppendASCII("Alias");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  ASSERT_TRUE(base::CreateSymbolicLink(dir, alias));
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(alias, dir));
+  EXPECT_TRUE(IsConfirmedNonDefaultUserDataDirectory(alias, temp_.GetPath()));
+}
+
+TEST_F(UserDataDirectoryIdentityTest, UnresolvableDefault) {
+  const base::FilePath loop = temp_.GetPath().AppendASCII("Loop");
+  ASSERT_TRUE(base::CreateSymbolicLink(loop, loop));
+  EXPECT_FALSE(IsConfirmedNonDefaultUserDataDirectory(temp_.GetPath(), loop));
+}
+#endif                     // BUILDFLAG(IS_WIN)
 
 TEST(ChromePaths, DefaultOrEnforcedDataDirectory) {
   EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), true);

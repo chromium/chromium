@@ -26,6 +26,14 @@ namespace chrome {
 // DIR_USER_DATA has been overridden by a command-line option.
 bool GetDefaultUserDataDirectory(base::FilePath* result);
 
+// Returns true if the initialized user data directory exists and is distinct
+// from the default. A missing default directory counts as distinct; unexpected
+// lookup errors or unusable identities return false. Performs blocking
+// filesystem I/O.
+bool IsConfirmedNonDefaultUserDataDirectory(
+    const base::FilePath& user_data_dir,
+    const base::FilePath& default_user_data_dir);
+
 // Records that the user data directory was set by enterprise policy.
 void SetUserDataDirSetByPolicy();
 

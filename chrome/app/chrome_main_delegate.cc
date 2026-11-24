@@ -651,6 +651,13 @@ struct MainFunction {
 };
 
 #if !defined(BUILDING_CHROME_RENDERER)
+void RemoveDisableWebSecuritySwitch() {
+  LOG(ERROR) << "Web security may only be disabled if '--user-data-dir' is "
+                "also specified with a non-default value.";
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kDisableWebSecurity);
+}
+
 // Initializes the user data dir. Must be called before InitializeLocalState().
 void InitializeUserDataDir(base::CommandLine* command_line) {
 #if BUILDFLAG(IS_WIN)
@@ -1246,10 +1253,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   // specified a distinct profile directory. This still enables tests to disable
   // web security by setting the kWebKitWebSecurityEnabled pref directly.
   //
-  // Note that this is done in ChromeMainDelegate::BasicStartupComplete()
-  // because this is the earliest callback. Many places in Chromium gate
-  // security features around kDisableWebSecurity, and it is unreasonable to
-  // expect them all to properly also check for kUserDataDir.
+  // PreSandboxStartup() checks the effective directory once it exists.
 #if !defined(BUILDING_CHROME_RENDERER)
   if (command_line.HasSwitch(switches::kDisableWebSecurity)) {
     base::FilePath default_user_data_dir;
@@ -1259,10 +1263,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
             .StripTrailingSeparators();
     if (specified_user_data_dir.empty() ||
         specified_user_data_dir == default_user_data_dir) {
-      LOG(ERROR) << "Web security may only be disabled if '--user-data-dir' is "
-                    "also specified with a non-default value.";
-      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-          switches::kDisableWebSecurity);
+      RemoveDisableWebSecuritySwitch();
     }
   }
 #endif  // !defined(BUILDING_CHROME_RENDERER)
@@ -1626,6 +1627,18 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // Initialize the user data dir for any process type that needs it.
   if (chrome::ProcessNeedsProfileDir(process_type)) {
     InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
+    if (command_line.HasSwitch(switches::kDisableWebSecurity)) {
+      // Initialization can fall back to the default instead of using the
+      // requested directory. Compare the effective directories on disk.
+      base::FilePath user_data_dir;
+      base::FilePath default_user_data_dir;
+      if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir) ||
+          !chrome::GetDefaultUserDataDirectory(&default_user_data_dir) ||
+          !chrome::IsConfirmedNonDefaultUserDataDirectory(
+              user_data_dir, default_user_data_dir)) {
+        RemoveDisableWebSecuritySwitch();
+      }
+    }
   }
 
   // Register component_updater PathProvider after DIR_USER_DATA overridden by
