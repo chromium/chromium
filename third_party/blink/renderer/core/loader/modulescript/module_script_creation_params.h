@@ -127,7 +127,9 @@ class CORE_EXPORT ModuleScriptCreationParams {
   CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
 
   bool IsSafeToSendToAnotherThread() const {
-    return !script_streamer_ && !cache_handler_;
+    return !script_streamer_ && !cache_handler_ &&
+           (module_type_ == ResolvedModuleType::kWasm ||
+            !GetSourceText().may_be_parked());
   }
 
   ScriptStreamer* GetScriptStreamer() const { return script_streamer_; }
