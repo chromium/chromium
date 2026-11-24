@@ -264,6 +264,8 @@ inline constexpr char kPumaRcClientId[] = "private_metrics.puma.client_id.rc";
 // Deprecated 11/2026.
 inline constexpr char kPrefsThemesSearchEnginesAccountStorageEnabled[] =
     "signin.prefs_themes_search_engines_account_storage_enabled";
+inline constexpr char kIosImageFetcherShouldClearCache[] =
+    "ios.image_fetcher_should_clear_cache";
 
 }  // namespace
 
@@ -603,7 +605,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kNTPContentSuggestionsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kIosImageFetcherShouldClearCache, true);
   registry->RegisterBooleanPref(
       prefs::kArticlesForYouEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -961,6 +962,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 11/2026.
   registry->RegisterBooleanPref(kPrefsThemesSearchEnginesAccountStorageEnabled,
                                 false);
+  registry->RegisterBooleanPref(kIosImageFetcherShouldClearCache, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1067,6 +1069,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 11/2026.
   prefs->ClearPref(kPrefsThemesSearchEnginesAccountStorageEnabled);
+  prefs->ClearPref(kIosImageFetcherShouldClearCache);
 }
 
 void MigrateObsoleteUserDefault() {
