@@ -79,6 +79,11 @@ public class TabGroupShareNoticeBottomSheetView extends LinearLayout implements 
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public BottomSheetType getSheetType() {
         return SHEET_TYPE;
     }

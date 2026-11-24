@@ -5,12 +5,14 @@ package org.chromium.chrome.browser.tasks.tab_management.tab_group_share_notice;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -101,5 +103,24 @@ public class TabGroupShareNoticeBottomSheetViewUnitTest {
         mView.setCompletionHandler(null);
         mConfirmButton.performClick();
         verify(mCompletionHandler, never()).run();
+    }
+
+    @Test
+    public void testShowHandlebar() {
+        assertTrue(mView.showHandlebar());
+        ViewGroup contentView = (ViewGroup) mView.getContentView();
+        assertEquals(4, contentView.getChildCount());
+        assertEquals(mIllustration, contentView.getChildAt(0));
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.tab_group_share_notice_bottom_sheet_content_margin_top),
+                contentView.getPaddingTop());
+        int expectedHorizontalPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.tab_group_share_notice_bottom_sheet_horizontal_padding);
+        assertEquals(expectedHorizontalPadding, contentView.getPaddingLeft());
+        assertEquals(expectedHorizontalPadding, contentView.getPaddingRight());
     }
 }
