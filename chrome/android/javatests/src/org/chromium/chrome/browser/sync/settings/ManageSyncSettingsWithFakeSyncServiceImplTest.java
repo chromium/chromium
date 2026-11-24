@@ -38,6 +38,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,8 @@ import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -80,19 +83,27 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Rule(order = 0)
     public final SyncTestRule mSyncTestRule =
-            new SyncTestRule() {
+            new SyncTestRule(/* launchActivity= */ false) {
                 @Override
                 protected FakeSyncServiceImpl createSyncServiceImpl() {
                     return new FakeSyncServiceImpl();
                 }
             };
 
-    // SettingsActivity has to be finished before the outer ChromeTabbedActivity can be finished,
-    // otherwise trying to finish ChromeTabbedActivity won't work (SyncTestRule extends
-    // ChromeTabbedActivityTestRule).
     @Rule(order = 1)
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    // SettingsActivity has to be finished before the outer ChromeTabbedActivity can be finished,
+    // otherwise trying to finish ChromeTabbedActivity won't work.
+    @Rule(order = 2)
     public final SettingsTestRule<ManageSyncSettings> mSettingsTestRule =
             new SettingsTestRule<>(ManageSyncSettings.class);
+
+    @Before
+    public void setUp() {
+        mCtaTestRule.startOnBlankPage();
+    }
 
     private SettingsActivityInterface mSettingsActivityInterface;
 

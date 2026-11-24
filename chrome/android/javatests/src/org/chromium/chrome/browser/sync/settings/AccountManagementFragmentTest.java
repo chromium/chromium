@@ -54,6 +54,8 @@ import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.SigninFeatures;
@@ -81,7 +83,10 @@ public class AccountManagementFragmentTest {
                     new ParameterSet().value(false).name("withAccountManagerFacadeSource"),
                     new ParameterSet().value(true).name("withIdentityManagerSource"));
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule();
+    private final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
     private static final int RENDER_TEST_REVISION = 4;
 
     private final boolean mIsIdentityManagerSourceOfAccounts;
@@ -94,7 +99,7 @@ public class AccountManagementFragmentTest {
             new SettingsTestRule<>(AccountManagementFragment.class);
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
-    // CTA won't work (SyncTestRule extends CTARule).
+    // CTA won't work.
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     public final TestRule mFeatureOverridesRule =
@@ -113,6 +118,7 @@ public class AccountManagementFragmentTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mFeatureOverridesRule)
                     .around(mSyncTestRule)
+                    .around(mCtaTestRule)
                     .around(mSettingsTestRule);
 
     @Rule
@@ -126,6 +132,7 @@ public class AccountManagementFragmentTest {
 
     @Before
     public void setUp() {
+        mCtaTestRule.startOnBlankPage();
         mFakeSyncService = overrideSyncService();
     }
 
