@@ -38,12 +38,15 @@ class MockServerProcess(object):
         more_logging=False,
         lines=None,
         crashed=False,
+        returncode=None,
     ):
-        # port_obj and name are unused, but are maintained for compatibility
+        # port_obj is unused, but is maintained for compatibility
         # with server_process.ServerProcess.
+        self._name = name
         self.timed_out = False
         self.lines = lines or [b'#READY']
         self.crashed = crashed
+        self.returncode = returncode
         self.writes = []
         self.cmd = cmd
         self.env = env
@@ -51,6 +54,12 @@ class MockServerProcess(object):
         self.logging = more_logging
         self.started = False
         self.stopped = False
+
+    def name(self):
+        return self._name
+
+    def poll(self):
+        return self.returncode
 
     def write(self, bytes):
         self.writes.append(bytes)

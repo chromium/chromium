@@ -390,7 +390,8 @@ class Driver(TestURIMapper):
         server_process_command = self._server_process.cmd()
 
         deadline = test_begin_time + int(driver_input.timeout) / 1000.0
-        self._server_process.write(test_command.encode('utf8', 'replace'))
+        if not self._server_process.has_crashed():
+            self._server_process.write(test_command.encode('utf8', 'replace'))
         # First block is either text or audio
         text, audio = self._read_first_block(deadline)
         # The second (optional) block is image data.
@@ -568,7 +569,8 @@ class Driver(TestURIMapper):
             if not self._wait_for_server_process_output(
                 self._server_process, deadline, b'#READY'
             ):
-                _log.error('%s took too long to startup.' % server_name)
+                if self._server_process.timed_out:
+                    _log.error('%s took too long to startup.' % server_name)
                 # Even though the server hasn't started up, we pretend it has
                 # so that the rest of the error-handling code can deal with
                 # this as if the test has simply crashed.
@@ -638,11 +640,25 @@ class Driver(TestURIMapper):
             )
             return False
         if server_process.has_crashed():
-            _log.error(
-                'The %s process crashed while starting: \n"%s"',
-                server_process.name(),
-                output,
-            )
+            returncode = server_process.poll()
+            if returncode is not None:
+                returncode_str = (
+                    f'{returncode} / {returncode & 0xFFFFFFFF:#x}'
+                    if returncode >= 0x100 or returncode <= -0x100
+                    else str(returncode)
+                )
+                _log.error(
+                    'The %s process crashed while starting (exit code %s): \n"%s"',
+                    server_process.name(),
+                    returncode_str,
+                    output,
+                )
+            else:
+                _log.error(
+                    'The %s process crashed while starting: \n"%s"',
+                    server_process.name(),
+                    output,
+                )
             return False
 
         return True

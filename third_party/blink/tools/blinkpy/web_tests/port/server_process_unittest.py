@@ -26,10 +26,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import errno
 import platform
 import sys
 import time
 import unittest
+from unittest import mock
 
 from blinkpy.common.system.system_host import SystemHost
 from blinkpy.common.system.system_host_mock import MockSystemHost
@@ -72,9 +74,10 @@ class MockProc(object):
         self.stdout = MockFile(server_process)
         self.stderr = MockFile(server_process)
         self.pid = 1
+        self.returncode = 1
 
     def poll(self):
-        return 1
+        return self.returncode
 
     def wait(self):
         return 0
@@ -88,6 +91,12 @@ class FakeServerProcess(server_process.ServerProcess):
         self.stderr = self._proc.stderr
         self._pid = self._proc.pid
         self.broken_pipes = []
+
+    def _non_blocking_read_win32(self, handle):
+        # MockFile.fileno() returns fd 1 (the test runner's write-only stdout),
+        # so avoid calling win32pipe.PeekNamedPipe on it when running on
+        # Windows.
+        return None
 
 
 class TestServerProcess(unittest.TestCase):
@@ -160,6 +169,84 @@ class TestServerProcess(unittest.TestCase):
         self.assertTrue(server_process.has_crashed())
         self.assertIsNone(server_process._proc)
         self.assertEqual(server_process.broken_pipes, [server_process.stdin])
+
+    def test_broken_pipe_einval_on_close(self):
+        port_obj = TrivialMockPort()
+        port_obj.host.platform.os_name = 'win'
+
+        def raise_einval():
+            raise OSError(errno.EINVAL, 'Invalid argument')
+
+        proc = FakeServerProcess(port_obj=port_obj, name='test', cmd=['test'])
+        proc._start()
+        proc._proc.stdin.close = raise_einval
+
+        # Writing to a dead pipe calls stop(0.0), which closes stdin; on Windows
+        # Python 3 this can raise OSError(EINVAL) instead of BrokenPipeError.
+        proc.write(b'should break')
+        self.assertTrue(proc.has_crashed())
+        self.assertIsNone(proc._proc)
+
+        # _reset() should also tolerate OSError(EINVAL) when closing stdin.
+        proc._start()
+        proc._proc.stdin.close = raise_einval
+        proc._reset()
+        self.assertIsNone(proc._proc)
+
+        # Unrelated OSErrors should still propagate.
+        def raise_eio():
+            raise OSError(errno.EIO, 'I/O error')
+
+        proc._start()
+        proc._proc.stdin.close = raise_eio
+        with self.assertRaises(OSError) as cm:
+            proc.stop(0.0)
+        self.assertEqual(cm.exception.errno, errno.EIO)
+
+    def test_win32_drains_pipes_after_process_exit(self):
+        port_obj = TrivialMockPort()
+        port_obj.host.platform.os_name = 'win'
+        proc = FakeServerProcess(port_obj=port_obj, name='test', cmd=['test'])
+        proc._use_win32_apis = True
+        proc._start()
+        # Fake stdout/stderr handles so we can distinguish stdout vs stderr.
+        proc._proc.stdout.fileno = lambda: 10
+        proc._proc.stderr.fileno = lambda: 20
+
+        pipe_data = {
+            10: [b'final stdout\n', None],
+            20: [b'fatal crash stderr\n', None],
+        }
+
+        def fake_read(handle):
+            return pipe_data[handle].pop(0) if pipe_data[handle] else None
+
+        fake_msvcrt = mock.Mock()
+        fake_msvcrt.get_osfhandle.side_effect = lambda fd: fd
+
+        with (
+            mock.patch.object(
+                server_process, 'msvcrt', fake_msvcrt, create=True
+            ),
+            mock.patch.object(
+                proc, '_non_blocking_read_win32', side_effect=fake_read
+            ),
+        ):
+            # Even though MockProc.poll() is already 1 (exited), _read() should
+            # drain buffered pipe output before reporting the crash.
+            self.assertIsNone(proc.read_stdout_line(time.time() + 1.0))
+            self.assertTrue(proc.has_crashed())
+            self.assertEqual(
+                proc.pop_all_buffered_stderr(), b'fatal crash stderr\n'
+            )
+
+            # stop() with an already-expired deadline should also drain any
+            # remaining pipe bytes on an exited process.
+            pipe_data[10] = [b'trailing out']
+            pipe_data[20] = [b'trailing err']
+            out, err = proc.stop(0.0)
+            self.assertEqual(out, b'final stdout\ntrailing out')
+            self.assertEqual(err, b'trailing err')
 
 
 class TestQuoteData(unittest.TestCase):

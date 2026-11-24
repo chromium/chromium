@@ -33,6 +33,7 @@ from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.command_line import command_wrapper
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import Driver
+from blinkpy.web_tests.port.driver import DriverInput
 from blinkpy.web_tests.port.driver import TestURIMapper
 from blinkpy.web_tests.port.driver import coalesce_repeated_switches
 from blinkpy.web_tests.port.server_process_mock import MockServerProcess
@@ -411,6 +412,103 @@ class DriverTest(unittest.TestCase):
         driver = Driver(port, 0)
         driver.start([], None)
         self.assertTrue(driver._server_process.started)
+
+    def test_start_crashed_logs_exit_code_without_timeout_error(self):
+        port = self.make_port()
+
+        def make_crashed_process(*args, **kwargs):
+            return MockServerProcess(
+                *args,
+                lines=[b''],
+                crashed=True,
+                returncode=0xC0000005,
+                **kwargs,
+            )
+
+        port.server_process_constructor = make_crashed_process
+        driver = Driver(port, 0)
+        with self.assertLogs(
+            'blinkpy.web_tests.port.driver', level='ERROR'
+        ) as logs:
+            driver.start([], None)
+        joined = '\n'.join(logs.output)
+        self.assertIn('exit code 3221225477 / 0xc0000005', joined)
+        self.assertNotIn('took too long to startup', joined)
+
+    def test_wait_for_server_process_output_small_exit_code(self):
+        port = self.make_port()
+        driver = Driver(port, 0)
+        proc = MockServerProcess(
+            name='content_shell', lines=[b''], crashed=True, returncode=-11
+        )
+        with self.assertLogs(
+            'blinkpy.web_tests.port.driver', level='ERROR'
+        ) as logs:
+            self.assertFalse(
+                driver._wait_for_server_process_output(proc, 0, b'#READY')
+            )
+        self.assertIn('(exit code -11)', '\n'.join(logs.output))
+
+    def test_start_timed_out_logs_timeout_error(self):
+        port = self.make_port()
+
+        def make_timed_out_process(*args, **kwargs):
+            proc = MockServerProcess(*args, lines=[b''], **kwargs)
+            proc.timed_out = True
+            return proc
+
+        port.server_process_constructor = make_timed_out_process
+        driver = Driver(port, 0)
+        with self.assertLogs(
+            'blinkpy.web_tests.port.driver', level='ERROR'
+        ) as logs:
+            driver.start([], None)
+        joined = '\n'.join(logs.output)
+        self.assertIn('Timed out while waiting for the content_shell', joined)
+        self.assertIn('content_shell took too long to startup.', joined)
+
+    def test_run_one_input_skips_write_when_already_crashed(self):
+        port = self.make_port()
+        driver = Driver(port, 0)
+
+        class CrashedServerProcess(object):
+            def __init__(self):
+                self.timed_out = False
+                self.write_called = False
+
+            def name(self):
+                return 'content_shell'
+
+            def pid(self):
+                return 1234
+
+            def cmd(self):
+                return ['content_shell']
+
+            def has_crashed(self):
+                return True
+
+            def write(self, data):
+                self.write_called = True
+
+            def read_either_stdout_or_stderr_line(self, deadline):
+                return None, None
+
+            def stop(
+                self, timeout_secs=0.0, kill_tree=True, send_sigterm=False
+            ):
+                return b'buffered stdout', b'buffered stderr'
+
+        proc = CrashedServerProcess()
+        driver._server_process = proc
+        driver_input = DriverInput(
+            'foo/bar.html', 6000, None, None, None, None, []
+        )
+        output = driver._run_one_input(driver_input, start_time=0)
+        self.assertFalse(proc.write_called)
+        self.assertTrue(output.crash)
+        self.assertEqual(output.text, b'buffered stdout')
+        self.assertIn(b'buffered stderr', output.error)
 
 
 class CoalesceRepeatedSwitchesTest(unittest.TestCase):

@@ -113,11 +113,27 @@ class ServerProcess(object):
     def cmd(self):
         return self._cmd[:]
 
+    def _close_stdin(self):
+        if not self._proc or not self._proc.stdin:
+            return
+        try:
+            # When closing stdin after the child has crashed or exited (e.g.
+            # following an IOError on write/flush), close() can raise
+            # BrokenPipeError, or on Windows OSError(EINVAL) (CPython
+            # bpo-19612 / bpo-30418, handled identically in
+            # subprocess.Popen._stdin_write).
+            self._proc.stdin.close()
+        except BrokenPipeError:
+            pass
+        except OSError as exc:
+            if exc.errno != errno.EINVAL:
+                raise
+        finally:
+            self._proc.stdin = None
+
     def _reset(self):
         if getattr(self, '_proc', None):
-            if self._proc.stdin:
-                self._proc.stdin.close()
-                self._proc.stdin = None
+            self._close_stdin()
             if self._proc.stdout:
                 self._proc.stdout.close()
                 self._proc.stdout = None
@@ -349,10 +365,17 @@ class ServerProcess(object):
         # See http://code.activestate.com/recipes/440554-module-to-allow-asynchronous-subprocess-use-on-win/
         # and http://docs.activestate.com/activepython/2.6/pywin32/modules.html
         # for documentation on all of these win32-specific modules.
+        if (
+            not self._proc.stdout
+            or not self._proc.stderr
+            or self._proc.stdout.closed
+            or self._proc.stderr.closed
+        ):
+            return
         now = time.time()
         out_fh = msvcrt.get_osfhandle(self._proc.stdout.fileno())
         err_fh = msvcrt.get_osfhandle(self._proc.stderr.fileno())
-        while (self._proc.poll() is None) and (now < deadline):
+        while True:
             output = self._non_blocking_read_win32(out_fh)
             self._log_data('OUT', output)
             error = self._non_blocking_read_win32(err_fh)
@@ -363,9 +386,10 @@ class ServerProcess(object):
                 if error:
                     self._error += error
                 return
+            if self._proc.poll() is not None or now >= deadline:
+                return
             time.sleep(0.01)
             now = time.time()
-        return
 
     def _non_blocking_read_win32(self, handle):
         try:
@@ -391,6 +415,8 @@ class ServerProcess(object):
     def _read(self, deadline, fetch_bytes_from_buffers_callback):
         while True:
             if self.has_crashed():
+                if self._use_win32_apis and self._proc:
+                    self._wait_for_data_and_update_buffers_using_win32_apis(0)
                 return None
 
             if time.time() > deadline:
@@ -420,13 +446,7 @@ class ServerProcess(object):
         if self._proc.stdin:
             if self._logging:
                 _log.info(' IN: ^D')
-            try:
-                # When we get here because of an IOError, close()
-                # may throw BrokenPipeError sometimes.
-                self._proc.stdin.close()
-            except BrokenPipeError:
-                pass
-            self._proc.stdin = None
+            self._close_stdin()
         if send_sigterm:
             self._host.executive.terminate(self._proc.pid)
         killed = False
@@ -469,7 +489,7 @@ class ServerProcess(object):
     def replace_input(self, stdin):
         assert self._proc
         if stdin:
-            self._proc.stdin.close()
+            self._close_stdin()
             self._proc.stdin = stdin
 
     def replace_outputs(self, stdout, stderr):
