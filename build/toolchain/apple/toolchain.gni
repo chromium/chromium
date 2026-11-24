@@ -921,7 +921,8 @@ template("single_apple_toolchain") {
             "--const-gather-protocols-file $_const_gather_protocols_file " +
             "--depfile-path $depfile --src-dir $_src_dir --gen-dir $_gen_dir " +
             "--bridge-header {{bridge_header}} {{include_dirs}} " +
-            "{{module_dirs}} {{swiftflags}} {{inputs}}$_extra_flags"
+            "{{module_dirs}} {{framework_dirs}} {{swiftflags}} " +
+            "{{inputs}}$_extra_flags"
 
         if (apple_tool_wrapper_script == "") {
           command = "$_env_vars $python_path $_tool $_swiftc_args"
