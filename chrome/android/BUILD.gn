@@ -1411,6 +1411,7 @@ if (_is_default_toolchain) {
     sources = [
       "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
+      "javatests/src/org/chromium/chrome/browser/tab/TabWebContentsDestroyerCleanupHook.java",
     ]
   }
 
@@ -1425,6 +1426,7 @@ if (_is_default_toolchain) {
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTestRule.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/modaldialog/ChromeModalDialogTestUtils.java",
+      "javatests/src/org/chromium/chrome/browser/tab/TabWebContentsDestroyerCleanupHook.java",
       "javatests/src/org/chromium/chrome/browser/webapps/TestFetchStorageCallback.java",
       "javatests/src/org/chromium/chrome/browser/webapps/WebappActivityTestRule.java",
     ]
@@ -2995,6 +2997,7 @@ if (_is_default_toolchain) {
     sources = [
       "javatests/src/custom_tabs_test_utils.cc",
       "javatests/src/federated_identity_test_utils.cc",
+      "javatests/src/tab_web_contents_destroyer_cleanup_hook.cc",
     ]
     deps = [
       ":chrome_test_util_jni",

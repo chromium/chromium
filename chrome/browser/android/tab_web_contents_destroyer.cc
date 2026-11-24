@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -27,6 +28,8 @@ namespace {
 // GracefulShutdownServiceImpl which matches this duration).
 constexpr base::TimeDelta kShutdownTimeout = base::Seconds(2);
 
+int g_active_instance_count = 0;
+
 }  // namespace
 
 // static
@@ -38,10 +41,18 @@ void TabWebContentsDestroyer::DestroyWebContents(
   new TabWebContentsDestroyer(std::move(web_contents));
 }
 
+// static
+int TabWebContentsDestroyer::GetActiveInstanceCountForTesting() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return g_active_instance_count;
+}
+
 TabWebContentsDestroyer::TabWebContentsDestroyer(
     std::unique_ptr<content::WebContents> web_contents)
     : content::WebContentsObserver(web_contents.get()),
       web_contents_(std::move(web_contents)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ++g_active_instance_count;
   if (web_contents_) {
     if (Profile* profile =
             Profile::FromBrowserContext(web_contents_->GetBrowserContext())) {
@@ -83,6 +94,9 @@ TabWebContentsDestroyer::~TabWebContentsDestroyer() {
     ignore_input_events_.reset();
     web_contents_.reset();
   }
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_GT(g_active_instance_count, 0);
+  --g_active_instance_count;
 }
 
 // content::WebContentsDelegate:

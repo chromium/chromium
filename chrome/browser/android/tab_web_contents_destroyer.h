@@ -53,6 +53,9 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
   static void DestroyWebContents(
       std::unique_ptr<content::WebContents> web_contents);
 
+  // Returns the number of active TabWebContentsDestroyer instances.
+  static int GetActiveInstanceCountForTesting();
+
   // content::WebContentsDelegate:
   void CloseContents(content::WebContents* source) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(

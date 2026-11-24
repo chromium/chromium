@@ -309,4 +309,41 @@ TEST_F(TabWebContentsDestroyerTest, WindowCreationSuppression) {
   task_environment()->FastForwardBy(base::Seconds(2));
 }
 
+TEST_F(TabWebContentsDestroyerTest, ActiveInstanceCountForTesting) {
+  EXPECT_EQ(0, TabWebContentsDestroyer::GetActiveInstanceCountForTesting());
+
+  TabWebContentsDestroyer::DestroyWebContents(nullptr);
+  EXPECT_EQ(0, TabWebContentsDestroyer::GetActiveInstanceCountForTesting());
+
+  std::unique_ptr<content::WebContents> web_contents_1 =
+      CreateTestWebContents();
+  content::WebContents* raw_web_contents_1 = web_contents_1.get();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      raw_web_contents_1, GURL("https://example.com"));
+  content::WebContentsDestroyedWatcher watcher_1(raw_web_contents_1);
+
+  std::unique_ptr<content::WebContents> web_contents_2 =
+      CreateTestWebContents();
+  content::WebContents* raw_web_contents_2 = web_contents_2.get();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      raw_web_contents_2, GURL("https://example.com"));
+  content::WebContentsDestroyedWatcher watcher_2(raw_web_contents_2);
+
+  TabWebContentsDestroyer::DestroyWebContents(std::move(web_contents_1));
+  EXPECT_EQ(1, TabWebContentsDestroyer::GetActiveInstanceCountForTesting());
+
+  TabWebContentsDestroyer::DestroyWebContents(std::move(web_contents_2));
+  EXPECT_EQ(2, TabWebContentsDestroyer::GetActiveInstanceCountForTesting());
+
+  raw_web_contents_1->GetDelegate()->CloseContents(raw_web_contents_1);
+  watcher_1.Wait();
+  EXPECT_TRUE(watcher_1.IsDestroyed());
+  EXPECT_FALSE(watcher_2.IsDestroyed());
+  EXPECT_EQ(1, TabWebContentsDestroyer::GetActiveInstanceCountForTesting());
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(watcher_2.IsDestroyed());
+  EXPECT_EQ(0, TabWebContentsDestroyer::GetActiveInstanceCountForTesting());
+}
+
 }  // namespace tabs
