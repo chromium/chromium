@@ -173,6 +173,11 @@ class CORE_EXPORT LocalFrameView final
     // rendering pipeline.
     virtual void DidFinishPostLifecycleSteps(const LocalFrameView&) {}
 
+    // Called when the view's display lock state changes. A display-locked view
+    // is throttled, so observers registered with kSuppressWhenThrottled get no
+    // other notifications while locked.
+    virtual void DisplayLockedStateChanged(const LocalFrameView&) {}
+
     // Called when the LocalFrameView is being disposed (e.g. during
     // Document::Shutdown).
     virtual void WillDisposeView() {}

@@ -64,6 +64,7 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/process_reuse_policy.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -106,6 +107,7 @@
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -616,6 +618,43 @@ class MainFrameThresholdTestBrowserClient
 };
 
 // SitePerProcessAutoplayBrowserTest
+
+class SitePerProcessContentVisibilityMediaPlaybackBrowserTest
+    : public SitePerProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "ContentVisibilityMediaPlayback");
+  }
+};
+
+class AudioStateWaiter : public WebContentsObserver {
+ public:
+  explicit AudioStateWaiter(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void WaitFor(bool audible) {
+    if (web_contents()->IsCurrentlyAudible() == audible) {
+      return;
+    }
+    expected_audible_ = audible;
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+    quit_closure_.Reset();
+  }
+
+  void OnAudioStateChanged(bool audible) override {
+    if (quit_closure_ && audible == expected_audible_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+ private:
+  bool expected_audible_ = false;
+  base::OnceClosure quit_closure_;
+};
 
 class SitePerProcessAutoplayBrowserTest : public SitePerProcessBrowserTest {
  public:
@@ -11429,6 +11468,69 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DisplayLockThrottlesOOPIF) {
   EXPECT_EQ(result2.ExtractString(), "true");
 }
 
+IN_PROC_BROWSER_TEST_P(SitePerProcessContentVisibilityMediaPlaybackBrowserTest,
+                       DisplayLockMutesAndDefersMediaEventsInOOPIF) {
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  FrameTreeNode* a_frame = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* b_frame = a_frame->child_at(0);
+  ASSERT_NE(a_frame->current_frame_host()->GetProcess(),
+            b_frame->current_frame_host()->GetProcess());
+
+  AudioStateWaiter audio_state_waiter(web_contents());
+  ASSERT_TRUE(ExecJs(b_frame->current_frame_host(), R"(
+    window.mediaEventCount = 0;
+    const media = document.createElement('audio');
+    media.id = 'media';
+    media.loop = true;
+    media.src = '/media/bear-320x240-audio-only.webm';
+    media.addEventListener('volumechange', () => ++mediaEventCount);
+    document.body.append(media);
+    media.play();
+  )"));
+  audio_state_waiter.WaitFor(true);
+  EXPECT_FALSE(
+      EvalJs(b_frame->current_frame_host(), "media.paused").ExtractBool());
+  MediaSessionImpl* media_session = MediaSessionImpl::Get(web_contents());
+  ASSERT_EQ(media_session::mojom::MediaSessionInfo::SessionState::kActive,
+            media_session->GetMediaSessionInfoSync()->state);
+
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
+                  a_frame->current_frame_host(),
+                  "document.body.style = 'content-visibility: hidden'", "")
+                  .is_ok());
+  audio_state_waiter.WaitFor(false);
+  EXPECT_FALSE(
+      EvalJs(b_frame->current_frame_host(), "media.paused").ExtractBool());
+  EXPECT_EQ(media_session::mojom::MediaSessionInfo::SessionState::kActive,
+            media_session->GetMediaSessionInfoSync()->state);
+
+  EXPECT_EQ(0, EvalJs(b_frame->current_frame_host(), R"(
+    (async () => {
+      media.volume = 0.5;
+      await new Promise(resolve => setTimeout(resolve, 100));
+      return mediaEventCount;
+    })()
+  )")
+                   .ExtractInt());
+
+  ASSERT_TRUE(ExecJs(b_frame->current_frame_host(), R"(
+    window.nextVolumeEvent = new Promise(resolve =>
+      media.addEventListener('volumechange', resolve, {once: true}));
+    media.volume = 0.75;
+  )"));
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(a_frame->current_frame_host(),
+                                         "document.body.style = ''", "")
+                  .is_ok());
+  EXPECT_TRUE(
+      EvalJs(b_frame->current_frame_host(), "nextVolumeEvent.then(() => true)")
+          .ExtractBool());
+  audio_state_waiter.WaitFor(true);
+  EXPECT_FALSE(
+      EvalJs(b_frame->current_frame_host(), "media.paused").ExtractBool());
+}
+
 namespace {
 
 // Helper class to intercept DidCommitProvisionalLoad messages and inject a
@@ -14986,6 +15088,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessAutoplayBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SitePerProcessContentVisibilityMediaPlaybackBrowserTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));

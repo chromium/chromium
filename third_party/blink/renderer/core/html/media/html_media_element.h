@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/frame/frame_visibility_observer.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/html/track/track_base.h"
@@ -117,6 +118,7 @@ class CORE_EXPORT HTMLMediaElement
       public ActiveScriptWrappable<HTMLMediaElement>,
       public ExecutionContextLifecycleStateObserver,
       public FrameVisibilityObserver,
+      public LocalFrameView::LifecycleNotificationObserver,
       public media::mojom::blink::MediaPlayer,
       public media::RemotePlaybackClientWrapper,
       private MediaPlayerClient {
@@ -391,6 +393,10 @@ class CORE_EXPORT HTMLMediaElement
   // Returns the "effective media volume" value as specified in the HTML5 spec.
   double EffectiveMediaVolume() const;
 
+  // Multiplier applied to the volume by the player, combining media session
+  // ducking with content-visibility muting.
+  double ComputeVolumeMultiplier() const;
+
   // Predicates also used when dispatching wrapper creation (cf.
   // [SpecialWrapFor] IDL attribute usage.)
   virtual bool IsHTMLAudioElement() const { return false; }
@@ -457,6 +463,10 @@ class CORE_EXPORT HTMLMediaElement
   // media::RemotePlaybackClientWrapper overrides:
   std::string GetActivePresentationId() override;
 
+  // LocalFrameView::LifecycleNotificationObserver implementation.
+  void DidFinishPostLifecycleSteps(const LocalFrameView&) override;
+  void DisplayLockedStateChanged(const LocalFrameView&) override;
+
   // Returns the execution context for player creation. This will be the
   // execution context of the opener document if available, otherwise the
   // execution context of the current document.
@@ -511,6 +521,7 @@ class CORE_EXPORT HTMLMediaElement
   virtual void OnWebMediaPlayerCleared() {}
 
   void UpdateLayoutObject();
+  void UpdateContentVisibilityState();
 
   virtual void RecordVideoOcclusionState(
       std::string_view occlusion_state) const {}
@@ -690,6 +701,7 @@ class CORE_EXPORT HTMLMediaElement
   void ProgressEventTimerFired();
   void PlaybackProgressTimerFired();
   void ScheduleTimeupdateEvent(bool periodic_event);
+  void UpdateVolumeMultiplier();
   void StartPlaybackProgressTimer();
   void StartProgressEventTimer();
   void StopPeriodicTimers();
@@ -867,6 +879,7 @@ class CORE_EXPORT HTMLMediaElement
   Member<MediaError> error_;
 
   double volume_ = 1.0;
+  double volume_multiplier_ = 1.0;
   double last_seek_time_ = 0;
 
   std::optional<base::ElapsedTimer> previous_progress_time_;
@@ -941,6 +954,7 @@ class CORE_EXPORT HTMLMediaElement
   bool can_autoplay_ : 1 = true;
   bool muted_is_default_ : 1 = true;
   bool muted_ : 1 = false;
+  bool muted_by_content_visibility_ : 1 = false;
   bool paused_ : 1 = true;
   bool seeking_ : 1 = false;
   bool show_poster_flag_ : 1 = true;

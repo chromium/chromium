@@ -5393,6 +5393,13 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
   if (was_throttled != CanThrottleRendering())
     RenderThrottlingStatusChanged();
 
+  if (was_display_locked != IsDisplayLockThrottled()) {
+    auto lifecycle_observers = lifecycle_observers_;
+    for (const auto& observer : lifecycle_observers) {
+      observer.key->DisplayLockedStateChanged(*this);
+    }
+  }
+
   if (was_hidden != IsHiddenForThrottling() ||
       was_subtree_throttled != IsSubtreeThrottled() ||
       was_display_locked != IsDisplayLockThrottled()) {

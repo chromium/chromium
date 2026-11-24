@@ -1588,6 +1588,10 @@
       status:  {"Android": "stable", "default": "experimental"},
     },
     {
+      name: "ContentVisibilityMediaPlayback",
+      status: "experimental",
+    },
+    {
       name: "ContextMenu",
       status: "experimental",
     },

@@ -806,6 +806,7 @@ blink_core_tests_html = [
   "link_element_loading_test.cc",
   "link_rel_attribute_test.cc",
   "media/autoplay_uma_helper_test.cc",
+  "media/html_media_element_content_visibility_test.cc",
   "media/html_media_element_event_listeners_test.cc",
   "media/html_media_element_test.cc",
   "media/html_video_element_persistent_test.cc",

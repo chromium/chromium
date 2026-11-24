@@ -47,6 +47,7 @@ EventQueue::~EventQueue() = default;
 
 void EventQueue::Trace(Visitor* visitor) const {
   visitor->Trace(queued_events_);
+  visitor->Trace(frozen_events_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -62,6 +63,18 @@ bool EventQueue::EnqueueEvent(const base::Location& from_here, Event& event) {
   bool was_added = queued_events_.insert(&event).is_new_entry;
   DCHECK(was_added);  // It should not have already been in the list.
 
+  if (is_frozen_) {
+    frozen_events_.push_back(&event);
+    frozen_event_locations_.push_back(from_here);
+  } else {
+    PostDispatchTask(from_here, event);
+  }
+
+  return true;
+}
+
+void EventQueue::PostDispatchTask(const base::Location& from_here,
+                                  Event& event) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetExecutionContext()->GetTaskRunner(task_type_);
 
@@ -70,8 +83,22 @@ bool EventQueue::EnqueueEvent(const base::Location& from_here, Event& event) {
   task_runner->PostTask(
       from_here, BindOnce(&EventQueue::DispatchEvent, WrapPersistent(this),
                           WrapWeakPersistent(&event)));
+}
 
-  return true;
+void EventQueue::SetFrozen(bool frozen) {
+  if (is_frozen_ == frozen) {
+    return;
+  }
+  is_frozen_ = frozen;
+  if (is_frozen_) {
+    return;
+  }
+  CHECK_EQ(frozen_events_.size(), frozen_event_locations_.size());
+  for (wtf_size_t i = 0; i < frozen_events_.size(); ++i) {
+    PostDispatchTask(frozen_event_locations_[i], *frozen_events_[i]);
+  }
+  frozen_events_.clear();
+  frozen_event_locations_.clear();
 }
 
 void EventQueue::CancelAllEvents() {
@@ -118,6 +145,8 @@ void EventQueue::DoCancelAllEvents(ExecutionContext* context) {
   for (const auto& queued_event : queued_events_)
     queued_event->async_task_context()->Cancel();
   queued_events_.clear();
+  frozen_events_.clear();
+  frozen_event_locations_.clear();
 }
 
 bool EventQueue::HasPendingEvents() const {

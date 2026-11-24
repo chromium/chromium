@@ -452,6 +452,7 @@ void HTMLVideoElement::UpdateVideoFrameAvailability() {
 // using a settings. See `HTMLMediaElement::onMediaControlsEnabledChange`.
 void HTMLVideoElement::SetPersistentState(bool persistent) {
   SetPersistentStateInternal(persistent);
+  UpdateContentVisibilityState();
   if (auto* wmp = GetWebMediaPlayer()) {
     wmp->SetPersistentState(persistent);
   }
@@ -1146,6 +1147,7 @@ void HTMLVideoElement::OnEnteredPictureInPicture() {
   picture_in_picture_interstitial_->Show();
 
   PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
+  UpdateContentVisibilityState();
 
   DCHECK(GetWebMediaPlayer());
   GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
@@ -1157,6 +1159,7 @@ void HTMLVideoElement::OnExitedPictureInPicture() {
   }
 
   PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
+  UpdateContentVisibilityState();
 
   if (auto* wmp = GetWebMediaPlayer()) {
     wmp->OnDisplayTypeChanged(GetDisplayType());

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Media events in an iframe skipped by content-visibility: hidden are deferred</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-2/#cv-notes">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe id="frame" srcdoc="
+  <audio id='media' src='/media/sound_5.oga'></audio>
+  <script>
+    const media = document.getElementById('media');
+    const seen = [];
+    media.addEventListener('volumechange', e => seen.push(e.type));
+    onmessage = e => {
+      if (e.data === 'set-volume') {
+        media.volume = 0.5;
+      }
+      e.source.postMessage(seen.slice(), '*');
+    };
+  &lt;/script>"></iframe>
+
+<script>
+const frame = document.getElementById("frame");
+
+// Two frames guarantee the lifecycle that applies or clears the display lock
+// has run; the trailing task turn lets any event dispatch it posted happen.
+async function settle(t) {
+  for (let i = 0; i < 2; ++i) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+}
+
+function ask(message) {
+  return new Promise(resolve => {
+    window.addEventListener("message", e => resolve(e.data), { once: true });
+    frame.contentWindow.postMessage(message, "*");
+  });
+}
+
+promise_test(async t => {
+  t.add_cleanup(() => { frame.style.contentVisibility = "visible"; });
+  await new Promise(resolve => frame.addEventListener("load", resolve, { once: true }));
+
+  frame.style.contentVisibility = "hidden";
+  await settle(t);
+
+  assert_array_equals(await ask("set-volume"), [], "no events while the iframe is skipped");
+  await settle(t);
+  assert_array_equals(await ask("poll"), [], "still no events while the iframe is skipped");
+
+  frame.style.contentVisibility = "visible";
+  await settle(t);
+  assert_array_equals(await ask("poll"), ["volumechange"],
+                      "the deferred event is dispatched once the iframe stops being skipped");
+}, "An iframe skipped by content-visibility: hidden defers media events in its document");
+</script>

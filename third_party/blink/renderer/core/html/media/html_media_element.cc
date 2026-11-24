@@ -643,6 +643,7 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   }
 
   HTMLElement::DidMoveToNewDocument(old_document);
+  UpdateContentVisibilityState();
 }
 bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
                                          Document& new_document) const {
@@ -935,6 +936,12 @@ Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(
 
   HTMLElement::InsertedInto(insertion_point);
   if (insertion_point.isConnected()) {
+    if (RuntimeEnabledFeatures::ContentVisibilityMediaPlaybackEnabled()) {
+      if (auto* view = insertion_point.GetDocument().View()) {
+        view->RegisterForLifecycleNotifications(this);
+      }
+    }
+    UpdateContentVisibilityState();
     if (auto* frame = insertion_point.GetDocument().GetFrame()) {
       frame->AddVisibilityObserver(this);
       is_frame_hidden_ = frame->IsHiddenForMediaPlayback();
@@ -974,8 +981,15 @@ void HTMLMediaElement::RemovedFrom(ContainerNode& insertion_point) {
   if (auto* frame = insertion_point.GetDocument().GetFrame()) {
     frame->RemoveVisibilityObserver(this);
   }
+  if (insertion_point.isConnected() &&
+      RuntimeEnabledFeatures::ContentVisibilityMediaPlaybackEnabled()) {
+    if (auto* view = insertion_point.GetDocument().View()) {
+      view->UnregisterFromLifecycleNotifications(this);
+    }
+  }
 
   HTMLElement::RemovedFrom(insertion_point);
+  UpdateContentVisibilityState();
 }
 
 void HTMLMediaElement::AttachLayoutTree(AttachContext& context) {
@@ -1811,6 +1825,7 @@ void HTMLMediaElement::StartPlayerLoad() {
   // wrapper.
   audio_source_provider_.Wrap(web_media_player_->GetAudioSourceProvider());
   web_media_player_->SetVolume(EffectiveMediaVolume());
+  UpdateVolumeMultiplier();
 
   web_media_player_->SetPoster(PosterImageURL());
 
@@ -3509,6 +3524,47 @@ double HTMLMediaElement::EffectiveMediaVolume() const {
   }
 
   return volume_;
+}
+
+double HTMLMediaElement::ComputeVolumeMultiplier() const {
+  return muted_by_content_visibility_ ? 0 : volume_multiplier_;
+}
+
+void HTMLMediaElement::UpdateVolumeMultiplier() {
+  if (web_media_player_) {
+    web_media_player_->SetVolumeMultiplier(ComputeVolumeMultiplier());
+  }
+}
+
+void HTMLMediaElement::DidFinishPostLifecycleSteps(const LocalFrameView&) {
+  UpdateContentVisibilityState();
+}
+
+void HTMLMediaElement::DisplayLockedStateChanged(const LocalFrameView&) {
+  UpdateContentVisibilityState();
+}
+
+void HTMLMediaElement::UpdateContentVisibilityState() {
+  if (!RuntimeEnabledFeatures::ContentVisibilityMediaPlaybackEnabled()) {
+    return;
+  }
+
+  // A Picture-in-Picture video is presented in its own window, so a skipped
+  // in-page subtree does not hide it from the user. Only subtrees skipped by
+  // `content-visibility: hidden` count; `auto` contents may remain relevant to
+  // the user (e.g. playing audio scrolled out of view).
+  const bool should_mute =
+      GetDisplayType() != WebMediaPlayer::DisplayType::kVideoPictureInPicture &&
+      DisplayLockUtilities::
+          IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(*this,
+                                                                kIncludeSelf);
+  if (muted_by_content_visibility_ == should_mute) {
+    return;
+  }
+
+  muted_by_content_visibility_ = should_mute;
+  UpdateVolumeMultiplier();
+  async_event_queue_->SetFrozen(should_mute);
 }
 
 // The spec says to fire periodic timeupdate events (those sent while playing)
@@ -5442,8 +5498,8 @@ void HTMLMediaElement::RequestMute(bool mute) {
 }
 
 void HTMLMediaElement::SetVolumeMultiplier(double multiplier) {
-  if (web_media_player_)
-    web_media_player_->SetVolumeMultiplier(multiplier);
+  volume_multiplier_ = multiplier;
+  UpdateVolumeMultiplier();
 }
 
 void HTMLMediaElement::SetPowerExperimentState(bool enabled) {

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Media events are not deferred by content-visibility: auto</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-2/#cv-notes">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+#spacer { height: 300vh; }
+#container { content-visibility: auto; contain-intrinsic-size: 100px 100px; }
+</style>
+
+<div id="spacer"></div>
+<div id="container">
+  <audio id="media" src="/media/sound_5.oga"></audio>
+</div>
+
+<script>
+const container = document.getElementById("container");
+const media = document.getElementById("media");
+
+const skipped = new Promise(resolve => {
+  container.addEventListener("contentvisibilityautostatechange", e => {
+    if (e.skipped) {
+      resolve();
+    }
+  });
+});
+
+// Two frames guarantee the lifecycle that applies or clears the display lock
+// has run; the trailing task turn lets any event dispatch it posted happen.
+async function settle(t) {
+  for (let i = 0; i < 2; ++i) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+}
+
+promise_test(async t => {
+  await skipped;
+
+  const seen = [];
+  media.addEventListener("volumechange", e => seen.push(e.type));
+  media.volume = 0.5;
+  await settle(t);
+  assert_array_equals(seen, ["volumechange"],
+                      "events fire while skipped by auto");
+}, "Contents skipped by content-visibility: auto keep dispatching media events");
+</script>

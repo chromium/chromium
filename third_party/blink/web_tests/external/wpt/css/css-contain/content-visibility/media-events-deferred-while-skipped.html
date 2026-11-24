@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Media events are deferred while skipped by content-visibility: hidden</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-2/#cv-notes">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6468">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="container">
+  <audio id="media" src="/media/sound_5.oga"></audio>
+</div>
+
+<script>
+const container = document.getElementById("container");
+const media = document.getElementById("media");
+
+function recordedEvents(types) {
+  const seen = [];
+  for (const type of types) {
+    media.addEventListener(type, e => seen.push(e.type));
+  }
+  return seen;
+}
+
+// Two frames guarantee the lifecycle that applies or clears the display lock
+// has run; the trailing task turn lets any event dispatch it posted happen.
+async function settle(t) {
+  for (let i = 0; i < 2; ++i) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+}
+
+promise_test(async t => {
+  t.add_cleanup(() => { container.style.contentVisibility = "visible"; });
+
+  container.style.contentVisibility = "hidden";
+  await settle(t);
+
+  const seen = recordedEvents(["volumechange", "ratechange"]);
+  media.volume = 0.5;
+  media.playbackRate = 2;
+  await settle(t);
+  assert_array_equals(seen, [], "no events while skipped");
+
+  assert_equals(media.volume, 0.5, "volume attribute still reflects the set value");
+  assert_equals(media.playbackRate, 2, "playbackRate still reflects the set value");
+  assert_false(media.muted, "muted is not changed by being skipped");
+
+  container.style.contentVisibility = "visible";
+  await settle(t);
+  assert_array_equals(seen, ["volumechange", "ratechange"],
+                      "deferred events are dispatched in enqueue order");
+}, "content-visibility: hidden defers media events until the element stops being skipped");
+
+promise_test(async t => {
+  t.add_cleanup(() => { container.style.contentVisibility = "visible"; });
+
+  container.style.contentVisibility = "hidden";
+  await settle(t);
+
+  const seen = recordedEvents(["volumechange"]);
+  media.volume = 0.25;
+  await settle(t);
+  assert_array_equals(seen, [], "no events while skipped");
+
+  // Removing the element from the skipped subtree also stops it being skipped.
+  document.body.appendChild(media);
+  t.add_cleanup(() => { container.appendChild(media); });
+  await settle(t);
+  assert_array_equals(seen, ["volumechange"],
+                      "deferred events are dispatched once the element leaves the subtree");
+}, "Leaving a skipped subtree dispatches the deferred media events");
+</script>

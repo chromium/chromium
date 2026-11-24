@@ -104,6 +104,15 @@ void SimulateRequestSeekTo(HTMLMediaElement* element,
       seek_time);
 }
 
+class EventCountingListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override { ++count_; }
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
 enum class TestURLScheme {
   kHttp,
   kHttps,
@@ -164,6 +173,7 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD0(UnlockBackgroundPlayback, void());
   MOCK_METHOD1(Pause, void(PauseReason));
   MOCK_METHOD1(Seek, void(double));
+  MOCK_METHOD1(SetVolumeMultiplier, void(double));
   MOCK_METHOD0(OnTimeUpdate, void());
   MOCK_CONST_METHOD0(Paused, bool());
   MOCK_CONST_METHOD0(Seekable, WebTimeRanges());
@@ -959,6 +969,118 @@ INSTANTIATE_TEST_SUITE_P(Audio,
 INSTANTIATE_TEST_SUITE_P(Video,
                          HTMLMediaElementTest,
                          testing::Values(MediaTestParam::kVideo));
+
+TEST_P(HTMLMediaElementTest, ContentVisibilityMediaPlaybackDisabled) {
+  ScopedContentVisibilityMediaPlaybackForTest scoped_feature(false);
+  Media()->GetDocument().body()->AppendChild(Media());
+  WaitForPlayer();
+  UpdateLifecyclePhases();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(), SetVolumeMultiplier(_)).Times(0);
+  Media()->GetDocument().body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("content-visibility: hidden"));
+  UpdateLifecyclePhases();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  auto* listener = MakeGarbageCollected<EventCountingListener>();
+  Media()->addEventListener(event_type_names::kVolumechange, listener);
+  Media()->setVolume(0.5);
+  test::RunPendingTasks();
+  EXPECT_EQ(1, listener->count());
+}
+
+TEST_P(HTMLMediaElementTest,
+       MutedWithoutPausingWhileSkippedByContentVisibility) {
+  ScopedContentVisibilityMediaPlaybackForTest scoped_feature(true);
+  Media()->GetDocument().body()->AppendChild(Media());
+  WaitForPlayer();
+  UpdateLifecyclePhases();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(), SetVolumeMultiplier(0));
+  EXPECT_CALL(*MockMediaPlayer(), Pause(_)).Times(0);
+  Media()->GetDocument().body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("content-visibility: hidden"));
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->muted());
+  EXPECT_FALSE(Media()->paused());
+
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+  EXPECT_CALL(*MockMediaPlayer(), SetVolumeMultiplier(1));
+  Media()->GetDocument().body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("content-visibility: visible"));
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->muted());
+}
+
+TEST_P(HTMLMediaElementTest, MutedWhenSelfSkippedByContentVisibility) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  ScopedContentVisibilityMediaPlaybackForTest scoped_feature(true);
+  Media()->GetDocument().body()->AppendChild(Media());
+  WaitForPlayer();
+  UpdateLifecyclePhases();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(), SetVolumeMultiplier(0));
+  Media()->setAttribute(html_names::kStyleAttr,
+                        AtomicString("content-visibility: hidden"));
+  UpdateLifecyclePhases();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
+
+TEST_P(HTMLMediaElementTest, DefersEventsWhileSkippedByContentVisibility) {
+  ScopedContentVisibilityMediaPlaybackForTest scoped_feature(true);
+  Media()->GetDocument().body()->AppendChild(Media());
+  WaitForPlayer();
+  UpdateLifecyclePhases();
+
+  Media()->GetDocument().body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("content-visibility: hidden"));
+  UpdateLifecyclePhases();
+  test::RunPendingTasks();
+
+  auto* listener = MakeGarbageCollected<EventCountingListener>();
+  Media()->addEventListener(event_type_names::kVolumechange, listener);
+  Media()->setVolume(0.5);
+  Media()->setVolume(0.75);
+  test::RunPendingTasks();
+  EXPECT_EQ(listener->count(), 0);
+
+  Media()->GetDocument().body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("content-visibility: visible"));
+  UpdateLifecyclePhases();
+  test::RunPendingTasks();
+  EXPECT_EQ(listener->count(), 2);
+}
+
+TEST_P(HTMLMediaElementTest, PictureInPictureStaysAudibleWhenSkipped) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  ScopedContentVisibilityMediaPlaybackForTest scoped_feature(true);
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  WaitForPlayer();
+  UpdateLifecyclePhases();
+  video->GetDocument().body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("content-visibility: hidden"));
+  UpdateLifecyclePhases();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(), SetVolumeMultiplier(1));
+  video->SetPersistentState(true);
+  EXPECT_FALSE(video->paused());
+
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+  EXPECT_CALL(*MockMediaPlayer(), SetVolumeMultiplier(0));
+  video->SetPersistentState(false);
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
 
 TEST_P(HTMLMediaElementTest, VideoFrameAvailability) {
   if (GetParam() != MediaTestParam::kVideo) {
@@ -2511,17 +2633,6 @@ TEST_P(HTMLMediaElementTest,
   // The element should no longer use the original frame.
   EXPECT_NE(old_frame, Media()->LocalFrameForPlayer());
 }
-
-// Listener that counts how many times an event of the given type fires, used
-// by the document-move tests below to assert presence/absence of play/pause.
-class EventCountingListener final : public NativeEventListener {
- public:
-  void Invoke(ExecutionContext*, Event*) override { ++count_; }
-  int count() const { return count_; }
-
- private:
-  int count_ = 0;
-};
 
 // A document move that doesn't keep the player (same-origin without
 // kDocumentPictureInPictureAPI) re-runs the load algorithm. The HTML spec

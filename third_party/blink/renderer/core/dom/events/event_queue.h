@@ -32,7 +32,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -50,6 +52,11 @@ class CORE_EXPORT EventQueue final : public GarbageCollected<EventQueue>,
   void CancelAllEvents();
   bool HasPendingEvents() const;
 
+  // Events enqueued while frozen are not dispatched until the queue is
+  // unfrozen, and are then dispatched in enqueue order. Events enqueued
+  // before the freeze are unaffected.
+  void SetFrozen(bool frozen);
+
  private:
   bool RemoveEvent(Event&);
   void DispatchEvent(Event*);
@@ -58,9 +65,16 @@ class CORE_EXPORT EventQueue final : public GarbageCollected<EventQueue>,
   void Close(ExecutionContext*);
   void DoCancelAllEvents(ExecutionContext*);
 
+  void PostDispatchTask(const base::Location&, Event&);
+
   const TaskType task_type_;
   HeapLinkedHashSet<Member<Event>> queued_events_;
+  // Parallel vectors: `frozen_event_locations_[i]` is the location of the
+  // EnqueueEvent() call that queued `frozen_events_[i]`.
+  HeapVector<Member<Event>> frozen_events_;
+  Vector<base::Location> frozen_event_locations_;
   bool is_closed_;
+  bool is_frozen_ = false;
 };
 
 }  // namespace blink
