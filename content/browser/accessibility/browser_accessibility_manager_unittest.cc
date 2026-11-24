@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "ui/accessibility/ax_tree_observer.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #if BUILDFLAG(IS_WIN)
 #include "ui/accessibility/platform/browser_accessibility_win.h"
@@ -79,6 +80,23 @@ class CountingAXTreeObserver : public ui::AXTreeObserver {
   int reparent_count_ = 0;
   int update_count_ = 0;
   int node_count_ = 0;
+};
+
+class TestAXPlatformTreeManager : public ui::AXPlatformTreeManager {
+ public:
+  explicit TestAXPlatformTreeManager(const ui::AXTreeUpdate& initial_tree)
+      : ui::AXPlatformTreeManager(std::make_unique<ui::AXTree>(initial_tree)) {}
+  ~TestAXPlatformTreeManager() override = default;
+
+  ui::AXPlatformNode* GetPlatformNodeFromTree(
+      ui::AXNodeID node_id) const override {
+    return nullptr;
+  }
+  ui::AXPlatformNode* GetPlatformNodeFromTree(
+      const ui::AXNode& node) const override {
+    return nullptr;
+  }
+  ui::AXPlatformNodeDelegate* RootDelegate() const override { return nullptr; }
 };
 
 ui::BrowserAccessibilityManager* CreateBrowserAccessibilityManager(
@@ -1723,5 +1741,167 @@ TEST_F(BrowserAccessibilityManagerTest,
             range->focus.offset_type);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Regression test for b/560514888: non-BrowserAccessibilityManager
+// AXPlatformTreeManager instances (such as views::AtomicViewAXTreeManager) have
+// `is_platform_tree_manager() == true` and are registered in AXTreeManagerMap.
+// Ensure BrowserAccessibilityManager never downcasts them via FromID,
+// GetFromAXNode, GetParentNodeFromParentTreeAsBrowserAccessibility, or
+// GetManagerForRootFrame.
+TEST_F(BrowserAccessibilityManagerTest,
+       DoesNotDowncastNonBrowserAccessibilityPlatformTreeManager) {
+  ui::AXNodeData leaf_child_tree_root;
+  leaf_child_tree_root.id = 1;
+  leaf_child_tree_root.role = ax::mojom::Role::kRootWebArea;
+  TestAXPlatformTreeManager leaf_child_platform_manager(
+      MakeAXTreeUpdateForTesting(leaf_child_tree_root));
+
+  ui::AXNodeData menu_child_tree_root;
+  menu_child_tree_root.id = 1;
+  menu_child_tree_root.role = ax::mojom::Role::kRootWebArea;
+  TestAXPlatformTreeManager menu_child_platform_manager(
+      MakeAXTreeUpdateForTesting(menu_child_tree_root));
+
+  ui::AXNodeData group_child_tree_root;
+  group_child_tree_root.id = 1;
+  group_child_tree_root.role = ax::mojom::Role::kRootWebArea;
+  TestAXPlatformTreeManager group_child_platform_manager(
+      MakeAXTreeUpdateForTesting(group_child_tree_root));
+
+  ui::AXNodeData iframe_child_tree_root;
+  iframe_child_tree_root.id = 1;
+  iframe_child_tree_root.role = ax::mojom::Role::kRootWebArea;
+  TestAXPlatformTreeManager iframe_child_platform_manager(
+      MakeAXTreeUpdateForTesting(iframe_child_tree_root));
+
+  ASSERT_TRUE(leaf_child_platform_manager.is_platform_tree_manager());
+  ASSERT_EQ(&leaf_child_platform_manager,
+            ui::AXTreeManager::FromID(leaf_child_platform_manager.GetTreeID()));
+  EXPECT_EQ(nullptr, ui::BrowserAccessibilityManager::FromAXTreeManager(
+                         &leaf_child_platform_manager));
+  EXPECT_EQ(
+      nullptr,
+      ui::BrowserAccessibilityManager::FromAXTreeManager(
+          static_cast<const ui::AXTreeManager*>(&leaf_child_platform_manager)));
+  EXPECT_EQ(nullptr, ui::BrowserAccessibilityManager::FromID(
+                         leaf_child_platform_manager.GetTreeID()));
+
+  ui::AXNodeData initial_root;
+  initial_root.id = 1;
+  initial_root.role = ax::mojom::Role::kRootWebArea;
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          MakeAXTreeUpdateForTesting(initial_root), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  EXPECT_EQ(manager.get(),
+            ui::BrowserAccessibilityManager::FromAXTreeManager(manager.get()));
+  EXPECT_EQ(manager.get(),
+            ui::BrowserAccessibilityManager::FromID(manager->GetTreeID()));
+  EXPECT_EQ(nullptr,
+            manager->GetFromAXNode(leaf_child_platform_manager.GetRoot()));
+
+  // Simulate an incremental renderer update attaching non-BAM
+  // AXPlatformTreeManager trees via kChildTreeId on a leaf host role
+  // (kTextField, where AXNode::IsLeaf() is true), a menu host role (kMenu), a
+  // container host role (kGroup), and an iframe host role (kIframe, which is
+  // never a leaf on any platform including Android).
+  ui::AXNodeData updated_root = initial_root;
+  updated_root.child_ids = {2, 3, 4, 5};
+
+  ui::AXNodeData text_field_host;
+  text_field_host.id = 2;
+  text_field_host.role = ax::mojom::Role::kTextField;
+  text_field_host.AddChildTreeId(leaf_child_platform_manager.GetTreeID());
+
+  ui::AXNodeData menu_host;
+  menu_host.id = 3;
+  menu_host.role = ax::mojom::Role::kMenu;
+  menu_host.AddChildTreeId(menu_child_platform_manager.GetTreeID());
+
+  ui::AXNodeData group_host;
+  group_host.id = 4;
+  group_host.role = ax::mojom::Role::kGroup;
+  group_host.AddChildTreeId(group_child_platform_manager.GetTreeID());
+
+  ui::AXNodeData iframe_host;
+  iframe_host.id = 5;
+  iframe_host.role = ax::mojom::Role::kIframe;
+  iframe_host.AddChildTreeId(iframe_child_platform_manager.GetTreeID());
+
+  ui::AXTreeUpdate incremental_update;
+  incremental_update.root_id = updated_root.id;
+  incremental_update.nodes = {updated_root, text_field_host, menu_host,
+                              group_host, iframe_host};
+
+  ui::AXUpdatesAndEvents events;
+  events.ax_tree_id = manager->GetTreeID();
+  events.updates.push_back(std::move(incremental_update));
+  ASSERT_TRUE(manager->OnAccessibilityEvents(events));
+
+  ui::BrowserAccessibility* text_field_node =
+      manager->GetFromID(text_field_host.id);
+  ASSERT_NE(nullptr, text_field_node);
+  EXPECT_TRUE(text_field_node->IsLeaf());
+  EXPECT_EQ(0u, text_field_node->PlatformChildCount());
+  EXPECT_EQ(nullptr, text_field_node->PlatformGetFirstChild());
+
+  ui::BrowserAccessibility* menu_node = manager->GetFromID(menu_host.id);
+  ASSERT_NE(nullptr, menu_node);
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, BrowserAccessibilityAndroid::ComputeIsLeaf() treats nodes with
+  // zero internal children as leaves via HasOnlyTextChildren().
+  EXPECT_TRUE(menu_node->IsLeaf());
+#else
+  EXPECT_FALSE(menu_node->IsLeaf());
+#endif
+  EXPECT_EQ(0u, menu_node->PlatformChildCount());
+  EXPECT_EQ(nullptr, menu_node->PlatformGetFirstChild());
+
+  ui::BrowserAccessibility* group_node = manager->GetFromID(group_host.id);
+  ASSERT_NE(nullptr, group_node);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(group_node->IsLeaf());
+#else
+  EXPECT_FALSE(group_node->IsLeaf());
+#endif
+  EXPECT_EQ(0u, group_node->PlatformChildCount());
+  EXPECT_EQ(nullptr, group_node->PlatformGetFirstChild());
+
+  ui::BrowserAccessibility* iframe_node = manager->GetFromID(iframe_host.id);
+  ASSERT_NE(nullptr, iframe_node);
+  EXPECT_FALSE(iframe_node->IsLeaf());
+  EXPECT_EQ(0u, iframe_node->PlatformChildCount());
+  EXPECT_EQ(nullptr, iframe_node->PlatformGetFirstChild());
+
+  // Also verify child-to-parent resolution when a child tree's parent_tree_id
+  // points to a non-BrowserAccessibilityManager AXPlatformTreeManager.
+  ui::AXNodeData child_root;
+  child_root.id = 1;
+  child_root.role = ax::mojom::Role::kRootWebArea;
+  ui::AXTreeUpdate child_update = MakeAXTreeUpdateForTesting(child_root);
+
+  ui::AXNodeData parent_platform_root;
+  parent_platform_root.id = 1;
+  parent_platform_root.role = ax::mojom::Role::kRootWebArea;
+  parent_platform_root.child_ids = {2};
+
+  ui::AXNodeData parent_platform_host;
+  parent_platform_host.id = 2;
+  parent_platform_host.role = ax::mojom::Role::kGroup;
+  parent_platform_host.AddChildTreeId(child_update.tree_data.tree_id);
+
+  TestAXPlatformTreeManager parent_platform_manager(
+      MakeAXTreeUpdateForTesting(parent_platform_root, parent_platform_host));
+
+  child_update.tree_data.parent_tree_id = parent_platform_manager.GetTreeID();
+  std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
+      CreateBrowserAccessibilityManager(child_update, node_id_delegate_,
+                                        nullptr));
+
+  EXPECT_EQ(nullptr, child_manager->GetManagerForRootFrame());
+  EXPECT_EQ(nullptr,
+            child_manager->GetParentNodeFromParentTreeAsBrowserAccessibility());
+}
 
 }  // namespace content
