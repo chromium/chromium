@@ -4,6 +4,8 @@
 
 #include "chrome/browser/performance_manager/policies/transient_keep_alive_policy.h"
 
+#include <string>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
@@ -30,13 +32,15 @@ class TransientKeepAlivePolicyBrowserTest : public InProcessBrowserTest {
   ~TransientKeepAlivePolicyBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Set up the feature with a short, testable duration and a small count as
-    // well as the kTrackEmptyRendererProcessesForReuse to be able to pick up
-    // "free" and "empty" renderer process hosts for reuse.
+    // Set up the feature with a short, testable duration (overridable by
+    // subclasses that need a generous timeout to avoid expiring mid-test on
+    // loaded bots) and a small count as well as
+    // kTrackEmptyRendererProcessesForReuse to be able to pick up "free" and
+    // "empty" renderer process hosts for reuse.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kTransientKeepAlivePolicy,
-          {{"duration", "1s"}, {"count", "2"}}},
+          {{"duration", GetKeepAliveDuration()}, {"count", "2"}}},
          {::features::kTrackEmptyRendererProcessesForReuse, {}}},
         /*disabled_features=*/{});
   }
@@ -56,6 +60,9 @@ class TransientKeepAlivePolicyBrowserTest : public InProcessBrowserTest {
     // Disable tab discarding to avoid interference.
     policies::UrgentPageDiscardingPolicy::DisableForTesting();
   }
+
+ protected:
+  virtual std::string GetKeepAliveDuration() const { return "1s"; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -96,14 +103,15 @@ IN_PROC_BROWSER_TEST_F(TransientKeepAlivePolicyBrowserTest,
   EXPECT_EQ(nullptr, content::RenderProcessHost::FromID(rph1_id));
 }
 
+class TransientKeepAlivePolicyLongTimeoutBrowserTest
+    : public TransientKeepAlivePolicyBrowserTest {
+ protected:
+  std::string GetKeepAliveDuration() const override { return "60s"; }
+};
+
 // Tests that a process is reused if a navigation occurs before timeout.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ProcessIsReused DISABLED_ProcessIsReused
-#else
-#define MAYBE_ProcessIsReused ProcessIsReused
-#endif
-IN_PROC_BROWSER_TEST_F(TransientKeepAlivePolicyBrowserTest,
-                       MAYBE_ProcessIsReused) {
+IN_PROC_BROWSER_TEST_F(TransientKeepAlivePolicyLongTimeoutBrowserTest,
+                       ProcessIsReused) {
   const GURL kUrl1 = embedded_test_server()->GetURL("a.com", "/title1.html");
   const GURL kUrl2 = embedded_test_server()->GetURL("b.com", "/title2.html");
 
@@ -112,14 +120,17 @@ IN_PROC_BROWSER_TEST_F(TransientKeepAlivePolicyBrowserTest,
 
   // 1. Create `rph1`
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl1));
-  content::RenderProcessHost* rph1 =
-      contents->GetPrimaryMainFrame()->GetProcess();
+  content::RenderFrameHost* rfh1 = contents->GetPrimaryMainFrame();
+  content::RenderFrameDeletedObserver rfh1_deleted_observer(rfh1);
+  content::RenderProcessHost* rph1 = rfh1->GetProcess();
 
-  // 2. Navigate away, making `rph1` empty and starting its timer.
+  // 2. Navigate away, making `rph1` empty and starting its timer once `rfh1`
+  // finishes unloading and is deleted.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
   EXPECT_NE(rph1, contents->GetPrimaryMainFrame()->GetProcess());
+  rfh1_deleted_observer.WaitUntilDeleted();
 
-  // 3. Navigate back to the first site *before* the 1s timer expires.
+  // 3. Navigate back to the first site before the keep-alive timer expires.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl1));
 
   // 4. Check that the RPH is the same one.
