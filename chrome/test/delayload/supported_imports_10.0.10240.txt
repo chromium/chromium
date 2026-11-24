@@ -12255,3 +12255,473 @@ File Type: DLL
         1000 .reloc
        11000 .rsrc
        43000 .text
+
+# The export tables below are `dumpbin /exports` output (dumpbin 14.43) for the
+# x64 DLLs of Windows 10.0.10240.16384 downloaded from Microsoft's symbol
+# server, not from the Windows install that the sections above come from:
+#   https://msdl.microsoft.com/download/symbols/<dll>/<key>/<dll>
+# <key> is the DLL's PE header TimeDateStamp (8 uppercase hex digits) followed
+# by its SizeOfImage (lowercase hex). Both come from the winbindex index
+# (https://winbindex.m417z.com/data/by_filename_compressed/<dll>.json.gz):
+# fields fileInfo.timestamp and fileInfo.virtualSize of the x64 entry
+# (fileInfo.machineType 34404) listed under windowsVersions["1507"]["BASE"].
+# The same method reproduces the user32.dll section above exactly.
+#   dwmapi.dll: key 559F3C5E22000, SHA-256
+#     983a22474a8e010809ffff8395b285de702ab87fc3b99dfd7b5c08ef56131e4f
+#   uxtheme.dll: key 559F3B8896000, SHA-256
+#     c433544661203a472c2966e6b4238b3efcf734e9dc9d4deb9773531bf6792531
+#   imm32.dll: key 559F3B6436000, SHA-256
+#     cc7ae51d7d116d2867fc9398ae962e8faf4d7684d28e88094c11144e150712a4
+
+Dump of file dwmapi.dll
+
+File Type: DLL
+
+  Section contains the following exports for dwmapi.dll
+
+    00000000 characteristics
+    559F2C31 time date stamp Thu Jul  9 19:21:37 2015
+        0.00 version
+         100 ordinal base
+          83 number of functions
+          43 number of names
+
+    ordinal hint RVA      name
+
+        111    0 0000D680 DllCanUnloadNow
+        115    1 0000D6C0 DllGetClassObject
+        116    2 00008F50 DwmAttachMilContent
+        117    3 00001EB0 DwmDefWindowProc
+        118    4 00008F50 DwmDetachMilContent
+        119    5 00004220 DwmEnableBlurBehindWindow
+        102    6 00008C20 DwmEnableComposition
+        120    7 00001440 DwmEnableMMCSS
+        121    8 00001C50 DwmExtendFrameIntoClientArea
+        122    9 00001B40 DwmFlush
+        123    A 00008470 DwmGetColorizationColor
+        129    B 000014D0 DwmGetCompositionTimingInfo
+        130    C 00008F50 DwmGetGraphicsStreamClient
+        149    D 00008F50 DwmGetGraphicsStreamTransformHint
+        165    E 00008F30 DwmGetTransportAttributes
+        166    F 00001360 DwmGetWindowAttribute
+        167   10 00001710 DwmInvalidateIconicBitmaps
+        168   11 00003240 DwmIsCompositionEnabled
+        169   12 000096E0 DwmModifyPreviousDxFrameDuration
+        170   13 000096F0 DwmQueryThumbnailSourceSize
+        171   14 00009840 DwmRegisterThumbnail
+        172   15 00009030 DwmRenderGesture
+        173   16 000096E0 DwmSetDxFrameDuration
+        174   17 00009900 DwmSetIconicLivePreviewBitmap
+        175   18 00009C50 DwmSetIconicThumbnail
+        176   19 000096E0 DwmSetPresentParameters
+        177   1A 000017D0 DwmSetWindowAttribute
+        178   1B 000011C0 DwmShowContact
+        179   1C 00009240 DwmTetherContact
+        156   1D 00009350 DwmTetherTextContact
+        180   1E 0000AE30 DwmTransitionOwnedWindow
+        181   1F 000039D0 DwmUnregisterThumbnail
+        182   20 00003F00 DwmUpdateThumbnailProperties
+        136   21 00003B90 DwmpAllocateSecurityDescriptor
+        125   22 00007930 DwmpDxBindSwapChain
+        100   23 00003660 DwmpDxGetWindowSharedSurface
+        126   24 00007B70 DwmpDxUnbindSwapChain
+        133   25 00007BB0 DwmpDxUpdateWindowRedirectionBltSurface
+        101   26 00007CE0 DwmpDxUpdateWindowSharedSurface
+        128   27 00003330 DwmpDxgiIsThreadDesktopComposited
+        143   28 00008C50 DwmpEnableDDASupport
+        137   29 00003E00 DwmpFreeSecurityDescriptor
+        135   2A 00009540 DwmpRenderFlick
+        103      00008E10 [NONAME]
+        104      000096E0 [NONAME]
+        105      00008F20 [NONAME]
+        106      00008CC0 [NONAME]
+        107      00008590 [NONAME]
+        108      000096E0 [NONAME]
+        109      00008F50 [NONAME]
+        110      00008F50 [NONAME]
+        112      00008F50 [NONAME]
+        113      00001250 [NONAME]
+        114      0000A290 [NONAME]
+        124      00004020 [NONAME]
+        127      00001990 [NONAME]
+        131      000088D0 [NONAME]
+        132      00001510 [NONAME]
+        134      00007AD0 [NONAME]
+        138      0000AEF0 [NONAME]
+        139      00004600 [NONAME]
+        140      0000B050 [NONAME]
+        141      00004630 [NONAME]
+        142      0000AA50 [NONAME]
+        144      0000B100 [NONAME]
+        145      0000AF00 [NONAME]
+        146      00008F60 [NONAME]
+        147      00002E00 [NONAME]
+        148      0000AF10 [NONAME]
+        150      0000B870 [NONAME]
+        151      0000B790 [NONAME]
+        152      0000B950 [NONAME]
+        153      0000BA30 [NONAME]
+        154      0000BC30 [NONAME]
+        155      0000BB30 [NONAME]
+        157      00008D40 [NONAME]
+        158      00008E70 [NONAME]
+        159      00001130 [NONAME]
+        160      0000A3C0 [NONAME]
+        161      000046D0 [NONAME]
+        162      00003940 [NONAME]
+        163      00009FF0 [NONAME]
+        164      0000AAF0 [NONAME]
+
+Dump of file uxtheme.dll
+
+File Type: DLL
+
+  Section contains the following exports for UxTheme.dll
+
+    00000000 characteristics
+    559F3124 time date stamp Thu Jul  9 19:42:44 2015
+        0.00 version
+           1 ordinal base
+         185 number of functions
+          84 number of names
+
+    ordinal hint RVA      name
+
+         37    0 0001C6D0 BeginBufferedAnimation
+         38    1 000183B0 BeginBufferedPaint
+          5    2 0003F620 BeginPanningFeedback
+         39    3 000188C0 BufferedPaintClear
+         40    4 0001CF30 BufferedPaintInit
+         41    5 0001C660 BufferedPaintRenderAnimation
+         42    6 0001E990 BufferedPaintSetAlpha
+         51    7 0001F560 BufferedPaintStopAllAnimations
+         52    8 0001D030 BufferedPaintUnInit
+         53    9 00010BF0 CloseThemeData
+         54    A 000349E0 DllCanUnloadNow
+         55    B 00034A80 DllGetActivationFactory
+         56    C 00034B20 DllGetClassObject
+         57    D 000152E0 DrawThemeBackground
+         47    E 0001AEC0 DrawThemeBackgroundEx
+         58    F 00002700 DrawThemeEdge
+         59   10 00048CC0 DrawThemeIcon
+         70   11 0001D6A0 DrawThemeParentBackground
+         71   12 0001D6C0 DrawThemeParentBackgroundEx
+         89   13 0001E0B0 DrawThemeText
+        114   14 00013A70 DrawThemeTextEx
+        130   15 00005660 EnableThemeDialogTexture
+        131   16 0004A6E0 EnableTheming
+        132   17 0001C7D0 EndBufferedAnimation
+        133   18 000189A0 EndBufferedPaint
+          6   19 0003F630 EndPanningFeedback
+        134   1A 00018520 GetBufferedPaintBits
+        135   1B 0001E6B0 GetBufferedPaintDC
+        136   1C 0001E730 GetBufferedPaintTargetDC
+        137   1D 00049580 GetBufferedPaintTargetRect
+        121   1E 000030B0 GetColorFromPreference
+        138   1F 000050B0 GetCurrentThemeName
+         95   20 00002E70 GetImmersiveColorFromColorSetEx
+         98   21 00002FC0 GetImmersiveUserColorSetPreference
+        139   22 000181D0 GetThemeAnimationProperty
+        140   23 00013430 GetThemeAnimationTransform
+        141   24 0001F2B0 GetThemeAppProperties
+        142   25 00013BB0 GetThemeBackgroundContentRect
+        143   26 00017C80 GetThemeBackgroundExtent
+        144   27 0001F1B0 GetThemeBackgroundRegion
+        145   28 0001CC50 GetThemeBitmap
+        146   29 00017D90 GetThemeBool
+        147   2A 00017E40 GetThemeColor
+        148   2B 000497B0 GetThemeDocumentationProperty
+        149   2C 0001ABF0 GetThemeEnumValue
+        150   2D 00049870 GetThemeFilename
+        151   2E 000180F0 GetThemeFont
+        152   2F 00018050 GetThemeInt
+        153   30 00049940 GetThemeIntList
+        154   31 000138D0 GetThemeMargins
+        155   32 0001E1D0 GetThemeMetric
+        156   33 00014000 GetThemePartSize
+        157   34 0001F3B0 GetThemePosition
+        158   35 00049A40 GetThemePropertyOrigin
+        159   36 00022230 GetThemeRect
+        160   37 00022170 GetThemeStream
+        161   38 00049AF0 GetThemeString
+        162   39 00049BB0 GetThemeSysBool
+        163   3A 00049C70 GetThemeSysColor
+        164   3B 00049D40 GetThemeSysColorBrush
+        165   3C 00049E10 GetThemeSysFont
+        166   3D 0004A100 GetThemeSysInt
+        167   3E 0004A1A0 GetThemeSysSize
+        168   3F 0004A260 GetThemeSysString
+        169   40 0001AC90 GetThemeTextExtent
+        170   41 0001E7B0 GetThemeTextMetrics
+        171   42 00013590 GetThemeTimingFunction
+        172   43 0001F450 GetThemeTransitionDuration
+        120   44 00003430 GetUserColorPreference
+        173   45 00004D00 GetWindowTheme
+        174   46 0001F950 HitTestThemeBackground
+        175   47 000028C0 IsAppThemed
+        176   48 00005A20 IsCompositionActive
+        177   49 000028F0 IsThemeActive
+        178   4A 00013680 IsThemeBackgroundPartiallyTransparent
+        179   4B 0004A450 IsThemeDialogTextureEnabled
+        180   4C 000111B0 IsThemePartDefined
+        181   4D 00005AE0 OpenThemeData
+         61   4E 0004A4C0 OpenThemeDataEx
+        182   4F 0004A960 SetThemeAppProperties
+        183   50 0001BA10 SetWindowTheme
+        184   51 000048B0 SetWindowThemeAttribute
+        185   52 00005C60 ThemeInitApiHook
+         12   53 0003F6A0 UpdatePanningFeedback
+          1      0004A650 [NONAME]
+          2               [NONAME] (forwarded to SHUNIMPL.#440)
+          3               [NONAME] (forwarded to SHUNIMPL.#441)
+          4               [NONAME] (forwarded to SHUNIMPL.#445)
+          7      000496A0 [NONAME]
+          8      00049300 [NONAME]
+          9      00049030 [NONAME]
+         10      00049220 [NONAME]
+         11               [NONAME] (forwarded to SHUNIMPL.#190)
+         13               [NONAME] (forwarded to SHUNIMPL.#444)
+         14      0004A710 [NONAME]
+         15      00049020 [NONAME]
+         16      0004A520 [NONAME]
+         17      0004A5E0 [NONAME]
+         18               [NONAME] (forwarded to SHUNIMPL.#189)
+         19               [NONAME] (forwarded to SHUNIMPL.#188)
+         20               [NONAME] (forwarded to SHUNIMPL.#395)
+         21               [NONAME] (forwarded to SHUNIMPL.#396)
+         22               [NONAME] (forwarded to SHUNIMPL.#397)
+         23               [NONAME] (forwarded to SHUNIMPL.#398)
+         24               [NONAME] (forwarded to SHUNIMPL.#399)
+         25               [NONAME] (forwarded to SHUNIMPL.#400)
+         26               [NONAME] (forwarded to SHUNIMPL.#215)
+         27               [NONAME] (forwarded to SHUNIMPL.#401)
+         28               [NONAME] (forwarded to SHUNIMPL.#402)
+         29               [NONAME] (forwarded to SHUNIMPL.#213)
+         30               [NONAME] (forwarded to SHUNIMPL.#403)
+         31               [NONAME] (forwarded to SHUNIMPL.#431)
+         32               [NONAME] (forwarded to SHUNIMPL.#406)
+         33      00022DF0 [NONAME]
+         34               [NONAME] (forwarded to SHUNIMPL.#407)
+         35               [NONAME] (forwarded to SHUNIMPL.#408)
+         36      0004A6E0 [NONAME]
+         43      0001B440 [NONAME]
+         44      0001DC10 [NONAME]
+         45      0001B3C0 [NONAME]
+         46      00045490 [NONAME]
+         48      000499F0 [NONAME]
+         49      000058E0 [NONAME]
+         50      0004A390 [NONAME]
+         60      00048C10 [NONAME]
+         62               [NONAME] (forwarded to SHUNIMPL.#409)
+         63               [NONAME] (forwarded to SHUNIMPL.#404)
+         64      00045250 [NONAME]
+         65      0004A880 [NONAME]
+         66               [NONAME] (forwarded to SHUNIMPL.#405)
+         67      00048BF0 [NONAME]
+         68      0004A860 [NONAME]
+         69      00049150 [NONAME]
+         72      00048DB0 [NONAME]
+         73      0004A330 [NONAME]
+         74      00049610 [NONAME]
+         75      00045720 [NONAME]
+         76      00022C90 [NONAME]
+         77               [NONAME] (forwarded to SHUNIMPL.#432)
+         78               [NONAME] (forwarded to SHUNIMPL.#433)
+         79               [NONAME] (forwarded to SHUNIMPL.#434)
+         80               [NONAME] (forwarded to SHUNIMPL.#435)
+         81               [NONAME] (forwarded to SHUNIMPL.#430)
+         82               [NONAME] (forwarded to SHUNIMPL.#436)
+         83               [NONAME] (forwarded to SHUNIMPL.#437)
+         84      00020240 [NONAME]
+         85      0003CAF0 [NONAME]
+         86      00045A30 [NONAME]
+         87               [NONAME] (forwarded to SHUNIMPL.#438)
+         88               [NONAME] (forwarded to SHUNIMPL.#439)
+         90      0003C890 [NONAME]
+         91      00021780 [NONAME]
+         92      00045E40 [NONAME]
+         93      00020A60 [NONAME]
+         94      00038440 [NONAME]
+         96      0001F4F0 [NONAME]
+         97      000384B0 [NONAME]
+         99      00022DD0 [NONAME]
+        100      00038410 [NONAME]
+        101      00022E00 [NONAME]
+        102      00038480 [NONAME]
+        103      00031810 [NONAME]
+        104      00003D50 [NONAME]
+        105      00038460 [NONAME]
+        106      000032B0 [NONAME]
+        107      00038540 [NONAME]
+        108      00038510 [NONAME]
+        109      00038570 [NONAME]
+        110      00024FA0 [NONAME]
+        111      000384E0 [NONAME]
+        112      00038530 [NONAME]
+        113      00038500 [NONAME]
+        115      00045530 [NONAME]
+        116      00046020 [NONAME]
+        117      00038440 [NONAME]
+        118      000383E0 [NONAME]
+        119      00003640 [NONAME]
+        122      00020700 [NONAME]
+        123      00020620 [NONAME]
+        124      00038450 [NONAME]
+        125      00020950 [NONAME]
+        126      000173C0 [NONAME]
+        127      00045FB0 [NONAME]
+        128      00020A40 [NONAME]
+        129      000059D0 [NONAME]
+
+Dump of file imm32.dll
+
+File Type: DLL
+
+  Section contains the following exports for IMM32.dll
+
+    00000000 characteristics
+    559F30B6 time date stamp Thu Jul  9 19:40:54 2015
+        0.00 version
+           1 ordinal base
+         137 number of functions
+         137 number of names
+
+    ordinal hint RVA      name
+
+          1    0 000206B0 CtfImmAppCompatEnableIMEonProtectedCode
+          2    1 00004B50 CtfImmCoUninitialize
+          3    2 000042E0 CtfImmDispatchDefImeMessage
+          4    3 00005170 CtfImmEnterCoInitCountSkipMode
+          5    4 000142B0 CtfImmGenerateMessage
+          6    5 000206D0 CtfImmGetCompatibleKeyboardLayout
+          7    6 000206E0 CtfImmGetGlobalIMEStatus
+          8    7 00020700 CtfImmGetGuidAtom
+          9    8 000207A0 CtfImmGetIMEFileName
+         10    9 000036D0 CtfImmGetTMAEFlags
+         11    A 00020850 CtfImmHideToolbarWnd
+         12    B 00020910 CtfImmIsCiceroEnabled
+         13    C 00004CC0 CtfImmIsCiceroStartedInThread
+         14    D 00020930 CtfImmIsComStartedInThread
+         15    E 00020950 CtfImmIsGuidMapEnable
+         16    F 00020BB0 CtfImmIsTextFrameServiceDisabled
+         17   10 00001840 CtfImmLastEnabledWndDestroy
+         18   11 00005130 CtfImmLeaveCoInitCountSkipMode
+         19   12 00004C70 CtfImmNotify
+         20   13 000209D0 CtfImmRestoreToolbarWnd
+         21   14 00005260 CtfImmSetAppCompatFlags
+         22   15 000051B0 CtfImmSetCiceroStartInThread
+         23   16 00005280 CtfImmSetDefaultRemoteKeyboardLayout
+         24   17 00003500 CtfImmTIMActivate
+         25   18 00014430 GetKeyboardLayoutCP
+         26   19 000113D0 ImmActivateLayout
+         27   1A 00002B90 ImmAssociateContext
+         28   1B 0000CBF0 ImmAssociateContextEx
+         29   1C 0001F5B0 ImmCallImeConsoleIME
+         30   1D 00011580 ImmConfigureIMEA
+         31   1E 000117F0 ImmConfigureIMEW
+         32   1F 0000CD40 ImmCreateContext
+         33   20 00005110 ImmCreateIMCC
+         34   21 000196E0 ImmCreateSoftKeyboard
+         35   22 0000CDD0 ImmDestroyContext
+         36   23 00001730 ImmDestroyIMCC
+         37   24 00019910 ImmDestroySoftKeyboard
+         38   25 00005250 ImmDisableIME
+         39   26 00005250 ImmDisableIme
+         40   27 000051E0 ImmDisableLegacyIME
+         41   28 00020BB0 ImmDisableTextFrameService
+         42   29 00004D20 ImmEnumInputContext
+         43   2A 00014DC0 ImmEnumRegisterWordA
+         44   2B 00014FD0 ImmEnumRegisterWordW
+         45   2C 00011A80 ImmEscapeA
+         46   2D 00011D70 ImmEscapeW
+         47   2E 00011FF0 ImmFreeLayout
+         48   2F 000144B0 ImmGenerateMessage
+         49   30 00004C80 ImmGetAppCompatFlags
+         50   31 0000D700 ImmGetCandidateListA
+         51   32 0000D720 ImmGetCandidateListCountA
+         52   33 0000D740 ImmGetCandidateListCountW
+         53   34 0000D8A0 ImmGetCandidateListW
+         54   35 00002180 ImmGetCandidateWindow
+         55   36 0000DA10 ImmGetCompositionFontA
+         56   37 0000DB00 ImmGetCompositionFontW
+         57   38 0000DBF0 ImmGetCompositionStringA
+         58   39 0000DCD0 ImmGetCompositionStringW
+         59   3A 00001900 ImmGetCompositionWindow
+         60   3B 00002F70 ImmGetContext
+         61   3C 0000DDB0 ImmGetConversionListA
+         62   3D 0000DFB0 ImmGetConversionListW
+         63   3E 000022E0 ImmGetConversionStatus
+         64   3F 00004B10 ImmGetDefaultIMEWnd
+         65   40 000135B0 ImmGetDescriptionA
+         66   41 00013690 ImmGetDescriptionW
+         67   42 0000E1B0 ImmGetGuideLineA
+         68   43 0000E1D0 ImmGetGuideLineW
+         69   44 00011060 ImmGetHotKey
+         70   45 00014660 ImmGetIMCCLockCount
+         71   46 00014690 ImmGetIMCCSize
+         72   47 000146B0 ImmGetIMCLockCount
+         73   48 00013760 ImmGetIMEFileNameA
+         74   49 000138B0 ImmGetIMEFileNameW
+         75   4A 00004F50 ImmGetImeInfoEx
+         76   4B 0001F980 ImmGetImeMenuItemsA
+         77   4C 0001FE40 ImmGetImeMenuItemsW
+         78   4D 00002440 ImmGetOpenStatus
+         79   4E 00013A00 ImmGetProperty
+         80   4F 00015200 ImmGetRegisterWordStyleA
+         81   50 00015360 ImmGetRegisterWordStyleW
+         82   51 0000E4C0 ImmGetStatusWindowPos
+         83   52 00014790 ImmGetVirtualKey
+         84   53 0001A200 ImmIMPGetIMEA
+         85   54 0001A280 ImmIMPGetIMEW
+         86   55 0001A2D0 ImmIMPQueryIMEA
+         87   56 0001A390 ImmIMPQueryIMEW
+         88   57 0001A4C0 ImmIMPSetIMEA
+         89   58 0001A580 ImmIMPSetIMEW
+         90   59 00013B00 ImmInstallIMEA
+         91   5A 00013C20 ImmInstallIMEW
+         92   5B 00005070 ImmIsIME
+         93   5C 000147F0 ImmIsUIMessageA
+         94   5D 00014810 ImmIsUIMessageW
+         95   5E 00004480 ImmLoadIME
+         96   5F 00005290 ImmLoadLayout
+         97   60 00003290 ImmLockClientImc
+         98   61 00003040 ImmLockIMC
+         99   62 00004C30 ImmLockIMCC
+        100   63 00003AD0 ImmLockImeDpi
+        101   64 000121E0 ImmNotifyIME
+        102   65 00003B80 ImmProcessKey
+        103   66 00020150 ImmPutImeMenuItemsIntoMappedFile
+        104   67 000148D0 ImmReSizeIMCC
+        105   68 00004360 ImmRegisterClient
+        106   69 000154B0 ImmRegisterWordA
+        107   6A 00015660 ImmRegisterWordW
+        108   6B 00004F40 ImmReleaseContext
+        109   6C 0000E6E0 ImmRequestMessageA
+        110   6D 0000E7C0 ImmRequestMessageW
+        111   6E 0001A6E0 ImmSendIMEMessageExA
+        112   6F 0001A700 ImmSendIMEMessageExW
+        113   70 00001990 ImmSetActiveContext
+        114   71 0001F710 ImmSetActiveContextConsoleIME
+        115   72 0000EAE0 ImmSetCandidateWindow
+        116   73 0000EBB0 ImmSetCompositionFontA
+        117   74 00001010 ImmSetCompositionFontW
+        118   75 0000ED30 ImmSetCompositionStringA
+        119   76 0000ED60 ImmSetCompositionStringW
+        120   77 00001150 ImmSetCompositionWindow
+        121   78 0000F320 ImmSetConversionStatus
+        122   79          ImmSetHotKey (forwarded to USER32.CliImmSetHotKey)
+        123   7A 0000F450 ImmSetOpenStatus
+        124   7B 0000F530 ImmSetStatusWindowPos
+        125   7C 00019920 ImmShowSoftKeyboard
+        126   7D 00011080 ImmSimulateHotKey
+        127   7E 000148F0 ImmSystemHandler
+        128   7F 00019B90 ImmTranslateMessage
+        129   80 000017A0 ImmUnlockClientImc
+        130   81 00002940 ImmUnlockIMC
+        131   82 00004C50 ImmUnlockIMCC
+        132   83 00002F10 ImmUnlockImeDpi
+        133   84 00015840 ImmUnregisterWordA
+        134   85 000159F0 ImmUnregisterWordW
+        135   86 0001A710 ImmWINNLSEnableIME
+        136   87 0001A750 ImmWINNLSGetEnableStatus
+        137   88 00020BB0 ImmWINNLSGetIMEHotkey

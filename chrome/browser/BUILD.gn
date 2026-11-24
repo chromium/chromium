@@ -1760,6 +1760,7 @@ source_set("core") {
       "//chrome/chrome_elf:dll_hash",
       "//chrome/chrome_elf:third_party_shared_defines",
       "//chrome/common:version_header",
+      "//chrome/common/win:core_dlls",
       "//chrome/credential_provider/common:common_constants",
       "//chrome/elevation_service:public_headers",
       "//chrome/install_static:install_static_util",

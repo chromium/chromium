@@ -61,6 +61,11 @@ source_set("delay_load_failure_support") {
   deps = [ "//base" ]
 }
 
+source_set("core_dlls") {
+  sources = [ "core_dlls.h" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

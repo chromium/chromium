@@ -97,6 +97,7 @@
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/env_vars.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/win/core_dlls.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/install_static/install_details.h"
@@ -575,10 +576,7 @@ void LoadAllImportsForCoreDlls() {
   // These DLLs are required by the browser process, so a failure to load one
   // of them or to resolve one of their imports is fatal (with crash keys
   // identifying the module) rather than silently ignored.
-  static constexpr base::cstring_view kDlls[] = {
-      "USER32.dll", "dwmapi.dll", "UxTheme.dll", "GDI32.dll", "IMM32.dll",
-  };
-  for (base::cstring_view dll : kDlls) {
+  for (base::cstring_view dll : kCoreDlls) {
     base::win::LoadAllImportsForDll(dll);
   }
 }

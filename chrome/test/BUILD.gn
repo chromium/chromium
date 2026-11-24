@@ -4362,6 +4362,7 @@ if (is_win) {
       "//base",
       "//base/test:test_support",
       "//chrome",
+      "//chrome/common/win:core_dlls",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
       "//mojo:buildflags",

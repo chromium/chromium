@@ -7,6 +7,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <map>
+#include <set>
+#include <string>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -16,6 +19,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -25,6 +29,7 @@
 #include "base/win/pe_image.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/common/win/core_dlls.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "mojo/buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -38,9 +43,10 @@ using DetailedImports = std::map<std::string, std::set<std::string>>;
 using SupportedApiSets = std::map<std::string, size_t>;
 
 // Generated static data - see `generate_allowed_imports.py` - module must be
-// lowercase as we force imports to lowercase when we read the module.
+// lowercase as we force imports to lowercase when we read the module. The
+// ordinal of each function is also listed, as "#<ordinal>".
 // e.g. const DetailedImports kAvailableImports = {
-//     {"kernel32.dll", {"Function1", "Function2"}}};
+//     {"kernel32.dll", {"Function1", "#1", "Function2", "#2"}}};
 const DetailedImports kAvailableImports = {
 #include "chrome/test/delayload/supported_imports.inc"
 };
@@ -154,6 +160,22 @@ class MinimumWindowsSupportTest : public DelayloadsTest {
       empty_fn_names.emplace(import_name);
       imports->emplace(std::move(mod_str), std::move(empty_fn_names));
     }
+    return true;
+  }
+
+  // Records every import in `cookie`, a DetailedImports. Module names keep
+  // their case. An import by ordinal is recorded as "#<ordinal>".
+  static bool DelayImportsCallback(const base::win::PEImage& image,
+                                   const char* module,
+                                   DWORD ordinal,
+                                   const char* import_name,
+                                   DWORD hint,
+                                   IMAGE_THUNK_DATA* iat,
+                                   void* cookie) {
+    DetailedImports* imports = reinterpret_cast<DetailedImports*>(cookie);
+    (*imports)[module].insert(import_name
+                                  ? std::string(import_name)
+                                  : "#" + base::NumberToString(ordinal));
     return true;
   }
 
@@ -482,6 +504,57 @@ TEST_F(MinimumWindowsSupportTest, ChromeDll) {
 #endif
   });
   Validate(L"chrome.dll");
+}
+
+// Verifies that the functions that chrome.dll delay-loads from core DLLs, which
+// are all resolved at browser startup, exist on the earliest supported Windows
+// version.
+TEST_F(MinimumWindowsSupportTest, ChromeDllCoreDllsDelayImports) {
+  // Delay-loaded imports that are known to be missing on Windows 10 10240.
+  // TODO(crbug.com/585429680): Remove once WebRTC resolves these functions with
+  // GetProcAddress(). Do not add new entries.
+  const DetailedImports kKnownMissingDelayImports = {
+      {"user32.dll",
+       {"GetThreadDpiAwarenessContext", "SetThreadDpiAwarenessContext"}},
+  };
+
+  base::FilePath dll;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &dll));
+  base::MemoryMappedFile dll_mmap;
+  ASSERT_TRUE(dll_mmap.Initialize(dll.Append(L"chrome.dll")));
+  base::win::PEImageAsData pe_image_data(
+      reinterpret_cast<HMODULE>(dll_mmap.mutable_bytes().data()));
+  ASSERT_TRUE(pe_image_data.VerifyMagic());
+  DetailedImports delay_imports;
+  ASSERT_TRUE(pe_image_data.EnumAllDelayImports(
+      MinimumWindowsSupportTest::DelayImportsCallback, &delay_imports,
+      nullptr));
+
+  for (base::cstring_view core_dll : kCoreDlls) {
+    // Exact case match: `base::win::LoadAllImportsForDll()` is case-sensitive.
+    const auto imports = delay_imports.find(std::string(core_dll));
+    ASSERT_TRUE(imports != delay_imports.end())
+        << "chrome.dll does not delay-load " << core_dll
+        << " (the name must match the case of the delay-import directory)";
+
+    const std::string module = base::ToLowerASCII(core_dll);
+
+    const auto available = kAvailableImports.find(module);
+    ASSERT_TRUE(available != kAvailableImports.end())
+        << "No Windows 10 10240 export data for " << core_dll;
+
+    const auto known_missing = kKnownMissingDelayImports.find(module);
+    for (const std::string& function : imports->second) {
+      if (known_missing != kKnownMissingDelayImports.end() &&
+          known_missing->second.contains(function)) {
+        continue;
+      }
+      EXPECT_TRUE(available->second.contains(function))
+          << core_dll << " does not export " << function
+          << " on Windows 10 10240. Resolve it with GetProcAddress() instead "
+             "of importing it.";
+    }
+  }
 }
 
 TEST_F(MinimumWindowsSupportTest, ChromeExtraDlls) {

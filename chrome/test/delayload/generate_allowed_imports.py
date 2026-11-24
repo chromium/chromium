@@ -26,15 +26,20 @@ RE_NEWMOD = re.compile(
 )
 # e.g. '       1020    0 00088A30 CertAddCRLContextToStore'
 #                        ^ can be blank
-RE_EXPORT = re.compile(r'^\s+\d+\s+[0-9A-F]+\s+[0-9A-F ]{8}\s+(?P<export>\w+)')
+# or   '       1000      00038950 [NONAME]' for an export without a name.
+RE_EXPORT = re.compile(
+  r'^\s+(?P<ordinal>\d+)\s+'
+  r'(?:[0-9A-F]+\s+[0-9A-F ]{8}\s+(?P<export>\w+)|[0-9A-F ]{8}\s+\[NONAME\])'
+)
 # apiset line in apisets.inc (see generate_supported_apisets.py)
 RE_APISET = re.compile(r'^{"(?P<apiset>[^"]+)",\s*(?P<version>\d+)},')
 
 
-def parse_file(f):
+def parse_file(f, include_ordinals=False):
   """Naive parser for dumpbin output.
 
-  f: filehandle to file containing dumpbin output."""
+  f: filehandle to file containing dumpbin output.
+  include_ordinals: also list the ordinal of each export, as '#<ordinal>'."""
   mods = dict()
   curmod = None
   imports = []
@@ -52,7 +57,10 @@ def parse_file(f):
     # e.g. '       1020    0 00088A30 CertAddCRLContextToStore'
     m = re.search(RE_EXPORT, line)
     if m:
-      imports.append(m.group('export'))
+      if m.group('export'):
+        imports.append(m.group('export'))
+      if include_ordinals:
+        imports.append('#' + m.group('ordinal'))
   if curmod:
     mods[curmod] = imports
   return mods
@@ -66,7 +74,9 @@ def generate_inc(input_file):
   using DetailedImports = std::map<std::string, std::set<std::string>>;
   """
   # const DetailedImports kVariable = {
-  mods = parse_file(open(input_file, 'r', encoding='utf-8'))
+  mods = parse_file(
+    open(input_file, 'r', encoding='utf-8'), include_ordinals=True
+  )
   module_entries = []
   for module, functions in mods.items():
     joined_functions = ',\n'.join([f'  "{fn}"' for fn in functions])
