@@ -13,7 +13,6 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -181,22 +180,20 @@ ProductMessageStatus ProductMessagingController::GetMessageStatus(
 // status.
 base::flat_map<ProductMessageKey, ProductMessageStatus>
 ProductMessagingController::GetAllMessages(
-    std::initializer_list<ProductMessageStatus> statuses_to_retrieve,
+    ProductMessageStatusSet statuses_to_retrieve,
     ProductMessageType priority_higher_than) const {
-  const base::flat_set<ProductMessageStatus> filter_statuses(
-      statuses_to_retrieve);
   base::flat_map<ProductMessageKey, ProductMessageStatus> infos;
   for (const auto& [key, shown] : active_messages_) {
     if (key.type() > priority_higher_than) {
-      if (shown && filter_statuses.contains(ProductMessageStatus::kShowing)) {
+      if (shown && statuses_to_retrieve.Has(ProductMessageStatus::kShowing)) {
         infos.emplace(key, ProductMessageStatus::kShowing);
       }
-      if (!shown && filter_statuses.contains(ProductMessageStatus::kReady)) {
+      if (!shown && statuses_to_retrieve.Has(ProductMessageStatus::kReady)) {
         infos.emplace(key, ProductMessageStatus::kReady);
       }
     }
   }
-  if (filter_statuses.contains(ProductMessageStatus::kWaiting)) {
+  if (statuses_to_retrieve.Has(ProductMessageStatus::kWaiting)) {
     for (auto& [key, data] : pending_messages_) {
       if (key.type() > priority_higher_than && !data.is_expired()) {
         infos.emplace(key, ProductMessageStatus::kWaiting);
@@ -291,15 +288,15 @@ void ProductMessagingController::MaybeShowNextMessageImpl() {
 
   // Build some lookups for faster access.
   ProductMessagingPolicy::Ids ids;
-  base::flat_set<ProductMessageType> queued_types;
-  base::flat_set<ProductMessageType> active_types;
+  ProductMessageTypeSet queued_types;
+  ProductMessageTypeSet active_types;
   for (const auto& [key, data] : pending_messages_) {
     ids.insert(key.id());
-    queued_types.insert(key.type());
+    queued_types.Put(key.type());
   }
   for (const auto& [key, data] : active_messages_) {
     ids.insert(key.id());
-    active_types.insert(key.type());
+    active_types.Put(key.type());
   }
 
   // Find a notice that is not waiting for any other notices to show.

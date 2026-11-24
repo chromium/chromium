@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_EDUCATION_PRODUCT_MESSAGING_PRODUCT_MESSAGING_CONTROLLER_H_
 #define COMPONENTS_USER_EDUCATION_PRODUCT_MESSAGING_PRODUCT_MESSAGING_CONTROLLER_H_
 
-#include <initializer_list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -117,7 +116,7 @@ class ProductMessagingController final {
   // Returns waiting, ready, or showing messages. Can be filtered by priority
   // and by status.
   base::flat_map<ProductMessageKey, ProductMessageStatus> GetAllMessages(
-      std::initializer_list<ProductMessageStatus> statuses_to_retrieve =
+      ProductMessageStatusSet statuses_to_retrieve =
           {ProductMessageStatus::kWaiting, ProductMessageStatus::kReady,
            ProductMessageStatus::kShowing},
       ProductMessageType priority_higher_than =

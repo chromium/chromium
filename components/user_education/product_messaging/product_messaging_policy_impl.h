@@ -42,9 +42,8 @@ class ProductMessagingPolicyImpl : public ProductMessagingPolicy {
   // Indicates that `type` can be shown irrespective of what other notices are
   // showing. This type may still block other messages (except for those in
   // `also_ignored_by`).
-  void SetIgnoreAll(
-      ProductMessageType type,
-      std::initializer_list<ProductMessageType> also_ignored_by = {});
+  void SetIgnoreAll(ProductMessageType type,
+                    ProductMessageTypeSet also_ignored_by = {});
 
   // Set that `type1` and `type2` are equivalent (i.e. active notices will block
   // each other, but without any precedence).
@@ -67,8 +66,7 @@ class ProductMessagingPolicyImpl : public ProductMessagingPolicy {
   std::map<ProductMessageKey, Ids> blocked_by_;
   std::map<ProductMessageKey, Ids> show_after_;
   std::set<std::pair<ProductMessageType, ProductMessageType>> equivalents_;
-  std::map<ProductMessageType, base::flat_set<ProductMessageType>>
-      ignore_and_ignored_by_;
+  std::map<ProductMessageType, ProductMessageTypeSet> ignore_and_ignored_by_;
 };
 
 }  // namespace user_education

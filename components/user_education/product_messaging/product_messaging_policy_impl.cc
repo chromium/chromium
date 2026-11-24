@@ -64,7 +64,7 @@ ProductMessagingPolicyImpl::GetRelationship(
   }
   if (auto* const ignored_by =
           base::FindOrNull(ignore_and_ignored_by_, other_type);
-      ignored_by && ignored_by->contains(type)) {
+      ignored_by && ignored_by->Has(type)) {
     return TypeRelationship::kIndependentOf;
   }
   if (equivalents_.contains({type, other_type})) {
@@ -93,7 +93,7 @@ void ProductMessagingPolicyImpl::SetSelfBlocking(ProductMessageType type,
 
 void ProductMessagingPolicyImpl::SetIgnoreAll(
     ProductMessageType type,
-    std::initializer_list<ProductMessageType> also_ignored_by) {
+    ProductMessageTypeSet also_ignored_by) {
   ignore_and_ignored_by_.emplace(type, also_ignored_by);
 }
 

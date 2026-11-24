@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/identifier/unique_identifier.h"
 
@@ -27,6 +28,7 @@ static constexpr std::string_view kProductMessageUniqueIdSuffix = "UniqueId";
 enum class ProductMessageType {
   // This value is only for filtering and must be first on the list.
   kNone = 0,
+  kMinValue = kNone,
   kLowPriorityForTesting,  // IN-TEST
   kAnchoredMessage,
   kLowPriorityIph,
@@ -35,6 +37,8 @@ enum class ProductMessageType {
   kHighPriorityForTesting,  // IN-TEST
   kMaxValue = kHighPriorityForTesting
 };
+
+using ProductMessageTypeSet = base::EnumSet<ProductMessageType>;
 
 // Used to uniquely identify a message and define its type.
 // Opaque, but the type can be retrieved.
@@ -105,14 +109,18 @@ enum class ProductMessageStatus {
   // The given message is not in the system. Either it has not been requested,
   // it was blocked, or it was made eligible/shown and then released.
   kNone,
+  kMinValue = kNone,
   // The given message is waiting for eligibility.
   kWaiting,
   // The given message is has been given permission to show, but has not yet
   // been shown.
   kReady,
   // The given message is showing, as per ProductMessagingHandle::SetShown().
-  kShowing
+  kShowing,
+  kMaxValue = kShowing
 };
+
+using ProductMessageStatusSet = base::EnumSet<ProductMessageStatus>;
 
 using ProductMessageStatusCallback =
     base::RepeatingCallback<void(ProductMessageKey, ProductMessageStatus)>;
