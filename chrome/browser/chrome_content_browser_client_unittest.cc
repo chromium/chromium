@@ -3358,14 +3358,17 @@ TEST_F(ChromeContentBrowserClientHandleExternalProtocolTest,
   GURL url(scheme + ":http://example.com");
   mojo::PendingRemote<network::mojom::URLLoaderFactory> out_factory;
 
+  bool opened = false;
   EXPECT_CALL(delegate, OpenURLFromTab)
-      .WillOnce([](content::WebContents* source,
-                   const content::OpenURLParams& params,
-                   base::OnceCallback<void(content::NavigationHandle&)>) {
-        EXPECT_EQ(GURL("http://example.com"), params.url);
-        EXPECT_TRUE(params.is_renderer_initiated);
-        return nullptr;
-      });
+      .WillOnce(
+          [&opened](content::WebContents* source,
+                    const content::OpenURLParams& params,
+                    base::OnceCallback<void(content::NavigationHandle&)>) {
+            EXPECT_EQ(GURL("http://example.com"), params.url);
+            EXPECT_TRUE(params.is_renderer_initiated);
+            opened = true;
+            return nullptr;
+          });
 
   bool handled = client.HandleExternalProtocol(
       url,
@@ -3379,6 +3382,48 @@ TEST_F(ChromeContentBrowserClientHandleExternalProtocolTest,
 
   EXPECT_TRUE(handled);
   EXPECT_EQ(0, process()->bad_msg_count());
+
+  // The navigation must not be started synchronously, since
+  // HandleExternalProtocol is called from within the NavigationURLLoader of the
+  // ongoing navigation, and opening the URL may destroy it
+  // (https://crbug.com/589323185).
+  EXPECT_FALSE(opened);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(opened);
+}
+
+// Tests that the deferred navigation is dropped if the WebContents is destroyed
+// before it runs.
+TEST_F(ChromeContentBrowserClientHandleExternalProtocolTest,
+       GoogleChromeSchemeWebContentsDestroyedBeforeOpen) {
+  ChromeContentBrowserClient client;
+  base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
+
+  std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
+  if (scheme.empty()) {
+    GTEST_SKIP() << "Direct launch scheme not defined.";
+  }
+
+  MockWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  EXPECT_CALL(delegate, OpenURLFromTab).Times(0);
+
+  GURL url(scheme + ":http://example.com");
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> out_factory;
+
+  bool handled = client.HandleExternalProtocol(
+      url,
+      base::BindRepeating(
+          &ChromeContentBrowserClientHandleExternalProtocolTest::web_contents,
+          base::Unretained(this)),
+      content::FrameTreeNodeId(), nullptr, false, false,
+      network::mojom::WebSandboxFlags::kNone, ui::PAGE_TRANSITION_LINK, false,
+      std::nullopt, /*initiator_document=*/nullptr, net::IsolationInfo(),
+      &out_factory);
+  EXPECT_TRUE(handled);
+
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ChromeContentBrowserClientHandleExternalProtocolTest,

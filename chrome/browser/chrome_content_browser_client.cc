@@ -1242,6 +1242,20 @@ bool ShouldHonorPolicies() {
 const char kDisableSandboxExternalProtocolSwitch[] =
     "disable-sandbox-external-protocols";
 
+// Direct launch schemes (google-chrome:, chromium:) are not supported on
+// Android.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+// Opens the inner URL of a direct launch scheme URL (e.g. google-chrome:) in
+// `web_contents`, if it still exists.
+void OpenDirectLaunchUrl(base::WeakPtr<content::WebContents> web_contents,
+                         const content::OpenURLParams& params) {
+  if (web_contents) {
+    web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
+}
+#endif
+
 void LaunchURL(
     base::WeakPtr<ChromeContentBrowserClient> client,
     const GURL& url,
@@ -7583,6 +7597,8 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
+  // Direct launch schemes (google-chrome:, chromium:) are not supported on
+  // Android.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   // Handle the google-chrome:// scheme (and chromium://).
@@ -7624,7 +7640,17 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
         // launches) to prevent it from being treated as a privileged
         // browser-initiated navigation.
         params.initiator_origin = initiating_origin.value_or(url::Origin());
-        web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+        // This is called synchronously from within the NavigationURLLoader of
+        // the navigation to the direct launch URL. OpenURL may synchronously
+        // start a new navigation in the same frame (e.g. if the disposition is
+        // rewritten to kCurrentTab), which would destroy the NavigationRequest
+        // and its NavigationURLLoader while they are still on the stack.
+        // Defer the navigation to avoid this. See https://crbug.com/589323185
+        // and https://crbug.com/361600654.
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(&OpenDirectLaunchUrl, web_contents->GetWeakPtr(),
+                           std::move(params)));
         return true;
       }
     }
