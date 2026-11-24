@@ -36,26 +36,6 @@ namespace blink {
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-enum class CanvasResourceProviderType {
-  kTexture [[deprecated]] = 0,
-  kBitmap = 1,
-  kSharedBitmap [[deprecated]] = 2,
-  kTextureGpuMemoryBuffer [[deprecated]] = 3,
-  kBitmapGpuMemoryBuffer [[deprecated]] = 4,
-  kSharedImage = 5,
-  kDirectGpuMemoryBuffer [[deprecated]] = 6,
-  kPassThrough [[deprecated]] = 7,
-  kSwapChain [[deprecated]] = 8,
-  kSkiaDawnSharedImage [[deprecated]] = 9,
-  kExternalBitmap [[deprecated]] = 10,
-  kMaxValue = kExternalBitmap,
-};
-#pragma GCC diagnostic pop
-
 // Resource type for SharedImage
 class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
  public:

@@ -2337,9 +2337,6 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     return nullptr;
   }
 
-  base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                CanvasResourceProviderType::kSharedImage);
-
   return resource_provider_.get();
 }
 

@@ -418,7 +418,6 @@ class MODULES_EXPORT BaseRenderingContext2D
                              gpu::SharedImageUsageSet shared_image_usage_flags);
   void CreateSharedImagePoolForSoftwareCompositor();
   void CreateSoftwareSurface();
-  void RecordBackingHistograms();
   scoped_refptr<StaticBitmapImage> Snapshot();
 
   bool context_restorable_{true};

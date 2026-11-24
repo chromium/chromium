@@ -259,7 +259,6 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     return false;
   }
 
-  RecordBackingHistograms();
   host->DidDraw();
   return true;
 }

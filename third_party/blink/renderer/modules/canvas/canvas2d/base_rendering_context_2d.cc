@@ -647,16 +647,6 @@ void BaseRenderingContext2D::CreateSoftwareSurface() {
   sw_snapshot_sk_image_id_ = 0u;
 }
 
-void BaseRenderingContext2D::RecordBackingHistograms() {
-  CHECK(HasBacking());
-  // Note: The histogram name dates back to historical usage of
-  // CanvasResourceProvider for both SharedImage and bitmap backings.
-  base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                image_pool_
-                                    ? CanvasResourceProviderType::kSharedImage
-                                    : CanvasResourceProviderType::kBitmap);
-}
-
 void BaseRenderingContext2D::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   // BaseRenderingContext2D is only registered with CanvasMemoryDumpProvider

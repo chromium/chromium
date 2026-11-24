@@ -1230,8 +1230,6 @@ void CanvasRenderingContext2D::RecreateBacking() {
     return;
   }
 
-  RecordBackingHistograms();
-
   if (GetHibernationHandler()->IsHibernating()) {
     WakeUpFromHibernation();
   }

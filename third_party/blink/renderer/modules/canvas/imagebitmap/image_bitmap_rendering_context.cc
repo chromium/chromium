@@ -490,8 +490,6 @@ ImageBitmapRenderingContext::GetResourceForPushFrame(
     Host()->UpdateMemoryUsage();
 
     if (resource_provider_for_offscreen_canvas_.get()) {
-      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                    CanvasResourceProviderType::kSharedImage);
       Host()->DidDraw();
     }
   }
