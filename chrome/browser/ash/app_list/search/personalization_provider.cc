@@ -15,7 +15,6 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
@@ -110,11 +109,9 @@ void PersonalizationProvider::Start(const std::u16string& query) {
 
   current_query_ = query;
   weak_ptr_factory_.InvalidateWeakPtrs();
-  search_handler_->Search(
-      query, kNumRequestedResults,
-      base::BindOnce(&PersonalizationProvider::OnSearchDone,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*start_time=*/base::TimeTicks::Now()));
+  search_handler_->Search(query, kNumRequestedResults,
+                          base::BindOnce(&PersonalizationProvider::OnSearchDone,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PersonalizationProvider::StopQuery() {
@@ -151,7 +148,6 @@ void PersonalizationProvider::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void PersonalizationProvider::OnSearchDone(
-    base::TimeTicks start_time,
     std::vector<::ash::personalization_app::mojom::SearchResultPtr> results) {
   SearchProvider::Results search_results;
   for (const auto& result : results) {
@@ -159,9 +155,6 @@ void PersonalizationProvider::OnSearchDone(
     search_results.push_back(std::make_unique<PersonalizationResult>(
         profile_, *result, current_query_, icon_));
   }
-
-  base::UmaHistogramTimes("Apps.AppList.PersonalizationProvider.QueryTime",
-                          base::TimeTicks::Now() - start_time);
 
   SwapResults(&search_results);
 }
