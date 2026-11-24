@@ -1,0 +1,23 @@
+Tests that pause on promise rejection works.
+
+=== Pausing only on uncaught exceptions ===
+Set timer for test function.
+Call stack:
+    0) testFunction (async-pause-on-exception.js:30)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:1)
+Paused on promiseRejection (uncaught: true): Error: uncaught
+
+=== Pausing on all exceptions ===
+Set timer for test function.
+Call stack:
+    0) testFunction (async-pause-on-exception.js:29)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:1)
+Paused on promiseRejection (uncaught: false): Error: caught
+Call stack:
+    0) testFunction (async-pause-on-exception.js:30)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:1)
+Paused on promiseRejection (uncaught: true): Error: uncaught
+
