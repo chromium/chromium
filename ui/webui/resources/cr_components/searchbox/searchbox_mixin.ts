@@ -692,6 +692,15 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         this.clearAutocompleteMatches();
       } else {
         this.dropdownIsVisible = false;
+        if (this.virtualFocusEnabled &&
+            this.selection.state !== SelectionLineState.kNormal &&
+            this.selection.state !== SelectionLineState.kKeywordMode) {
+          this.setSelection({
+            line: this.selection.line,
+            state: SelectionLineState.kNormal,
+            actionIndex: 0,
+          });
+        }
 
         // Stop autocomplete but leave (potentially stale) results and continue
         // listening for key presses. These stale results should never be shown.
