@@ -53,8 +53,13 @@ constexpr size_t kMaxTimestampsSupportable = 9;
 
 class EGLSyncControlVSyncProvider : public SyncControlVSyncProvider {
  public:
-  EGLSyncControlVSyncProvider(EGLSurface surface, GLDisplayEGL* display)
-      : surface_(surface), display_(display) {
+  EGLSyncControlVSyncProvider(
+      EGLSurface surface,
+      GLDisplayEGL* display,
+      std::unique_ptr<gfx::VSyncProvider> interval_provider)
+      : SyncControlVSyncProvider(std::move(interval_provider)),
+        surface_(surface),
+        display_(display) {
     DCHECK(display_);
   }
 
@@ -440,8 +445,11 @@ bool NativeViewGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
 
   if (!vsync_provider_external_ &&
       EGLSyncControlVSyncProvider::IsSupported(display_)) {
-    vsync_provider_internal_ =
-        std::make_unique<EGLSyncControlVSyncProvider>(surface_, display_);
+    // eglGetMscRateANGLE may report the rate of the screen rather than of
+    // the output showing the window (e.g. glXGetMscRateOML on Mesa), so use
+    // the platform's per-window interval when there is one.
+    vsync_provider_internal_ = std::make_unique<EGLSyncControlVSyncProvider>(
+        surface_, display_, CreateVsyncProviderInternal());
   }
 
   if (!vsync_provider_external_ && !vsync_provider_internal_)

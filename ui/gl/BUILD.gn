@@ -609,6 +609,10 @@ test("gl_unittests") {
     sources += [ "gl_surface_egl_unittest.cc" ]
   }
 
+  if (is_linux || is_chromeos) {
+    sources += [ "sync_control_vsync_provider_unittest.cc" ]
+  }
+
   if (is_win) {
     sources += [
       "dcomp_presenter_unittest.cc",

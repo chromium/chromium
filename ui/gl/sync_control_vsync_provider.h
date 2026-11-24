@@ -7,18 +7,25 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/gfx/vsync_provider.h"
+#include "ui/gl/gl_export.h"
 
 namespace gl {
 
 // Base class for providers based on extensions like EGL_CHROMIUM_sync_control.
 // TODO(344606399): Consider folding the EGL implementation in this class.
-class SyncControlVSyncProvider : public gfx::VSyncProvider {
+class GL_EXPORT SyncControlVSyncProvider : public gfx::VSyncProvider {
  public:
-  SyncControlVSyncProvider();
+  // If `interval_provider` is non-null, its interval is used instead of
+  // GetMscRate(), which may report the rate of the wrong output when the
+  // display has several outputs with different refresh rates.
+  explicit SyncControlVSyncProvider(
+      std::unique_ptr<gfx::VSyncProvider> interval_provider = nullptr);
 
   SyncControlVSyncProvider(const SyncControlVSyncProvider&) = delete;
   SyncControlVSyncProvider& operator=(const SyncControlVSyncProvider&) = delete;
@@ -46,6 +53,8 @@ class SyncControlVSyncProvider : public gfx::VSyncProvider {
   virtual bool GetMscRate(int32_t* numerator, int32_t* denominator) = 0;
 
  private:
+  std::unique_ptr<gfx::VSyncProvider> interval_provider_;
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::TimeTicks last_timebase_;
   uint64_t last_media_stream_counter_ = 0;

@@ -6,6 +6,8 @@
 
 #include <math.h>
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -25,7 +27,9 @@ const double kRelativeIntervalDifferenceThreshold = 0.05;
 
 namespace gl {
 
-SyncControlVSyncProvider::SyncControlVSyncProvider() : gfx::VSyncProvider() {
+SyncControlVSyncProvider::SyncControlVSyncProvider(
+    std::unique_ptr<gfx::VSyncProvider> interval_provider)
+    : interval_provider_(std::move(interval_provider)) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On platforms where we can't get an accurate reading on the refresh
   // rate we fall back to the assumption that we're displaying 60 frames
@@ -114,8 +118,15 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
   while (last_computed_intervals_.size() > 1)
     last_computed_intervals_.pop();
 
+  base::TimeTicks unused_timebase;
+  base::TimeDelta provided_interval;
   int32_t numerator, denominator;
-  if (GetMscRate(&numerator, &denominator) && numerator) {
+  if (interval_provider_ &&
+      interval_provider_->GetVSyncParametersIfAvailable(&unused_timebase,
+                                                        &provided_interval) &&
+      provided_interval.is_positive()) {
+    last_computed_intervals_.push(provided_interval);
+  } else if (GetMscRate(&numerator, &denominator) && numerator) {
     last_computed_intervals_.push(base::Seconds(denominator) / numerator);
   } else if (!last_timebase_.is_null()) {
     base::TimeDelta timebase_diff = timebase - last_timebase_;
