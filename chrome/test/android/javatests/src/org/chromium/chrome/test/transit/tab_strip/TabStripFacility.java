@@ -28,6 +28,7 @@ import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabModelSelectedCondition;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * The horizontal tab strip of tablets and desktop, entered with {@link
@@ -45,6 +46,9 @@ import org.chromium.chrome.test.transit.tabmodel.TabModelSelectedCondition;
 public class TabStripFacility<HostStationT extends CtaPageStation> extends Facility<HostStationT> {
     // Same timeout as TabStripUtils.clickNewTabButton().
     private static final long NEW_TAB_TIMEOUT_MS = 10000L;
+
+    // How far after the new tab button openContextMenu() long-presses.
+    private static final float EMPTY_SPACE_OFFSET_DP = 50f;
 
     public Element<StripLayoutHelperManager> stripLayoutHelperManagerElement;
     public StripViewElement<CompositorButton> newTabButtonElement;
@@ -189,6 +193,32 @@ public class TabStripFacility<HostStationT extends CtaPageStation> extends Facil
                 .andWaitFor(
                         new TabModelSelectedCondition(
                                 mHostStation.tabModelSelectorElement, expectIncognito));
+    }
+
+    /**
+     * Long-presses the empty space after the new tab button and opens the tab strip context menu.
+     */
+    public TabStripContextMenuFacility<HostStationT> openContextMenu() {
+        return runOnUiThreadTo(
+                        () -> {
+                            StripLayoutHelperManager manager =
+                                    stripLayoutHelperManagerElement.value();
+                            CompositorButton newTabButton = newTabButtonElement.value();
+                            // See StripLayoutHelper#getViewAtPositionX().
+                            float x =
+                                    LocalizationUtils.isLayoutRtl()
+                                            ? newTabButton.getDrawX() - EMPTY_SPACE_OFFSET_DP
+                                            : newTabButton.getDrawX()
+                                                    + newTabButton.getWidth()
+                                                    + EMPTY_SPACE_OFFSET_DP;
+                            float y = manager.getHeight() / 2;
+                            assert x >= 0
+                                            && x <= manager.getWidth()
+                                            && manager.getClickedViewForTesting(x, y) == null
+                                    : "No empty space at x=" + x;
+                            manager.simulateLongPress(x, y);
+                        })
+                .enterFacility(new TabStripContextMenuFacility<>());
     }
 
     /** Clicks the tab search button and opens the Tab Search overlay. */

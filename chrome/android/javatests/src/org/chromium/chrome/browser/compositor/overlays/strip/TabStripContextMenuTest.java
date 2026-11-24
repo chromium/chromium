@@ -4,33 +4,25 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tab_strip.TabStripContextMenuFacility;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Instrumentation tests for the tab strip empty space long press context menu. */
@@ -43,34 +35,27 @@ public class TabStripContextMenuTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
-    private StripLayoutHelper mStripLayoutHelper;
     private WebPageStation mPage;
 
     @Before
     public void setUp() {
         mPage = mActivityTestRule.startOnBlankPage();
-        mStripLayoutHelper =
-                TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
     }
 
     @Test
     @LargeTest
     public void testBookmarkAllTabs_EnabledWithMultipleTabs() {
         // 1. Create 2 tabs to ensure we have multiple tabs (count > 1).
-        mPage.openNewTabFast().loadAboutBlank();
+        mPage = mPage.openNewTabFast().loadAboutBlank();
 
-        // 2. Perform a long press on the empty space of the tab strip.
-        longPressOnEmptySpace();
+        // 2. Perform a long press on the empty space of the tab strip. The menu Facility checks
+        // that the "Bookmark all tabs" menu item is displayed and enabled.
+        TabStripContextMenuFacility<CtaPageStation> menu = mPage.expectTabStrip().openContextMenu();
 
-        // 3. Verify the "Bookmark all tabs" menu item is displayed and enabled.
-        onView(withText(R.string.menu_bookmark_all_tabs))
-                .check(matches(allOf(isDisplayed(), isEnabled())));
+        // 3. Click the menu item to ensure it's actionable and closes the menu.
+        menu.bookmarkAllTabs();
 
-        // 4. Click the menu item to ensure it's actionable and closes the menu.
-        onView(withText(R.string.menu_bookmark_all_tabs)).perform(click());
-        onView(withText(R.string.menu_bookmark_all_tabs)).check(doesNotExist());
-
-        // 5. Verify the "Bookmarked" snackbar shows
+        // 4. Verify the "Bookmarked" snackbar shows
         // TODO(crbug.com/483119758): Add check to verify bookmark action occurred.
     }
 
@@ -78,35 +63,14 @@ public class TabStripContextMenuTest {
     @LargeTest
     public void testBookmarkAllTabs_DisabledWithSingleTab() {
         // 1. Start with 1 tab.
-        // Perform a long press on the empty space of the tab strip.
-        longPressOnEmptySpace();
+        // Perform a long press on the empty space of the tab strip. The menu Facility checks
+        // that the "Bookmark all tabs" menu item is displayed but disabled.
+        TabStripContextMenuFacility<CtaPageStation> menu = mPage.expectTabStrip().openContextMenu();
+        assertEquals(
+                ScrollableFacility.Item.Presence.PRESENT_AND_DISABLED,
+                menu.bookmarkAllTabsItem.getPresence());
 
-        // 2. Verify the "Bookmark all tabs" menu item is displayed but disabled.
-        onView(withText(R.string.menu_bookmark_all_tabs))
-                .check(matches(allOf(isDisplayed(), not(isEnabled()))));
-
-        // 3. Close menu
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(
-                        () -> {
-                            mStripLayoutHelper.dismissContextMenu();
-                        });
-    }
-
-    private void longPressOnEmptySpace() {
-        // Calculate a position on the empty space of the tab strip (right of the last tab).
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsToRender();
-        StripLayoutTab lastTab = tabs[tabs.length - 1];
-        // Click 50dp to the right of the last tab to ensure we hit empty space.
-        StripLayoutHelperManager manager =
-                mActivityTestRule.getActivity().getLayoutManager().getStripLayoutHelperManager();
-        float x = lastTab.getDrawX() + lastTab.getWidth() + 50f;
-        float y = manager.getHeight() / 2;
-
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(
-                        () -> {
-                            manager.simulateLongPress(x, y);
-                        });
+        // 2. Close menu
+        menu.dismiss();
     }
 }
