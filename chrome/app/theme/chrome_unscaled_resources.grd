@@ -105,39 +105,6 @@
         <include name="IDR_WEBSTORE_APP_ICON_16" file="${branding_path_component}/chromeos/webstore_app_icon_16.png" type="BINDATA" />
         <include name="IDR_WEBSTORE_APP_ICON_128" file="${branding_path_component}/chromeos/webstore_app_icon_128.png" type="BINDATA" />
       </if>
-      <if expr="is_win">
-        <!-- Double-size profile avatar images used for generating .ico
-             files for Windows profile shortcuts. Included here because
-             they do not depend on the UI scale factor.
-             See: http://crbug.com/40297405. -->
-        <include name="IDR_PROFILE_AVATAR_2X_0" file="default_200_percent/common/profile_avatar_generic.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_1" file="default_200_percent/common/profile_avatar_generic_aqua.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_2" file="default_200_percent/common/profile_avatar_generic_blue.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_3" file="default_200_percent/common/profile_avatar_generic_green.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_4" file="default_200_percent/common/profile_avatar_generic_orange.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_5" file="default_200_percent/common/profile_avatar_generic_purple.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_6" file="default_200_percent/common/profile_avatar_generic_red.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_7" file="default_200_percent/common/profile_avatar_generic_yellow.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_8" file="default_200_percent/common/profile_avatar_secret_agent.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_9" file="default_200_percent/common/profile_avatar_superhero.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_10" file="default_200_percent/common/profile_avatar_volley_ball.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_11" file="default_200_percent/common/profile_avatar_businessman.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_12" file="default_200_percent/common/profile_avatar_ninja.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_13" file="default_200_percent/common/profile_avatar_alien.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_14" file="default_200_percent/common/profile_avatar_awesome.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_15" file="default_200_percent/common/profile_avatar_flower.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_16" file="default_200_percent/common/profile_avatar_pizza.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_17" file="default_200_percent/common/profile_avatar_soccer.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_18" file="default_200_percent/common/profile_avatar_burger.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_19" file="default_200_percent/common/profile_avatar_cat.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_20" file="default_200_percent/common/profile_avatar_cupcake.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_21" file="default_200_percent/common/profile_avatar_dog.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_22" file="default_200_percent/common/profile_avatar_horse.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_23" file="default_200_percent/common/profile_avatar_margarita.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_24" file="default_200_percent/common/profile_avatar_note.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_25" file="default_200_percent/common/profile_avatar_sun_cloud.png" type="BINDATA" />
-        <include name="IDR_PROFILE_AVATAR_2X_26" file="default_200_percent/common/profile_avatar_placeholder.png" type="BINDATA" />
-      </if>
       <if expr="is_macosx">
         <include name="IDR_APPS_FOLDER_16" file="mac/apps_folder_16.png" type="BINDATA" />
         <include name="IDR_APPS_FOLDER_32" file="mac/apps_folder_32.png" type="BINDATA" />

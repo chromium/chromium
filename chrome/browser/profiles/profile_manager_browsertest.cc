@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -537,7 +538,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, CreateProfileWithCallback) {
   base::RunLoop run_loop;
   ProfileManager::CreateMultiProfileAsync(
       u"New Profile",
-      /*icon_index=*/0, /*is_hidden=*/false,
+      /*icon_index=*/profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/false,
       base::BindOnce(&ProfileCreationComplete, run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);

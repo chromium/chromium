@@ -14,7 +14,7 @@ import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 
-const AVATAR_URL: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
+const AVATAR_URL: string = 'chrome://theme/IDR_PROFILE_AVATAR_27';
 
 const PARAMETERS: ChromeSigninInterceptionParameters = {
   title: 'title',
@@ -90,7 +90,7 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     // Simulate a change of picture url.
     const newParams = {
       ...PARAMETERS,
-      pictureUrl: 'chrome://theme/IDR_PROFILE_AVATAR_2',
+      pictureUrl: 'chrome://theme/IDR_PROFILE_AVATAR_28',
     };
     webUIListenerCallback(
         'interception-chrome-signin-parameters-changed', newParams);

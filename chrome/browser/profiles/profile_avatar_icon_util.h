@@ -146,10 +146,6 @@ size_t GetPlaceholderAvatarIndex();
 // Gets the start index of the modern profile avatar icons.
 size_t GetModernAvatarIconStartIndex();
 
-// Returns whether |icon_index| corresponds to one of the modern profile avatar
-// icons.
-bool IsModernAvatarIconIndex(size_t icon_index);
-
 // Gets the resource ID of the placeholder avatar icon.
 int GetPlaceholderAvatarIconResourceID();
 
@@ -179,12 +175,6 @@ gfx::Image GetPlaceholderAvatarIconWithColors(
 // Gets the resource ID of the default avatar icon at |index|.
 int GetDefaultAvatarIconResourceIDAtIndex(size_t index);
 
-#if BUILDFLAG(IS_WIN)
-// Gets the resource ID of the 2x sized version of the old profile avatar icon
-// at |index|.
-int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index);
-#endif  // BUILDFLAG(IS_WIN)
-
 // Gets the resource filename of the default avatar icon at |index|.
 const char* GetDefaultAvatarIconFileNameAtIndex(size_t index);
 
@@ -197,7 +187,8 @@ base::FilePath GetPathOfHighResAvatarAtIndex(size_t index);
 // Returns a URL for the default avatar icon with specified index.
 std::string GetDefaultAvatarIconUrl(size_t index);
 
-// Checks if |index| is a valid avatar icon index
+// Checks if |index| is a valid avatar icon index. Indices of the removed legacy
+// avatar icons are not valid.
 bool IsDefaultAvatarIconIndex(size_t index);
 
 // Returns a valid avatar index. If `icon_index` is negative or invalid,
@@ -207,6 +198,10 @@ size_t GetSanitizedAvatarIndex(int icon_index);
 // Checks if the given URL points to one of the default avatar icons. If it
 // is, returns true and its index through |icon_index|. If not, returns false.
 bool IsDefaultAvatarIconUrl(std::string_view icon_url, size_t* icon_index);
+
+// Returns whether `icon_url` points to one of the removed legacy avatar icons
+// (i.e. a default avatar URL with an index below the placeholder index).
+bool IsLegacyAvatarIconUrl(std::string_view icon_url);
 
 // Returns dictionary containing the avatar icon info in the format expected by
 // the WebUI component 'cr-profile-avatar-selector'.
@@ -252,10 +247,6 @@ void SetGaiaPictureAsAvatar(PrefService* pref_service);
 #if BUILDFLAG(IS_WIN)
 // Get the 2x avatar image for a ProfileAttributesEntry.
 SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry);
-
-// Returns a bitmap with a couple of columns shaved off so it is more square,
-// so that when resized to a square aspect ratio it looks pretty.
-SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap);
 
 // Badges |app_icon_bitmap| with |avatar_bitmap| at the bottom right corner and
 // returns the resulting SkBitmap.

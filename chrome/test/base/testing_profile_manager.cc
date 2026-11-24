@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -134,7 +135,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   DCHECK(called_set_up_);
   return CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      base::UTF8ToUTF16(name), /*avatar_id=*/0, std::move(testing_factories),
+      base::UTF8ToUTF16(name), profiles::GetPlaceholderAvatarIndex(),
+      std::move(testing_factories),
       /*is_supervised_profile=*/false, /*is_new_profile=*/std::nullopt,
       /*policy_service=*/std::nullopt, shared_url_loader_factory);
 }
@@ -160,7 +162,9 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
       profile_manager_->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path);
   DCHECK(entry);
-  entry->SetAvatarIconIndex(avatar_id);
+  // Invalid avatar indices (e.g. those of the removed legacy avatars) fall back
+  // to the placeholder avatar.
+  entry->SetAvatarIconIndex(profiles::GetSanitizedAvatarIndex(avatar_id));
   entry->SetSupervisedUserId(is_supervised_profile
                                  ? ::supervised_user::kChildAccountSUID
                                  : std::string());

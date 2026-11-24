@@ -26,7 +26,7 @@ TEST(ResourcesUtil, SpotCheckIds) {
   const auto kCases = std::to_array<Cases>({
 #if !BUILDFLAG(IS_ANDROID)
       // IDRs from chrome/app/theme/webui_theme_resources.grd should be valid.
-      {"IDR_PROFILE_AVATAR_0", IDR_PROFILE_AVATAR_0},
+      {"IDR_PROFILE_AVATAR_26", IDR_PROFILE_AVATAR_26},
 #endif
       // IDRs from components_scaled_resources should be valid.
       {"IDR_ERROR_NETWORK_GENERIC", IDR_ERROR_NETWORK_GENERIC},

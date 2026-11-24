@@ -43,8 +43,8 @@ suite('ProfileCustomizationTest', function() {
   let app: ProfileCustomizationAppElement;
   let browserProxy: TestProfileCustomizationBrowserProxy;
 
-  const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
-  const AVATAR_URL_2 = 'chrome://theme/IDR_PROFILE_AVATAR_2';
+  const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_27';
+  const AVATAR_URL_2 = 'chrome://theme/IDR_PROFILE_AVATAR_28';
   const STATIC_TITLE_PATTERN = /^Customize your (Chromium|Chrome) profile$/g;
 
   setup(function() {
@@ -211,7 +211,7 @@ suite('SignedOutProfileCreationTest', function() {
   let app: ProfileCustomizationAppElement;
   let browserProxy: TestProfileCustomizationBrowserProxy;
 
-  const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
+  const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_27';
   const WELCOME_TITLE = 'Welcome!';
 
   setup(async function() {

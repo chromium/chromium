@@ -52,10 +52,12 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
                            HandleSetProfileIconToDefaultCustomAvatar);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
                            HandleSetProfileIconToDefaultGenericAvatar);
+  FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
+                           HandleSetProfileIconToLegacyAvatar);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest, HandleSetProfileName);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest, HandleGetAvailableIcons);
   FRIEND_TEST_ALL_PREFIXES(ManageProfileHandlerTest,
-                           HandleGetAvailableIconsOldIconSelected);
+                           HandleGetAvailableIconsPlaceholderSelected);
 
   // Callback for the "getAvailableIcons" message.
   // Sends the array of default profile icon URLs and profile names to WebUI.

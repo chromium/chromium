@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -57,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutSubManagerBrowserTest,
 
   base::test::TestFuture<Profile*> profile_future;
   ProfileManager::CreateMultiProfileAsync(
-      u"A Profile", /*icon_index=*/0, /*is_hidden=*/true,
+      u"A Profile", profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/true,
       profile_future.GetCallback(), base::DoNothing());
   Profile* secondary = profile_future.Get();
   ASSERT_TRUE(secondary);

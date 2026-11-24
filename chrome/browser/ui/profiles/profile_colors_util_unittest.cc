@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -78,7 +79,12 @@ class ProfileColorsUtilTest : public testing::Test {
     params.profile_name = name;
     params.user_name = name;
     params.is_consented_primary_account = true;
-    params.icon_index = number_of_profiles;
+    const size_t modern_avatar_start =
+        profiles::GetModernAvatarIconStartIndex();
+    params.icon_index =
+        modern_avatar_start +
+        number_of_profiles %
+            (profiles::GetDefaultAvatarIconCount() - modern_avatar_start);
     storage()->AddProfile(std::move(params));
 
     EXPECT_EQ(number_of_profiles + 1, storage()->GetNumberOfProfiles());

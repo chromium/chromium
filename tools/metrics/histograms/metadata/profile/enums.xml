@@ -244,31 +244,31 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ProfileAvatar">
   <int value="0" label="Generic"/>
-  <int value="1" label="Generic Aqua"/>
-  <int value="2" label="Generic Blue"/>
-  <int value="3" label="Generic Green"/>
-  <int value="4" label="Generic Orange"/>
-  <int value="5" label="Generic Purple"/>
-  <int value="6" label="Generic Red"/>
-  <int value="7" label="Generic Yellow"/>
-  <int value="8" label="Secret Agent"/>
-  <int value="9" label="Superhero"/>
-  <int value="10" label="Volleyball"/>
-  <int value="11" label="Businessman"/>
-  <int value="12" label="Ninja"/>
-  <int value="13" label="Alien"/>
-  <int value="14" label="Super Awesome Cool Smiley Face"/>
-  <int value="15" label="Flower"/>
-  <int value="16" label="Pizza"/>
-  <int value="17" label="Soccer"/>
-  <int value="18" label="Burger"/>
-  <int value="19" label="Cat"/>
-  <int value="20" label="Cupcake"/>
-  <int value="21" label="Dog"/>
-  <int value="22" label="Horse"/>
-  <int value="23" label="Margarita"/>
-  <int value="24" label="Note"/>
-  <int value="25" label="Sun And Cloud"/>
+  <int value="1" label="(Deprecated) Generic Aqua"/>
+  <int value="2" label="(Deprecated) Generic Blue"/>
+  <int value="3" label="(Deprecated) Generic Green"/>
+  <int value="4" label="(Deprecated) Generic Orange"/>
+  <int value="5" label="(Deprecated) Generic Purple"/>
+  <int value="6" label="(Deprecated) Generic Red"/>
+  <int value="7" label="(Deprecated) Generic Yellow"/>
+  <int value="8" label="(Deprecated) Secret Agent"/>
+  <int value="9" label="(Deprecated) Superhero"/>
+  <int value="10" label="(Deprecated) Volleyball"/>
+  <int value="11" label="(Deprecated) Businessman"/>
+  <int value="12" label="(Deprecated) Ninja"/>
+  <int value="13" label="(Deprecated) Alien"/>
+  <int value="14" label="(Deprecated) Super Awesome Cool Smiley Face"/>
+  <int value="15" label="(Deprecated) Flower"/>
+  <int value="16" label="(Deprecated) Pizza"/>
+  <int value="17" label="(Deprecated) Soccer"/>
+  <int value="18" label="(Deprecated) Burger"/>
+  <int value="19" label="(Deprecated) Cat"/>
+  <int value="20" label="(Deprecated) Cupcake"/>
+  <int value="21" label="(Deprecated) Dog"/>
+  <int value="22" label="(Deprecated) Horse"/>
+  <int value="23" label="(Deprecated) Margarita"/>
+  <int value="24" label="(Deprecated) Note"/>
+  <int value="25" label="(Deprecated) Sun And Cloud"/>
   <int value="26" label="Placeholder"/>
   <int value="27" label="Unknown"/>
   <int value="28" label="GAIA"/>

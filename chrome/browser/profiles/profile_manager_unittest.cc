@@ -277,7 +277,9 @@ class ProfileManagerTestBase : public testing::Test {
                                const std::string& name,
                                MockObserver* mock_observer) {
     ProfileManager::CreateMultiProfileAsync(
-        base::UTF8ToUTF16(name), /*icon_index=*/0, /*is_hidden=*/false,
+        base::UTF8ToUTF16(name),
+        /*icon_index=*/profiles::GetPlaceholderAvatarIndex(),
+        /*is_hidden=*/false,
         base::BindOnce(&MockObserver::OnProfileInitialized,
                        base::Unretained(mock_observer)),
         base::BindOnce(&MockObserver::OnProfileCreated,
@@ -1031,7 +1033,8 @@ TEST_F(ProfileManagerMultiProfileTest, CreateHiddenProfileAsync) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   profile_manager->CreateMultiProfileAsync(
-      u"New Profile", 0, /*is_hidden=*/true,
+      u"New Profile", profiles::GetPlaceholderAvatarIndex(),
+      /*is_hidden=*/true,
       base::BindOnce(&MockObserver::OnProfileInitialized,
                      base::Unretained(&mock_observer)),
       base::BindOnce(&MockObserver::OnProfileCreated,
@@ -2319,7 +2322,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   params2.gaia_id = GaiaId("23456");
   params2.user_name = ASCIIToUTF16(profile_basename2);
   params2.is_consented_primary_account = true;
-  params2.icon_index = 1;
+  params2.icon_index = profiles::GetModernAvatarIconStartIndex();
   storage.AddProfile(std::move(params2));
   ProfileAttributesInitParams params3;
   params3.profile_path = profile_path3;
@@ -2327,7 +2330,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   params3.gaia_id = GaiaId("34567");
   params3.user_name = ASCIIToUTF16(profile_basename3);
   params3.is_consented_primary_account = true;
-  params3.icon_index = 2;
+  params3.icon_index = profiles::GetModernAvatarIconStartIndex() + 1;
   storage.AddProfile(std::move(params3));
 
   content::RunAllTasksUntilIdle();
@@ -2602,19 +2605,21 @@ TEST_F(ProfileManagerTest, ProfileAvatarRecordedAtProfileInit) {
   EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
               BucketsAre(Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1)));
 
+#if !BUILDFLAG(IS_CHROMEOS)
   // 3. Regular profile initialized with a custom avatar index
-  // (AVATAR_GENERIC_PURPLE).
+  // (AVATAR_ORIGAMI_CAT). Only the placeholder avatar is available on ChromeOS.
   base::FilePath path_2 = dest_path.Append(FILE_PATH_LITERAL("Profile 2"));
   ProfileAttributesInitParams params_2;
   params_2.profile_path = path_2;
   params_2.profile_name = u"Profile 2";
-  params_2.icon_index = ProfileMetrics::AVATAR_GENERIC_PURPLE;
+  params_2.icon_index = profiles::GetModernAvatarIconStartIndex();
   profile_manager->GetProfileAttributesStorage().AddProfile(
       std::move(params_2));
   profile_manager->GetProfile(path_2);
   EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
-              BucketsAre(Bucket(ProfileMetrics::AVATAR_GENERIC_PURPLE, 1),
+              BucketsAre(Bucket(ProfileMetrics::AVATAR_ORIGAMI_CAT, 1),
                          Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1)));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // 4. Regular profile using GAIA avatar (AVATAR_GAIA).
   base::FilePath path_3 = dest_path.Append(FILE_PATH_LITERAL("Profile 3"));
@@ -2630,9 +2635,12 @@ TEST_F(ProfileManagerTest, ProfileAvatarRecordedAtProfileInit) {
   entry_3->SetIsUsingGAIAPicture(true);
   profile_manager->GetProfile(path_3);
   EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
-              BucketsAre(Bucket(ProfileMetrics::AVATAR_GENERIC_PURPLE, 1),
-                         Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1),
-                         Bucket(ProfileMetrics::AVATAR_GAIA, 1)));
+              BucketsAre(
+#if !BUILDFLAG(IS_CHROMEOS)
+                  Bucket(ProfileMetrics::AVATAR_ORIGAMI_CAT, 1),
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+                  Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1),
+                  Bucket(ProfileMetrics::AVATAR_GAIA, 1)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

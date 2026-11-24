@@ -319,6 +319,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -3309,6 +3310,21 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   // Added 11/2026.
   profile_prefs->ClearPref(kObsoleteAccessibilityAXTreeFixingEnabled);
+
+  // Added 11/2026.
+  if (profile_prefs->HasPrefPath(prefs::kProfileAvatarIndex)) {
+    const int avatar_index =
+        profile_prefs->GetInteger(prefs::kProfileAvatarIndex);
+    if (avatar_index >= 0 && static_cast<size_t>(avatar_index) <
+                                 profiles::GetPlaceholderAvatarIndex()) {
+      profile_prefs->SetInteger(
+          prefs::kProfileAvatarIndex,
+          static_cast<int>(profiles::GetPlaceholderAvatarIndex()));
+      profile_prefs->SetBoolean(
+          prefs::kProfileUsingDefaultAvatar,
+          !profile_prefs->GetBoolean(prefs::kProfileUsingGAIAAvatar));
+    }
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Added 11/2026.

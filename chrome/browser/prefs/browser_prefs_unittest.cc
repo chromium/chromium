@@ -20,6 +20,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/common/pref_names.h"
+#endif
+
 namespace {
 
 class BrowserPrefsTest : public testing::Test {
@@ -70,5 +75,56 @@ TEST_F(BrowserPrefsTest, DeletesObsoleteLoginDataFilesWithoutBlocking) {
   for (const base::FilePath& file : login_data_files) {
     EXPECT_FALSE(base::PathExists(file)) << file;
   }
+}
+#else
+TEST_F(BrowserPrefsTest, MigrateLegacyProfileAvatarPrefs) {
+  base::ScopedTempDir profile_dir;
+  ASSERT_TRUE(profile_dir.CreateUniqueTempDir());
+
+  // Legacy avatar without GAIA picture: migrated to placeholder + default.
+  prefs_.SetInteger(prefs::kProfileAvatarIndex, 5);
+  prefs_.SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
+  prefs_.SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
+  MigrateObsoleteProfilePrefs(&prefs_, profile_dir.GetPath());
+  EXPECT_EQ(prefs_.GetInteger(prefs::kProfileAvatarIndex),
+            static_cast<int>(profiles::GetPlaceholderAvatarIndex()));
+  EXPECT_TRUE(prefs_.GetBoolean(prefs::kProfileUsingDefaultAvatar));
+  EXPECT_FALSE(prefs_.GetBoolean(prefs::kProfileUsingGAIAAvatar));
+
+  // Legacy avatar with GAIA picture: migrated to placeholder, keeping
+  // kProfileUsingDefaultAvatar false.
+  prefs_.SetInteger(prefs::kProfileAvatarIndex, 0);
+  prefs_.SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
+  prefs_.SetBoolean(prefs::kProfileUsingGAIAAvatar, true);
+  MigrateObsoleteProfilePrefs(&prefs_, profile_dir.GetPath());
+  EXPECT_EQ(prefs_.GetInteger(prefs::kProfileAvatarIndex),
+            static_cast<int>(profiles::GetPlaceholderAvatarIndex()));
+  EXPECT_FALSE(prefs_.GetBoolean(prefs::kProfileUsingDefaultAvatar));
+  EXPECT_TRUE(prefs_.GetBoolean(prefs::kProfileUsingGAIAAvatar));
+
+  // Valid avatar (modern on desktop, placeholder on ChromeOS) is not modified.
+  const int valid_index =
+      static_cast<int>(profiles::GetModernAvatarIconStartIndex());
+  prefs_.SetInteger(prefs::kProfileAvatarIndex, valid_index);
+  prefs_.SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
+  prefs_.SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
+  MigrateObsoleteProfilePrefs(&prefs_, profile_dir.GetPath());
+  EXPECT_EQ(prefs_.GetInteger(prefs::kProfileAvatarIndex), valid_index);
+  EXPECT_FALSE(prefs_.GetBoolean(prefs::kProfileUsingDefaultAvatar));
+
+  // Unknown future index is not modified.
+  prefs_.SetInteger(prefs::kProfileAvatarIndex, 999);
+  prefs_.SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
+  MigrateObsoleteProfilePrefs(&prefs_, profile_dir.GetPath());
+  EXPECT_EQ(prefs_.GetInteger(prefs::kProfileAvatarIndex), 999);
+  EXPECT_FALSE(prefs_.GetBoolean(prefs::kProfileUsingDefaultAvatar));
+
+  // Unset pref (default -1) stays unset.
+  prefs_.ClearPref(prefs::kProfileAvatarIndex);
+  prefs_.ClearPref(prefs::kProfileUsingDefaultAvatar);
+  prefs_.ClearPref(prefs::kProfileUsingGAIAAvatar);
+  MigrateObsoleteProfilePrefs(&prefs_, profile_dir.GetPath());
+  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kProfileAvatarIndex));
+  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kProfileUsingDefaultAvatar));
 }
 #endif  // BUILDFLAG(IS_ANDROID)

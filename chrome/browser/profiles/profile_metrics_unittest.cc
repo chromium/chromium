@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -19,6 +20,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#endif
 
 namespace {
 
@@ -382,18 +387,23 @@ TEST(ProfileMetrics, ThresholdTest) {
 TEST(ProfileMetricsTest, LogProfileAvatar) {
   base::HistogramTester histogram_tester;
 
-  ProfileMetrics::LogProfileAvatarOnLoad(
-      /*icon_index=*/ProfileMetrics::AVATAR_GENERIC);
+#if BUILDFLAG(IS_ANDROID)
+  ProfileMetrics::LogProfileAvatarOnLoad(/*icon_index=*/0);
   histogram_tester.ExpectUniqueSample("Profile.AvatarOnLoad",
                                       ProfileMetrics::AVATAR_GENERIC, 1);
+#else
+  ProfileMetrics::LogProfileAvatarOnLoad(
+      /*icon_index=*/profiles::GetPlaceholderAvatarIndex());
+  histogram_tester.ExpectUniqueSample("Profile.AvatarOnLoad",
+                                      ProfileMetrics::AVATAR_PLACEHOLDER, 1);
+#endif
 
   ProfileMetrics::LogProfileAvatarOnLoad(/*icon_index=*/SIZE_MAX);
   histogram_tester.ExpectBucketCount("Profile.AvatarOnLoad",
                                      ProfileMetrics::AVATAR_GAIA, 1);
   histogram_tester.ExpectTotalCount("Profile.AvatarOnLoad", 2);
 
-  ProfileMetrics::LogProfileAvatarSelection(
-      /*icon_index=*/ProfileMetrics::AVATAR_GENERIC_AQUA);
+  ProfileMetrics::LogProfileAvatarSelection(/*icon_index=*/27);
   histogram_tester.ExpectUniqueSample("Profile.Avatar",
-                                      ProfileMetrics::AVATAR_GENERIC_AQUA, 1);
+                                      ProfileMetrics::AVATAR_ORIGAMI_CAT, 1);
 }

@@ -299,6 +299,26 @@ ProfileAttributesStorage::ProfileAttributesStorage(
                using_default_name.value());
     }
 
+    // Added 11/2026.
+    // Profiles still using one of the removed legacy avatar icons are migrated
+    // to the placeholder avatar. They are also marked as using a default
+    // avatar, so that the GAIA picture is preferred when available. Other
+    // unknown avatars (e.g. written by a newer version) are left untouched and
+    // only resolved to the placeholder when read. Per-profile prefs are
+    // migrated separately in `MigrateObsoleteProfilePrefs()`.
+    const std::string* avatar_icon_url =
+        info.FindString(ProfileAttributesEntry::kAvatarIconKey);
+    if (avatar_icon_url && profiles::IsLegacyAvatarIconUrl(*avatar_icon_url)) {
+      info.Set(ProfileAttributesEntry::kAvatarIconKey,
+               profiles::GetDefaultAvatarIconUrl(
+                   profiles::GetPlaceholderAvatarIndex()));
+      const bool using_gaia_picture =
+          info.FindBool(ProfileAttributesEntry::kUseGAIAPictureKey)
+              .value_or(false);
+      info.Set(ProfileAttributesEntry::kIsUsingDefaultAvatarKey,
+               !using_gaia_picture);
+    }
+
     // `info` may become invalid after this call.
     // Profiles loaded from disk can never be omitted.
     InitEntryWithKey(kv.first, /*is_omitted=*/false);

@@ -16,6 +16,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -310,7 +311,7 @@ void AddMultipleProfiles(bool is_glic_version,
     }
   }
 
-  size_t icon_index = 0;
+  size_t icon_index = profiles::GetModernAvatarIconStartIndex();
   for (ProfileStatus profile_status : profiles_status) {
     base::RunLoop run_loop;
     ProfileManager::CreateMultiProfileAsync(
@@ -534,7 +535,8 @@ class ProfilePickerUIPixelTest
     views::Widget* widget = GetWidgetForScreenshot();
 
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
-    const std::string baseline = "8481376";
+    const std::string baseline =
+        GetParam().use_multiple_profiles ? "8622683" : "8481376";
     const std::string screenshot_name = base::StrCat(
         {test_info->test_suite_name(), "_", test_info->name(), "_", baseline});
 

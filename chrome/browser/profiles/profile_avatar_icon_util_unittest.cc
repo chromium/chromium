@@ -57,11 +57,61 @@ TEST(ProfileInfoUtilTest, TitleBarIcon) {
   // Test that an avatar icon isn't changed.
   const gfx::Image& profile_image(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PROFILE_AVATAR_0));
+          IDR_PROFILE_AVATAR_26));
   gfx::Image result =
       profiles::GetAvatarIconForTitleBar(profile_image, width, height);
   EXPECT_FALSE(gfx::test::IsEmpty(result));
   EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, result));
+}
+
+// The indices of the removed legacy avatar icons, below the placeholder avatar
+// index, are not valid default avatar indices.
+TEST(ProfileInfoUtilTest, LegacyAvatarIndicesAreInvalid) {
+  const size_t placeholder_index = profiles::GetPlaceholderAvatarIndex();
+  for (size_t i = 0; i < placeholder_index; ++i) {
+    SCOPED_TRACE(i);
+    EXPECT_FALSE(profiles::IsDefaultAvatarIconIndex(i));
+    EXPECT_EQ(placeholder_index,
+              profiles::GetSanitizedAvatarIndex(static_cast<int>(i)));
+  }
+
+  size_t icon_index = 0;
+  EXPECT_FALSE(profiles::IsDefaultAvatarIconUrl(
+      "chrome://theme/IDR_PROFILE_AVATAR_0", &icon_index));
+  EXPECT_FALSE(profiles::IsDefaultAvatarIconUrl(
+      "chrome://theme/IDR_PROFILE_AVATAR_25", &icon_index));
+  EXPECT_EQ(placeholder_index, profiles::GetSanitizedAvatarIndex(0));
+
+  EXPECT_TRUE(
+      profiles::IsLegacyAvatarIconUrl("chrome://theme/IDR_PROFILE_AVATAR_0"));
+  EXPECT_TRUE(
+      profiles::IsLegacyAvatarIconUrl("chrome://theme/IDR_PROFILE_AVATAR_25"));
+  EXPECT_FALSE(profiles::IsLegacyAvatarIconUrl(
+      profiles::GetDefaultAvatarIconUrl(placeholder_index)));
+  // Unknown indices beyond the known avatars are not legacy.
+  EXPECT_FALSE(
+      profiles::IsLegacyAvatarIconUrl("chrome://theme/IDR_PROFILE_AVATAR_999"));
+  EXPECT_FALSE(profiles::IsLegacyAvatarIconUrl("chrome://theme/IDR_FOO_0"));
+  EXPECT_FALSE(profiles::IsLegacyAvatarIconUrl(""));
+}
+
+TEST(ProfileInfoUtilTest, ValidAvatarIndices) {
+  const size_t placeholder_index = profiles::GetPlaceholderAvatarIndex();
+  for (size_t i = placeholder_index; i < profiles::GetDefaultAvatarIconCount();
+       ++i) {
+    SCOPED_TRACE(i);
+    EXPECT_TRUE(profiles::IsDefaultAvatarIconIndex(i));
+    EXPECT_EQ(i, profiles::GetSanitizedAvatarIndex(static_cast<int>(i)));
+
+    size_t icon_index = 0;
+    EXPECT_TRUE(profiles::IsDefaultAvatarIconUrl(
+        profiles::GetDefaultAvatarIconUrl(i), &icon_index));
+    EXPECT_EQ(i, icon_index);
+  }
+
+  EXPECT_FALSE(profiles::IsDefaultAvatarIconIndex(
+      profiles::GetDefaultAvatarIconCount()));
+  EXPECT_EQ(placeholder_index, profiles::GetSanitizedAvatarIndex(-1));
 }
 
 }  // namespace

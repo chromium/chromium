@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -326,7 +327,8 @@ class DiceSigninUiUtilBrowserTest : public InProcessBrowserTest {
     Profile* new_profile = nullptr;
     base::RunLoop run_loop;
     ProfileManager::CreateMultiProfileAsync(
-        u"test_profile", /*icon_index=*/0, /*is_hidden=*/false,
+        u"test_profile", profiles::GetPlaceholderAvatarIndex(),
+        /*is_hidden=*/false,
         base::BindLambdaForTesting([&new_profile, &run_loop](Profile* profile) {
           ASSERT_TRUE(profile);
           new_profile = profile;

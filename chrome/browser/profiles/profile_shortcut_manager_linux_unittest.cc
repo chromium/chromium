@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -323,7 +324,11 @@ TEST_F(ProfileShortcutManagerLinuxTest, AvatarChangeChangesIconPath) {
 
   // Desktop environments cache icons by path, so a new icon must get a new
   // path, and the old icon is cleaned up.
-  GetEntry()->SetAvatarIconIndex(GetEntry()->GetAvatarIconIndex() == 1 ? 2 : 1);
+  const size_t modern_avatar_index = profiles::GetModernAvatarIconStartIndex();
+  GetEntry()->SetAvatarIconIndex(GetEntry()->GetAvatarIconIndex() ==
+                                         modern_avatar_index
+                                     ? modern_avatar_index + 1
+                                     : modern_avatar_index);
   Flush();
 
   const base::FilePath new_icon_path = GetIconPath();

@@ -54,7 +54,7 @@ suite('SignInCelebrationTest', function() {
   test('UpdatesUserInfo', async function() {
     const testElement = await createSignInCelebrationAppElement();
     const newUserInfo = {
-      avatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_1',
+      avatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_27',
       title: 'Welcome, Updated User',
     };
 

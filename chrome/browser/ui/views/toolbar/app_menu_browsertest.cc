@@ -214,9 +214,16 @@ bool AppMenuBrowserTest::VerifyUi() {
 
   const auto* const test_info =
       testing::UnitTest::GetInstance()->current_test_info();
+  std::string screenshot_name = test_info->name();
+  if (std::string_view(test_info->test_suite_name()) ==
+          "AppMenuAiRingBrowserTest" &&
+      base::StartsWith(screenshot_name, "InvokeUi_profile_menu_in_app_menu_")) {
+    // Baseline Gerrit CL number of the most recent CL that modified the UI.
+    screenshot_name += "_8622683";
+  }
   return VerifyPixelUi(menu_item->GetSubmenu()->GetScrollViewContainer(),
                        test_info->test_suite_name(),
-                       test_info->name()) != ui::test::ActionResult::kFailed;
+                       screenshot_name) != ui::test::ActionResult::kFailed;
 }
 
 void AppMenuBrowserTest::WaitForUserDismissal() {

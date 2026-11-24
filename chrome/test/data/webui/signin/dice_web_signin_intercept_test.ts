@@ -13,8 +13,8 @@ import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 
-const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
-const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_2';
+const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_27';
+const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_28';
 const AVATAR_BADGE_SOURCE: string = 'cr:domain';
 
 const BASE_PARAMETERS: InterceptionParameters = {

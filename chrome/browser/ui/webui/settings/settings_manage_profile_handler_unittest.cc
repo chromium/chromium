@@ -101,7 +101,6 @@ class ManageProfileHandlerTest : public testing::Test {
       EXPECT_TRUE(profiles::IsDefaultAvatarIconIndex(icon_index_int));
       size_t icon_index = static_cast<size_t>(icon_index_int);
       EXPECT_NE(icon_index, profiles::GetPlaceholderAvatarIndex());
-      EXPECT_NE(icon_index_int, 0);
       size_t url_icon_index;
       EXPECT_TRUE(profiles::IsDefaultAvatarIconUrl(*icon_url, &url_icon_index));
       EXPECT_EQ(icon_index, url_icon_index);
@@ -116,7 +115,7 @@ class ManageProfileHandlerTest : public testing::Test {
       }
     }
 
-    EXPECT_TRUE(selected_index == 0 || selected_found);
+    EXPECT_TRUE(selected_found);
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -172,11 +171,11 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToGaiaAvatar) {
 
 TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultCustomAvatar) {
   base::ListValue list_args;
-  list_args.Append(15);
+  list_args.Append(30);
   handler()->HandleSetProfileIconToDefaultAvatar(list_args);
 
   PrefService* pref_service = profile()->GetPrefs();
-  EXPECT_EQ(15, pref_service->GetInteger(prefs::kProfileAvatarIndex));
+  EXPECT_EQ(30, pref_service->GetInteger(prefs::kProfileAvatarIndex));
   EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
   EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar));
 }
@@ -189,6 +188,20 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultGenericAvatar) {
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ(generic_avatar_index,
+            pref_service->GetInteger(prefs::kProfileAvatarIndex));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
+  EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar));
+}
+
+// A legacy (removed) avatar index coming from the WebUI must not crash and
+// must be sanitized to the placeholder avatar.
+TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToLegacyAvatar) {
+  base::ListValue list_args;
+  list_args.Append(5);
+  handler()->HandleSetProfileIconToDefaultAvatar(list_args);
+
+  PrefService* pref_service = profile()->GetPrefs();
+  EXPECT_EQ(static_cast<int>(profiles::GetPlaceholderAvatarIndex()),
             pref_service->GetInteger(prefs::kProfileAvatarIndex));
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
   EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar));
@@ -223,9 +236,14 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIcons) {
   VerifyIconListWithOnlyCustomAvatars(data_1.arg3(), 27);
 }
 
-TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsOldIconSelected) {
+TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsPlaceholderSelected) {
+  // Select a custom avatar first, as the profile uses the placeholder avatar
+  // initially.
+  entry()->SetAvatarIconIndex(27);
+  web_ui()->ClearTrackedCalls();
+
   // Set avatar icon will trigger avatar icons updated event.
-  entry()->SetAvatarIconIndex(7);
+  entry()->SetAvatarIconIndex(profiles::GetPlaceholderAvatarIndex());
   EXPECT_EQ(1U, web_ui()->call_data().size());
   web_ui()->ClearTrackedCalls();
 
@@ -239,7 +257,8 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsOldIconSelected) {
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   EXPECT_EQ("get-icons-callback-id", data.arg1()->GetString());
 
-  VerifyIconListWithOnlyCustomAvatars(data.arg3(), 0);
+  VerifyIconListWithOnlyCustomAvatars(data.arg3(),
+                                      profiles::GetPlaceholderAvatarIndex());
 }
 
 TEST_F(ManageProfileHandlerTest, GetAvailableIconsSignedInProfile) {

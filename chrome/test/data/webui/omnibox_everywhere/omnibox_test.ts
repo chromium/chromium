@@ -70,7 +70,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       searchboxCr23Theming: true,
       searchboxCr23SteadyStateShadow: false,
       contextManagementInComposeboxEnabled: false,
-      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_26',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       profileTooltipHeader: 'Chrome profile',
@@ -1973,7 +1973,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
       composeboxContextDragAndDropEnabled: true,
       energyEffectAnimationEnabled: false,
       composeboxEnergyEffectAnimationEnabled: true,
-      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_26',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
@@ -2629,7 +2629,7 @@ suite('OmniboxEverywhereAppTest', () => {
       searchboxCr23Theming: true,
       searchboxCr23SteadyStateShadow: false,
       searchboxShowComposeEntrypoint: false,
-      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_26',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
@@ -4944,7 +4944,7 @@ suite('OmniboxEverywhereProfileIconTest', () => {
   async function createProfileIcon(profilePickerEnabled: boolean) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
-      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_26',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       profileTooltipHeader: 'Chrome profile',
@@ -5001,7 +5001,7 @@ suite('OmniboxEverywhereProfileIconTest', () => {
   test('renders enterprise badge when profile is enterprise', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
-      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_26',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: true,
@@ -5133,7 +5133,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       searchboxCr23Theming: true,
       searchboxCr23SteadyStateShadow: false,
       contextManagementInComposeboxEnabled: false,
-      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_26',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,

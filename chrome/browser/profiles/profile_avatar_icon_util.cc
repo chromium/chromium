@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/numerics/angle_conversions.h"
@@ -61,7 +62,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -73,7 +73,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/40147906
 #include "ui/gfx/win/icon_util.h"  // For Iconutil::kLargeIconSize.
 #endif
 
@@ -127,28 +126,6 @@ static_assert(kAvatarWithDottedRingParamsNoPadding.dotted_ring_radius >
                   kAvatarWithDottedRingParamsNoPadding.ring_stroke_width);
 
 #if BUILDFLAG(IS_WIN)
-const int kOldAvatarIconWidth = 38;
-const int kOldAvatarIconHeight = 31;
-
-// 2x sized versions of the old profile avatar icons.
-// TODO(crbug.com/41444689): Clean this up.
-constexpr auto kProfileAvatarIconResources2x = std::to_array<int>({
-    IDR_PROFILE_AVATAR_2X_0,  IDR_PROFILE_AVATAR_2X_1,
-    IDR_PROFILE_AVATAR_2X_2,  IDR_PROFILE_AVATAR_2X_3,
-    IDR_PROFILE_AVATAR_2X_4,  IDR_PROFILE_AVATAR_2X_5,
-    IDR_PROFILE_AVATAR_2X_6,  IDR_PROFILE_AVATAR_2X_7,
-    IDR_PROFILE_AVATAR_2X_8,  IDR_PROFILE_AVATAR_2X_9,
-    IDR_PROFILE_AVATAR_2X_10, IDR_PROFILE_AVATAR_2X_11,
-    IDR_PROFILE_AVATAR_2X_12, IDR_PROFILE_AVATAR_2X_13,
-    IDR_PROFILE_AVATAR_2X_14, IDR_PROFILE_AVATAR_2X_15,
-    IDR_PROFILE_AVATAR_2X_16, IDR_PROFILE_AVATAR_2X_17,
-    IDR_PROFILE_AVATAR_2X_18, IDR_PROFILE_AVATAR_2X_19,
-    IDR_PROFILE_AVATAR_2X_20, IDR_PROFILE_AVATAR_2X_21,
-    IDR_PROFILE_AVATAR_2X_22, IDR_PROFILE_AVATAR_2X_23,
-    IDR_PROFILE_AVATAR_2X_24, IDR_PROFILE_AVATAR_2X_25,
-    IDR_PROFILE_AVATAR_2X_26,
-});
-
 // Returns a copied SkBitmap for the given image that can be safely passed to
 // another thread.
 SkBitmap GetSkBitmapCopy(const gfx::Image& image) {
@@ -561,7 +538,7 @@ constexpr base::FilePath::CharType kGAIAPictureFileName[] =
 constexpr base::FilePath::CharType kHighResAvatarFolderName[] =
     FILE_PATH_LITERAL("Avatars");
 
-// The size of the function-static kDefaultAvatarIconResources array below.
+// One past the largest valid default avatar index.
 #if BUILDFLAG(IS_ANDROID)
 constexpr size_t kDefaultAvatarIconsCount = 1;
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -572,10 +549,21 @@ constexpr size_t kDefaultAvatarIconsCount = 56;
 
 #if !BUILDFLAG(IS_ANDROID)
 // The avatar used as a placeholder.
+//
+// Indices below the placeholder index used to refer to the legacy avatar icons,
+// which have been removed. They are no longer valid default avatar indices, and
+// profiles still using them fall back to the placeholder avatar. The indices
+// are kept reserved so that the indices of the remaining avatars, which are
+// persisted on disk and recorded in metrics, remain stable.
 constexpr size_t kPlaceholderAvatarIndex = 26;
 #else
 constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
+
+// The size of the function-static `kDefaultAvatarIconResourceInfo` array in
+// `GetDefaultAvatarIconResourceInfo()`.
+constexpr size_t kDefaultAvatarIconResourcesCount =
+    kDefaultAvatarIconsCount - kPlaceholderAvatarIndex;
 
 ui::ImageModel GetGuestAvatar(int size) {
   // Guest profiles generally use the default theme, no need to go through the
@@ -748,11 +736,6 @@ size_t GetModernAvatarIconStartIndex() {
 #endif
 }
 
-bool IsModernAvatarIconIndex(size_t icon_index) {
-  return icon_index >= GetModernAvatarIconStartIndex() &&
-         icon_index < GetDefaultAvatarIconCount();
-}
-
 int GetPlaceholderAvatarIconResourceID() {
   // TODO(crbug.com/40138086): Replace with the new icon. Consider coloring the
   // icon (i.e. providing the image through
@@ -770,64 +753,9 @@ std::string GetPlaceholderAvatarIconUrl() {
 }
 
 const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
-  CHECK_LT(index, kDefaultAvatarIconsCount);
-  static const std::array<IconResourceInfo, kDefaultAvatarIconsCount>
-      resource_info = {{
-  // Old avatar icons:
-#if !BUILDFLAG(IS_ANDROID)
-          {IDR_PROFILE_AVATAR_0, "avatar_generic.png",
-           IDS_DEFAULT_AVATAR_LABEL_0},
-          {IDR_PROFILE_AVATAR_1, "avatar_generic_aqua.png",
-           IDS_DEFAULT_AVATAR_LABEL_1},
-          {IDR_PROFILE_AVATAR_2, "avatar_generic_blue.png",
-           IDS_DEFAULT_AVATAR_LABEL_2},
-          {IDR_PROFILE_AVATAR_3, "avatar_generic_green.png",
-           IDS_DEFAULT_AVATAR_LABEL_3},
-          {IDR_PROFILE_AVATAR_4, "avatar_generic_orange.png",
-           IDS_DEFAULT_AVATAR_LABEL_4},
-          {IDR_PROFILE_AVATAR_5, "avatar_generic_purple.png",
-           IDS_DEFAULT_AVATAR_LABEL_5},
-          {IDR_PROFILE_AVATAR_6, "avatar_generic_red.png",
-           IDS_DEFAULT_AVATAR_LABEL_6},
-          {IDR_PROFILE_AVATAR_7, "avatar_generic_yellow.png",
-           IDS_DEFAULT_AVATAR_LABEL_7},
-          {IDR_PROFILE_AVATAR_8, "avatar_secret_agent.png",
-           IDS_DEFAULT_AVATAR_LABEL_8},
-          {IDR_PROFILE_AVATAR_9, "avatar_superhero.png",
-           IDS_DEFAULT_AVATAR_LABEL_9},
-          {IDR_PROFILE_AVATAR_10, "avatar_volley_ball.png",
-           IDS_DEFAULT_AVATAR_LABEL_10},
-          {IDR_PROFILE_AVATAR_11, "avatar_businessman.png",
-           IDS_DEFAULT_AVATAR_LABEL_11},
-          {IDR_PROFILE_AVATAR_12, "avatar_ninja.png",
-           IDS_DEFAULT_AVATAR_LABEL_12},
-          {IDR_PROFILE_AVATAR_13, "avatar_alien.png",
-           IDS_DEFAULT_AVATAR_LABEL_13},
-          {IDR_PROFILE_AVATAR_14, "avatar_awesome.png",
-           IDS_DEFAULT_AVATAR_LABEL_14},
-          {IDR_PROFILE_AVATAR_15, "avatar_flower.png",
-           IDS_DEFAULT_AVATAR_LABEL_15},
-          {IDR_PROFILE_AVATAR_16, "avatar_pizza.png",
-           IDS_DEFAULT_AVATAR_LABEL_16},
-          {IDR_PROFILE_AVATAR_17, "avatar_soccer.png",
-           IDS_DEFAULT_AVATAR_LABEL_17},
-          {IDR_PROFILE_AVATAR_18, "avatar_burger.png",
-           IDS_DEFAULT_AVATAR_LABEL_18},
-          {IDR_PROFILE_AVATAR_19, "avatar_cat.png",
-           IDS_DEFAULT_AVATAR_LABEL_19},
-          {IDR_PROFILE_AVATAR_20, "avatar_cupcake.png",
-           IDS_DEFAULT_AVATAR_LABEL_20},
-          {IDR_PROFILE_AVATAR_21, "avatar_dog.png",
-           IDS_DEFAULT_AVATAR_LABEL_21},
-          {IDR_PROFILE_AVATAR_22, "avatar_horse.png",
-           IDS_DEFAULT_AVATAR_LABEL_22},
-          {IDR_PROFILE_AVATAR_23, "avatar_margarita.png",
-           IDS_DEFAULT_AVATAR_LABEL_23},
-          {IDR_PROFILE_AVATAR_24, "avatar_note.png",
-           IDS_DEFAULT_AVATAR_LABEL_24},
-          {IDR_PROFILE_AVATAR_25, "avatar_sun_cloud.png",
-           IDS_DEFAULT_AVATAR_LABEL_25},
-#endif
+  CHECK(IsDefaultAvatarIconIndex(index)) << index;
+  static constexpr auto kDefaultAvatarIconResourceInfo =
+      std::to_array<IconResourceInfo>({
           // Placeholder avatar icon:
           {IDR_PROFILE_AVATAR_26, nullptr, IDS_DEFAULT_AVATAR_LABEL_26},
 
@@ -892,8 +820,10 @@ const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
           {IDR_PROFILE_AVATAR_55, "avatar_abstract_sandwich.png",
            IDS_DEFAULT_AVATAR_LABEL_55},
 #endif
-      }};
-  return &resource_info[index];
+      });
+  static_assert(kDefaultAvatarIconResourceInfo.size() ==
+                kDefaultAvatarIconResourcesCount);
+  return &kDefaultAvatarIconResourceInfo[index - kPlaceholderAvatarIndex];
 }
 
 gfx::Image GetPlaceholderAvatarIconVisibleAgainstBackground(
@@ -953,12 +883,6 @@ int GetDefaultAvatarIconResourceIDAtIndex(size_t index) {
   return GetDefaultAvatarIconResourceInfo(index)->resource_id;
 }
 
-#if BUILDFLAG(IS_WIN)
-int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index) {
-  return kProfileAvatarIconResources2x[index];
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 const char* GetDefaultAvatarIconFileNameAtIndex(size_t index) {
   CHECK_NE(index, kPlaceholderAvatarIndex);
   return GetDefaultAvatarIconResourceInfo(index)->filename;
@@ -983,7 +907,9 @@ int GetDefaultAvatarLabelResourceIDAtIndex(size_t index) {
 }
 
 bool IsDefaultAvatarIconIndex(size_t index) {
-  return index < kDefaultAvatarIconsCount;
+  // Indices below `kPlaceholderAvatarIndex` belonged to the removed legacy
+  // avatar icons and are no longer valid.
+  return index >= kPlaceholderAvatarIndex && index < kDefaultAvatarIconsCount;
 }
 
 size_t GetSanitizedAvatarIndex(int icon_index) {
@@ -1002,13 +928,25 @@ bool IsDefaultAvatarIconUrl(std::string_view url, size_t* icon_index) {
   int int_value = -1;
   if (base::StringToInt(url.substr(kDefaultUrlPrefix.size()), &int_value)) {
     if (int_value < 0 ||
-        int_value >= static_cast<int>(kDefaultAvatarIconsCount))
+        !IsDefaultAvatarIconIndex(static_cast<size_t>(int_value))) {
       return false;
+    }
     *icon_index = int_value;
     return true;
   }
 
   return false;
+}
+
+bool IsLegacyAvatarIconUrl(std::string_view url) {
+  if (!base::StartsWith(url, kDefaultUrlPrefix, base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+
+  int int_value = -1;
+  return base::StringToInt(url.substr(kDefaultUrlPrefix.size()), &int_value) &&
+         int_value >= 0 &&
+         static_cast<size_t>(int_value) < kPlaceholderAvatarIndex;
 }
 
 base::DictValue GetAvatarIconAndLabelDict(const std::string& url,
@@ -1145,33 +1083,15 @@ SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry) {
                            /*icon_params=*/{.has_padding = false}));
 }
 
-SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap) {
-  constexpr int kIconScaleFactor = 2;
-  if ((source_bitmap.width() != kIconScaleFactor * kOldAvatarIconWidth) ||
-      (source_bitmap.height() != kIconScaleFactor * kOldAvatarIconHeight)) {
-    // It's not an old avatar icon, the image should be square.
-    // TODO(crbug.com/579578807): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK_EQ(source_bitmap.width(), source_bitmap.height());
-    return source_bitmap;
-  }
-
-  // If |source_bitmap| matches the old avatar icon dimensions, i.e. it's an
-  // old avatar icon, shave a couple of columns so the |source_bitmap| is more
-  // square. So when resized to a square aspect ratio it looks pretty.
-  gfx::Rect frame(gfx::SkIRectToRect(source_bitmap.bounds()));
-  frame.Inset(
-      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kIconScaleFactor * 2));
-  SkBitmap cropped_bitmap;
-  source_bitmap.extractSubset(&cropped_bitmap, gfx::RectToSkIRect(frame));
-  return cropped_bitmap;
-}
-
 SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
                                          const SkBitmap& avatar_bitmap) {
   // TODO(dfried): This function often doesn't actually do the thing it claims
   // to. We should probably fix it.
-  SkBitmap source_bitmap = profiles::GetWin2xAvatarIconAsSquare(avatar_bitmap);
+  // Avatars should be square now that the legacy (non-square) avatar icons are
+  // gone.
+  // TODO(crbug.com/579578807): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_EQ(avatar_bitmap.width(), avatar_bitmap.height());
 
   int avatar_badge_width = kProfileAvatarBadgeSizeWin;
   if (app_icon_bitmap.width() != kShortcutIconSizeWin) {
@@ -1184,10 +1104,10 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   // ratio (but prefer more square than rectangular when rounding).
   const int avatar_badge_height = base::ClampCeil(
       avatar_badge_width *
-      (static_cast<float>(source_bitmap.height()) / source_bitmap.width()));
+      (static_cast<float>(avatar_bitmap.height()) / avatar_bitmap.width()));
   SkBitmap sk_icon = skia::ImageOperations::Resize(
-      source_bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
-      avatar_badge_width, avatar_badge_height);
+      avatar_bitmap, skia::ImageOperations::RESIZE_LANCZOS3, avatar_badge_width,
+      avatar_badge_height);
 
   // Sanity check - avatars shouldn't be taller than they are wide.
   // TODO(crbug.com/587307947): CHECK-exclusion: Convert to a CHECK once we are

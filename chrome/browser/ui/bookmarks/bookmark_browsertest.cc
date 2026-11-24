@@ -19,6 +19,7 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
@@ -234,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MultiProfile) {
   base::RunLoop run_loop;
   Profile* profile2 = nullptr;
   g_browser_process->profile_manager()->CreateMultiProfileAsync(
-      u"New Profile", 0, false,
+      u"New Profile", profiles::GetPlaceholderAvatarIndex(), false,
       base::BindLambdaForTesting([&](Profile* profile) {
         if (profile) {
           profile2 = profile;

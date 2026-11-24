@@ -15,6 +15,7 @@
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -486,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   Profile* new_profile = nullptr;
   base::RunLoop run_loop;
   ProfileManager::CreateMultiProfileAsync(
-      u"test_profile", /*icon_index=*/0, /*is_hidden=*/false,
+      u"test_profile", profiles::GetPlaceholderAvatarIndex(),
+      /*is_hidden=*/false,
       base::BindLambdaForTesting([&new_profile, &run_loop](Profile* profile) {
         ASSERT_TRUE(profile);
         new_profile = profile;

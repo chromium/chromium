@@ -44,6 +44,7 @@
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -1489,8 +1490,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   base::test::TestFuture<Profile*> future;
   g_browser_process->profile_manager()->CreateMultiProfileAsync(
-      u"Test Profile 2", /*icon_index=*/0, /*is_hidden=*/false,
-      future.GetCallback());
+      u"Test Profile 2", profiles::GetPlaceholderAvatarIndex(),
+      /*is_hidden=*/false, future.GetCallback());
   Profile* second_profile = future.Get();
   ASSERT_TRUE(second_profile);
   CreateBrowser(second_profile);

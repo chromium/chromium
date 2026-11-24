@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/image_operations.h"
@@ -184,10 +183,7 @@ void DrawTaskbarDecoration(gfx::NativeWindow window, const gfx::Image* image) {
   // gfx::Image isn't thread safe.
   std::unique_ptr<SkBitmap> bitmap;
   if (image) {
-    // If `image` is an old avatar, then it's guaranteed to by 2x by code in
-    // ProfileAttributesEntry::GetAvatarIcon().
-    bitmap = std::make_unique<SkBitmap>(
-        profiles::GetWin2xAvatarIconAsSquare(*image->ToSkBitmap()));
+    bitmap = std::make_unique<SkBitmap>(*image->ToSkBitmap());
   }
 
   PostSetOverlayIcon(hwnd, std::move(bitmap), "");

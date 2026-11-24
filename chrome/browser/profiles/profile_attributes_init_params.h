@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -39,7 +40,7 @@ struct ProfileAttributesInitParams {
   // Whether or not the profile has a primary account with the Sync consent.
   bool is_consented_primary_account = false;
   // Index of the default avatar icon used by the profile.
-  size_t icon_index = 0;
+  size_t icon_index = profiles::GetPlaceholderAvatarIndex();
   // ID of the supervisor user for this profile. Empty string if the profile is
   // not supervised.
   std::string supervised_user_id;

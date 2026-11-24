@@ -1241,7 +1241,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   std::string supervised_user_id;
   if (profile->IsGuestSession()) {
     profile_name = l10n_util::GetStringUTF8(IDS_PROFILES_GUEST_PROFILE_NAME);
-    avatar_index = 0;
+    avatar_index = profiles::GetPlaceholderAvatarIndex();
   } else {
     ProfileAttributesEntry* entry =
         storage.GetProfileAttributesWithPath(profile->GetPath());

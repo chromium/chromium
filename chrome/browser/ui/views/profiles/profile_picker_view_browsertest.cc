@@ -60,6 +60,7 @@
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -2607,7 +2608,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   base::RunLoop run_loop;
   Profile* second_profile = nullptr;
   ProfileManager::CreateMultiProfileAsync(
-      u"Joe", /*icon_index=*/0, /*is_hidden=*/false,
+      u"Joe", profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/false,
       base::BindLambdaForTesting([&](Profile* profile) {
         ASSERT_TRUE(profile);
         second_profile = profile;

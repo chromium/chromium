@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -117,7 +118,8 @@ class ProfileIdServiceFactoryTest : public testing::Test,
     base::RunLoop run_loop;
 
     ProfileManager::CreateMultiProfileAsync(
-        base::UTF8ToUTF16(new_profile_name), /*icon_index=*/0,
+        base::UTF8ToUTF16(new_profile_name),
+        /*icon_index=*/profiles::GetPlaceholderAvatarIndex(),
         /*is_hidden=*/false,
         base::BindLambdaForTesting([&new_profile, &run_loop](Profile* profile) {
           ASSERT_TRUE(profile);

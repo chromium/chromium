@@ -174,12 +174,21 @@ class ProfileAttributesTestObserver
   MOCK_METHOD0(OnProfilesOrderChanged, void());
 };
 
-size_t GetDefaultAvatarIconResourceIDAtIndex(int index) {
-#if BUILDFLAG(IS_WIN)
-  return profiles::GetOldDefaultAvatar2xIconResourceIDAtIndex(index);
-#else
-  return profiles::GetDefaultAvatarIconResourceIDAtIndex(index);
-#endif  // BUILDFLAG(IS_WIN)
+// Returns a valid default avatar icon index derived from `i`. On platforms
+// with non-placeholder default avatars (desktop), consecutive values of `i`
+// map to distinct non-placeholder avatars. On other platforms, this returns
+// the placeholder avatar index.
+size_t GetTestAvatarIconIndex(size_t i) {
+  const size_t start = profiles::GetModernAvatarIconStartIndex();
+  const size_t count = profiles::GetDefaultAvatarIconCount() - start;
+  return start + i % count;
+}
+
+// Returns whether `icon_index` is the index of one of the modern avatar icons
+// (or of the placeholder avatar, on platforms without modern avatar icons).
+bool IsModernAvatarIconIndex(size_t icon_index) {
+  return icon_index >= profiles::GetModernAvatarIconStartIndex() &&
+         icon_index < profiles::GetDefaultAvatarIconCount();
 }
 
 std::u16string ConcatenateGaiaAndProfileNames(
@@ -276,7 +285,7 @@ class ProfileAttributesStorageTest : public testing::Test {
     params.user_name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_user%" PRIuS, number_of_profiles));
     params.is_consented_primary_account = true;
-    params.icon_index = number_of_profiles;
+    params.icon_index = GetTestAvatarIconIndex(number_of_profiles);
     storage()->AddProfile(std::move(params));
 
     EXPECT_EQ(number_of_profiles + 1, storage()->GetNumberOfProfiles());
@@ -354,7 +363,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfile) {
   params.gaia_id = GaiaId("new_profile_gaia_1");
   params.user_name = u"new_profile_username_1";
   params.is_consented_primary_account = true;
-  params.icon_index = 1;
+  params.icon_index = GetTestAvatarIconIndex(1);
   storage()->AddProfile(std::move(params));
 
   VerifyAndResetCallExpectations();
@@ -370,8 +379,8 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
   DisableObserver();  // This test doesn't test observers.
 
   EXPECT_EQ(0u, storage()->GetNumberOfProfiles());
-  // Avatar icons not used on Android.
-#if !BUILDFLAG(IS_ANDROID)
+  // Non-placeholder avatar icons are only available on desktop platforms.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 #endif
 
@@ -380,12 +389,13 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
         GetProfilePath(base::StringPrintf("path_%zu", i));
     std::u16string profile_name =
         base::ASCIIToUTF16(base::StringPrintf("name_%zu", i));
-#if !BUILDFLAG(IS_ANDROID)
+    const size_t icon_index = GetTestAvatarIconIndex(i);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-    size_t icon_id = GetDefaultAvatarIconResourceIDAtIndex(i);
+    int icon_id = profiles::GetDefaultAvatarIconResourceIDAtIndex(icon_index);
     const SkBitmap* icon = rb.GetImageNamed(icon_id).ToSkBitmap();
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     std::string supervised_user_id;
     if (i == 3u)
       supervised_user_id = supervised_user::kChildAccountSUID;
@@ -393,7 +403,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = profile_name;
-    params.icon_index = i;
+    params.icon_index = icon_index;
     params.supervised_user_id = supervised_user_id;
     storage()->AddProfile(std::move(params));
 
@@ -411,7 +421,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
     EXPECT_EQ(expected_profile_name, entry->GetName());
 
     EXPECT_EQ(profile_path, entry->GetPath());
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     const SkBitmap* actual_icon = entry->GetAvatarIcon().ToSkBitmap();
     EXPECT_EQ(icon->width(), actual_icon->width());
     EXPECT_EQ(icon->height(), actual_icon->height());
@@ -437,7 +447,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
         ConcatenateGaiaAndProfileNames(gaia_name, profile_name);
     EXPECT_EQ(expected_profile_name, entry->GetName());
 #if !BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(i, entry->GetAvatarIconIndex());
+    EXPECT_EQ(GetTestAvatarIconIndex(i), entry->GetAvatarIconIndex());
 #endif
     EXPECT_EQ(true, entry->GetBackgroundStatus());
     EXPECT_EQ(gaia_name, entry->GetGAIAName());
@@ -610,12 +620,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
 }
 
 TEST_F(ProfileAttributesStorageTest, InitialValues) {
-#if BUILDFLAG(IS_ANDROID)
-  // Android has only one default avatar.
-  size_t kIconIndex = 0;
-#else
-  size_t kIconIndex = 1;
-#endif
+  const size_t kIconIndex = GetTestAvatarIconIndex(0);
   base::FilePath profile_path = GetProfilePath("testing_profile_path");
   EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
 
@@ -660,7 +665,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues_Defaults) {
   EXPECT_TRUE(params.gaia_id.empty());
   EXPECT_TRUE(params.user_name.empty());
   EXPECT_FALSE(params.is_consented_primary_account);
-  EXPECT_EQ(0U, params.icon_index);
+  EXPECT_EQ(profiles::GetPlaceholderAvatarIndex(), params.icon_index);
   EXPECT_TRUE(params.supervised_user_id.empty());
   EXPECT_TRUE(params.account_id.empty());
   EXPECT_FALSE(params.is_ephemeral);
@@ -675,7 +680,8 @@ TEST_F(ProfileAttributesStorageTest, InitialValues_Defaults) {
       storage()->GetProfileAttributesWithPath(profile_path);
   VerifyInitialValues(entry, profile_path, /*profile_name=*/std::u16string(),
                       GaiaId(), /*user_name=*/std::u16string(),
-                      /*is_consented_primary_account=*/false, /*icon_index=*/0,
+                      /*is_consented_primary_account=*/false,
+                      /*icon_index=*/profiles::GetPlaceholderAvatarIndex(),
                       /*supervised_user_id=*/std::string(),
                       /*is_ephemeral=*/false, /*is_omitted=*/false,
                       /*is_signed_in_with_credential_provider=*/false);
@@ -1184,7 +1190,7 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
   alpha_params.gaia_id = GaiaId("alpha_gaia");
   alpha_params.user_name = u"alpha_username";
   alpha_params.is_consented_primary_account = true;
-  alpha_params.icon_index = 1;
+  alpha_params.icon_index = GetTestAvatarIconIndex(1);
   storage()->AddProfile(std::move(alpha_params));
 
   ProfileAttributesInitParams lima_params;
@@ -1193,7 +1199,7 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
   lima_params.gaia_id = GaiaId("lima_gaia");
   lima_params.user_name = u"lima_username";
   lima_params.is_consented_primary_account = true;
-  lima_params.icon_index = 1;
+  lima_params.icon_index = GetTestAvatarIconIndex(1);
   storage()->AddProfile(std::move(lima_params));
 
   ProfileAttributesEntry* entry =
@@ -1273,7 +1279,7 @@ TEST_F(ProfileAttributesStorageTest, ChooseAvatarIconIndexForNewProfile) {
       icon_index = storage()->ChooseAvatarIconIndexForNewProfile();
       // Icon must not be used.
       ASSERT_EQ(0u, used_icon_indices.count(icon_index));
-      ASSERT_TRUE(profiles::IsModernAvatarIconIndex(icon_index));
+      ASSERT_TRUE(IsModernAvatarIconIndex(icon_index));
     }
 
     used_icon_indices.insert(icon_index);
@@ -1290,7 +1296,7 @@ TEST_F(ProfileAttributesStorageTest, ChooseAvatarIconIndexForNewProfile) {
 
   for (int iter = 0; iter < num_iterations; ++iter) {
     // All icons are used up, expect any valid icon.
-    ASSERT_TRUE(profiles::IsModernAvatarIconIndex(
+    ASSERT_TRUE(IsModernAvatarIconIndex(
         storage()->ChooseAvatarIconIndexForNewProfile()));
   }
 }
@@ -1405,25 +1411,25 @@ TEST_F(ProfileAttributesStorageTest, ProfileForceSigninLock) {
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 
-// Avatar icons not used on Android.
-#if !BUILDFLAG(IS_ANDROID)
+// Only the placeholder avatar icon is available on Android and ChromeOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
   base::FilePath profile_path = AddTestingProfile();
 
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
   ASSERT_NE(entry, nullptr);
-  ASSERT_EQ(0U, entry->GetAvatarIconIndex());
+  ASSERT_EQ(GetTestAvatarIconIndex(0), entry->GetAvatarIconIndex());
 
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
-  entry->SetAvatarIconIndex(2U);
+  entry->SetAvatarIconIndex(GetTestAvatarIconIndex(2));
   VerifyAndResetCallExpectations();
-  ASSERT_EQ(2U, entry->GetAvatarIconIndex());
+  ASSERT_EQ(GetTestAvatarIconIndex(2), entry->GetAvatarIconIndex());
 
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
-  entry->SetAvatarIconIndex(3U);
+  entry->SetAvatarIconIndex(GetTestAvatarIconIndex(3));
   VerifyAndResetCallExpectations();
-  ASSERT_EQ(3U, entry->GetAvatarIconIndex());
+  ASSERT_EQ(GetTestAvatarIconIndex(3), entry->GetAvatarIconIndex());
 }
 #endif
 
@@ -1503,7 +1509,7 @@ TEST_F(ProfileAttributesStorageTest, GetAvatarIconWithType) {
 TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
   storage()->set_disable_avatar_download_for_testing(false);
 
-  const size_t kIconIndex = 0;
+  const size_t kIconIndex = profiles::GetModernAvatarIconStartIndex();
   base::FilePath icon_path =
       profiles::GetPathOfHighResAvatarAtIndex(kIconIndex);
 
@@ -1613,7 +1619,7 @@ TEST_F(ProfileAttributesStorageTest, NothingToDownloadHighResAvatarTest) {
 }
 
 TEST_F(ProfileAttributesStorageTest, LoadAvatarFromDiskTest) {
-  const size_t kIconIndex = 0;
+  const size_t kIconIndex = profiles::GetModernAvatarIconStartIndex();
   base::FilePath icon_path =
       profiles::GetPathOfHighResAvatarAtIndex(kIconIndex);
 
@@ -1755,7 +1761,12 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
   ASSERT_NE(entry, nullptr);
-  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  // On platforms without non-placeholder avatars, the testing profile already
+  // uses the placeholder avatar, so no change is notified.
+  const bool avatar_changes =
+      entry->GetAvatarIconIndex() != profiles::GetPlaceholderAvatarIndex();
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path))
+      .Times(avatar_changes ? 1 : 0);
   entry->SetAvatarIconIndex(profiles::GetPlaceholderAvatarIndex());
   VerifyAndResetCallExpectations();
 
@@ -1790,8 +1801,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
-  const int kDefaultAvatarIndex = 0;
-  const int kOtherAvatarIndex = 1;
+  const size_t kDefaultAvatarIndex = GetTestAvatarIconIndex(0);
+  const size_t kOtherAvatarIndex = GetTestAvatarIconIndex(1);
   const int kGaiaPictureSize = 256;  // Standard size of a Gaia account picture.
   base::FilePath profile_path = GetProfilePath("path_1");
   ProfileAttributesInitParams params;
@@ -1810,12 +1821,16 @@ TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
 
   // The profile icon should be the default one.
   EXPECT_TRUE(entry->IsUsingDefaultAvatar());
-  size_t default_avatar_id =
-      GetDefaultAvatarIconResourceIDAtIndex(kDefaultAvatarIndex);
+  // On ChromeOS, only the placeholder avatar is available, and its icon is not
+  // the default avatar resource.
+#if !BUILDFLAG(IS_CHROMEOS)
+  int default_avatar_id =
+      profiles::GetDefaultAvatarIconResourceIDAtIndex(kDefaultAvatarIndex);
   const gfx::Image& default_avatar_image(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(default_avatar_id));
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(default_avatar_image, entry->GetAvatarIcon()));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Set GAIA picture.
   gfx::Image gaia_image(
@@ -1831,22 +1846,25 @@ TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, entry->GetAvatarIcon()));
 
   // Set a non-default avatar. This should be preferred over the GAIA image.
-  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  // On platforms with only the placeholder avatar, the avatar index does not
+  // change.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path))
+      .Times(kOtherAvatarIndex != kDefaultAvatarIndex ? 1 : 0);
   entry->SetAvatarIconIndex(kOtherAvatarIndex);
   entry->SetIsUsingDefaultAvatar(false);
   VerifyAndResetCallExpectations();
   EXPECT_FALSE(entry->IsUsingDefaultAvatar());
   EXPECT_FALSE(entry->IsUsingGAIAPicture());
-// Avatar icons not used on Android.
-#if !BUILDFLAG(IS_ANDROID)
+// Non-placeholder avatar icons are only available on desktop platforms.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-  size_t other_avatar_id =
-      GetDefaultAvatarIconResourceIDAtIndex(kOtherAvatarIndex);
+  int other_avatar_id =
+      profiles::GetDefaultAvatarIconResourceIDAtIndex(kOtherAvatarIndex);
   const gfx::Image& other_avatar_image(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(other_avatar_id));
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(other_avatar_image, entry->GetAvatarIcon()));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   // Explicitly setting the GAIA picture should make it preferred again.
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
@@ -1863,7 +1881,7 @@ TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
   VerifyAndResetCallExpectations();
   EXPECT_FALSE(entry->IsUsingGAIAPicture());
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(other_avatar_image, entry->GetAvatarIcon()));
 #endif
@@ -1907,14 +1925,18 @@ TEST_F(ProfileAttributesStorageTest, PersistGAIAPicture) {
 
 TEST_F(ProfileAttributesStorageTest, EmptyGAIAInfo) {
   std::u16string profile_name = u"name_1";
-  size_t id = GetDefaultAvatarIconResourceIDAtIndex(0);
+  const size_t kIconIndex = GetTestAvatarIconIndex(0);
+#if !BUILDFLAG(IS_CHROMEOS)
+  int id = profiles::GetDefaultAvatarIconResourceIDAtIndex(kIconIndex);
   const gfx::Image& profile_image(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(id));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   base::FilePath profile_path = GetProfilePath("path_1");
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = profile_name;
+  params.icon_index = kIconIndex;
   EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
   storage()->AddProfile(std::move(params));
   VerifyAndResetCallExpectations();
@@ -1939,7 +1961,13 @@ TEST_F(ProfileAttributesStorageTest, EmptyGAIAInfo) {
 
   // Verify that the profile name and picture are not empty.
   EXPECT_EQ(profile_name, entry->GetName());
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, entry->GetAvatarIcon()));
+#else
+  // On ChromeOS, only the placeholder avatar is available, and its icon is not
+  // the default avatar resource.
+  EXPECT_FALSE(entry->GetAvatarIcon().IsEmpty());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(ProfileAttributesStorageTest, GetAllProfilesKeys) {
@@ -2065,7 +2093,7 @@ TEST_F(ProfileAttributesStorageTest,
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = base::ASCIIToUTF16(kTestCases[i].profile_name);
-    params.icon_index = i;
+    params.icon_index = GetTestAvatarIconIndex(i);
     storage()->AddProfile(std::move(params));
     entry = storage()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
@@ -2116,6 +2144,115 @@ TEST_F(ProfileAttributesStorageTest,
   EXPECT_EQ(actual_profile_names, expected_profile_names);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+// Checks that profiles still using one of the removed legacy avatar icons are
+// migrated to the placeholder avatar when the storage is initialized. Legacy
+// avatar icons never existed on Android (where the placeholder index is 0).
+TEST_F(ProfileAttributesStorageTest, MigrateLegacyAvatarIconToPlaceholder) {
+  const std::string kLegacyAvatarIconUrl =
+      "chrome://theme/IDR_PROFILE_AVATAR_5";
+  const size_t kPlaceholderIndex = profiles::GetPlaceholderAvatarIndex();
+
+  base::FilePath profile_path = AddTestingProfile();
+  DisableObserver();  // The rest of this test doesn't test observers.
+  const std::string key = storage()->StorageKeyFromProfilePath(profile_path);
+
+  // Mimic a profile using a legacy avatar icon, explicitly chosen by the user.
+  PrefService* local_state = g_browser_process->local_state();
+  {
+    ScopedDictPrefUpdate update(local_state, prefs::kProfileAttributes);
+    base::DictValue* profile_dict = update->FindDict(key);
+    ASSERT_TRUE(profile_dict);
+    profile_dict->Set(ProfileAttributesEntry::kAvatarIconKey,
+                      kLegacyAvatarIconUrl);
+    profile_dict->Set(ProfileAttributesEntry::kIsUsingDefaultAvatarKey, false);
+  }
+
+  ResetProfileAttributesStorage();
+
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(kPlaceholderIndex, entry->GetAvatarIconIndex());
+  EXPECT_TRUE(entry->IsUsingDefaultAvatar());
+
+  // The stored avatar icon URL is rewritten.
+  const base::DictValue* profile_dict =
+      local_state->GetDict(prefs::kProfileAttributes).FindDict(key);
+  ASSERT_TRUE(profile_dict);
+  const std::string* avatar_icon_url =
+      profile_dict->FindString(ProfileAttributesEntry::kAvatarIconKey);
+  ASSERT_TRUE(avatar_icon_url);
+  EXPECT_EQ(profiles::GetDefaultAvatarIconUrl(kPlaceholderIndex),
+            *avatar_icon_url);
+  EXPECT_THAT(
+      profile_dict->FindBool(ProfileAttributesEntry::kIsUsingDefaultAvatarKey),
+      testing::Optional(true));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Checks that an unknown avatar icon URL (e.g. written by a newer version of
+// Chrome with more avatars) is left untouched in storage, and resolves to the
+// placeholder avatar when read.
+TEST_F(ProfileAttributesStorageTest, UnknownAvatarIconNotMigrated) {
+  const std::string kUnknownAvatarIconUrl =
+      "chrome://theme/IDR_PROFILE_AVATAR_999";
+  const size_t kPlaceholderIndex = profiles::GetPlaceholderAvatarIndex();
+
+  base::FilePath profile_path = AddTestingProfile();
+  DisableObserver();  // The rest of this test doesn't test observers.
+  const std::string key = storage()->StorageKeyFromProfilePath(profile_path);
+
+  PrefService* local_state = g_browser_process->local_state();
+  {
+    ScopedDictPrefUpdate update(local_state, prefs::kProfileAttributes);
+    base::DictValue* profile_dict = update->FindDict(key);
+    ASSERT_TRUE(profile_dict);
+    profile_dict->Set(ProfileAttributesEntry::kAvatarIconKey,
+                      kUnknownAvatarIconUrl);
+    profile_dict->Set(ProfileAttributesEntry::kIsUsingDefaultAvatarKey, false);
+  }
+
+  ResetProfileAttributesStorage();
+
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(kPlaceholderIndex, entry->GetAvatarIconIndex());
+  EXPECT_FALSE(entry->IsUsingDefaultAvatar());
+  // Reading the icon must not crash.
+  EXPECT_FALSE(entry->GetAvatarIcon().IsEmpty());
+
+  // The stored avatar icon URL is preserved.
+  const base::DictValue* profile_dict =
+      local_state->GetDict(prefs::kProfileAttributes).FindDict(key);
+  ASSERT_TRUE(profile_dict);
+  const std::string* avatar_icon_url =
+      profile_dict->FindString(ProfileAttributesEntry::kAvatarIconKey);
+  ASSERT_TRUE(avatar_icon_url);
+  EXPECT_EQ(kUnknownAvatarIconUrl, *avatar_icon_url);
+}
+
+// Checks that profiles using a valid default avatar icon are not migrated.
+TEST_F(ProfileAttributesStorageTest, ValidAvatarIconNotMigrated) {
+  const size_t kIconIndex = GetTestAvatarIconIndex(1);
+
+  base::FilePath profile_path = AddTestingProfile();
+  DisableObserver();  // The rest of this test doesn't test observers.
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
+  entry->SetAvatarIconIndex(kIconIndex);
+  entry->SetIsUsingDefaultAvatar(false);
+
+  ResetProfileAttributesStorage();
+
+  entry = storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(kIconIndex, entry->GetAvatarIconIndex());
+  EXPECT_FALSE(entry->IsUsingDefaultAvatar());
+}
 
 TEST_F(ProfileAttributesStorageTest,
        InitialSavedOrderValidWithAddRemoveProfiles) {

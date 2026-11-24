@@ -59,6 +59,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -746,7 +747,7 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
     testing_profile_manager->profile_manager()
         ->GetProfileAttributesStorage()
         .GetProfileAttributesWithPath(profile_->GetPath())
-        ->SetAvatarIconIndex(1);
+        ->SetAvatarIconIndex(profiles::GetModernAvatarIconStartIndex());
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);

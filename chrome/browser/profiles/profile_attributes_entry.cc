@@ -395,18 +395,6 @@ ProfileAttributesEntry::GetAvatarIconWithType(
 #endif
 
   const int icon_index = GetAvatarIconIndex();
-#if BUILDFLAG(IS_WIN)
-  if (!profiles::IsModernAvatarIconIndex(icon_index)) {
-    // Return the 2x version of the old avatar, defined specifically for
-    // Windows. No special treatment is needed for modern avatars as they
-    // already have high enough resolution.
-    const int win_resource_id =
-        profiles::GetOldDefaultAvatar2xIconResourceIDAtIndex(icon_index);
-    return {ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-                win_resource_id),
-            AvatarIconType::kNonPlaceholder};
-  }
-#endif
   int resource_id = profiles::GetDefaultAvatarIconResourceIDAtIndex(icon_index);
   return {
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(resource_id),
@@ -525,8 +513,10 @@ bool ProfileAttributesEntry::IsDasherlessManagement() const {
 size_t ProfileAttributesEntry::GetAvatarIconIndex() const {
   std::string icon_url = GetString(kAvatarIconKey);
   size_t icon_index = 0;
-  if (!profiles::IsDefaultAvatarIconUrl(icon_url, &icon_index))
+  if (!profiles::IsDefaultAvatarIconUrl(icon_url, &icon_index)) {
     DLOG(WARNING) << "Unknown avatar icon: " << icon_url;
+    return profiles::GetPlaceholderAvatarIndex();
+  }
 
   return icon_index;
 }

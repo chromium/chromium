@@ -30,34 +30,6 @@
         <structure type="chrome_scaled_image" name="IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" file="cros/logo_avatar_circle_blue_color.png" />
         <structure type="chrome_scaled_image" name="IDR_LOGO_GOOGLE_COLOR_90" file="cros/logo_google_color_90.png" />
       </if>
-      <if expr="not is_android">
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_0" file="common/profile_avatar_generic.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_1" file="common/profile_avatar_generic_aqua.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_2" file="common/profile_avatar_generic_blue.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_3" file="common/profile_avatar_generic_green.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_4" file="common/profile_avatar_generic_orange.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_5" file="common/profile_avatar_generic_purple.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_6" file="common/profile_avatar_generic_red.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_7" file="common/profile_avatar_generic_yellow.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_8" file="common/profile_avatar_secret_agent.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_9" file="common/profile_avatar_superhero.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_10" file="common/profile_avatar_volley_ball.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_11" file="common/profile_avatar_businessman.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_12" file="common/profile_avatar_ninja.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_13" file="common/profile_avatar_alien.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_14" file="common/profile_avatar_awesome.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_15" file="common/profile_avatar_flower.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_16" file="common/profile_avatar_pizza.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_17" file="common/profile_avatar_soccer.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_18" file="common/profile_avatar_burger.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_19" file="common/profile_avatar_cat.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_20" file="common/profile_avatar_cupcake.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_21" file="common/profile_avatar_dog.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_22" file="common/profile_avatar_horse.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_23" file="common/profile_avatar_margarita.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_24" file="common/profile_avatar_note.png" />
-        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_25" file="common/profile_avatar_sun_cloud.png" />
-      </if>
       <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_26" file="common/profile_avatar_placeholder.png" />
       <if expr="not is_android and not is_chromeos">
         <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_27" file="common/modern_avatars/origami/avatar_cat.png" />

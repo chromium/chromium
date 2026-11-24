@@ -19,8 +19,8 @@ suite('ManagedUserProfileNoticeTest', function() {
   let app: ManagedUserProfileNoticeAppElement;
   let browserProxy: TestManagedUserProfileNoticeBrowserProxy;
 
-  const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
-  const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_2';
+  const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_27';
+  const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_28';
 
   const testManagedUserProfileInfo: ManagedUserProfileInfo = {
     pictureUrl: AVATAR_URL_1,

@@ -80,84 +80,11 @@ base::TimeDelta GetActivityThresholdDelta(
 void LogProfileAvatar(size_t icon_index, std::string_view histogram_name) {
   ProfileMetrics::ProfileAvatar icon_name = ProfileMetrics::AVATAR_UNKNOWN;
   switch (icon_index) {
+#if BUILDFLAG(IS_ANDROID)
     case 0:
       icon_name = ProfileMetrics::AVATAR_GENERIC;
       break;
-    case 1:
-      icon_name = ProfileMetrics::AVATAR_GENERIC_AQUA;
-      break;
-    case 2:
-      icon_name = ProfileMetrics::AVATAR_GENERIC_BLUE;
-      break;
-    case 3:
-      icon_name = ProfileMetrics::AVATAR_GENERIC_GREEN;
-      break;
-    case 4:
-      icon_name = ProfileMetrics::AVATAR_GENERIC_ORANGE;
-      break;
-    case 5:
-      icon_name = ProfileMetrics::AVATAR_GENERIC_PURPLE;
-      break;
-    case 6:
-      icon_name = ProfileMetrics::AVATAR_GENERIC_RED;
-      break;
-    case 7:
-      icon_name = ProfileMetrics::AVATAR_GENERIC_YELLOW;
-      break;
-    case 8:
-      icon_name = ProfileMetrics::AVATAR_SECRET_AGENT;
-      break;
-    case 9:
-      icon_name = ProfileMetrics::AVATAR_SUPERHERO;
-      break;
-    case 10:
-      icon_name = ProfileMetrics::AVATAR_VOLLEYBALL;
-      break;
-    case 11:
-      icon_name = ProfileMetrics::AVATAR_BUSINESSMAN;
-      break;
-    case 12:
-      icon_name = ProfileMetrics::AVATAR_NINJA;
-      break;
-    case 13:
-      icon_name = ProfileMetrics::AVATAR_ALIEN;
-      break;
-    case 14:
-      icon_name = ProfileMetrics::AVATAR_AWESOME;
-      break;
-    case 15:
-      icon_name = ProfileMetrics::AVATAR_FLOWER;
-      break;
-    case 16:
-      icon_name = ProfileMetrics::AVATAR_PIZZA;
-      break;
-    case 17:
-      icon_name = ProfileMetrics::AVATAR_SOCCER;
-      break;
-    case 18:
-      icon_name = ProfileMetrics::AVATAR_BURGER;
-      break;
-    case 19:
-      icon_name = ProfileMetrics::AVATAR_CAT;
-      break;
-    case 20:
-      icon_name = ProfileMetrics::AVATAR_CUPCAKE;
-      break;
-    case 21:
-      icon_name = ProfileMetrics::AVATAR_DOG;
-      break;
-    case 22:
-      icon_name = ProfileMetrics::AVATAR_HORSE;
-      break;
-    case 23:
-      icon_name = ProfileMetrics::AVATAR_MARGARITA;
-      break;
-    case 24:
-      icon_name = ProfileMetrics::AVATAR_NOTE;
-      break;
-    case 25:
-      icon_name = ProfileMetrics::AVATAR_SUN_CLOUD;
-      break;
+#endif
     case 26:
       icon_name = ProfileMetrics::AVATAR_PLACEHOLDER;
       break;

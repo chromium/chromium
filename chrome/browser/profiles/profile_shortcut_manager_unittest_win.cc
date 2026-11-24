@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
@@ -849,7 +850,7 @@ TEST_F(ProfileShortcutManagerTest, ProfileShortcutsWithSystemLevelShortcut) {
       profile_attributes_storage_->GetProfileAttributesWithPath(
           profile_3_path_);
   ASSERT_NE(entry_3, nullptr);
-  entry_3->SetAvatarIconIndex(3u);
+  entry_3->SetAvatarIconIndex(profiles::GetModernAvatarIconStartIndex() + 2);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_3_name_));
 
@@ -989,7 +990,7 @@ TEST_F(ProfileShortcutManagerTest, ProfileIconOnAvatarChange) {
       profile_attributes_storage_->GetProfileAttributesWithPath(
           profile_1_path_);
   ASSERT_NE(entry_1, nullptr);
-  entry_1->SetAvatarIconIndex(1u);
+  entry_1->SetAvatarIconIndex(profiles::GetModernAvatarIconStartIndex());
   task_environment_.RunUntilIdle();
 
   std::string new_badged_icon_1;
@@ -1005,7 +1006,7 @@ TEST_F(ProfileShortcutManagerTest, ProfileIconOnAvatarChange) {
   EXPECT_NE(unbadged_icon_1, new_badged_icon_1);
 
   // Ensure the icon doesn't change on avatar change without 2 profiles.
-  entry_1->SetAvatarIconIndex(1u);
+  entry_1->SetAvatarIconIndex(profiles::GetModernAvatarIconStartIndex());
   task_environment_.RunUntilIdle();
 
   std::string unbadged_icon_1_a;
