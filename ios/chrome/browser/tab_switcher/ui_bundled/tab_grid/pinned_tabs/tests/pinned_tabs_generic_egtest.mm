@@ -92,7 +92,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 }
 
 // Waits for the animation (context modal disappearance) to complete.
-- (void)waitForAnimationCompletionWithMacther:(id<GREYMatcher>)elementMatcher {
+- (void)waitForAnimationCompletionWithMatcher:(id<GREYMatcher>)elementMatcher {
   // Wait until it's gone.
   ConditionBlock condition = ^{
     NSError* error = nil;
@@ -343,11 +343,11 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       assertWithMatcher:grey_enabled()];
 
   // Verify Overflow Menu button is enabled.
-  [self waitForAnimationCompletionWithMacther:
+  [self waitForAnimationCompletionWithMatcher:
             grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
                        grey_enabled(), nil)];
 
-  [self waitForAnimationCompletionWithMacther:GetMatcherForPinnedCellWithTitle(
+  [self waitForAnimationCompletionWithMatcher:GetMatcherForPinnedCellWithTitle(
                                                   @"PinnedTab0")];
 
   // Long tap on the first pinned tab.
@@ -361,7 +361,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
-  [self waitForAnimationCompletionWithMacther:GetMatcherForPinnedCellWithTitle(
+  [self waitForAnimationCompletionWithMatcher:GetMatcherForPinnedCellWithTitle(
                                                   @"PinnedTab1")];
 
   // Long tap on the other pinned tab.
@@ -381,7 +381,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
         assertWithMatcher:grey_enabled()];
   } else {
     // Verify "Done" button is disabled.
-    [self waitForAnimationCompletionWithMacther:grey_allOf(
+    [self waitForAnimationCompletionWithMatcher:grey_allOf(
                                                     GetMatcherForDoneButton(),
                                                     grey_not(grey_enabled()),
                                                     nil)];
@@ -433,7 +433,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
-  [self waitForAnimationCompletionWithMacther:GetMatcherForPinnedCellWithTitle(
+  [self waitForAnimationCompletionWithMatcher:GetMatcherForPinnedCellWithTitle(
                                                   @"PinnedTab1")];
 
   // Long tap on the other pinned tab.
@@ -456,7 +456,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_enabled()];
 
-  [self waitForAnimationCompletionWithMacther:GetMatcherForRegularCellWithTitle(
+  [self waitForAnimationCompletionWithMatcher:GetMatcherForRegularCellWithTitle(
                                                   @"RegularTab0")];
 
   // Long tap on the first regular tab.
@@ -474,7 +474,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
     [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
         assertWithMatcher:grey_enabled()];
   } else {
-    [self waitForAnimationCompletionWithMacther:grey_allOf(
+    [self waitForAnimationCompletionWithMatcher:grey_allOf(
                                                     GetMatcherForDoneButton(),
                                                     grey_not(grey_enabled()),
                                                     nil)];

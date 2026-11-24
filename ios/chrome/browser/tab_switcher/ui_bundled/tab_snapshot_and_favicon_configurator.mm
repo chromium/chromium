@@ -36,7 +36,7 @@ const CGFloat kFaviconSize = 16.0;
 constexpr CGFloat kFaviconMinimumSize = 8.0;
 
 // Returns a key for the given `group_item`.
-NSValue* TabGroupIdentifierKeyforTabGroupItem(TabGroupItem* group_item) {
+NSValue* TabGroupIdentifierKeyForTabGroupItem(TabGroupItem* group_item) {
   return [NSValue valueWithPointer:group_item.tabGroupIdentifier];
 }
 
@@ -167,7 +167,7 @@ void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconForTabGroupItem(
   TabGroupItemFetchInfo* fetch_info = [[TabGroupItemFetchInfo alloc]
       initWithRequestID:request_id
       initialFetchCount:TabGroupItemFetchRequestsCount(tab_count)];
-  group_item_fetches_[TabGroupIdentifierKeyforTabGroupItem(group_item)] =
+  group_item_fetches_[TabGroupIdentifierKeyForTabGroupItem(group_item)] =
       fetch_info;
 
   NSInteger first_index = tab_group->range().range_begin();
@@ -308,7 +308,7 @@ void TabSnapshotAndFaviconConfigurator::OnSnapshotAndFaviconFromWebStateFetched(
     return;
   }
 
-  NSValue* group_key = TabGroupIdentifierKeyforTabGroupItem(group_item);
+  NSValue* group_key = TabGroupIdentifierKeyForTabGroupItem(group_item);
 
   // Check if the fetch is still the active one before proceeding.
   TabGroupItemFetchInfo* current_fetch_info = group_item_fetches_[group_key];

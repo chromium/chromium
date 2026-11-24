@@ -19,14 +19,14 @@ namespace {
 // Spacing between overlapping avatars.
 const CGFloat kAvatarSpacing = -6;
 
-// Substracted stroke around containers.
-const CGFloat kContainerSubstractredStroke = 2;
+// Subtracted stroke around containers.
+const CGFloat kContainerSubtractedStroke = 2;
 
 // Font size of `plusXLabel`.
-const CGFloat kPlusXlabelFontSize = 9;
+const CGFloat kPlusXLabelFontSize = 9;
 
 // horizontal inner margin in for the `_plusXLabel`.
-const CGFloat kPlusXlabelContainerHorizontalInnerMargin = 3;
+const CGFloat kPlusXLabelContainerHorizontalInnerMargin = 3;
 
 // Alpha value of the non-avatar view background color.
 const CGFloat kNonAvatarContainerBackgroundAlpha = 0.2;
@@ -100,7 +100,7 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
 
 - (CGFloat)optimalWidth {
   NSInteger containerCount = _membersCount < 3 ? 2 : 3;
-  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
+  CGFloat containerSize = _avatarSize + kContainerSubtractedStroke * 2;
 
   CGFloat width = (containerCount - 1) * kAvatarSpacing;
   width += containerCount * containerSize;
@@ -111,11 +111,11 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
     width -= _avatarSize;
     width +=
         [_plusXLabel.text sizeWithAttributes:@{
-          NSFontAttributeName : [UIFont systemFontOfSize:kPlusXlabelFontSize
+          NSFontAttributeName : [UIFont systemFontOfSize:kPlusXLabelFontSize
                                                   weight:UIFontWeightMedium]
         }]
             .width;
-    width += 2 * kPlusXlabelContainerHorizontalInnerMargin;
+    width += 2 * kPlusXLabelContainerHorizontalInnerMargin;
   }
 
   return width;
@@ -227,7 +227,7 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
   plusXLabel.text = [NSString stringWithFormat:@"+%ld", (long)remainingCount];
   plusXLabel.translatesAutoresizingMaskIntoConstraints = NO;
   plusXLabel.textAlignment = NSTextAlignmentCenter;
-  plusXLabel.font = [UIFont systemFontOfSize:kPlusXlabelFontSize
+  plusXLabel.font = [UIFont systemFontOfSize:kPlusXLabelFontSize
                                       weight:UIFontWeightMedium];
   [plusXLabel setContentHuggingPriority:UILayoutPriorityRequired
                                 forAxis:UILayoutConstraintAxisHorizontal];
@@ -251,10 +251,10 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
   [NSLayoutConstraint activateConstraints:@[
     [plusXLabel.leadingAnchor
         constraintEqualToAnchor:plusXLabelContainer.leadingAnchor
-                       constant:kPlusXlabelContainerHorizontalInnerMargin],
+                       constant:kPlusXLabelContainerHorizontalInnerMargin],
     [plusXLabel.trailingAnchor
         constraintEqualToAnchor:plusXLabelContainer.trailingAnchor
-                       constant:-kPlusXlabelContainerHorizontalInnerMargin],
+                       constant:-kPlusXLabelContainerHorizontalInnerMargin],
   ]];
   AddSameCenterConstraints(plusXLabelContainer, plusXLabel);
 
@@ -337,7 +337,7 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
     [view removeFromSuperview];
   }
 
-  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
+  CGFloat containerSize = _avatarSize + kContainerSubtractedStroke * 2;
   NSInteger avatarsCount = static_cast<NSUInteger>(_avatars.count);
   self.layer.cornerRadius = containerSize / 2.0;
 
@@ -442,10 +442,10 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
       [plusXLabel.heightAnchor constraintEqualToConstant:_avatarSize],
       [plusXLabel.leadingAnchor
           constraintEqualToAnchor:plusXContainerView.leadingAnchor
-                         constant:kContainerSubstractredStroke],
+                         constant:kContainerSubtractedStroke],
       [plusXLabel.trailingAnchor
           constraintEqualToAnchor:plusXContainerView.trailingAnchor
-                         constant:-kContainerSubstractredStroke],
+                         constant:-kContainerSubtractedStroke],
 
       [plusXContainerView.heightAnchor constraintEqualToConstant:containerSize]
     ]];

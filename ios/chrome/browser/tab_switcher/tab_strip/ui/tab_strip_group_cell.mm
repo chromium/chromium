@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_group_cell.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
@@ -18,9 +20,9 @@
 namespace {
 
 // Content container constraints.
-constexpr CGFloat kcontentContainerVerticalPadding = 4;
-constexpr CGFloat kcontentContainerCenterYOffset = -2;
-constexpr CGFloat kcontentContainerTransitionThreshold = 70;
+constexpr CGFloat kContentContainerVerticalPadding = 4;
+constexpr CGFloat kContentContainerCenterYOffset = -2;
+constexpr CGFloat kContentContainerTransitionThreshold = 70;
 
 // Title label constraints.
 constexpr CGFloat kTitleLabelCompressionResistance = 998;
@@ -38,7 +40,7 @@ constexpr CGFloat kNotificationDotTrailingPadding = 10;
 
 // Animation delays.
 constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
-constexpr double kcontentContainerFadeAnimationSeconds = 0.25;
+constexpr double kContentContainerFadeAnimationSeconds = 0.25;
 
 // Returns the font used by the title.
 UIFont* TitleFont() {
@@ -360,7 +362,7 @@ CGFloat CalculateTitleLength(NSString* title) {
       constraintEqualToAnchor:_titleLabel.widthAnchor];
   _groupStrokeViewTitleLabelConstraint.priority =
       kTitleLabelCompressionResistance - 2;
-  NSLayoutConstraint* groupStrokeViewcontentContainerConstraint =
+  NSLayoutConstraint* groupStrokeViewContentContainerConstraint =
       [_groupStrokeView.widthAnchor
           constraintLessThanOrEqualToAnchor:_contentContainer.widthAnchor
                                    constant:
@@ -368,17 +370,17 @@ CGFloat CalculateTitleLength(NSString* title) {
                                            TabStripGroupItemConstants
                                                .contentContainerHorizontalPadding -
                                        kGroupStrokeViewMinimumWidth];
-  groupStrokeViewcontentContainerConstraint.priority =
+  groupStrokeViewContentContainerConstraint.priority =
       kTitleLabelCompressionResistance - 1;
   [NSLayoutConstraint activateConstraints:@[
     _groupStrokeViewTitleLabelConstraint,
-    groupStrokeViewcontentContainerConstraint,
+    groupStrokeViewContentContainerConstraint,
     [_groupStrokeView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
     [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
 
     [_contentContainer.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor
-                       constant:kcontentContainerCenterYOffset],
+                       constant:kContentContainerCenterYOffset],
     [_titleLabel.centerYAnchor
         constraintEqualToAnchor:_contentContainer.centerYAnchor],
     _titleLabelLeadingConstraint,
@@ -454,10 +456,10 @@ CGFloat CalculateTitleLength(NSString* title) {
 // container's height, based on its current width relative to its min/max
 // dimensions.
 - (void)updateTransitionState {
-  CGFloat verticalTitlePadding = kcontentContainerVerticalPadding;
+  CGFloat verticalTitlePadding = kContentContainerVerticalPadding;
 
   CGFloat threshold =
-      kcontentContainerTransitionThreshold + _facePile.bounds.size.width;
+      kContentContainerTransitionThreshold + _facePile.bounds.size.width;
 
   CGFloat contentContainerMargin =
       2 * TabStripGroupItemConstants.contentContainerHorizontalMargin;
@@ -466,26 +468,26 @@ CGFloat CalculateTitleLength(NSString* title) {
                                        contentContainerMargin),
            threshold);
 
-  CGFloat currentcontentContainerWidth = _contentContainer.bounds.size.width;
+  CGFloat currentContentContainerWidth = _contentContainer.bounds.size.width;
 
-  CGFloat mincontentContainerDimension =
+  CGFloat minContentContainerDimension =
       2 * _contentContainer.layer.cornerRadius;
 
   CGFloat factor = 0;
-  if (maxContentContainerWidth - mincontentContainerDimension != 0) {
-    factor = (currentcontentContainerWidth - mincontentContainerDimension) /
-             (maxContentContainerWidth - mincontentContainerDimension);
+  if (maxContentContainerWidth - minContentContainerDimension != 0) {
+    factor = (currentContentContainerWidth - minContentContainerDimension) /
+             (maxContentContainerWidth - minContentContainerDimension);
   }
   factor = fmax(fmin(factor, 1), 0);
 
   _facePile.alpha = factor;
 
-  CGFloat maxcontentContainerHeight =
+  CGFloat maxContentContainerHeight =
       _titleLabel.frame.size.height + 2 * verticalTitlePadding;
   _titleLabel.alpha = factor;
   _contentContainerHeightConstraint.constant =
-      (1 - factor) * mincontentContainerDimension +
-      factor * maxcontentContainerHeight;
+      (1 - factor) * minContentContainerDimension +
+      factor * maxContentContainerHeight;
 
   // At the end of the group shrinking animation (factor is 0), if the group
   // intersects with the leading or trailing edge, then animate the title
@@ -495,7 +497,7 @@ CGFloat CalculateTitleLength(NSString* title) {
     contentContainerAlpha = 0;
   }
   UIView* contentContainer = _contentContainer;
-  [UIView animateWithDuration:kcontentContainerFadeAnimationSeconds
+  [UIView animateWithDuration:kContentContainerFadeAnimationSeconds
                    animations:^{
                      contentContainer.alpha = contentContainerAlpha;
                    }];

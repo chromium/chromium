@@ -36,6 +36,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -666,7 +667,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, CloseGroupLocally) {
 
 // Tests that the service is correctly updated when the last tab of a group is
 // deleted.
-TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTtab) {
+TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   web::FakeWebState* web_state = InsertWebState(web_state_list);
   InsertWebState(web_state_list);
