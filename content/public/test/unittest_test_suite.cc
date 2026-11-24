@@ -34,6 +34,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/blink.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if defined(USE_AURA)
@@ -100,6 +101,10 @@ class UnitTestTestSuite::UnitTestEventListener
     ResetNetworkServiceForTesting();
 
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
+
+    // Destroy any thread-local clipboard created during the test so state does
+    // not leak into later batched tests.
+    ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
  private:
