@@ -58,6 +58,15 @@ def filter_clang_args(clangargs):
                 i += 1
                 continue
 
+            # TODO(crbug.com/587906184): Remove once -fno-module-local-hints is
+            # removed or supported by pinned libclang.
+            if arg in (
+                '-fno-module-local-hints',
+                '/clang:-fno-module-local-hints',
+            ):
+                i += 1
+                continue
+
             # Filter all warning flags (Clang/GCC -W*, clang-cl /W*, /wd*,
             # /clang:-W*) and warning-as-error flags (-Werror, /WX).
             if (

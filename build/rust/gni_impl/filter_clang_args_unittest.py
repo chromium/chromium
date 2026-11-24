@@ -97,6 +97,16 @@ class FilterClangArgsTest(unittest.TestCase):
         ]
         self.assertEqual(filter_clang_args(args), args + NEUTRALIZING_FLAGS)
 
+    def test_filters_no_module_local_hints(self):
+        args = [
+            '-I../../base',
+            '-fno-module-local-hints',
+            '/clang:-fno-module-local-hints',
+            '-O2',
+        ]
+        expected = ['-I../../base', '-O2'] + NEUTRALIZING_FLAGS
+        self.assertEqual(filter_clang_args(args), expected)
+
 
 if __name__ == '__main__':
     unittest.main()
