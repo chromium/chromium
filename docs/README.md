@@ -136,6 +136,9 @@ used when committed.
     when working with AI agents
 *   [Chromium Engineering Principles](engineering_principles.md) - Default
     stances for balancing design and implementation trade-offs
+*   [How To Think About and Structure Your Chromium
+    Migration](migration_guidance.md) - Guidance and questions for planning and
+    executing large cross-platform migrations
 *   [Mandatory Code-Review Rollout](code_review_owners.md) - Upcoming policy changes related to code review and OWNERS
 *   [LUCI Migration FAQ](luci_migration_faq.md) - FAQ on Buildbot-to-LUCI
     builder migration for Chromium
