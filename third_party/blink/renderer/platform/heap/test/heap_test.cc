@@ -3463,4 +3463,87 @@ TEST_F(HeapTest, StableSortTraceablePartObjects) {
   }
 }
 
+#if !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
+TEST_F(HeapTest, InlineCapacityHeapVectorDefaultInitialization) {
+  using InnerVector = HeapVector<Member<IntWrapper>, 4>;
+  Persistent<GCedHeapVector<InnerVector>> vec =
+      MakeGarbageCollected<GCedHeapVector<InnerVector>>();
+  InnerVector initial;
+  initial.push_back(MakeGarbageCollected<IntWrapper>(42));
+  vec->push_back(std::move(initial));
+  ASSERT_EQ(4u, (*vec)[0].capacity());
+  ASSERT_EQ(42, (*vec)[0][0]->Value());
+
+  // Growing via `resize` default-initializes slot 1; if
+  // VectorTrait's kCanInitializeWithMemset was true, the inner vector at slot 1
+  // would have a null `buffer_` and zero capacity instead of pointing to its
+  // inline buffer.
+  vec->resize(2);
+  EXPECT_EQ(4u, (*vec)[1].capacity());
+  (*vec)[1].push_back(MakeGarbageCollected<IntWrapper>(99));
+  EXPECT_EQ(42, (*vec)[0][0]->Value());
+  EXPECT_EQ(99, (*vec)[1][0]->Value());
+}
+
+TEST_F(HeapTest, InlineCapacityHeapVectorMove) {
+  using InnerVector = HeapVector<Member<IntWrapper>, 4>;
+  Persistent<GCedHeapVector<InnerVector>> vec =
+      MakeGarbageCollected<GCedHeapVector<InnerVector>>();
+  InnerVector inner0;
+  inner0.push_back(MakeGarbageCollected<IntWrapper>(42));
+  InnerVector inner1;
+  inner1.push_back(MakeGarbageCollected<IntWrapper>(99));
+  vec->push_back(std::move(inner0));
+  vec->push_back(std::move(inner1));
+  // Allocate another backing in the same space so `reserve(16)` cannot expand
+  // `vec`'s backing in-place and must move elements to a new backing.
+  Persistent<GCedHeapVector<InnerVector>> blocker =
+      MakeGarbageCollected<GCedHeapVector<InnerVector>>();
+  blocker->push_back(InnerVector());
+  ASSERT_EQ(42, (*vec)[0][0]->Value());
+  ASSERT_EQ(99, (*vec)[1][0]->Value());
+
+  vec->reserve(16);
+  // Check that the inner vector's first element resides within the inner
+  // vector. Since there is only a single element in the inner vector, it should
+  // reside in the inline buffer.
+  const auto front0 = reinterpret_cast<uintptr_t>(&(*vec)[0].front());
+  EXPECT_GE(front0, reinterpret_cast<uintptr_t>(&(*vec)[0]));
+  EXPECT_LT(front0,
+            reinterpret_cast<uintptr_t>(&(*vec)[0]) + sizeof(InnerVector));
+  // The elements of the inner vectors are preserved.
+  EXPECT_EQ(42, (*vec)[0][0]->Value());
+  EXPECT_EQ(99, (*vec)[1][0]->Value());
+
+  vec->EraseAt(0);
+  ASSERT_EQ(1u, vec->size());
+  const auto shifted_front = reinterpret_cast<uintptr_t>(&(*vec)[0].front());
+  EXPECT_GE(shifted_front, reinterpret_cast<uintptr_t>(&(*vec)[0]));
+  EXPECT_LT(shifted_front,
+            reinterpret_cast<uintptr_t>(&(*vec)[0]) + sizeof(InnerVector));
+  EXPECT_EQ(99, (*vec)[0][0]->Value());
+}
+
+TEST_F(HeapTest, InlineCapacityHeapVectorDestruction) {
+  using InnerVector = HeapVector<Member<IntWrapper>, 2>;
+  const bool was_enabled = ProcessHeap::IsHeapVectorPromptlyFreeEnabled();
+
+  PreciselyCollectGarbage();
+  const size_t initial_size = GetOverallObjectSize();
+
+  ProcessHeap::SetHeapVectorPromptlyFreeEnabledForTesting(true);
+  {
+    HeapVector<InnerVector> outer;
+    outer.push_back(InnerVector(100));
+    EXPECT_GT(GetOverallObjectSize(), initial_size);
+    // `outer.clear()` destroys its `InnerVector` elements; with
+    // `kNeedsDestruction = true`, `~InnerVector()` runs and promptly frees the
+    // spilled out-of-line backing without waiting for a GC.
+    outer.clear();
+    EXPECT_EQ(GetOverallObjectSize(), initial_size);
+  }
+  ProcessHeap::SetHeapVectorPromptlyFreeEnabledForTesting(was_enabled);
+}
+#endif  // !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
+
 }  // namespace blink

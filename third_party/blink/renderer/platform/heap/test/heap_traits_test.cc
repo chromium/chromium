@@ -146,6 +146,23 @@ static_assert(
                    void>,
     "16-byte aligned backings must fall back to default non-compactable space");
 
+using InlineMemberHeapVector = HeapVector<Member<GarbageCollectedStruct>, 2>;
+static_assert(std::is_same_v<VectorTraits<InlineMemberHeapVector>::TraitType,
+                             InlineMemberHeapVector>);
+#if !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
+static_assert(VectorTraits<InlineMemberHeapVector>::kNeedsDestruction,
+              "HeapVector with inline capacity requires destruction");
+static_assert(!VectorTraits<InlineMemberHeapVector>::kCanInitializeWithMemset,
+              "HeapVector with inline capacity cannot initialize with memset");
+static_assert(!VectorTraits<InlineMemberHeapVector>::kCanMoveWithMemcpy,
+              "HeapVector with inline capacity cannot move with memcpy");
+static_assert(!VectorTraits<InlineMemberHeapVector>::kCanCopyWithMemcpy,
+              "HeapVector with inline capacity cannot copy with memcpy");
+static_assert(
+    VectorTraits<InlineMemberHeapVector>::kCanClearUnusedSlotsWithMemset,
+    "HeapVector<Member<T>, N> can clear unused slots with memset");
+#endif  // !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
+
 }  // namespace
 
 }  // namespace blink

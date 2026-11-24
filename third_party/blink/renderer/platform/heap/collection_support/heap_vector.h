@@ -234,17 +234,33 @@ struct VectorTraits<HeapVector<T, 0>> : VectorTraitsBase<HeapVector<T, 0>> {
   static const bool kCanMoveWithMemcpy = true;
 };
 
+#if defined(ANNOTATE_CONTIGUOUS_CONTAINER)
+// Inline capacity is disabled when container annotations are active (see
+// `INLINE_CAPACITY` in vector.h), giving `HeapVector<T, inlineCapacity>`
+// the same representation as `HeapVector<T>`.
 template <typename T, wtf_size_t inlineCapacity>
+  requires(inlineCapacity > 0)
+struct VectorTraits<HeapVector<T, inlineCapacity>>
+    : VectorTraits<HeapVector<T>> {
+  STATIC_ONLY(VectorTraits);
+  using TraitType = HeapVector<T, inlineCapacity>;
+};
+#else   // defined(ANNOTATE_CONTIGUOUS_CONTAINER)
+template <typename T, wtf_size_t inlineCapacity>
+  requires(inlineCapacity > 0)
 struct VectorTraits<HeapVector<T, inlineCapacity>>
     : VectorTraitsBase<HeapVector<T, inlineCapacity>> {
   STATIC_ONLY(VectorTraits);
-  static const bool kNeedsDestruction = VectorTraits<T>::kNeedsDestruction;
-  static const bool kCanInitializeWithMemset =
-      VectorTraits<T>::kCanInitializeWithMemset;
+  // Vectors with inline buffers store an interior `buffer_` pointer into
+  // `inline_buffer_`, so they must run constructors/destructors and cannot be
+  // initialized with memset or moved with memcpy.
+  static const bool kNeedsDestruction = true;
+  static const bool kCanInitializeWithMemset = false;
   static const bool kCanClearUnusedSlotsWithMemset =
       VectorTraits<T>::kCanClearUnusedSlotsWithMemset;
-  static const bool kCanMoveWithMemcpy = VectorTraits<T>::kCanMoveWithMemcpy;
+  static const bool kCanMoveWithMemcpy = false;
 };
+#endif  // defined(ANNOTATE_CONTIGUOUS_CONTAINER)
 
 }  // namespace blink
 

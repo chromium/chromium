@@ -2114,6 +2114,9 @@ void Vector<T, kInlineCapacity, Allocator>::assign(Range&& other, Proj proj) {
       Shrink(other_size);
     }
     TypeOperations::Destruct(data(), DataEnd());
+    if constexpr (!VectorTraits<T>::kCanInitializeWithMemset) {
+      UNSAFE_BUFFERS(ClearUnusedSlots(data(), DataEnd()));
+    }
   }
 
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
@@ -2677,6 +2680,11 @@ inline void Vector<T, kInlineCapacity, Allocator>::EraseAt(
   UNSAFE_TODO({
     T* spot = data() + position;
     spot->~T();
+    if constexpr (!VectorTraits<T>::kCanInitializeWithMemset) {
+      if (spot + 1 < DataEnd()) {
+        ClearUnusedSlots(spot, spot + 1);
+      }
+    }
     TypeOperations::MoveOverlapping(
         spot + 1, DataEnd(), spot, VectorOperationOrigin::kRegularModification);
     ClearUnusedSlots(DataEnd() - 1, DataEnd());
@@ -2719,6 +2727,12 @@ inline void Vector<T, kInlineCapacity, Allocator>::EraseAt(wtf_size_t position,
     T* begin_spot = data() + position;
     T* end_spot = begin_spot + length;
     TypeOperations::Destruct(begin_spot, end_spot);
+    if constexpr (!VectorTraits<T>::kCanInitializeWithMemset) {
+      T* overwrite_end = std::min(end_spot, DataEnd() - length);
+      if (begin_spot < overwrite_end) {
+        ClearUnusedSlots(begin_spot, overwrite_end);
+      }
+    }
     TypeOperations::MoveOverlapping(
         end_spot, DataEnd(), begin_spot,
         VectorOperationOrigin::kRegularModification);
