@@ -39,7 +39,6 @@ class UserDelegateImpl : public device_signals::UserDelegate {
   GaiaId GetPrimaryAccountGaiaId() const override;
 #endif  // BUILDFLAG(IS_ANDROID)
   std::set<policy::PolicyScope> GetPolicyScopesNeedingSignals() const override;
-  bool IsCollectSignalsConsentRequired() const override;
 
  private:
   const raw_ptr<Profile> profile_;

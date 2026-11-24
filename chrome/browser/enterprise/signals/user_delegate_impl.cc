@@ -20,7 +20,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -101,20 +100,6 @@ std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()
     }
   }
   return policy_scopes;
-}
-
-bool UserDelegateImpl::IsCollectSignalsConsentRequired() const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/463390232): Remove this workaround once the
-  // DeviceSignalsConsentDialog and explicit consent preferences are fully wired
-  // for Android managed profiles. Consent is implicitly granted during managed
-  // profile creation on Android.
-  if (enterprise_connectors::IsDeviceTrustConnectorAndroidEnabled() &&
-      IsManagedUser()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  return true;
 }
 
 }  // namespace enterprise_signals

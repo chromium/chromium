@@ -191,9 +191,3 @@ TEST_F(UserDelegateIOSTest, GetPolicyScopesNeedingSignals_User) {
   EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
             std::set<policy::PolicyScope>({policy::POLICY_SCOPE_USER}));
 }
-
-// Tests that IsCollectSignalsConsentRequired returns true on iOS.
-TEST_F(UserDelegateIOSTest, IsCollectSignalsConsentRequired) {
-  CreateDelegate();
-  EXPECT_TRUE(user_delegate_->IsCollectSignalsConsentRequired());
-}

@@ -171,8 +171,8 @@ DeviceTrustNavigationThrottle::MayTriggerConsentDialog() {
     return PROCEED;
   }
 #if BUILDFLAG(IS_ANDROID)
-  // Android collects the user's consent natively during the profile sign-in
-  // flow so there is no in-flow dialog to show here.
+  // Android collects the user's consent through the enterprise signals
+  // disclaimer, so there is no in-flow dialog to show here.
   return PROCEED;
 #else
   if (!consent_requester_) {

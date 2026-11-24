@@ -75,7 +75,3 @@ std::set<policy::PolicyScope> UserDelegateIOS::GetPolicyScopesNeedingSignals()
   }
   return policy_scopes;
 }
-
-bool UserDelegateIOS::IsCollectSignalsConsentRequired() const {
-  return true;
-}

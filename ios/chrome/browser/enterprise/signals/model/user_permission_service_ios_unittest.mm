@@ -41,11 +41,6 @@ class UserPermissionServiceIOSTest : public PlatformTest {
         testing::StrictMock<device_signals::MockUserDelegate>>();
     mock_user_delegate_ = mock_user_delegate.get();
 
-    // Mirrors `UserDelegateIOS::IsCollectSignalsConsentRequired()`.
-    EXPECT_CALL(*mock_user_delegate_, IsCollectSignalsConsentRequired())
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(true));
-
     permission_service_ = std::make_unique<UserPermissionServiceIOS>(
         &management_service_, std::move(mock_user_delegate), &test_prefs_);
   }
