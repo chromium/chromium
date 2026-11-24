@@ -729,6 +729,8 @@ inline constexpr char16_t kSidePanelManifestDefaultPathInvalid[] =
     u"resource.";
 inline constexpr char kSidePanelManifestDefaultPathDoesNotExist[] =
     "Side panel file path must exist.";
+inline constexpr char16_t kSidebarManifestDefaultPathInvalid[] =
+    u"Sidebar file path must be a relative URL to a valid extension resource.";
 inline constexpr char16_t
     kTransientBackgroundConflictsWithPersistentBackground[] =
         u"The 'transientBackground' permission cannot be used with a "

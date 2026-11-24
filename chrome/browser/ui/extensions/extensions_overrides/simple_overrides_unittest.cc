@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/common/extensions/api/side_panel.h"
+#include "chrome/common/extensions/api/sidebar.h"
 #include "extensions/common/api/chrome_url_overrides.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/api/cross_origin_isolation.h"
@@ -107,6 +108,7 @@ constexpr const char* kDisallowedFeatures[] = {
     extensions::api::shared_module::ManifestKeys::kExport,
     extensions::api::shared_module::ManifestKeys::kImport,
     extensions::api::side_panel::ManifestKeys::kSidePanel,
+    extensions::api::sidebar::ManifestKeys::kSidebar,
     extensions::api::web_accessible_resources::ManifestKeys::
         kWebAccessibleResources,
 
@@ -131,11 +133,6 @@ constexpr const char* kDisallowedFeatures[] = {
     "oauth2.auto_approve",
     "platforms",
     "sandbox",
-    // TODO(crbug.com/586554274): Use
-    // `extensions::api::sidebar::ManifestKeys::kSidebar` in the compiled
-    // manifest keys section above once sidebar.webidl declares the `sidebar`
-    // manifest key.
-    "sidebar",
     "storage",
 };
 
