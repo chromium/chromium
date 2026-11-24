@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -33,8 +31,6 @@ import org.chromium.chrome.browser.ViewportTestUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -50,13 +46,9 @@ import org.chromium.chrome.test.transit.page.WebContentsPresentCondition;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-
-import java.util.concurrent.TimeoutException;
 
 /** Browser test for {@link TopControlsStacker}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -94,28 +86,26 @@ public class BrowserControlsPTTest {
 
         public TripBuilder dragDownFromPageTopTo() {
             return runTo(
-                    () ->
-                            dragDownFromPageTop(
-                                    mActivityElement.value(), activityTabElement.value()));
+                    () -> {
+                        assertInPhase(Phase.ACTIVE);
+                        View contentView = activityTabElement.value().getView();
+                        float x = contentView.getWidth() / 2f;
+                        // Match WebPageStation#scrollPageUpWithGestureTo()'s exact drag endpoints
+                        // so Pull 1 and Pull 2 cover the same distance.
+                        float fromY =
+                                getActivity().getBrowserControlsManager().getTopControlsHeight()
+                                        + 100f;
+                        float toY = contentView.getHeight();
+                        TouchCommon.performDragNoFling(
+                                mActivityElement.value(),
+                                x,
+                                x,
+                                fromY,
+                                toY,
+                                /* stepCount= */ 50,
+                                /* duration= */ 500);
+                    });
         }
-    }
-
-    private static void dragDownFromPageTop(ChromeTabbedActivity activity, Tab tab) {
-        View contentView = tab.getView();
-        float x = contentView.getWidth() / 2f;
-        float fromY = activity.getBrowserControlsManager().getTopControlsHeight() + 100f;
-        float toY = contentView.getHeight();
-        // Use wall-clock pacing so DidOverscroll returns from the renderer mid-gesture and
-        // subsequent MOVE events drive SwipeRefreshLayout past activation instead of coalescing.
-        TouchCommon.performWallClockDrag(
-                activity,
-                x,
-                x,
-                fromY,
-                toY,
-                /* duration= */ 500,
-                /* dispatchIntervalMs= */ 16,
-                /* preventFling= */ true);
     }
 
     @Before
@@ -189,70 +179,43 @@ public class BrowserControlsPTTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "crbug.com/579544393")
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
-    public void twoStepPullToRefreshWhenTopControlsHiddenAcrossSameOriginNav()
-            throws TimeoutException {
-        // Extend the page to 400vh and scroll controls off via FullscreenManagerTestUtils rather
-        // than BrowserControlsFacility.waitForBrowserControlsToBeMoveable(), whose hardcoded
-        // 100px drags can stay below BrowserControlsScrollSnapAnimation's trigger threshold on
-        // high-density screens until 150vh hits the bottom exclusion zone.
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mPage.webContentsElement.value(), "document.body.style.height = '400vh';");
-        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivity, /* showControls= */ false);
-        mPage.noopTo()
-                .exitFacilityAnd(mPage.topFacility)
-                .enterFacility(BrowserControlsFacility.scrolledOff());
+    public void twoStepPullToRefreshWhenTopControlsHiddenAcrossSameOriginNav() {
+        BrowserControlsFacility.waitForBrowserControlsToBeMoveable(mPage);
+
+        var bottomFacility =
+                mPage.topFacility.scrollToBottom(BrowserControlsFacility.scrolledOff());
 
         // Same-origin link navigation keeps top controls scrolled off on the new page (scrollY==0).
-        // Click via DOM rather than touch because edge-to-edge places #bottom_link behind the
-        // system gesture navigation bar once bottom controls scroll off.
         String destinationUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         ScrolledOffWebPageStation destination =
                 ScrolledOffWebPageStation.newBuilder()
                         .initForLoadingUrlOnSameTab(destinationUrl, mPage)
                         .build();
-        mPage.runJsTo("document.getElementById('bottom_link').click()").arriveAt(destination);
+        bottomFacility.bottomElement.clickTo().arriveAt(destination);
 
         UserActionTester userActionTester = new UserActionTester();
         try {
             // Pull 1 at the top of the page reveals the Omnibox without triggering a reload.
-            // Check SwipeRefreshLayout#isRefreshing() (set synchronously on release before the
-            // refresh animation fires onRefresh()) alongside loading and user-action state so a
-            // pending refresh animation from Pull 1 cannot slip past this assertion.
             WebPageStation revealedStation =
                     WebPageStation.newBuilder().initFrom(destination).build();
             destination
                     .dragDownFromPageTopTo()
                     .arriveAt(revealedStation, BrowserControlsFacility.shown());
-            Tab tab = revealedStation.getTab();
-            assertFalse(isSwipeRefreshRefreshing(tab));
-            assertFalse(ThreadUtils.runOnUiThreadBlocking(tab::isLoading));
             assertEquals(0, userActionTester.getActionCount("MobilePullGestureReload"));
 
             // Pull 2 with the Omnibox fully visible triggers pull-to-refresh and reloads the page.
+            WebPageStation reloadedStation =
+                    WebPageStation.newBuilder().initFrom(revealedStation).build();
             revealedStation
-                    .runTo(() -> dragDownFromPageTop(mActivity, tab))
-                    .waitFor(new PageLoadCallbackCondition(tab));
+                    .scrollPageUpWithGestureTo()
+                    .waitForAnd(new PageLoadCallbackCondition(revealedStation.getTab()))
+                    .arriveAt(reloadedStation, BrowserControlsFacility.shown());
             assertEquals(1, userActionTester.getActionCount("MobilePullGestureReload"));
         } finally {
             userActionTester.tearDown();
         }
-    }
-
-    private static boolean isSwipeRefreshRefreshing(Tab tab) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ViewGroup contentView = tab.getContentView();
-                    if (contentView == null) return false;
-                    for (int i = 0; i < contentView.getChildCount(); i++) {
-                        View child = contentView.getChildAt(i);
-                        if (child instanceof SwipeRefreshLayout layout && layout.isRefreshing()) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
     }
 }

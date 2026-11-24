@@ -331,11 +331,9 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
      */
     private boolean shouldKeepControlsHiddenOnStart(
             NavigationHandle navigation, int fallbackShowAfterMs) {
-        if (fallbackShowAfterMs <= 0) return false;
-        BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
-        return provider != null
-                && canKeepOmniboxHiddenInTab(mTab, provider)
-                && BrowserControlsUtils.isTopToolbarScrolledOffScreen(provider)
+        return fallbackShowAfterMs > 0
+                && canKeepOmniboxHiddenInTab()
+                && isToolbarScrolledOffScreen()
                 && canHideBrowserControls()
                 && isSameOriginHttpOrHttpsNavigation(navigation)
                 && isEligibleNavigationType(navigation);
@@ -386,25 +384,29 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                 && targetUrl.getOrigin().equals(currentUrl.getOrigin());
     }
 
-    /**
-     * Returns whether the Omnibox can stay hidden across navigations in {@code tab}.
-     *
-     * <p>Shared with {@link org.chromium.chrome.browser.SwipeRefreshHandler} so two-step
-     * pull-to-refresh suppression stays in sync with the cohort of tabs where the Omnibox can stay
-     * hidden across same-origin navigations.
-     */
-    public static boolean canKeepOmniboxHiddenInTab(
-            Tab tab, BrowserControlsStateProvider provider) {
+    /** Returns whether the Omnibox can stay hidden across navigations in this tab. */
+    private boolean canKeepOmniboxHiddenInTab() {
         // A hidden tab reads the controls offset of the foreground tab, and a detached tab retains
         // its previous WindowAndroid without setting isHidden(). Keep the load lock for both.
-        if (!tab.isTabInBrowser() || tab.isHidden() || tab.isDetachedFromActivity()) {
+        if (!mTab.isTabInBrowser() || mTab.isHidden() || mTab.isDetachedFromActivity()) {
             return false;
         }
         if (DeviceInfo.isAutomotive() || DeviceInfo.isTV() || DeviceInfo.isXr()) {
             return false;
         }
+        BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
         // Exp A covers only the top toolbar. With a bottom toolbar, navigations keep the load lock.
-        return provider.getControlsPosition() == ControlsPosition.TOP;
+        return provider != null && provider.getControlsPosition() == ControlsPosition.TOP;
+    }
+
+    /**
+     * Returns whether the toolbar and the layers that scroll with it are scrolled off screen. A
+     * non-scrollable strip above them (for example the edge-to-edge top scalp) can still be
+     * visible.
+     */
+    private boolean isToolbarScrolledOffScreen() {
+        BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
+        return provider != null && BrowserControlsUtils.isTopToolbarScrolledOffScreen(provider);
     }
 
     private @Nullable BrowserControlsStateProvider getBrowserControlsStateProvider() {
@@ -459,11 +461,10 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private boolean canKeepControlsHiddenOnCommit(NavigationHandle navigation) {
         // Re-check tab and window eligibility in case the tab moved windows or changed controls
         // position while the navigation was in flight.
-        BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
-        if (provider == null || !canKeepOmniboxHiddenInTab(mTab, provider)) return false;
+        if (!canKeepOmniboxHiddenInTab()) return false;
         // If the user scrolled to partially reveal the controls mid-load, finish showing and lock
         // them rather than leaving them partially visible on the new document.
-        if (!BrowserControlsUtils.isTopToolbarScrolledOffScreen(provider)) return false;
+        if (!isToolbarScrolledOffScreen()) return false;
         // Error pages must always display the Omnibox even when NavigationHandle#isSameOrigin() is
         // true.
         if (navigation.isErrorPage()) return false;

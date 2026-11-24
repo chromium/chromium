@@ -644,10 +644,7 @@ android_library(
 
   sources = [ "src/org/chromium/chrome/browser/browser_controls/BrowserControlsPTTest.java" ]
 
-  deps = [
-    ":chrome_test_java_helper",
-    "//third_party/android_swipe_refresh:android_swipe_refresh_java",
-  ]
+  deps = [ ":chrome_test_java_helper" ]
 }
 
 android_library(
