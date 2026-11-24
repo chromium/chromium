@@ -54,9 +54,12 @@ class SessionJournal;
 // Input is ignored once the session has ended. Observers (the debug page)
 // receive batched updates at most every kFlushInterval.
 //
-// Memory is bounded: text is truncated (kMaxTextLength, kMaxTranscriptLength),
-// and tool calls, issues and turns beyond their caps are dropped and counted in
-// Snapshot::dropped_items.
+// Memory is bounded. Text is truncated (kMaxTextLength, kMaxTranscriptLength),
+// and the text of all tool calls, of all issues and of all transcripts has a
+// byte budget each (kMaxToolCallTextBytes, kMaxIssueTextBytes,
+// kMaxTranscriptBytes): once it is spent, items are kept without that text.
+// Tool calls, issues and turns beyond their caps are dropped. Both are counted
+// in Snapshot::dropped_items.
 class TtcDebugSession final : public DebugSink {
  public:
   enum class Stage {
@@ -102,7 +105,8 @@ class TtcDebugSession final : public DebugSink {
     bool audio_cap_reached = false;
     int open_errors = 0;
     int open_warnings = 0;
-    // Tool calls, issues and turns dropped because their cap was reached.
+    // Tool calls, issues and turns dropped because their cap was reached, or
+    // kept without all their text because its budget was spent.
     int64_t dropped_items = 0;
     std::array<StageStatus, kStageCount> stages;
   };
@@ -158,6 +162,10 @@ class TtcDebugSession final : public DebugSink {
     std::optional<double> audio_out_end_ms;
     std::string input_transcript;
     std::string output_transcript;
+    // Whether transcript text was left out at some point because
+    // kMaxTranscriptBytes was reached. The turn then keeps what it has, and
+    // its transcripts stop growing.
+    bool text_dropped = false;
   };
 
   // State of a tab a tool acted on.
@@ -208,6 +216,9 @@ class TtcDebugSession final : public DebugSink {
     bool response_dropped = false;
     std::vector<std::string> actor_steps;
     bool model_followed_up = false;
+    // Whether some of this call's text was left out at some point because
+    // kMaxToolCallTextBytes was reached.
+    bool text_dropped = false;
   };
 
   enum class IssueSeverity { kInfo, kWarning, kError };
@@ -244,6 +255,9 @@ class TtcDebugSession final : public DebugSink {
     // Condition-based issues resolve once the condition clears.
     bool resolved = false;
     std::optional<double> resolved_ms;
+    // Whether the detail and evidence were left out at some point because
+    // kMaxIssueTextBytes was reached.
+    bool text_dropped = false;
   };
 
   // What changed since the previous update.
@@ -293,9 +307,20 @@ class TtcDebugSession final : public DebugSink {
   static constexpr size_t kMaxTurns = 1000;
   // Labels, tool arguments and responses, issue details and evidence.
   static constexpr size_t kMaxTextLength = 4096;
+  // Tool call ids, tool names, result codes and issue titles.
+  static constexpr size_t kMaxNameLength = 256;
   // Each transcript of a turn.
   static constexpr size_t kMaxTranscriptLength = 16 * 1024;
   static constexpr size_t kMaxIssueKeyLength = 256;
+  // Each actor step of a tool call.
+  static constexpr size_t kMaxActorStepLength = 512;
+  // Total bytes of text kept by all tool calls (arguments, responses, result
+  // messages, effect details, tab URLs and titles, actor steps), by all issues
+  // (details and evidence) and by all turns (transcripts). Once a budget is
+  // spent, further text of that kind is left out.
+  static constexpr size_t kMaxToolCallTextBytes = 8 * 1024 * 1024;
+  static constexpr size_t kMaxIssueTextBytes = 4 * 1024 * 1024;
+  static constexpr size_t kMaxTranscriptBytes = 8 * 1024 * 1024;
 
   // Stage health: how recent a signal must be to count.
   static constexpr base::TimeDelta kActivityWindow = base::Seconds(1);
@@ -418,6 +443,24 @@ class TtcDebugSession final : public DebugSink {
       page_content_annotations::FetchPageContextError error);
 
  private:
+  // A byte budget for the text kept by one kind of item.
+  class TextBudget {
+   public:
+    explicit TextBudget(size_t capacity) : capacity_(capacity) {}
+
+    // Takes `bytes` from the budget. Returns false, taking nothing, if fewer
+    // are left.
+    bool Take(size_t bytes);
+    // Gives back `bytes` that Take() took earlier. Giving back more than was
+    // taken is a bug: the budget would grow past its capacity.
+    void Release(size_t bytes);
+
+   private:
+    const size_t capacity_;
+    // Bytes taken and not given back. Never more than `capacity_`.
+    size_t used_ = 0;
+  };
+
   // Returns `text` cut to at most `max_length` bytes, ending in an ellipsis
   // (U+2026) if it was cut.
   static std::string Truncate(std::string_view text,
@@ -425,8 +468,6 @@ class TtcDebugSession final : public DebugSink {
   // Like Truncate(), in place.
   static void TruncateInPlace(std::string& text,
                               size_t max_length = kMaxTextLength);
-  // `tab` with its URL and title truncated.
-  static TabSnapshot TruncateTab(const TabSnapshot& tab);
 
   // Time since the session started.
   base::TimeDelta Elapsed() const;
@@ -455,8 +496,15 @@ class TtcDebugSession final : public DebugSink {
   // The last turn, if it is still open.
   Turn* OpenTurn();
   void CloseOpenTurn(TurnStatus status);
+  // Appends `text` to `transcript`, a transcript of `turn`, up to
+  // kMaxTranscriptLength. Once the transcript budget is spent, the turn keeps
+  // what it has and is counted in dropped_items.
+  void AppendTranscript(Turn& turn,
+                        std::string& transcript,
+                        std::string_view text);
   void MarkTurnChanged(const Turn& turn);
-  // Counts an item dropped because of a cap, and reports the first one.
+  // Counts an item dropped because of a cap, or kept without its text because
+  // of a budget, and reports the first such item.
   void DropItem(std::string_view what);
   void OnServerActivity();
   void ArmWatchdog();
@@ -477,6 +525,10 @@ class TtcDebugSession final : public DebugSink {
   };
   // Raises the issue `key`, or bumps its count if it is already open.
   void RaiseIssue(std::string key, IssueSpec spec);
+  // Replaces the detail and evidence of `issue`. If the issue text budget
+  // doesn't cover them, both are left empty and the issue is counted in
+  // dropped_items.
+  void SetIssueText(Issue& issue, std::string detail, Evidence evidence);
   // Raises "<kind>:<tool call id>" with the tool call's evidence attached.
   void RaiseToolIssue(std::string_view kind,
                       const ToolCall& tool_call,
@@ -495,6 +547,18 @@ class TtcDebugSession final : public DebugSink {
   // Null if the call is new and kMaxToolCalls is reached.
   ToolCall* FindOrCreateToolCall(std::string_view call_id,
                                  std::string_view name);
+  // Replaces `field`, a text field of `tool_call`, with `text` cut to
+  // `max_length` bytes. If the tool call text budget doesn't cover it, the
+  // field is left empty and the call is counted in dropped_items.
+  void SetToolCallText(ToolCall& tool_call,
+                       std::string& field,
+                       std::string_view text,
+                       size_t max_length = kMaxTextLength);
+  // Replaces `field`, a tab of `tool_call`, with `tab`. The URL and title are
+  // stored like SetToolCallText() does.
+  void SetToolCallTab(ToolCall& tool_call,
+                      std::optional<TabSnapshot>& field,
+                      const TabSnapshot& tab);
   void MarkToolCallChanged(const ToolCall& tool_call);
   // Records that `call_id` finished with `status`. Null if it can't be
   // recorded.
@@ -577,7 +641,8 @@ class TtcDebugSession final : public DebugSink {
   bool events_truncated_ = false;
   std::vector<Turn> turns_;
 
-  // Items dropped because of the caps.
+  // Items dropped because of the caps, or kept without their text because of
+  // a budget (see Snapshot::dropped_items).
   int64_t dropped_items_ = 0;
   bool items_truncated_reported_ = false;
   // Whether a turn is being dropped, so that it is only counted once.
@@ -586,6 +651,10 @@ class TtcDebugSession final : public DebugSink {
   std::string last_dropped_call_id_;
   // Keys of dropped issues, so that each is only counted once.
   std::set<std::string, std::less<>> dropped_issue_keys_;
+  // Budgets for the text of tool calls, issues and transcripts.
+  TextBudget tool_call_text_{kMaxToolCallTextBytes};
+  TextBudget issue_text_{kMaxIssueTextBytes};
+  TextBudget transcript_text_{kMaxTranscriptBytes};
 
   TtcSessionAudioRecorder recorder_;
   bool cap_reported_ = false;

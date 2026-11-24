@@ -10,6 +10,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,23 +56,6 @@ std::string FormatAge(const std::optional<double>& t, double now) {
 
 std::string NoResponseKey(int turn_index) {
   return base::StrCat({"no_response:", base::NumberToString(turn_index)});
-}
-
-// Appends `more` to `text`, keeping `text` within `max_length` bytes. Once the
-// limit is reached, an ellipsis is added and later text is dropped.
-void AppendTruncated(std::string& text,
-                     std::string_view more,
-                     size_t max_length) {
-  const size_t limit = max_length - kEllipsis.size();
-  if (text.size() >= limit) {
-    return;
-  }
-  if (text.size() + more.size() <= limit) {
-    text.append(more);
-    return;
-  }
-  text.append(base::TruncateUTF8ToByteSize(more, limit - text.size()));
-  text.append(kEllipsis);
 }
 
 }  // namespace
@@ -123,6 +107,19 @@ void TtcDebugSession::TruncateInPlace(std::string& text, size_t max_length) {
   if (text.size() > max_length) {
     text = Truncate(text, max_length);
   }
+}
+
+bool TtcDebugSession::TextBudget::Take(size_t bytes) {
+  if (bytes > capacity_ - used_) {
+    return false;
+  }
+  used_ += bytes;
+  return true;
+}
+
+void TtcDebugSession::TextBudget::Release(size_t bytes) {
+  CHECK_LE(bytes, used_);
+  used_ -= bytes;
 }
 
 // static
@@ -242,7 +239,6 @@ void TtcDebugSession::End() {
   if (ended_) {
     return;
   }
-  AddEvent(EventKind::kSessionEnded);
   Turn* turn = OpenTurn();
   CloseOpenTurn(turn && turn->first_audio_ms ? TurnStatus::kOk
                                              : TurnStatus::kNoAudio);
@@ -257,12 +253,16 @@ void TtcDebugSession::End() {
     }
     if (checking) {
       tool_call.effect = ToolEffect::kNotChecked;
-      tool_call.effect_detail = "The session ended before the effect was seen.";
+      SetToolCallText(tool_call, tool_call.effect_detail,
+                      "The session ended before the effect was seen.");
     }
     if (in_flight || checking) {
       MarkToolCallChanged(tool_call);
     }
   }
+  // Last, so that it stays the last event: closing the turn and the tool calls
+  // can add events, e.g. when the effect note spends a text budget.
+  AddEvent(EventKind::kSessionEnded);
   ended_ = true;
   watchdog_.Stop();
   detector_timer_.Stop();
@@ -364,6 +364,35 @@ void TtcDebugSession::CloseOpenTurn(TurnStatus status) {
                                                       turn->speech_end_ms)
                                      .c_str()
                                : "none"));
+}
+
+void TtcDebugSession::AppendTranscript(Turn& turn,
+                                       std::string& transcript,
+                                       std::string_view text) {
+  if (turn.text_dropped) {
+    return;
+  }
+  // The transcript stays within kMaxTranscriptLength, with an ellipsis once
+  // that is reached. The budget is checked before the transcript grows, so
+  // text that doesn't fit allocates nothing.
+  const size_t limit = kMaxTranscriptLength - kEllipsis.size();
+  if (transcript.size() >= limit) {
+    return;
+  }
+  const bool fits_turn = text.size() <= limit - transcript.size();
+  const std::string_view piece =
+      fits_turn ? text
+                : base::TruncateUTF8ToByteSize(text, limit - transcript.size());
+  const size_t added = piece.size() + (fits_turn ? 0 : kEllipsis.size());
+  if (!transcript_text_.Take(added)) {
+    turn.text_dropped = true;
+    DropItem("transcripts");
+    return;
+  }
+  transcript.append(piece);
+  if (!fits_turn) {
+    transcript.append(kEllipsis);
+  }
 }
 
 void TtcDebugSession::MarkTurnChanged(const Turn& turn) {
@@ -673,12 +702,10 @@ void TtcDebugSession::HandleFrame(const Transcript& transcript) {
     if (!turn->first_transcript_ms) {
       turn->first_transcript_ms = now;
     }
-    AppendTruncated(turn->input_transcript, transcript.text,
-                    kMaxTranscriptLength);
+    AppendTranscript(*turn, turn->input_transcript, transcript.text);
     MarkTurnChanged(*turn);
   } else if (Turn* turn = OpenTurn()) {
-    AppendTruncated(turn->output_transcript, transcript.text,
-                    kMaxTranscriptLength);
+    AppendTranscript(*turn, turn->output_transcript, transcript.text);
     MarkTurnChanged(*turn);
   }
 }
@@ -716,7 +743,7 @@ void TtcDebugSession::HandleFrame(const DebugSink::ToolCall& frame) {
   if (!tool_call) {
     return;
   }
-  tool_call->arguments_json = Truncate(frame.arguments_json);
+  SetToolCallText(*tool_call, tool_call->arguments_json, frame.arguments_json);
   AddEvent(EventKind::kToolStart, static_cast<float>(tool_call->id),
            base::StrCat({tool_call->name, " ", tool_call->arguments_json}));
   MarkToolCallChanged(*tool_call);
@@ -1049,6 +1076,7 @@ base::DictValue TtcDebugSession::ToValue() const {
     }
     t.Set("input_transcript", turn.input_transcript);
     t.Set("output_transcript", turn.output_transcript);
+    t.Set("text_dropped", turn.text_dropped);
     turns.Append(std::move(t));
   }
   dict.Set("turns", std::move(turns));

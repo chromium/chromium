@@ -150,6 +150,18 @@ class TtcDebugSessionTest : public testing::Test {
     return nullptr;
   }
 
+  // Bytes of detail and evidence kept by all issues.
+  size_t IssueTextBytes() const {
+    size_t bytes = 0;
+    for (const TtcDebugSession::Issue& issue : session_->issues()) {
+      bytes += issue.detail.size();
+      for (const auto& [name, value] : issue.evidence) {
+        bytes += name.size() + value.size();
+      }
+    }
+    return bytes;
+  }
+
   static TtcDebugSession::TabSnapshot ForegroundTab() {
     return {.tab_id = 7,
             .url = "https://example.com/",
@@ -163,6 +175,33 @@ class TtcDebugSessionTest : public testing::Test {
     tab.visible = false;
     tab.active_in_window = false;
     return tab;
+  }
+
+  // Records tool calls until the tool call text budget is spent exactly. The
+  // last call is running, has all its text, and is being verified if
+  // `verifying`.
+  void FillToolCallTextBudget(bool verifying) {
+    const std::string text(TtcDebugSession::kMaxTextLength, 'a');
+    TtcDebugSession::TabSnapshot tab = ForegroundTab();
+    tab.url = text;
+    tab.title = text;
+    // Each of these calls keeps three fields of text: arguments, URL, title.
+    const size_t full_calls =
+        TtcDebugSession::kMaxToolCallTextBytes / (3 * text.size());
+    for (size_t i = 0; i < full_calls; ++i) {
+      const std::string call_id = base::NumberToString(i);
+      session_->OnToolDispatched(call_id, "click", text);
+      session_->OnToolTarget(call_id, tab, /*verifying=*/false);
+    }
+    // What is left fits exactly the last call's arguments and URL.
+    ASSERT_EQ(
+        TtcDebugSession::kMaxToolCallTextBytes - full_calls * 3 * text.size(),
+        2 * text.size());
+    tab.title.clear();
+    session_->OnToolDispatched("last", "navigate", text);
+    session_->OnToolTarget("last", tab, verifying);
+    ASSERT_FALSE(session_->tool_calls().back().text_dropped);
+    ASSERT_EQ(CountEvents(EventKind::kItemsTruncated), 0);
   }
 
   // Runs a navigate tool call from the server through to a successful actor
@@ -1107,12 +1146,34 @@ TEST_F(TtcDebugSessionTest, LongTextIsTruncated) {
   const TtcDebugSession::Issue& issue = session_->issues()[0];
   EXPECT_EQ(issue.count, 2);
   EXPECT_LE(issue.key.size(), TtcDebugSession::kMaxIssueKeyLength);
-  EXPECT_LE(issue.title.size(), TtcDebugSession::kMaxTextLength);
+  EXPECT_LE(issue.title.size(), TtcDebugSession::kMaxNameLength);
   for (const auto& entry : issue.evidence) {
     EXPECT_LE(entry.second.size(), TtcDebugSession::kMaxTextLength);
   }
   EXPECT_LE(session_->GetSnapshot().last_error.size(),
             TtcDebugSession::kMaxTextLength);
+}
+
+TEST_F(TtcDebugSessionTest, NamesAndActorStepsAreTruncated) {
+  const std::string long_text(TtcDebugSession::kMaxTextLength, 'a');
+  session_->OnServerFrame(DebugSink::ToolCall{
+      .call_id = long_text, .name = long_text, .arguments_json = "{}"});
+  // The call is still found by its full id.
+  session_->OnToolDispatched(long_text, long_text, "{}");
+  session_->OnActorJournalEntry("Click", 'B', long_text, /*has_error=*/false);
+  session_->OnToolFailed(long_text, long_text, /*message=*/"", std::nullopt);
+
+  ASSERT_EQ(session_->tool_calls().size(), 1u);
+  const TtcDebugSession::ToolCall& tool_call = session_->tool_calls()[0];
+  EXPECT_EQ(tool_call.status, ToolStatus::kError);
+  EXPECT_LE(tool_call.call_id.size(), TtcDebugSession::kMaxNameLength);
+  EXPECT_TRUE(tool_call.call_id.ends_with(kEllipsis));
+  EXPECT_LE(tool_call.name.size(), TtcDebugSession::kMaxNameLength);
+  EXPECT_LE(tool_call.result_code.size(), TtcDebugSession::kMaxNameLength);
+  ASSERT_EQ(tool_call.actor_steps.size(), 1u);
+  EXPECT_LE(tool_call.actor_steps[0].size(),
+            TtcDebugSession::kMaxActorStepLength);
+  EXPECT_TRUE(tool_call.actor_steps[0].ends_with(kEllipsis));
 }
 
 TEST_F(TtcDebugSessionTest, TranscriptsAreCapped) {
@@ -1197,6 +1258,200 @@ TEST_F(TtcDebugSessionTest, TurnsAreCapped) {
   EXPECT_EQ(session_->turns().size(), TtcDebugSession::kMaxTurns);
   EXPECT_EQ(session_->GetSnapshot().dropped_items, 2);
   EXPECT_EQ(CountEvents(EventKind::kItemsTruncated), 1);
+}
+
+TEST_F(TtcDebugSessionTest, ToolCallTextHasABudget) {
+  // Arguments, URLs and titles as long as they can be: more text than the
+  // budget covers, in fewer calls than kMaxToolCalls.
+  const std::string text(TtcDebugSession::kMaxTextLength, 'a');
+  TtcDebugSession::TabSnapshot tab = ForegroundTab();
+  tab.url = text;
+  tab.title = text;
+  for (size_t i = 0; i < TtcDebugSession::kMaxToolCalls; ++i) {
+    const std::string call_id = base::NumberToString(i);
+    session_->OnToolDispatched(call_id, "click", text);
+    session_->OnToolTarget(call_id, tab, /*verifying=*/false);
+  }
+
+  // Every call is recorded, the later ones without the text that didn't fit.
+  ASSERT_EQ(session_->tool_calls().size(), TtcDebugSession::kMaxToolCalls);
+  size_t text_bytes = 0;
+  int64_t calls_without_text = 0;
+  for (const TtcDebugSession::ToolCall& tool_call : session_->tool_calls()) {
+    text_bytes += tool_call.arguments_json.size() +
+                  tool_call.target_before->url.size() +
+                  tool_call.target_before->title.size();
+    calls_without_text += tool_call.text_dropped;
+  }
+  EXPECT_LE(text_bytes, TtcDebugSession::kMaxToolCallTextBytes);
+  EXPECT_GT(text_bytes, TtcDebugSession::kMaxToolCallTextBytes - text.size());
+  EXPECT_GT(calls_without_text, 0);
+  EXPECT_EQ(session_->GetSnapshot().dropped_items, calls_without_text);
+  EXPECT_EQ(CountEvents(EventKind::kItemsTruncated), 1);
+
+  EXPECT_FALSE(session_->tool_calls().front().text_dropped);
+  EXPECT_EQ(session_->tool_calls().front().arguments_json, text);
+  const TtcDebugSession::ToolCall& last = session_->tool_calls().back();
+  EXPECT_TRUE(last.text_dropped);
+  EXPECT_EQ(last.name, "click");
+  EXPECT_EQ(last.status, ToolStatus::kRunning);
+  EXPECT_EQ(last.target_before->tab_id, tab.tab_id);
+  EXPECT_TRUE(last.arguments_json.empty());
+  EXPECT_TRUE(last.target_before->url.empty());
+  // The export says which ones lost their text.
+  const base::DictValue value = session_->ToValue();
+  const base::ListValue* exported = value.FindList("tool_calls");
+  ASSERT_TRUE(exported);
+  EXPECT_THAT(exported->front().GetDict().FindBool("text_dropped"),
+              testing::Optional(false));
+  EXPECT_THAT(exported->back().GetDict().FindBool("text_dropped"),
+              testing::Optional(true));
+}
+
+// The end of the session stays the last event, even if ending it is what
+// spends a text budget.
+TEST_F(TtcDebugSessionTest, SessionEndStaysLastWhenEndingSpendsABudget) {
+  ASSERT_NO_FATAL_FAILURE(FillToolCallTextBudget(/*verifying=*/true));
+
+  // Ending notes on the call being verified that its effect wasn't seen,
+  // which no longer fits.
+  session_->End();
+  EXPECT_TRUE(session_->tool_calls().back().text_dropped);
+  EXPECT_EQ(CountEvents(EventKind::kItemsTruncated), 1);
+  EXPECT_EQ(session_->events().back().kind, EventKind::kSessionEnded);
+}
+
+// A page that is open learns that a call lost text even when only an actor
+// step was dropped.
+TEST_F(TtcDebugSessionTest, DroppedActorStepUpdatesTheToolCall) {
+  ASSERT_NO_FATAL_FAILURE(FillToolCallTextBudget(/*verifying=*/false));
+  RecordingObserver observer;
+  session_->AddObserver(&observer);
+  task_environment_.FastForwardBy(TtcDebugSession::kFlushInterval);
+  observer.tool_calls.clear();
+
+  session_->OnActorJournalEntry("Click", 'B', "details", /*has_error=*/false);
+  task_environment_.FastForwardBy(TtcDebugSession::kFlushInterval);
+  ASSERT_EQ(observer.tool_calls.size(), 1u);
+  EXPECT_EQ(observer.tool_calls[0].call_id, "last");
+  EXPECT_TRUE(observer.tool_calls[0].text_dropped);
+  EXPECT_TRUE(observer.tool_calls[0].actor_steps.empty());
+  session_->RemoveObserver(&observer);
+}
+
+TEST_F(TtcDebugSessionTest, IssueTextHasABudget) {
+  // Each issue keeps the message twice, as its detail and as evidence.
+  const std::string message(TtcDebugSession::kMaxTextLength, 'a');
+  for (size_t i = 0; i < TtcDebugSession::kMaxIssues; ++i) {
+    session_->OnServerFrame(DebugSink::ServerError{
+        .code = base::NumberToString(i), .message = message});
+  }
+
+  // Every issue is recorded, the later ones without detail and evidence.
+  ASSERT_EQ(session_->issues().size(), TtcDebugSession::kMaxIssues);
+  int64_t issues_without_text = 0;
+  for (const TtcDebugSession::Issue& issue : session_->issues()) {
+    issues_without_text += issue.text_dropped;
+  }
+  EXPECT_LE(IssueTextBytes(), TtcDebugSession::kMaxIssueTextBytes);
+  EXPECT_GT(issues_without_text, 0);
+  EXPECT_EQ(session_->GetSnapshot().dropped_items, issues_without_text);
+  EXPECT_EQ(CountEvents(EventKind::kItemsTruncated), 1);
+
+  EXPECT_FALSE(session_->issues().front().text_dropped);
+  EXPECT_EQ(session_->issues().front().detail, message);
+  const TtcDebugSession::Issue& last = session_->issues().back();
+  EXPECT_TRUE(last.text_dropped);
+  EXPECT_EQ(last.title, "Server error: 999");
+  EXPECT_TRUE(last.detail.empty());
+  EXPECT_TRUE(last.evidence.empty());
+  // The export says which ones lost their text.
+  const base::DictValue value = session_->ToValue();
+  const base::ListValue* exported = value.FindList("issues");
+  ASSERT_TRUE(exported);
+  EXPECT_THAT(exported->front().GetDict().FindBool("text_dropped"),
+              testing::Optional(false));
+  EXPECT_THAT(exported->back().GetDict().FindBool("text_dropped"),
+              testing::Optional(true));
+}
+
+TEST_F(TtcDebugSessionTest, TranscriptsHaveABudget) {
+  const std::string text(TtcDebugSession::kMaxTranscriptLength, 'a');
+  for (size_t i = 0; i < TtcDebugSession::kMaxTurns; ++i) {
+    session_->OnServerFrame(
+        DebugSink::Transcript{.is_input = true, .text = text});
+    session_->OnServerFrame(
+        DebugSink::Transcript{.is_input = false, .text = text});
+    session_->OnServerFrame(DebugSink::TurnComplete());
+  }
+
+  // Every turn is recorded, the later ones without their transcripts.
+  ASSERT_EQ(session_->turns().size(), TtcDebugSession::kMaxTurns);
+  size_t text_bytes = 0;
+  int64_t turns_without_text = 0;
+  for (const TtcDebugSession::Turn& turn : session_->turns()) {
+    text_bytes += turn.input_transcript.size() + turn.output_transcript.size();
+    turns_without_text += turn.text_dropped;
+  }
+  EXPECT_LE(text_bytes, TtcDebugSession::kMaxTranscriptBytes);
+  EXPECT_GT(turns_without_text, 0);
+  EXPECT_EQ(session_->GetSnapshot().dropped_items, turns_without_text);
+  EXPECT_EQ(CountEvents(EventKind::kItemsTruncated), 1);
+
+  EXPECT_FALSE(session_->turns().front().text_dropped);
+  EXPECT_FALSE(session_->turns().front().input_transcript.empty());
+  const TtcDebugSession::Turn& last = session_->turns().back();
+  EXPECT_TRUE(last.text_dropped);
+  EXPECT_TRUE(last.first_transcript_ms.has_value());
+  EXPECT_TRUE(last.input_transcript.empty());
+  EXPECT_TRUE(last.output_transcript.empty());
+  // The export says which ones lost their text.
+  const base::DictValue value = session_->ToValue();
+  const base::ListValue* exported = value.FindList("turns");
+  ASSERT_TRUE(exported);
+  EXPECT_THAT(exported->front().GetDict().FindBool("text_dropped"),
+              testing::Optional(false));
+  EXPECT_THAT(exported->back().GetDict().FindBool("text_dropped"),
+              testing::Optional(true));
+}
+
+TEST_F(TtcDebugSessionTest, ReplacedTextReturnsToItsBudget) {
+  const std::string text(TtcDebugSession::kMaxTextLength, 'a');
+
+  // A repeated issue replaces its detail and evidence. Repeat it more often
+  // than the budget would cover if every repeat kept its text.
+  const size_t issue_repeats =
+      2 * TtcDebugSession::kMaxIssueTextBytes / text.size();
+  for (size_t i = 0; i < issue_repeats; ++i) {
+    session_->OnServerFrame(
+        DebugSink::ServerError{.code = "same", .message = text});
+  }
+  ASSERT_EQ(session_->issues().size(), 1u);
+  EXPECT_EQ(session_->issues()[0].count, static_cast<int>(issue_repeats));
+  EXPECT_EQ(session_->issues()[0].detail, text);
+  EXPECT_FALSE(session_->issues()[0].text_dropped);
+
+  // The same for the effect detail of a tool call.
+  session_->OnToolDispatched("c1", "click", "{}");
+  const size_t effect_repeats =
+      2 * TtcDebugSession::kMaxToolCallTextBytes / text.size();
+  for (size_t i = 0; i < effect_repeats; ++i) {
+    session_->OnToolEffect("c1", /*verified=*/true, text);
+  }
+  EXPECT_EQ(session_->tool_calls()[0].effect_detail, text);
+  EXPECT_FALSE(session_->tool_calls()[0].text_dropped);
+
+  EXPECT_EQ(session_->GetSnapshot().dropped_items, 0);
+  EXPECT_FALSE(HasEvent(EventKind::kItemsTruncated));
+
+  // Replaced text gave back only what it had taken: the budget still holds
+  // once other issues fill it.
+  for (size_t i = 1; i < TtcDebugSession::kMaxIssues; ++i) {
+    session_->OnServerFrame(DebugSink::ServerError{
+        .code = base::NumberToString(i), .message = text});
+  }
+  EXPECT_GT(session_->GetSnapshot().dropped_items, 0);
+  EXPECT_LE(IssueTextBytes(), TtcDebugSession::kMaxIssueTextBytes);
 }
 
 }  // namespace

@@ -4,9 +4,12 @@
 
 // Tool call tracing and real-time problem detection for TtcDebugSession.
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -66,6 +69,17 @@ ResponseError ParseResponseError(std::string_view response_json) {
     result.message = *message;
   }
   return result;
+}
+
+// The bytes of text in the detail and evidence of an issue.
+size_t IssueTextBytes(
+    const std::string& detail,
+    const std::vector<std::pair<std::string, std::string>>& evidence) {
+  size_t bytes = detail.size();
+  for (const auto& [name, value] : evidence) {
+    bytes += name.size() + value.size();
+  }
+  return bytes;
 }
 
 }  // namespace
@@ -183,7 +197,7 @@ void TtcDebugSession::RaiseIssue(std::string key, IssueSpec spec) {
     return;
   }
   TruncateInPlace(key, kMaxIssueKeyLength);
-  TruncateInPlace(spec.title);
+  TruncateInPlace(spec.title, kMaxNameLength);
   TruncateInPlace(spec.detail);
   for (auto& entry : spec.evidence) {
     TruncateInPlace(entry.second);
@@ -192,8 +206,7 @@ void TtcDebugSession::RaiseIssue(std::string key, IssueSpec spec) {
   if (Issue* open = FindOpenIssue(key)) {
     ++open->count;
     open->last_ms = now;
-    open->detail = std::move(spec.detail);
-    open->evidence = std::move(spec.evidence);
+    SetIssueText(*open, std::move(spec.detail), std::move(spec.evidence));
     MarkIssueChanged(*open);
     return;
   }
@@ -213,8 +226,7 @@ void TtcDebugSession::RaiseIssue(std::string key, IssueSpec spec) {
   issue.severity = spec.severity;
   issue.category = spec.category;
   issue.title = std::move(spec.title);
-  issue.detail = std::move(spec.detail);
-  issue.evidence = std::move(spec.evidence);
+  SetIssueText(issue, std::move(spec.detail), std::move(spec.evidence));
   issue.first_ms = now;
   issue.last_ms = now;
   issue.tool_call_id = spec.tool_call_id;
@@ -230,6 +242,25 @@ void TtcDebugSession::RaiseIssue(std::string key, IssueSpec spec) {
                base::StrCat({IssueSeverityName(added.severity), ": ",
                              added.title, ". ", added.detail}));
   MarkIssueChanged(added);
+}
+
+void TtcDebugSession::SetIssueText(Issue& issue,
+                                   std::string detail,
+                                   Evidence evidence) {
+  issue_text_.Release(IssueTextBytes(issue.detail, issue.evidence));
+  if (!issue_text_.Take(IssueTextBytes(detail, evidence))) {
+    // Swapped rather than cleared, so that no memory is kept for text that
+    // was dropped.
+    std::string().swap(issue.detail);
+    Evidence().swap(issue.evidence);
+    if (!issue.text_dropped) {
+      issue.text_dropped = true;
+      DropItem("issue details");
+    }
+    return;
+  }
+  issue.detail = std::move(detail);
+  issue.evidence = std::move(evidence);
 }
 
 void TtcDebugSession::ResolveIssue(std::string_view key) {
@@ -264,21 +295,12 @@ void TtcDebugSession::MarkIssueChanged(const Issue& issue) {
 // ---------------------------------------------------------------------------
 // Tool calls
 
-// static
-TtcDebugSession::TabSnapshot TtcDebugSession::TruncateTab(
-    const TabSnapshot& tab) {
-  TabSnapshot truncated = tab;
-  TruncateInPlace(truncated.url);
-  TruncateInPlace(truncated.title);
-  return truncated;
-}
-
 TtcDebugSession::ToolCall* TtcDebugSession::FindToolCall(
     std::string_view call_id) {
   // Stored ids are truncated.
   std::string truncated;
-  if (call_id.size() > kMaxTextLength) {
-    truncated = Truncate(call_id);
+  if (call_id.size() > kMaxNameLength) {
+    truncated = Truncate(call_id, kMaxNameLength);
     call_id = truncated;
   }
   // The most recent call with this id; ids are unique per session in practice.
@@ -299,7 +321,7 @@ TtcDebugSession::ToolCall* TtcDebugSession::FindOrCreateToolCall(
   if (tool_calls_.size() >= kMaxToolCalls) {
     // A call is usually reported several times (received, dispatched,
     // finished, response sent); count it once.
-    std::string truncated_id = Truncate(call_id);
+    std::string truncated_id = Truncate(call_id, kMaxNameLength);
     if (truncated_id != last_dropped_call_id_) {
       last_dropped_call_id_ = std::move(truncated_id);
       DropItem("tool calls");
@@ -309,8 +331,8 @@ TtcDebugSession::ToolCall* TtcDebugSession::FindOrCreateToolCall(
   const double now = NowMs();
   ToolCall tool_call;
   tool_call.id = static_cast<int>(tool_calls_.size()) + 1;
-  tool_call.call_id = Truncate(call_id);
-  tool_call.name = Truncate(name);
+  tool_call.call_id = Truncate(call_id, kMaxNameLength);
+  tool_call.name = Truncate(name, kMaxNameLength);
   tool_call.received_ms = now;
   if (Turn* turn = EnsureOpenTurn(last_speech_end_ms_.value_or(now))) {
     tool_call.turn_index = turn->index;
@@ -318,6 +340,36 @@ TtcDebugSession::ToolCall* TtcDebugSession::FindOrCreateToolCall(
   tool_calls_.push_back(std::move(tool_call));
   MarkToolCallChanged(tool_calls_.back());
   return &tool_calls_.back();
+}
+
+void TtcDebugSession::SetToolCallText(ToolCall& tool_call,
+                                      std::string& field,
+                                      std::string_view text,
+                                      size_t max_length) {
+  tool_call_text_.Release(field.size());
+  std::string truncated = Truncate(text, max_length);
+  if (tool_call_text_.Take(truncated.size())) {
+    field = std::move(truncated);
+    return;
+  }
+  // Swapped rather than cleared, so that no memory is kept for text that was
+  // dropped.
+  std::string().swap(field);
+  if (!tool_call.text_dropped) {
+    tool_call.text_dropped = true;
+    DropItem("tool call details");
+  }
+}
+
+void TtcDebugSession::SetToolCallTab(ToolCall& tool_call,
+                                     std::optional<TabSnapshot>& field,
+                                     const TabSnapshot& tab) {
+  TabSnapshot& stored = field ? *field : field.emplace();
+  stored.tab_id = tab.tab_id;
+  stored.visible = tab.visible;
+  stored.active_in_window = tab.active_in_window;
+  SetToolCallText(tool_call, stored.url, tab.url);
+  SetToolCallText(tool_call, stored.title, tab.title);
 }
 
 void TtcDebugSession::MarkToolCallChanged(const ToolCall& tool_call) {
@@ -395,7 +447,7 @@ void TtcDebugSession::OnToolDispatched(std::string_view call_id,
     return;
   }
   if (tool_call->arguments_json.empty()) {
-    tool_call->arguments_json = Truncate(arguments_json);
+    SetToolCallText(*tool_call, tool_call->arguments_json, arguments_json);
   }
   tool_call->status = ToolStatus::kRunning;
   tool_call->dispatched_ms = NowMs();
@@ -414,7 +466,7 @@ void TtcDebugSession::OnToolTarget(std::string_view call_id,
   if (!tool_call) {
     return;
   }
-  tool_call->target_before = TruncateTab(target);
+  SetToolCallTab(*tool_call, tool_call->target_before, target);
   if (verifying) {
     tool_call->effect = ToolEffect::kChecking;
   }
@@ -442,10 +494,10 @@ TtcDebugSession::ToolCall* TtcDebugSession::FinishToolCall(
   }
   tool_call->status = status;
   tool_call->finished_ms = NowMs();
-  tool_call->result_code = Truncate(result_code);
-  tool_call->result_message = Truncate(message);
+  tool_call->result_code = Truncate(result_code, kMaxNameLength);
+  SetToolCallText(*tool_call, tool_call->result_message, message);
   if (target_after) {
-    tool_call->target_after = TruncateTab(*target_after);
+    SetToolCallTab(*tool_call, tool_call->target_after, *target_after);
   }
   const double latency =
       *tool_call->finished_ms -
@@ -515,7 +567,7 @@ void TtcDebugSession::OnToolEffect(std::string_view call_id,
     return;
   }
   tool_call->effect = verified ? ToolEffect::kVerified : ToolEffect::kNoEffect;
-  tool_call->effect_detail = Truncate(detail);
+  SetToolCallText(*tool_call, tool_call->effect_detail, detail);
   MarkToolCallChanged(*tool_call);
   if (!verified) {
     RaiseToolIssue(
@@ -538,7 +590,7 @@ void TtcDebugSession::OnToolResponseSent(std::string_view call_id,
     return;
   }
   tool_call->response_sent_ms = NowMs();
-  tool_call->response_json = Truncate(response_json);
+  SetToolCallText(*tool_call, tool_call->response_json, response_json);
   tool_call->response_dropped = !sent;
   MarkToolCallChanged(*tool_call);
   if (tool_call->status == ToolStatus::kPending) {
@@ -589,9 +641,22 @@ void TtcDebugSession::OnActorJournalEntry(std::string_view event,
   ToolCall* running = RunningToolCall();
   if (running && running->actor_steps.size() < kMaxActorStepsPerTool) {
     const double now = NowMs();
-    running->actor_steps.push_back(base::StrCat(
-        {"+", Ms(now - running->dispatched_ms.value_or(now)), " ", label}));
-    MarkToolCallChanged(*running);
+    // Left empty if the tool call text budget is spent.
+    std::string step;
+    const bool text_was_dropped = running->text_dropped;
+    SetToolCallText(
+        *running, step,
+        base::StrCat(
+            {"+", Ms(now - running->dispatched_ms.value_or(now)), " ", label}),
+        kMaxActorStepLength);
+    const bool step_kept = !step.empty();
+    if (step_kept) {
+      running->actor_steps.push_back(std::move(step));
+    }
+    // A dropped step still changes the call: it is now marked text_dropped.
+    if (step_kept || running->text_dropped != text_was_dropped) {
+      MarkToolCallChanged(*running);
+    }
   }
   if (has_error) {
     RaiseIssue(base::StrCat({"actor_error:", event}),
@@ -801,6 +866,7 @@ void TtcDebugSession::AppendProblemsToValue(base::DictValue& dict) const {
     value.Set("response_dropped", tool_call.response_dropped);
     value.Set("model_followed_up", tool_call.model_followed_up);
     value.Set("actor_steps", std::move(steps));
+    value.Set("text_dropped", tool_call.text_dropped);
     if (tool_call.dispatched_ms) {
       value.Set("dispatched_ms", *tool_call.dispatched_ms);
     }
@@ -832,6 +898,7 @@ void TtcDebugSession::AppendProblemsToValue(base::DictValue& dict) const {
     value.Set("last_ms", issue.last_ms);
     value.Set("count", issue.count);
     value.Set("resolved", issue.resolved);
+    value.Set("text_dropped", issue.text_dropped);
     if (issue.turn_index) {
       value.Set("turn", *issue.turn_index);
     }
