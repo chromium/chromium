@@ -20,7 +20,6 @@ interface RemotingHostControl {
   // owner email and robot account to use for authentication to service APIs.
   // This method may be called multiple times as changes are detected in the
   // host configuration file.
-  [EnableIf=is_win|is_linux]
   ApplyHostConfig(mojo_base.mojom.DictionaryValue config);
 
   // Provides the network process with a set of platform handles which are used
@@ -53,7 +52,6 @@ interface RemotingHostControl {
 // ID would be <user_email@domain.com>/chromoting_ftl_<unique_ftl_resource_id>.
 // The remote for this interface is owned in the unprivileged, trusted network
 // process and the receiver is bound in the high-privilege daemon process.
-[EnableIf=is_win|is_linux]
 interface HostStatusObserver {
   // Called when an unauthorized user attempts to connect to the host.
   OnClientAccessDenied(string signaling_id);

@@ -14,12 +14,13 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "remoting/base/buildflags.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/errors.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 #include "remoting/host/mojom/peer_session.mojom.h"
 #endif
 
@@ -40,13 +41,14 @@ struct SessionPolicies;
 class PeerSession {
  public:
   // LINT.IfChange(peer_session_event_handler)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  // On Windows and Linux, `PeerSession::EventHandler` is an alias to the
-  // generated Mojo interface `mojom::PeerSessionEventHandler`.
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
+  // On multi-process platforms (Windows, Linux, and macOS),
+  // `PeerSession::EventHandler` is an alias to the generated Mojo interface
+  // `mojom::PeerSessionEventHandler`.
   using EventHandler = mojom::PeerSessionEventHandler;
 #else
   // Pure virtual fallback interface for platforms that do not support
-  // multi-process peer connections (such as macOS). This definition must
+  // multi-process peer connections (i.e. ChromeOS). This definition must
   // exactly match the generated C++ interface of
   // `remoting::mojom::PeerSessionEventHandler`.
   class EventHandler {

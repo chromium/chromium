@@ -33,6 +33,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -96,6 +97,7 @@ class TestAgentProcess : public mojom::AgentProcess,
       mojo::PendingReceiver<mojom::RemotingHostControl> receiver) override;
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver) override;
+  void ApplyHostConfig(base::DictValue config) override;
 
  private:
   void WriteAgentState(std::string_view state);
@@ -131,6 +133,8 @@ void TestAgentProcess::BindChromotingHostServices(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver) {
   WriteAgentState(kAgentStateChromotingHostServicesBound);
 }
+
+void TestAgentProcess::ApplyHostConfig(base::DictValue config) {}
 
 void TestAgentProcess::WriteAgentState(std::string_view state) {
   agent_state_file_.SetLength(state.size());

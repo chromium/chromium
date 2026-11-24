@@ -64,6 +64,14 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
+#if BUILDFLAG(IS_MAC)
+#include <cstdlib>
+#include <vector>
+
+#include "remoting/host/audio_capturer_mac.h"
+#include "remoting/host/mac/permission_utils.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
@@ -352,6 +360,33 @@ int HostMain(int argc, char** argv) {
 
   // Enable debug logs.
   InitHostLogging();
+
+#if BUILDFLAG(IS_MAC)
+  if (command_line->HasSwitch(kCheckAccessibilityPermissionSwitchName)) {
+    return mac::CanInjectInput() ? EXIT_SUCCESS : EXIT_FAILURE;
+  }
+  if (command_line->HasSwitch(kCheckScreenRecordingPermissionSwitchName)) {
+    bool permission_granted = mac::CanRecordScreen();
+    if (!permission_granted) {
+      // This adds the host bundle to the list of apps under Security & Privacy
+      // -> Screen Recording. This may also show a system prompt (if the bundle
+      // was not previously in the list).
+      mac::RequestScreenCapturePermission();
+    }
+    return permission_granted ? EXIT_SUCCESS : EXIT_FAILURE;
+  }
+  if (command_line->HasSwitch(kListAudioDevicesSwitchName)) {
+    std::vector<AudioCapturerMac::AudioDeviceInfo> audio_devices =
+        AudioCapturerMac::GetAudioDevices();
+    printf("Audio devices:\n");
+    for (const auto& audio_device : audio_devices) {
+      printf("\n");
+      printf("  Device name: %s\n", audio_device.device_name.c_str());
+      printf("  Device UID: %s\n", audio_device.device_uid.c_str());
+    }
+    return kSuccessExitCode;
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (command_line->HasSwitch(kAgentStatusSwitchName) ||

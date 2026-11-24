@@ -469,6 +469,11 @@ void DesktopSessionAgent::InjectSendAttentionSequence() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
 
+  if (!action_executor_) {
+    LOG(WARNING) << "ActionExecutor is not available; ignoring SAS.";
+    return;
+  }
+
   protocol::ActionRequest request;
   request.set_action(protocol::ActionRequest::SEND_ATTENTION_SEQUENCE);
   action_executor_->ExecuteAction(request);
@@ -477,6 +482,12 @@ void DesktopSessionAgent::InjectSendAttentionSequence() {
 void DesktopSessionAgent::LockWorkstation() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
+
+  if (!action_executor_) {
+    LOG(WARNING)
+        << "ActionExecutor is not available; ignoring LockWorkstation.";
+    return;
+  }
 
   protocol::ActionRequest request;
   request.set_action(protocol::ActionRequest::LOCK_WORKSTATION);
@@ -529,6 +540,11 @@ void DesktopSessionAgent::StopAudioCapturer() {
 void DesktopSessionAgent::SetUpUrlForwarder() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
+
+  if (!url_forwarder_configurator_) {
+    OnUrlForwarderSetUpStateChanged(SetUpUrlForwarderResponse::FAILED);
+    return;
+  }
 
   url_forwarder_configurator_->SetUpUrlForwarder(base::BindRepeating(
       &DesktopSessionAgent::OnUrlForwarderSetUpStateChanged, this));
@@ -724,12 +740,16 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
   session_file_operations_handler_.emplace(
       desktop_environment_->CreateFileOperations());
 
+  // CreateUrlForwarderConfigurator() returns nullptr on platforms that do not
+  // support remote_open_url (such as macOS).
   url_forwarder_configurator_ =
       desktop_environment_->CreateUrlForwarderConfigurator();
 
   // Check and report the initial URL forwarder setup state.
-  url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
-      &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
+  if (url_forwarder_configurator_) {
+    url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
+        &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
+  }
 
   webauthn_state_change_notifier_ =
       desktop_environment_->CreateRemoteWebAuthnStateChangeNotifier();

@@ -5,8 +5,6 @@
 module remoting.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-
-[EnableIf=is_win|is_linux]
 import "services/network/public/mojom/ip_endpoint.mojom";
 
 // This enum mirrors the remoting::ErrorCode enum.
@@ -59,7 +57,7 @@ struct SourceLocation {
 };
 
 // This enum mirrors the remoting::protocol::TransportRoute::RouteType enum.
-[EnableIf=is_win|is_linux]
+[EnableIf=is_win|is_linux|is_mac]
 enum TransportRouteType {
   kUndefined = 0,
   kDirect = 1,
@@ -68,7 +66,7 @@ enum TransportRouteType {
 };
 
 // This struct mirrors the remoting::protocol::TransportRoute struct.
-[EnableIf=is_win|is_linux]
+[EnableIf=is_win|is_linux|is_mac]
 struct TransportRoute {
   TransportRouteType type;
   network.mojom.IPEndPoint remote_address;

@@ -98,6 +98,7 @@ Me2MeDesktopEnvironment::CreateScreenControls() {
   return resizer;
 }
 
+// LINT.IfChange(get_capabilities)
 std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   std::string capabilities = BasicDesktopEnvironment::GetCapabilities();
   if (!capabilities.empty()) {
@@ -153,6 +154,7 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
 
   return capabilities;
 }
+// LINT.ThenChange(//remoting/host/desktop_session_proxy.cc:get_capabilities)
 
 Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,

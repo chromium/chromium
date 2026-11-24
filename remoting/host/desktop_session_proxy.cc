@@ -166,7 +166,6 @@ DesktopSessionProxy::CreateRemoteWebAuthnStateChangeNotifier() {
       base::BindRepeating(&DesktopSessionProxy::SignalWebAuthnExtension, this));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void DesktopSessionProxy::OnSessionServicesClientConnected(
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -175,8 +174,8 @@ void DesktopSessionProxy::OnSessionServicesClientConnected(
         std::move(receiver));
   }
 }
-#endif
 
+// LINT.IfChange(get_capabilities)
 std::string DesktopSessionProxy::GetCapabilities() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -184,6 +183,11 @@ std::string DesktopSessionProxy::GetCapabilities() const {
   result += " ";
   result += protocol::kMultiStreamCapability;
 
+#if !BUILDFLAG(IS_MAC)
+  // Matches `Me2MeDesktopEnvironment::GetCapabilities()`: `DesktopResizerMac`
+  // only supports single-monitor fixed 96-DPI display modes.
+  // TODO(crbug.com/589840045): Support HiDPI and multi-monitor resizing in
+  // `DesktopResizerMac` and enable these capabilities on macOS.
   if (options_.enable_curtaining()) {
     // Ask the client to send its resolution unconditionally.
     result += " ";
@@ -195,6 +199,7 @@ std::string DesktopSessionProxy::GetCapabilities() const {
     result += " ";
     result += protocol::kDefaultResizeCapability;
   }
+#endif
 
   if (InputInjector::SupportsTouchEvents()) {
     result += " ";
@@ -218,6 +223,7 @@ std::string DesktopSessionProxy::GetCapabilities() const {
 
   return result;
 }
+// LINT.ThenChange(//remoting/host/me2me_desktop_environment.cc:get_capabilities)
 
 void DesktopSessionProxy::SetCapabilities(const std::string& capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

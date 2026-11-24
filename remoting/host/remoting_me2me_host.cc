@@ -155,9 +155,7 @@
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
-#include "remoting/host/audio_capturer_mac.h"
 #include "remoting/host/mac/agent_process_broker_client.h"
-#include "remoting/host/mac/permission_utils.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -633,28 +631,18 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   raw_ptr<ShutdownWatchdog> shutdown_watchdog_;
 
-// On Mac, `remoting_host_control_` is bound by the BindRemotingHostControl IPC,
-// so it's a regular mojo receiver, while on other platforms, this is bound by
-// the legacy OnAssociatedInterfaceRequest, which requires using an associated
-// receiver.
 #if BUILDFLAG(IS_MAC)
-  mojo::Receiver<mojom::RemotingHostControl> remoting_host_control_{this};
-#else
-  mojo::AssociatedReceiver<mojom::RemotingHostControl> remoting_host_control_{
+  // On Mac in single-process mode, `legacy_remoting_host_control_` is bound by
+  // BindRemotingHostControl(), so it uses a regular mojo receiver.
+  mojo::Receiver<mojom::RemotingHostControl> legacy_remoting_host_control_{
       this};
 #endif
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
+  mojo::AssociatedReceiver<mojom::RemotingHostControl> remoting_host_control_{
+      this};
   mojo::AssociatedReceiver<mojom::WorkerProcessControl> worker_process_control_{
       this};
 #endif
-
-#if BUILDFLAG(IS_APPLE)
-  // When using the command line option to check the Accessibility or Screen
-  // Recording permission, these track the permission state and indicate that
-  // the host should exit immediately with the result.
-  bool checking_permission_state_ = false;
-  bool permission_granted_ = false;
-#endif  // BUILDFLAG(IS_APPLE)
 };
 
 HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
@@ -668,7 +656,7 @@ HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
       exit_code_out_(exit_code_out),
       shutdown_watchdog_(shutdown_watchdog) {
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   enable_peer_connection_process_ = multi_process_;
 #elif BUILDFLAG(IS_WIN)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -688,12 +676,6 @@ HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
   // And remove the same line from me2me_desktop_environment.cc.
 
   StartOnUiThread();
-
-#if BUILDFLAG(IS_APPLE)
-  if (checking_permission_state_) {
-    *exit_code_out = (permission_granted_ ? EXIT_SUCCESS : EXIT_FAILURE);
-  }
-#endif
 }
 
 HostProcess::~HostProcess() {
@@ -712,36 +694,6 @@ HostProcess::~HostProcess() {
 }
 
 bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
-#if BUILDFLAG(IS_APPLE)
-  if (cmd_line->HasSwitch(kCheckAccessibilityPermissionSwitchName)) {
-    checking_permission_state_ = true;
-    permission_granted_ = mac::CanInjectInput();
-    return false;
-  }
-  if (cmd_line->HasSwitch(kCheckScreenRecordingPermissionSwitchName)) {
-    checking_permission_state_ = true;
-    permission_granted_ = mac::CanRecordScreen();
-    if (!permission_granted_) {
-      // This adds the host bundle to the list of apps under Security & Privacy
-      // -> Screen Recording. This may also show a system prompt (if the bundle
-      // was not previously in the list).
-      mac::RequestScreenCapturePermission();
-    }
-    return false;
-  }
-  if (cmd_line->HasSwitch(kListAudioDevicesSwitchName)) {
-    std::vector<AudioCapturerMac::AudioDeviceInfo> audio_devices =
-        AudioCapturerMac::GetAudioDevices();
-    printf("Audio devices:\n");
-    for (const auto& audio_device : audio_devices) {
-      printf("\n");
-      printf("  Device name: %s\n", audio_device.device_name.c_str());
-      printf("  Device UID: %s\n", audio_device.device_uid.c_str());
-    }
-    return false;
-  }
-#endif  // BUILDFLAG(IS_APPLE)
-
   // Mojo keeps the task runner passed to it alive forever, so an
   // AutoThreadTaskRunner should not be passed to it. Otherwise, the process may
   // never shut down cleanly.
@@ -1286,8 +1238,11 @@ void HostProcess::ShutdownOnUiThread() {
   daemon_channel_.reset();
 
   // Release the remotes after the daemon channel has been closed.
-  remoting_host_control_.reset();
+#if BUILDFLAG(IS_MAC)
+  legacy_remoting_host_control_.reset();
+#endif
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
+  remoting_host_control_.reset();
   worker_process_control_.reset();
 #endif
 
@@ -1388,8 +1343,9 @@ void HostProcess::BindRemotingHostControl(
                                   std::move(receiver)));
     return;
   }
-  DCHECK(!remoting_host_control_.is_bound());
-  remoting_host_control_.Bind(std::move(receiver));
+  DCHECK(!multi_process_);
+  DCHECK(!legacy_remoting_host_control_.is_bound());
+  legacy_remoting_host_control_.Bind(std::move(receiver));
 }
 
 #endif
@@ -2018,7 +1974,7 @@ void HostProcess::StartHost() {
   DCHECK(!host_);
 
 #if BUILDFLAG(IS_MAC)
-  if (!agent_process_broker_client_) {
+  if (!multi_process_ && !agent_process_broker_client_) {
     HOST_LOG << "Suspending process to wait for broker outcome";
     SetState(HOST_SUSPENDED);
     ConnectAgentProcessBroker();
@@ -2226,8 +2182,17 @@ void HostProcess::StartHost() {
   }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/499082867): Move HostPowerSaveBlocker to DaemonProcessMac
+  // in multi-process mode since the Network process runs sandboxed.
+  if (!multi_process_) {
+    power_save_blocker_ = std::make_unique<HostPowerSaveBlocker>(
+        host_->status_monitor(), context_->ui_task_runner());
+  }
+#else
   power_save_blocker_ = std::make_unique<HostPowerSaveBlocker>(
       host_->status_monitor(), context_->ui_task_runner());
+#endif
 
   ftl_host_change_notification_listener_ =
       std::make_unique<FtlHostChangeNotificationListener>(
@@ -2480,7 +2445,15 @@ int HostProcessMain(bool multi_process) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 
   // Create the main task executor and start helper threads.
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI,
+  base::MessagePumpType message_pump_type = base::MessagePumpType::UI;
+#if BUILDFLAG(IS_MAC)
+  if (multi_process) {
+    // Avoid initializing NSApplication in the headless multi-process network
+    // worker.
+    message_pump_type = base::MessagePumpType::NS_RUNLOOP;
+  }
+#endif
+  base::SingleThreadTaskExecutor main_task_executor(message_pump_type,
                                                     /*is_main_thread=*/true);
   base::RunLoop run_loop;
   std::unique_ptr<ChromotingHostContext> context =

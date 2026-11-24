@@ -7,13 +7,11 @@ import("//remoting/remoting_options.gni")
 
 mojom("mojom") {
   sources = [
-    "agent_process_broker.mojom",
     "chromoting_host_services.mojom",
     "common.mojom",
     "remote_security_key.mojom",
     "remote_support.mojom",
     "remote_url_opener.mojom",
-    "remoting_host.mojom",
     "webauthn_proxy.mojom",
   ]
 
@@ -22,10 +20,14 @@ mojom("mojom") {
       "desktop_session.mojom",
       "keyboard_layout.mojom",
       "peer_session.mojom",
+      "remoting_host.mojom",
       "webrtc_types.mojom",
     ]
     if (is_linux) {
       sources += [ "login_session.mojom" ]
+    }
+    if (is_mac) {
+      sources += [ "agent_process_broker.mojom" ]
     }
   }
 

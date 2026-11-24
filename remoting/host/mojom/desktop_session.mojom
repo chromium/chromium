@@ -292,7 +292,6 @@ struct DesktopSessionOptions {
 // platform-specific, since some platforms (such as Linux) may keep the session
 // alive and reuse it for future connections, while other platforms (such as
 // Windows) will tear down the session when the endpoint is closed or reset.
-[EnableIf=is_win|is_linux]
 interface DesktopSession {
   // Sends the updated screen resolution to the desktop agent running in this
   // session.
@@ -304,7 +303,6 @@ interface DesktopSession {
 // environment.
 // The remote for this interface is owned in the high-privilege daemon process
 // and the receiver is bound in the session owner process.
-[EnableIf=is_win|is_linux]
 interface DesktopSessionEvents {
   // Notifies the session owner that the daemon has disconnected the desktop
   // session from the associated desktop environment.
@@ -331,7 +329,6 @@ interface DesktopSessionEvents {
 // destroy the current desktop session.
 // The remote for this interface is owned in the trusted network process and the
 // receiver is bound in the high-privilege daemon process.
-[EnableIf=is_win|is_linux]
 interface DesktopSessionManager {
   // Requests a desktop environment for the session identified by
   // `options.client_id`. If an existing persistent session exists for

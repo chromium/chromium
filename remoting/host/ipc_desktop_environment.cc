@@ -187,11 +187,9 @@ class IpcDesktopEnvironmentFactory::Core : public mojom::DesktopSessionEvents {
                               ErrorCode error_code,
                               const std::string& error_details,
                               const SourceLocation& error_location);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void OnSessionServicesClientConnected(
       int terminal_id,
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
-#endif
 
   // mojom::DesktopSessionEvents implementation.
   void OnDesktopSessionAgentAttached(
@@ -199,11 +197,9 @@ class IpcDesktopEnvironmentFactory::Core : public mojom::DesktopSessionEvents {
   void OnTerminalDisconnected(ErrorCode error_code,
                               const std::string& error_details,
                               const SourceLocation& error_location) override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void OnSessionServicesClientConnected(
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
       override;
-#endif
 
   size_t active_desktop_sessions_count_for_testing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -363,13 +359,11 @@ void IpcDesktopEnvironmentFactory::Core::OnTerminalDisconnected(
                          error_details, error_location);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void IpcDesktopEnvironmentFactory::Core::OnSessionServicesClientConnected(
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
   OnSessionServicesClientConnected(GetEventsReceivers().current_context(),
                                    std::move(receiver));
 }
-#endif
 
 void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionAgentAttached(
     int terminal_id,
@@ -409,7 +403,6 @@ void IpcDesktopEnvironmentFactory::Core::OnTerminalDisconnected(
   }
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void IpcDesktopEnvironmentFactory::Core::OnSessionServicesClientConnected(
     int terminal_id,
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
@@ -424,7 +417,6 @@ void IpcDesktopEnvironmentFactory::Core::OnSessionServicesClientConnected(
                  << "Invalid terminal ID " << terminal_id;
   }
 }
-#endif
 
 void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionRemoteDisconnected(
     int terminal_id) {
@@ -523,13 +515,11 @@ void IpcDesktopEnvironmentFactory::OnTerminalDisconnectedForTesting(
                                 error_location);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void IpcDesktopEnvironmentFactory::OnSessionServicesClientConnectedForTesting(
     int terminal_id,
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
   core_->OnSessionServicesClientConnected(terminal_id, std::move(receiver));
 }
-#endif
 
 size_t IpcDesktopEnvironmentFactory::active_desktop_sessions_count_for_testing()
     const {

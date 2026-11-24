@@ -69,7 +69,6 @@ struct JingleTransportInfo {
 //
 // Callee: High-privilege Daemon Process (`remoting::DaemonProcess`).
 // Caller: Trusted Network Process (`remoting::IpcPeerSessionFactory`).
-[EnableIf=is_win|is_linux]
 interface PeerSessionManager {
   // Launches a peer session and binds `peer_session_receiver`.
   LaunchPeerSession(
@@ -79,7 +78,6 @@ interface PeerSessionManager {
 // LINT.IfChange(peer_session_event_handler)
 // Mirror of remoting::PeerSession::EventHandler.
 // Implemented by the Network process and called by the Peer Connection process.
-[EnableIf=is_win|is_linux]
 interface PeerSessionEventHandler {
   // Called after all channels have been connected.
   OnSessionChannelsConnected();
@@ -99,7 +97,6 @@ interface PeerSessionEventHandler {
 // Handles outgoing transport signaling messages from the PC process to the
 // Network process.
 // Implemented by `IpcPeerSession` in the Network process.
-[EnableIf=is_win|is_linux]
 interface TransportEventHandler {
   // Relays outgoing transport information (local ICE candidates / SDP)
   // from the PC process to the Network process.
@@ -158,7 +155,6 @@ interface PairingRequester {
 // Callee: Trusted Network Process (`remoting::IpcPeerSession`).
 // Caller: Untrusted Peer Connection Process
 //         (`remoting::PeerConnectionProcess`).
-[EnableIf=is_win|is_linux]
 interface DesktopSessionRequester {
   // Requests a desktop session with the given initial screen resolution.
   // Can only be called once per peer session. Repeated calls will be rejected
@@ -175,7 +171,6 @@ interface DesktopSessionRequester {
 //
 // Callee: Untrusted Peer Connection Process (`PeerConnectionProcess`).
 // Caller: Network Process (`IpcPeerSession`).
-[EnableIf=is_win|is_linux]
 interface PeerSession {
   // Starts the peer session.
   Start(string client_jid,
@@ -211,7 +206,6 @@ interface PeerSession {
 //
 // Callee: Untrusted Peer Connection Process (`PeerConnectionProcess`).
 // Caller: Privileged Daemon Process (`remoting::DaemonProcess`).
-[EnableIf=is_win|is_linux]
 interface PeerConnectionProcessControl {
   // Binds the `PeerSession` receiver in the PC process.
   BindPeerSession(pending_receiver<PeerSession> session_receiver);

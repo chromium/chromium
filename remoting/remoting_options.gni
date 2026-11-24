@@ -16,7 +16,7 @@ enable_remoting_host = is_win || is_mac || is_chromeos || remoting_use_x11
 enable_me2me_host = is_win || is_mac || remoting_use_x11
 
 # Enable multi-process host support.
-remoting_multi_process = is_win || is_linux
+remoting_multi_process = is_win || is_linux || is_mac
 
 remoting_rdp_session = 1
 
