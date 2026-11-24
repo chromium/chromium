@@ -347,13 +347,9 @@ source_set("webrtc") {
       "//chrome/browser/ash/arc/screen_capture",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/policy/handlers",
-      "//chrome/browser/ash/policy/uploading",
       "//chrome/browser/ash/profiles",
-      "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
       "//chrome/browser/chromeos/policy/dlp",
-      "//chrome/browser/ui/ash/keyboard",
-      "//chrome/browser/ui/ash/media_client",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:multi_capture_notification_details_view",
       "//chrome/browser/web_applications",
       "//chromeos/ash/components/browser_context_helper",
@@ -364,10 +360,6 @@ source_set("webrtc") {
     allow_circular_includes_from = [
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/arc/screen_capture",
-      "//chrome/browser/ash/policy/uploading",
-      "//chrome/browser/ui/ash/keyboard",
-      "//chrome/browser/ui/ash/media_client",
-      "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
     ]
   }
