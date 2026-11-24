@@ -10,7 +10,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Build;
+import android.os.LocaleList;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
@@ -21,6 +23,7 @@ import android.text.TextUtils;
 import android.text.method.MetaKeyKeyListener;
 import android.text.style.ReplacementSpan;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -73,6 +76,7 @@ import org.chromium.ui.display.DisplayUtil;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.text.BreakIterator;
+import java.util.Objects;
 
 /** The URL text entry view for the Omnibox. */
 @NullMarked
@@ -1960,11 +1964,7 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     private boolean containsRtl(CharSequence text) {
-        BidiFormatter bidi =
-                new BidiFormatter.Builder()
-                        .setTextDirectionHeuristic(TextDirectionHeuristicsCompat.ANYRTL_LTR)
-                        .build();
-        return bidi.isRtl(text);
+        return TextDirectionHeuristicsCompat.ANYRTL_LTR.isRtl(text, 0, text.length());
     }
 
     @VisibleForTesting
@@ -2071,6 +2071,10 @@ public class UrlBar extends AutocompleteEditText {
 
         public static final EllipsisSpan INSTANCE = new EllipsisSpan();
 
+        private final SparseIntArray mEllipsisWidthByTextSize = new SparseIntArray();
+        private @Nullable Typeface mCachedTypeface;
+        private @Nullable LocaleList mCachedTextLocales;
+
         @Override
         public int getSize(
                 Paint paint,
@@ -2078,7 +2082,22 @@ public class UrlBar extends AutocompleteEditText {
                 int start,
                 int end,
                 Paint.@Nullable FontMetricsInt fm) {
-            return (int) Math.ceil(paint.measureText(ELLIPSIS));
+            Typeface typeface = paint.getTypeface();
+            LocaleList textLocales = paint.getTextLocales();
+            if (!Objects.equals(mCachedTypeface, typeface)
+                    || !Objects.equals(mCachedTextLocales, textLocales)) {
+                mEllipsisWidthByTextSize.clear();
+                mCachedTypeface = typeface;
+                mCachedTextLocales = textLocales;
+            }
+            int key = Float.floatToRawIntBits(paint.getTextSize());
+            int cached = mEllipsisWidthByTextSize.get(key, -1);
+            if (cached >= 0) {
+                return cached;
+            }
+            int width = (int) Math.ceil(paint.measureText(ELLIPSIS));
+            mEllipsisWidthByTextSize.put(key, width);
+            return width;
         }
 
         @Override

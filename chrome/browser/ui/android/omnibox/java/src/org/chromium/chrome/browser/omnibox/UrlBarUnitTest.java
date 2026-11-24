@@ -32,7 +32,9 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Build;
+import android.os.LocaleList;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -603,6 +605,16 @@ public class UrlBarUnitTest {
         assertEquals(0, spans.length);
 
         mUrlBar.setLayoutParams(previousLayoutParams);
+    }
+
+    @Test
+    public void testTruncation_RtlUrl() {
+        measureAndLayoutUrlBar();
+        String rtlUrl = SHORT_DOMAIN + SUPER_LONG_RTL_PATH;
+        mUrlBar.setTextWithTruncation(rtlUrl, ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+        Editable text = mUrlBar.getText();
+        assertEquals(rtlUrl, text.toString());
+        assertEquals(0, text.getSpans(0, text.length(), BoundsEllipsisSpan.class).length);
     }
 
     @Test
@@ -2889,5 +2901,84 @@ public class UrlBarUnitTest {
                 EditorInfo.TYPE_TEXT_VARIATION_URI,
                 urlInfo.inputType & EditorInfo.TYPE_TEXT_VARIATION_URI);
         assertEquals(0, urlInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT);
+    }
+
+    private static class MeasuringPaint extends TextPaint {
+        float mWidth;
+        int mMeasureCount;
+
+        @Override
+        public float measureText(String text) {
+            assertEquals(EllipsisSpan.ELLIPSIS, text);
+            mMeasureCount++;
+            return mWidth;
+        }
+    }
+
+    @Test
+    public void testEllipsisSpan_cachesMeasuredWidthByTextSize() {
+        EllipsisSpan span = new EllipsisSpan();
+        MeasuringPaint paint = new MeasuringPaint();
+        paint.setTextSize(16f);
+        paint.mWidth = 12.3f;
+
+        assertEquals(13, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(13, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(1, paint.mMeasureCount);
+
+        paint.setTextSize(24f);
+        paint.mWidth = 18.1f;
+        assertEquals(19, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(19, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(2, paint.mMeasureCount);
+
+        paint.setTextSize(16f);
+        assertEquals(13, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(2, paint.mMeasureCount);
+    }
+
+    @Test
+    public void testEllipsisSpan_invalidatesCacheOnTypefaceChange() {
+        EllipsisSpan span = new EllipsisSpan();
+        MeasuringPaint paint = new MeasuringPaint();
+        paint.setTextSize(16f);
+        paint.mWidth = 12.3f;
+        assertEquals(13, span.getSize(paint, "text", 0, 1, null));
+
+        paint.setTextSize(24f);
+        paint.mWidth = 18.1f;
+        assertEquals(19, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(2, paint.mMeasureCount);
+
+        paint.setTypeface(Typeface.MONOSPACE);
+        paint.mWidth = 15.0f;
+        assertEquals(15, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(3, paint.mMeasureCount);
+
+        paint.setTextSize(16f);
+        paint.mWidth = 14.0f;
+        assertEquals(14, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(4, paint.mMeasureCount);
+
+        paint.setTypeface(null);
+        paint.mWidth = 12.3f;
+        assertEquals(13, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(5, paint.mMeasureCount);
+    }
+
+    @Test
+    public void testEllipsisSpan_invalidatesCacheOnTextLocaleChange() {
+        EllipsisSpan span = new EllipsisSpan();
+        MeasuringPaint paint = new MeasuringPaint();
+        paint.setTextSize(16f);
+        paint.mWidth = 12.3f;
+        assertEquals(13, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(1, paint.mMeasureCount);
+
+        paint.setTextLocales(LocaleList.forLanguageTags("ar"));
+        paint.mWidth = 14.5f;
+        assertEquals(15, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(15, span.getSize(paint, "text", 0, 1, null));
+        assertEquals(2, paint.mMeasureCount);
     }
 }
