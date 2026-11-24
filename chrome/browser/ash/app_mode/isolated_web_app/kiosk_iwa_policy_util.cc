@@ -91,20 +91,6 @@ base::expected<IwaPinnedVersion, std::monostate> GetPinnedVersion(
   return *std::move(parsed_pinned_version);
 }
 
-KioskIwaUpdateData::KioskIwaUpdateData(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    GURL update_manifest_url,
-    web_app::UpdateChannel update_channel,
-    IwaPinnedVersion pinned_version,
-    bool allow_downgrades)
-    : web_bundle_id(web_bundle_id),
-      update_manifest_url(std::move(update_manifest_url)),
-      update_channel(std::move(update_channel)),
-      pinned_version(std::move(pinned_version)),
-      allow_downgrades(allow_downgrades) {}
-
-KioskIwaUpdateData::~KioskIwaUpdateData() = default;
-
 std::optional<web_package::SignedWebBundleId> GetCurrentKioskIwaBundleId() {
   if (!chromeos::IsIwaKioskSession()) {
     return std::nullopt;
@@ -139,24 +125,23 @@ std::optional<KioskIwaUpdateData> GetCurrentKioskIwaUpdateData() {
 
   const std::string& update_channel_raw =
       current_kiosk_policy.kiosk_iwa_info.update_channel();
-  ASSIGN_OR_RETURN(
-      web_app::UpdateChannel update_channel,
-      GetUpdateChannel(update_channel_raw),
-      [update_channel_raw](auto) -> std::optional<KioskIwaUpdateData> {
-        LOG(ERROR) << "Cannot update kiosk IWA. Invalid update channel: "
-                   << update_channel_raw;
-        return std::nullopt;
-      });
+  ASSIGN_OR_RETURN(web_app::UpdateChannel update_channel,
+                   GetUpdateChannel(update_channel_raw), [&](auto) {
+                     LOG(ERROR)
+                         << "Cannot update kiosk IWA. Invalid update channel: "
+                         << update_channel_raw;
+                     return std::nullopt;
+                   });
 
   const std::string& pinned_version_raw =
       current_kiosk_policy.kiosk_iwa_info.pinned_version();
-  ASSIGN_OR_RETURN(
-      IwaPinnedVersion pinned_version, GetPinnedVersion(pinned_version_raw),
-      [pinned_version_raw](auto) -> std::optional<KioskIwaUpdateData> {
-        LOG(ERROR) << "Cannot update kiosk IWA. Invalid pinned version: "
-                   << pinned_version_raw;
-        return std::nullopt;
-      });
+  ASSIGN_OR_RETURN(IwaPinnedVersion pinned_version,
+                   GetPinnedVersion(pinned_version_raw), [&](auto) {
+                     LOG(ERROR)
+                         << "Cannot update kiosk IWA. Invalid pinned version: "
+                         << pinned_version_raw;
+                     return std::nullopt;
+                   });
 
   const bool allow_downgrades =
       current_kiosk_policy.kiosk_iwa_info.allow_downgrades();
@@ -166,9 +151,13 @@ std::optional<KioskIwaUpdateData> GetCurrentKioskIwaUpdateData() {
     return std::nullopt;
   }
 
-  return std::make_optional<KioskIwaUpdateData>(
-      maybe_web_bundle_id.value(), current_update_manifest_url, update_channel,
-      pinned_version, allow_downgrades);
+  return KioskIwaUpdateData{
+      .web_bundle_id = std::move(maybe_web_bundle_id).value(),
+      .update_manifest_url = std::move(current_update_manifest_url),
+      .update_channel = std::move(update_channel),
+      .pinned_version = std::move(pinned_version),
+      .allow_downgrades = allow_downgrades,
+  };
 }
 
 }  // namespace ash

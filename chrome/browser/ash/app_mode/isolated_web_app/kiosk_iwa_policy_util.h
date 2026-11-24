@@ -37,20 +37,11 @@ base::expected<IwaPinnedVersion, std::monostate> GetPinnedVersion(
 std::optional<web_package::SignedWebBundleId> GetCurrentKioskIwaBundleId();
 
 struct KioskIwaUpdateData {
-  KioskIwaUpdateData(const web_package::SignedWebBundleId& web_bundle_id,
-                     GURL update_manifest_url,
-                     web_app::UpdateChannel update_channel,
-                     IwaPinnedVersion pinned_version,
-                     bool allow_downgrades);
-  ~KioskIwaUpdateData();
-  KioskIwaUpdateData(const KioskIwaUpdateData& other) = delete;
-  KioskIwaUpdateData& operator=(const KioskIwaUpdateData&) = delete;
-
-  const web_package::SignedWebBundleId web_bundle_id;
-  const GURL update_manifest_url;
-  const web_app::UpdateChannel update_channel;
-  const IwaPinnedVersion pinned_version;
-  const bool allow_downgrades;
+  web_package::SignedWebBundleId web_bundle_id;
+  GURL update_manifest_url;
+  web_app::UpdateChannel update_channel;
+  IwaPinnedVersion pinned_version;
+  bool allow_downgrades = false;
 };
 
 // If an Isolated Web App is running in kiosk mode, returns app update data from

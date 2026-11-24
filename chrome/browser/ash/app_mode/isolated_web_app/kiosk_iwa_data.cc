@@ -39,7 +39,7 @@ std::unique_ptr<KioskIwaData> KioskIwaData::Create(
   ASSIGN_OR_RETURN(
       web_package::SignedWebBundleId web_bundle_id,
       web_package::SignedWebBundleId::Create(policy_info.web_bundle_id()),
-      [policy_info](const std::string& error) -> std::unique_ptr<KioskIwaData> {
+      [&](const std::string& error) {
         LOG(ERROR) << "Cannot create kiosk IWA. Invalid bundle id: "
                    << policy_info.web_bundle_id() << ": " << error;
         return nullptr;
@@ -53,8 +53,7 @@ std::unique_ptr<KioskIwaData> KioskIwaData::Create(
   }
 
   ASSIGN_OR_RETURN(web_app::UpdateChannel update_channel,
-                   GetUpdateChannel(policy_info.update_channel()),
-                   [policy_info](auto) -> std::unique_ptr<KioskIwaData> {
+                   GetUpdateChannel(policy_info.update_channel()), [&](auto) {
                      LOG(ERROR)
                          << "Cannot create kiosk IWA. Invalid update channel: "
                          << policy_info.update_channel();
@@ -62,8 +61,7 @@ std::unique_ptr<KioskIwaData> KioskIwaData::Create(
                    });
 
   ASSIGN_OR_RETURN(PinnedVersion pinned_version,
-                   GetPinnedVersion(policy_info.pinned_version()),
-                   [policy_info](auto) -> std::unique_ptr<KioskIwaData> {
+                   GetPinnedVersion(policy_info.pinned_version()), [&](auto) {
                      LOG(ERROR)
                          << "Cannot create kiosk IWA. Invalid pinned version: "
                          << policy_info.pinned_version();
