@@ -26,6 +26,7 @@ source_set("tracked_element") {
     "//base",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//url",
   ]
 
   if (!is_android) {
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:test_support",

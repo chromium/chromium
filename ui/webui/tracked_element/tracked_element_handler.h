@@ -226,6 +226,13 @@ class TrackedElementHandler
 
   void UpdateAllEffectiveVisibilities(bool bounds_changed = false);
   void RegisterIdentifier(ui::ElementIdentifier id);
+  // Returns true if `id` is non-empty and its `native_identifier` is
+  // registered on this handler (even if no visible element currently exists for
+  // `secondary_identifier`). Logs an IPC error when returning false.
+  bool IsValidIdentifier(
+      const tracked_element::mojom::TrackedElementIdentifierPtr& id) const;
+  // Returns the active element for `id`, or nullptr if `id` is invalid or the
+  // element is not currently visible (unless `create_if_not_present` is true).
   TrackedElementWebUI* GetElement(
       const tracked_element::mojom::TrackedElementIdentifierPtr& id,
       bool create_if_not_present = false);

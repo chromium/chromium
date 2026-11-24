@@ -4,11 +4,11 @@
 
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,6 +24,7 @@
 #include "ui/webui/tracked_element/anchored_dialog_registry_webui.h"
 #include "ui/webui/tracked_element/element_highlighter_webui.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "ui/views/controls/webview/webview.h"
@@ -392,10 +393,14 @@ void TrackedElementHandler::TrackedElementVisibilityChanged(
 
 void TrackedElementHandler::TrackedElementActivated(
     tracked_element::mojom::TrackedElementIdentifierPtr id) {
+  if (!IsValidIdentifier(id)) {
+    ReportBadMessage("TrackedElementActivated for invalid element.", id);
+    return;
+  }
+  // The element may legitimately have hidden since the WebUI dispatched the
+  // activation, so this is not a bad message.
   TrackedElementWebUI* const element = GetElement(id);
   if (!element || !element->visible()) {
-    ReportBadMessage(
-        "TrackedElementActivated for nonexistent or non-visible element.", id);
     return;
   }
   element->Activate();
@@ -404,13 +409,12 @@ void TrackedElementHandler::TrackedElementActivated(
 void TrackedElementHandler::TrackedElementCustomEvent(
     tracked_element::mojom::TrackedElementIdentifierPtr id,
     const std::string& event_name) {
-  TrackedElementWebUI* const element = GetElement(id);
-  if (!element || !element->visible()) {
-    const auto message = base::StringPrintf(
-        "TrackedElementCustomEvent of type \"%s\" for nonexistent or "
-        "non-visible element.",
-        event_name);
-    ReportBadMessage(message, id);
+  if (!IsValidIdentifier(id)) {
+    ReportBadMessage(
+        base::StringPrintf(
+            "TrackedElementCustomEvent of type \"%s\" for invalid element.",
+            event_name),
+        id);
     return;
   }
   const ui::CustomElementEventType event_type =
@@ -421,6 +425,12 @@ void TrackedElementHandler::TrackedElementCustomEvent(
             "TrackedElementCustomEvent received invalid event name \"%s\".",
             event_name),
         id);
+    return;
+  }
+  // The element may legitimately have hidden since the WebUI dispatched the
+  // event, so this is not a bad message.
+  TrackedElementWebUI* const element = GetElement(id);
+  if (!element || !element->visible()) {
     return;
   }
   element->CustomEvent(event_type);
@@ -491,28 +501,39 @@ std::vector<std::string> TrackedElementHandler::GetIdentifiers() {
   return identifiers;
 }
 
-TrackedElementWebUI* TrackedElementHandler::GetElement(
-    const tracked_element::mojom::TrackedElementIdentifierPtr& id,
-    bool create_if_not_present) {
+bool TrackedElementHandler::IsValidIdentifier(
+    const tracked_element::mojom::TrackedElementIdentifierPtr& id) const {
+  CHECK(id);
   const std::string& name = id->native_identifier;
   const std::string& secondary_identifier = id->secondary_identifier;
   if (name.empty()) {
     LOG(ERROR) << "Empty ElementIdentifier for TrackedElement via IPC.";
-    return nullptr;
+    return false;
   }
   if (secondary_identifier.empty()) {
-    LOG(ERROR)
-        << "Empty sub-identifier received via IPC for TrackedElement of type \""
-        << secondary_identifier << "\"";
+    LOG(ERROR) << "Empty sub-identifier received via IPC for TrackedElement "
+                  "with identifier \""
+               << name << "\"";
+    return false;
+  }
+  if (!elements_.contains(name)) {
+    LOG(ERROR) << "ElementIdentifier \"" << name << "\" not registered for "
+               << (web_contents() ? web_contents()->GetURL() : GURL());
+    return false;
+  }
+  return true;
+}
+
+TrackedElementWebUI* TrackedElementHandler::GetElement(
+    const tracked_element::mojom::TrackedElementIdentifierPtr& id,
+    bool create_if_not_present) {
+  if (!IsValidIdentifier(id)) {
     return nullptr;
   }
+  const std::string& name = id->native_identifier;
+  const std::string& secondary_identifier = id->secondary_identifier;
   auto it = elements_.find(name);
-  if (it == elements_.end()) {
-    NOTREACHED(base::NotFatalUntil::M153)
-        << "ElementIdentifier \"" << name << "\" not registered for "
-        << web_contents()->GetURL();
-    return nullptr;
-  }
+  CHECK(it != elements_.end());
   auto it2 = it->second.find(secondary_identifier);
   if (it2 == it->second.end()) {
     if (!create_if_not_present) {
@@ -531,6 +552,7 @@ TrackedElementWebUI* TrackedElementHandler::GetElement(
 void TrackedElementHandler::ReportBadMessage(
     std::string_view description,
     const tracked_element::mojom::TrackedElementIdentifierPtr& id) {
+  CHECK(id);
   LOG(ERROR) << description << " Element has native id "
              << id->native_identifier
              << " and secondary identifier: " << id->secondary_identifier;

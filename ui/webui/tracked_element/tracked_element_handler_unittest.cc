@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
@@ -57,6 +58,7 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier2);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUnregisteredElementIdentifier);
 constexpr std::string_view kTestSecondaryId1 = "3";
 constexpr std::string_view kTestSecondaryId2 = "7";
 constexpr gfx::RectF kElementBounds{10, 20, 30, 40};
@@ -189,6 +191,20 @@ class TrackedElementHandlerTest : public content::RenderViewHostTestHarness {
     content::SetBrowserClientForTesting(&test_browser_client_);
     content::RenderViewHostTestHarness::SetUp();
 
+    ResetHandler();
+  }
+
+  void TearDown() override {
+    tracked_element_handler_remote_.reset();
+    handler_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  void ResetHandler() {
+    tracked_element_handler_remote_.reset();
+    handler_.reset();
+
     mojo::PendingRemote<tracked_element::mojom::TrackedElementHandler> remote;
     handler_ = std::make_unique<TrackedElementHandler>(
         web_contents(),
@@ -200,13 +216,15 @@ class TrackedElementHandlerTest : public content::RenderViewHostTestHarness {
     tracked_element_handler_remote_.Bind(std::move(remote));
   }
 
-  void TearDown() override {
-    tracked_element_handler_remote_.reset();
-    handler_.reset();
-    content::RenderViewHostTestHarness::TearDown();
+  template <typename Fn>
+  void ExpectBadMessage(Fn&& fn, std::string_view expected_substr) {
+    ResetHandler();
+    mojo::test::BadMessageObserver bad_message_observer;
+    std::forward<Fn>(fn)();
+    EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+                testing::HasSubstr(expected_substr));
   }
 
- protected:
   tracked_element::mojom::TrackedElementHandler* handler_remote() {
     return tracked_element_handler_remote_.get();
   }
@@ -305,6 +323,288 @@ TEST_F(TrackedElementHandlerTest, ElementCustomEventOnEvent) {
         MakeId(kTestElementIdentifier1, kTestSecondaryId1), event_name);
     tracked_element_handler_remote_.FlushForTesting();
   });
+}
+
+TEST_F(TrackedElementHandlerTest,
+       ElementActivatedIgnoredWhenHiddenOrNonexistent) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, activated);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  const ui::ElementContext context = element->context();
+  auto subscription = tracker->AddElementActivatedCallback(
+      kTestElementIdentifier1, context, activated.Get());
+  EXPECT_CALL(activated, Run).Times(0);
+
+  // Activation for an unknown secondary ID while a sibling secondary ID is
+  // visible should be ignored without falling back to the visible sibling.
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementActivated(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId2));
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Activation arriving after browser-side WebContents hiding should be
+  // ignored without reporting a bad message.
+  handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementActivated(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1));
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+  handler()->OnVisibilityChanged(content::Visibility::VISIBLE);
+
+  // Activation arriving after the element lost visibility in the renderer
+  // (which removes it from the secondary map) should also be ignored.
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), false, gfx::RectF());
+  tracked_element_handler_remote_.FlushForTesting();
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementActivated(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1));
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Activation for a registered identifier whose element has not yet reported
+  // visible = true should also be ignored.
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementActivated(
+        MakeId(kTestElementIdentifier2, kTestSecondaryId2));
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Re-showing the element over the same Mojo pipe still delivers activations.
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+  auto* const reshown_element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(reshown_element);
+  EXPECT_CALL_IN_SCOPE(activated, Run(reshown_element), {
+    handler_remote()->TrackedElementActivated(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1));
+    tracked_element_handler_remote_.FlushForTesting();
+  });
+}
+
+TEST_F(TrackedElementHandlerTest,
+       ElementActivatedReportsBadMessageForInvalidIdentifier) {
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementActivated(
+            tracked_element::mojom::TrackedElementIdentifier::New(
+                "", std::string(kTestSecondaryId1)));
+      },
+      "TrackedElementActivated for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementActivated(
+            MakeId(kTestElementIdentifier1, ""));
+      },
+      "TrackedElementActivated for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementActivated(
+            MakeId(kUnregisteredElementIdentifier, kTestSecondaryId1));
+      },
+      "TrackedElementActivated for invalid element.");
+}
+
+TEST_F(TrackedElementHandlerTest,
+       ElementCustomEventIgnoredWhenHiddenOrNonexistent) {
+  const std::string event_name = kTestCustomEvent.GetName();
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, custom_event);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  const ui::ElementContext context = element->context();
+  auto subscription = tracker->AddCustomEventCallback(kTestCustomEvent, context,
+                                                      custom_event.Get());
+  EXPECT_CALL(custom_event, Run).Times(0);
+
+  // Custom event for an unknown secondary ID while a sibling secondary ID is
+  // visible should be ignored without falling back to the visible sibling.
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementCustomEvent(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId2), event_name);
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Custom event arriving after browser-side WebContents hiding should be
+  // ignored without reporting a bad message.
+  handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementCustomEvent(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1), event_name);
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+  handler()->OnVisibilityChanged(content::Visibility::VISIBLE);
+
+  // Custom event arriving after the element lost visibility in the renderer
+  // should also be ignored.
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), false, gfx::RectF());
+  tracked_element_handler_remote_.FlushForTesting();
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementCustomEvent(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1), event_name);
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Custom event for a registered identifier whose element has not yet reported
+  // visible = true should also be ignored.
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    handler_remote()->TrackedElementCustomEvent(
+        MakeId(kTestElementIdentifier2, kTestSecondaryId2), event_name);
+    tracked_element_handler_remote_.FlushForTesting();
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Re-showing the element over the same Mojo pipe still delivers custom
+  // events.
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+  auto* const reshown_element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(reshown_element);
+  EXPECT_CALL_IN_SCOPE(custom_event, Run(reshown_element), {
+    handler_remote()->TrackedElementCustomEvent(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1), event_name);
+    tracked_element_handler_remote_.FlushForTesting();
+  });
+}
+
+TEST_F(TrackedElementHandlerTest,
+       ElementCustomEventReportsBadMessageForInvalidInput) {
+  const std::string event_name = kTestCustomEvent.GetName();
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementCustomEvent(
+            tracked_element::mojom::TrackedElementIdentifier::New(
+                "", std::string(kTestSecondaryId1)),
+            event_name);
+      },
+      "for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementCustomEvent(
+            MakeId(kTestElementIdentifier1, ""), event_name);
+      },
+      "for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementCustomEvent(
+            MakeId(kUnregisteredElementIdentifier, kTestSecondaryId1),
+            event_name);
+      },
+      "for invalid element.");
+
+  // An unregistered/invalid custom event name must still report a bad message
+  // even when the target element is currently hidden.
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementCustomEvent(
+            MakeId(kTestElementIdentifier1, kTestSecondaryId1),
+            "kNonexistentCustomEventName");
+      },
+      "received invalid event name \"kNonexistentCustomEventName\"");
+}
+
+TEST_F(TrackedElementHandlerTest,
+       VisibilityAndHighlightReportBadMessageForInvalidIdentifier) {
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementVisibilityChanged(
+            tracked_element::mojom::TrackedElementIdentifier::New(
+                "", std::string(kTestSecondaryId1)),
+            true, kElementBounds);
+      },
+      "TrackedElementVisibilityChanged(true) for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementVisibilityChanged(
+            MakeId(kTestElementIdentifier1, ""), true, kElementBounds);
+      },
+      "TrackedElementVisibilityChanged(true) for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementVisibilityChanged(
+            MakeId(kUnregisteredElementIdentifier, kTestSecondaryId1), true,
+            kElementBounds);
+      },
+      "TrackedElementVisibilityChanged(true) for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementCanHighlightChanged(
+            tracked_element::mojom::TrackedElementIdentifier::New(
+                "", std::string(kTestSecondaryId1)),
+            true);
+      },
+      "TrackedElementCanHighlightChanged for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementCanHighlightChanged(
+            MakeId(kTestElementIdentifier1, ""), true);
+      },
+      "TrackedElementCanHighlightChanged for invalid element.");
+
+  ExpectBadMessage(
+      [&] {
+        handler_remote()->TrackedElementCanHighlightChanged(
+            MakeId(kUnregisteredElementIdentifier, kTestSecondaryId1), true);
+      },
+      "TrackedElementCanHighlightChanged for invalid element.");
+}
+
+TEST_F(TrackedElementHandlerTest,
+       UnregisteredIdentifierWithoutWebContentsDoesNotCrash) {
+  mojo::Remote<tracked_element::mojom::TrackedElementHandler> remote;
+  TrackedElementHandler headless_handler(
+      /*web_contents=*/nullptr, remote.BindNewPipeAndPassReceiver(),
+      ui::ElementContext::CreateFakeContextForTesting(1),
+      std::vector<ui::ElementIdentifier>{kTestElementIdentifier1});
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote->TrackedElementActivated(
+      MakeId(kUnregisteredElementIdentifier, kTestSecondaryId1));
+  EXPECT_THAT(
+      bad_message_observer.WaitForBadMessage(),
+      testing::HasSubstr("TrackedElementActivated for invalid element."));
 }
 
 TEST_F(TrackedElementHandlerTest,
