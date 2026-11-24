@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenation_minikin.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <utility>
 
@@ -187,23 +189,30 @@ Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
   return hyphen_locations;
 }
 
+namespace {
+
+// 10 chars for "de-LI-1901"/"de-ch-1901" + NUL.
+constexpr size_t kLocaleBufferSize = 11;
+
 struct HyphenatorLocaleData {
-  const char* locale = nullptr;
-  const char* locale_for_exact_match = nullptr;
+  char locale[kLocaleBufferSize] = "";
+  char locale_for_exact_match[kLocaleBufferSize] = "";
 };
 
 using LocaleMap = HashMap<AtomicString,
                           const HyphenatorLocaleData*,
                           IgnoringAsciiCaseHashTraits<AtomicString>>;
 
-static LocaleMap CreateLocaleFallbackMap() {
+LocaleMap CreateLocaleFallbackMap() {
   // This data is from CLDR, compiled by AOSP.
   // https://android.googlesource.com/platform/frameworks/base/+/master/core/jni/android_text_Hyphenator.cpp
   struct LocaleFallback {
-    const char* locale;
+    char locale[kLocaleBufferSize];
     HyphenatorLocaleData data;
   };
-  static LocaleFallback locale_fallback_data[] = {
+  // Fixed-size char[kLocaleBufferSize] fields keep this table in .rodata with
+  // no dynamic relocations.
+  static constexpr LocaleFallback locale_fallback_data[] = {
       // English locales that fall back to en-US. The data is from CLDR. It's
       // all English locales,
       // minus the locales whose parent is en-001 (from supplementalData.xml,
@@ -266,6 +275,8 @@ static LocaleMap CreateLocaleFallbackMap() {
   return map;
 }
 
+}  // namespace
+
 // static
 AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
   static base::NoDestructor<LocaleMap> locale_fallback(
@@ -273,8 +284,10 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
   for (AtomicString mapped_locale = locale;;) {
     const auto& it = locale_fallback->find(mapped_locale);
     if (it != locale_fallback->end()) {
-      if (it->value->locale_for_exact_match && locale == mapped_locale)
+      if (it->value->locale_for_exact_match[0] != '\0' &&
+          locale == mapped_locale) {
         return AtomicString(it->value->locale_for_exact_match);
+      }
       return AtomicString(it->value->locale);
     }
     const wtf_size_t last_hyphen = mapped_locale.rfind('-');
