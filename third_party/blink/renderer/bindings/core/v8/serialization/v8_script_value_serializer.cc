@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
@@ -66,8 +65,21 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
+#include "v8/include/v8-microtask-queue.h"
 
 namespace blink {
+
+namespace {
+
+bool HasValidExecutionContext(const ScriptState* script_state) {
+  if (!script_state || !script_state->ContextIsValid()) {
+    return false;
+  }
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  return execution_context && !execution_context->IsContextDestroyed();
+}
+
+}  // namespace
 
 // The "Blink-side" serialization version, which defines how Blink will behave
 // during the serialization process, is in
@@ -214,6 +226,7 @@ V8ScriptValueSerializer::V8ScriptValueSerializer(ScriptState* script_state,
           script_state_->GetIsolate(),
           this,
           (options.for_storage == SerializedScriptValue::kForStorage ||
+           !HasValidExecutionContext(script_state_) ||
            !ExecutionContext::From(script_state_)
                 ->SharedArrayBufferTransferAllowed())
               ? v8::ValueSerializer::SharedImmutableArrayBufferMode::kDisabled
@@ -257,11 +270,13 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
 
   // Serialize the value and handle errors.
   v8::Isolate* isolate = script_state_->GetIsolate();
+  v8::Local<v8::Context> context = script_state_->GetContext();
   TryRethrowScope rethrow_scope(isolate, exception_state);
-  V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   bool wrote_value;
-  if (!serializer_.WriteValue(script_state_->GetContext(), value)
-           .To(&wrote_value)) {
+  if (!serializer_.WriteValue(context, value).To(&wrote_value)) {
     DCHECK(rethrow_scope.HasCaught());
     return nullptr;
   }
@@ -274,7 +289,8 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
 
   if (shared_array_buffers_.size()) {
     auto* execution_context = ExecutionContext::From(script_state_);
-    if (!execution_context->CheckSharedArrayBufferTransferAllowedAndReport()) {
+    if (!HasValidExecutionContext(script_state_) ||
+        !execution_context->CheckSharedArrayBufferTransferAllowedAndReport()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "SharedArrayBuffer transfer requires self.crossOriginIsolated.");
@@ -476,8 +492,9 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
       index = transferables_->image_bitmaps.Find(image_bitmap);
     if (index != kNotFound) {
       if (image_bitmap->OriginClean()) {
-        execution_context->CountUse(
-            mojom::WebFeature::kOriginCleanImageBitmapTransfer);
+        UseCounter::Count(
+            execution_context,
+            mojom::blink::WebFeature::kOriginCleanImageBitmapTransfer);
       } else {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kDataCloneError,
@@ -493,8 +510,9 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
 
     // Otherwise, it must be fully serialized.
     if (image_bitmap->OriginClean()) {
-      execution_context->CountUse(
-          mojom::WebFeature::kOriginCleanImageBitmapSerialization);
+      UseCounter::Count(
+          execution_context,
+          mojom::blink::WebFeature::kOriginCleanImageBitmapSerialization);
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -1006,6 +1024,13 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetSharedArrayBufferId(
 
   ExceptionState exception_state(isolate);
 
+  if (!HasValidExecutionContext(script_state_)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataCloneError,
+        "A SharedArrayBuffer cannot be cloned in a detached context.");
+    return v8::Nothing<uint32_t>();
+  }
+
   if (for_storage_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
@@ -1094,7 +1119,8 @@ bool V8ScriptValueSerializer::AdoptSharedValueConveyor(
     v8::Isolate* isolate,
     v8::SharedValueConveyor&& conveyor) {
   auto* execution_context = ExecutionContext::From(script_state_);
-  if (for_storage_ || !execution_context->SharedArrayBufferTransferAllowed()) {
+  if (for_storage_ || !HasValidExecutionContext(script_state_) ||
+      !execution_context->SharedArrayBufferTransferAllowed()) {
     V8ThrowDOMException::Throw(
         isolate, DOMExceptionCode::kDataCloneError,
         for_storage_

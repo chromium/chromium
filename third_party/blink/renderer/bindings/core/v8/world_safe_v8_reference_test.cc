@@ -297,7 +297,9 @@ TEST(WorldSafeV8ReferenceTest, CrossWorldSharedArrayBufferUnpacksCleanly) {
 
 class WorldSafeV8ReferenceSimTest : public SimTest {};
 
-TEST_F(WorldSafeV8ReferenceSimTest, DetachedContextsFailClosedAndDoNotLeak) {
+TEST_F(WorldSafeV8ReferenceSimTest,
+       DetachedContextsCloneInSourceRealmAndDoNotLeak) {
+  ScopedSharedArrayBufferForTest enable_sab(true);
   SimRequest main_resource("https://example.com/main.html", "text/html");
   SimRequest detach_src("https://example.com/detach_src.html", "text/html");
   SimRequest detach_dst("https://example.com/detach_dst.html", "text/html");
@@ -317,6 +319,14 @@ TEST_F(WorldSafeV8ReferenceSimTest, DetachedContextsFailClosedAndDoNotLeak) {
   ASSERT_TRUE(isolated_world);
 
   Persistent<ReferenceHolder> detached_obj_holder =
+      MakeGarbageCollected<ReferenceHolder>();
+  Persistent<ReferenceHolder> detached_blob_holder =
+      MakeGarbageCollected<ReferenceHolder>();
+  Persistent<ReferenceHolder> detached_bitmap_holder =
+      MakeGarbageCollected<ReferenceHolder>();
+  Persistent<ReferenceHolder> detached_wasm_holder =
+      MakeGarbageCollected<ReferenceHolder>();
+  Persistent<ReferenceHolder> detached_sab_holder =
       MakeGarbageCollected<ReferenceHolder>();
   Persistent<ReferenceHolder> detached_prim_holder =
       MakeGarbageCollected<ReferenceHolder>();
@@ -349,13 +359,47 @@ TEST_F(WorldSafeV8ReferenceSimTest, DetachedContextsFailClosedAndDoNotLeak) {
     }
 
     // Set up detached source frame references for post-GC verification below.
-    EvalInScriptState(main_state, "globalThis.detachedGetterRan = false;");
+    EvalInScriptState(main_state,
+                      "globalThis.getterUsedDetachedRealm = false;");
     {
       ScriptState::Scope scope(detach_src_state);
       detached_obj_holder->reference.Set(
           isolate, EvalInScriptState(detach_src_state, R"JS(
-            ({ get x() { parent.detachedGetterRan = true; return 1; } })
+            (() => {
+              const parentWin = parent;
+              const detachedArrayCtor = Array;
+              const obj = {};
+              Object.defineProperty(obj, 'a', {
+                enumerable: true,
+                get: new Proxy(() => {}, {
+                  apply(_t, _r, args) {
+                    parentWin.getterUsedDetachedRealm =
+                        (Object.getPrototypeOf(args) ===
+                         detachedArrayCtor.prototype);
+                    return 42;
+                  }
+                }),
+              });
+              return obj;
+            })()
           )JS"));
+      detached_blob_holder->reference.Set(
+          isolate, EvalInScriptState(detach_src_state, "new Blob(['hello'])"));
+      detached_bitmap_holder->reference.Set(
+          isolate, EvalInScriptState(detach_src_state, R"JS(
+            (() => {
+              const c = new OffscreenCanvas(1, 1);
+              c.getContext('2d');
+              return c.transferToImageBitmap();
+            })()
+          )JS"));
+      detached_wasm_holder->reference.Set(
+          isolate, EvalInScriptState(detach_src_state,
+                                     "new WebAssembly.Module(new "
+                                     "Uint8Array([0,97,115,109,1,0,0,0]))"));
+      detached_sab_holder->reference.Set(
+          isolate,
+          EvalInScriptState(detach_src_state, "new SharedArrayBuffer(16)"));
       detached_prim_holder->reference.Set(isolate,
                                           v8::Integer::New(isolate, 7));
     }
@@ -373,24 +417,118 @@ TEST_F(WorldSafeV8ReferenceSimTest, DetachedContextsFailClosedAndDoNotLeak) {
     ScriptState* main_isolated_state =
         ToScriptState(&Window(), *isolated_world);
     ScriptState::Scope target_scope(main_isolated_state);
+
+    // JS objects serialize in the detached source realm without leaking
+    // target-world intrinsics.
+    v8::Local<v8::Value> cloned_obj =
+        detached_obj_holder->reference.GetAcrossWorld(main_isolated_state);
+    ASSERT_TRUE(cloned_obj->IsObject());
+    EXPECT_EQ(cloned_obj.As<v8::Object>()->GetCreationContextChecked(isolate),
+              main_isolated_state->GetContext());
+    v8::Local<v8::Value> prop_a = cloned_obj.As<v8::Object>()
+                                      ->Get(main_isolated_state->GetContext(),
+                                            V8AtomicString(isolate, "a"))
+                                      .ToLocalChecked();
+    ASSERT_TRUE(prop_a->IsInt32());
+    EXPECT_EQ(42, prop_a.As<v8::Int32>()->Value());
     EXPECT_TRUE(
-        detached_obj_holder->reference.GetAcrossWorld(main_isolated_state)
+        EvalInScriptState(ToScriptStateForMainWorld(GetDocument().GetFrame()),
+                          "globalThis.getterUsedDetachedRealm")
+            ->BooleanValue(isolate));
+
+    // Host/DOM and Wasm module objects that do not depend on the source
+    // ExecutionContext still clone cleanly, while SharedArrayBuffer fails
+    // closed when the source ExecutionContext is detached/destroyed.
+    EXPECT_TRUE(
+        detached_blob_holder->reference.GetAcrossWorld(main_isolated_state)
+            ->IsObject());
+    EXPECT_TRUE(
+        detached_bitmap_holder->reference.GetAcrossWorld(main_isolated_state)
+            ->IsObject());
+    EXPECT_TRUE(
+        detached_wasm_holder->reference.GetAcrossWorld(main_isolated_state)
+            ->IsObject());
+    EXPECT_TRUE(
+        detached_sab_holder->reference.GetAcrossWorld(main_isolated_state)
             ->IsNull());
+
     v8::Local<v8::Value> prim_val =
         detached_prim_holder->reference.GetAcrossWorld(main_isolated_state);
     ASSERT_TRUE(prim_val->IsInt32());
     EXPECT_EQ(7, prim_val.As<v8::Int32>()->Value());
-    EXPECT_FALSE(
-        EvalInScriptState(ToScriptStateForMainWorld(GetDocument().GetFrame()),
-                          "globalThis.detachedGetterRan")
-            ->BooleanValue(isolate));
   }
 
   detached_obj_holder->reference.Reset();
+  detached_blob_holder->reference.Reset();
+  detached_bitmap_holder->reference.Reset();
+  detached_wasm_holder->reference.Reset();
+  detached_sab_holder->reference.Reset();
   isolate->LowMemoryNotification();
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
   EXPECT_FALSE(weak_detach_src_window);
+}
+
+TEST_F(WorldSafeV8ReferenceSimTest,
+       DetachedIframeCustomEventDetailClonesAcrossWorlds) {
+  SimRequest main_resource("https://example.com/main.html", "text/html");
+  LoadURL("https://example.com/main.html");
+  main_resource.Complete("<!DOCTYPE html><body></body>");
+  test::RunPendingTasks();
+
+  v8::Isolate* isolate = Window().GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  Persistent<DOMWrapperWorld> isolated_world =
+      DOMWrapperWorld::EnsureIsolatedWorld(isolate, kIsolatedWorldId1);
+  ASSERT_TRUE(isolated_world);
+
+  ScriptState* main_state = ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState* isolated_state = ToScriptState(&Window(), *isolated_world);
+
+  EvalInScriptState(isolated_state, R"JS(
+    globalThis.received = [];
+    window.addEventListener('probe', e => {
+      const d = e.detail;
+      if (d instanceof Blob) {
+        globalThis.received.push({ blobSize: d.size });
+      } else {
+        globalThis.received.push({
+          isNull: d === null,
+          inIsolatedRealm: d !== null && typeof d === 'object' &&
+                           Object.getPrototypeOf(d) === Object.prototype,
+          json: JSON.stringify(d),
+        });
+      }
+    });
+  )JS");
+
+  EvalInScriptState(main_state, R"JS(
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const W = f.contentWindow;
+    const DetachedCE = W.CustomEvent;
+    f.remove();
+
+    // Plain object created in the live main page.
+    dispatchEvent(new DetachedCE('probe', { detail: { a: 1 } }));
+    // Null-prototype object created via the detached iframe's primordials.
+    const nullProto = W.Object.assign(W.Object.create(null), { m: 'ack' });
+    dispatchEvent(new DetachedCE('probe', { detail: nullProto }));
+    // Primitive detail.
+    dispatchEvent(new DetachedCE('probe', { detail: 'str' }));
+    // Host/DOM object also clones across worlds.
+    dispatchEvent(new DetachedCE('probe', { detail: new Blob(['x']) }));
+  )JS");
+
+  v8::Local<v8::Value> summary =
+      EvalInScriptState(isolated_state, "JSON.stringify(globalThis.received)");
+  ASSERT_TRUE(summary->IsString());
+  EXPECT_EQ(
+      R"([{"isNull":false,"inIsolatedRealm":true,"json":"{\"a\":1}"},)"
+      R"({"isNull":false,"inIsolatedRealm":true,"json":"{\"m\":\"ack\"}"},)"
+      R"({"isNull":false,"inIsolatedRealm":false,"json":"\"str\""},)"
+      R"({"blobSize":1}])",
+      ToCoreString(isolate, summary.As<v8::String>()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
