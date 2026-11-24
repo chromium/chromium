@@ -1488,6 +1488,36 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
 }
 
 TEST_F(AmbientLoginPermissionBubbleViewTest,
+       TitleOriginForDisplayShowsSignInToOriginTitle) {
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"),
+          /*credentials=*/
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::vector<ambient_signin::FederatedCredential>{
+              {u"idp.example.com", u"Carol", u"carol@example.com",
+               GURL("https://idp.example.com")}},
+          /*federated_selected_callback=*/base::DoNothing(),
+          ambient_signin::AmbientLoginPermissionRequest::Options{
+              .title_origin_for_display = u"iframe.example"}));
+  // The request comes from the embedding origin, but the caller shows the
+  // iframe's origin, e.g. FedCM when an identity provider asks for it.
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+
+  const std::u16string expected_title = l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE, u"iframe.example");
+  EXPECT_EQ(bubble->GetWindowTitle(), expected_title);
+  auto* title_label =
+      views::AsViewClass<views::Label>(bubble->GetBubbleFrameView()->title());
+  ASSERT_NE(title_label, nullptr);
+  EXPECT_EQ(title_label->GetText(), expected_title);
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
        CrossOriginIframeWrapsLongOriginInTitle) {
   const std::string long_host = std::string(100, 'a') + ".example.com";
   MockAmbientDelegate delegate(GURL("https://" + long_host),

@@ -1980,7 +1980,13 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
               .permission_decided_callback = base::BindRepeating(
                   &FedCmAccountSelectionView::OnAmbientBubbleDecided,
                   ambient_bubble_weak_ptr_factory_.GetWeakPtr()),
-              .bubble_starts_open = bubble_starts_open});
+              .bubble_starts_open = bubble_starts_open,
+              // Like the regular FedCM UI, the bubble shows the iframe's origin
+              // only if an identity provider asks for it.
+              .title_origin_for_display =
+                  rp_data_->iframe_for_display.empty()
+                      ? std::nullopt
+                      : std::make_optional(rp_data_->iframe_for_display)});
 
   // Set before adding the request, since the decided callback runs
   // synchronously if the request is rejected right away.

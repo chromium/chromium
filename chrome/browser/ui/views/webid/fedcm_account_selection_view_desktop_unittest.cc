@@ -3600,6 +3600,34 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       AmbientBubbleShowsIframeOriginThatFedCmUiShows) {
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), tab_interface_.get(), this);
+  controller->Show(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u"iframe.example"),
+      {idp_data_}, accounts_, blink::mojom::RpMode::kPassive,
+      /*new_accounts=*/{});
+
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  // The bubble's title asks the user to sign in to the iframe's origin.
+  EXPECT_EQ(request->title_origin_for_display(), u"iframe.example");
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       AmbientBubbleDoesNotShowIframeOriginThatFedCmUiDoesNotShow) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  EXPECT_FALSE(request->title_origin_for_display().has_value());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
        AcceptingAmbientBubbleSelectsAccount) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);

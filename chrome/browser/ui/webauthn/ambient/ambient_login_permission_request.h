@@ -103,6 +103,13 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
     // Called when the user explicitly dismisses the bubble (e.g. via the close
     // button or Escape key).
     base::OnceClosure bubble_dismissed_callback = base::DoNothing();
+    // The origin to show in the bubble's title, formatted for display, e.g.
+    // "iframe.example" for "Sign in to iframe.example". Set by callers that
+    // decide themselves which origin to show, e.g. FedCM, whose UI only shows
+    // the iframe's origin if an identity provider asks for it. If
+    // `std::nullopt`, the title shows the requesting origin if it isn't the
+    // embedding origin.
+    std::optional<std::u16string> title_origin_for_display;
   };
 
   // Constructor supporting both WebAuthn/password credentials and FedCM
@@ -129,6 +136,9 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   }
   const std::vector<FederatedCredential>& federated_credentials() const {
     return federated_credentials_;
+  }
+  const std::optional<std::u16string>& title_origin_for_display() const {
+    return title_origin_for_display_;
   }
 
   // Records the chosen credential index to be passed to
@@ -176,6 +186,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   bool selected_from_expanded_list_ = false;
   std::optional<size_t> selected_federated_index_;
   const bool bubble_starts_open_;
+  const std::optional<std::u16string> title_origin_for_display_;
 };
 
 }  // namespace ambient_signin

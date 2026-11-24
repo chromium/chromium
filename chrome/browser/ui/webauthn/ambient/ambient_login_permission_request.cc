@@ -47,7 +47,8 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
           std::move(options.permission_decided_callback)),
       bubble_shown_callback_(std::move(options.bubble_shown_callback)),
       bubble_dismissed_callback_(std::move(options.bubble_dismissed_callback)),
-      bubble_starts_open_(options.bubble_starts_open) {}
+      bubble_starts_open_(options.bubble_starts_open),
+      title_origin_for_display_(std::move(options.title_origin_for_display)) {}
 
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     const GURL& requesting_origin,

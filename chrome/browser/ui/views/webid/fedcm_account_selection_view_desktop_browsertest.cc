@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_id.h"
@@ -41,11 +42,15 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/event.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/views_switches.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -54,6 +59,8 @@
 #endif
 
 namespace webid {
+
+using LoginState = content::IdentityRequestAccount::LoginState;
 
 // TODO(https://crbug.com/378939142): This is a misuse of DialogBrowserTest.
 // DialogBrowserTest exists to test the visual properties of dialogs. Instead
@@ -396,9 +403,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 class FedCmMixin {
  public:
   // In a bubble view. If `requires_disclosure` is true, the account requires
-  // disclosure text, e.g. because it is a new account.
+  // disclosure text, e.g. because it is a new account. `login_state` is the
+  // login state that the browser trusts, e.g. `LoginState::kSignIn` for a
+  // returning account. `iframe_for_display` is the iframe's origin that the
+  // FedCM UI shows, if any.
   void ShowAccounts(BrowserWindowInterface* browser,
-                    bool requires_disclosure = false) {
+                    bool requires_disclosure = false,
+                    LoginState login_state = LoginState::kSignUp,
+                    const std::u16string& iframe_for_display = u"") {
     delegate_ = std::make_unique<FakeDelegate>(
         browser->GetActiveTabInterface()->GetContents());
     account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
@@ -416,15 +428,16 @@ class FedCmMixin {
         /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
-        /*labels=*/std::vector<std::string>())};
+        /*labels=*/std::vector<std::string>(),
+        /*idp_claimed_login_state=*/std::nullopt,
+        /*browser_trusted_login_state=*/login_state)};
     accounts_[0]->identity_provider = idps_[0];
     if (requires_disclosure) {
       accounts_[0]->fields = idps_[0]->disclosure_fields;
     }
     account_selection_view_->Show(
-        content::RelyingPartyData(u"rp-example.com",
-                                  /*iframe_for_display=*/u""),
-        idps_, accounts_, blink::mojom::RpMode::kPassive,
+        content::RelyingPartyData(u"rp-example.com", iframe_for_display), idps_,
+        accounts_, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
 
@@ -978,6 +991,19 @@ class FedCmAmbientBubbleBrowserTest : public FedCmBrowserTest {
     FedCmBrowserTest::TearDownOnMainThread();
   }
 
+ protected:
+  // Shows a returning account, whose ambient bubble opens right away, and
+  // returns the bubble's widget once it is shown. `iframe_for_display` is the
+  // iframe's origin that the regular FedCM UI shows, if any.
+  views::Widget* ShowAmbientBubbleForReturningAccount(
+      const std::u16string& iframe_for_display) {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "AmbientLoginPermissionBubbleView");
+    ShowAccounts(browser(), /*requires_disclosure=*/false, LoginState::kSignIn,
+                 iframe_for_display);
+    return waiter.WaitIfNeededAndGet();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kFedCmAmbientBubble};
@@ -1012,6 +1038,35 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientBubbleBrowserTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_TRUE(account_selection_view_->IsDialogWidgetVisible());
+}
+
+// Tests that the ambient bubble's title shows the iframe's origin if the
+// regular FedCM UI shows it, i.e. if the identity provider asks for it.
+IN_PROC_BROWSER_TEST_F(FedCmAmbientBubbleBrowserTest, TitleShowsIframeOrigin) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("a.com", "/title1.html")));
+
+  views::Widget* bubble = ShowAmbientBubbleForReturningAccount(
+      /*iframe_for_display=*/u"iframe.example");
+  ASSERT_TRUE(bubble);
+  EXPECT_EQ(
+      bubble->widget_delegate()->GetWindowTitle(),
+      l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
+                                 u"iframe.example"));
+}
+
+// Tests that the ambient bubble's title doesn't show any origin if the regular
+// FedCM UI doesn't show the iframe's origin.
+IN_PROC_BROWSER_TEST_F(FedCmAmbientBubbleBrowserTest,
+                       TitleDoesNotShowOriginWithoutIframeOrigin) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("a.com", "/title1.html")));
+
+  views::Widget* bubble =
+      ShowAmbientBubbleForReturningAccount(/*iframe_for_display=*/u"");
+  ASSERT_TRUE(bubble);
+  EXPECT_EQ(bubble->widget_delegate()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(IDS_AMBIENT_LOGIN_TITLE));
 }
 
 class FedCmIdpLinksBrowserTest : public FedCmBrowserTest {

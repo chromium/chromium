@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -349,13 +350,24 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
       gfx::Insets::TLBR(12, kHorizontalPadding, 8, kHorizontalPadding));
 
   CHECK(delegate);
-  if (url::Origin::Create(delegate->GetRequestingOrigin())
-          .IsSameOriginWith(delegate->GetEmbeddingOrigin())) {
-    SetTitle(l10n_util::GetStringUTF16(IDS_AMBIENT_LOGIN_TITLE));
+  CHECK_EQ(delegate->Requests().size(), 1u);
+  ambient_signin::AmbientLoginPermissionRequest* ambient_request =
+      GetAmbientRequest();
+  CHECK(ambient_request);
+  // Show the origin that the caller chose, if any. Otherwise, show the
+  // requesting origin if it isn't the embedding origin, e.g. for a call from a
+  // cross-origin iframe.
+  std::optional<std::u16string> title_origin =
+      ambient_request->title_origin_for_display();
+  if (!title_origin && !url::Origin::Create(delegate->GetRequestingOrigin())
+                            .IsSameOriginWith(delegate->GetEmbeddingOrigin())) {
+    title_origin = GetUrlIdentityObject().name;
+  }
+  if (title_origin) {
+    SetTitle(l10n_util::GetStringFUTF16(
+        IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE, *title_origin));
   } else {
-    SetTitle(
-        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
-                                   GetUrlIdentityObject().name));
+    SetTitle(l10n_util::GetStringUTF16(IDS_AMBIENT_LOGIN_TITLE));
   }
 
   std::u16string username;
@@ -363,10 +375,6 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
   gfx::ElideBehavior provider_elide_behavior = gfx::ELIDE_TAIL;
   ui::ImageModel credential_icon = GetDefaultCredentialIcon();
   ui::ImageModel credential_badge;
-  CHECK_EQ(delegate->Requests().size(), 1u);
-  ambient_signin::AmbientLoginPermissionRequest* ambient_request =
-      GetAmbientRequest();
-  CHECK(ambient_request);
   if (!ambient_request->credentials().empty()) {
     const ambient_signin::PasskeyOrPasswordCredential& cred =
         ambient_request->credentials().front();
