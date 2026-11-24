@@ -1159,26 +1159,9 @@ class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
 
   [[nodiscard]] std::unique_ptr<PrePrefetchHandle> PostMakePrePrefetchAndWait(
       const GURL& prefetch_url) {
-    base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> future;
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(
-            [](PrePrefetchService* service_ptr, const GURL& url) {
-              base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
-              return service_ptr->StartPrePrefetchRequest(
-                  url, test::kPreloadingEmbedderHistogramSuffixForTesting,
-                  /*javascript_enabled=*/true,
-                  /*no_vary_search_hint=*/std::nullopt,
-                  /*priority=*/PrefetchPriority::kHighest,
-                  /*additional_headers=*/{},
-                  /*request_status_listener=*/nullptr, base::TimeDelta(),
-                  /*should_append_variations_header=*/false,
-                  /*should_disable_block_until_head_timeout=*/false,
-                  /*should_bypass_http_cache=*/false);
-            },
-            pre_prefetch_service(), prefetch_url),
-        future.GetCallback());
-    return future.Take();
+    CHECK(pre_prefetch_service());
+    return PostStartPrePrefetchRequestAndWaitForTesting(*pre_prefetch_service(),
+                                                        prefetch_url);
   }
   [[nodiscard]] std::unique_ptr<PrefetchHandle> AddPrefetchFromPrePrefetch(
       std::unique_ptr<PrePrefetchHandle> pre_prefetch_handle) {

@@ -5,8 +5,13 @@
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "base/test/test_waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -19,6 +24,9 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
+#include "content/public/browser/pre_prefetch_handle.h"
+#include "content/public/browser/pre_prefetch_service.h"
+#include "content/public/browser/prefetch_priority.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/cookies/site_for_cookies.h"
@@ -947,6 +955,36 @@ void VerifyCommonRequestState(const GURL& url,
     EXPECT_EQ(request.headers.GetHeader(header_it.name()),
               std::optional<std::string>(header_it.value()));
   }
+}
+
+std::unique_ptr<PrePrefetchHandle> PostStartPrePrefetchRequestAndWaitForTesting(
+    PrePrefetchService& pre_prefetch_service,
+    const GURL& url) {
+  std::unique_ptr<PrePrefetchHandle> handle;
+  base::TestWaitableEvent done_event;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](PrePrefetchService* service, const GURL& url,
+             std::unique_ptr<PrePrefetchHandle>* out_handle,
+             base::WaitableEvent* event) {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+            *out_handle = service->StartPrePrefetchRequest(
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
+                /*javascript_enabled=*/true,
+                /*no_vary_search_hint=*/std::nullopt,
+                /*priority=*/PrefetchPriority::kHighest,
+                /*additional_headers=*/{},
+                /*request_status_listener=*/nullptr, base::TimeDelta(),
+                /*should_append_variations_header=*/false,
+                /*should_disable_block_until_head_timeout=*/false,
+                /*should_bypass_http_cache=*/false);
+            event->Signal();
+          },
+          &pre_prefetch_service, url, &handle, &done_event));
+  // Blocks the calling (UI) thread without running its tasks.
+  done_event.Wait();
+  return handle;
 }
 
 }  // namespace content

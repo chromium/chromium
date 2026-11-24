@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_INTERNAL_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_INTERNAL_H_
 
+#include <memory>
 #include <string>
 
 #include "base/test/bind.h"
@@ -36,6 +37,9 @@ class RunLoop;
 }  // namespace base
 
 namespace content {
+
+class PrePrefetchHandle;
+class PrePrefetchService;
 
 network::mojom::URLResponseHeadPtr SuccessfulPrefetchResponseHeadForTesting();
 
@@ -408,6 +412,16 @@ void VerifyCommonRequestState(const GURL& url,
                               const VerifyCommonRequestStateOptions& options,
                               const network::ResourceRequest& request,
                               BrowserContext* browser_context);
+
+// Posts a task to start a PrePrefetch for `url` via `pre_prefetch_service` on a
+// non-UI trigger thread (with `priority = PrefetchPriority::kHighest`), and
+// blocks the calling (UI) thread until the start returns, without running
+// UI-thread tasks in the meantime. Returns the result of
+// `PrePrefetchService::StartPrePrefetchRequest()`.
+[[nodiscard]] std::unique_ptr<PrePrefetchHandle>
+PostStartPrePrefetchRequestAndWaitForTesting(
+    PrePrefetchService& pre_prefetch_service,
+    const GURL& url);
 
 }  // namespace content
 
