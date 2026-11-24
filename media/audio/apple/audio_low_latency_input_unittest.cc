@@ -8,12 +8,13 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/environment.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -70,9 +71,17 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
   static constexpr int kMaxBufferSize = 2 * 2 * 480 * 100 * 10;
 
   explicit WriteToFileAudioSink(const char* file_name)
-      : buffer_(0, kMaxBufferSize), file_(fopen(file_name, "wb")) {}
+      : buffer_(0, kMaxBufferSize),
+        file_(base::FilePath::FromASCII(file_name),
+              base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE) {
+    EXPECT_TRUE(file_.IsValid())
+        << base::File::ErrorToString(file_.error_details());
+  }
 
   ~WriteToFileAudioSink() override {
+    if (!file_.IsValid()) {
+      return;
+    }
     size_t bytes_written = 0;
     while (bytes_written < bytes_to_write_) {
       const base::span<const uint8_t> chunk = buffer_.GetCurrentChunk();
@@ -82,11 +91,13 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
       }
 
       // Write recorded data chunk to the file and prepare for next chunk.
-      UNSAFE_TODO(fwrite(chunk.data(), 1, chunk.size(), file_));
+      if (!file_.WriteAtCurrentPosAndCheck(chunk)) {
+        ADD_FAILURE() << "Failed to write recorded audio data.";
+        break;
+      }
       buffer_.Seek(chunk.size());
       bytes_written += chunk.size();
     }
-    fclose(file_);
   }
 
   // AudioInputStream::AudioInputCallback implementation.
@@ -98,7 +109,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
     auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
     src->ToInterleaved<SignedInt16SampleTypeTraits>(interleaved.as_span());
 
-    // Store data in a temporary buffer to avoid making blocking fwrite() calls
+    // Store data in a temporary buffer to avoid making blocking file writes
     // in the audio callback. The complete buffer will be written to file in the
     // destructor.
     if (buffer_.Append(base::as_bytes(interleaved.as_span()))) {
@@ -110,7 +121,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
 
  private:
   media::SeekableBuffer buffer_;
-  raw_ptr<FILE> file_;
+  base::File file_;
   size_t bytes_to_write_ = 0;
 };
 
@@ -307,14 +318,14 @@ TEST_F(MacAudioInputTest, DISABLED_AUAudioInputStreamRecordToFile) {
   AudioInputStream* ais = CreateDefaultAudioInputStream();
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
-  UNSAFE_TODO(fprintf(stderr, "               File name  : %s\n", kFileName));
-  fprintf(stderr, "               Sample rate: %d\n", fs);
+  VLOG(0) << "File name  : " << kFileName;
+  VLOG(0) << "Sample rate: " << fs;
   WriteToFileAudioSink file_sink(kFileName);
-  fprintf(stderr, "               >> Speak into the mic while recording...\n");
+  VLOG(0) << ">> Speak into the mic while recording...";
   ais->Start(&file_sink);
   base::PlatformThread::Sleep(TestTimeouts::action_timeout());
   ais->Stop();
-  fprintf(stderr, "               >> Recording has stopped.\n");
+  VLOG(0) << ">> Recording has stopped.";
   ais->Close();
 }
 
