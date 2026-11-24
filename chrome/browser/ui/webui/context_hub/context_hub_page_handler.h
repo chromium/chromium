@@ -255,6 +255,12 @@ class ContextHubPageHandler
   void OnCopyAttachmentsToClipboardWritten(
       CopyAttachmentsToClipboardCallback callback,
       std::vector<std::pair<std::string, base::FilePath>> written_files);
+
+  // Opens the Glic side panel in a new conversation pre-populated with
+  // `skill_instructions` when Skills and Glic are enabled, then resolves
+  // `callback`.
+  void OnSkillGeneratedForGlic(GenerateSkillFromRecordingCallback callback,
+                               std::optional<std::string> skill_instructions);
 #endif
 
   mojo::Remote<browser::context_hub::mojom::Page> page_;

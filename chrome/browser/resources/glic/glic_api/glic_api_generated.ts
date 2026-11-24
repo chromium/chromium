@@ -862,6 +862,8 @@ export enum InvocationSource {
   // From the "Open chat" button on a chrome://history critical action row.
   // Targets the turn where the action happened, when known.
   HISTORY_PAGE_CRITICAL_ACTION_CHAT_LINKOUT = 51,
+  // From the Context Hub Record Replay UI.
+  CONTEXT_HUB_RECORD_REPLAY = 52,
 }
 
 // Target for actuation.

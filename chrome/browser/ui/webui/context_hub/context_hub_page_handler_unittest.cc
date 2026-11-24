@@ -6,7 +6,10 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -67,7 +70,9 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
@@ -118,6 +123,9 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"  // nogncheck
+#include "components/prefs/pref_service.h"              // nogncheck
+#include "components/skills/features.h"                 // nogncheck
+#include "components/skills/public/skills_prefs.h"      // nogncheck
 #include "components/tabs/public/mock_tab_interface.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"       // nogncheck
 #include "ui/base/accelerators/accelerator.h"
@@ -148,6 +156,7 @@ using ::testing::Not;
 using ::testing::VariantWith;
 
 #if !BUILDFLAG(IS_ANDROID)
+using ::testing::HasSubstr;
 using ::testing::WithArg;
 
 class MockTabProvider : public ContextHubPageHandler::TabProvider {
@@ -4373,6 +4382,12 @@ TEST_F(ContextHubPageHandlerTest,
 // service through GlicKeyedService::Get().
 class ContextHubPageHandlerGlicTest : public ChromeRenderViewHostTestHarness {
  protected:
+  ContextHubPageHandlerGlicTest() {
+    feature_list_.InitWithFeatures({browser::context_hub::mojom::kRecordReplay,
+                                    ::features::kSkillsEnabled},
+                                   {});
+  }
+
   void SetUp() override {
     // GlicKeyedService is created eagerly along with the profile and reaches
     // for the global ProfileManager, so this has to exist before the harness
@@ -4432,7 +4447,27 @@ class ContextHubPageHandlerGlicTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(
             &ContextHubPageHandlerGlicTest::CreateMockGlicService,
             base::Unretained(this)));
+    builder.AddTestingFactory(
+        OptimizationGuideKeyedServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<MockOptimizationGuideKeyedService>();
+        }));
+#if BUILDFLAG(IS_CHROMEOS)
+    builder.AddTestingFactory(
+        CrosSpeechRecognitionServiceFactory::GetInstanceForTest(),
+        BrowserContextKeyedServiceFactory::TestingFactory());
+#else
+    builder.AddTestingFactory(
+        SpeechRecognitionServiceFactory::GetInstanceForTest(),
+        BrowserContextKeyedServiceFactory::TestingFactory());
+#endif
     return builder.Build();
+  }
+
+  MockOptimizationGuideKeyedService* GetMockOptimizationGuideService() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile()));
   }
 
   std::unique_ptr<KeyedService> CreateMockGlicService(
@@ -4488,6 +4523,33 @@ class ContextHubPageHandlerGlicTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(testing::Return(&showing_instance_));
   }
 
+  void RecordSampleAction() {
+    SkillRecordingService* service =
+        SkillRecordingServiceFactory::GetForProfile(profile());
+    ASSERT_NE(service, nullptr);
+    service->StartRecording();
+    service->CaptureAction(
+        browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
+        "Step 1: Click Submit");
+    service->StopRecording();
+  }
+
+  void ExpectMesSkillResponse(std::string_view response_text) {
+    optimization_guide::proto::ContextHubResponse response;
+    response.mutable_memory_bank_chat_response()->set_text_response(
+        response_text);
+
+    EXPECT_CALL(
+        *GetMockOptimizationGuideService(),
+        ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub,
+                     _, _, _))
+        .WillOnce(RunOnceCallback<3>(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(optimization_guide::AnyWrapProto(response)), nullptr),
+            nullptr));
+  }
+
+  base::test::ScopedFeatureList feature_list_;
   // Constructed by default so that most tests exercise the enabled path. Tests
   // covering the disabled path reset it.
   std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
@@ -5650,6 +5712,119 @@ TEST_F(ContextHubPageHandlerTest,
   std::move(held_callback)
       .Run(optimization_guide::OptimizationGuideModelExecutionResult(),
            nullptr);
+}
+
+TEST_F(ContextHubPageHandlerGlicTest,
+       GenerateSkillFromRecordingInvokesGlicWithPrompt) {
+  AttachWebContentsToTab();
+  glic::SetFRECompletion(profile(), glic::prefs::FreStatus::kNotStarted);
+  ExpectInvokeCapturingOptions();
+  RecordSampleAction();
+  ExpectMesSkillResponse("Compiled Skill: 1. Click Submit");
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateSkillFromRecording(future.GetCallback());
+  EXPECT_EQ(future.Get(), "Compiled Skill: 1. Click Submit");
+
+  ASSERT_TRUE(captured_options_.has_value());
+  EXPECT_EQ(captured_options_->GetInvocationSource(),
+            glic::mojom::InvocationSource::kContextHubRecordReplay);
+  EXPECT_THAT(
+      captured_options_->prompts,
+      ElementsAre(AllOf(HasSubstr("Help me create and save a Chrome skill"),
+                        HasSubstr("Compiled Skill: 1. Click Submit"))));
+  EXPECT_FALSE(captured_options_->pin_on_bind);
+  EXPECT_TRUE(captured_options_->disable_zss);
+  EXPECT_TRUE(captured_options_->wait_for_panel_open);
+  EXPECT_FALSE(captured_options_->supersede_if_in_progress);
+  EXPECT_EQ(captured_options_->timeout, base::Minutes(5));
+  EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
+      captured_options_->target.conversation));
+  ASSERT_TRUE(std::holds_alternative<tabs::TabHandle>(
+      captured_options_->target.surface));
+  EXPECT_EQ(std::get<tabs::TabHandle>(captured_options_->target.surface),
+            mock_tab_.GetHandle());
+}
+
+TEST_F(ContextHubPageHandlerGlicTest,
+       GenerateSkillFromRecordingUsesDefaultTimeoutWhenFreCompleted) {
+  AttachWebContentsToTab();
+  glic::SetFRECompletion(profile(), glic::prefs::FreStatus::kCompleted);
+  ExpectInvokeCapturingOptions();
+  RecordSampleAction();
+  ExpectMesSkillResponse("Compiled Skill: 1. Click Submit");
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateSkillFromRecording(future.GetCallback());
+  EXPECT_EQ(future.Get(), "Compiled Skill: 1. Click Submit");
+
+  ASSERT_TRUE(captured_options_.has_value());
+  EXPECT_FALSE(captured_options_->timeout.has_value());
+}
+
+TEST_F(ContextHubPageHandlerGlicTest,
+       GenerateSkillFromRecordingReturnsSkillWithoutInvokingWhenGlicDisabled) {
+  AttachWebContentsToTab();
+  scoped_glic_bypass_.reset();
+  EXPECT_CALL(*mock_glic_service(), Invoke(_)).Times(0);
+  RecordSampleAction();
+  ExpectMesSkillResponse("Compiled Skill: 1. Click Submit");
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateSkillFromRecording(future.GetCallback());
+  EXPECT_EQ(future.Get(), "Compiled Skill: 1. Click Submit");
+}
+
+TEST_F(
+    ContextHubPageHandlerGlicTest,
+    GenerateSkillFromRecordingReturnsSkillWithoutInvokingWhenSkillsDisabled) {
+  AttachWebContentsToTab();
+  profile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, false);
+  EXPECT_CALL(*mock_glic_service(), Invoke(_)).Times(0);
+  RecordSampleAction();
+  ExpectMesSkillResponse("Compiled Skill: 1. Click Submit");
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateSkillFromRecording(future.GetCallback());
+  EXPECT_EQ(future.Get(), "Compiled Skill: 1. Click Submit");
+}
+
+TEST_F(
+    ContextHubPageHandlerGlicTest,
+    GenerateSkillFromRecordingReturnsSkillWithoutInvokingWhenNotHostedInTab) {
+  EXPECT_CALL(*mock_glic_service(), Invoke(_)).Times(0);
+  RecordSampleAction();
+  ExpectMesSkillResponse("Compiled Skill: 1. Click Submit");
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateSkillFromRecording(future.GetCallback());
+  EXPECT_EQ(future.Get(), "Compiled Skill: 1. Click Submit");
+}
+
+TEST_F(ContextHubPageHandlerGlicTest,
+       GenerateSkillFromRecordingDoesNotInvokeGlicOnMesFailure) {
+  AttachWebContentsToTab();
+  EXPECT_CALL(*mock_glic_service(), Invoke(_)).Times(0);
+  RecordSampleAction();
+
+  EXPECT_CALL(
+      *GetMockOptimizationGuideService(),
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionError(
+                          optimization_guide::
+                              OptimizationGuideModelExecutionError::
+                                  ModelExecutionError::kGenericFailure)),
+              nullptr),
+          nullptr));
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateSkillFromRecording(future.GetCallback());
+  EXPECT_EQ(future.Get(), "");
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

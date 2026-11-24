@@ -58,6 +58,9 @@ TEST(MetricsTypesTest, GetInvocationSourceString) {
       "HistoryPageCriticalActionChatLinkout",
       GetInvocationSourceString(
           mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout));
+  EXPECT_EQ("ContextHubRecordReplay",
+            GetInvocationSourceString(
+                mojom::InvocationSource::kContextHubRecordReplay));
 }
 
 TEST(MetricsTypesTest, GetResponseSegmentation) {
@@ -233,6 +236,30 @@ TEST(MetricsTypesTest, GetResponseSegmentation) {
       GetResponseSegmentation(
           /*attached=*/false, mojom::WebClientMode::kAudio,
           mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout));
+
+  // ContextHubRecordReplay Attached Text
+  EXPECT_EQ(ResponseSegmentation::kContextHubRecordReplayAttachedText,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kContextHubRecordReplay));
+
+  // ContextHubRecordReplay Attached Audio
+  EXPECT_EQ(ResponseSegmentation::kContextHubRecordReplayAttachedAudio,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kAudio,
+                mojom::InvocationSource::kContextHubRecordReplay));
+
+  // ContextHubRecordReplay Detached Text
+  EXPECT_EQ(ResponseSegmentation::kContextHubRecordReplayDetachedText,
+            GetResponseSegmentation(
+                /*attached=*/false, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kContextHubRecordReplay));
+
+  // ContextHubRecordReplay Detached Audio
+  EXPECT_EQ(ResponseSegmentation::kContextHubRecordReplayDetachedAudio,
+            GetResponseSegmentation(
+                /*attached=*/false, mojom::WebClientMode::kAudio,
+                mojom::InvocationSource::kContextHubRecordReplay));
 }
 
 }  // namespace

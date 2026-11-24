@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -94,6 +95,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"             // nogncheck
 #include "chrome/browser/glic/public/glic_invoke_options.h"       // nogncheck
 #include "chrome/browser/glic/public/glic_keyed_service.h"        // nogncheck
+#include "chrome/browser/skills/skills_service_factory.h"         // nogncheck
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -881,6 +883,46 @@ glic::GlicKeyedService* GetGlicServiceIfEnabled(Profile* profile) {
     return nullptr;
   }
   return glic::GlicKeyedService::Get(profile);
+}
+
+void MaybeInvokeGlicWithSkillInstructions(Profile* profile,
+                                          content::WebContents* web_contents,
+                                          std::string_view skill_instructions) {
+  if (!web_contents ||
+      !skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile)) {
+    return;
+  }
+  glic::GlicKeyedService* glic_service = GetGlicServiceIfEnabled(profile);
+  if (!glic_service) {
+    return;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return;
+  }
+
+  glic::GlicInvokeOptions options(
+      glic::Target(*tab, glic::NewConversation()),
+      glic::mojom::InvocationSource::kContextHubRecordReplay);
+
+  // Unlocalized LLM prompt prefix used to seed Glic skill creation for the
+  // experimental Record and Replay feature.
+  // TODO(crbug.com/587049387): Move to a localized GRD string resource once GRD
+  // strings are added.
+  std::string prompt =
+      base::StrCat({"Help me create and save a Chrome skill with the following "
+                    "instructions:\n\n",
+                    skill_instructions});
+  options.prompts.push_back(std::move(prompt));
+  options.pin_on_bind = false;
+  options.disable_zss = true;
+  options.wait_for_panel_open = true;
+  if (!glic::GlicEnabling::HasConsentedForProfile(profile)) {
+    options.timeout = base::Minutes(5);
+  }
+
+  glic_service->Invoke(std::move(options));
 }
 #endif
 
@@ -1950,6 +1992,19 @@ void ContextHubPageHandler::OnCopyAttachmentsToClipboardWritten(
   std::move(callback).Run(
       browser::context_hub::mojom::CopyAttachmentsToClipboardStatus::kSuccess);
 }
+
+void ContextHubPageHandler::OnSkillGeneratedForGlic(
+    GenerateSkillFromRecordingCallback callback,
+    std::optional<std::string> skill_instructions) {
+  if (!skill_instructions.has_value() || skill_instructions->empty()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  MaybeInvokeGlicWithSkillInstructions(profile_, web_contents_,
+                                       skill_instructions.value());
+  std::move(callback).Run(std::move(skill_instructions).value());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void ContextHubPageHandler::StartSkillRecording() {
@@ -1991,13 +2046,9 @@ void ContextHubPageHandler::GenerateSkillFromRecording(
     return;
   }
 
-  service->GenerateSkillFromRecording(base::BindOnce(
-      [](GenerateSkillFromRecordingCallback callback,
-         std::optional<std::string> skill_instructions) {
-        std::move(callback).Run(
-            std::move(skill_instructions).value_or(std::string()));
-      },
-      std::move(callback)));
+  service->GenerateSkillFromRecording(
+      base::BindOnce(&ContextHubPageHandler::OnSkillGeneratedForGlic,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

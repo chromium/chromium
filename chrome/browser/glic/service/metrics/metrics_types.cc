@@ -164,6 +164,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "ActivityListBubble";
     case mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout:
       return "HistoryPageCriticalActionChatLinkout";
+    case mojom::InvocationSource::kContextHubRecordReplay:
+      return "ContextHubRecordReplay";
   }
 }
 

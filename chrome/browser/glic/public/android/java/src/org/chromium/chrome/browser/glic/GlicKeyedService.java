@@ -64,7 +64,7 @@ public interface GlicKeyedService {
         int ACTOR_TOOL = 49;
         int ACTIVITY_LIST_BUBBLE = 50;
         // Must match the largest mojom value, since MAX_VALUE + 1 bounds Glic.EntryPoint.Click.
-        int MAX_VALUE = 51;
+        int MAX_VALUE = 52;
     }
 
     // LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource)

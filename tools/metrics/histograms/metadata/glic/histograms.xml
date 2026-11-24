@@ -197,6 +197,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AutoOpenedForPdf"/>
   <variant name="CaptureRegionHotkey"/>
   <variant name="ContextHubAutoTodos"/>
+  <variant name="ContextHubRecordReplay"/>
   <variant name="ContextHubTopics"/>
   <variant name="ConversationSwitch"/>
   <variant name="DaisyChainOnFollowLink"/>

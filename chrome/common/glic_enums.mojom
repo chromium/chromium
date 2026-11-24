@@ -194,6 +194,8 @@ enum InvocationSource {
   // From the "Open chat" button on a chrome://history critical action row.
   // Targets the turn where the action happened, when known.
   [MinVersion=35] kHistoryPageCriticalActionChatLinkout = 51,
+  // From the Context Hub Record Replay UI.
+  [MinVersion=36] kContextHubRecordReplay = 52,
 };
 
 // LINT.ThenChange(//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java:GlicInvocationSource,

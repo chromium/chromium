@@ -843,6 +843,7 @@ chromium-metrics-reviews@google.com.
   <int value="51"
       label="History page critical action row 'Open chat' linkout (opens at
              the recorded turn)"/>
+  <int value="52" label="Context Hub Record Replay"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource) -->
@@ -1421,6 +1422,10 @@ chromium-metrics-reviews@google.com.
   <int value="208"
       label="History page critical action row 'Open chat' linkout, detached,
              audio mode."/>
+  <int value="209" label="Context Hub Record Replay, attached, text mode."/>
+  <int value="210" label="Context Hub Record Replay, attached, audio mode."/>
+  <int value="211" label="Context Hub Record Replay, detached, text mode."/>
+  <int value="212" label="Context Hub Record Replay, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
