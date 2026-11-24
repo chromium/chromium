@@ -59,7 +59,7 @@ pub(crate) enum RequestedUuid {
 impl<'a> InvalidUuid<'a> {
     /// Converts the lightweight error type into detailed diagnostics.
     pub fn into_err(self) -> Error {
-        if self.0.len() == 0 || self.0.len() > 45 {
+        if self.0.is_empty() || self.0.len() > 45 {
             // Don't waste time looking at strings that may be enormous
             return Error(ErrorKind::ParseLength { len: self.0.len() });
         }

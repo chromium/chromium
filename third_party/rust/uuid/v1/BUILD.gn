@@ -42,11 +42,10 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_authors = "Ashley Mannix<ashleymannix@live.com.au>, Dylan DPC<dylan.dpc@gmail.com>, Hunar Roop Kahlon<hunar.roop@gmail.com>"
   cargo_pkg_name = "uuid"
   cargo_pkg_description = "A library to generate and parse UUIDs."
   cargo_pkg_repository = "https://github.com/uuid-rs/uuid"
-  cargo_pkg_version = "1.29.0"
+  cargo_pkg_version = "1.29.2"
 
   allow_unsafe = true
 

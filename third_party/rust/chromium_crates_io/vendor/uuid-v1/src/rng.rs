@@ -18,7 +18,7 @@ pub(crate) fn u16() -> u16 {
     imp::RngImp::u16()
 }
 
-#[cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))]
+#[cfg(not(all(target_family = "wasm", any(target_os = "unknown", target_os = "none"))))]
 mod imp {
     /*
     Random support for non `wasm32-unknown-unknown` platforms.
@@ -86,7 +86,7 @@ mod imp {
     }
 }
 
-#[cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))]
+#[cfg(all(target_family = "wasm", any(target_os = "unknown", target_os = "none")))]
 mod imp {
     /*
     Random support for `wasm32-unknown-unknown`.
