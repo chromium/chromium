@@ -261,8 +261,8 @@ bool IsBracket(UChar32 codepoint) {
 }
 
 // Returns a vector containing the script and the script extensions of the
-// Unicode |codepoint|.
-ScriptVector GetScriptExtensions(UChar32 codepoint) {
+// Unicode |codepoint|, as reported by ICU.
+ScriptVector GetScriptExtensionsFromIcu(UChar32 codepoint) {
   UErrorCode icu_error = U_ZERO_ERROR;
   ScriptVector result;
   result.resize(kMaxScripts);
@@ -274,6 +274,20 @@ ScriptVector GetScriptExtensions(UChar32 codepoint) {
   result.resize(count);
 
   return result;
+}
+
+// Returns a vector containing the script and the script extensions of the
+// Unicode |codepoint|.
+ScriptVector GetScriptExtensions(UChar32 codepoint) {
+  // Most UI text is ASCII, so avoid the ICU lookup for it. ASCII letters are
+  // Latin and all other ASCII code points are Common, without extensions.
+  if (codepoint >= 0 && codepoint < 0x80) {
+    ScriptVector result = {base::IsAsciiAlpha(codepoint) ? USCRIPT_LATIN
+                                                         : USCRIPT_COMMON};
+    DCHECK(result == GetScriptExtensionsFromIcu(codepoint));
+    return result;
+  }
+  return GetScriptExtensionsFromIcu(codepoint);
 }
 
 // Intersects the script extensions set of |codepoint| with |result| and writes

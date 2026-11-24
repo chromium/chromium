@@ -47,6 +47,7 @@
 #include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -7472,6 +7473,22 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsInLtrAscii) {
   render_text->SetDirectionalityMode(DIRECTIONALITY_FORCE_RTL);
   render_text->SetText(u"abc.");
   EXPECT_EQ("[3][0->2]", GetRunListStructureString());
+}
+
+// RenderTextHarfBuzz does not ask ICU for the scripts of ASCII code points. It
+// assumes that letters are Latin and everything else is Common, and that none
+// of them has script extensions. Verifies that ICU agrees.
+TEST_F(RenderTextTest, HarfBuzz_AsciiScriptExtensions) {
+  for (UChar32 codepoint = 0; codepoint < 0x80; ++codepoint) {
+    SCOPED_TRACE(codepoint);
+    UScriptCode scripts[2];
+    UErrorCode icu_error = U_ZERO_ERROR;
+    ASSERT_EQ(1, uscript_getScriptExtensions(codepoint, scripts,
+                                             std::size(scripts), &icu_error));
+    ASSERT_TRUE(U_SUCCESS(icu_error));
+    EXPECT_EQ(base::IsAsciiAlpha(codepoint) ? USCRIPT_LATIN : USCRIPT_COMMON,
+              scripts[0]);
+  }
 }
 
 // Test that, on Mac, font fallback mechanisms and Harfbuzz configuration cause
