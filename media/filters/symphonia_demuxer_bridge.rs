@@ -217,7 +217,7 @@ pub mod ffi {
             self: &mut SymphoniaDemuxerBridge,
             source: Pin<&mut SymphoniaSourceBridge>,
             time_us: u64,
-            track_id: i32,
+            track_id: i64,
         ) -> SymphoniaSeekResult;
 
         fn container_name(&self) -> &str;
@@ -736,7 +736,7 @@ impl SymphoniaDemuxerBridge {
         &mut self,
         source: Pin<&mut ffi::SymphoniaSourceBridge>,
         time_us: u64,
-        track_id: i32,
+        track_id: i64,
     ) -> ffi::SymphoniaSeekResult {
         let _source_guard = self.source_handle.as_ref().map(|h| h.bind(source));
 
@@ -752,10 +752,11 @@ impl SymphoniaDemuxerBridge {
 
         // If track_id >= 0, seek specifically taking into account that track's
         // index / keyframes. A negative track_id (e.g. -1) seeks across any
-        // track.
+        // track. `i64` holds the full `u32` track ID range (including random
+        // 32-bit Ogg serial numbers).
         let seek_to = SeekTo::Time {
             time: Time::from_micros_u64(time_us),
-            track_id: if track_id >= 0 { Some(track_id as u32) } else { None },
+            track_id: u32::try_from(track_id).ok(),
         };
 
         match reader.seek(SeekMode::Accurate, seek_to) {

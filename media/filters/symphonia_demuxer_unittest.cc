@@ -838,6 +838,163 @@ TEST_F(SymphoniaDemuxerTest, OnTracksChangedDisablesAndReenables) {
   EXPECT_TRUE(stream->is_enabled());
 }
 
+TEST_F(SymphoniaDemuxerTest, ReenabledTrackResumesAtCurrentTime) {
+  CreateDemuxer("sfx_s16le.wav");
+  InitializeDemuxer();
+  ASSERT_NE(media_tracks_, nullptr);
+  MediaTrack::Id track_id = media_tracks_->tracks()[0]->track_id();
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+
+  base::test::TestFuture<DemuxerStream*> disable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, std::nullopt,
+                            base::TimeDelta(), disable_future.GetCallback());
+  ASSERT_EQ(disable_future.Get(), nullptr);
+
+  // Like `FFmpegDemuxer`, re-enabling a track seeks to the current playback
+  // time, so the stream's first packet covers `kCurrentTime` rather than
+  // continuing from wherever demuxing had reached.
+  constexpr base::TimeDelta kCurrentTime = base::Milliseconds(200);
+  base::test::TestFuture<DemuxerStream*> enable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, track_id, kCurrentTime,
+                            enable_future.GetCallback());
+  ASSERT_EQ(enable_future.Get(), stream);
+
+  scoped_refptr<DecoderBuffer> buffer = ReadBuffer(stream);
+  ASSERT_NE(buffer, nullptr);
+  ASSERT_FALSE(buffer->end_of_stream());
+  EXPECT_LE(buffer->timestamp(), kCurrentTime);
+  EXPECT_GT(buffer->timestamp() + buffer->duration(), kCurrentTime);
+}
+
+TEST_F(SymphoniaDemuxerTest, StopCompletesPendingTrackChange) {
+  CreateDemuxer("sfx_s16le.wav");
+  InitializeDemuxer();
+  ASSERT_NE(media_tracks_, nullptr);
+  MediaTrack::Id track_id = media_tracks_->tracks()[0]->track_id();
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+
+  base::test::TestFuture<DemuxerStream*> disable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, std::nullopt,
+                            base::TimeDelta(), disable_future.GetCallback());
+  ASSERT_EQ(disable_future.Get(), nullptr);
+
+  // Stop before the track change seek replies; the change must still finish.
+  base::test::TestFuture<DemuxerStream*> enable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, track_id,
+                            base::Milliseconds(200),
+                            enable_future.GetCallback());
+  EXPECT_FALSE(enable_future.IsReady());
+  demuxer_->Stop();
+  EXPECT_TRUE(enable_future.IsReady());
+  EXPECT_EQ(enable_future.Get(), stream);
+}
+
+TEST_F(SymphoniaDemuxerTest,
+       SwitchingMultitrackAudioSeeksSecondTrackToCurrentTime) {
+  CreateDemuxer("multitrack-2audio.webm");
+  InitializeDemuxer();
+
+  ASSERT_NE(media_tracks_, nullptr);
+  ASSERT_EQ(media_tracks_->tracks().size(), 2u);
+  std::vector<raw_ptr<DemuxerStream>> streams = demuxer_->GetAllStreams();
+  ASSERT_EQ(streams.size(), 2u);
+  auto* first_stream = static_cast<SymphoniaDemuxerStream*>(streams[0].get());
+  auto* second_stream = static_cast<SymphoniaDemuxerStream*>(streams[1].get());
+
+  // Advance demuxing on the first track past 1s before switching to the second
+  // track at an earlier playback position.
+  base::TimeDelta last_first_pts;
+  while (last_first_pts < base::Seconds(1)) {
+    scoped_refptr<DecoderBuffer> buffer = ReadBuffer(first_stream);
+    ASSERT_NE(buffer, nullptr);
+    ASSERT_FALSE(buffer->end_of_stream());
+    last_first_pts = buffer->timestamp();
+  }
+
+  constexpr base::TimeDelta kSwitchTime = base::Milliseconds(200);
+  MediaTrack::Id second_track_id = media_tracks_->tracks()[1]->track_id();
+  base::test::TestFuture<DemuxerStream*> switch_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, second_track_id, kSwitchTime,
+                            switch_future.GetCallback());
+  ASSERT_EQ(switch_future.Get(), second_stream);
+  EXPECT_FALSE(first_stream->is_enabled());
+  EXPECT_TRUE(second_stream->is_enabled());
+
+  // WebM `SimpleBlock`s carry zero duration, so `MkvReader` lands on the
+  // nearest packet around `kSwitchTime` (~215 ms) rather than continuing past
+  // `last_first_pts` (>1 s).
+  scoped_refptr<DecoderBuffer> buffer = ReadBuffer(second_stream);
+  ASSERT_NE(buffer, nullptr);
+  ASSERT_FALSE(buffer->end_of_stream());
+  EXPECT_GE(buffer->timestamp(), kSwitchTime - base::Milliseconds(50));
+  EXPECT_LT(buffer->timestamp(), base::Milliseconds(300));
+}
+
+TEST_F(SymphoniaDemuxerTest, ReenablingTrackAtEndOfStreamEndsStream) {
+  CreateDemuxer("sfx_s16le.wav");
+  InitializeDemuxer();
+  ASSERT_NE(media_tracks_, nullptr);
+  MediaTrack::Id track_id = media_tracks_->tracks()[0]->track_id();
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+
+  ExpectReadsAllPackets();
+
+  base::test::TestFuture<DemuxerStream*> disable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, std::nullopt,
+                            stream->duration(), disable_future.GetCallback());
+  ASSERT_EQ(disable_future.Get(), nullptr);
+
+  // Re-enabling past the last packet hits `OutOfRange` and must immediately
+  // mark the stream at end of stream rather than stalling or logging an error.
+  base::test::TestFuture<DemuxerStream*> enable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, track_id,
+                            stream->duration() + base::Seconds(1),
+                            enable_future.GetCallback());
+  ASSERT_EQ(enable_future.Get(), stream);
+
+  scoped_refptr<DecoderBuffer> buffer = ReadBuffer(stream);
+  ASSERT_NE(buffer, nullptr);
+  EXPECT_TRUE(buffer->end_of_stream());
+}
+
+TEST_F(SymphoniaDemuxerTest, AbortPendingReadsCompletesHeldTrackChange) {
+  CreateDemuxer("multitrack-2audio.webm");
+  InitializeDemuxer();
+  ASSERT_NE(media_tracks_, nullptr);
+  MediaTrack::Id track_id = media_tracks_->tracks()[0]->track_id();
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+
+  base::test::TestFuture<DemuxerStream*> disable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, std::nullopt,
+                            base::TimeDelta(), disable_future.GetCallback());
+  ASSERT_EQ(disable_future.Get(), nullptr);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  base::test::TestFuture<void> read_held;
+  file_data_source_->BlockReads(read_held.GetSequenceBoundCallback());
+
+  base::test::TestFuture<DemuxerStream*> enable_future;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, track_id,
+                            base::Milliseconds(500),
+                            enable_future.GetCallback());
+  ASSERT_TRUE(read_held.Wait());
+  EXPECT_FALSE(enable_future.IsReady());
+
+  demuxer_->AbortPendingReads();
+  EXPECT_TRUE(enable_future.IsReady());
+  EXPECT_EQ(enable_future.Get(), stream);
+
+  // Subsequent seeks and reads must still work after aborting a track change.
+  Seek(kSeekTarget);
+  scoped_refptr<DecoderBuffer> buffer = ReadBuffer(stream);
+  ASSERT_NE(buffer, nullptr);
+  EXPECT_FALSE(buffer->end_of_stream());
+}
+
 TEST_F(SymphoniaDemuxerTest, CancelPendingSeekAbortsReads) {
   CreateDemuxer("sfx_s16le.wav");
   InitializeDemuxer();

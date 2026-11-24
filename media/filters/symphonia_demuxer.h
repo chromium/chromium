@@ -75,8 +75,6 @@ struct SymphoniaTrackInfo;
 // - Packet side data, excluding discard padding; TODO(crbug.com/583935113).
 // - Non-zero start time (TODO(crbug.com/583934943)) and timeline offsets
 //   (TODO(crbug.com/583936230)).
-// - Re-enabling tracks at the current playback time - currently resumes at the
-//   current demuxing position; TODO(crbug.com/583935964).
 class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
  public:
   // Outcome of `Initialize()`, recorded to the
@@ -187,6 +185,7 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
   void OnInitializeDone(InitResultOrError result);
   void OnReadPacketDone(SymphoniaReadPacketResult packet_result);
   void OnSeekDone(SymphoniaSeekResult seek_result);
+  void OnTrackChangeSeekDone(SymphoniaSeekResult seek_result);
 
   // Ends every stream, and sets the duration from the packets read so far if
   // the container did not report one.
@@ -232,6 +231,9 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
 
   PipelineStatusCallback pending_init_cb_;
   PipelineStatusCallback pending_seek_cb_;
+  // Set while seeking to the current time after a track is re-enabled; runs
+  // the `TrackChangeCB` for that change.
+  base::OnceClosure pending_track_change_cb_;
   bool is_read_pending_ = false;
   bool is_eos_ = false;
   bool is_stopped_ = false;

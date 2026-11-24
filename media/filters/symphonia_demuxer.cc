@@ -137,10 +137,11 @@ SymphoniaSeekResult SeekOnBlockingSequence(
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
     SymphoniaDemuxerBridge* demuxer,
     SymphoniaDataSourceBridge* source,
-    uint64_t time_us) {
+    uint64_t time_us,
+    int64_t track_id) {
   CHECK(blocking_task_runner->RunsTasksInCurrentSequence());
-  // A track ID of -1 lets Symphonia pick the default track to seek on.
-  return demuxer->seek_to(*source, time_us, /*track_id=*/-1);
+  // A negative track ID lets Symphonia pick the default track to seek on.
+  return demuxer->seek_to(*source, time_us, track_id);
 }
 
 // Adapts an owned `rust::Vec<uint8_t>` packet payload into a
@@ -474,6 +475,9 @@ void SymphoniaDemuxer::AbortPendingReads() {
   if (pending_seek_cb_) {
     std::move(pending_seek_cb_).Run(PIPELINE_OK);
   }
+  if (pending_track_change_cb_) {
+    std::move(pending_track_change_cb_).Run();
+  }
 }
 
 void SymphoniaDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {}
@@ -503,8 +507,12 @@ void SymphoniaDemuxer::Seek(base::TimeDelta time,
 
   is_eos_ = false;
   pending_seek_cb_ = std::move(status_cb);
+  int64_t seek_track_id = -1;
   for (const auto& stream : streams_) {
     stream->FlushBuffers();
+    if (seek_track_id < 0 && stream->is_enabled()) {
+      seek_track_id = static_cast<int64_t>(stream->track_id());
+    }
   }
 
   const uint64_t seek_time_us =
@@ -517,7 +525,8 @@ void SymphoniaDemuxer::Seek(base::TimeDelta time,
       FROM_HERE,
       base::BindOnce(&SeekOnBlockingSequence, blocking_task_runner_,
                      base::Unretained(&**demuxer_bridge_),
-                     base::Unretained(source_bridge_.get()), seek_time_us),
+                     base::Unretained(source_bridge_.get()), seek_time_us,
+                     seek_track_id),
       base::BindOnce(&SymphoniaDemuxer::OnSeekDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -567,6 +576,10 @@ void SymphoniaDemuxer::Stop() {
 
   if (pending_seek_cb_) {
     std::move(pending_seek_cb_).Run(PIPELINE_ERROR_ABORT);
+  }
+
+  if (pending_track_change_cb_) {
+    std::move(pending_track_change_cb_).Run();
   }
 
   for (const auto& stream : streams_) {
@@ -620,21 +633,84 @@ void SymphoniaDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
                                        base::TimeDelta curr_time,
                                        TrackChangeCB change_completed_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `PipelineController` waits for each track change to finish before it
+  // starts another one.
+  CHECK(!pending_track_change_cb_);
   // Symphonia has no notion of selected tracks: it always demuxes packets for
   // every track, and packets for disabled streams are dropped on enqueue.
-  // TODO(crbug.com/583935964): Seek a re-enabled stream to `curr_time`.
   SymphoniaDemuxerStream* enabled_stream = nullptr;
+  bool newly_enabled = false;
   for (const auto& stream : streams_) {
     if (stream->type() != track_type) {
       continue;
     }
     const bool enable = track_id == stream->media_track_id();
-    stream->SetEnabled(enable);
     if (enable) {
       enabled_stream = stream.get();
+      newly_enabled = !stream->is_enabled();
     }
+    stream->SetEnabled(enable);
   }
-  std::move(change_completed_cb).Run(enabled_stream);
+
+  // A disabled stream dropped its packets, so a newly enabled stream has none
+  // around `curr_time`. Like `FFmpegDemuxer`, seek back to `curr_time` and
+  // flush the newly enabled stream. Other streams receive packets they may
+  // already have, which the pipeline tolerates. A pending seek flushes every
+  // stream and moves the read position anyway, so it covers this case.
+  if (!newly_enabled || is_stopped_ || !demuxer_bridge_ || pending_seek_cb_) {
+    std::move(change_completed_cb).Run(enabled_stream);
+    ReadFrameIfNeeded();
+    return;
+  }
+
+  is_eos_ = false;
+  // Flush before seeking (clearing any prior `end_of_stream_` or `aborted_`
+  // state); packet reads are paused while `pending_track_change_cb_` is set, so
+  // nothing can enqueue until the seek finishes.
+  enabled_stream->FlushBuffers();
+  pending_track_change_cb_ =
+      base::BindOnce(std::move(change_completed_cb), enabled_stream);
+  const uint64_t seek_time_us =
+      static_cast<uint64_t>(std::max(int64_t{0}, curr_time.InMicroseconds()));
+
+  // Unretained is safe: the bridges are only destroyed by a task that `Stop()`
+  // posts to the same sequenced `blocking_task_runner_`, so they outlive this
+  // task.
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&SeekOnBlockingSequence, blocking_task_runner_,
+                     base::Unretained(&**demuxer_bridge_),
+                     base::Unretained(source_bridge_.get()), seek_time_us,
+                     static_cast<int64_t>(enabled_stream->track_id())),
+      base::BindOnce(&SymphoniaDemuxer::OnTrackChangeSeekDone,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SymphoniaDemuxer::OnTrackChangeSeekDone(SymphoniaSeekResult seek_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_stopped_);
+  CHECK(pending_track_change_cb_);
+
+  // Re-enabling a track at or past the last packet is not an error: mark every
+  // stream at end of stream, matching `OnSeekDone()`.
+  if (seek_result.status == SymphoniaSeekStatus::OutOfRange) {
+    is_eos_ = true;
+    for (const auto& stream : streams_) {
+      stream->SetEndOfStream();
+    }
+    std::move(pending_track_change_cb_).Run();
+    return;
+  }
+
+  // TODO(crbug.com/550619039): Report seek failures for track changes too.
+  // `FFmpegDemuxer` ignores them as well.
+  if (seek_result.status != SymphoniaSeekStatus::Ok) {
+    MEDIA_LOG(ERROR, media_log_)
+        << GetDisplayName()
+        << ": track change seek failed: " << seek_result.error_str;
+  }
+
+  std::move(pending_track_change_cb_).Run();
   ReadFrameIfNeeded();
 }
 
@@ -657,7 +733,8 @@ std::vector<raw_ptr<DemuxerStream>> SymphoniaDemuxer::GetAllStreams() {
 void SymphoniaDemuxer::ReadFrameIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_stopped_ || is_eos_ || is_read_pending_ || pending_seek_cb_ ||
-      !demuxer_bridge_ || !StreamsHaveAvailableCapacity()) {
+      pending_track_change_cb_ || !demuxer_bridge_ ||
+      !StreamsHaveAvailableCapacity()) {
     return;
   }
 
@@ -689,7 +766,7 @@ void SymphoniaDemuxer::OnReadPacketDone(
   is_read_pending_ = false;
 
   // A seek started while this read was in flight; drop the stale packet.
-  if (pending_seek_cb_) {
+  if (pending_seek_cb_ || pending_track_change_cb_) {
     return;
   }
 
