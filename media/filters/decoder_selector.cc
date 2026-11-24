@@ -272,7 +272,14 @@ void DecoderSelector<StreamType>::OnDecoderInitializeDone(
     return;
   }
 
-  RunSelectDecoderCB(std::move(decoder_));
+  // Retain ownership of `decoder_` and `decrypting_demuxer_stream_` until the
+  // posted task runs. Moving them into the posted task would allow them to
+  // outlive `DecoderSelector` (and pipeline dependencies such as `CdmContext`
+  // or `DemuxerStream`) if `this` is destroyed before the task executes.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DecoderSelector<StreamType>::DeliverSelectedDecoder,
+                     weak_this_factory_.GetWeakPtr()));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -280,11 +287,24 @@ void DecoderSelector<StreamType>::ReturnSelectionError(DecoderStatus error) {
   DVLOG(1) << __func__ << ": No decoder selected";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!error.is_ok());
+  DCHECK(select_decoder_cb_);
 
+  // Cancel any pending initialization or delivery tasks before destroying
+  // `decoder_` and `decrypting_demuxer_stream_`.
+  weak_this_factory_.InvalidateWeakPtrs();
+
+  decoder_.reset();
+  if (stream_ == decrypting_demuxer_stream_.get()) {
+    stream_ = nullptr;
+  }
   decrypting_demuxer_stream_.reset();
   decoders_.clear();
   prefer_prepended_platform_decoder_ = false;
-  RunSelectDecoderCB(base::unexpected(std::move(error)));
+
+  EndSelectDecoderTrace("null", /*has_decrypting_demuxer_stream=*/false);
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(select_decoder_cb_),
+                                base::unexpected(std::move(error)), nullptr));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -332,25 +352,36 @@ void DecoderSelector<StreamType>::OnDecryptingDemuxerStreamInitializeDone(
 }
 
 template <DemuxerStream::Type StreamType>
-void DecoderSelector<StreamType>::RunSelectDecoderCB(
-    DecoderOrError decoder_or_error) {
+void DecoderSelector<StreamType>::DeliverSelectedDecoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(select_decoder_cb_);
+  DCHECK(decoder_);
+
+  EndSelectDecoderTrace(GetDecoderName(decoder_->GetDecoderType()),
+                        !!decrypting_demuxer_stream_);
+
+  // Clear member state before running `select_decoder_cb_` in case it
+  // synchronously calls back into `this` (e.g. FinalizeDecoderSelection()) or
+  // destroys `this`.
+  auto select_decoder_cb = std::move(select_decoder_cb_);
+  auto decoder = std::move(decoder_);
+  auto decrypting_demuxer_stream = std::move(decrypting_demuxer_stream_);
+  std::move(select_decoder_cb)
+      .Run(std::move(decoder), std::move(decrypting_demuxer_stream));
+}
+
+template <DemuxerStream::Type StreamType>
+void DecoderSelector<StreamType>::EndSelectDecoderTrace(
+    const char* decoder_name,
+    bool has_decrypting_demuxer_stream) {
   TRACE_EVENT_END(
       "media", GetTracingTrack(this), "type",
       DemuxerStream::GetTypeName(StreamType), "decoder",
       base::StringPrintf(
-          "%s (%s)",
-          decoder_or_error.has_value()
-              ? GetDecoderName(decoder_or_error.value()->GetDecoderType())
-              : "null",
-          decrypting_demuxer_stream_ ? "encrypted" : "unencrypted"));
+          "%s (%s)", decoder_name,
+          has_decrypting_demuxer_stream ? "encrypted" : "unencrypted"));
   TRACE_EVENT_END("media",
                   /* kSelectDecoderTrace */ GetTracingTrack(this));
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(select_decoder_cb_), std::move(decoder_or_error),
-                     std::move(decrypting_demuxer_stream_)));
 }
 
 template <DemuxerStream::Type StreamType>

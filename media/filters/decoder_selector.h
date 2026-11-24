@@ -123,7 +123,9 @@ class MEDIA_EXPORT DecoderSelector {
   void ReturnSelectionError(DecoderStatus error);
   void InitializeDecryptingDemuxerStream();
   void OnDecryptingDemuxerStreamInitializeDone(PipelineStatus status);
-  void RunSelectDecoderCB(DecoderOrError decoder_or_error);
+  void DeliverSelectedDecoder();
+  void EndSelectDecoderTrace(const char* decoder_name,
+                             bool has_decrypting_demuxer_stream);
   void FilterAndSortAvailableDecoders();
   void SelectDecoderInternal(SelectDecoderCB select_decoder_cb,
                              typename Decoder::OutputCB output_cb,
