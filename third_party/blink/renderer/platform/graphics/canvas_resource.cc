@@ -4,16 +4,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 
-#include <inttypes.h>
-
-#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/strings/stringprintf.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -26,7 +21,6 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/common/features.h"
@@ -119,25 +113,6 @@ void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
 void CanvasResource::NotifyResourceLost() {
   DCHECK(!is_cross_thread());
   resource_is_lost_ = true;
-}
-
-void CanvasResource::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                                  const std::string& parent_path) const {
-  scoped_refptr<gpu::ClientSharedImage> client_si = GetSharedImage();
-
-  std::string dump_name =
-      base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, parent_path.c_str(),
-                         reinterpret_cast<uintptr_t>(this));
-  auto* dump = pmd->CreateAllocatorDump(dump_name);
-  size_t memory_size =
-      client_si->format().EstimatedSizeInBytes(client_si->size());
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  memory_size);
-
-  client_si->OnMemoryDump(
-      pmd, dump->guid(),
-      static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
 }  // namespace blink

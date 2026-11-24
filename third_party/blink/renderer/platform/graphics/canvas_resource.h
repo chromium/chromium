@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
@@ -97,9 +95,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
     DCHECK(!is_cross_thread());
     return resource_is_lost_;
   }
-
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    const std::string& parent_path) const override;
 
   bool is_cross_thread() const {
     return base::PlatformThread::CurrentRef() != owning_thread_ref_;
