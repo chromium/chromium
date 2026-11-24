@@ -276,6 +276,11 @@ export class
           'show-suggestion-activity-link',
           this.shouldShowSuggestionActivityLink());
     }
+    if (changedProperties.has('canSubmitFilesAndInput')) {
+      this.dispatchEvent(new CustomEvent('can-submit-files-and-input-changed', {
+        detail: {canSubmitFilesAndInput: this.canSubmitFilesAndInput},
+      }));
+    }
   }
 
   override computeVoiceSearchCoherenceEnabled(): boolean {

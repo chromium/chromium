@@ -610,12 +610,6 @@ export const ComposeboxEmbedderMixin =
                 this.hasValidQuery() && this.fileUploadsComplete;
           }
 
-          if (changedPrivateProperties.has('canSubmitFilesAndInput')) {
-            this.fire('can-submit-files-and-input-changed', {
-              canSubmitFilesAndInput: this.canSubmitFilesAndInput,
-            });
-          }
-
           // Hold `willFulfillInAim` steady while `submitting` (so clearing
           // inputs on submit or entering AI Mode on SEND does not flash the UI
           // before navigation), and reconcile once `submitting` clears.
