@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/expandable_site_list_view.h"
 #include "chrome/browser/ui/views/extensions/extension_permissions_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -49,6 +51,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
@@ -63,6 +67,7 @@
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -551,11 +556,13 @@ void ExtensionInstallDialogView::LinkClicked() {
 void ExtensionInstallDialogView::CreateContents() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  bool has_permissions = prompt_->GetPermissionCount() > 0;
-  bool requires_justification =
-      prompt_->type() == InstallPromptData::EXTENSION_REQUEST_PROMPT;
   bool has_site_access_options =
       prompt_->ShouldWithheldPermissionsOnDialogAccept();
+  bool has_permissions = has_site_access_options
+                             ? prompt_->GetNonHostPermissionCount() > 0
+                             : prompt_->GetPermissionCount() > 0;
+  bool requires_justification =
+      prompt_->type() == InstallPromptData::EXTENSION_REQUEST_PROMPT;
 
   if (!has_permissions && !requires_justification && !has_site_access_options) {
     // Use a smaller margin between the title area and buttons, since there
@@ -597,25 +604,51 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
           .SetBetweenChildSpacing(provider->GetDistanceMetric(
               views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
-  if (has_permissions) {
-    auto permissions_view =
-        std::make_unique<ExtensionPermissionsView>(prompt_->GetPermissions());
-    permissions_view_observation_.Observe(permissions_view.get());
-    extension_info_container.AddChild(
+  if (has_permissions || has_site_access_options) {
+    auto permissions_section =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetBetweenChildSpacing(provider->GetDistanceMetric(
                 views::DISTANCE_RELATED_CONTROL_VERTICAL))
-            .AddChildren(
-                // Permissions header.
-                views::Builder<views::Label>()
-                    .SetText(prompt_->GetPermissionsHeading())
-                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetMultiLine(true),
-                // Permissions content.
-                views::Builder<ExtensionPermissionsView>(
-                    std::move(permissions_view))));
+            .Build();
+    auto* permissions_heading_label = permissions_section->AddChildView(
+        // Permissions header ("It can:").
+        views::Builder<views::Label>()
+            .SetText(prompt_->GetPermissionsHeading())
+            .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+            .SetMultiLine(true)
+            .Build());
+
+    if (has_site_access_options) {
+      auto permissions_list = std::make_unique<views::BoxLayoutView>();
+      permissions_list->SetOrientation(
+          views::BoxLayout::Orientation::kVertical);
+      permissions_list->SetBetweenChildSpacing(provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL));
+      permissions_list->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
+      permissions_list->GetViewAccessibility().SetName(
+          *permissions_heading_label);
+
+      permissions_list->AddChildView(CreateSiteAccessSection());
+      if (has_permissions) {
+        auto permissions_view = std::make_unique<ExtensionPermissionsView>(
+            prompt_->GetNonHostPermissions(),
+            /*show_bullet_points=*/true);
+        preferred_size_observations_.AddObservation(permissions_view.get());
+        permissions_list->AddChildView(std::move(permissions_view));
+      }
+      permissions_section->AddChildView(std::move(permissions_list));
+    } else {
+      auto permissions_view = std::make_unique<ExtensionPermissionsView>(
+          prompt_->GetPermissions(),
+          /*show_bullet_points=*/false);
+      preferred_size_observations_.AddObservation(permissions_view.get());
+      permissions_section->AddChildView(std::move(permissions_view));
+    }
+
+    extension_info_container.AddChild(
+        views::Builder<views::BoxLayoutView>(std::move(permissions_section)));
   }
 
   if (requires_justification) {
@@ -627,36 +660,6 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
             std::move(justification_view)));
   }
 
-  if (has_site_access_options) {
-    constexpr int kRadioGroupId = 0;
-    extension_info_container.AddChild(
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .SetBetweenChildSpacing(provider->GetDistanceMetric(
-                views::DISTANCE_RELATED_CONTROL_VERTICAL))
-            .SetAccessibleRole(ax::mojom::Role::kRadioGroup)
-            .SetAccessibleName(l10n_util::GetStringUTF16(
-                IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE))
-            .AddChildren(
-                views::Builder<views::Label>()
-                    .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE))
-                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetMultiLine(true),
-                views::Builder<views::RadioButton>()
-                    .CopyAddressTo(&on_click_radio_button_)
-                    .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_CLICK))
-                    .SetGroup(kRadioGroupId)
-                    .SetChecked(true),
-                views::Builder<views::RadioButton>()
-                    .CopyAddressTo(&always_all_sites_radio_button_)
-                    .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2))
-                    .SetGroup(kRadioGroupId)));
-  }
-
   return views::Builder<views::ScrollView>()
       .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
       .ClipHeightTo(
@@ -664,6 +667,136 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
                  views::DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
       .SetContents(extension_info_container)
       .Build();
+}
+
+std::unique_ptr<views::View>
+ExtensionInstallDialogView::CreateSiteAccessSection() {
+  constexpr int kRadioGroupId = 0;
+  constexpr int kRadioButtonIconDipSize = 20;
+  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  const int radio_text_indent =
+      provider->GetInsetsMetric(views::INSETS_CHECKBOX_RADIO_BUTTON).left() +
+      kRadioButtonIconDipSize +
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  auto section = std::make_unique<views::BoxLayoutView>();
+  section->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  section->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
+  section->GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  section->GetViewAccessibility().SetName(prompt_->GetSiteAccessHeader());
+
+  auto header_row = std::make_unique<views::BoxLayoutView>();
+  header_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  header_row->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  header_row->GetViewAccessibility().SetIsIgnored(true);
+
+  auto* bullet = header_row->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(u"• ")
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::STYLE_PRIMARY)
+          .Build());
+  bullet->GetViewAccessibility().SetIsIgnored(true);
+
+  auto* header_label = header_row->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(prompt_->GetSiteAccessHeader())
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::STYLE_PRIMARY)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
+          .Build());
+  header_label->GetViewAccessibility().SetIsIgnored(true);
+  header_row->SetFlexForView(header_label, 1);
+
+  const int bullet_indent = bullet->GetPreferredSize().width();
+  section->AddChildView(std::move(header_row));
+
+  auto radio_group = std::make_unique<views::BoxLayoutView>();
+  radio_group->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  radio_group->SetInsideBorderInsets(gfx::Insets::TLBR(0, bullet_indent, 0, 0));
+  radio_group->GetViewAccessibility().SetRole(ax::mojom::Role::kRadioGroup);
+  radio_group->GetViewAccessibility().SetName(prompt_->GetSiteAccessHeader());
+
+  on_click_radio_button_ = radio_group->AddChildView(
+      views::Builder<views::RadioButton>()
+          .SetText(prompt_->GetSiteAccessOnClickOptionText())
+          .SetGroup(kRadioGroupId)
+          .SetChecked(true)
+          .SetMultiLine(true)
+          .Build());
+  auto* on_click_subtext = radio_group->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(prompt_->GetSiteAccessOnClickOptionSubtext())
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
+          .SetBorder(views::CreateEmptyBorder(
+              gfx::Insets::TLBR(0, radio_text_indent, 0, 0)))
+          .Build());
+  on_click_radio_button_->GetViewAccessibility().SetDescription(
+      *on_click_subtext);
+
+  always_on_sites_radio_button_ = radio_group->AddChildView(
+      views::Builder<views::RadioButton>()
+          .SetText(prompt_->GetSiteAccessAlwaysOptionText())
+          .SetGroup(kRadioGroupId)
+          .SetChecked(false)
+          .SetMultiLine(true)
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(provider->GetDistanceMetric(
+                                    views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                                0, 0, 0))
+          .Build());
+  auto* always_subtext = radio_group->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(prompt_->GetSiteAccessAlwaysOptionSubtext())
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
+          .SetBorder(views::CreateEmptyBorder(
+              gfx::Insets::TLBR(0, radio_text_indent, 0, 0)))
+          .Build());
+
+  if (prompt_->has_all_hosts_permission()) {
+    always_on_sites_radio_button_->GetViewAccessibility().SetDescription(
+        *always_subtext);
+  } else {
+    auto site_list = std::make_unique<ExpandableSiteListView>(
+        prompt_->GetVisibleHostPermissions(),
+        prompt_->GetCollapsedHostPermissions(),
+        base::BindRepeating(&ExtensionInstallDialogView::
+                                UpdateAlwaysOnSitesAccessibleDescription,
+                            base::Unretained(this)));
+    site_list->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(provider->GetDistanceMetric(
+                              DISTANCE_RELATED_CONTROL_VERTICAL_SMALL),
+                          0, 0, 0));
+    site_list->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, radio_text_indent, 0, 0)));
+    site_list_view_ = site_list.get();
+    preferred_size_observations_.AddObservation(site_list_view_);
+    radio_group->AddChildView(std::move(site_list));
+    UpdateAlwaysOnSitesAccessibleDescription();
+  }
+
+  section->AddChildView(std::move(radio_group));
+  return section;
+}
+
+void ExtensionInstallDialogView::UpdateAlwaysOnSitesAccessibleDescription() {
+  if (!always_on_sites_radio_button_ || !site_list_view_) {
+    return;
+  }
+  always_on_sites_radio_button_->GetViewAccessibility().SetDescription(
+      base::StrCat({prompt_->GetSiteAccessAlwaysOptionSubtext(), u"\n",
+                    site_list_view_->GetSitesText()}));
 }
 
 std::unique_ptr<views::TableLayoutView>
@@ -861,8 +994,11 @@ void ExtensionInstallDialogView::OnViewPreferredSizeChanged(
 }
 
 void ExtensionInstallDialogView::OnViewIsDeleting(views::View* observed_view) {
-  if (permissions_view_observation_.IsObservingSource(observed_view)) {
-    permissions_view_observation_.Reset();
+  if (observed_view == site_list_view_) {
+    site_list_view_ = nullptr;
+  }
+  if (preferred_size_observations_.IsObservingSource(observed_view)) {
+    preferred_size_observations_.RemoveObservation(observed_view);
   }
   if (dialog_client_view_observation_.IsObservingSource(observed_view)) {
     dialog_client_view_observation_.Reset();

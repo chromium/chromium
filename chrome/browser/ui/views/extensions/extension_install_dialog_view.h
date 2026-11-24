@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -26,6 +27,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+class ExpandableSiteListView;
 class PictureInPictureInputProtector;
 class Profile;
 class ExtensionJustificationView;
@@ -81,8 +83,11 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   views::RadioButton* on_click_radio_button_for_testing() {
     return on_click_radio_button_;
   }
-  views::RadioButton* always_all_sites_radio_button_for_testing() {
-    return always_all_sites_radio_button_;
+  views::RadioButton* always_on_sites_radio_button_for_testing() {
+    return always_on_sites_radio_button_;
+  }
+  ExpandableSiteListView* site_list_view_for_testing() {
+    return site_list_view_;
   }
 
  private:
@@ -124,6 +129,10 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // `DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT`.
   void UpdateScrollViewMaxHeight();
 
+  // Creates the site access radio group section shown at the top of "It can:".
+  [[nodiscard]] std::unique_ptr<views::View> CreateSiteAccessSection();
+  void UpdateAlwaysOnSitesAccessibleDescription();
+
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
@@ -164,9 +173,11 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // entered text length is larger than the defined limit.
   bool request_button_enabled_ = true;
 
-  // Radio buttons used to select site access permissions on install.
+  // Radio buttons and site list used to select site access permissions on
+  // install.
   raw_ptr<views::RadioButton> on_click_radio_button_ = nullptr;
-  raw_ptr<views::RadioButton> always_all_sites_radio_button_ = nullptr;
+  raw_ptr<views::RadioButton> always_on_sites_radio_button_ = nullptr;
+  raw_ptr<ExpandableSiteListView> site_list_view_ = nullptr;
 
   // The justification text field view where users enter their justification for
   // requesting an extension.
@@ -178,8 +189,8 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   std::unique_ptr<PictureInPictureInputProtector>
       picture_in_picture_input_protector_;
 
-  base::ScopedObservation<views::View, views::ViewObserver>
-      permissions_view_observation_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      preferred_size_observations_{this};
   base::ScopedObservation<views::View, views::ViewObserver>
       dialog_client_view_observation_{this};
 };

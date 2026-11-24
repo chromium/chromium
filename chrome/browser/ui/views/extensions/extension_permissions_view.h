@@ -23,7 +23,8 @@ class ExtensionPermissionsView : public views::View {
 
  public:
   explicit ExtensionPermissionsView(
-      const extensions::InstallPromptPermissions& permissions);
+      const extensions::InstallPromptPermissions& permissions,
+      bool show_bullet_points = false);
   ExtensionPermissionsView(const ExtensionPermissionsView&) = delete;
   ExtensionPermissionsView& operator=(const ExtensionPermissionsView&) = delete;
 
@@ -38,6 +39,8 @@ class ExtensionPermissionsView : public views::View {
   void AddItem(const std::u16string& permission_text,
                const std::u16string& visible_details,
                const std::u16string& collapsed_details);
+
+  const bool show_bullet_points_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionPermissionsView, views::View)

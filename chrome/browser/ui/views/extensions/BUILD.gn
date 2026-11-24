@@ -242,6 +242,7 @@ source_set("unit_tests") {
   sources = [
     "chooser_dialog_view_unittest.cc",
     "expandable_container_view_unittest.cc",
+    "expandable_site_list_view_unittest.cc",
   ]
   deps = [
     ":extensions_views_utils",
@@ -480,6 +481,8 @@ source_set("extensions_views_utils") {
     "chooser_dialog_view.h",
     "expandable_container_view.cc",
     "expandable_container_view.h",
+    "expandable_site_list_view.cc",
+    "expandable_site_list_view.h",
     "extension_context_menu_controller.cc",
     "extension_context_menu_controller.h",
     "extension_keybinding_registry_views.cc",
@@ -504,6 +507,8 @@ source_set("extensions_views_utils") {
     "//chrome/browser/ui/views:device_chooser_content_view",
     "//chrome/browser/ui/views:layout_provider",
     "//components/constrained_window",
+    "//extensions/browser",
+    "//extensions/strings",
     "//ui/base/mojom:ui_base_types",
     "//ui/color",
     "//ui/events",
