@@ -50,6 +50,7 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
                        use_counter_document,
                        other->resource_fetch_restriction_) {
   is_ad_related_ = other->is_ad_related_;
+  check_ad_script_on_url_parse_ = other->check_ad_script_on_url_parse_;
 }
 
 CSSParserContext::CSSParserContext(const CSSParserContext* other,
@@ -69,6 +70,8 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
                        use_counter_document,
                        other->resource_fetch_restriction_) {
   is_ad_related_ = other->is_ad_related_;
+  // Only used by `Document::ElementSheet()`, which has no `@import` rules.
+  check_ad_script_on_url_parse_ = false;
 }
 
 CSSParserContext::CSSParserContext(CSSParserMode mode,
@@ -167,6 +170,7 @@ bool CSSParserContext::operator==(const CSSParserContext& other) const {
   return base_url_ == other.base_url_ && origin_clean_ == other.origin_clean_ &&
          charset_ == other.charset_ && mode_ == other.mode_ &&
          is_ad_related_ == other.is_ad_related_ &&
+         check_ad_script_on_url_parse_ == other.check_ad_script_on_url_parse_ &&
          is_html_document_ == other.is_html_document_ &&
          secure_context_mode_ == other.secure_context_mode_ &&
          world_ == other.world_ && referrer_ == other.referrer_ &&

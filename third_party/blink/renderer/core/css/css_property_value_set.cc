@@ -53,12 +53,14 @@ AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(size_t count) {
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(
     base::span<const CSSPropertyValue> properties,
     CSSParserMode css_parser_mode,
-    bool contains_cursor_hand) {
+    bool contains_cursor_hand,
+    bool may_contain_url) {
   DCHECK_LE(properties.size(), static_cast<unsigned>(kMaxArraySize));
   return MakeGarbageCollected<ImmutableCSSPropertyValueSet>(
       AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
           properties.size()),
-      PassKey(), properties, css_parser_mode, contains_cursor_hand);
+      PassKey(), properties, css_parser_mode, contains_cursor_hand,
+      may_contain_url);
 }
 
 ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
@@ -71,7 +73,32 @@ ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
 
   const auto* mutable_this = To<MutableCSSPropertyValueSet>(this);
   return ImmutableCSSPropertyValueSet::Create(
-      base::span(mutable_this->property_vector_), CssParserMode());
+      base::span(mutable_this->property_vector_), CssParserMode(),
+      /*contains_cursor_hand=*/false, MayContainUrl());
+}
+
+bool CSSPropertyValueSet::MayContainUrl() const {
+  if (auto* mutable_property_set =
+          DynamicTo<MutableCSSPropertyValueSet>(this)) {
+    for (const CSSPropertyValue& property :
+         mutable_property_set->Properties()) {
+      if (property.Value().MayContainUrl()) {
+        return true;
+      }
+    }
+    return false;
+  }
+  bool may_contain_url = bits_.get<MayContainUrlField>();
+#if DCHECK_IS_ON()
+  if (!may_contain_url) {
+    for (const CSSPropertyValue& property : Properties()) {
+      DCHECK(!property.Value().MayContainUrl())
+          << "MayContainUrl() called on an ImmutableCSSPropertyValueSet "
+             "created without compute_may_contain_url";
+    }
+  }
+#endif
+  return may_contain_url;
 }
 
 uint32_t CSSPropertyValueSet::ComputeHash() const {
@@ -129,10 +156,12 @@ ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     PassKey,
     base::span<const CSSPropertyValue> properties,
     CSSParserMode css_parser_mode,
-    bool contains_query_hand)
+    bool contains_query_hand,
+    bool may_contain_url)
     : CSSPropertyValueSet(css_parser_mode,
                           base::checked_cast<unsigned>(properties.size()),
-                          contains_query_hand) {
+                          contains_query_hand,
+                          may_contain_url) {
   const unsigned array_size = bits_.get<ArraySizeField>();
   if (array_size > 0) {
     // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet

@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/ad_tracker/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
@@ -12830,12 +12831,15 @@ void Element::CloneAttributesFrom(const Element& other) {
 
   // If 'other' has a mutable ElementData, convert it to an immutable one so we
   // can share it between both elements.
-  // We can only do this if there are no presentation attributes and sharing the
+  // We can only do this if there are no presentation attributes, no inline
+  // style URLs (which may carry caller-specific ad tagging), and sharing the
   // data won't result in different case sensitivity of class or id.
   auto* unique_element_data =
       DynamicTo<UniqueElementData>(other.element_data_.Get());
   if (unique_element_data && !owner_documents_have_different_case_sensitivity &&
-      !other.element_data_->PresentationAttributeStyle()) {
+      !other.element_data_->PresentationAttributeStyle() &&
+      (!other.element_data_->InlineStyle() ||
+       !other.element_data_->InlineStyle()->MayContainUrl())) {
     const_cast<Element&>(other).element_data_ =
         unique_element_data->MakeShareableCopy();
   }
@@ -12936,26 +12940,40 @@ void Element::NotifyInlineStyleMutation() {
 inline void Element::SetInlineStyleFromString(
     const AtomicString& new_style_string) {
   DCHECK(IsStyledElement());
-  Member<CSSPropertyValueSet>& inline_style = GetElementData()->inline_style_;
-
-  // Avoid redundant work if we're using shared attribute data with already
-  // parsed inline style.
-  if (inline_style && !GetElementData()->IsUnique()) {
-    return;
+  if (CSSPropertyValueSet* shared_inline_style =
+          GetElementData()->IsUnique()
+              ? nullptr
+              : GetElementData()->inline_style_.Get()) {
+    // When there are no URLs, reuse the cached declaration without querying
+    // AdTracker.
+    if (!shared_inline_style->MayContainUrl() ||
+        !AdTracker::IsAdScriptExecutingInDocument(&GetDocument())) {
+      return;
+    }
+    // Detach from `ShareableElementData` so re-parsing below records ad tagging
+    // on this element without polluting `ElementDataCache`.
+    EnsureUniqueElementData().inline_style_.Clear();
   }
 
   // We reconstruct the property set instead of mutating if there is no CSSOM
   // wrapper.  This makes wrapperless property sets immutable and so cacheable.
-  if (inline_style && !inline_style->IsMutable()) {
-    inline_style.Clear();
+  if (CSSPropertyValueSet* inline_style = GetElementData()->inline_style_.Get();
+      inline_style && !inline_style->IsMutable()) {
+    GetElementData()->inline_style_.Clear();
   }
 
-  if (!inline_style) {
-    inline_style =
+  if (!GetElementData()->inline_style_) {
+    ImmutableCSSPropertyValueSet* parsed_style =
         CSSParser::ParseInlineStyleDeclaration(new_style_string, this);
+    if (parsed_style->MayContainUrl() && !GetElementData()->IsUnique() &&
+        AdTracker::IsAdScriptExecutingInDocument(&GetDocument())) {
+      EnsureUniqueElementData().inline_style_ = parsed_style;
+    } else {
+      GetElementData()->inline_style_ = parsed_style;
+    }
   } else {
-    DCHECK(inline_style->IsMutable());
-    static_cast<MutableCSSPropertyValueSet*>(inline_style.Get())
+    DCHECK(GetElementData()->inline_style_->IsMutable());
+    To<MutableCSSPropertyValueSet>(GetElementData()->inline_style_.Get())
         ->ParseDeclarationList(
             new_style_string,
             GetExecutionContext()

@@ -83,6 +83,7 @@ class CORE_EXPORT CSSParserContext final
   const TextEncoding& Charset() const { return charset_; }
   const Referrer& GetReferrer() const { return referrer_; }
   bool IsAdRelated() const { return is_ad_related_; }
+  bool CheckAdScriptOnUrlParse() const { return check_ad_script_on_url_parse_; }
   bool IsHTMLDocument() const { return is_html_document_; }
   enum ResourceFetchRestriction ResourceFetchRestriction() const {
     return resource_fetch_restriction_;
@@ -98,6 +99,7 @@ class CORE_EXPORT CSSParserContext final
   CSSParserMode GetMode() const { return mode_; }
 
   void SetIsAdRelated() { is_ad_related_ = true; }
+  void SetCheckAdScriptOnUrlParse() { check_ad_script_on_url_parse_ = true; }
 
   KURL CompleteURL(const String& url) const;
 
@@ -163,8 +165,15 @@ class CORE_EXPORT CSSParserContext final
 
   // Whether the associated stylesheet's ResourceRequest is an ad resource. If
   // there is no associated ResourceRequest, whether ad script is on the v8 call
-  // stack at stylesheet creation. Not set for presentation attributes.
+  // stack at stylesheet creation. Not set for presentation attributes or
+  // `Document::ElementSheet()`.
   bool is_ad_related_ = false;
+
+  // True on `Document::ElementSheet()`'s parser context (and copies derived
+  // from it for inline style parsing), indicating that `AdTracker` should be
+  // queried synchronously when a `url()` token is parsed rather than
+  // snapshotted once at sheet creation.
+  bool check_ad_script_on_url_parse_ = false;
   bool is_html_document_;
   SecureContextMode secure_context_mode_;
 

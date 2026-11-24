@@ -307,10 +307,21 @@ static inline void FilterProperties(
   }
 }
 
+static bool AnyPropertyMayContainUrl(
+    base::span<const CSSPropertyValue> properties) {
+  for (const CSSPropertyValue& property : properties) {
+    if (property.Value().MayContainUrl()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     HeapVector<CSSPropertyValue, 64>& parsed_properties,
     CSSParserMode mode,
-    const Document* document) {
+    const Document* document,
+    bool compute_may_contain_url = false) {
   if (mode != kHTMLQuirksMode && (parsed_properties.size() < 2 ||
                                   (parsed_properties.size() == 2 &&
                                    parsed_properties[0].PropertyID() !=
@@ -318,8 +329,11 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     // Fast path for the situations where we can trivially detect that there can
     // be no collision between properties, and don't need to reorder, make
     // bitsets, or similar.
-    ImmutableCSSPropertyValueSet* result =
-        ImmutableCSSPropertyValueSet::Create(parsed_properties, mode);
+    bool may_contain_url =
+        compute_may_contain_url && AnyPropertyMayContainUrl(parsed_properties);
+    ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
+        parsed_properties, mode, /*contains_cursor_hand=*/false,
+        may_contain_url);
     parsed_properties.resize(0);  // clear() deallocates the backing.
     return result;
   }
@@ -361,9 +375,12 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     }
   }
 
+  base::span<const CSSPropertyValue> filtered_properties =
+      base::span(parsed_properties).subspan(unused_entries);
+  bool may_contain_url =
+      compute_may_contain_url && AnyPropertyMayContainUrl(filtered_properties);
   ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
-      base::span(parsed_properties).subspan(unused_entries), mode,
-      count_cursor_hand);
+      filtered_properties, mode, count_cursor_hand, may_contain_url);
   parsed_properties.resize(0);  // clear() deallocates the backing.
   return result;
 }
@@ -384,7 +401,8 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
                               /*parent_rule_for_nesting=*/nullptr,
                               /*nested_declarations_start_index=*/kNotFound,
                               /*child_rules=*/nullptr);
-  return CreateCSSPropertyValueSet(parser.parsed_properties_, mode, &document);
+  return CreateCSSPropertyValueSet(parser.parsed_properties_, mode, &document,
+                                   /*compute_may_contain_url=*/true);
 }
 
 ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
@@ -401,7 +419,7 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
                               /*nested_declarations_start_index=*/kNotFound,
                               /*child_rules=*/nullptr);
   return CreateCSSPropertyValueSet(parser.parsed_properties_, parser_mode,
-                                   document);
+                                   document, /*compute_may_contain_url=*/true);
 }
 
 bool CSSParserImpl::ParseDeclarationList(

@@ -184,6 +184,13 @@ class CORE_EXPORT CSSPropertyValueSet
   }
 
   bool HasAllProperty() const { return bits_.get<HasAllField>(); }
+  // Returns true if this property set may contain a `CSSUrlData` (e.g.,
+  // `url()`). On `ImmutableCSSPropertyValueSet`, this bit is only populated
+  // for inline style declarations (and `ImmutableCopyIfNeeded()`), not
+  // stylesheet rules. Does not cover unparsed custom properties (`--bg:
+  // url(...)`) or `var()`-substituted declarations (which resolve during style
+  // recalc).
+  bool MayContainUrl() const;
 
   // Computes a hash of the contents of this property value set
   // (cached after first call). Note that hash equality may have
@@ -252,7 +259,7 @@ class CORE_EXPORT CSSPropertyValueSet
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
 
  protected:
-  static constexpr unsigned kMaxArraySize = (1 << 24) - 1;
+  static constexpr unsigned kMaxArraySize = (1 << 23) - 1;
 
   explicit CSSPropertyValueSet(CSSParserMode css_parser_mode)
       : bits_(ArraySizeField::encode(0) |
@@ -262,7 +269,8 @@ class CORE_EXPORT CSSPropertyValueSet
 
   CSSPropertyValueSet(CSSParserMode css_parser_mode,
                       unsigned immutable_array_size,
-                      bool contains_cursor_hand)
+                      bool contains_cursor_hand,
+                      bool may_contain_url = false)
       // Avoid min()/max() from std here in the header, because that would
       // require inclusion of <algorithm>, which is slow to compile.
       : bits_(ArraySizeField::encode((immutable_array_size < kMaxArraySize)
@@ -270,7 +278,8 @@ class CORE_EXPORT CSSPropertyValueSet
                                          : kMaxArraySize) |
               CSSParserModeField::encode(css_parser_mode) |
               IsMutableField::encode(false) |
-              ContainsCursorHandField::encode(contains_cursor_hand)) {}
+              ContainsCursorHandField::encode(contains_cursor_hand) |
+              MayContainUrlField::encode(may_contain_url)) {}
 
   uint32_t ComputeHash() const;
 
@@ -281,7 +290,7 @@ class CORE_EXPORT CSSPropertyValueSet
   // instead of C++ bitfields.
   using BitField = ConcurrentlyReadBitField<uint32_t>;
   using ArraySizeField =
-      BitField::DefineFirstValue<uint32_t, 24>;  // Only for immutable sets.
+      BitField::DefineFirstValue<uint32_t, 23>;  // Only for immutable sets.
   using CSSParserModeField = ArraySizeField::DefineNextValue<uint32_t, 4>;
   using IsMutableField = CSSParserModeField::DefineNextValue<bool, 1>;
   using ContainsCursorHandField = IsMutableField::DefineNextValue<bool, 1>;
@@ -289,6 +298,8 @@ class CORE_EXPORT CSSPropertyValueSet
       ContainsCursorHandField::DefineNextValue<bool,
                                                1>;  // Only for mutable sets.
   using HasAllField = MayHaveLogicalPropertiesField::DefineNextValue<bool, 1>;
+  using MayContainUrlField =
+      HasAllField::DefineNextValue<bool, 1>;  // Only for immutable sets.
   BitField bits_;
 
   // EmptyValue() means “not computed yet”. DeletedValue() means “invalid”
@@ -310,12 +321,14 @@ class CORE_EXPORT alignas(CSSPropertyName) ImmutableCSSPropertyValueSet
   ImmutableCSSPropertyValueSet(PassKey,
                                base::span<const CSSPropertyValue>,
                                CSSParserMode,
-                               bool contains_cursor_hand = false);
+                               bool contains_cursor_hand = false,
+                               bool may_contain_url = false);
 
   static ImmutableCSSPropertyValueSet* Create(
       base::span<const CSSPropertyValue>,
       CSSParserMode,
-      bool contains_cursor_hand = false);
+      bool contains_cursor_hand = false,
+      bool may_contain_url = false);
 
   unsigned PropertyCount() const { return bits_.get<ArraySizeField>(); }
 

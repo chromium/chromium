@@ -53,7 +53,7 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
   static AdTracker* FromExecutionContext(ExecutionContext*);
 
   // Returns true if an ad script is currently executing in `document`.
-  static bool IsAdScriptExecutingInDocument(Document* document);
+  static bool IsAdScriptExecutingInDocument(const Document* document);
 
   AdTracker(LocalFrame*, ScriptInitiationMonitor*);
   AdTracker(const AdTracker&) = delete;

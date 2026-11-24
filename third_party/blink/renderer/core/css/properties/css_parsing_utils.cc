@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
@@ -1779,10 +1780,20 @@ const CSSUrlData* CollectUrlData(const StringView& url,
                                  const CSSUrlRequestModifiers& modifiers,
                                  const CSSParserContext& context) {
   AtomicString url_string = url.ToAtomicString();
+  bool is_ad_related = context.IsAdRelated();
+  if (!is_ad_related && context.CheckAdScriptOnUrlParse()) {
+    // Skip during style recalc: the V8 stack reflects whatever triggered
+    // recalc rather than the script that wrote the style. Note that inline
+    // declarations using `var()` (e.g., `background: url(x) var(--pos)`) are
+    // only parsed during recalc, so their `url()`s are not tagged here.
+    if (const Document* document = context.GetDocument();
+        document && !document->InStyleRecalc()) {
+      is_ad_related = AdTracker::IsAdScriptExecutingInDocument(document);
+    }
+  }
   return MakeGarbageCollected<CSSUrlData>(
       url_string, context.CompleteNonEmptyURL(url_string),
-      context.GetReferrer(), context.IsOriginClean(), context.IsAdRelated(),
-      modifiers);
+      context.GetReferrer(), context.IsOriginClean(), is_ad_related, modifiers);
 }
 
 }  // namespace

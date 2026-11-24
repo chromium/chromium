@@ -143,10 +143,12 @@ CSSStyleSheet* CSSStyleSheet::CreateInline(StyleSheetContents* sheet,
                                              start_position);
 }
 
-CSSParserContext* CSSStyleSheet::InlineParserContext(
-    Document& owner_node_document,
-    const KURL& base_url,
-    const TextEncoding& encoding) {
+namespace {
+
+CSSParserContext* CreateInlineParserContext(Document& owner_node_document,
+                                            const KURL& base_url,
+                                            const TextEncoding& encoding,
+                                            bool is_element_sheet) {
   auto* parser_context = MakeGarbageCollected<CSSParserContext>(
       owner_node_document,
       base_url.IsNull() ? owner_node_document.BaseURL() : base_url,
@@ -161,10 +163,22 @@ CSSParserContext* CSSStyleSheet::InlineParserContext(
           Referrer::ClientReferrerString(),
           owner_node_document.GetReferrerPolicy()),
       encoding);
-  if (AdTracker::IsAdScriptExecutingInDocument(&owner_node_document)) {
+  if (is_element_sheet) {
+    parser_context->SetCheckAdScriptOnUrlParse();
+  } else if (AdTracker::IsAdScriptExecutingInDocument(&owner_node_document)) {
     parser_context->SetIsAdRelated();
   }
   return parser_context;
+}
+
+}  // namespace
+
+CSSParserContext* CSSStyleSheet::InlineParserContext(
+    Document& owner_node_document,
+    const KURL& base_url,
+    const TextEncoding& encoding) {
+  return CreateInlineParserContext(owner_node_document, base_url, encoding,
+                                   /*is_element_sheet=*/false);
 }
 
 CSSStyleSheet* CSSStyleSheet::CreateInline(Node& owner_node,
@@ -172,8 +186,13 @@ CSSStyleSheet* CSSStyleSheet::CreateInline(Node& owner_node,
                                            const TextPosition& start_position,
                                            const TextEncoding& encoding) {
   Document& owner_node_document = owner_node.GetDocument();
-  CSSParserContext* parser_context =
-      InlineParserContext(owner_node_document, base_url, encoding);
+  // `Document::ElementSheet()` is the only non-test caller passing a
+  // `Document` as `owner_node`; other `ElementSheet()` consumers (e.g.,
+  // `element.animate()`, `CSS.registerProperty()`, Typed OM shorthands)
+  // inherit `check_ad_script_on_url_parse_`.
+  CSSParserContext* parser_context = CreateInlineParserContext(
+      owner_node_document, base_url, encoding,
+      /*is_element_sheet=*/owner_node.IsDocumentNode());
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(parser_context,
                                                          base_url.GetString());
   return MakeGarbageCollected<CSSStyleSheet>(sheet, owner_node, true,

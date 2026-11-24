@@ -161,8 +161,31 @@ bool CSSValue::HasFailedOrCanceledSubresources(ResourceFetcher* fetcher) const {
 }
 
 bool CSSValue::MayContainUrl() const {
-  if (IsValueList()) {
-    return To<CSSValueList>(*this).MayContainUrl();
+  if (const auto* value_list = DynamicTo<CSSValueList>(this)) {
+    return value_list->MayContainUrl();
+  }
+  if (const auto* image_set = DynamicTo<CSSImageSetOptionValue>(this)) {
+    return image_set->GetImage().MayContainUrl();
+  }
+  if (const auto* cursor_image =
+          DynamicTo<cssvalue::CSSCursorImageValue>(this)) {
+    return cursor_image->ImageValue().MayContainUrl();
+  }
+  if (const auto* crossfade = DynamicTo<cssvalue::CSSCrossfadeValue>(this)) {
+    for (const auto& [image, percentage] :
+         crossfade->GetImagesAndPercentages()) {
+      if (image->MayContainUrl()) {
+        return true;
+      }
+    }
+    return false;
+  }
+  if (const auto* pair = DynamicTo<CSSLightDarkValuePair>(this)) {
+    return pair->First().MayContainUrl() || pair->Second().MayContainUrl();
+  }
+  if (const auto* reflect = DynamicTo<cssvalue::CSSReflectValue>(this)) {
+    const CSSValue* mask = reflect->Mask();
+    return mask && mask->MayContainUrl();
   }
   return IsImageValue() || IsURIValue();
 }

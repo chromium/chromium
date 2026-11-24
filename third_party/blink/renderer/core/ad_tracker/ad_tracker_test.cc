@@ -176,6 +176,7 @@ class TestAdTracker : public AdTracker {
   // and caches its results for later verification in tests.
   bool IsAdScriptInStack(MonkeyPatchableApi ignore_monkey_patch,
                          AdScriptAncestry* out_ad_script_ancestry) override {
+    ++is_ad_script_in_stack_call_count_;
     bool result = AdTracker::IsAdScriptInStack(ignore_monkey_patch,
                                                out_ad_script_ancestry);
 
@@ -212,6 +213,14 @@ class TestAdTracker : public AdTracker {
     return last_is_ad_script_in_stack_result_;
   }
 
+  int is_ad_script_in_stack_call_count() const {
+    return is_ad_script_in_stack_call_count_;
+  }
+
+  void ResetIsAdScriptInStackCallCount() {
+    is_ad_script_in_stack_call_count_ = 0;
+  }
+
  protected:
   std::optional<AdProvenance> CalculateIfAdSubresource(
       ExecutionContext* execution_context,
@@ -245,6 +254,7 @@ class TestAdTracker : public AdTracker {
   bool sim_test_ = false;
 
   bool last_is_ad_script_in_stack_result_ = false;
+  int is_ad_script_in_stack_call_count_ = 0;
   AdScriptAncestry last_ad_script_ancestry_;
 
   base::OnceClosure quit_closure_;
@@ -1083,6 +1093,153 @@ TEST_P(AdTrackerVanillaOrAdSimTest, InlineCSSSetByScript) {
   EXPECT_EQ(ad_tracker_->RequestWithUrlTaggedAsAd(script_url), IsAdRun());
   EXPECT_EQ(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_image_url),
             IsAdRun());
+}
+
+// Regression test: inline style ad tagging is evaluated per `url()` parse
+// rather than latched document-wide on `Document::ElementSheet()` or leaked
+// through `ElementDataCache`.
+TEST_F(AdTrackerSimTest, InlineCSS_EvaluatedPerUrlParse) {
+  String parser_bg_url = "https://example.com/parser_bg.png";
+  String vanilla_bg_url = "https://example.com/vanilla_bg.png";
+  String ad_bg_url = "https://example.com/ad_bg.png";
+  String shared_ad_url = "https://example.com/shared_ad.png";
+  String shared_vanilla_url = "https://example.com/shared_vanilla.png";
+  String shared_imageset_url = "https://example.com/shared_imageset.png";
+
+  SimSubresourceRequest ad_head("https://example.com/ad_head.js?ad=true",
+                                "text/javascript");
+  SimSubresourceRequest ad_body("https://example.com/ad_body.js?ad=true",
+                                "text/javascript");
+  SimSubresourceRequest vanilla("https://example.com/vanilla.js",
+                                "text/javascript");
+  SimSubresourceRequest parser_bg(parser_bg_url, "image/png");
+  SimSubresourceRequest vanilla_bg(vanilla_bg_url, "image/png");
+  SimSubresourceRequest ad_bg(ad_bg_url, "image/png");
+  SimSubresourceRequest shared_ad(shared_ad_url, "image/png");
+  SimSubresourceRequest shared_vanilla(shared_vanilla_url, "image/png");
+  SimSubresourceRequest shared_imageset(shared_imageset_url, "image/png");
+
+  main_resource_->Write(R"HTML(
+    <head>
+      <script src="ad_head.js?ad=true"></script>
+      <script defer src="ad_body.js?ad=true"></script>
+      <script defer src="vanilla.js"></script>
+    </head>
+  )HTML");
+  // 1. Ad script touches `.style` in `<head>` before any body inline style.
+  ad_head.Complete("document.createElement('img').style = 'display: none;';");
+
+  // 2. Parser parses a visible `url()` and a hidden `url()` (populating
+  //    `ElementDataCache` without fetching).
+  main_resource_->Complete(R"HTML(
+    <body>
+      <div style="background-image: url('parser_bg.png')"></div>
+      <div style="display: none">
+        <p style="background-image: url('shared_vanilla.png')"></p>
+      </div>
+      <div id="vanilla_el"></div>
+      <div id="ad_el"></div>
+      <div id="ad_host"></div>
+      <div id="vanilla_host"></div>
+    </body>
+  )HTML");
+
+  // 3. Ad script sets `.style.backgroundImage`, parses `url()` / `image-set()`
+  //    in `display: none` (trying to populate `ElementDataCache` without
+  //    fetching), then visibly re-injects the cached `shared_vanilla.png`.
+  ad_body.Complete(R"SCRIPT(
+    document.getElementById("ad_el").style.backgroundImage = "url('ad_bg.png')";
+    const adHost = document.getElementById("ad_host");
+    adHost.style.display = "none";
+    adHost.innerHTML =
+        "<span style=\"background-image: url('shared_ad.png')\"></span>" +
+        "<span style=\"background-image: image-set(url('shared_imageset.png') 1x)\"></span>";
+    adHost.innerHTML = "";
+    adHost.style.display = "block";
+    adHost.innerHTML =
+        "<p style=\"background-image: url('shared_vanilla.png')\"></p>";
+  )SCRIPT");
+
+  // 4. Vanilla script sets `.style.backgroundImage` and visibly injects the
+  //    same `shared_ad.png` / `shared_imageset.png` markup.
+  vanilla.Complete(R"SCRIPT(
+    document.getElementById("vanilla_el").style.backgroundImage =
+        "url('vanilla_bg.png')";
+    document.getElementById("vanilla_host").innerHTML =
+        "<span style=\"background-image: url('shared_ad.png')\"></span>" +
+        "<span style=\"background-image: image-set(url('shared_imageset.png') 1x)\"></span>";
+  )SCRIPT");
+
+  for (const auto& url :
+       {parser_bg_url, vanilla_bg_url, ad_bg_url, shared_vanilla_url,
+        shared_ad_url, shared_imageset_url}) {
+    ad_tracker_->WaitForSubresource(url);
+  }
+  parser_bg.Complete();
+  vanilla_bg.Complete();
+  ad_bg.Complete();
+  shared_vanilla.Complete();
+  shared_ad.Complete();
+  shared_imageset.Complete();
+
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(parser_bg_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_bg_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(shared_ad_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(shared_imageset_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_bg_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(shared_vanilla_url));
+}
+
+// Verifies that inline styles without `url()` never invoke `IsAdScriptInStack`,
+// while inline styles with `url()` still query `AdTracker`.
+TEST_F(AdTrackerSimTest, InlineCSS_NonUrlStylesSkipStackScan) {
+  SimSubresourceRequest ad_head("https://example.com/ad_head.js?ad=true",
+                                "text/javascript");
+  SimSubresourceRequest ad_non_url("https://example.com/ad_non_url.js?ad=true",
+                                   "text/javascript");
+  SimSubresourceRequest ad_url("https://example.com/ad_url.js?ad=true",
+                               "text/javascript");
+
+  main_resource_->Write(R"HTML(
+    <head><script src="ad_head.js?ad=true"></script></head>
+  )HTML");
+  // Register an ad script so `IsAdScriptInStack` is armed, and init
+  // `ElementSheet()`.
+  ad_head.Complete("document.createElement('div').style = 'display: none';");
+  ad_tracker_->ResetIsAdScriptInStackCallCount();
+
+  // Parser and ad script setting non-URL inline styles (cache miss + hit):
+  // 0 stack scans.
+  main_resource_->Complete(R"HTML(
+    <body>
+      <div style="color: red">One</div>
+      <div style="color: red">Two</div>
+      <div id="host" style="display: none"></div>
+      <script defer src="ad_non_url.js?ad=true"></script>
+      <script defer src="ad_url.js?ad=true"></script>
+    </body>
+  )HTML");
+  ad_non_url.Complete(R"SCRIPT(
+    const host = document.getElementById("host");
+    host.innerHTML =
+        "<p style='font-weight: bold'>A</p><p style='font-weight: bold'>B</p>";
+    const clone = host.firstElementChild.cloneNode(true);
+    clone.setAttribute("style", "opacity: 0.5");
+    host.appendChild(clone);
+  )SCRIPT");
+  test::RunPendingTasks();
+  EXPECT_EQ(ad_tracker_->is_ad_script_in_stack_call_count(), 0);
+
+  // Ad script setting an inline style with `url()`: queries `AdTracker`.
+  ad_url.Complete(R"SCRIPT(
+    const div = document.createElement("div");
+    div.id = "url_div";
+    div.setAttribute("style", "background-image: url('https://example.com/1.png')");
+    document.getElementById("host").appendChild(div);
+  )SCRIPT");
+  test::RunPendingTasks();
+  ASSERT_NE(GetDocument().getElementById(AtomicString("url_div")), nullptr);
+  EXPECT_GT(ad_tracker_->is_ad_script_in_stack_call_count(), 0);
 }
 
 TEST_F(AdTrackerSimTest, StyleTagInMainframe) {

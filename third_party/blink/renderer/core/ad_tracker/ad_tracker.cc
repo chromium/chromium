@@ -54,7 +54,7 @@ AdTracker* AdTracker::FromExecutionContext(
 }
 
 // static
-bool AdTracker::IsAdScriptExecutingInDocument(Document* document) {
+bool AdTracker::IsAdScriptExecutingInDocument(const Document* document) {
   AdTracker* ad_tracker =
       document->GetFrame() ? document->GetFrame()->GetAdTracker() : nullptr;
   return ad_tracker && ad_tracker->IsAdScriptInStack();
