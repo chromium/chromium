@@ -1,7 +1,8 @@
 # ![Logo](public_transit.webp) Public Transit Best Practices
 
 Guidance for writing and reviewing Public Transit tests and Transit Layer code.
-Read the [README](README.md) first for core concepts and default APIs.
+Read the [README](README.md) first for core concepts and default APIs. For
+debugging utilities and timeouts, see [Debugging](debugging.md).
 
 [TOC]
 

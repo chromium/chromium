@@ -10,6 +10,7 @@ states and transitions between them.
 * This README: concepts and framework features.
 * [Best Practices](best_practices.md): guidance for writing and reviewing tests
   and Transit Layer code.
+* [Debugging](debugging.md): `ViewPrinter`, debugging options, and timeouts.
 
 ### Write Your First Test {#first-test}
 
@@ -49,8 +50,8 @@ From the starting Station, call transition methods to navigate to the state you
 want to test. If a state or affordance isn't modeled yet, add a `Station`,
 `Facility` or transition method to the Transit Layer in
 `//chrome/test/android/javatests/src/org/chromium/chrome/test/transit/` (see
-[Classes and Concepts](#concepts)). [`ViewPrinter`](#viewprinter) helps find the
-Views to declare.
+[Classes and Concepts](#concepts)). [`ViewPrinter`](debugging.md#viewprinter)
+helps find the Views to declare.
 
 See some example tests:
 
@@ -124,6 +125,9 @@ StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>]
     [9] [OK  ] View: (view.getId() is <2130773201/org.chromium.chrome.tests:id/menu_button>) (>= 51% displayed, effectively VISIBLE, enabled) {fulfilled after 0~33 ms}
 StationToStationTrip 4 (from [<S3: WebPageStation>, <S3|F1003: ToolbarFacility>] to [<S4: WebPageStation>, <S4|F1004: ToolbarFacility>]): finished
 ```
+
+See [Timeouts and Failure Reports](debugging.md#timeouts) for timeout defaults
+and reading `TravelException` condition reports.
 
 ### Code Reuse
 
@@ -226,52 +230,11 @@ See [ViewFinder Best Practices](best_practices.md#viewfinder).
 
 [`ViewFinder`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.ViewFinder&ss=chromium
 
-### ViewPrinter {#viewprinter}
+### ViewPrinter and Debugging Options {#debugging}
 
-[`ViewPrinter`] is useful to print a View hierarchy to write ViewElements and
-debug failures. The output with default options looks like this:
-
-```
-@id/control_container | ToolbarControlContainer
-├── @id/toolbar_container | ToolbarViewResourceFrameLayout
-│   ╰── @id/toolbar | ToolbarPhone
-│       ├── @id/home_button | HomeButton
-│       ├── @id/location_bar | LocationBarPhone
-│       │   ├── @id/location_bar_status | StatusView
-│       │   │   ╰── @id/location_bar_status_icon_view | StatusIconView
-│       │   │       ╰── @id/location_bar_status_icon_frame | FrameLayout
-│       │   │           ╰── @id/loc_bar_status_icon | ChromeImageView
-│       │   ╰── "about:blank" | @id/url_bar | UrlBarApi26
-│       ╰── @id/toolbar_buttons | LinearLayout
-│           ├── @id/tab_switcher_button | ToggleTabStackButton
-│           ╰── @id/menu_button_wrapper | MenuButton
-│               ╰── @id/menu_button | ChromeImageButton
-╰── @id/tab_switcher_toolbar | StartSurfaceToolbarView
-    ├── @id/new_tab_view | LinearLayout
-    │   ├── AppCompatImageView
-    │   ╰── "New tab" | MaterialTextView
-    ╰── @id/menu_anchor | FrameLayout
-        ╰── @id/menu_button_wrapper | MenuButton
-            ╰── @id/menu_button | ChromeImageButton
-```
-
-[`ViewPrinter`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.util.ViewPrinter&ss=chromium
-
-### Debugging Options {#debugging}
-
-[`PublicTransitConfig`] configures the test to run differently for debugging:
-
-* `setTransitionPauseForDebugging()` causes the test to run more slowly, pausing
-  for some time after each transition and displaying a Toast with which Station
-  is active. 1500ms is a good default.
-* `setOnExceptionCallback()` runs the given callback when an Exception happens
-  during a Transition. Useful to print debug information before the test fails
-  and the app is closed.
-* `setFreezeOnException()` freezes the test when an Exception happens during a
-  Transition. Useful to see what the screen looks like before the test fails and
-  the instrumented app is closed.
-
-[`PublicTransitConfig`]: https://source.chromium.org/search?q=symbol:PublicTransitConfig%20f:base%2Ftest&ss=chromium
+See [ViewPrinter](debugging.md#viewprinter) to print View hierarchies and
+[Debugging Options](debugging.md#debugging-options) to slow down or freeze tests
+with `PublicTransitConfig`.
 
 ## Overview
 
@@ -679,7 +642,8 @@ The way a Transition works is:
 [`TransitionOptions`] let individual Transitions be customized, adjusting
 timeouts, adding retries, or disabling the pre-check. They are set through
 `TripBuilder` methods such as `withTimeout()`, `withRetry()` and
-`withPossiblyAlreadyFulfilled()`.
+`withPossiblyAlreadyFulfilled()`. See [Timeouts](debugging.md#timeouts) before
+changing a timeout.
 
 [`TransitionOptions`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Transition.TransitionOptions&ss=chromium
 
