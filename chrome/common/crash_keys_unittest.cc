@@ -65,6 +65,11 @@ TEST_F(CrashKeysTest, ShouldIgnoreBoringFlags) {
   EXPECT_TRUE(GetCrashKeyValue("switch-5").empty());
 }
 
+TEST_F(CrashKeysTest, IsBoringSwitch) {
+  EXPECT_TRUE(crash_keys::IsBoringSwitch("--v=1"));
+  EXPECT_FALSE(crash_keys::IsBoringSwitch("--enable-multi-profiles"));
+}
+
 namespace {
 
 void InitFromArgv(base::CommandLine& command_line,

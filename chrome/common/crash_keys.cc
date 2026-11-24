@@ -6,6 +6,7 @@
 
 #include <array>
 #include <deque>
+#include <string>
 #include <string_view>
 
 #include "base/base_switches.h"
@@ -36,7 +37,31 @@ namespace {
 
 constexpr std::string_view kStringAnnotationsSwitch = "string-annotations";
 
-// Return true if we DON'T want to upload this flag to the crash server.
+std::deque<CrashKeyWithName>& GetCommandLineStringAnnotations() {
+  static base::NoDestructor<std::deque<CrashKeyWithName>>
+      command_line_string_annotations;
+  return *command_line_string_annotations;
+}
+
+void SetStringAnnotations(const base::CommandLine& command_line) {
+  // This is only meant to be used to pass annotations from the browser to
+  // children and not to be used on the browser command line.
+  if (!command_line.HasSwitch(switches::kProcessType)) {
+    return;
+  }
+  base::StringPairs annotations;
+  if (!base::SplitStringIntoKeyValuePairs(
+          command_line.GetSwitchValueASCII(kStringAnnotationsSwitch), '=', ',',
+          &annotations)) {
+    return;
+  }
+  for (const auto& [key, value] : annotations) {
+    GetCommandLineStringAnnotations().emplace_back(key).Set(value);
+  }
+}
+
+}  // namespace
+
 bool IsBoringSwitch(const std::string& flag) {
   if (crash_keys::IsDefaultBoringSwitch(flag)) {
     return true;
@@ -95,31 +120,6 @@ bool IsBoringSwitch(const std::string& flag) {
   }
   return false;
 }
-
-std::deque<CrashKeyWithName>& GetCommandLineStringAnnotations() {
-  static base::NoDestructor<std::deque<CrashKeyWithName>>
-      command_line_string_annotations;
-  return *command_line_string_annotations;
-}
-
-void SetStringAnnotations(const base::CommandLine& command_line) {
-  // This is only meant to be used to pass annotations from the browser to
-  // children and not to be used on the browser command line.
-  if (!command_line.HasSwitch(switches::kProcessType)) {
-    return;
-  }
-  base::StringPairs annotations;
-  if (!base::SplitStringIntoKeyValuePairs(
-          command_line.GetSwitchValueASCII(kStringAnnotationsSwitch), '=', ',',
-          &annotations)) {
-    return;
-  }
-  for (const auto& [key, value] : annotations) {
-    GetCommandLineStringAnnotations().emplace_back(key).Set(value);
-  }
-}
-
-}  // namespace
 
 void AllocateCrashKeyInBrowserAndChildren(std::string_view key,
                                           std::string_view value) {

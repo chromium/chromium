@@ -28,8 +28,10 @@
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/crash_keys.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/crash/core/common/crash_keys.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -233,6 +235,14 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
   local_state_->UpdateCommandLinePrefStore(
       base::MakeRefCounted<ChromeCommandLinePrefStore>(
           base::CommandLine::ForCurrentProcess()));
+
+  // Update the command-line crash keys now so that crashes during field trial
+  // setup report the switches and features added from about:flags.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  crash_keys::SetFeaturesFromCommandLine(command_line);
+  crash_keys::SetSwitchesFromCommandLine(command_line,
+                                         &crash_keys::IsBoringSwitch);
 }
 
 std::unique_ptr<flags_ui::FlagsStorage>

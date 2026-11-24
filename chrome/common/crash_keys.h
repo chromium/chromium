@@ -5,6 +5,7 @@
 #ifndef CHROME_COMMON_CRASH_KEYS_H_
 #define CHROME_COMMON_CRASH_KEYS_H_
 
+#include <string>
 #include <string_view>
 
 namespace base {
@@ -12,6 +13,9 @@ class CommandLine;
 }
 
 namespace crash_keys {
+
+// Returns true when the crash report must omit `flag`.
+bool IsBoringSwitch(const std::string& flag);
 
 // This function is only expected to be called in the browser process. Allocates
 // a crash key in this process. The (key, value) pair will be included in the
