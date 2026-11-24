@@ -370,4 +370,8 @@ extern NSString* const kGeminiFirstRunWrapperStackAccessibilityIdentifier;
 // The accessibility ID of the close button in the Gemini modal.
 extern NSString* const kGeminiModalContentCloseButtonAccessibilityIdentifier;
 
+// The accessibility ID of the card Gemini shows before it starts a browsing
+// task.
+extern NSString* const kGeminiConfirmationCardAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_GEMINI_CONSTANTS_H_

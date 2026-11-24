@@ -15,7 +15,9 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
+#import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_block_data_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_custom_ui_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_snackbar_data_types.h"
@@ -134,6 +136,22 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
         base::test::ios::kWaitForUIElementTimeout, ^{
           return base_view_controller_.presentedViewController == nil;
         });
+  }
+
+  // Returns a block node carrying a start-task confirmation card.
+  FakeGeminiBlockNode* MakeConfirmationCardBlock() {
+    FakeGeminiBlockNode* block = [[FakeGeminiBlockNode alloc] init];
+    block.browserActuationConfirmationCard =
+        [[FakeGeminiBrowserActuationConfirmationCard alloc] init];
+    return block;
+  }
+
+  // Returns the custom UI handler of the container mediator the coordinator
+  // showed the container with.
+  GeminiCustomUIHandler* CustomUIHandlerOf(
+      id<AssistantContainerDelegate> delegate) {
+    return base::apple::ObjCCastStrict<GeminiContainerMediator>(delegate)
+        .gatewayManager.customUIHandler;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -467,6 +485,80 @@ TEST_F(GeminiContainerCoordinatorTest, TestStartWiresSessionSnackbarHandler) {
                                    message:@"Response copied"];
   [session_handler showSnackbar:snackbar];
   EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  [coordinator_ stop];
+  [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
+}
+
+// Tests that, with the actor enabled, `start` registers a provider for the
+// start-task confirmation card before the container is shown, and that the
+// card is no longer claimed after `stop`.
+TEST_F(GeminiContainerCoordinatorTest,
+       TestStartRegistersConfirmationCardProviderWhenActorEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor}, {});
+
+  id mock_container_handler =
+      OCMProtocolMock(@protocol(AssistantContainerCommands));
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:mock_container_handler
+                           forProtocol:@protocol(AssistantContainerCommands)];
+
+  FakeGeminiBlockNode* card_block = MakeConfirmationCardBlock();
+  __block GeminiCustomUIHandler* handler = nil;
+  __block BOOL card_claimed_when_shown = NO;
+  OCMExpect([mock_container_handler
+      showAssistantContainerWithContent:[OCMArg any]
+                               delegate:
+                                   [OCMArg checkWithBlock:^BOOL(
+                                               id<AssistantContainerDelegate>
+                                                   delegate) {
+                                     handler = CustomUIHandlerOf(delegate);
+                                     card_claimed_when_shown = [handler
+                                         providesCustomContentViewForBlockNode:
+                                             card_block];
+                                     return YES;
+                                   }]]);
+
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler);
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(card_claimed_when_shown);
+  EXPECT_TRUE([handler providesCustomContentViewForBlockNode:card_block]);
+
+  [coordinator_ stop];
+  EXPECT_FALSE([handler providesCustomContentViewForBlockNode:card_block]);
+  [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
+}
+
+// Tests that, with the actor disabled, the start-task confirmation card is
+// not claimed.
+TEST_F(GeminiContainerCoordinatorTest,
+       TestStartDoesNotRegisterConfirmationCardProviderWhenActorDisabled) {
+  id mock_container_handler =
+      OCMProtocolMock(@protocol(AssistantContainerCommands));
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:mock_container_handler
+                           forProtocol:@protocol(AssistantContainerCommands)];
+
+  __block GeminiCustomUIHandler* handler = nil;
+  OCMExpect([mock_container_handler
+      showAssistantContainerWithContent:[OCMArg any]
+                               delegate:[OCMArg
+                                            checkWithBlock:^BOOL(
+                                                id<AssistantContainerDelegate>
+                                                    delegate) {
+                                              handler =
+                                                  CustomUIHandlerOf(delegate);
+                                              return YES;
+                                            }]]);
+
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler);
+  ASSERT_TRUE(handler);
+  EXPECT_FALSE([handler
+      providesCustomContentViewForBlockNode:MakeConfirmationCardBlock()]);
 
   [coordinator_ stop];
   [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];

@@ -100,6 +100,22 @@ source_set("inline_worklog_view_provider") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("confirmation_card_view_provider") {
+  sources = [
+    "gemini_confirmation_card_view_provider.h",
+    "gemini_confirmation_card_view_provider.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/intelligence/bwg/model:custom_ui" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
+    "//ui/base",
+  ]
+}
+
 source_set("actor_task_store") {
   sources = [
     "gemini_actor_task_store.h",
@@ -137,6 +153,7 @@ source_set("coordinator") {
     "gemini_web_modal_coordinator.mm",
   ]
   deps = [
+    ":confirmation_card_view_provider",
     ":container_mediator",
     ":inline_worklog_view_provider",
     "//base",
@@ -163,6 +180,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
     "//ios/chrome/browser/intelligence/bwg/model:config",
+    "//ios/chrome/browser/intelligence/bwg/model:custom_ui",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
@@ -205,6 +223,7 @@ source_set("unit_tests") {
     "gemini_actor_task_store_manager_unittest.mm",
     "gemini_actor_task_store_unittest.mm",
     "gemini_actuation_worklog_builders_unittest.mm",
+    "gemini_confirmation_card_view_provider_unittest.mm",
     "gemini_container_coordinator_unittest.mm",
     "gemini_container_mediator_unittest.mm",
     "gemini_container_snackbar_manager_unittest.mm",
@@ -217,6 +236,7 @@ source_set("unit_tests") {
   deps = [
     ":actor_task_store",
     ":actuation_worklog_builders",
+    ":confirmation_card_view_provider",
     ":container_mediator",
     ":coordinator",
     ":inline_worklog_view_provider",

@@ -47,7 +47,7 @@ inline constexpr NSString* const
 // Enables or disables the top-right collapsible chevron button.
 @property(nonatomic, assign, readonly, getter=isCollapsible) BOOL collapsible;
 
-// Collapsed state of the card.
+// Collapsed state of the card. Initially YES only if the card is collapsible.
 @property(nonatomic, assign, getter=isCollapsed) BOOL collapsed;
 
 // Enables or disables the action button.

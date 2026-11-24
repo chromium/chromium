@@ -3618,6 +3618,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_ACCORDION_EXPANDED" desc="Accessibility value spoken to signify that the focused accordion row is expanded. [iOS only].">
         Expanded
       </message>
+      <message name="IDS_IOS_GEMINI_CONFIRMATION_CARD_BUTTON" desc="Label of the button on the card Gemini shows in the chat before it starts a browsing task on the user's behalf. Tapping it also sends this exact text as the user's message to Gemini, so the translation must match the 'Start task' button of the Gemini web app exactly since the server only recognizes those translations. [iOS only]">
+        Start task
+      </message>
+      <message name="IDS_IOS_GEMINI_CONFIRMATION_CARD_TITLE" desc="Title of the card Gemini shows in the chat before it starts a browsing task on the user's behalf, above a description of the planned task and the button to start it. [iOS only]">
+        Review task
+      </message>
       <message name="IDS_IOS_GEMINI_CONSENT_CONNECTED_SERVICES_BODY" desc="Connected services body text for the Gemini Consent page.">
         To provide tailored help, Gemini shares some of your data (like parts of your chats, location, and other relevant info) with other Google services, like Maps and Flights. These services may use that info to improve, even if you later delete your Gemini history. Learn more in the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Gemini Apps Privacy Hub<ph name="END_LINK">END_LINK</ph>.
       </message>

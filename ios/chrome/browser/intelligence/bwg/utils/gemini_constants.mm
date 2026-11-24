@@ -166,6 +166,9 @@ NSString* const kGeminiFirstRunWrapperStackAccessibilityIdentifier =
 NSString* const kGeminiModalContentCloseButtonAccessibilityIdentifier =
     @"GeminiModalContentCloseButtonAccessibilityIdentifier";
 
+NSString* const kGeminiConfirmationCardAccessibilityIdentifier =
+    @"GeminiConfirmationCardAccessibilityIdentifier";
+
 @implementation GeminiStartupState
 
 - (instancetype)initWithEntryPoint:(gemini::EntryPoint)entryPoint {

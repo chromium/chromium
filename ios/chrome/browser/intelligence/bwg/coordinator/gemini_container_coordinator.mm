@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_coordinator.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_confirmation_card_view_provider.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_snackbar_manager.h"
@@ -72,6 +73,8 @@
   ActuationWorklogCoordinator* _actuationWorklogCoordinator;
   // Renders the worklog of agent tasks inside Gemini responses.
   GeminiInlineWorklogViewProvider* _inlineWorklogViewProvider;
+  // Renders the start-task confirmation cards inside Gemini responses.
+  GeminiConfirmationCardViewProvider* _confirmationCardViewProvider;
   // Child coordinator presenting a URL in a web modal over the container.
   GeminiWebModalCoordinator* _webModalCoordinator;
   // Cancelable callback for starting the container once other windows dismiss
@@ -147,6 +150,11 @@
       [_mediator.gatewayManager.customUIHandler
           removeViewProvider:_inlineWorklogViewProvider];
       _inlineWorklogViewProvider = nil;
+    }
+    if (_confirmationCardViewProvider) {
+      [_mediator.gatewayManager.customUIHandler
+          removeViewProvider:_confirmationCardViewProvider];
+      _confirmationCardViewProvider = nil;
     }
   }
   [self dismissWebModal];
@@ -260,6 +268,10 @@
     _inlineWorklogViewProvider = [[GeminiInlineWorklogViewProvider alloc] init];
     [_mediator.gatewayManager.customUIHandler
         addViewProvider:_inlineWorklogViewProvider];
+    _confirmationCardViewProvider =
+        [[GeminiConfirmationCardViewProvider alloc] init];
+    [_mediator.gatewayManager.customUIHandler
+        addViewProvider:_confirmationCardViewProvider];
   }
 
   _viewController = [[GeminiContainerViewController alloc]

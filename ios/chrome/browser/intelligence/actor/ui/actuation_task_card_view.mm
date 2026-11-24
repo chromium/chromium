@@ -56,7 +56,7 @@ const NSTimeInterval kCollapseAnimationDuration = 0.45;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _collapsible = collapsible;
-    _collapsed = YES;
+    _collapsed = collapsible;
     [self setupSubviews];
     [self setupConstraints];
 
