@@ -165,7 +165,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
             @Nullable ComponentName parentComponent,
             String url,
             boolean incognito) {
-        // History shows up as a tab on tablets.
+        // Bookmarks show up as a tab on tablets.
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         AsyncTabCreationParams params =
                 parentComponent != null

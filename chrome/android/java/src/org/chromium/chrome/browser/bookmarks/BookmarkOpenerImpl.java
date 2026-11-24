@@ -53,7 +53,8 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
      * @param bookmarkModelSupplier Supplies the bookmark model, used to query for bookmark urls and
      *     type.
      * @param context The android activity context, used to build the intent to open bookmarks.
-     * @param componentName The name of the parent component, can be null on tablets.
+     * @param componentName The name of the parent component, or null if unknown (e.g. when launched
+     *     without a parent activity).
      * @param multiInstanceManager The multi instance manager.
      * @param currentTabSupplier Supplies the active tab for bookmarklet execution, if available.
      */
@@ -280,9 +281,9 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         if (mComponentName != null) {
             ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, mComponentName);
         } else {
-            // If the bookmark manager is shown in a tab on a phone (rather than in a separate
-            // activity) the component name may be null. Send the intent through
-            // ChromeLauncherActivity instead to avoid crashing. See crbug.com/40470797.
+            // If no parent component name is available (e.g. BookmarkActivity launched without a
+            // parent activity), send the intent through ChromeLauncherActivity instead to avoid
+            // crashing. See crbug.com/40470797.
             intent.setClass(mContext.getApplicationContext(), ChromeLauncherActivity.class);
         }
 
