@@ -20,11 +20,14 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_language.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -35,7 +38,6 @@
 #include "chromeos/assistant/internal/ambient/utils.h"
 #include "chromeos/assistant/internal/proto/backdrop/backdrop.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -463,18 +465,22 @@ void AmbientBackendControllerImpl::FetchWeather(
           std::move(callback).Run(std::nullopt);
         }
       };
-  // Tests may not have a user manager, or an active user with a Gaia account.
-  const auto* user = user_manager::UserManager::IsInitialized()
-                         ? user_manager::UserManager::Get()->GetActiveUser()
-                         : nullptr;
-  if (!user || !user->HasGaiaAccount()) {
+  // TODO(crbug.com/585125918): take the account from the caller. Both of them
+  // know which user they are fetching for - BirchWeatherProvider reads the
+  // same session a few lines before it calls here - whereas this picks the
+  // active one, which is not necessarily the user whose AmbientUiSettings
+  // chose the launcher that asked (those come from the primary user).
+  // Index 0 is the active session.
+  const UserSession& active_session =
+      CHECK_DEREF(Shell::Get()->session_controller()->GetUserSession(0));
+  if (!active_session.user_info.has_gaia_account) {
     std::move(callback).Run(std::nullopt);
     return;
   }
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchWeatherInfoRequest(
-          user->GetAccountId().GetGaiaId().ToString(), GetClientId(),
-          weather_client_id);
+          active_session.user_info.account_id.GetGaiaId().ToString(),
+          GetClientId(), weather_client_id);
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateResourceRequest(request);
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
