@@ -12,6 +12,7 @@
 # TODO(crbug.com/40945935): Test currently fails on iOS blink.
 -AutofillAgentTest.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs
 -AutofillAgentTest.CheckIfSuggestionsAvailable_FormExtractionFailed
+-AutofillAgentTest.CheckIfSuggestionsAvailable_ForwardsTriggerSource
 -AutofillAgentTest.CheckIfSuggestionsAvailable_MultipleFormsExtracted
 -AutofillAgentTest.CheckIfSuggestionsAvailable_NoFormExtracted
 -AutofillAgentTest.CheckIfSuggestionsAvailable_NonUserInitiatedActivity
