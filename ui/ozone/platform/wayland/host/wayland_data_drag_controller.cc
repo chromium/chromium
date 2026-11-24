@@ -701,10 +701,10 @@ void WaylandDataDragController::OnDataSourceSend(
   }
 #endif
 
-  // We don't actually have any data to send. Nothing except Chrome itself
-  // should accept this MIME type, and Chrome won't request the non-existent
-  // data; but the KDE desktop seems to accept and request the data. To prevent
-  // hitting a CHECK in ExtractData() due to the MIME type, we exit early here.
+  // There is no actual data to send. Nothing except Chrome itself should
+  // accept this MIME type, and Chrome won't request the non-existent data; but
+  // the KDE desktop seems to accept and request the data. Exit early so that
+  // the warning below is not logged for every such drag.
   if (mime_type == ui::kMimeTypeWindowDrag) {
     std::move(callback).Run("");
     return;

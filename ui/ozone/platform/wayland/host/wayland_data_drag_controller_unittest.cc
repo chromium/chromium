@@ -356,6 +356,22 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   ReadAndCheckData(kMimeTypePlainText, {});
 }
 
+// Regression test for https://crbug.com/589214126: requesting an offered
+// pickled format must not deliver the text representation.
+TEST_P(WaylandDataDragControllerTest, StartDragAndRequestPickledMimeType) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  constexpr char kPickledMimeType[] = "chromium/x-bookmark-entries";
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetString(sample_text_for_dnd());
+  os_exchange_data.SetPickledData(
+      ClipboardFormatType::CustomPlatformType(kPickledMimeType), {});
+  drag_controller()->StartSession(os_exchange_data, DragDropTypes::DRAG_COPY,
+                                  DragEventSource::kMouse, window());
+
+  ReadAndCheckData(kPickledMimeType, {});
+}
+
 TEST_P(WaylandDataDragControllerTest, StartDragWithLink) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 

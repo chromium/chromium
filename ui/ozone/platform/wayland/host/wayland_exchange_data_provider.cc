@@ -308,7 +308,12 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
 bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
   CHECK(out_content, base::NotFatalUntil::M163);
-  CHECK(IsMimeTypeSupported(mime_type), base::NotFatalUntil::M163);
+  // Peers may request any MIME type, including offered pickled formats that
+  // are only meaningful to Chrome (e.g. chromium/x-bookmark-entries). No data
+  // is delivered for those.
+  if (!IsMimeTypeSupported(mime_type)) {
+    return false;
+  }
 
   if (mime_type == ui::kMimeTypeMozillaUrl) {
     const std::vector<ClipboardUrlInfo> url_infos =
