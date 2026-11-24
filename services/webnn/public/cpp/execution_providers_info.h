@@ -230,9 +230,9 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
         {
             .min_package_version =
                 {
-                    .major = 1,
-                    .minor = 8,
-                    .build = 95,
+                    .major = 2,
+                    .minor = 1080,
+                    .build = 97,
                     .revision = 0,
                 },
             .vendor_id = 0x8086,
