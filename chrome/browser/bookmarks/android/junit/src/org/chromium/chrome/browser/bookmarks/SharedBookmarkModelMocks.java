@@ -68,7 +68,8 @@ public class SharedBookmarkModelMocks {
     static final BookmarkItem URL_ITEM_C =
             makeUrlItem(URL_BOOKMARK_ID_C, "Url C", URL_C, FOLDER_BOOKMARK_ID_A);
     static final BookmarkItem URL_ITEM_D =
-            makeUrlItemWithRead(URL_BOOKMARK_ID_D, "Url D", URL_D, READING_LIST_BOOKMARK_ID, true);
+            makeUrlItemWithRead(
+                    URL_BOOKMARK_ID_D, "Url D", URL_D, READING_LIST_BOOKMARK_ID, /* read= */ true);
     static final BookmarkItem URL_ITEM_E =
             makeUrlItem(URL_BOOKMARK_ID_E, "Url E", URL_E, READING_LIST_BOOKMARK_ID);
     static final BookmarkItem URL_ITEM_F =
@@ -141,7 +142,7 @@ public class SharedBookmarkModelMocks {
 
     private static BookmarkItem makeUrlItem(
             BookmarkId id, String title, GURL url, BookmarkId parentId) {
-        return makeUrlItemWithRead(id, title, url, parentId, false);
+        return makeUrlItemWithRead(id, title, url, parentId, /* read= */ false);
     }
 
     private static BookmarkItem makeUrlItemWithRead(
@@ -152,20 +153,30 @@ public class SharedBookmarkModelMocks {
                 id,
                 title,
                 url,
-                false,
+                /* isFolder= */ false,
                 parentId,
-                false,
-                false,
+                /* isEditable= */ false,
+                /* isManaged= */ false,
                 dateAdded,
                 read,
                 dateLastOpened,
-                false);
+                /* isAccountBookmark= */ false);
     }
 
     private static BookmarkItem makeFolderItem(BookmarkId id, String title, BookmarkId parentId) {
         boolean isEditable = !ROOT_BOOKMARK_ID.equals(parentId);
         long dateAdded = id.getId();
         return new BookmarkItem(
-                id, title, null, true, parentId, isEditable, false, dateAdded, false, 0, false);
+                id,
+                title,
+                /* url= */ null,
+                /* isFolder= */ true,
+                parentId,
+                isEditable,
+                /* isManaged= */ false,
+                dateAdded,
+                /* read= */ false,
+                /* dateLastOpened= */ 0,
+                /* isAccountBookmark= */ false);
     }
 }
