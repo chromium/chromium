@@ -13,10 +13,6 @@ OmniboxPopupView::OmniboxPopupView(OmniboxController* controller)
 
 OmniboxPopupView::~OmniboxPopupView() = default;
 
-OmniboxPopupPresenterBase* OmniboxPopupView::presenter() {
-  return nullptr;
-}
-
 OmniboxPopupHost* OmniboxPopupView::popup_host() const {
   return nullptr;
 }

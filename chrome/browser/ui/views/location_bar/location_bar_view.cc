@@ -394,7 +394,6 @@ void LocationBarView::Init() {
           /*omnibox_view=*/omnibox_view_,
           /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
           std::move(presenter));
-      popup_view->set_presenter(omnibox_popup_presenter_);
       omnibox_popup_view_ = std::move(popup_view);
     } else if (omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
       omnibox_popup_view_ =
@@ -417,9 +416,6 @@ void LocationBarView::Init() {
           std::move(popup_host),
           base::BindRepeating(&LocationBarView::OnFullWebUiOmniboxReady,
                               weak_factory_.GetWeakPtr()));
-      if (omnibox_popup_presenter_) {
-        popup_view->set_presenter(omnibox_popup_presenter_);
-      }
       omnibox_popup_view_ = std::move(popup_view);
     }
 

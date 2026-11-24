@@ -23,7 +23,6 @@
 
 class OmniboxController;
 class OmniboxPopupHost;
-class OmniboxPopupPresenterBase;
 class OmniboxResultView;
 class OmniboxSuggestionButtonRowView;
 class OmniboxPopupViewBrowserView;
@@ -42,8 +41,6 @@ class OmniboxPopupView {
  public:
   explicit OmniboxPopupView(OmniboxController* controller);
   virtual ~OmniboxPopupView();
-
-  virtual OmniboxPopupPresenterBase* presenter();
 
   // Returns the OmniboxPopupHost that shows the popup's WebUI, or null if the
   // popup has none.

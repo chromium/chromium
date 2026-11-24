@@ -165,7 +165,6 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
         /*omnibox_view=*/omnibox_view_.get(),
         /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
         std::move(presenter));
-    popup_view->set_presenter(omnibox_popup_presenter_);
     omnibox_popup_view_ = std::move(popup_view);
   } else {
     auto presenter = std::make_unique<OmniboxPopupPresenter>(
@@ -175,7 +174,6 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
     auto popup_view = std::make_unique<OmniboxPopupViewWebUI>(
         /*omnibox_view=*/omnibox_view_.get(), omnibox_controller_.get(),
         /*location_bar=*/this, std::move(presenter));
-    popup_view->set_presenter(omnibox_popup_presenter_);
     omnibox_popup_view_ = std::move(popup_view);
   }
 
