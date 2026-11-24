@@ -114,7 +114,28 @@ void ToastService::RegisterToasts() {
 }
 ```
 
-### 3. Trigger your Toast
+### 3. Update the Toast Metrics
+Toast metrics are automatically recorded using the new `ToastId` and its
+corresponding string name from [`GetToastName()`](api/toast_id.cc). Update the
+following metrics files to include your new toast:
+
+* **[`tools/metrics/histograms/metadata/toasts/enums.xml`](/tools/metrics/histograms/metadata/toasts/enums.xml)**:
+  Add your new `ToastId` entry to the `ToastId` enum (used by
+  `Toast.TriggeredToShow` and `Toast.FailedToShow`). The integer value must
+  match the value added in [`api/toast_id.h`](api/toast_id.h).
+* **[`tools/metrics/histograms/metadata/toasts/histograms.xml`](/tools/metrics/histograms/metadata/toasts/histograms.xml)**:
+  Add a new `<variant>` entry under the `ToastName` `<variants>` element (used
+  by the `Toast.{ToastName}.Dismissed` histogram). The `name` attribute must
+  match the string returned by `GetToastName()` in
+  [`api/toast_id.cc`](api/toast_id.cc).
+* **[`tools/metrics/actions/actions.xml`](/tools/metrics/actions/actions.xml)**:
+  If your toast has an action button or a close button, add a new `<variant>`
+  entry (prefixed with `.`, e.g. `.MyToastName`) to the `Toast_Type`
+  `<variants>` element (used by `Toast.ActionButtonClicked{Toast_Type}` and
+  `Toast.CloseButtonClicked{Toast_Type}`). The suffix must match the string
+  returned by `GetToastName()` in [`api/toast_id.cc`](api/toast_id.cc).
+
+### 4. Trigger your Toast
 When you want to trigger your toast to show, you will need to retrieve the
 [ToastController](toast_controller.h) using
 `ToastController::From(browser_window_interface)` and

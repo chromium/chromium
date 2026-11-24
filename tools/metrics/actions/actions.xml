@@ -1107,18 +1107,45 @@ should be able to be added at any place in this file.
   <variant name=".AutofillAiSuggestionRemoved"
       summary="Autofill AI suggestion removed"/>
   <variant name=".DiceUserMigrated" summary="DICe user migrated"/>
+  <variant name=".EmailVerificationError" summary="Email verification error"/>
   <variant name=".EnhancedBundledSecuritySettings"
       summary="Enhanced protection user migrated"/>
+  <variant name=".EnterpriseCopyWarning" summary="Enterprise copy warning"/>
+  <variant name=".GeminiWorkingOnTask"
+      summary="Gemini will keep working on task"/>
   <variant name=".Glic" summary="Glic toast"/>
   <variant name=".GlicSelectionHiddenForSite"
       summary="Glic selection hidden for site"/>
+  <variant name=".GlicShareImageFailed"
+      summary="Sharing image with Gemini failed"/>
+  <variant name=".IndigoDeleteError"
+      summary="Indigo delete uploaded photo error"/>
+  <variant name=".IndigoInvokeError" summary="Indigo invocation error"/>
   <variant name=".MultistepFilterSuggestion" summary="Filter suggested"/>
+  <variant name=".SendTabToSelfFailure"
+      summary="Send Tab To Self failed to send"/>
+  <variant name=".SendTabToSelfNoInternetConnection"
+      summary="Send Tab To Self no internet connection"/>
+  <variant name=".SendTabToSelfSuccess"
+      summary="Send Tab To Self successfully sent"/>
+  <variant name=".SendTabToSelfSuccessThrottled"
+      summary="Send Tab To Self successfully sent but throttled"/>
+  <variant name=".SendTabToSelfTabsOpenedInBackground"
+      summary="Send Tab To Self tabs opened in background"/>
   <variant name=".SkillDeleted" summary="Skill deleted"/>
   <variant name=".SkillSaved" summary="Skill saved"/>
   <variant name=".SyncEsbOff"
       summary="Enhanced Protection setting has been synced to Off"/>
   <variant name=".SyncEsbOn"
       summary="Enhanced Protection setting has been synced to On"/>
+  <variant name=".TabGroupSyncTabRemoved"
+      summary="Tab removed from shared tab group"/>
+  <variant name=".TabGroupSyncUserJoined"
+      summary="User joined shared tab group"/>
+  <variant name=".TabStripSwitchDelayedHorizontal"
+      summary="Tab strip switch to horizontal delayed"/>
+  <variant name=".TabStripSwitchDelayedVertical"
+      summary="Tab strip switch to vertical delayed"/>
   <variant name=".Translate" summary="Translate"/>
   <variant name=".TtcGenericError" summary="TTC generic error"/>
   <variant name=".TtcInactivityTimeout" summary="TTC inactivity timeout"/>

@@ -146,6 +146,11 @@ source_set("browser_tests") {
     "toast_service_browsertest.cc",
     "toast_view_browsertest.cc",
   ]
+  data = [
+    "//tools/metrics/actions/actions.xml",
+    "//tools/metrics/histograms/metadata/toasts/enums.xml",
+    "//tools/metrics/histograms/metadata/toasts/histograms.xml",
+  ]
   deps = [
     ":test_support",
     ":toasts",

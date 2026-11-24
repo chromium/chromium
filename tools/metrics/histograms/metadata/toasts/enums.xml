@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Auto Dismissed"/>
   <int value="1" label="Action Button"/>
   <int value="2" label="Close Button"/>
-  <int value="3" label="Prempted by another toast"/>
+  <int value="3" label="Preempted by another toast"/>
   <int value="4" label="Menu Item Clicked"/>
   <int value="5" label="Feature explicitly dismiss toast"/>
   <int value="6" label="Aborted"/>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Added to Reading List"/>
   <int value="4" label="(Deprecated) Lens Overlay"/>
   <int value="5" label="Non-milestone Update"/>
-  <int value="6" label="Added to comparison table"/>
+  <int value="6" label="(Deprecated) Added to comparison table"/>
   <int value="7" label="Clear Browsing Data"/>
   <int value="8"
       label="(Deprecated) Automatic plus address replacement during Autofill"/>

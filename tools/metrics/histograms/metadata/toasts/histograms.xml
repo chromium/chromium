@@ -8,6 +8,110 @@ found in the LICENSE file.
 
 <histograms>
 
+<!-- LINT.IfChange(ToastName) -->
+
+<variants name="ToastName">
+  <variant name="AddedToReadingList" summary="add to reading list"/>
+  <variant name="AtMemorySpiiFetchErrorMessage"
+      summary="AtMemory SPII fetch error message"/>
+  <variant name="AutofillAiFetchEntityErrorMessage"
+      summary="Autofill AI fetch entity error message"/>
+  <variant name="AutofillAiPreFetchErrorMessage"
+      summary="Autofill AI prefetch error message"/>
+  <variant name="AutofillAiSaveToWalletErrorMessage"
+      summary="Autofill AI Wallet save error message"/>
+  <variant name="AutofillAiSuggestionRemoved"
+      summary="Autofill AI suggestion removed"/>
+  <variant name="AutoSignIn" summary="auto sign-in"/>
+  <variant name="ClearBrowsingData" summary="clear browsing data"/>
+  <variant name="ClosePinnedTab" summary="close pinned tab confirmation"/>
+  <variant name="CopiedToClipboard" summary="copied to clipboard"/>
+  <variant name="DefaultBrowserUpdateSuccess"
+      summary="default browser update success"/>
+  <variant name="DiceUserMigrated" summary="dice user migrated"/>
+  <variant name="DictationError" summary="dictation error"/>
+  <variant name="DictationNoMicrophoneError"
+      summary="dictation no microphone detected error"/>
+  <variant name="DictationStopped" summary="dictation stopped"/>
+  <variant name="EmailVerificationError" summary="email verification error"/>
+  <variant name="EmailVerificationLoading"
+      summary="email verification loading"/>
+  <variant name="EmailVerified" summary="email verified"/>
+  <variant name="EnhancedBundledSecuritySettings"
+      summary="enhanced protection user migrated"/>
+  <variant name="EnterpriseCopyAudit"
+      summary="enterprise copy audit monitored"/>
+  <variant name="EnterpriseCopyBlocked" summary="enterprise copy blocked"/>
+  <variant name="EnterpriseCopyFailClosed"
+      summary="enterprise copy fail-closed"/>
+  <variant name="EnterpriseCopyKeptInManagedChrome"
+      summary="enterprise copy kept in managed Chrome"/>
+  <variant name="EnterpriseCopyWarning" summary="enterprise copy warning"/>
+  <variant name="GeminiWorkingOnTask" summary="Gemini working on task"/>
+  <variant name="Glic" summary="Glic toast"/>
+  <variant name="GlicSelectionHiddenForSite"
+      summary="Glic selection hidden for site"/>
+  <variant name="GlicShareImageFailed" summary="Glic share image failed"/>
+  <variant name="ImageCopied" summary="image copied"/>
+  <variant name="IndigoDeleteError"
+      summary="Indigo delete uploaded photo error"/>
+  <variant name="IndigoDeleteSuccess"
+      summary="Indigo delete uploaded photo success"/>
+  <variant name="IndigoInvokeError" summary="Indigo invocation error"/>
+  <variant name="LensOverlay" summary="lens overlay"/>
+  <variant name="LinkCopied" summary="link copied"/>
+  <variant name="LinkToHighlightCopied" summary="link to highlight"/>
+  <variant name="MultistepFilterSuggestion" summary="filter suggestion"/>
+  <variant name="MultistepFilterSuggestionRecent"
+      summary="recent filter suggestion"/>
+  <variant name="NonMilestoneUpdate" summary="non-milestone update"/>
+  <variant name="RecordReplay" summary="record / replay progress"/>
+  <variant name="ReportUnsafeSiteConfirmation"
+      summary="unsafe site report confirmation"/>
+  <variant name="ScheduledRestartOnIdle" summary="scheduled restart on idle"/>
+  <variant name="SendTabToSelfFailure" summary="send tab to self failure"/>
+  <variant name="SendTabToSelfNoInternetConnection"
+      summary="send tab to self no internet connection"/>
+  <variant name="SendTabToSelfSuccess" summary="send tab to self success"/>
+  <variant name="SendTabToSelfSuccessThrottled"
+      summary="send tab to self success throttled"/>
+  <variant name="SendTabToSelfTabOpened" summary="send tab to self tab opened"/>
+  <variant name="SendTabToSelfTabsOpenedInBackground"
+      summary="send tab to self tabs opened in background"/>
+  <variant name="SkillDeleted" summary="skill deleted"/>
+  <variant name="SkillSaved" summary="skill saved"/>
+  <variant name="SkillSavedWithoutInvokeButton"
+      summary="skill saved without invoke button"/>
+  <variant name="SyncEsbOff" summary="ESB synced to off"/>
+  <variant name="SyncEsbOn" summary="ESB synced to on"/>
+  <variant name="SyncEsbOnWithoutActionButton"
+      summary="ESB synced to on without action button"/>
+  <variant name="TabGroupFocusExited" summary="tab group focus mode exited"/>
+  <variant name="TabGroupSharingVersionUpToDate"
+      summary="shared tab groups version up to date"/>
+  <variant name="TabGroupSyncRemovedFromGroup"
+      summary="removed from shared tab group"/>
+  <variant name="TabGroupSyncTabRemoved"
+      summary="tab removed from shared tab group"/>
+  <variant name="TabGroupSyncUserJoined"
+      summary="user joined shared tab group"/>
+  <variant name="TabStripSwitchDelayedHorizontal"
+      summary="tab strip switch to horizontal delayed"/>
+  <variant name="TabStripSwitchDelayedVertical"
+      summary="tab strip switch to vertical delayed"/>
+  <variant name="Translate" summary="translate"/>
+  <variant name="TtcGenericError" summary="TTC generic error"/>
+  <variant name="TtcInactivityTimeout" summary="TTC inactivity timeout"/>
+  <variant name="TtcMicrophoneMuted" summary="TTC microphone muted"/>
+  <variant name="TtcNoMicrophoneError" summary="TTC no microphone error"/>
+  <variant name="TtcPermissionDenied" summary="TTC permission denied"/>
+  <variant name="TtcSpeakerMuted" summary="TTC speaker muted"/>
+  <variant name="TtcSpeakerVolumeLow" summary="TTC speaker volume low"/>
+  <variant name="VideoFrameCopied" summary="video frame copied"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/toasts/api/toast_id.cc:GetToastName) -->
+
 <histogram name="Toast.FailedToShow" enum="ToastId" expires_after="2027-02-07">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
@@ -37,7 +141,7 @@ found in the LICENSE file.
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
-    Logs the ToastId of the toast that is triggered to shown to users. This is
+    Logs the ToastId of the toast that is triggered to show to users. This is
     logged each time a feature triggers the toast and is used to learn how often
     users see a particular toast.
   </summary>
@@ -52,39 +156,7 @@ found in the LICENSE file.
     Logs the reason why the {ToastName} toast was dismissed. This is used to
     gain insight on if the user ignores or interacts with the toast.
   </summary>
-  <token key="ToastName">
-    <variant name="AddedToReadingList" summary="add to reading list"/>
-    <variant name="AutofillAiSuggestionRemoved"
-        summary="Autofill AI suggestion removed"/>
-    <variant name="DiceUserMigrated" summary="dice user migrated"/>
-    <variant name="EnhancedBundledSecuritySettings"
-        summary="enhanced protection user migrated"/>
-    <variant name="Glic" summary="Glic toast"/>
-    <variant name="ImageCopied" summary="image copied"/>
-    <variant name="LensOverlay" summary="lens overlay"/>
-    <variant name="LinkCopied" summary="link copied"/>
-    <variant name="LinkToHighlightCopied" summary="link to highlight"/>
-    <variant name="MultistepFilterSuggestion" summary="filter suggestion"/>
-    <variant name="MultistepFilterSuggestionRecent"
-        summary="recent filter suggestion"/>
-    <variant name="NonMilestoneUpdate" summary="non-milestone update"/>
-    <variant name="ScheduledRestartOnIdle" summary="scheduled restart on idle"/>
-    <variant name="SendTabToSelfNoInternetConnection"
-        summary="send tab to self no internet connection"/>
-    <variant name="SendTabToSelfTabOpened"
-        summary="send tab to self tab opened"/>
-    <variant name="SendTabToSelfTabsOpenedInBackground"
-        summary="send tab to self tab opened in background"/>
-    <variant name="TabGroupFocusExited" summary="tab group focus mode exited"/>
-    <variant name="Translate" summary="translate"/>
-    <variant name="TtcGenericError" summary="TTC generic error"/>
-    <variant name="TtcInactivityTimeout" summary="TTC inactivity timeout"/>
-    <variant name="TtcMicrophoneMuted" summary="TTC microphone muted"/>
-    <variant name="TtcNoMicrophoneError" summary="TTC no microphone error"/>
-    <variant name="TtcPermissionDenied" summary="TTC permission denied"/>
-    <variant name="TtcSpeakerMuted" summary="TTC speaker muted"/>
-    <variant name="TtcSpeakerVolumeLow" summary="TTC speaker volume low"/>
-  </token>
+  <token key="ToastName" variants="ToastName"/>
 </histogram>
 
 </histograms>

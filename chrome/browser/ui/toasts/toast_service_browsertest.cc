@@ -5,11 +5,19 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/action_variants_reader.h"
+#include "base/test/metrics/histogram_enum_reader.h"
+#include "base/test/metrics/histogram_variants_reader.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -17,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
+#include "chrome/browser/ui/toasts/api/toast_specification.h"
 #include "chrome/browser/ui/toasts/test/mock_toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -42,11 +51,16 @@ constexpr auto kDeprecatedToastIds =
          /*kPlusAddressOverride=*/8, /*kMultistepFilterSuggestion=*/31,
          /*kMultistepFilterSuggestionRecent=*/32});
 
-ToastIdEnumSet GetActiveToastIds() {
+ToastIdEnumSet GetNonDeprecatedToastIds() {
   auto result = ToastIdEnumSet::All();
   for (auto toast_id : kDeprecatedToastIds) {
     result.Remove(static_cast<ToastId>(toast_id));
   }
+  return result;
+}
+
+ToastIdEnumSet GetActiveToastIds() {
+  auto result = GetNonDeprecatedToastIds();
 #if BUILDFLAG(IS_CHROMEOS)
   result.Remove(ToastId::kDefaultBrowserUpdateSuccess);
 #endif
@@ -88,6 +102,92 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, RegisterAllToastIds) {
 
   for (ToastId id : GetActiveToastIds()) {
     EXPECT_NE(toast_registry->GetToastSpecification(id), nullptr);
+  }
+}
+
+// Verifies that every ToastId (including deprecated entries) has an entry in
+// the ToastId enum in //tools/metrics/histograms/metadata/toasts/enums.xml.
+IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, AllToastIdsInEnumsXml) {
+  std::optional<base::HistogramEnumEntryMap> enum_entries;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    enum_entries = base::ReadEnumFromEnumsXml("ToastId", "toasts");
+  }
+  ASSERT_TRUE(enum_entries.has_value())
+      << "Failed to read ToastId enum from "
+         "//tools/metrics/histograms/metadata/toasts/enums.xml";
+
+  for (ToastId id : ToastIdEnumSet::All()) {
+    EXPECT_TRUE(enum_entries->contains(std::to_underlying(id)))
+        << "ToastId (" << std::to_underlying(id)
+        << ") is missing from the ToastId enum in "
+           "//tools/metrics/histograms/metadata/toasts/enums.xml";
+  }
+}
+
+// Verifies that every active ToastId has a corresponding variant matching
+// GetToastName() in the ToastName variants list in
+// //tools/metrics/histograms/metadata/toasts/histograms.xml.
+IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, AllToastIdsInHistogramsXml) {
+  std::optional<base::HistogramVariantsEntryMap> variants;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    variants = base::ReadVariantsFromHistogramsXml("ToastName", "toasts");
+  }
+  ASSERT_TRUE(variants.has_value())
+      << "Failed to read ToastName variants from "
+         "//tools/metrics/histograms/metadata/toasts/histograms.xml";
+
+  for (ToastId id : GetNonDeprecatedToastIds()) {
+    const std::string toast_name(GetToastName(id));
+    EXPECT_TRUE(variants->contains(toast_name))
+        << "Toast \"" << toast_name
+        << "\" is missing from ToastName variants in "
+           "//tools/metrics/histograms/metadata/toasts/histograms.xml";
+  }
+}
+
+// Verifies that every registered toast with an action button or close button
+// has a corresponding variant in //tools/metrics/actions/actions.xml.
+IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, InteractiveToastsInActionsXml) {
+  std::vector<base::test::ActionVariantsEntryMap> action_button_variants;
+  std::vector<base::test::ActionVariantsEntryMap> close_button_variants;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    action_button_variants = base::test::ReadActionVariantsForAction(
+        "Toast.ActionButtonClicked", ".");
+    close_button_variants = base::test::ReadActionVariantsForAction(
+        "Toast.CloseButtonClicked", ".");
+  }
+  ASSERT_EQ(action_button_variants.size(), 1u)
+      << "Failed to read Toast.ActionButtonClicked variants from "
+         "//tools/metrics/actions/actions.xml";
+  ASSERT_EQ(close_button_variants.size(), 1u)
+      << "Failed to read Toast.CloseButtonClicked variants from "
+         "//tools/metrics/actions/actions.xml";
+
+  ToastService* const toast_service = ToastService::From(browser());
+  const ToastRegistry* const toast_registry = toast_service->toast_registry();
+
+  for (ToastId id : GetActiveToastIds()) {
+    const ToastSpecification* const spec =
+        toast_registry->GetToastSpecification(id);
+    ASSERT_NE(spec, nullptr);
+    const std::string toast_name(GetToastName(id));
+    if (spec->action_button_string_id().has_value()) {
+      EXPECT_TRUE(action_button_variants[0].contains(toast_name))
+          << "Toast \"" << toast_name
+          << "\" has an action button but is missing a '." << toast_name
+          << "' variant for Toast.ActionButtonClicked in "
+             "//tools/metrics/actions/actions.xml";
+    }
+    if (spec->has_close_button()) {
+      EXPECT_TRUE(close_button_variants[0].contains(toast_name))
+          << "Toast \"" << toast_name
+          << "\" has a close button but is missing a '." << toast_name
+          << "' variant for Toast.CloseButtonClicked in "
+             "//tools/metrics/actions/actions.xml";
+    }
   }
 }
 
