@@ -512,7 +512,6 @@ void HistoryClustersService::LoadCachesFromPrefs() {
     return;
   }
 
-  base::ElapsedTimer load_caches_timer;
   const base::DictValue& short_cache_dict =
       pref_service_->GetDict(prefs::kShortCache);
   const base::DictValue* short_keywords_dict =
@@ -535,11 +534,6 @@ void HistoryClustersService::LoadCachesFromPrefs() {
       base::ValueToTime(all_cache_dict.Find("all_timestamp"))
           .value_or(all_keywords_cache_timestamp_),
       base::Time::Now() - kAllKeywordsCacheRefreshAge + base::Seconds(15));
-
-  base::UmaHistogramCustomTimes(
-      "History.Clusters.KeywordCache.LoadCachesFromPrefs.Latency",
-      load_caches_timer.Elapsed(), base::Microseconds(50), base::Seconds(2),
-      50);
 }
 
 void HistoryClustersService::WriteShortCacheToPrefs() {
