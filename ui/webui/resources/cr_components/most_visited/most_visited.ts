@@ -9,11 +9,13 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toast/cr_toast_manager.js';
+import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrToastManagerElement} from '//resources/cr_elements/cr_toast/cr_toast_manager.js';
+import type {CrTooltipElement} from '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {skColorToRgba} from '//resources/js/color_utils.js';
@@ -285,6 +287,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private get tileElements_() {
     return Array.from(
         this.shadowRoot.querySelectorAll<HTMLElement>('.tile:not([hidden])'));
+  }
+
+  private get reorderTooltip_(): CrTooltipElement|null {
+    return this.shadowRoot.querySelector<CrTooltipElement>('#reorderTooltip');
   }
 
   constructor() {
@@ -750,6 +756,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     // Need to clear the tile that has a forced hover style for when the drag
     // started without moving the mouse after the last drag/drop.
     this.clearForceHover_();
+    this.reorderTooltip_?.hide();
 
     dragElement.classList.add('dragging');
     const dragElementRect = dragElement.getBoundingClientRect();
@@ -960,6 +967,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private onDocumentKeyDown_(e: KeyboardEvent) {
+    if (this.inReorderMode_) {
+      this.reorderTooltip_?.hide();
+    }
+
     if (this.nonEditable || e.altKey || e.shiftKey) {
       return;
     }
@@ -1049,6 +1060,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     await new Promise(requestAnimationFrame);
     if (this.inReorderMode_) {
       this.tileFocus_(this.actionMenuTargetIndex_);
+      this.showReorderTooltip_();
     }
     this.recordMenuAction_(MostVisitedMenuAction.REORDER);
   }
@@ -1373,6 +1385,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private async exitReorderMode_() {
+    this.reorderTooltip_?.hide();
     this.inReorderMode_ = false;
     this.reordering_ = false;
     this.actionMenuTargetIndex_ = -1;
@@ -1389,6 +1402,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (!this.inReorderMode_) {
       return;
     }
+
+    this.reorderTooltip_?.hide();
 
     if (!e.composedPath().includes(this.$.container)) {
       await this.exitReorderMode_();
@@ -1430,6 +1445,15 @@ export class MostVisitedElement extends MostVisitedElementBase {
     assert(this.maxVisibleTiles_ > 0);
     this.browserProxy_.handler.onMostVisitedTilesRendered(
         this.tiles_.slice(0, this.maxVisibleTiles_), this.windowProxy_.now());
+  }
+
+  private showReorderTooltip_() {
+    const targetTile = this.tileElements_[this.actionMenuTargetIndex_];
+    const tooltip = this.reorderTooltip_;
+    if (targetTile && tooltip) {
+      tooltip.target = targetTile;
+      tooltip.show();
+    }
   }
 
   protected getMoreActionText_(title: string) {

@@ -13,6 +13,7 @@ import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visi
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
@@ -2443,6 +2444,17 @@ suite('EnterpriseShortcuts', () => {
 });
 
 suite('ShortcutsReorder', () => {
+  function assertTooltipShown(tooltip: CrTooltipElement) {
+    assertFalse(tooltip.$.tooltip.hidden);
+    assertTrue(tooltip.$.tooltip.classList.contains('fade-in-animation'));
+  }
+
+  function assertTooltipHidden(tooltip: CrTooltipElement) {
+    assertTrue(
+        tooltip.$.tooltip.hidden ||
+        tooltip.$.tooltip.classList.contains('fade-out-animation'));
+  }
+
   [false, true].forEach(shortcutsReorderEnabled => {
     test(
         `reorder menu option rendered when shortcutsReorderEnabled=${
@@ -2681,19 +2693,18 @@ suite('ShortcutsReorder', () => {
   });
 
   test(
-      'shows drag icon and hides action menu button in reorder mode',
+      'shows reorder tooltip and hides action menu button in reorder mode',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         await setUpTest({shortcutsReorderEnabled: true});
         await addTiles(2);
         const tile = queryTiles()[0]!;
-        const dragPanIcon = tile.querySelector<HTMLElement>('.drag-pan-icon')!;
+        const tooltip = $$<CrTooltipElement>(mostVisited, '#reorderTooltip');
         const actionMenuButton =
             tile.querySelector<HTMLElement>('#actionMenuButton')!;
 
-        // In default mode the drag icon is hidden.
-        assertFalse(isVisible(dragPanIcon));
-        assertEquals('0', getComputedStyle(dragPanIcon).opacity);
+        // In default mode the tooltip is hidden.
+        assertTrue(tooltip.$.tooltip.hidden);
 
         // Enter reorder mode.
         actionMenuButton.click();
@@ -2702,27 +2713,10 @@ suite('ShortcutsReorder', () => {
         await new Promise(requestAnimationFrame);
         await microtasksFinished();
 
-        tile.dispatchEvent(new MouseEvent('mouseenter'));
-        await microtasksFinished();
-
-        // Verify the drag icon is visible and the action menu button is hidden.
-        assertTrue(isVisible(dragPanIcon));
-        assertEquals('1', getComputedStyle(dragPanIcon).opacity);
+        // Verify the tooltip is visible and the action menu button is hidden.
+        assertEquals(tile, tooltip.target);
+        assertTooltipShown(tooltip);
         assertFalse(isVisible(actionMenuButton));
-      });
-
-  test(
-      'does not show drag icon for non-custom most visited tiles', async () => {
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        await setUpTest({shortcutsReorderEnabled: true});
-        await addTiles(2);
-        const tile = queryTiles()[0]!;
-        const dragPanIcon = tile.querySelector<HTMLElement>('.drag-pan-icon')!;
-
-        tile.dispatchEvent(new MouseEvent('mouseenter'));
-        await microtasksFinished();
-
-        assertFalse(isVisible(dragPanIcon));
       });
 
   test('announces tile move', async () => {
@@ -2765,6 +2759,93 @@ suite('ShortcutsReorder', () => {
     await microtasksFinished();
 
     assertEquals('', announcer.textContent.trim());
+  });
+
+  test('reorder tooltip hides on drag start', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(2);
+    const tile = queryTiles()[0]!;
+    const tooltip = $$<CrTooltipElement>(mostVisited, '#reorderTooltip');
+    assertTrue(tooltip.$.tooltip.hidden);
+
+    // Enter reorder mode.
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await new Promise(requestAnimationFrame);
+    await microtasksFinished();
+
+    assertTooltipShown(tooltip);
+
+    // Starting a drag hides the tooltip.
+    tile.dispatchEvent(new DragEvent('dragstart', {bubbles: true}));
+    await microtasksFinished();
+    assertTooltipHidden(tooltip);
+  });
+
+  test('hides reorder tooltip when moving with arrow keys', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(2);
+    const tile = queryTiles()[0]!;
+    const tooltip = $$<CrTooltipElement>(mostVisited, '#reorderTooltip');
+
+    // Enter reorder mode.
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await new Promise(requestAnimationFrame);
+    await microtasksFinished();
+    assertTooltipShown(tooltip);
+
+    // Moving with arrow keys hides the tooltip.
+    tile.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowRight', bubbles: true, composed: true}));
+    await microtasksFinished();
+    assertTooltipHidden(tooltip);
+  });
+
+  test('hides reorder tooltip when exiting reorder mode', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(2);
+    const tile = queryTiles()[0]!;
+    const tooltip = $$<CrTooltipElement>(mostVisited, '#reorderTooltip');
+
+    // Enter reorder mode.
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await new Promise(requestAnimationFrame);
+    await microtasksFinished();
+    assertTooltipShown(tooltip);
+
+    // Exiting reorder mode hides the tooltip.
+    tile.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, composed: true}));
+    await microtasksFinished();
+    assertTooltipHidden(tooltip);
+  });
+
+  test('hides reorder tooltip on click', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(2);
+    const tile = queryTiles()[0]!;
+    const tooltip = $$<CrTooltipElement>(mostVisited, '#reorderTooltip');
+
+    // Enter reorder mode and verify clicking a tile hides the tooltip.
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await new Promise(requestAnimationFrame);
+    await microtasksFinished();
+    assertTooltipShown(tooltip);
+
+    tile.click();
+    await microtasksFinished();
+    assertTooltipHidden(tooltip);
   });
 });
 

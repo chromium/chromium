@@ -28,11 +28,6 @@ export function getHtml(this: MostVisitedElement) {
       <a href="${this.inReorderMode_ ? '' : item.url}"
           aria-label="${this.getTileAriaLabel_(item.title)}" draggable="false">
       </a>
-      <div class="drag-pan-icon" aria-hidden="true"
-          ?hidden="${!this.inReorderMode_ ||
-              (!this.customLinksEnabled_ &&
-               !this.isFromEnterpriseShortcut_(item.source))}">
-      </div>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           title="${this.getMoreActionText_(item.title)}"
           @click="${this.onTileActionButtonClick_}" tabindex="0"
@@ -161,6 +156,12 @@ export function getHtml(this: MostVisitedElement) {
     </button>
   </cr-action-menu>
 </div>
+${this.shortcutsReorderEnabled ? html`
+  <cr-tooltip id="reorderTooltip" manual-mode position="top" animation-delay="0"
+      offset="0" aria-hidden="true">
+    <span>${this.i18n('shortcutReorderTooltip')}</span>
+  </cr-tooltip>
+` : ''}
 <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true">
   ${this.reorderAnnouncement_}
 </div>

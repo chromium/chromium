@@ -13,9 +13,6 @@
 
 :host {
   --cr-tooltip-icon-fill-color: var(--cr-fallback-color-on-surface-subtle);
-  --drag-pan-icon-color: var(
-      --color-sys-on-surface-subtle,
-      var(--cr-fallback-color-on-surface-subtle));
   --icon-button-color-active: var(--google-grey-700);
   --icon-button-color: var(--google-grey-600);
   --icon-size: var(--most-visited-icon-size, 48px);
@@ -24,6 +21,7 @@
   --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
   --tile-size: var(--most-visited-tile-size, 112px);
   --title-height: var(--most-visited-title-height, 32px);
+  position: relative;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,7 +31,6 @@
 }
 
 :host([is-dark_]) {
-  --drag-pan-icon-color: white;
   --icon-button-color-active: var(--google-grey-300);
   --icon-button-color: white;
   --tile-hover-color: rgba(255, 255, 255, .1);
@@ -190,21 +187,6 @@
   background-color: var(--tile-hover-color);
 }
 
-.drag-pan-icon {
-  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/drag_pan.svg);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 100%;
-  background-color: var(--drag-pan-icon-color);
-  height: 24px;
-  inset-inline-start: 0;
-  margin: 4px 2px;
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  width: 24px;
-}
-
 @media (forced-colors: active) {
   #addShortcutIcon,
   #showMoreIcon,
@@ -212,8 +194,7 @@
   :host([use-white-tile-icon_]) #addShortcutIcon,
   :host([use-white-tile-icon_]) #showMoreIcon,
   :host([use-white-tile-icon_]) #showLessIcon,
-  .query-tile-icon,
-  .drag-pan-icon {
+  .query-tile-icon {
     background-color: ButtonText;
   }
 
@@ -375,18 +356,6 @@ cr-policy-indicator {
   z-index: 2;
 }
 
-:host-context(:not(.focus-outline-visible))
-    #container:not(:has(.force-hover))
-    .tile:hover
-    .drag-pan-icon,
-.force-hover .drag-pan-icon {
-  opacity: 1;
-}
-
-:host-context(.focus-outline-visible) .tile:focus-within .drag-pan-icon {
-  opacity: 1;
-}
-
 cr-icon-button {
   --cr-icon-button-fill-color: var(--icon-button-color);
   --cr-icon-button-size: 28px;
@@ -440,6 +409,10 @@ cr-icon-button {
 
 cr-toast-manager {
   --cr-toast-white-space: normal;
+}
+
+#reorderTooltip {
+  width: max-content;
 }
 
 :host-context([webui-rounded-icons]) #addShortcutIcon {
