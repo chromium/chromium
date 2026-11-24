@@ -2303,6 +2303,8 @@ crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-unscaled-s
 crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-unscaled-scroll.html [ Failure ]
 
 # ====== Test expectations added to unblock wpt-importer ======
+crbug.com/566472941 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-root-both-edges.html [ Pass Failure ]
+crbug.com/554470714 [ Mac ] external/wpt/css/css-contain/contain-size-grid-003.html [ Pass Failure ]
 crbug.com/437034328 external/wpt/html/semantics/embedded-content/the-img-element/animated-webp-update.tentative.html [ Failure ]
 crbug.com/431542979 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/406036293 [ Mac ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
