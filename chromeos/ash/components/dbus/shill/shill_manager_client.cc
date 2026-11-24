@@ -6,8 +6,12 @@
 
 #include <ios>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -367,7 +371,8 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
   void TestHostsConnectivity(
       const std::vector<std::string>& hosts,
-      const base::flat_map<std::string, std::string>& options,
+      base::span<const std::pair<const std::string_view, std::string_view>>
+          options,
       TestHostsConnectivityCallback callback,
       ErrorCallback error_callback,
       std::optional<int> timeout_ms = std::nullopt) override {
@@ -380,8 +385,8 @@ class ShillManagerClientImpl : public ShillManagerClient {
     for (const auto& [key, value] : options) {
       dbus::MessageWriter entry_writer(nullptr);
       array_writer.OpenDictEntry(&entry_writer);
-      entry_writer.AppendString(key);
-      entry_writer.AppendString(value);
+      entry_writer.AppendString(std::string(key));
+      entry_writer.AppendString(std::string(value));
       array_writer.CloseContainer(&entry_writer);
     }
     writer.CloseContainer(&array_writer);

@@ -6,10 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_MANAGER_CLIENT_H_
 
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -435,13 +437,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
       base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback) = 0;
 
-  // Tests connectivity to multiple `hosts`. The `options` map contains
-  // optional configuration (timeout, max_errors, proxy). The `callback`
+  // Tests connectivity to multiple `hosts`. `options` contains optional
+  // key-value configuration (timeout, max_errors, proxy). The `callback`
   // receives a serialized protobuf byte array on success. `timeout_ms`
   // overrides the default D-Bus call timeout when provided.
   virtual void TestHostsConnectivity(
       const std::vector<std::string>& hosts,
-      const base::flat_map<std::string, std::string>& options,
+      base::span<const std::pair<const std::string_view, std::string_view>>
+          options,
       TestHostsConnectivityCallback callback,
       ErrorCallback error_callback,
       std::optional<int> timeout_ms = std::nullopt) = 0;

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/net/network_diagnostics/google_services_connectivity_routine_util.h"

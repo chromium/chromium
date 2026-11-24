@@ -8,9 +8,12 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
+#include <utility>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -112,7 +115,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       ErrorCallback error_callback) override;
   void TestHostsConnectivity(
       const std::vector<std::string>& hosts,
-      const base::flat_map<std::string, std::string>& options,
+      base::span<const std::pair<const std::string_view, std::string_view>>
+          options,
       TestHostsConnectivityCallback callback,
       ErrorCallback error_callback,
       std::optional<int> timeout_ms = std::nullopt) override;

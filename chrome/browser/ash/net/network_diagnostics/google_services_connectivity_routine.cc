@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -145,16 +145,17 @@ bool GoogleServicesConnectivityRoutine::CanRun() {
 
 void GoogleServicesConnectivityRoutine::Run() {
   CHECK(CanRun());
-  const base::flat_map<std::string, std::string> options = {
-      {shill::kTestHostsConnectivityTimeoutKey, kTimeoutSecNum},
-      {shill::kTestHostsConnectivityMaxErrorsKey, kMaxErrorsNum},
-      {shill::kTestHostsConnectivityProxyKey,
-       shill::kTestHostsConnectivityProxySystem},
-  };
+  static constexpr auto kOptions =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {shill::kTestHostsConnectivityTimeoutKey, kTimeoutSecNum},
+          {shill::kTestHostsConnectivityMaxErrorsKey, kMaxErrorsNum},
+          {shill::kTestHostsConnectivityProxyKey,
+           shill::kTestHostsConnectivityProxySystem},
+      });
   shill_manager_client_->TestHostsConnectivity(
       base::ToVector(GetGoogleServicesHostnames(),
                      [](std::string_view host) { return std::string(host); }),
-      options,
+      kOptions,
       base::BindOnce(
           &GoogleServicesConnectivityRoutine::OnGetHostsConnectivityResult,
           weak_factory_.GetWeakPtr()),

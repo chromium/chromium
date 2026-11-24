@@ -4,12 +4,16 @@
 
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -586,6 +590,63 @@ TEST_F(ShillManagerClientTest, DisconnectFromP2PGroup) {
       kShillId, disconnect_from_p2p_group_result.GetCallback<base::DictValue>(),
       error_result.GetCallback<const std::string&, const std::string&>());
   EXPECT_EQ(disconnect_from_p2p_group_result.Get(), result_dictionary);
+}
+
+TEST_F(ShillManagerClientTest, TestHostsConnectivity) {
+  const std::vector<std::string> kHosts = {"clients1.google.com",
+                                           "www.google.com"};
+  static constexpr auto kOptions =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {shill::kTestHostsConnectivityTimeoutKey, "10"},
+          {shill::kTestHostsConnectivityMaxErrorsKey, "5"},
+          {shill::kTestHostsConnectivityProxyKey,
+           shill::kTestHostsConnectivityProxySystem},
+      });
+  const std::vector<uint8_t> kExpectedResponse = {0x01, 0x02, 0x03};
+
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+  writer.AppendArrayOfBytes(kExpectedResponse);
+
+  // Set expectations.
+  PrepareForMethodCall(
+      shill::kTestHostsConnectivityFunction,
+      base::BindLambdaForTesting([&](dbus::MessageReader* reader) {
+        std::vector<std::string> actual_hosts;
+        ASSERT_TRUE(reader->PopArrayOfStrings(&actual_hosts));
+        EXPECT_EQ(kHosts, actual_hosts);
+
+        dbus::MessageReader array_reader(nullptr);
+        ASSERT_TRUE(reader->PopArray(&array_reader));
+        std::vector<std::pair<std::string, std::string>> actual_options;
+        while (array_reader.HasMoreData()) {
+          dbus::MessageReader entry_reader(nullptr);
+          ASSERT_TRUE(array_reader.PopDictEntry(&entry_reader));
+          std::string key;
+          std::string value;
+          ASSERT_TRUE(entry_reader.PopString(&key));
+          ASSERT_TRUE(entry_reader.PopString(&value));
+          EXPECT_FALSE(entry_reader.HasMoreData());
+          actual_options.emplace_back(std::move(key), std::move(value));
+        }
+        EXPECT_TRUE(std::ranges::equal(
+            actual_options, kOptions, [](const auto& lhs, const auto& rhs) {
+              return lhs.first == rhs.first && lhs.second == rhs.second;
+            }));
+        EXPECT_FALSE(reader->HasMoreData());
+      }),
+      response.get());
+
+  // Call method.
+  base::test::TestFuture<std::vector<uint8_t>> connectivity_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->TestHostsConnectivity(
+      kHosts, kOptions,
+      connectivity_result.GetCallback<const std::vector<uint8_t>&>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_EQ(connectivity_result.Get(), kExpectedResponse);
+  EXPECT_FALSE(error_result.IsReady());
 }
 
 }  // namespace ash

@@ -10,9 +10,11 @@
 #include <memory>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -828,7 +830,8 @@ int FakeShillManagerClient::GetRecentlyDisconnectedP2PGroupId() {
 
 void FakeShillManagerClient::TestHostsConnectivity(
     const std::vector<std::string>& hosts,
-    const base::flat_map<std::string, std::string>& options,
+    base::span<const std::pair<const std::string_view, std::string_view>>
+        options,
     TestHostsConnectivityCallback callback,
     ErrorCallback error_callback,
     std::optional<int> timeout_ms) {
