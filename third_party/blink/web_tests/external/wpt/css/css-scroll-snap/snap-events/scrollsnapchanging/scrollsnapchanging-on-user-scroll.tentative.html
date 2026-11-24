@@ -211,7 +211,7 @@
 
     // scrollsnapchanging doesn't fire test.
     subsetTestByKey("wheel", promise_test, async (t) => {
-      test_no_scrollsnapchanging(t, scroller, 10);
+      await test_no_scrollsnapchanging(t, scroller, 10);
     }, "scrollsnapchanging doesn't fire if scroll doesn't reach different snap " +
     "targets.");
     </script>

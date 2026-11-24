@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] pulling incomingBidirectionalStreams while closed resolves should not produce a stream
+  assert_not_equals: then getter should run while closed resolves got disallowed value undefined
+Harness: the test ran to completion.
+

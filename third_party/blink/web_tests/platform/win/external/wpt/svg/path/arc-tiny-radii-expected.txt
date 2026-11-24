@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] tiny radii, small arc
+  assert_greater_than: arc is not dropped expected a number greater than 0 but got 0
+[FAIL] tiny radii, large arc
+  assert_greater_than: arc is not dropped expected a number greater than 0 but got 0
+[FAIL] denormal radii, rotated
+  assert_approx_equals: end x expected 5 +/- 0.01 but got 1.2030797004699707
+[FAIL] one tiny radius
+  assert_greater_than: arc is not dropped expected a number greater than 0 but got 0
+Harness: the test ran to completion.
+

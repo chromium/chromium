@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] setParameters() with maxFramerate limits the encoded frame rate of a VideoTrackGenerator track generated at 60 fps
+  promise_test: Unhandled rejection with value: object "[object ErrorEvent]"
+Harness: the test ran to completion.
+

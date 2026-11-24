@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Asymmetric padding on centered block math
+  assert_approx_equals: space on the left expected 170 +/- 1 but got 195
+[FAIL] Asymmetric border on centered block math
+  assert_approx_equals: space on the left expected 170 +/- 1 but got 195
+[FAIL] Asymmetric padding on centered block math (rtl)
+  assert_approx_equals: space on the left expected 170 +/- 1 but got 145
+[FAIL] Asymmetric padding on shrink-to-fit block math
+  assert_approx_equals: space on the left expected 20 +/- 1 but got 45
+[FAIL] Asymmetric border on shrink-to-fit block math
+  assert_approx_equals: space on the left expected 20 +/- 1 but got 45
+Harness: the test ran to completion.
+

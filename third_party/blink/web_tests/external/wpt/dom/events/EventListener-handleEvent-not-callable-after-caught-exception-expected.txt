@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] reports a TypeError when the handleEvent getter caught an exception before returning a non-callable value
+  assert_equals: exactly one error should be reported expected 1 but got 0
+[FAIL] reports a TypeError when a previous listener caught an exception
+  assert_equals: exactly one error should be reported expected 1 but got 0
+Harness: the test ran to completion.
+

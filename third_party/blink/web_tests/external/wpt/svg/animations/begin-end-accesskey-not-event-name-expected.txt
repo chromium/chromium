@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] begin='accessKey(a)' does not begin on a script event named 'accessKey(a)'
+  assert_false: beginEvent fired expected false got true
+[FAIL] begin='accessKey(a) + 2s' gets no begin time from a script event named 'accessKey(a)'
+  assert_throws_dom: function "() => tested.getStartTime()" did not throw
+[FAIL] end='accessKey(a)' does not end on a script event named 'accessKey(a)'
+  assert_false: endEvent fired expected false got true
+Harness: the test ran to completion.
+

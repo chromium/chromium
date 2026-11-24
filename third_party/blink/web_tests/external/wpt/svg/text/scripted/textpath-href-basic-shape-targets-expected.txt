@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] textPath href to rect: the first character starts at the start of the shape's path
+  assert_approx_equals: x of the first character expected 200 +/- 3 but got 0
+[FAIL] textPath href to rect with rx: the first character starts at the start of the shape's path
+  assert_approx_equals: x of the first character expected 240 +/- 3 but got 0
+[FAIL] textPath href to circle: the first character starts at the start of the shape's path
+  assert_approx_equals: x of the first character expected 350 +/- 3 but got 0
+[FAIL] textPath href to ellipse: the first character starts at the start of the shape's path
+  assert_approx_equals: x of the first character expected 370 +/- 3 but got 0
+[FAIL] textPath href to line: the first character starts at the start of the shape's path
+  assert_approx_equals: x of the first character expected 200 +/- 3 but got 0
+[FAIL] textPath href to polyline: the first character starts at the start of the shape's path
+  assert_approx_equals: x of the first character expected 200 +/- 3 but got 0
+[FAIL] textPath href to polygon: the first character starts at the start of the shape's path
+  assert_approx_equals: x of the first character expected 200 +/- 3 but got 0
+Harness: the test ran to completion.
+

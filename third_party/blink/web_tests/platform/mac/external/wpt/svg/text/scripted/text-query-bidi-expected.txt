@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] getSubStringLength() on Hebrew in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 73.171875 +/- 0.01 but got 73.125
+[FAIL] getSubStringLength() on Latin, then Hebrew in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 65.5625 +/- 0.01 but got 65.515625
+[FAIL] getSubStringLength() on Hebrew, then Latin in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 73.171875 +/- 0.01 but got 73.125
+[FAIL] getSubStringLength() on Hebrew and Latin in a tspan in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 73.171875 +/- 0.01 but got 73.125
+[FAIL] getSubStringLength() on Arabic in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 66.328125 +/- 0.01 but got 66.28125
+[FAIL] getSubStringLength() on Latin, then Arabic in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 65.5625 +/- 0.01 but got 65.515625
+[FAIL] getSubStringLength() on Arabic, then Latin in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 66.3125 +/- 0.01 but got 66.28125
+[FAIL] getSubStringLength() on Arabic and Latin in a tspan in ltr text
+  assert_approx_equals: getSubStringLength(0, 4) expected 66.3125 +/- 0.01 but got 66.28125
+[FAIL] getSubStringLength() on Hebrew in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 73.171875 +/- 0.01 but got 73.125
+[FAIL] getSubStringLength() on Latin, then Hebrew in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 65.546875 +/- 0.01 but got 65.515625
+[FAIL] getSubStringLength() on Hebrew, then Latin in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 73.171875 +/- 0.01 but got 73.125
+[FAIL] getSubStringLength() on Hebrew and Latin in a tspan in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 73.171875 +/- 0.01 but got 73.125
+[FAIL] getSubStringLength() on Arabic in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 66.328125 +/- 0.01 but got 66.28125
+[FAIL] getSubStringLength() on Latin, then Arabic in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 65.5625 +/- 0.01 but got 65.53125
+[FAIL] getSubStringLength() on Arabic, then Latin in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 66.3125 +/- 0.01 but got 66.28125
+[FAIL] getSubStringLength() on Arabic and Latin in a tspan in rtl text
+  assert_approx_equals: getSubStringLength(0, 4) expected 66.3125 +/- 0.01 but got 66.28125
+Harness: the test ran to completion.
+

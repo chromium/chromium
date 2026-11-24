@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Test configure() between decode() calls outputs the frames decoded with the previous configuration
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test reset() while configure() waits for the previous decoder discards its frames
+  hev1.1.6.L60.90 unsupported
+Harness: the test ran to completion.
+

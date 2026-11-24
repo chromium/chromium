@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Fatal flag, streaming error resets BOM handling: utf-8
+  assert_equals: expected "A" but got "﻿A"
+[FAIL] Fatal flag, streaming error resets BOM handling: utf-16le
+  assert_equals: expected "A" but got "﻿A"
+[FAIL] Fatal flag, streaming error resets BOM handling: utf-16be
+  assert_equals: expected "A" but got "﻿A"
+Harness: the test ran to completion.
+

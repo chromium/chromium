@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] rect: translate moves the start
+  assert_approx_equals: x of character 0 expected 200 +/- 3 but got 0
+[FAIL] line: translate moves the start
+  assert_approx_equals: x of character 0 expected 200 +/- 3 but got 0
+[FAIL] polygon: translate moves the start
+  assert_approx_equals: x of character 0 expected 200 +/- 3 but got 0
+[FAIL] circle: translate moves the 3 o'clock start
+  assert_approx_equals: x of character 0 expected 350 +/- 3 but got 0
+[FAIL] ellipse: translate moves the 3 o'clock start
+  assert_approx_equals: x of character 0 expected 370 +/- 3 but got 0
+[FAIL] line: scale keeps the character advance at 20
+  assert_approx_equals: x of character 1 expected 220 +/- 3 but got 0
+[FAIL] line: rotate turns the text to run down
+  assert_approx_equals: x of character 1 expected 200 +/- 3 but got 0
+[FAIL] line: the CSS transform property moves the start
+  assert_approx_equals: x of character 0 expected 200 +/- 3 but got 0
+Harness: the test ran to completion.
+

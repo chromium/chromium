@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] 'textLength' on <textPath> with 'text-anchor' adjustments, single character, lengthAdjust=spacing
+  assert_approx_equals: x, text-anchor=middle expected 40 +/- 0.5 but got 43
+Harness: the test ran to completion.
+

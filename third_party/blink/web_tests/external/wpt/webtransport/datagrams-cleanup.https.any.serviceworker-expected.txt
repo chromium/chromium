@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] close() closes datagrams.readable
+  promise_test: Unhandled rejection with value: object "WebTransportError: The session is closed."
+[FAIL] close() closes a byte datagrams.readable
+  promise_test: Unhandled rejection with value: object "WebTransportError: The session is closed."
+Harness: the test ran to completion.
+

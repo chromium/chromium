@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] rect: after the first corner the text runs down the right edge
+  assert_approx_equals: x of character 6 expected 300 +/- 3 but got 0
+[FAIL] polyline: after the first corner the text runs down the right edge
+  assert_approx_equals: x of character 6 expected 300 +/- 3 but got 0
+[FAIL] polygon: after the first corner the text runs down the right edge
+  assert_approx_equals: x of character 6 expected 300 +/- 3 but got 0
+[FAIL] polygon: the text continues back along the closing edge
+  assert_approx_equals: x of character 11 expected 285.86 +/- 3 but got 0
+[FAIL] line from right to left: the second character is to the left of the first
+  assert_approx_equals: x of character 1 expected 380 +/- 3 but got 0
+[FAIL] circle: the second character is below the 3 o'clock point (clockwise)
+  assert_approx_equals: x of character 1 expected 348.5 +/- 3 but got 0
+[FAIL] ellipse: the second character is below the 3 o'clock point (clockwise)
+  assert_greater_than: moves down, which is clockwise on screen expected a number greater than 10 but got 0
+Harness: the test ran to completion.
+

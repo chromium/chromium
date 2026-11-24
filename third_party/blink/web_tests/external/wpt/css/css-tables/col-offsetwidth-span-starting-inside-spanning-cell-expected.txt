@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] end-inside: second col ends at the end of end-inside-spanning
+  assert_greater_than_equal: end-inside-second: offsetLeft 10, offsetWidth 0, right 10 expected a number greater than or equal to 70 but got 10
+Harness: the test ran to completion.
+

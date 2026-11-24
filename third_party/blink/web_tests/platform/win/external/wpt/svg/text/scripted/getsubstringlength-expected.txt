@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A ligature counts for its first character
+  assert_equals: first character expected 29 but got 14.5
+Harness: the test ran to completion.
+
