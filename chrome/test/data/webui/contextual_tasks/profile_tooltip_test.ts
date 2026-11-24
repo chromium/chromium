@@ -144,10 +144,12 @@ suite('ProfileTooltipTest', () => {
   test('uses unbounded element when flag is enabled', async () => {
     loadTimeData.overrideValues({contextualTasksUnboundedMenuEnabled: true});
     const div = getTooltipDiv();
+    let showOptions: ShowUnboundedElementOptions|undefined;
     let showCalled = false;
     let hideCalled = false;
-    div.showUnboundedElement = () => {
+    div.showUnboundedElement = (options?: ShowUnboundedElementOptions) => {
       showCalled = true;
+      showOptions = options;
       return Promise.resolve();
     };
     div.hideUnboundedElement = () => {
@@ -157,7 +159,10 @@ suite('ProfileTooltipTest', () => {
 
     await tooltip.show(anchor);
     assertTrue(showCalled);
+    assertEquals(anchor, showOptions?.source);
     assertTrue(div.hasAttribute('unbounded'));
+    assertEquals('', div.style.left);
+    assertEquals('', div.style.top);
 
     tooltip.hide();
     await microtasksFinished();
@@ -198,5 +203,35 @@ suite('ProfileTooltipTest', () => {
     assertFalse(tooltip.isOpen);
     // The platform already dismissed it, so it must not be hidden again.
     assertFalse(hideCalled);
+  });
+
+  test('falls back to bounded positioning when unbounded fails', async () => {
+    loadTimeData.overrideValues({contextualTasksUnboundedMenuEnabled: true});
+    const div = getTooltipDiv();
+    div.showUnboundedElement = () =>
+        Promise.reject(new DOMException('Not supported', 'NotSupportedError'));
+
+    await tooltip.show(anchor);
+    await microtasksFinished();
+
+    assertTrue(tooltip.isOpen);
+    assertFalse(div.hasAttribute('unbounded'));
+    assertTrue(div.style.left !== '');
+    assertTrue(div.style.top !== '');
+  });
+
+  test('ignores AbortError from showUnboundedElement', async () => {
+    loadTimeData.overrideValues({contextualTasksUnboundedMenuEnabled: true});
+    const div = getTooltipDiv();
+    div.showUnboundedElement = () =>
+        Promise.reject(new DOMException('Aborted', 'AbortError'));
+
+    await tooltip.show(anchor);
+    await microtasksFinished();
+
+    assertTrue(tooltip.isOpen);
+    assertTrue(div.hasAttribute('unbounded'));
+    assertEquals('', div.style.left);
+    assertEquals('', div.style.top);
   });
 });

@@ -79,7 +79,7 @@ export class ProfileTooltipElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     // Recenter under the anchor when the content width changes while open.
-    if (this.open_ && this.anchor_ &&
+    if (this.open_ && this.anchor_ && !this.useUnbounded_ &&
         (changedProperties.has('fullName') || changedProperties.has('email'))) {
       this.position_(this.anchor_);
     }
@@ -124,15 +124,20 @@ export class ProfileTooltipElement extends CrLitElement {
       return;
     }
 
-    this.position_(anchor);
-
     if (useUnbounded) {
-      this.$.tooltip.showUnboundedElement?.().catch(err => {
+      this.$.tooltip.style.left = '';
+      this.$.tooltip.style.top = '';
+      this.$.tooltip.showUnboundedElement?.({source: anchor}).catch(err => {
         if (err instanceof DOMException && err.name === 'AbortError') {
           return;
         }
         this.useUnbounded_ = false;
+        if (this.open_ && this.anchor_) {
+          this.position_(this.anchor_);
+        }
       });
+    } else {
+      this.position_(anchor);
     }
   }
 

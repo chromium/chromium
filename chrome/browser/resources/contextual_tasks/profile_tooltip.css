@@ -39,6 +39,15 @@
   z-index: 1000;
 }
 
+#tooltip[unbounded] {
+  inset: auto;
+  margin-block: 4px;
+  margin-inline: 8px;
+  position-anchor: auto;
+  position-area: self-block-end span-all;
+  position-try-fallbacks: flip-block;
+}
+
 #tooltip:not([open]) {
   visibility: hidden;
 }
