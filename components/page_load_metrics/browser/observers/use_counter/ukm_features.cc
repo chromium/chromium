@@ -500,6 +500,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kXmlCAPAlert,
           WebFeature::kXmlCAPAlertWithXSLT,
           WebFeature::kGeolocationAccuracyModeApproximate,
+          WebFeature::kBeforeInstallPromptEventPrompt,
           // NOTE: before adding new use counters here, verify in UMA that
           // their emissions are very rare, e.g. <1% of page loads.
       }));
