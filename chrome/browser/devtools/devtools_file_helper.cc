@@ -634,9 +634,11 @@ bool DevToolsFileHelper::IsFileInFileSystem(const std::string& file_path) {
   if (path.ReferencesParent()) {
     return false;
   }
+  path = path.NormalizePathSeparators().StripTrailingSeparators();
   for (const auto& pair : file_system_paths_) {
-    base::FilePath file_system_path =
-        base::FilePath::FromUTF8Unsafe(pair.first);
+    base::FilePath file_system_path = base::FilePath::FromUTF8Unsafe(pair.first)
+                                          .NormalizePathSeparators()
+                                          .StripTrailingSeparators();
     if (file_system_path == path || file_system_path.IsParent(path)) {
       return true;
     }

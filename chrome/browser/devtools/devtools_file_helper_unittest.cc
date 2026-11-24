@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_file_helper.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -881,8 +882,10 @@ TEST_F(DevToolsFileHelperTest, IsFileInFileSystem) {
   ConnectAutomaticFileSystem(fs_path, uuid, /* already_known */ true);
 
   // 3. Now verify IsFileInFileSystem behaviors.
-  // - Exact match should be true.
+  // - Exact match (with or without trailing separator) should be true.
   EXPECT_TRUE(file_helper()->IsFileInFileSystem(fs_path.AsUTF8Unsafe()));
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(
+      fs_path.AsEndingWithSeparator().AsUTF8Unsafe()));
   // - Subpath should be true.
   EXPECT_TRUE(file_helper()->IsFileInFileSystem(file_path.AsUTF8Unsafe()));
   // - Siblings/outside paths should be false.
@@ -920,4 +923,96 @@ TEST_F(DevToolsFileHelperTest, IsFileInFileSystem) {
 
   EXPECT_FALSE(file_helper()->IsFileInFileSystem(fs_path.AsUTF8Unsafe()));
   EXPECT_FALSE(file_helper()->IsFileInFileSystem(file_path.AsUTF8Unsafe()));
+
+  // 5. Verify matching when the registered workspace root itself ends with a
+  // trailing separator.
+  base::FilePath fs_path_with_sep = fs_path.AsEndingWithSeparator();
+  ConnectAutomaticFileSystem(fs_path_with_sep, uuid, /* already_known */ true);
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(fs_path.AsUTF8Unsafe()));
+  EXPECT_TRUE(
+      file_helper()->IsFileInFileSystem(fs_path_with_sep.AsUTF8Unsafe()));
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(file_path.AsUTF8Unsafe()));
+
+  EXPECT_CALL(storage(), UnregisterFileSystem(fs_path_with_sep));
+  EXPECT_CALL(delegate(), FileSystemRemoved(fs_path_with_sep.AsUTF8Unsafe()));
+  {
+    base::RunLoop run_loop_disconnect;
+    ON_CALL(delegate(), FileSystemRemoved).WillByDefault([&] {
+      run_loop_disconnect.Quit();
+    });
+    file_helper()->DisconnectAutomaticFileSystem(
+        fs_path_with_sep.AsUTF8Unsafe());
+    run_loop_disconnect.Run();
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // 6. On Windows, verify a forward-slash registered root matches backslash
+  // queries.
+  base::FilePath forward_slash_fs_path =
+      fs_path.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'));
+  base::FilePath backslash_fs_path = fs_path.NormalizePathSeparators();
+  ASSERT_NE(forward_slash_fs_path.value(), backslash_fs_path.value());
+  ConnectAutomaticFileSystem(forward_slash_fs_path, uuid,
+                             /* already_known */ true);
+  EXPECT_TRUE(
+      file_helper()->IsFileInFileSystem(backslash_fs_path.AsUTF8Unsafe()));
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(
+      backslash_fs_path.AsEndingWithSeparator().AsUTF8Unsafe()));
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(
+      file_path.NormalizePathSeparators().AsUTF8Unsafe()));
+
+  EXPECT_CALL(storage(), UnregisterFileSystem(forward_slash_fs_path));
+  EXPECT_CALL(delegate(),
+              FileSystemRemoved(forward_slash_fs_path.AsUTF8Unsafe()));
+  {
+    base::RunLoop run_loop_disconnect;
+    ON_CALL(delegate(), FileSystemRemoved).WillByDefault([&] {
+      run_loop_disconnect.Quit();
+    });
+    file_helper()->DisconnectAutomaticFileSystem(
+        forward_slash_fs_path.AsUTF8Unsafe());
+    run_loop_disconnect.Run();
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DevToolsFileHelperTest, IsFileInFileSystemVirtualDocumentPath) {
+  base::FilePath cache_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &cache_dir));
+  base::ScopedTempDir td;
+  ASSERT_TRUE(td.CreateUniqueTempDirUnderPath(cache_dir));
+  std::optional<base::FilePath> saf_dir =
+      base::test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+          td.GetPath());
+  ASSERT_TRUE(saf_dir.has_value());
+  base::FilePath saf_path = *saf_dir;
+
+  DevToolsFileHelper::FileSystem file_system{"", "test", "filesystem:test",
+                                             saf_path.AsUTF8Unsafe()};
+  EXPECT_CALL(storage(), RegisterFileSystem(saf_path, ""))
+      .WillOnce(Return(file_system));
+  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)));
+
+  ASSERT_THAT(file_helper()->GetFileSystems(), IsEmpty());
+
+  base::RunLoop run_loop;
+  ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
+  file_helper()->AddFileSystem(
+      "", FakeSelectFileCallback(ui::SelectedFileInfo(saf_path)),
+      base::BindRepeating([](const std::string&, const std::u16string&,
+                             base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      }));
+  run_loop.Run();
+
+  // NavigatorView passes a trailing '/' when opening the root workspace folder.
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(saf_path.AsUTF8Unsafe()));
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(
+      saf_path.AsEndingWithSeparator().AsUTF8Unsafe()));
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(
+      saf_path.AppendASCII("sub").AsUTF8Unsafe()));
+  EXPECT_TRUE(file_helper()->IsFileInFileSystem(
+      saf_path.AppendASCII("hello.js").AsUTF8Unsafe()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
