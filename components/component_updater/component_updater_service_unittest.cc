@@ -800,14 +800,16 @@ class ComponentUpdaterMeteredTest : public ComponentUpdaterTest {
       bool allow_updates_on_metered_connection) {
     auto installer = base::MakeRefCounted<MockInstaller>();
     ON_CALL(*installer, Uninstall()).WillByDefault(Return(true));
-    return ComponentRegistration(
-        id, /*name=*/{}, base::ToVector(update_client::jebg_hash),
-        base::Version("0.9"), /*fingerprint=*/{}, /*installer_attributes=*/{},
-        /*action_handler=*/nullptr, std::move(installer),
-        /*requires_network_encryption=*/false,
-        /*supports_group_policy_enable_component_updates=*/true,
-        /*allow_cached_copies=*/true, allow_updates_on_metered_connection,
-        /*allow_updates=*/true);
+    return {
+        .app_id = id,
+        .public_key_hash = base::ToVector(update_client::jebg_hash),
+        .version = base::Version("0.9"),
+        .installer = std::move(installer),
+        .requires_network_encryption = false,
+        .supports_group_policy_enable_component_updates = true,
+        .allow_updates_on_metered_connection =
+            allow_updates_on_metered_connection,
+    };
   }
 
   // Makes the update client report that the update of `id` is in `state`.
@@ -842,20 +844,21 @@ class ComponentUpdaterMeteredTest : public ComponentUpdaterTest {
   CrxUpdateItem MakeUpdateDisabledItem(
       const std::string& id,
       bool allow_updates_on_metered_connection = false) {
-    CrxUpdateItem item;
-    item.id = id;
-    item.state = ComponentState::kUpdateError;
-    item.error_category = update_client::ErrorCategory::kService;
-    item.error_code =
-        std::to_underlying(update_client::ServiceError::UPDATE_DISABLED);
-    item.component.emplace();
-    item.component->app_id = id;
-    item.component->allow_updates_on_metered_connection =
-        allow_updates_on_metered_connection;
-    item.component->updates_enabled =
-        configurator()->GetPrefService()->GetBoolean(
-            prefs::kComponentUpdatesEnabled);
-    return item;
+    return {
+        .state = ComponentState::kUpdateError,
+        .id = id,
+        .component =
+            CrxComponent{
+                .app_id = id,
+                .updates_enabled = configurator()->GetPrefService()->GetBoolean(
+                    prefs::kComponentUpdatesEnabled),
+                .allow_updates_on_metered_connection =
+                    allow_updates_on_metered_connection,
+            },
+        .error_category = update_client::ErrorCategory::kService,
+        .error_code =
+            std::to_underlying(update_client::ServiceError::UPDATE_DISABLED),
+    };
   }
 
  private:
@@ -1217,11 +1220,9 @@ TEST_F(ComponentUpdaterMeteredTest, CompletedUpdateClearsPendingDeferral) {
   configurator()->SetIsNetworkConnectionMetered(true);
   crx_update_service().OnEvent(MakeUpdateDisabledItem(kComponent1));
 
-  CrxUpdateItem updated_item;
-  updated_item.id = kComponent1;
-  updated_item.state = ComponentState::kUpdated;
-  updated_item.next_version = base::Version("1.0");
-  crx_update_service().OnEvent(updated_item);
+  crx_update_service().OnEvent({.state = ComponentState::kUpdated,
+                                .id = kComponent1,
+                                .next_version = base::Version("1.0")});
 
   SetConnectionCost(net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
   task_environment().FastForwardBy(base::Minutes(1));
