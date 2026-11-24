@@ -2714,6 +2714,8 @@ void RenderViewContextMenu::AppendPageItems() {
     // Indigo (Try it on)
     AppendIndigoItem();
 
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+
     // Open in reading mode & Listen to this page
     AppendReadAnythingItem();
 
@@ -3284,6 +3286,12 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
     AppendSearchProvider();
     if (glic_below_search) {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
+    }
+    // Glic and search should be within the same section in the menu.
+    if (glic_item_shown_ ||
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
+            .has_value()) {
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
     AppendPrintItem();
     AppendTranslateOrPartialTranslateItem();
@@ -6462,6 +6470,9 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
     // Link + Selection case
     AppendCopyItem();
     AppendLinkToTextItems();
+
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+
     if (!glic_below_search) {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
@@ -6469,6 +6480,13 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
     if (glic_below_search) {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
+
+    if (glic_item_shown_ ||
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
+            .has_value()) {
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    }
+
     AppendSaveToMemoryBanksItem();
     AppendPrintItem();
 
@@ -6488,6 +6506,13 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
     if (glic_below_search) {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
+
+    if (glic_item_shown_ ||
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
+            .has_value()) {
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    }
+
     AppendReadAnythingItem();
     AppendSaveToMemoryBanksItem();
 
