@@ -71,9 +71,6 @@ public class BookmarkPage extends BasicNativePage {
         mTitle = host.getContext().getString(R.string.bookmarks);
         mBookmarkOpener = bookmarkOpener;
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
-        // Provide the BackPressManager to the coordinator so it can manage itself.
-        // The logic in the coordinator ensures that there is only one NATIVE_PAGE handler set
-        // at a time.
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
                         windowAndroid,

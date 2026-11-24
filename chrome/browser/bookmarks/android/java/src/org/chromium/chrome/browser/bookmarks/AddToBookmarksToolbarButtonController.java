@@ -191,7 +191,6 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         }
 
         RecordUserAction.record("MobileTopToolbarAddToBookmarksButton");
-        // mActiveTabSupplier.hasValue() is true, so .get() should be non-null
         tabBookmarker.addOrEditBookmark(activeTab, view);
     }
 

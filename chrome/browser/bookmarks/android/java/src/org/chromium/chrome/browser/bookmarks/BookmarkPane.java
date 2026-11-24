@@ -33,7 +33,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/** A {@link Pane} representing history. */
+/** A {@link Pane} representing bookmarks. */
 @NullMarked
 public class BookmarkPane extends PaneBase {
 

@@ -74,9 +74,11 @@ public class BookmarkUtils {
     private static @Nullable Boolean sReadingListSupportedForTesting;
 
     /**
-     * If the tab has already been bookmarked, start {@link BookmarkEditActivity} for the normal
-     * bookmark or show the reading list page for reading list bookmark. If not, add the bookmark to
-     * {@link BookmarkModel}, and show a snackbar notifying the user.
+     * Adds or edits bookmarks for the given tabs. For a single tab, opens {@link
+     * BookmarkPopupCoordinator} or {@link BookmarkManagerOpener#startEditActivity} if already
+     * bookmarked, or adds the bookmark to {@link BookmarkModel} and shows the popup or {@link
+     * BookmarkSaveFlowCoordinator} bottom sheet if new. For multiple tabs, adds them to the reading
+     * list or a new bookmarks folder and shows a snackbar.
      *
      * @param existingBookmarkItems The {@link BookmarkItem} if the tab has already been bookmarked.
      * @param bookmarkModel The bookmark model.
@@ -392,8 +394,8 @@ public class BookmarkUtils {
         popupCoordinator.show(bookmarkId, launchType, isNewBookmark);
     }
 
-    // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
-    // Used for feed and GTS.
+    // Adds a single-tab bookmark and shows a confirmation snackbar without triggering the bookmark
+    // save flow.
     private static @Nullable BookmarkId addBookmarkAndShowSnackbar(
             BookmarkModel bookmarkModel,
             Tab tab,
@@ -484,8 +486,8 @@ public class BookmarkUtils {
 
     /**
      * Add an article to the reading list. If the article was already loaded, the entry will be
-     * overwritten. After successful addition, a snackbar will be shown notifying the user about the
-     * result of the operation.
+     * overwritten. After successful addition, shows the bookmark save flow when account bookmark
+     * folders are active, or a snackbar notifying the user otherwise.
      *
      * @param activity The associated activity which is adding this reading list item.
      * @param bookmarkModel The bookmark model that talks to the bookmark backend.
@@ -498,8 +500,8 @@ public class BookmarkUtils {
      * @param bookmarkManagerOpener Manages opening bookmarks.
      * @param priceDropNotificationManager Manages price drop notifications.
      * @return The bookmark ID created after saving the article to the reading list.
-     * @deprecated Used only by feed, new users should rely on addOrEditBookmark (or the tab
-     *     bookmarker).
+     * @deprecated Legacy entry point; new callers should rely on {@link TabBookmarker} or {@link
+     *     #addOrEditBookmark}.
      */
     @Deprecated
     public static @Nullable BookmarkId addToReadingList(
@@ -837,7 +839,7 @@ public class BookmarkUtils {
 
     /**
      * Saves the last used url to preference. The saved url will be later queried by {@link
-     * #getLastUsedUrl()}.
+     * BookmarkManagerOpener#getLastUsedUrl(Profile)}.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setLastUsedUrl(String url) {

@@ -181,11 +181,12 @@ class BookmarkToolbarMediator
     }
 
     boolean onMenuIdClick(@IdRes int id) {
-        // Sorting/viewing submenu needs to be caught, but haven't been implemented yet.
         if (id == R.id.create_new_folder_menu_id) {
             mBookmarkAddNewFolderCoordinator.show(assumeNonNull(mCurrentFolder));
             return true;
         } else if (id == R.id.normal_options_submenu) {
+            // Handled to open the sorting/viewing submenu without triggering the unhandled-click
+            // assert.
             return true;
         } else if (id == R.id.sort_by_manual) {
             assert SORT_MENU_IDS.contains(id);
@@ -425,7 +426,7 @@ class BookmarkToolbarMediator
                 BookmarkUtils.canAddFolderToParent(mBookmarkModel, mCurrentFolder));
 
         // Special behavior in reading list:
-        // - Select CHRONOLOGICAL as sort order.
+        // - Select REVERSE_CHRONOLOGICAL as sort order.
         // - Disable sort menu items.
         boolean inReadingList = mBookmarkModel.isReadingListFolder(mCurrentFolder);
         mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED, !inReadingList);
