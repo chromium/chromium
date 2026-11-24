@@ -166,7 +166,6 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -424,7 +423,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
-        PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
 
         mBookmarkModel = FakeBookmarkModel.createModel();
         mBookmarkModel.setEditBookmarksEnabled(true);

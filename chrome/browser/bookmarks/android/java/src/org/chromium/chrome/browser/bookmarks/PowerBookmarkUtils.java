@@ -35,7 +35,6 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 @NullMarked
 public class PowerBookmarkUtils {
     private static @Nullable Boolean sPriceTrackingEligibleForTesting;
-    private static @Nullable PowerBookmarkMeta sPowerBookmarkMetaForTesting;
 
     /** Returns whether the given meta is a shopping list item. */
     @Contract("_, null -> false")
@@ -212,11 +211,5 @@ public class PowerBookmarkUtils {
     public static void setPriceTrackingEligibleForTesting(@Nullable Boolean enabled) {
         sPriceTrackingEligibleForTesting = enabled;
         ResettersForTesting.register(() -> sPriceTrackingEligibleForTesting = null);
-    }
-
-    /** Sets the current page meta to the test value given. */
-    public static void setPowerBookmarkMetaForTesting(@Nullable PowerBookmarkMeta meta) {
-        sPowerBookmarkMetaForTesting = meta;
-        ResettersForTesting.register(() -> sPowerBookmarkMetaForTesting = null);
     }
 }

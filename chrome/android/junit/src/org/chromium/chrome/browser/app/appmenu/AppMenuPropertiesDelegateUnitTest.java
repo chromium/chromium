@@ -194,7 +194,6 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
-        PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
 
         AppMenuPropertiesDelegateImpl realDelegate =
                 new AppMenuPropertiesDelegateImpl(
@@ -391,7 +390,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                                         .setProductClusterId(clusterId)
                                         .build())
                         .build();
-        PowerBookmarkUtils.setPowerBookmarkMetaForTesting(meta);
         doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
 
         MVCListAdapter.ListItem item =
