@@ -81,6 +81,7 @@ ${this.showVoiceSearchOverlay_ ? html`
       @click="${this.onVoiceSearchDialogClick_}">
     <div id="voiceSearchCardContainer">
       ${!this.hasVoiceSearchError_ ? html`
+        <div id="voiceSearchGIcon" aria-hidden="true"></div>
         <search-animated-glow id="voiceSearchGlow"
             .coloredTicTacVoiceAnimationEnabled="${true}"
             .isListening="${this.voiceSearchListening_}"
@@ -90,18 +91,21 @@ ${this.showVoiceSearchOverlay_ ? html`
         </search-animated-glow>
       ` : ''}
       <cr-composebox-voice-search id="voiceSearch" in-voice-search-mode
+          .audioWaveEnabled="${true}" .helperTextEnabled="${true}"
           @voice-permission-changed="${this.onVoicePermissionChanged_}"
           @voice-search-cancel="${this.onVoiceSearchCancel_}"
           @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
           @voice-search-error="${this.onVoiceSearchError_}"
           @voice-search-restart="${this.onVoiceSearchRestart_}"
+          @transcript-lines-changed="${
+              this.onVoiceSearchTranscriptLinesChanged_}"
           @transcript-update="${this.onVoiceSearchTranscriptUpdate_}"
           @speech-received="${this.onVoiceSearchSpeechReceived_}"
           @recording-stopped="${this.onVoiceSearchRecordingStopped_}"
           .hasErrorTimer="${true}" .idleTimeout="${this.voiceIdleTimeoutMs_}"
           .dynamicTimeoutEnabled="${true}"
           .queryLengthLimit="${this.voiceQueryLengthLimit_}"
-          .liveTranscriptEnabled="${false}"
+          .liveTranscriptEnabled="${true}"
           .pageCallbackRouter="${this.callbackRouter_}"
           .autosubmitEnabled="${true}" .submitStopButtonsEnabled="${true}">
       </cr-composebox-voice-search>

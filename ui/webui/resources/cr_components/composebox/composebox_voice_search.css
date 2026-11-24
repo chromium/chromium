@@ -256,8 +256,9 @@
    */
   padding-bottom: 7px;
   padding-inline-end: 20px;
-  padding-inline-start: 20px;
-  padding-top: 20px;
+  padding-inline-start: var(
+      --composebox-voice-search-input-padding-inline-start, 20px);
+  padding-top: var(--composebox-voice-search-input-padding-top, 20px);
   text-align: start;
   word-break: break-word;
 }
@@ -271,7 +272,7 @@
   padding-bottom: 0;
   padding-inline-end: 0;
   padding-inline-start: 0;
-  padding-top: 20px;
+  padding-top: var(--composebox-voice-search-input-padding-top, 20px);
   text-align: center;
 }
 

@@ -840,6 +840,7 @@ export class OmniboxEverywhereAppElement extends
     this.showVoiceSearchOverlay_ = false;
     this.hasVoiceSearchError_ = false;
     this.voiceSearchListening_ = false;
+    this.style.removeProperty('--transcript-lines');
   }
 
   protected onVoicePermissionChanged_(
@@ -901,6 +902,11 @@ export class OmniboxEverywhereAppElement extends
     this.voiceSearchListening_ = true;
     this.voiceSearchReceivedSpeech_ = false;
     this.voiceSearchTranscript_ = '';
+  }
+
+  protected onVoiceSearchTranscriptLinesChanged_(
+      e: CustomEvent<{value: number}>) {
+    this.style.setProperty('--transcript-lines', `${e.detail.value}`);
   }
 
   protected onVoiceSearchTranscriptUpdate_(e: CustomEvent<string>) {

@@ -12,6 +12,7 @@ import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {HelpBubbleArrowPosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
@@ -2518,8 +2519,22 @@ suite('OmniboxEverywhereAppTest', () => {
     const dialog =
         app.shadowRoot.querySelector<HTMLDialogElement>('#voiceSearchDialog');
     assertTrue(!!dialog);
-    const voiceSearch = app.shadowRoot.querySelector('#voiceSearch');
+    const gIcon = app.shadowRoot.querySelector('#voiceSearchGIcon');
+    assertTrue(!!gIcon);
+    const voiceSearch =
+        app.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
+            '#voiceSearch');
     assertTrue(!!voiceSearch);
+    assertTrue(voiceSearch.audioWaveEnabled);
+    assertTrue(voiceSearch.helperTextEnabled);
+    assertTrue(voiceSearch.liveTranscriptEnabled);
+    assertEquals(160, dialog.offsetHeight);
+
+    dialog.style.transition = 'none';
+    voiceSearch.transcriptLines = 4;
+    await microtasksFinished();
+    assertEquals('4', app.style.getPropertyValue('--transcript-lines'));
+    assertEquals(232, dialog.offsetHeight);
   });
 
   test(
