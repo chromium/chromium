@@ -310,11 +310,9 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
     ASSERT_TRUE(parsed->is_dict());
     EXPECT_EQ(*parsed->GetDict().FindString(type_key), expected_type);
     EXPECT_EQ(*parsed->GetDict().FindString("origin"), test.origin.Serialize());
-    std::string expected_challenge;
-    base::Base64UrlEncode(test.challenge,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &expected_challenge);
-    EXPECT_EQ(*parsed->GetDict().FindString("challenge"), expected_challenge);
+    EXPECT_EQ(*parsed->GetDict().FindString("challenge"),
+              base::Base64UrlEncode(test.challenge,
+                                    base::Base64UrlEncodePolicy::OMIT_PADDING));
     EXPECT_EQ(*parsed->GetDict().FindBool("crossOrigin"), test.is_cross_origin);
     if (test.is_cross_origin) {
       EXPECT_EQ(*parsed->GetDict().FindString("topOrigin"),

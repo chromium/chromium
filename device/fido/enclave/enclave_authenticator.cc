@@ -323,11 +323,6 @@ void EnclaveAuthenticator::OnHaveReencodedLargeBlob(
     return;
   }
 
-  std::string large_blob_b64;
-  base::Base64UrlEncode(base::span<const uint8_t>(*maybe_deflated),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &large_blob_b64);
-
   auto* root = pending_get_assertion_request_->options.json->value.get();
   auto* exts = root->GetDict().FindDict(kExtensionsKey);
   CHECK(exts);
@@ -336,7 +331,10 @@ void EnclaveAuthenticator::OnHaveReencodedLargeBlob(
     large_blob = exts->Set(kLargeBlobKey, base::DictValue())->GetIfDict();
   }
 
-  large_blob->Set(kLargeBlobWriteKey, large_blob_b64);
+  large_blob->Set(
+      kLargeBlobWriteKey,
+      base::Base64UrlEncode(*maybe_deflated,
+                            base::Base64UrlEncodePolicy::OMIT_PADDING));
   large_blob->Set(kLargeBlobSizeKey, static_cast<int>(original_size));
 
   DispatchGetAssertion();
