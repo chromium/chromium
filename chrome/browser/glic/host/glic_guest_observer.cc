@@ -33,15 +33,6 @@ namespace glic {
 
 namespace {
 
-// LINT.IfChange(WebViewAutoPlayProgress)
-enum class WebViewAutoPlayProgress {
-  kWebContentsObserverRegistered = 0,
-  kAutoPlayGrantedForPrimaryRFH = 1,
-  kAutoPlayGrantedForOtherRFH = 2,
-  kMaxValue = kAutoPlayGrantedForOtherRFH,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebViewAutoPlayProgress)
-
 BASE_FEATURE(kGlicUpdateHiddenScreenInfo,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -116,9 +107,6 @@ void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle) {
   DVLOG(1) << "Granted Glic AutoPlay for origin=\"" << origin
            << "\" at primary main RFH with url=\""
            << navigation_handle->GetURL() << "\"";
-  base::UmaHistogramEnumeration(
-      "Glic.Host.WebView.AutoPlay",
-      WebViewAutoPlayProgress::kAutoPlayGrantedForPrimaryRFH);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicGuestObserver);

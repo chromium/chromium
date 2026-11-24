@@ -5,7 +5,12 @@
 #include "chrome/browser/glic/host/glic_guest_observer.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/host/glic_pwc_policy_delegate.h"
@@ -23,13 +28,64 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace glic {
 namespace {
+
+class FakeAutoplayConfigurationClient
+    : public blink::mojom::AutoplayConfigurationClient {
+ public:
+  void OverrideOnFrame(content::RenderFrameHost* frame) {
+    frame->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        blink::mojom::AutoplayConfigurationClient::Name_,
+        base::BindRepeating(&FakeAutoplayConfigurationClient::Bind,
+                            base::Unretained(this)));
+  }
+
+  // blink::mojom::AutoplayConfigurationClient:
+  void AddAutoplayFlags(const url::Origin& origin, int32_t flags) override {
+    granted_calls_.emplace_back(origin, flags);
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  std::pair<url::Origin, int32_t> WaitForNextCall() {
+    if (consumed_calls_ >= granted_calls_.size()) {
+      base::RunLoop run_loop;
+      quit_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+    return granted_calls_[consumed_calls_++];
+  }
+
+  const std::vector<std::pair<url::Origin, int32_t>>& granted_calls() const {
+    return granted_calls_;
+  }
+
+ private:
+  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(this,
+                   mojo::PendingAssociatedReceiver<
+                       blink::mojom::AutoplayConfigurationClient>(
+                       std::move(handle)));
+  }
+
+  mojo::AssociatedReceiverSet<blink::mojom::AutoplayConfigurationClient>
+      receivers_;
+  std::vector<std::pair<url::Origin, int32_t>> granted_calls_;
+  size_t consumed_calls_ = 0;
+  base::OnceClosure quit_closure_;
+};
 
 class GlicGuestObserverTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -46,58 +102,71 @@ class GlicGuestObserverTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  FakeAutoplayConfigurationClient autoplay_client_;
 };
 
 TEST_F(GlicGuestObserverTest, GrantsAutoplayForGuestOrigin) {
-  base::HistogramTester histogram_tester;
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://gemini.google.com/app"), web_contents());
   navigation->ReadyToCommit();
+  autoplay_client_.OverrideOnFrame(
+      navigation->GetNavigationHandle()->GetRenderFrameHost());
   GrantAutoplayPermissions(navigation->GetNavigationHandle());
   navigation->Commit();
 
-  // Expect WebViewAutoPlayProgress::kAutoPlayGrantedForPrimaryRFH (1).
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebView.AutoPlay", 1, 1);
+  EXPECT_EQ(autoplay_client_.WaitForNextCall(),
+            std::make_pair(
+                url::Origin::Create(GURL("https://gemini.google.com")),
+                blink::mojom::kAutoplayFlagForceAllow));
+  EXPECT_EQ(autoplay_client_.granted_calls().size(), 1u);
 }
 
 TEST_F(GlicGuestObserverTest, GrantsAutoplayForCorpOrigin) {
-  base::HistogramTester histogram_tester;
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://gemini.corp.google.com/app"), web_contents());
   navigation->ReadyToCommit();
+  autoplay_client_.OverrideOnFrame(
+      navigation->GetNavigationHandle()->GetRenderFrameHost());
   GrantAutoplayPermissions(navigation->GetNavigationHandle());
   navigation->Commit();
 
-  // Expect WebViewAutoPlayProgress::kAutoPlayGrantedForPrimaryRFH (1).
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebView.AutoPlay", 1, 1);
+  EXPECT_EQ(autoplay_client_.WaitForNextCall(),
+            std::make_pair(
+                url::Origin::Create(GURL("https://gemini.corp.google.com")),
+                blink::mojom::kAutoplayFlagForceAllow));
+  EXPECT_EQ(autoplay_client_.granted_calls().size(), 1u);
 }
 
 TEST_F(GlicGuestObserverTest, DoesNotGrantAutoplayForDisallowedOrigin) {
-  base::HistogramTester histogram_tester;
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://evil.com"), web_contents());
   navigation->ReadyToCommit();
+  autoplay_client_.OverrideOnFrame(
+      navigation->GetNavigationHandle()->GetRenderFrameHost());
   GrantAutoplayPermissions(navigation->GetNavigationHandle());
   navigation->Commit();
+  base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount("Glic.Host.WebView.AutoPlay", 0);
+  EXPECT_TRUE(autoplay_client_.granted_calls().empty());
 }
 
 TEST_F(GlicGuestObserverTest, DoesNotGrantAutoplayForSubframe) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://gemini.google.com/app"));
 
-  base::HistogramTester histogram_tester;
   content::RenderFrameHost* subframe =
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   auto subframe_simulator =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL("https://gemini.google.com/subframe"), subframe);
   subframe_simulator->ReadyToCommit();
+  autoplay_client_.OverrideOnFrame(
+      subframe_simulator->GetNavigationHandle()->GetRenderFrameHost());
   GrantAutoplayPermissions(subframe_simulator->GetNavigationHandle());
   subframe_simulator->Commit();
+  base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount("Glic.Host.WebView.AutoPlay", 0);
+  EXPECT_TRUE(autoplay_client_.granted_calls().empty());
 }
 
 TEST_F(GlicGuestObserverTest, RecordsMetricsWhenNoWebviewEnabled) {

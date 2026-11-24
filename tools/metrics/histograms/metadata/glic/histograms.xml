@@ -1155,17 +1155,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
-<histogram name="Glic.Host.WebView.AutoPlay" enum="WebViewAutoPlayProgress"
-    expires_after="2026-08-09">
-  <owner>carlosk@chromium.org</owner>
-  <owner>dewittj@google.com</owner>
-  <summary>
-    Debug histogram that tracks the internal steps that lead to the granting of
-    AutoPlay permissions to the renderer frame hosting Glic's embedded webview.
-    Samples are recorded when their respective events take place.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Instance.Session.UninterruptedActiveDuration" units="ms"
     expires_after="2027-11-16">
   <owner>birnie@google.com</owner>

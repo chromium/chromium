@@ -876,8 +876,6 @@ void PageContextFetcher::ReceivedInnerText(
   pending_result_->inner_text_result.emplace(
       std::move(trimmed_text), std::move(result->node_offset), truncated);
   inner_text_done_ = true;
-  base::UmaHistogramTimes("Glic.PageContextFetcher.GetInnerText",
-                          elapsed_timer_.Elapsed());
   RunCallbackIfComplete();
 }
 
