@@ -73,8 +73,8 @@ class PendingTransportSessionImpl : public TransportSession {
   base::expected<void, SendUpstreamMessageError> SendUpstreamMessage(
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) override;
-  void OnMessage(PayloadType payload_type,
-                 std::string_view serialized_payload) override;
+  void OnWakeMessage(PayloadType payload_type,
+                     std::string_view serialized_payload) override;
   void Close() override;
 
   // Marks this pending handle closed and drops any buffered messages so

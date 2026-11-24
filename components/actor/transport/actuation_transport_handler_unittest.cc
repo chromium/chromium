@@ -44,8 +44,8 @@ class FakeTransportSession : public stream_transport::TransportSession {
     return {};
   }
 
-  void OnMessage(stream_transport::PayloadType payload_type,
-                 std::string_view serialized_payload) override {}
+  void OnWakeMessage(stream_transport::PayloadType payload_type,
+                     std::string_view serialized_payload) override {}
 
   void Close() override {}
 

@@ -93,8 +93,8 @@ class TransportSessionImpl : public TransportSession,
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) override;
 
-  void OnMessage(PayloadType payload_type,
-                 std::string_view serialized_payload) override;
+  void OnWakeMessage(PayloadType payload_type,
+                     std::string_view serialized_payload) override;
 
   void Close() override;
 
@@ -146,7 +146,7 @@ class TransportSessionImpl : public TransportSession,
 
   // Sequence number of the downstream message currently being dispatched on
   // the session's sequence (`0` on the out-of-band FCM wake-up path), or
-  // `std::nullopt` outside an active `OnMessage()` /
+  // `std::nullopt` outside an active `OnWakeMessage()` /
   // `ProcessDownstreamMessage()` frame. Used by `ProbeTransportHandler` to
   // preserve `responding_to_sequence_number` across delayed probe replies.
   std::optional<int64_t> dispatching_sequence_number() const {
@@ -210,10 +210,10 @@ class TransportSessionImpl : public TransportSession,
   int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
   // Set once `ProcessDownstreamMessage()` accepts any valid stream message
   // (including out-of-order messages buffered in `sequencer_`), permanently
-  // ignoring late sequence-0 wake calls via `OnMessage()`.
+  // ignoring late sequence-0 wake calls via `OnWakeMessage()`.
   bool stream_message_seen_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  // Bitmasks of `PayloadType` values already dispatched via `OnMessage()` at
-  // sequence 0. Non-empty wake payloads and empty wake-up pings (used on
+  // Bitmasks of `PayloadType` values already dispatched via `OnWakeMessage()`
+  // at sequence 0. Non-empty wake payloads and empty wake-up pings (used on
   // `StartSession` to report live capabilities) are tracked separately so each
   // can fire at most once per payload type before the stream begins.
   uint32_t wake_payload_types_seen_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;

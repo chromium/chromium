@@ -514,13 +514,14 @@ TEST(TransportSessionRegistryImplTest,
       registry.CreateSession("session_2", InitIngressSource::kUnspecified);
   ASSERT_NE(session2, nullptr);
 
-  // Advance 25 minutes and record activity on `session_2` via `OnMessage()`,
-  // then advance another 10 minutes: `session_1` has been idle for 45m (>= 30m
-  // default TTL), while `session_2` is 35m past `start_time()` (>= 30m TTL) but
-  // only 10m past its `OnMessage()` activity (< 30m TTL). Creating `session_3`
-  // evicts `session_1` and succeeds despite `max_concurrent_sessions` == 2.
+  // Advance 25 minutes and record activity on `session_2` via
+  // `OnWakeMessage()`, then advance another 10 minutes: `session_1` has been
+  // idle for 45m (>= 30m default TTL), while `session_2` is 35m past
+  // `start_time()` (>= 30m TTL) but only 10m past its `OnWakeMessage()`
+  // activity (< 30m TTL). Creating `session_3` evicts `session_1` and succeeds
+  // despite `max_concurrent_sessions` == 2.
   task_environment.FastForwardBy(base::Minutes(25));
-  session2->OnMessage(PayloadType::kControl, "");
+  session2->OnWakeMessage(PayloadType::kControl, "");
   task_environment.FastForwardBy(base::Minutes(10));
   EXPECT_NE(
       registry.CreateSession("session_3", InitIngressSource::kUnspecified),
