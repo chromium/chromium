@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -35,7 +36,10 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -56,9 +60,11 @@
 #include "components/favicon_base/favicon_callback.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/mock_password_manager.h"
 #include "components/password_manager/core/browser/mock_password_suggestion_flow.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
@@ -71,6 +77,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync/test/test_sync_user_settings.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "device/fido/public/features.h"
 #include "manage_passwords_referrer.h"
@@ -183,6 +191,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
        autofill::mojom::AutofillSuggestionAvailability suggestion_availability),
       (override));
   MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (override));
+  MOCK_METHOD(autofill::AutofillDriver*,
+              GetAutofillDriver,
+              (),
+              (const, override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
   MOCK_METHOD(bool, HasValidURL, (bool), (override));
   MOCK_METHOD(bool, IsRenderFrameHostSupported, (), (override));
@@ -215,16 +227,27 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
     return &test_sync_service_;
   }
 
+  syncer::TestSyncService* test_sync_service() { return &test_sync_service_; }
+
   signin::IdentityTestEnvironment& identity_test_env() {
     return identity_test_env_;
   }
 
+  using PasswordManagerClient::GetPasswordManager;
+  MOCK_METHOD(const PasswordManagerInterface*,
+              GetPasswordManager,
+              (),
+              (const, override));
   using PasswordManagerClient::IsFillingEnabled;
   MOCK_METHOD(bool,
               IsFillingEnabled,
               (const url::Origin&, base::optional_ref<const GURL>),
               (const, override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
+  MOCK_METHOD(void,
+              StartTrustedVaultKeyRetrieval,
+              (trusted_vault::TrustedVaultUserActionTriggerForUMA),
+              (override));
   MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
   MOCK_METHOD(void,
               NavigateToManagePasswordsPage,
@@ -269,7 +292,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
-  MockPasswordManagerDriver driver_;
+  NiceMock<MockPasswordManagerDriver> driver_;
   signin::IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService test_sync_service_;
   std::unique_ptr<MockPasswordFeatureManager> feature_manager_{
@@ -3039,5 +3062,160 @@ TEST_F(PasswordAutofillManagerTest, UpdatePopupIsNoOpForOtherManager) {
   pam1.OnAddPasswordFillData(data);
 }
 
+TEST_F(PasswordAutofillManagerTest, DidAcceptSuggestion_UnlockTrustedVault) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  EXPECT_CALL(client, StartTrustedVaultKeyRetrieval(
+                          trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                              kPasswordManagerSettings));
+  EXPECT_CALL(
+      autofill_client,
+      HideSuggestions(autofill::SuggestionHidingReason::kAcceptSuggestion,
+                      std::optional(FillingProduct::kPassword)));
+
+  Suggestion suggestion(
+      autofill::SuggestionType::kPendingStateTrustedVaultError);
+  suggestion.main_text.value = u"Unlock Google Password Manager";
+  password_autofill_manager_->DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       DidSelectSuggestion_UnlockTrustedVault_NoPreview) {
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client, nullptr);
+
+  Suggestion suggestion(
+      autofill::SuggestionType::kPendingStateTrustedVaultError);
+  suggestion.main_text.value = test_username_;
+
+  EXPECT_CALL(*client.mock_driver(), PreviewSuggestion).Times(0);
+  password_autofill_manager_->DidSelectSuggestion(suggestion);
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+class PasswordAutofillManagerTrustedVaultTest
+    : public PasswordAutofillManagerTest {
+ protected:
+  ~PasswordAutofillManagerTrustedVaultTest() override {
+    autofill::test_api(autofill_driver_)
+        .SetLifecycleState(
+            autofill::AutofillDriver::LifecycleState::kPendingDeletion);
+  }
+
+  void SetUp() override {
+    PasswordAutofillManagerTest::SetUp();
+    autofill_driver_.set_frame_token(frame_token_);
+    client_.mock_driver()->set_last_committed_url(GURL(kMainFrameUrl));
+    ON_CALL(*client_.mock_driver(), GetAutofillDriver)
+        .WillByDefault(Return(&autofill_driver_));
+    ON_CALL(client_, GetPasswordManager)
+        .WillByDefault(Return(&password_manager_));
+    client_.test_sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(
+        true);
+    InitializePasswordAutofillManager(&client_, nullptr);
+  }
+
+  base::test::ScopedFeatureList feature_list_{
+      password_manager::features::kPasswordSignInInContextErrorResolution};
+  const autofill::LocalFrameToken frame_token_ =
+      autofill::test::MakeLocalFrameToken();
+  const autofill::FieldRendererId username_renderer_id_{10};
+  const autofill::FieldRendererId password_renderer_id_{11};
+  const autofill::FieldRendererId other_renderer_id_{12};
+  NiceMock<MockAutofillClient> autofill_client_;
+  autofill::TestAutofillDriver autofill_driver_{&autofill_client_};
+  NiceMock<TestPasswordManagerClient> client_;
+  NiceMock<MockPasswordManager> password_manager_;
+};
+
+TEST_F(PasswordAutofillManagerTrustedVaultTest,
+       GetTrustedVaultUnlockSuggestion_LoginForm) {
+  PasswordForm login_form;
+  login_form.username_element_renderer_id = username_renderer_id_;
+  login_form.password_element_renderer_id = password_renderer_id_;
+  ON_CALL(password_manager_,
+          GetParsedObservedForm(client_.mock_driver(), username_renderer_id_))
+      .WillByDefault(Return(&login_form));
+  ON_CALL(password_manager_,
+          GetParsedObservedForm(client_.mock_driver(), password_renderer_id_))
+      .WillByDefault(Return(&login_form));
+  ON_CALL(password_manager_,
+          GetParsedObservedForm(client_.mock_driver(), other_renderer_id_))
+      .WillByDefault(Return(nullptr));
+
+  std::optional<Suggestion> suggestion =
+      password_autofill_manager_->GetTrustedVaultUnlockSuggestion(
+          {frame_token_, username_renderer_id_});
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_EQ(suggestion->type,
+            autofill::SuggestionType::kPendingStateTrustedVaultError);
+
+  // Non-username fields or fields outside a parsed sign-in form return nullopt.
+  EXPECT_EQ(password_autofill_manager_->GetTrustedVaultUnlockSuggestion(
+                {frame_token_, password_renderer_id_}),
+            std::nullopt);
+  EXPECT_EQ(password_autofill_manager_->GetTrustedVaultUnlockSuggestion(
+                {frame_token_, other_renderer_id_}),
+            std::nullopt);
+}
+
+TEST_F(PasswordAutofillManagerTrustedVaultTest,
+       GetTrustedVaultUnlockSuggestion_SingleUsernameForm) {
+  PasswordForm single_username_form;
+  single_username_form.username_element_renderer_id = username_renderer_id_;
+  ASSERT_TRUE(single_username_form.IsSingleUsername());
+  ON_CALL(password_manager_,
+          GetParsedObservedForm(client_.mock_driver(), username_renderer_id_))
+      .WillByDefault(Return(&single_username_form));
+
+  std::optional<Suggestion> suggestion =
+      password_autofill_manager_->GetTrustedVaultUnlockSuggestion(
+          {frame_token_, username_renderer_id_});
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_EQ(suggestion->type,
+            autofill::SuggestionType::kPendingStateTrustedVaultError);
+}
+
+TEST_F(PasswordAutofillManagerTrustedVaultTest,
+       GetTrustedVaultUnlockSuggestion_OnlyForFallbackSuppressed) {
+  PasswordForm fallback_form;
+  fallback_form.only_for_fallback = true;
+  fallback_form.username_element_renderer_id = username_renderer_id_;
+  fallback_form.password_element_renderer_id = password_renderer_id_;
+  ON_CALL(password_manager_,
+          GetParsedObservedForm(client_.mock_driver(), username_renderer_id_))
+      .WillByDefault(Return(&fallback_form));
+
+  EXPECT_EQ(password_autofill_manager_->GetTrustedVaultUnlockSuggestion(
+                {frame_token_, username_renderer_id_}),
+            std::nullopt);
+}
+
+TEST_F(PasswordAutofillManagerTrustedVaultTest,
+       GetTrustedVaultUnlockSuggestion_SignupFormSuppressed) {
+  PasswordForm signup_form;
+  signup_form.username_element_renderer_id = username_renderer_id_;
+  signup_form.new_password_element_renderer_id = autofill::FieldRendererId(13);
+  ON_CALL(password_manager_,
+          GetParsedObservedForm(client_.mock_driver(), username_renderer_id_))
+      .WillByDefault(Return(&signup_form));
+
+  EXPECT_EQ(password_autofill_manager_->GetTrustedVaultUnlockSuggestion(
+                {frame_token_, username_renderer_id_}),
+            std::nullopt);
+}
+
+TEST_F(PasswordAutofillManagerTrustedVaultTest,
+       GetTrustedVaultUnlockSuggestion_MismatchedFrameToken) {
+  EXPECT_CHECK_DEATH(
+      password_autofill_manager_->GetTrustedVaultUnlockSuggestion(
+          {autofill::test::MakeLocalFrameToken(), username_renderer_id_}));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 }  // namespace password_manager

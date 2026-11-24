@@ -8,11 +8,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -49,6 +51,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
@@ -65,6 +68,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -276,8 +280,24 @@ void PasswordAutofillManager::OnWebauthnInlineQrCodeSuggestionShown() {
 
 std::optional<autofill::Suggestion>
 PasswordAutofillManager::GetTrustedVaultUnlockSuggestion(
-    const autofill::FieldGlobalId& /*field_id*/) const {
-  return std::nullopt;
+    const autofill::FieldGlobalId& field_id) const {
+  if (const autofill::AutofillDriver* autofill_driver =
+          password_manager_driver_->GetAutofillDriver()) {
+    CHECK_EQ(autofill_driver->GetFrameToken(), field_id.frame_token);
+  }
+  const PasswordManagerInterface* password_manager =
+      password_client_->GetPasswordManager();
+  if (!password_manager) {
+    return std::nullopt;
+  }
+  const PasswordForm* form = password_manager->GetParsedObservedForm(
+      password_manager_driver_, field_id.renderer_id);
+  if (!form || form->only_for_fallback ||
+      (!form->HasPasswordElement() && !form->IsSingleUsername()) ||
+      form->username_element_renderer_id != field_id.renderer_id) {
+    return std::nullopt;
+  }
+  return suggestion_generator_.GetTrustedVaultUnlockSuggestion();
 }
 
 void PasswordAutofillManager::OnSuggestionsShown(
@@ -426,8 +446,10 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           signin_metrics::AccessPoint::kAutofillDropdown);
       break;
     case autofill::SuggestionType::kPendingStateTrustedVaultError:
-      // Interaction logic is implemented in a follow-up CL once
-      // PasswordManagerClient::StartTrustedVaultKeyRetrieval is introduced.
+      // TODO(crbug.com/570520925): Use kPasswordAutofillDropdown once added.
+      password_client_->StartTrustedVaultKeyRetrieval(
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::
+              kPasswordManagerSettings);
       break;
     case autofill::SuggestionType::kIdentityCredential: {
       if (const autofill::IdentityCredentialDelegate*
