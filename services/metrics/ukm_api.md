@@ -35,10 +35,16 @@ Any events and metrics you collect need to be defined in
     people reading query results. Precise measurements of user actions timing,
     e.g. in milliseconds, require bucketing to be applied, for instance using
     [GetExponentialBucketMinForFineUserTiming](https://source.chromium.org/chromium/chromium/src/+/main:services/metrics/public/cpp/metrics_utils.h;l=22;drc=098756533733ea50b2dcb1c40d9a9e18d49febbe).
-*   If an event will only happen once per Navigation, it can be marked
-    `singular="true"` so that the generated proto definition defines the field
-    as "optional" instead of "repeated". If multiple such events are attempted,
-    it's undefined which one will be kept.
+*   If an event conceptually happens once per source, it can be marked
+    `singular="true"` so that the server-side generated protobuf defines the
+    field as singular (`optional`) instead of `repeated`. Note that
+    `singular="true"` only affects server-side log representation: multiple
+    client emissions for the same `SourceId` have distinct metric fields merged
+    into one event server-side, while duplicate emissions of the *same* metric
+    overwrite each other in unspecified order across reports. If you want the
+    client itself to buffer updates and record only the latest values once on
+    destruction (browser process only), use `ukm::SingularUkmEntry` (see
+    [Singular UKM Events](#singular-ukm-events)).
 
 ### Example
 
@@ -57,6 +63,11 @@ Any events and metrics you collect need to be defined in
   <metric name="GoatType" enum="GoatType">
     <summary>
       The type of goat that was teleported.
+    </summary>
+  </metric>
+  <metric name="TeleportSucceeded" enum="Boolean">
+    <summary>
+      Whether the goat teleportation succeeded.
     </summary>
   </metric>
 </event>
@@ -230,15 +241,42 @@ UKM identifies navigations by their source ID and you'll need to associate an ID
 
 Prefer using `ukm::SourceId` if only the underlying int64 value is required to identify a source and is used in Mojo interface, and no type conversion needs to be performed. If additional source type information is needed, `ukm::SourceIdObj` can be used.
 
-The main method for getting an existing ID is by converting from the navigation ID:
+The main methods for getting an existing `ukm::SourceId` are:
 
-```cpp
-ukm::SourceId source_id = render_frame_host->GetPageUkmSourceId();
-ukm::SourceId source_id = ukm::ConvertToSourceId(
-    navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-```
+*   **Browser process (`content/`)**:
+    ```cpp
+    // From a committed RenderFrameHost:
+    ukm::SourceId source_id = render_frame_host->GetPageUkmSourceId();
 
-Some events however occur in the background, and a navigation ID does not exist. In that case, you can use the `ukm::UkmBackgroundRecorderService` to check whether the event can be recorded. This is achieved by using the History Service to determine whether the event's origin is still present in the user profile.
+    // From an in-flight or committing NavigationHandle:
+    ukm::SourceId source_id = navigation_handle->GetNextPageUkmSourceId();
+    ```
+    Prefer `navigation_handle->GetNextPageUkmSourceId()` over manually calling
+    `ukm::ConvertToSourceId(navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID)`,
+    as `GetNextPageUkmSourceId()` handles subframe, same-document, and
+    back-forward cache navigations. Note that for prerender activations it
+    returns a different ID than the eventual `GetPageUkmSourceId()`; see
+    [/content/browser/preloading/prerender/README.md](/content/browser/preloading/prerender/README.md#ukm-source-ids).
+*   **Blink / renderer process**:
+    ```cpp
+    ukm::SourceId source_id = document->UkmSourceID();
+    // Or from an ExecutionContext:
+    ukm::SourceId source_id = execution_context->UkmSourceID();
+    ```
+*   **iOS (`web::WebState`)** (from
+    [/components/ukm/ios/ukm_url_recorder.h](/components/ukm/ios/ukm_url_recorder.h)):
+    ```cpp
+    ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state);
+    ```
+*   **Events not tied to a URL** (e.g. session- or report-level metrics):
+    ```cpp
+    ukm::SourceId source_id = ukm::NoURLSourceId();
+    ```
+
+Some events occur in the background where an active navigation or frame does not
+exist. In that case, you can use `ukm::UkmBackgroundRecorderService` to check
+whether the event can be recorded. This uses the History Service to determine
+whether the event's origin is still present in the user profile.
 
 ```cpp
 // Add the service as a dependency in your service's constructor.
@@ -261,15 +299,15 @@ void DidGetBackgroundSourceId(std::optional<ukm::SourceId> source_id) {
 }
 ```
 
-For the remaining cases you may need to temporarily create your own IDs and associate the URL with them. However we currently prefer that this method is not used, and if you need to set up the URL yourself, please email the OWNERS of components/ukm.
-Example:
-
-```cpp
-ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-ukm_recorder->UpdateSourceURL(source_id, main_frame_url);
-```
-
-You will also need to add your class as a friend of UkmRecorder in order to use this private API.
+For approved non-navigation URL sources (such as extensions, notifications,
+redirects, payment apps, or Federated Credential Management), `ukm::UkmRecorder`
+provides dedicated `SourceIdType`s and `base::PassKey`-guarded static helpers
+(e.g. `GetSourceIdForRedirectUrl()`, `GetSourceIdForExtensionUrl()`,
+`GetSourceIdForNotificationEvent()` in
+[/services/metrics/public/cpp/ukm_recorder.h](/services/metrics/public/cpp/ukm_recorder.h))
+instead of adding `friend` classes that call `UpdateSourceURL()` directly on
+`DEFAULT`-typed source IDs. New uses of custom URL-backed source IDs must be
+approved by the UKM owners and go through UKM privacy review.
 
 ### Create Events
 
@@ -305,9 +343,32 @@ To avoid having UKM report becoming unbounded in size, an upper limit is placed 
 
 For data quality purposes, if you have the option to record an event from either the browser process or a renderer process, prefer the former. Because renderer processes are not trusted, events recorded in them are more complex to attribute to the corresponding browser-side navigations. Prior to Chrome version 149.0.7812.0, this was done using the `DocumentCreated` event. Starting from Chrome version 149.0.7812.0, sources representing blink Documents directly contain their parent navigation URLs in the `resolved_urls` field (and the `DocumentCreated` event is no longer sent to server or recorded in UKM logs). This allows direct, simplified attribution without the limitations and query performance overhead of the legacy `DocumentCreated` join method (see [go/ukm-readable-guide](http://go/ukm-readable-guide#processing-events-attached-to-blink-document-sources)).
 
+### Recording from Java (Android)
+
+In Android browser-process Java code, use `org.chromium.components.ukm.UkmRecorder`
+([/components/ukm/android/java/src/org/chromium/components/ukm/UkmRecorder.java](/components/ukm/android/java/src/org/chromium/components/ukm/UkmRecorder.java))
+with a non-null, non-destroyed `WebContents` on the UI thread:
+
+```java
+import org.chromium.components.ukm.UkmRecorder;
+
+new UkmRecorder(webContents, "Goat.Teleported")
+    .addMetric("DurationSeconds", durationSeconds)
+    .addBooleanMetric("TeleportSucceeded")
+    .record();
+```
+
+`addBooleanMetric(name)` records a boolean metric with an implied value of `1`
+(`true`).
+
 ### Singular UKM Events
 
-The Singular UKM Entry provides a type safe API for updating metric fields of an event where only the latest metric values are recorded. The Singular UKM Entry must be used and destroyed on the same sequence it was created. Currently, only recording from the browser process is supported.
+Unlike `singular="true"` in `ukm.xml` (which only controls server-side protobuf
+cardinality), `ukm::SingularUkmEntry` provides a client-side type-safe API for
+updating metric fields of an event over time so that only the latest entry is
+recorded once when `entry` is destroyed. The `SingularUkmEntry` and its
+`EntryBuilder`s must be used and destroyed on the same sequence where it was
+created. Currently, only recording from the browser process is supported.
 
 Example:
 
@@ -378,11 +439,43 @@ In the above screenshot, the value in the right column is the web feature id.
 
 ## Unit Testing
 
-You can pass your code a `TestUkmRecorder` (see [//components/ukm/test_ukm_recorder.h](https://cs.chromium.org/chromium/src/components/ukm/test_ukm_recorder.h)) and then use the methods it provides to test that your data records correctly.
+For code that records via `ukm::UkmRecorder::Get()` in the browser process,
+instantiate a `ukm::TestAutoSetUkmRecorder` (from
+[//components/ukm/test_ukm_recorder.h](https://cs.chromium.org/chromium/src/components/ukm/test_ukm_recorder.h)),
+which automatically registers itself as the global `UkmRecorder` for its
+lifetime. If your code instead accepts an explicit `ukm::UkmRecorder*`, you can
+pass a `ukm::TestUkmRecorder` directly. Use the generated `kEntryName` and
+`k<Metric>Name` constants from `ukm_builders.h` to verify recorded entries:
+
+```cpp
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+
+ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+// Trigger the code under test...
+TeleportGoat();
+
+auto entries = test_ukm_recorder.GetEntriesByName(
+    ukm::builders::Goat_Teleported::kEntryName);
+ASSERT_EQ(entries.size(), 1u);
+test_ukm_recorder.ExpectEntrySourceHasUrl(entries[0],
+                                          GURL("https://example.com/"));
+test_ukm_recorder.ExpectEntryMetric(
+    entries[0], ukm::builders::Goat_Teleported::kDurationSecondsName, 5);
+```
 
 ## Adding UKMs in Every Report
 
-Certain information may be useful to be included on every uploaded UKM report. This may be applicable if your information is always "available" in some sense, as opposed to triggered/computed at a particular instance, which is the default. In this case, the best way to proceed is to set up a [MetricsProvider](https://source.chromium.org/chromium/src/components/metrics/metrics_provider.h). The new Provider should implement the `ProvideCurrentSessionUKMData()` method. Record a UKM Event within that implementation, and it will be recorded exactly once per UKM report, immediately before the information is uploaded.
+Certain information may be useful to be included on every uploaded UKM report. This may be applicable if your information is always "available" in some sense, as opposed to triggered/computed at a particular instance, which is the default. In this case, the best way to proceed is to set up a [MetricsProvider](https://source.chromium.org/chromium/src/components/metrics/metrics_provider.h). The new Provider should implement the `ProvideCurrentSessionUKMData()` method and record the UKM event using `ukm::NoURLSourceId()` and `ukm::UkmRecorder::Get()`; it will be recorded once per UKM report immediately before the report is serialized for upload:
+
+```cpp
+void MyMetricsProvider::ProvideCurrentSessionUKMData() {
+  ukm::builders::MySessionEvent(ukm::NoURLSourceId())
+      .SetMyMetric(ComputeCurrentValue())
+      .Record(ukm::UkmRecorder::Get());
+}
+```
 
 ## Recording Information about Subframes URLs via Categorization
 
