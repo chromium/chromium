@@ -366,10 +366,13 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   protected accessor isErrorPageVisible_: boolean = false;
   // Whether no queries have been submitted in the current AIM thread. This
-  // can be undefined on initial load to prevent the composebox from flashing
-  // briefly before the zero state is rendered.
-  protected accessor isZeroState_: boolean =
-      loadTimeData.getBoolean('isZeroState');
+  // is undefined on initial load if the browser doesn't know the state yet, to
+  // prevent the composebox from flashing briefly before the zero state is
+  // rendered.
+  protected accessor isZeroState_: boolean|undefined =
+      loadTimeData.getBoolean('isZeroStateKnownOnInit') ?
+      loadTimeData.getBoolean('isZeroState') :
+      undefined;
   protected accessor enableNativeZeroStateSuggestions_: boolean =
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   protected accessor inNlm_: boolean = false;

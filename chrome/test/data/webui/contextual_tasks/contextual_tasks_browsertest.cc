@@ -150,6 +150,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_ComposeboxHiddenUntilZeroStateKnown) {
+  RunTest("contextual_tasks/app_test.js",
+          "runMochaTest('ContextualTasksAppTest', "
+          "'composebox stays hidden until zero state is known')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_ComposeboxShownOnLoadWhenZeroStateKnown) {
+  RunTest("contextual_tasks/app_test.js",
+          "runMochaTest('ContextualTasksAppTest', "
+          "'composebox is shown on load when zero state is known')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
                        App_NewThreadClickWhenThreadFrameSrcIsEmpty) {
   RunTest("contextual_tasks/app_test.js",
           "runMochaTest('ContextualTasksAppTest', "

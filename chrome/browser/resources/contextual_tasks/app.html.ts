@@ -84,7 +84,8 @@ ${this.isErrorDialogVisible_ ? html`
   <contextual-tasks-composebox id="composebox"
       style="${this.getComposeboxBoundsStyles()}"
       ?hidden="${this.isComposeboxHidden_()}"
-      .isZeroState="${this.isZeroState_}" .isSidePanel="${!this.isShownInTab_}"
+      .isZeroState="${!!this.isZeroState_}"
+      .isSidePanel="${!this.isShownInTab_}"
       .isLensOverlayShowing="${this.isLensOverlayShowing_}"
       .isOverlayOpenForAimVisualSearch="${
           this.isOverlayOpenForAimVisualSearch_}"

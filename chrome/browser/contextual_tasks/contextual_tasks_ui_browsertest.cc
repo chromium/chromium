@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -792,6 +793,61 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
                zoom_map->GetZoomLevelForHostAndScheme("https", "google.com") -
                new_zoom) < 0.01;
   }));
+}
+
+namespace {
+
+// Returns whether the page was told the zero state at load time.
+bool IsZeroStateKnownOnLoad(content::WebContents* web_contents) {
+  return content::EvalJs(
+             web_contents,
+             "import('chrome://resources/js/load_time_data.js').then("
+             "    m => m.loadTimeData.getBoolean('isZeroStateKnownOnInit'))")
+      .ExtractBool();
+}
+
+}  // namespace
+
+// A task without a creation URL only resolves its URL after the page loads, so
+// the page must be told that the zero state isn't known yet.
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       ZeroStateUnknownOnLoadWithoutCreationUrl) {
+  auto* tasks_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  auto* ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  const base::Uuid task_id = tasks_service->CreateTask().GetTaskId();
+  ASSERT_FALSE(ui_service->GetCreationUrlForTask(task_id));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), ui_service->GetContextualTaskUrlForTask(task_id)));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  EXPECT_FALSE(IsZeroStateKnownOnLoad(web_contents));
+}
+
+// A task with a creation URL has a known zero state when the page loads.
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       ZeroStateKnownOnLoadWithCreationUrl) {
+  auto* tasks_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  auto* ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  const base::Uuid task_id = tasks_service->CreateTask().GetTaskId();
+  ui_service->SetInitialUrlForTask(
+      task_id, ui_service->GetDefaultAiPageUrlForTask(task_id));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), ui_service->GetContextualTaskUrlForTask(task_id)));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  EXPECT_TRUE(IsZeroStateKnownOnLoad(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,

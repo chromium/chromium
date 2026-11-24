@@ -1,8 +1,11 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/base64url.h"
@@ -10,7 +13,9 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
@@ -112,8 +117,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -1121,6 +1131,119 @@ class ContextualTasksPinnedToolbarInteractiveUiTest
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 };
+
+namespace {
+
+// Script that watches the Contextual Tasks page on every animation frame while
+// it opens, and records glitches that are only visible for a few frames.
+constexpr char kZeroStateOpenProbeScript[] =
+    "window.zeroStateOpenProbe = {"
+    "  sawComposeboxBeforeZeroState: false,"
+    "  maxScrollOffset: 0,"
+    "  framesInZeroState: 0,"
+    "};"
+    "(function tick() {"
+    "  const probe = window.zeroStateOpenProbe;"
+    "  const app = document.querySelector('contextual-tasks-app');"
+    "  if (app && app.shadowRoot) {"
+    "    const composebox = app.shadowRoot.querySelector('#composebox');"
+    "    if (app.isZeroState_) {"
+    "      probe.framesInZeroState++;"
+    "    } else if (composebox && !composebox.hidden) {"
+    "      probe.sawComposeboxBeforeZeroState = true;"
+    "    }"
+    "    probe.maxScrollOffset = Math.max("
+    "        probe.maxScrollOffset,"
+    "        window.scrollY + document.body.scrollTop);"
+    "  }"
+    "  requestAnimationFrame(tick);"
+    "})();";
+
+// Installs `kZeroStateOpenProbeScript` in every chrome:// page as soon as it
+// commits, so that the probe sees the page's first frames.
+class ZeroStateOpenProbeInstaller {
+ public:
+  ZeroStateOpenProbeInstaller()
+      : subscription_(content::RegisterWebContentsCreationCallback(
+            base::BindRepeating(&ZeroStateOpenProbeInstaller::OnCreated,
+                                base::Unretained(this)))) {}
+
+ private:
+  class Observer : public content::WebContentsObserver {
+   public:
+    explicit Observer(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+
+    // content::WebContentsObserver:
+    void DidFinishNavigation(content::NavigationHandle* handle) override {
+      if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
+          handle->IsSameDocument() ||
+          !handle->GetURL().SchemeIs(content::kChromeUIScheme)) {
+        return;
+      }
+      web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+          base::UTF8ToUTF16(std::string_view(kZeroStateOpenProbeScript)),
+          base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
+    }
+  };
+
+  void OnCreated(content::WebContents* web_contents) {
+    observers_.push_back(std::make_unique<Observer>(web_contents));
+  }
+
+  std::vector<std::unique_ptr<Observer>> observers_;
+  base::CallbackListSubscription subscription_;
+};
+
+}  // namespace
+
+// This tests the following CUJ:
+//  (1) User has a new tab open, with the Contextual Tasks toolbar button
+//      pinned.
+//  (2) User clicks the pinned Contextual Tasks toolbar button.
+//  (3) Contextual Tasks side panel opens in the zero state. While it opens,
+//      the composebox is never shown outside of the zero state, and the page
+//      never scrolls its toolbar out of view.
+IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
+                       OpensInZeroStateWithoutComposeboxFlashOrScroll) {
+  SkipIfIncognito("Toolbar pinning is not supported in Incognito");
+
+  // Enough frames in the zero state for its entrance animations to finish.
+  constexpr int kZeroStateFramesToWatch = 90;
+
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
+      ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL), -1, true);
+
+  std::unique_ptr<ZeroStateOpenProbeInstaller> probe_installer;
+  RunTestSequence(
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        probe_installer = std::make_unique<ZeroStateOpenProbeInstaller>();
+      }),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId));
+
+  content::WebContents* panel_contents =
+      ContextualTasksPanelController::From(browser())->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents);
+
+  auto probe_value = [&](const std::string& name) {
+    return content::EvalJs(panel_contents,
+                           "window.zeroStateOpenProbe ? "
+                           "Number(window.zeroStateOpenProbe." +
+                               name + ") : -1");
+  };
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return probe_value("framesInZeroState").ExtractInt() >=
+           kZeroStateFramesToWatch;
+  }));
+
+  EXPECT_EQ(0, probe_value("sawComposeboxBeforeZeroState"))
+      << "The composebox was shown before the page was in the zero state.";
+  EXPECT_EQ(0, probe_value("maxScrollOffset"))
+      << "The page scrolled while opening in the zero state.";
+}
 
 // This tests the following CUJ:
 //  (1) User opens Customize Chrome toolbar section to pin Contextual Tasks.
