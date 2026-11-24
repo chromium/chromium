@@ -1926,6 +1926,28 @@ NavigationRequest::NavigationRequest(
     }
   }
 
+  // Disclose the full URL in COEP reports only if it was requested by a
+  // document same-origin with the parent, which therefore already knows it.
+  // Only a new renderer-initiated navigation gets its URL from the initiator.
+  // Others (history, reload, restore...) get it from session history.
+  //
+  // Best effort: this may miss some navigations whose URL did come from a
+  // same-origin initiator. That's fine, they only get a less detailed report.
+  // What must not happen is disclosing a URL the parent didn't know.
+  RenderFrameHostImpl* parent = GetParentFrameOrOuterDocument();
+  RenderFrameHostImpl* initiator = GetInitiatorDocumentRenderFrameHost();
+  if (!browser_initiated &&
+      common_params_->navigation_type ==
+          blink::mojom::NavigationType::DIFFERENT_DOCUMENT &&
+      !common_params_->is_history_navigation_in_new_child_frame && parent &&
+      initiator &&
+      initiator->GetLastCommittedOrigin().IsSameOriginWith(
+          parent->GetLastCommittedOrigin())) {
+    coep_report_url_ = original_url_;
+  } else {
+    coep_report_url_ = original_url_.DeprecatedGetOriginAsURL();
+  }
+
   ComputeDownloadPolicy();
 
   // Ensure the blink::RuntimeFeatureStateContext is initialized.
@@ -3213,7 +3235,7 @@ void NavigationRequest::BeginNavigationImpl() {
       // [spec]: https://html.spec.whatwg.org/C/#process-a-navigate-response
       // 4. if [...] the result of checking a navigation response's adherence to
       // its embedder policy [...], then set failure to true.
-      if (!CheckResponseAdherenceToCoep(common_params_->url)) {
+      if (!CheckResponseAdherenceToCoep()) {
         OnRequestFailedInternal(network::URLLoaderCompletionStatus(
                                     network::mojom::BlockedByResponseReason::
                                         kCoepFrameResourceNeedsCoepHeader),
@@ -5573,7 +5595,7 @@ void NavigationRequest::OnResponseStarted(
   // [spec]: https://html.spec.whatwg.org/C/#process-a-navigate-response
   // 4. if [...] the result of checking a navigation response's adherence to its
   // embedder policy [...], then set failure to true.
-  if (!CheckResponseAdherenceToCoep(url)) {
+  if (!CheckResponseAdherenceToCoep()) {
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(
                                 network::mojom::BlockedByResponseReason::
                                     kCoepFrameResourceNeedsCoepHeader),
@@ -11562,7 +11584,7 @@ NavigationRequest::ComputeIntegrityPolicies() {
 //
 // Return whether the child's |coep| is compatible with its parent's COEP. It
 // also sends COEP reports if needed.
-bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
+bool NavigationRequest::CheckResponseAdherenceToCoep() {
   const auto& coep =
       policy_container_builder_->FinalPolicies().cross_origin_embedder_policy;
 
@@ -11586,7 +11608,7 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
   if (CoepBlockIframe(parent_coep.report_only_value, coep.value,
                       is_credentialless())) {
     if (parent_coep_reporter) {
-      parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
+      parent_coep_reporter->QueueNavigationReport(coep_report_url_,
                                                   /*report_only=*/true);
     }
   }
@@ -11602,7 +11624,7 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
   // response, "navigation", parentPolicy's reporting endpoint, "enforce", and
   // target's container document's relevant settings object.
   if (parent_coep_reporter) {
-    parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
+    parent_coep_reporter->QueueNavigationReport(coep_report_url_,
                                                 /*report_only=*/false);
   }
 
@@ -11631,7 +11653,7 @@ NavigationRequest::EnforceCOEP() {
     return std::nullopt;
   }
   return network::CrossOriginResourcePolicy::IsNavigationBlocked(
-      url, redirect_chain_[0], parent_frame->GetLastCommittedOrigin(),
+      url, coep_report_url_, parent_frame->GetLastCommittedOrigin(),
       *response_head_, request_destination(),
       parent_frame->cross_origin_embedder_policy(),
       parent_frame->coep_reporter());

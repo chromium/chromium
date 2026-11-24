@@ -2599,7 +2599,7 @@ class CONTENT_EXPORT NavigationRequest
   //
   // Return whether the response's COEP is compatible with its parent's COEP. It
   // also sends COEP reports if needed.
-  bool CheckResponseAdherenceToCoep(const GURL& url);
+  bool CheckResponseAdherenceToCoep();
 
   std::optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
 
@@ -3878,6 +3878,15 @@ class CONTENT_EXPORT NavigationRequest
   // checks to avoid using sanitized versions sent to the renderer in
   // `commit_params`.
   GURL original_url_;
+
+  // The URL to use in COEP violation reports sent to the parent.
+  //
+  // Goal: the parent must not learn anything new from these reports, such as
+  // a cross-origin redirect target restored by a history navigation, or the
+  // URL picked by a cross-origin child. This is the full requested URL only
+  // if a document same-origin with the parent requested it, and its origin
+  // otherwise.
+  GURL coep_report_url_;
 
   // Set to true if `this` started as a same-document navigation but couldn't
   // commit, and was restarted as a cross-document navigation. See
