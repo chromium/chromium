@@ -31,9 +31,11 @@
   // No op.
 }
 
-- (void)fetchKeysForIdentity:(CWVIdentity*)identity
-                  completion:(void (^)(NSArray<NSData*>* _Nullable,
-                                       NSError* _Nullable))completion {
+- (void)
+    fetchKeysWithVersionsForIdentity:(CWVIdentity*)identity
+                          completion:
+                              (void (^)(NSArray<CWVTrustedVaultKey*>* _Nullable,
+                                        NSError* _Nullable))completion {
   NSError* error = [NSError errorWithDomain:@"org.chromium.ios-web-view-shell"
                                        code:-1
                                    userInfo:nil];

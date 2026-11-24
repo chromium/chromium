@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVIdentity;
+@class CWVTrustedVaultKey;
 @class CWVTrustedVaultObserver;
 
 // Provides trusted vault functionality to the trusted vault client.
@@ -23,16 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 // in |addTrustedVaultObserver:|. To ensure the correct |observer| is removed,
 // you must compare them using -[NSObject isEqual:].
 - (void)removeTrustedVaultObserver:(CWVTrustedVaultObserver*)observer;
-
-// Fetch the necessary keys for the trusted vault.
-// |identity| The identity whose keys are to be fetched.
-// |completion| To be called whether key fetching is successful or not. NSArray
-// should be a list of opaque key data whose format is already privately
-// established internally. If successful, NSArray will be non-nil and NSError
-// will be nil. Otherwise, NSArray will be nil and NSError will be non-nil.
-- (void)fetchKeysForIdentity:(CWVIdentity*)identity
-                  completion:(void (^)(NSArray<NSData*>* _Nullable,
-                                       NSError* _Nullable))completion;
 
 // Marks the local keys as out of date.
 // |identity| The identity whose keys are to be marked stale.
@@ -55,6 +46,34 @@ NS_ASSUME_NONNULL_BEGIN
 // Clears local data belonging to |identity|, such as shared keys. This
 // excludes the physical client's key pair, which remains unchanged.
 - (void)clearLocalDataForForIdentity:(CWVIdentity*)identity;
+
+@optional
+
+// Fetches the shared keys and their versions for the trusted vault.
+// `identity` The identity whose keys are to be fetched.
+// `completion` To be called whether key fetching is successful or not. If
+// successful, `keys` will be non-nil and `error` will be nil. Otherwise,
+// `keys` will be nil and `error` will be non-nil.
+- (void)
+    fetchKeysWithVersionsForIdentity:(CWVIdentity*)identity
+                          completion:
+                              (void (^)(
+                                  NSArray<CWVTrustedVaultKey*>* _Nullable keys,
+                                  NSError* _Nullable error))completion;
+
+// Fetch the necessary keys for the trusted vault.
+// Deprecated: embedders should implement
+// `-fetchKeysWithVersionsForIdentity:completion:` instead.
+// TODO(crbug.com/588274186): Remove this method once embedders implement
+// `-fetchKeysWithVersionsForIdentity:completion:`.
+// `identity` The identity whose keys are to be fetched.
+// `completion` To be called whether key fetching is successful or not. NSArray
+// should be a list of opaque key data whose format is already privately
+// established internally. If successful, NSArray will be non-nil and NSError
+// will be nil. Otherwise, NSArray will be nil and NSError will be non-nil.
+- (void)fetchKeysForIdentity:(CWVIdentity*)identity
+                  completion:(void (^)(NSArray<NSData*>* _Nullable,
+                                       NSError* _Nullable))completion;
 
 @end
 
