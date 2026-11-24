@@ -46,6 +46,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -253,6 +254,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/589519186")
     public void testBeginDeclutter_DisablesAndEnablesArchivedSaveTabListTask() {
         finishLoading();
         mActivityTestRule.loadUrlInNewTab(
