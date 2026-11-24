@@ -5,12 +5,16 @@
 #include "third_party/blink/renderer/modules/ai/decision_model.h"
 
 #include "base/notreached.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_decision_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-test-utils.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -54,11 +58,44 @@ class MockAIDecisionModel : public mojom::blink::AIDecisionModel {
     last_input_ = input;
     call_count_++;
 
+    if (should_defer_next_decide_) {
+      should_defer_next_decide_ = false;
+      deferred_callback_ = std::move(callback);
+      deferred_decide_future_.SetValue();
+      return;
+    }
+
     if (next_error_) {
       std::move(callback).Run(base::unexpected(std::move(next_error_)));
       return;
     }
 
+    std::move(callback).Run(CreateDefaultResult());
+  }
+
+  void set_next_error(mojom::blink::AIDecisionModelDecideErrorPtr error) {
+    next_error_ = std::move(error);
+  }
+
+  void DeferNextDecide() {
+    deferred_decide_future_.Clear();
+    should_defer_next_decide_ = true;
+  }
+
+  [[nodiscard]] bool WaitForDeferredDecide() {
+    return deferred_decide_future_.Wait();
+  }
+
+  void FinishDeferredDecide() {
+    ASSERT_TRUE(deferred_callback_);
+    std::move(deferred_callback_).Run(CreateDefaultResult());
+  }
+
+  const String& last_input() const { return last_input_; }
+  int call_count() const { return call_count_; }
+
+ private:
+  static mojom::blink::AIDecisionModelResultPtr CreateDefaultResult() {
     auto result = mojom::blink::AIDecisionModelResult::New();
 
     auto decision = mojom::blink::AIDecisionModelDecision::New();
@@ -70,20 +107,14 @@ class MockAIDecisionModel : public mojom::blink::AIDecisionModel {
     decision->probabilities.push_back(
         mojom::blink::AIDecisionModelOptionProbability::New("false", 0.92f));
     result->decisions.push_back(std::move(decision));
-
-    std::move(callback).Run(std::move(result));
+    return result;
   }
 
-  void set_next_error(mojom::blink::AIDecisionModelDecideErrorPtr error) {
-    next_error_ = std::move(error);
-  }
-
-  const String& last_input() const { return last_input_; }
-  int call_count() const { return call_count_; }
-
- private:
   String last_input_;
   mojom::blink::AIDecisionModelDecideErrorPtr next_error_;
+  DecideCallback deferred_callback_;
+  base::test::TestFuture<void> deferred_decide_future_;
+  bool should_defer_next_decide_ = false;
   int call_count_ = 0;
   mojo::Receiver<mojom::blink::AIDecisionModel> receiver_;
 };
@@ -105,7 +136,8 @@ class DecisionModelTest : public testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<MockAIDecisionModel> mock_remote_;
 };
 
@@ -376,6 +408,253 @@ TEST_F(DecisionModelTest, DecideKeepsModelAliveAcrossGC) {
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(weak_model);
+}
+
+TEST_F(DecisionModelTest, DecideRecordsSuccessMetrics) {
+  V8TestingScope scope;
+  DecisionModel* model = CreateDecisionModel(scope.GetScriptState());
+  base::HistogramTester histogram_tester;
+
+  // Use a 16-bit string where CharactersSizeInBytes() != length().
+  const String kInput = String::FromUtf8("こんにちは");
+  ASSERT_FALSE(kInput.Is8Bit());
+  EXPECT_NE(kInput.CharactersSizeInBytes(), kInput.length());
+
+  mock_remote_->DeferNextDecide();
+  DummyExceptionStateForTesting exception_state;
+  auto promise =
+      model->decide(scope.GetScriptState(), kInput,
+                    DecisionModelDecideOptions::Create(), exception_state);
+  ASSERT_TRUE(mock_remote_->WaitForDeferredDecide());
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  mock_remote_->FinishDeferredDecide();
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  histogram_tester.ExpectUniqueSample(
+      "AI.Session.DecisionModel.PromptRequestSize", kInput.length(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "AI.Session.DecisionModel.PromptResponseStatus",
+      mojom::blink::ModelStreamingResponseStatus::kComplete, 1);
+  histogram_tester.ExpectTotalCount(
+      "AI.Session.DecisionModel.ResponseCompleteTime", 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "AI.Session.DecisionModel.ResponseCompleteTime", base::Milliseconds(250),
+      1);
+}
+
+TEST_F(DecisionModelTest, DecideRecordsErrorAndDisconnectMetrics) {
+  V8TestingScope scope;
+  DecisionModel* model = CreateDecisionModel(scope.GetScriptState());
+
+  // Explicit Mojo error records PromptRequestSize and the error status without
+  // ResponseCompleteTime.
+  {
+    base::HistogramTester histogram_tester;
+    mock_remote_->set_next_error(mojom::blink::AIDecisionModelDecideError::New(
+        mojom::blink::ModelStreamingResponseStatus::kErrorInputTooLarge,
+        mojom::blink::QuotaErrorInfo::New(/*requested=*/12000,
+                                          /*quota=*/10000)));
+
+    const String kInput = "Oversized request";
+    DummyExceptionStateForTesting exception_state;
+    auto promise =
+        model->decide(scope.GetScriptState(), kInput,
+                      DecisionModelDecideOptions::Create(), exception_state);
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsRejected());
+    ExpectDOMException(scope, tester.Value().V8Value(), "QuotaExceededError");
+
+    histogram_tester.ExpectUniqueSample(
+        "AI.Session.DecisionModel.PromptRequestSize", kInput.length(), 1);
+    histogram_tester.ExpectUniqueSample(
+        "AI.Session.DecisionModel.PromptResponseStatus",
+        mojom::blink::ModelStreamingResponseStatus::kErrorInputTooLarge, 1);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.ResponseCompleteTime", 0);
+  }
+
+  // Remote disconnect while a request is in flight records
+  // kErrorSessionDestroyed without ResponseCompleteTime.
+  {
+    base::HistogramTester histogram_tester;
+    mock_remote_->DeferNextDecide();
+
+    const String kInput = "In-flight disconnect";
+    DummyExceptionStateForTesting exception_state;
+    auto promise =
+        model->decide(scope.GetScriptState(), kInput,
+                      DecisionModelDecideOptions::Create(), exception_state);
+    ASSERT_TRUE(mock_remote_->WaitForDeferredDecide());
+    ASSERT_EQ(mock_remote_->call_count(), 2);
+
+    mock_remote_.reset();
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsRejected());
+    ExpectDOMException(scope, tester.Value().V8Value(), "InvalidStateError");
+
+    histogram_tester.ExpectUniqueSample(
+        "AI.Session.DecisionModel.PromptRequestSize", kInput.length(), 1);
+    histogram_tester.ExpectUniqueSample(
+        "AI.Session.DecisionModel.PromptResponseStatus",
+        mojom::blink::ModelStreamingResponseStatus::kErrorSessionDestroyed, 1);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.ResponseCompleteTime", 0);
+  }
+
+  // Subsequent decide() on an already-disconnected session throws synchronously
+  // without recording session metrics.
+  {
+    base::HistogramTester histogram_tester;
+    DummyExceptionStateForTesting exception_state;
+    model->decide(scope.GetScriptState(), "After disconnect",
+                  DecisionModelDecideOptions::Create(), exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kInvalidStateError);
+
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.PromptRequestSize", 0);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.PromptResponseStatus", 0);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.ResponseCompleteTime", 0);
+  }
+}
+
+TEST_F(DecisionModelTest, DecideSkipsMetricsOnValidationAndAbort) {
+  V8TestingScope scope;
+
+  // Pre-flight validation, pre-aborted signal, and destroyed session emit no
+  // session metrics.
+  {
+    DecisionModel* model = CreateDecisionModel(scope.GetScriptState());
+    base::HistogramTester histogram_tester;
+
+    DummyExceptionStateForTesting empty_exception_state;
+    model->decide(scope.GetScriptState(), "   ",
+                  DecisionModelDecideOptions::Create(), empty_exception_state);
+    EXPECT_TRUE(empty_exception_state.HadException());
+
+    AbortController* pre_aborted =
+        AbortController::Create(scope.GetScriptState());
+    pre_aborted->abort(scope.GetScriptState());
+    DecisionModelDecideOptions* pre_options =
+        DecisionModelDecideOptions::Create();
+    pre_options->setSignal(pre_aborted->signal());
+    {
+      v8::TryCatch try_catch(scope.GetIsolate());
+      DummyExceptionStateForTesting abort_exception_state;
+      model->decide(scope.GetScriptState(), "Aborted before send", pre_options,
+                    abort_exception_state);
+      EXPECT_TRUE(try_catch.HasCaught());
+    }
+
+    DummyExceptionStateForTesting destroy_exception_state;
+    model->destroy(scope.GetScriptState(), destroy_exception_state);
+    {
+      v8::TryCatch try_catch(scope.GetIsolate());
+      DummyExceptionStateForTesting destroyed_exception_state;
+      model->decide(scope.GetScriptState(), "After destroy",
+                    DecisionModelDecideOptions::Create(),
+                    destroyed_exception_state);
+      EXPECT_TRUE(try_catch.HasCaught());
+    }
+
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.PromptRequestSize", 0);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.PromptResponseStatus", 0);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.ResponseCompleteTime", 0);
+  }
+
+  // In-flight signal abort and session destroy record PromptRequestSize once
+  // per dispatched call, but skip PromptResponseStatus and
+  // ResponseCompleteTime.
+  {
+    DecisionModel* model = CreateDecisionModel(scope.GetScriptState());
+    DummyExceptionStateForTesting exception_state;
+
+    {
+      base::HistogramTester histogram_tester;
+      AbortController* in_flight =
+          AbortController::Create(scope.GetScriptState());
+      DecisionModelDecideOptions* in_flight_options =
+          DecisionModelDecideOptions::Create();
+      in_flight_options->setSignal(in_flight->signal());
+
+      mock_remote_->DeferNextDecide();
+      const String kFirstInput = "Aborted while pending";
+      auto first_promise = model->decide(scope.GetScriptState(), kFirstInput,
+                                         in_flight_options, exception_state);
+      ASSERT_TRUE(mock_remote_->WaitForDeferredDecide());
+      in_flight->abort(scope.GetScriptState());
+      mock_remote_->FinishDeferredDecide();
+      ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
+      first_tester.WaitUntilSettled();
+      EXPECT_TRUE(first_tester.IsRejected());
+
+      histogram_tester.ExpectUniqueSample(
+          "AI.Session.DecisionModel.PromptRequestSize", kFirstInput.length(),
+          1);
+      histogram_tester.ExpectTotalCount(
+          "AI.Session.DecisionModel.PromptResponseStatus", 0);
+      histogram_tester.ExpectTotalCount(
+          "AI.Session.DecisionModel.ResponseCompleteTime", 0);
+    }
+
+    {
+      base::HistogramTester histogram_tester;
+      mock_remote_->DeferNextDecide();
+      const String kSecondInput = "Destroyed while pending";
+      auto second_promise =
+          model->decide(scope.GetScriptState(), kSecondInput,
+                        DecisionModelDecideOptions::Create(), exception_state);
+      ASSERT_TRUE(mock_remote_->WaitForDeferredDecide());
+      model->destroy(scope.GetScriptState(), exception_state);
+      ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
+      second_tester.WaitUntilSettled();
+      EXPECT_TRUE(second_tester.IsRejected());
+
+      histogram_tester.ExpectUniqueSample(
+          "AI.Session.DecisionModel.PromptRequestSize", kSecondInput.length(),
+          1);
+      histogram_tester.ExpectTotalCount(
+          "AI.Session.DecisionModel.PromptResponseStatus", 0);
+      histogram_tester.ExpectTotalCount(
+          "AI.Session.DecisionModel.ResponseCompleteTime", 0);
+    }
+  }
+
+  // ExecutionContext teardown while a request is in flight records
+  // PromptRequestSize, without emitting a spurious kErrorSessionDestroyed
+  // response status when HeapMojoRemote resets on context destruction.
+  {
+    base::HistogramTester histogram_tester;
+    const String kThirdInput = "Context destroyed while pending";
+    {
+      V8TestingScope inner_scope;
+      DecisionModel* model = CreateDecisionModel(inner_scope.GetScriptState());
+      mock_remote_->DeferNextDecide();
+      DummyExceptionStateForTesting exception_state;
+      [[maybe_unused]] auto pending_promise =
+          model->decide(inner_scope.GetScriptState(), kThirdInput,
+                        DecisionModelDecideOptions::Create(), exception_state);
+      ASSERT_TRUE(mock_remote_->WaitForDeferredDecide());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "AI.Session.DecisionModel.PromptRequestSize", kThirdInput.length(), 1);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.PromptResponseStatus", 0);
+    histogram_tester.ExpectTotalCount(
+        "AI.Session.DecisionModel.ResponseCompleteTime", 0);
+  }
 }
 
 namespace {

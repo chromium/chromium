@@ -48,8 +48,13 @@ class ResolverWithAbortSignal final
     visitor->Trace(abort_handle_);
   }
 
+  // Returns true once settled, aborted, or detached on `ExecutionContext`
+  // destruction (including while `NotifyContextDestroyed()` is notifying
+  // earlier observers such as `HeapMojoRemote`, before `ContextDestroyed()`
+  // clears `resolver_`).
   bool aborted() const {
-    return !resolver_ || (abort_signal_ && abort_signal_->aborted());
+    return !resolver_ || !resolver_->GetExecutionContext() ||
+           (abort_signal_ && abort_signal_->aborted());
   }
 
   ScriptPromise<T> Promise() {

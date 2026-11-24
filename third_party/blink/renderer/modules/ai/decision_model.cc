@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/modules/ai/decision_model.h"
 
 #include "base/check_deref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_backend.h"
@@ -547,6 +550,10 @@ DecisionModel::decide(ScriptState* script_state,
     return ScriptPromise<IDLRecord<IDLString, DecisionModelDecision>>();
   }
 
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kDecisionModel),
+                             static_cast<int>(input.length()));
+
   using DecideResult = IDLRecord<IDLString, DecisionModelDecision>;
   auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<DecideResult>>(
       script_state, signal);
@@ -557,9 +564,10 @@ DecisionModel::decide(ScriptState* script_state,
   decision_model_remote_->Decide(
       input,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          BindOnce(
+          blink::BindOnce(
               [](DecisionModel*,
                  ResolverWithAbortSignal<DecideResult>* resolver,
+                 base::TimeTicks start_time,
                  base::expected<mojom::blink::AIDecisionModelResultPtr,
                                 mojom::blink::AIDecisionModelDecideErrorPtr>
                      result) {
@@ -567,12 +575,25 @@ DecisionModel::decide(ScriptState* script_state,
                   return;
                 }
                 if (!result.has_value()) {
+                  base::UmaHistogramEnumeration(
+                      AIMetrics::GetAISessionResponseStatusMetricName(
+                          AIMetrics::AISessionType::kDecisionModel),
+                      result.error()->status);
                   resolver->Reject(
                       ConvertModelStreamingResponseErrorToDOMException(
                           result.error()->status,
                           std::move(result.error()->quota_error_info)));
                   return;
                 }
+
+                base::UmaHistogramEnumeration(
+                    AIMetrics::GetAISessionResponseStatusMetricName(
+                        AIMetrics::AISessionType::kDecisionModel),
+                    mojom::blink::ModelStreamingResponseStatus::kComplete);
+                base::UmaHistogramMediumTimes(
+                    AIMetrics::GetAISessionResponseCompleteTimeMetricName(
+                        AIMetrics::AISessionType::kDecisionModel),
+                    base::TimeTicks::Now() - start_time);
 
                 HeapVector<std::pair<String, Member<DecisionModelDecision>>>
                     decisions_record;
@@ -598,7 +619,8 @@ DecisionModel::decide(ScriptState* script_state,
                 }
                 resolver->Resolve(decisions_record);
               },
-              WrapPersistent(this), WrapPersistent(resolver)),
+              WrapPersistent(this), WrapPersistent(resolver),
+              base::TimeTicks::Now()),
           base::unexpected(mojom::blink::AIDecisionModelDecideError::New(
               ModelStreamingResponseStatus::kErrorSessionDestroyed,
               /*quota_error_info=*/nullptr))));
