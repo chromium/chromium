@@ -113,7 +113,9 @@ public class ServiceTabLauncher {
             return;
         }
 
-        boolean canLaunchInApp = canLaunchInApp(isRendererInitiated, initiatorOrigin, url);
+        boolean canLaunchInApp =
+                canLaunchInApp(
+                        profile.isOffTheRecord(), isRendererInitiated, initiatorOrigin, url);
 
         dispatchLaunch(
                 requestId,
@@ -130,13 +132,20 @@ public class ServiceTabLauncher {
 
     /**
      * Determines whether a navigation may be captured into an installed web app (WebAPK, TWA, or
-     * standalone window). Renderer-initiated navigations must be strictly same-origin with the
-     * target to prevent cross-origin service workers from bypassing navigation initiator tracking
-     * and SameSite cookie restrictions.
+     * standalone window). Off-the-record navigations must stay in an Incognito browser tab rather
+     * than escaping into a regular-profile web app, and renderer-initiated navigations must be
+     * strictly same-origin with the target to prevent cross-origin service workers from bypassing
+     * navigation initiator tracking and SameSite cookie restrictions.
      */
     @VisibleForTesting
     static boolean canLaunchInApp(
-            boolean isRendererInitiated, @Nullable Origin initiatorOrigin, GURL targetUrl) {
+            boolean incognito,
+            boolean isRendererInitiated,
+            @Nullable Origin initiatorOrigin,
+            GURL targetUrl) {
+        if (incognito) {
+            return false;
+        }
         if (!isRendererInitiated) {
             return true;
         }

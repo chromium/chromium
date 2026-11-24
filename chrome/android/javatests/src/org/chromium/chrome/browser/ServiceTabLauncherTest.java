@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -131,9 +132,13 @@ public final class ServiceTabLauncherTest {
     }
 
     private void waitForRequest(String path) {
+        waitForRequest(sWebServer, path);
+    }
+
+    private void waitForRequest(TestWebServer webServer, String path) {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    Criteria.checkThat(sWebServer.getRequestCount(path), Matchers.greaterThan(0));
+                    Criteria.checkThat(webServer.getRequestCount(path), Matchers.greaterThan(0));
                 },
                 CHROME_LAUNCH_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -379,8 +384,72 @@ public final class ServiceTabLauncherTest {
     }
 
     /**
-     * Tests {@link ServiceTabLauncher#canLaunchInApp} gating logic across browser-initiated,
-     * same-origin, cross-origin, and opaque navigations.
+     * Tests that a launch requested by the primary Incognito profile for a URL matching a
+     * recently-used standalone web app stays inside an Incognito browser tab rather than escaping
+     * into a regular-profile web app frame with regular-profile cookies.
+     */
+    @Test
+    @MediumTest
+    public void testLaunchTabPrimaryIncognitoDoesNotCaptureWebapp() throws Exception {
+        String setCookiesUrl =
+                sWebServer.setResponse(
+                        "/set-cookies.html",
+                        PAGE_BODY,
+                        Arrays.asList(Pair.create("Set-Cookie", "regular_cookie=1; Path=/")));
+
+        // Plant a host-only localhost cookie in the regular profile first, then serve the target
+        // page from an additional TestWebServer instance so an unused regular-profile preconnect
+        // socket cannot block single-threaded WebServer.ServerThread while the isolated Incognito
+        // socket pool connects.
+        ChromeTabbedActivity activity = launchTabAndWaitForActivity(setCookiesUrl, null, false);
+        waitForTabLoaded(activity, setCookiesUrl);
+
+        try (TestWebServer targetServer = TestWebServer.startAdditional()) {
+            String targetUrl = targetServer.setResponse("/incognito-target.html", PAGE_BODY, null);
+            registerWebappWithScope("test_webapp_id", targetServer.getBaseUrl());
+
+            int initialIncognitoTabCount =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> TabWindowManagerSingleton.getInstance().getIncognitoTabCount());
+            Assert.assertEquals(0, initialIncognitoTabCount);
+
+            Origin sameOriginInitiator = Origin.create(new GURL(targetUrl));
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Profile primaryIncognitoProfile =
+                                ProfileManager.getLastUsedRegularProfile()
+                                        .getOrCreatePrimaryOtrProfile();
+                        ServiceTabLauncher.launchTab(
+                                0,
+                                primaryIncognitoProfile,
+                                new GURL(targetUrl),
+                                WindowOpenDisposition.NEW_FOREGROUND_TAB,
+                                "",
+                                ReferrerPolicy.DEFAULT,
+                                "",
+                                null,
+                                sameOriginInitiator,
+                                true);
+                    });
+            waitForRequest(targetServer, "/incognito-target.html");
+
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        Criteria.checkThat(
+                                TabWindowManagerSingleton.getInstance().getIncognitoTabCount(),
+                                Matchers.is(1));
+                    },
+                    CHROME_LAUNCH_TIMEOUT_MS,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+            String cookieHeader =
+                    targetServer.getLastRequest("/incognito-target.html").headerValue("Cookie");
+            Assert.assertEquals("", cookieHeader);
+        }
+    }
+
+    /**
+     * Tests {@link ServiceTabLauncher#canLaunchInApp} gating logic across off-the-record,
+     * browser-initiated, same-origin, cross-origin, and opaque navigations.
      */
     @Test
     @SmallTest
@@ -392,17 +461,23 @@ public final class ServiceTabLauncherTest {
         Origin differentScheme = Origin.create(new GURL("http://example.com"));
         Origin opaqueOrigin = Origin.createOpaqueOrigin();
 
-        // Browser-initiated navigations are always allowed to capture into apps.
-        Assert.assertTrue(ServiceTabLauncher.canLaunchInApp(false, null, targetUrl));
-        Assert.assertTrue(ServiceTabLauncher.canLaunchInApp(false, crossOrigin, targetUrl));
+        // Off-the-record navigations must never capture into regular-profile web apps.
+        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(true, false, null, targetUrl));
+        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(true, true, sameOrigin, targetUrl));
+
+        // Browser-initiated regular-profile navigations are allowed to capture into apps.
+        Assert.assertTrue(ServiceTabLauncher.canLaunchInApp(false, false, null, targetUrl));
+        Assert.assertTrue(ServiceTabLauncher.canLaunchInApp(false, false, crossOrigin, targetUrl));
 
         // Renderer-initiated navigations require a non-null, non-opaque, strictly same-origin
         // initiator.
-        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(true, null, targetUrl));
-        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(true, opaqueOrigin, targetUrl));
-        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(true, crossOrigin, targetUrl));
-        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(true, differentPort, targetUrl));
-        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(true, differentScheme, targetUrl));
-        Assert.assertTrue(ServiceTabLauncher.canLaunchInApp(true, sameOrigin, targetUrl));
+        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(false, true, null, targetUrl));
+        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(false, true, opaqueOrigin, targetUrl));
+        Assert.assertFalse(ServiceTabLauncher.canLaunchInApp(false, true, crossOrigin, targetUrl));
+        Assert.assertFalse(
+                ServiceTabLauncher.canLaunchInApp(false, true, differentPort, targetUrl));
+        Assert.assertFalse(
+                ServiceTabLauncher.canLaunchInApp(false, true, differentScheme, targetUrl));
+        Assert.assertTrue(ServiceTabLauncher.canLaunchInApp(false, true, sameOrigin, targetUrl));
     }
 }
