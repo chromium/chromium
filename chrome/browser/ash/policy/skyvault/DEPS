@@ -24,6 +24,7 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h",
+  "+chrome/grit/generated_resources.h",
   "+chrome/test/base",
 
   "+ui/message_center/message_center.h",

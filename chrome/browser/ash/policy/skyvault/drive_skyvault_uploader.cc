@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -28,9 +29,13 @@
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "components/drive/file_errors.h"
+#include "components/user_manager/user.h"
+#include "content/public/browser/browser_context.h"
 
 using storage::FileSystemURL;
 
@@ -53,16 +58,16 @@ bool CreateDirectoryIfNeeded(const base::FilePath& dir_path) {
 }  // namespace
 
 DriveSkyvaultUploader::DriveSkyvaultUploader(
-    Profile* profile,
+    user_manager::User* user,
     const base::FilePath& file_path,
     const base::FilePath& relative_source_path,
     const std::string& upload_root,
     UploadCallback callback)
-    : profile_(profile),
-      file_system_context_(
-          file_manager::util::GetFileManagerFileSystemContext(profile)),
+    : user_(CHECK_DEREF(user)),
+      file_system_context_(file_manager::util::GetFileManagerFileSystemContext(
+          browser_context())),
       drive_integration_service_(
-          drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
+          drive::DriveIntegrationServiceFactory::FindForProfile(profile())),
       source_url_(file_system_context_->CreateCrackedFileSystemURL(
           blink::StorageKey(),
           storage::kFileSystemTypeLocal,
@@ -81,14 +86,8 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  if (!profile_) {
-    LOG(ERROR) << "No profile";
-    OnEndCopy(MigrationUploadError::kUnexpectedError);
-    return;
-  }
-
   file_manager::VolumeManager* volume_manager =
-      file_manager::VolumeManager::Get(profile_);
+      file_manager::VolumeManager::Get(browser_context());
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
     OnEndCopy(MigrationUploadError::kUnexpectedError);
@@ -117,7 +116,7 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  auto drive_status = drive::util::GetDriveConnectionStatus(profile_);
+  auto drive_status = drive::util::GetDriveConnectionStatus(profile());
   waiting_for_connection_ =
       drive_status != drive::util::ConnectionStatus::kConnected;
   SkyVaultMigrationWaitForConnectionHistogram(
@@ -189,8 +188,8 @@ void DriveSkyvaultUploader::CreateCopyIOTask(
 
   // Destination url.
   FileSystemURL destination_folder_url =
-      ash::cloud_upload::FilePathToFileSystemURL(profile_, file_system_context_,
-                                                 destination_folder_path);
+      ash::cloud_upload::FilePathToFileSystemURL(
+          profile(), file_system_context_, destination_folder_path);
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder Drive URL";
     OnEndCopy(MigrationUploadError::kServiceUnavailable);
@@ -202,7 +201,7 @@ void DriveSkyvaultUploader::CreateCopyIOTask(
   std::unique_ptr<file_manager::io_task::IOTask> copy_task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
           file_manager::io_task::OperationType::kCopy, std::move(source_urls),
-          std::move(destination_folder_url), profile_, file_system_context_,
+          std::move(destination_folder_url), profile(), file_system_context_,
           /*show_notification=*/false);
 
   observed_copy_task_id_ = io_task_controller_->Add(std::move(copy_task));
@@ -211,6 +210,15 @@ void DriveSkyvaultUploader::CreateCopyIOTask(
 void DriveSkyvaultUploader::SetFailDeleteForTesting(bool fail) {
   CHECK_IS_TEST();
   fail_delete_for_testing_ = fail;
+}
+
+content::BrowserContext* DriveSkyvaultUploader::browser_context() const {
+  return ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+      &user_.get());
+}
+
+Profile* DriveSkyvaultUploader::profile() const {
+  return Profile::FromBrowserContext(browser_context());
 }
 
 void DriveSkyvaultUploader::OnEndCopy(
@@ -254,7 +262,7 @@ void DriveSkyvaultUploader::OnEndCopy(
     // If copy to Drive was unsuccessful, delete destination file to undo the
     // copy to Drive.
     FileSystemURL dest_url = ash::cloud_upload::FilePathToFileSystemURL(
-        profile_, file_system_context_, observed_absolute_dest_path_);
+        profile(), file_system_context_, observed_absolute_dest_path_);
     file_urls.push_back(dest_url);
   }
 

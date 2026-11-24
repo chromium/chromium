@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -387,7 +388,7 @@ void GoogleDriveMigrationUploader::OnLogFileReady(base::File log_file) {
     base::FilePath target_path = GetPathRelativeToMyFiles(*user_, file_path);
     std::unique_ptr<DriveSkyvaultUploader> uploader =
         std::make_unique<DriveSkyvaultUploader>(
-            GetProfile(), file_path, target_path, upload_root_,
+            &user_.get(), file_path, target_path, upload_root_,
             base::BindOnce(&GoogleDriveMigrationUploader::OnUploadDone,
                            weak_ptr_factory_.GetWeakPtr(), file_path));
 
@@ -439,7 +440,7 @@ void GoogleDriveMigrationUploader::OnUploadDone(
     base::FilePath target_path = GetPathRelativeToMyFiles(*user_, file_path);
     std::unique_ptr<DriveSkyvaultUploader> uploader =
         std::make_unique<DriveSkyvaultUploader>(
-            GetProfile(), file_path, target_path, upload_root_,
+            &user_.get(), file_path, target_path, upload_root_,
             base::BindOnce(&GoogleDriveMigrationUploader::OnUploadDone,
                            weak_ptr_factory_.GetWeakPtr(), file_path));
 

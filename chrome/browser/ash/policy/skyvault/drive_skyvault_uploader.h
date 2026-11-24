@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -23,6 +24,14 @@
 #include "storage/browser/file_system/file_system_url.h"
 
 class Profile;
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace policy::local_user_files {
 
@@ -42,7 +51,8 @@ class DriveSkyvaultUploader
       base::OnceCallback<void(std::optional<MigrationUploadError>,
                               base::FilePath)>;
 
-  DriveSkyvaultUploader(Profile* profile,
+  // `user` must not be null and must outlive this instance.
+  DriveSkyvaultUploader(user_manager::User* user,
                         const base::FilePath& file_path,
                         const base::FilePath& relative_source_path,
                         const std::string& upload_root,
@@ -66,6 +76,9 @@ class DriveSkyvaultUploader
   void SetFailDeleteForTesting(bool fail);
 
  private:
+  content::BrowserContext* browser_context() const;
+  Profile* profile() const;
+
   // Starts the IOTask to upload the file to Google Drive to
   // `destination_folder_path`, if it was created successfully and fails the
   // operation otherwise.
@@ -118,7 +131,8 @@ class DriveSkyvaultUploader
   // DeleteIO task is ignored.
   bool fail_delete_for_testing_ = false;
 
-  const raw_ptr<Profile> profile_;
+  // The user for which this instance was created.
+  const raw_ref<user_manager::User> user_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   const raw_ptr<drive::DriveIntegrationService> drive_integration_service_;
 

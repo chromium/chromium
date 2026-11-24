@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, SuccessfulUpload) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedUpload) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedDelete) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->SetFailDeleteForTesting(/*fail=*/true);
   drive_upload_handler->Run();
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, WaitingWhenNoConnection) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, ConnectionLostDuringUpload) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, Cancel) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
   drive_upload_handler->Cancel();
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, CancelAfterCopyStarts) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
 
   on_copy_in_progress_callback_ = base::BindLambdaForTesting(
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailsWhenDriveDisabled) {
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      user(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
