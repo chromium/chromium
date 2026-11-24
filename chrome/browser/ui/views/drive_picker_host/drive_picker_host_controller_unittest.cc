@@ -318,11 +318,14 @@ TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostWithAnchorWidget) {
 }
 
 // Verifies that when `omnibox::kOmniboxEverywhere` is enabled and
-// `features::kGlicDrivePicker` is disabled (the base fixture default), a
-// request with `Style::kGlic` anchors to the browser window's `dialog_host`
-// with standard non-Glic sizing and widget behavior.
+// `features::kGlicDrivePicker` is disabled, a request with `Style::kGlic`
+// anchors to the browser window's `dialog_host` with standard non-Glic sizing
+// and widget behavior.
 TEST_F(DrivePickerHostControllerTest,
        GlicFlagDisabledWithOmniboxEverywhereUsesNonGlicBehavior) {
+  base::test::ScopedFeatureList disable_glic_drive_picker;
+  disable_glic_drive_picker.InitAndDisableFeature(features::kGlicDrivePicker);
+
   views::Widget anchor_widget;
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,

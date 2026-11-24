@@ -464,7 +464,9 @@ const base::FeatureParam<base::TimeDelta>
 #endif  // BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kGlicApiBundleResource, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicDrivePicker, base::FEATURE_DISABLED_BY_DEFAULT);
+// Default-enabled platforms: all (kill switch for the modal Drive picker; only
+// desktop advertises the capability, so this has no effect on Android).
+BASE_FEATURE(kGlicDrivePicker, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicCic, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicCicUrl{
