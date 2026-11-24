@@ -179,6 +179,15 @@ class GlicGlobalEnabling {
   // since ui::GetDeviceFormFactor() reports an unfolded foldable as a tablet.
   static bool IsAndroidFormFactorAllowed(ui::DeviceFormFactor form_factor,
                                          bool is_foldable);
+  // Returns whether the given Android form factor uses the Glic side panel
+  // instead of the bottom sheet. Callers must also check that the side panel
+  // is enabled (kGlicAndroidSidePanel and AndroidSidePanelEnabledFn). Desktop
+  // always does; tablets only with kGlicAndroidTablet. Foldables never do in
+  // either posture.
+  // TODO(crbug.com/519677400): Let foldables use the side panel once Glic can
+  // switch containers when the device folds or unfolds.
+  static bool IsAndroidSidePanelFormFactor(ui::DeviceFormFactor form_factor,
+                                           bool is_foldable);
 #endif  // BUILDFLAG(IS_ANDROID)
   bool IsLocaleEnabled() const { return locale_enablement_.value_or(true); }
   // Note that country checks are executed along profile-level checks because

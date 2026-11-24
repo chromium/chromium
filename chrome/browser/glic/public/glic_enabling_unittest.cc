@@ -102,6 +102,7 @@
 #include "base/android/android_info.h"
 #include "base/android/application_status_listener.h"
 #include "chrome/browser/glic/android/background_actuation_capability.h"
+#include "ui/base/device_form_factor.h"
 #else
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"  // nogncheck
@@ -4956,6 +4957,51 @@ TEST(GlicAndroidFormFactorTest, UnsupportedFormFactorsNotAllowed) {
       ui::DEVICE_FORM_FACTOR_AUTOMOTIVE, /*is_foldable=*/false));
   EXPECT_FALSE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
       ui::DEVICE_FORM_FACTOR_XR, /*is_foldable=*/false));
+}
+
+TEST(GlicAndroidSidePanelFormFactorTest, DesktopUsesSidePanel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_TRUE(GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+      ui::DEVICE_FORM_FACTOR_DESKTOP, /*is_foldable=*/false));
+}
+
+TEST(GlicAndroidSidePanelFormFactorTest, TabletUsesSidePanelWithTabletFlag) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kGlicAndroidTablet);
+    EXPECT_FALSE(GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+        ui::DEVICE_FORM_FACTOR_TABLET, /*is_foldable=*/false));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kGlicAndroidTablet);
+    EXPECT_TRUE(GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+        ui::DEVICE_FORM_FACTOR_TABLET, /*is_foldable=*/false));
+  }
+}
+
+TEST(GlicAndroidSidePanelFormFactorTest, PhoneUsesBottomSheet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_FALSE(GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+      ui::DEVICE_FORM_FACTOR_PHONE, /*is_foldable=*/false));
+}
+
+// An unfolded foldable reports DEVICE_FORM_FACTOR_TABLET, but stays on the
+// bottom sheet in both postures.
+TEST(GlicAndroidSidePanelFormFactorTest, FoldableUsesBottomSheet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_FALSE(GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+      ui::DEVICE_FORM_FACTOR_TABLET, /*is_foldable=*/true));
+  EXPECT_FALSE(GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+      ui::DEVICE_FORM_FACTOR_PHONE, /*is_foldable=*/true));
+  EXPECT_FALSE(GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+      ui::DEVICE_FORM_FACTOR_FOLDABLE, /*is_foldable=*/false));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

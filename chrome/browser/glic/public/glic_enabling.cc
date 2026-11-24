@@ -924,6 +924,18 @@ bool GlicGlobalEnabling::IsAndroidFormFactorAllowed(
          (form_factor == ui::DEVICE_FORM_FACTOR_TABLET &&
           base::FeatureList::IsEnabled(features::kGlicAndroidTablet));
 }
+
+// static
+bool GlicGlobalEnabling::IsAndroidSidePanelFormFactor(
+    ui::DeviceFormFactor form_factor,
+    bool is_foldable) {
+  if (is_foldable) {
+    return false;
+  }
+  return form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP ||
+         (form_factor == ui::DEVICE_FORM_FACTOR_TABLET &&
+          base::FeatureList::IsEnabled(features::kGlicAndroidTablet));
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool GlicGlobalEnabling::IsOsVersionSupported() {
