@@ -94,6 +94,9 @@ export import SafeBrowsingVerdict = generated.SafeBrowsingVerdict;
 export import Screenshot = generated.Screenshot;
 export import ScreenshotCollectionOptions =
     generated.ScreenshotCollectionOptions;
+export import ScriptToolRejection = generated.ScriptToolRejection;
+export import ScriptToolRejectionDocument =
+    generated.ScriptToolRejectionDocument;
 export import ScrollToNodeSelector = generated.ScrollToNodeSelector;
 export import ScrollToParams = generated.ScrollToParams;
 export import ScrollToSelector = generated.ScrollToSelector;
@@ -175,6 +178,7 @@ export import ScreenshotCompressionQuality =
     generated.ScreenshotCompressionQuality;
 export import ScreenshotEncryptionScheme = generated.ScreenshotEncryptionScheme;
 export import ScreenshotImageFormat = generated.ScreenshotImageFormat;
+export import ScriptToolRejectionReason = generated.ScriptToolRejectionReason;
 export import ScrollToErrorReason = generated.ScrollToErrorReason;
 export import SelectRolloutStageResult = generated.SelectRolloutStageResult;
 export import SettingsPageField = generated.SettingsPageField;
@@ -1454,6 +1458,13 @@ export declare interface GlicBrowserHost {
    */
   processCounterAbuseVerdict?
       (tabId: string, verdict: CounterAbuseVerdict): void;
+
+  /**
+   * Notifies the host that one or more WebMCP script tool sets declared by page
+   * documents were withheld for a query, along with the coarse rejection
+   * reason.
+   */
+  reportScriptToolRejections?(rejections: ScriptToolRejection[]): void;
 
   /**
    * Returns an object providing synchronous persistent key-value storage for

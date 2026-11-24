@@ -82,6 +82,7 @@ import type {                                  //
              Platform,                         //
              PromptType,                       //
              ResizeWindowOptions,              //
+             ScriptToolRejection,              //
              SendTabToSelfDevice,              //
              SwitchAssistantOptions,           //
              SwitchAssistantResponse,          //
@@ -746,6 +747,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
       (tabId: string, verdict: CounterAbuseVerdict): void {
     const mojoVerdict = counterAbuseVerdictFromClient(verdict);
     this.handler.processCounterAbuseVerdict(idFromClient(tabId), mojoVerdict);
+  }
+
+  reportScriptToolRejections(_rejections: ScriptToolRejection[]): void {
+    // TODO(b/567266220): Forward rejections to WebClientHandler.
   }
 
   async closePanel(): Promise<void> {

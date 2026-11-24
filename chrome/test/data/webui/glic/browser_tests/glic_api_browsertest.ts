@@ -22,6 +22,7 @@ import {                             //
   ResponseStopCause,                 //
   SbThreatType,                      //
   ScreenshotEncryptionScheme,        //
+  ScriptToolRejectionReason,         //
   ScrollToErrorReason,               //
   TooltipImpressionType,             //
   WebClientMode,                     //
@@ -43,6 +44,7 @@ import type {                                  //
              PageMetadata,                     //
              PanelOpeningData,                 //
              PanelState,                       //
+             ScriptToolRejection,              //
              ScrollToError,                    //
              TabContextResult,                 //
              TabData,                          //
@@ -2235,6 +2237,51 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testProcessCounterAbuseVerdictIsUndefinedWhenFeatureDisabled() {
     assertTrue(this.host.processCounterAbuseVerdict === undefined);
+  }
+
+  async testReportScriptToolRejections() {
+    assertDefined(this.host.reportScriptToolRejections);
+    const rejections: ScriptToolRejection[] = [
+      {
+        reason: ScriptToolRejectionReason.SECURITY,
+        documents: [
+          {
+            tabId: '1',
+            documentId: '00112233445566778899AABBCCDDEEFF',
+            toolNames: ['bookFlight', 'cancelOrder'],
+          },
+        ],
+      },
+      {
+        reason: ScriptToolRejectionReason.THROTTLING,
+        documents: [],
+      },
+      {
+        reason: ScriptToolRejectionReason.QUALITY,
+        documents: [
+          {
+            tabId: 'invalid-tab-id',
+            documentId: '112233445566778899AABBCCDDEEFF00',
+            toolNames: ['searchCatalog'],
+          },
+        ],
+      },
+      {
+        reason: ScriptToolRejectionReason.SCAN_PENDING,
+        documents: [
+          {
+            documentId: '2233445566778899AABBCCDDEEFF0011',
+            toolNames: ['checkStatus'],
+          },
+        ],
+      },
+      {
+        reason: ScriptToolRejectionReason.UNSPECIFIED,
+        documents: [],
+      },
+    ];
+    this.host.reportScriptToolRejections(rejections);
+    this.host.reportScriptToolRejections([]);
   }
 
   async testScrollToFindsText() {

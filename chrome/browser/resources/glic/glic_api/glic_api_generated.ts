@@ -202,6 +202,20 @@ export enum SbThreatType {
   UNWANTED_SOFTWARE = 3,
 }
 
+// Reason why a page-declared WebMCP script tool set was withheld.
+export enum ScriptToolRejectionReason {
+  // Default / unspecified reason (also used for unrecognized future values).
+  UNSPECIFIED = 0,
+  // Withheld due to a security or safety check.
+  SECURITY = 1,
+  // Withheld because the site is rate-limited / throttled.
+  THROTTLING = 2,
+  // Withheld due to a quality check.
+  QUALITY = 3,
+  // Withheld while an asynchronous evaluation or scan is still in flight.
+  SCAN_PENDING = 4,
+}
+
 // Enum to specify the image format of the screenshot.
 export enum ScreenshotImageFormat {
   // JPEG screenshot format. This is the default format.
@@ -997,6 +1011,23 @@ export declare interface SafeBrowsingVerdict {
 // The type of counter abuse verdict that was received.
 export declare interface CounterAbuseVerdict {
   sbVerdictResult: SafeBrowsingVerdict;
+}
+
+// Identifies a page document whose declared WebMCP tools were withheld.
+export declare interface ScriptToolRejectionDocument {
+  // Optional ID of the tab hosting the document, when known by the web client.
+  tabId?: string;
+  // DocumentIdentifier.serialized_token from AnnotatedPageContent.
+  documentId: string;
+  // Page-declared WebMCP tool names withheld for this document.
+  toolNames: string[];
+}
+
+// Groups page documents whose declared WebMCP tools were withheld for a shared
+// reason.
+export declare interface ScriptToolRejection {
+  reason: ScriptToolRejectionReason;
+  documents: ScriptToolRejectionDocument[];
 }
 
 // Options for screenshot collection.

@@ -4374,6 +4374,11 @@ IN_PROC_BROWSER_TEST_P(
       1);
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testReportScriptToolRejections) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 // TODO(harringtond): Flaky on windows.
 // TODO(b/508340871): Re-enable on Android. Failing because something pops up
 // and suppresses the bottom sheet.

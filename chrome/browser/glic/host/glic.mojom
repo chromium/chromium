@@ -233,6 +233,41 @@ struct CounterAbuseVerdict {
   SafeBrowsingVerdict sb_verdict_result;
 };
 
+// @generate glic_api
+// Reason why a page-declared WebMCP script tool set was withheld.
+[Stable, Extensible]
+enum ScriptToolRejectionReason {
+  // Default / unspecified reason (also used for unrecognized future values).
+  [Default] kUnspecified = 0,
+  // Withheld due to a security or safety check.
+  kSecurity = 1,
+  // Withheld because the site is rate-limited / throttled.
+  kThrottling = 2,
+  // Withheld due to a quality check.
+  kQuality = 3,
+  // Withheld while an asynchronous evaluation or scan is still in flight.
+  kScanPending = 4,
+};
+
+// @generate glic_api
+// Identifies a page document whose declared WebMCP tools were withheld.
+struct ScriptToolRejectionDocument {
+  // Optional ID of the tab hosting the document, when known by the web client.
+  int32? tab_id;
+  // DocumentIdentifier.serialized_token from AnnotatedPageContent.
+  mojo_base.mojom.UnguessableToken document_id;
+  // Page-declared WebMCP tool names withheld for this document.
+  array<string> tool_names;
+};
+
+// @generate glic_api
+// Groups page documents whose declared WebMCP tools were withheld for a shared
+// reason.
+struct ScriptToolRejection {
+  ScriptToolRejectionReason reason;
+  array<ScriptToolRejectionDocument> documents;
+};
+
 // The result of `WebClientCreated()`. Contains information that needs to be
 // available before the web client is initialized.
 struct WebClientInitialState {
