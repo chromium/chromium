@@ -18,8 +18,18 @@
 
 namespace activity_reporter {
 
+// The app id that all Chrome use is reported under. On Android, that includes
+// both browser and custom tab use.
 inline constexpr std::string_view kChromeActivityId =
     "{afb5a10b-511f-4904-9596-d3f2937fd403}";
+
+// The app id that custom tab use is reported under.
+inline constexpr std::string_view kCustomTabActivityId =
+    "{1679af61-6450-4560-8ce4-13f535c5fce9}";
+
+// The app id that browser use, outside custom tabs, is reported under.
+inline constexpr std::string_view kBrowserActivityId =
+    "{495846a7-4e04-48d7-8d10-804961db3e79}";
 
 // Refer to ./buildflags.gni to enable/disable reporting.
 inline constexpr std::string_view kUrl =
