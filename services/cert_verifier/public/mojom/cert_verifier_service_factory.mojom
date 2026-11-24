@@ -30,8 +30,6 @@ struct CertVerifierCreationParams {
   // If true, verifier should wait for a call to
   // CertVeriferServiceUpdater.UpdateAdditionalCertificates
   // before processing any verifications.
-  // TODO(crbug.com/370696616): Also see if verifications can be blocked until
-  // PKIMetadata component updates are finished.
   bool wait_for_update = false;
 
   // Initial certificate transparency policies.
@@ -138,10 +136,11 @@ interface CertVerifierServiceFactory {
                      CertVerifierCreationParams? creation_params);
 
   // Updates the CRLSet used in the verification of certificates. CRLSets that
-  // cannot be parsed using net::CRLSet::Parse will be ignored, as will older
-  // CRLSets (where older is determined by the sequence number). All
+  // are empty or cannot be parsed using net::CRLSet::Parse will be ignored, as
+  // will older CRLSets (where older is determined by the sequence number). All
   // CertVerifierServices created by the CertVerifierServiceFactory, including
-  // those created after this call, will use the same CRLSet.
+  // those created after this call, will use the same CRLSet. Any call (even
+  // with an empty or ignored CRLSet) satisfies pending initial CRLSet waiting.
   // TODO(crbug.com/40902260): consider using ReadOnlySharedMemoryRegion
   // or ReadOnlyFile instead of BigBuffer for this and ChromeRootStore.
   UpdateCRLSet(mojo_base.mojom.BigBuffer crl_set) => ();
@@ -155,16 +154,18 @@ interface CertVerifierServiceFactory {
   // Updates PKI metadata (CT config, Key Pins list, and/or Chrome Root Store +
   // MtcConfig) from the PKIMetadata component in a single call. The callback
   // will be run once the update has been processed (regardless if it was
-  // updated successfully or the update was ignored).
+  // updated successfully or the update was empty/ignored). Any call satisfies
+  // pending initial PKIMetadata waiting.
   [EnableIf=is_ct_supported|chrome_key_pinning_supported|is_chrome_root_store_supported]
   UpdatePKIMetadata(PKIMetadataUpdate update) => ();
 
   // Updates the Merkle Tree Certificate metadata used by the
-  // CertVerifierServiceFactory with a new version. The callback will be run
-  // once the update has been processed (regardless if it was updated
-  // successfully or the update was ignored.)
+  // CertVerifierServiceFactory with a new version. Null or invalid metadata is
+  // ignored. The callback will be run once the update has been processed
+  // (regardless if it was updated successfully or the update was ignored). Any
+  // call satisfies pending initial MtcMetadata waiting.
   [EnableIf=is_chrome_root_store_supported]
-  UpdateMtcMetadata(mojo_base.mojom.ProtoWrapper new_mtc_metadata) => ();
+  UpdateMtcMetadata(mojo_base.mojom.ProtoWrapper? new_mtc_metadata) => ();
 
   // Sets whether verification should use the Chrome Root Store or not. All
   // CertVerifierServices created by the CertVerifierServiceFactory, including

@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -42,6 +43,7 @@
 #include "net/test/chrome_root_store_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/cert_verifier/public/cpp/component_data_type.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -62,7 +64,6 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "base/version_info/version_info.h"  // nogncheck
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/root_store_proto_lite/signer_set.pb.h"
@@ -205,6 +206,78 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
       Verify(cv_service_remote, test_cert, "www.example.com");
   ASSERT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
   ASSERT_TRUE(result.cert_status & net::CERT_STATUS_AUTHORITY_INVALID);
+}
+
+TEST(CertVerifierServiceFactoryTest,
+     WaitForComponentDataEmptyUpdateDoesNotNotifyChanged) {
+  base::test::TaskEnvironment task_environment;
+
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  scoped_refptr<net::X509Certificate> test_cert(
+      net::ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_NE(nullptr, test_cert.get());
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver(),
+      {ComponentDataType::kCRLSet});
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+
+  base::RunLoop request_completed_run_loop;
+  DummyCVServiceRequest dummy_cv_service_req(
+      request_completed_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
+      &dummy_cv_service_req);
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
+  cv_service_remote->Verify(
+      net::CertVerifier::RequestParams(test_cert, "www.example.com",
+                                       /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      net_log.source(),
+      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(dummy_cv_service_req.is_completed);
+
+  // Sending an empty CRLSet update (e.g. when no cached CRLSet exists on disk)
+  // should directly unblock the queued request without triggering a verifier
+  // change notification.
+  cv_service_factory_remote->UpdateCRLSet(mojo_base::BigBuffer(),
+                                          base::DoNothing());
+  request_completed_run_loop.Run();
+
+  EXPECT_EQ(dummy_cv_service_req.net_error, net::ERR_CERT_AUTHORITY_INVALID);
+  cv_service_remote.FlushForTesting();
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Subsequent verifications on existing and newly created services should not
+  // block.
+  {
+    auto [net_error, result] =
+        Verify(cv_service_remote, test_cert, "www.example.com");
+    EXPECT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+  }
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote2;
+  DummyCVServiceClient cv_service_client2;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote2.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client2.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+  {
+    auto [net_error, result] =
+        Verify(cv_service_remote2, test_cert, "www.example.com");
+    EXPECT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+  }
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -1932,6 +2005,346 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
   // system time (which is expired).
   EXPECT_THAT(net_error, IsError(net::ERR_CERT_DATE_INVALID));
   EXPECT_TRUE(net::IsCertStatusError(result.cert_status));
+}
+
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
+       WaitForComponentDataBlocksVerifyAndCoalescesUpdates) {
+  scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+  ASSERT_TRUE(test_root);
+  net::ScopedTestRoot scoped_test_root(test_root);
+  scoped_refptr<net::X509Certificate> ok_cert(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(ok_cert);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver(),
+      {ComponentDataType::kCRLSet});
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+
+  // Start a verification request before the CRLSet is loaded. With the
+  // built-in CRLSet `ok_cert` would succeed, so if it were not blocked on
+  // component data it would return net::OK.
+  base::RunLoop request1_run_loop;
+  DummyCVServiceRequest req1(request1_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> req1_receiver(&req1);
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
+  cv_service_remote->Verify(
+      net::CertVerifier::RequestParams(ok_cert, "127.0.0.1", /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      net_log.source(), req1_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req1.is_completed);
+
+  // Update network time while waiting for CRLSet; the update should be deferred
+  // and coalesced with the CRLSet update when CRLSet finishes loading.
+  cv_service_factory_impl.UpdateNetworkTime(
+      base::Time::Now(), base::TimeTicks::Now(), base::Time::Now(),
+      kNetworkTimeUncertainty);
+
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req1.is_completed);
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // A second CertVerifierService created after the first update (while still
+  // waiting on CRLSet) should also queue requests, and receive a single
+  // notification when the CRLSet update unblocks both services.
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote2;
+  DummyCVServiceClient cv_service_client2;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote2.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client2.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+
+  base::RunLoop request2_run_loop;
+  DummyCVServiceRequest req2(request2_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> req2_receiver(&req2);
+  cv_service_remote2->Verify(
+      net::CertVerifier::RequestParams(ok_cert, "127.0.0.1", /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      net_log.source(), req2_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote2.FlushForTesting();
+  EXPECT_FALSE(req2.is_completed);
+
+  // Delivering the CRLSet update should directly unblock both queued requests
+  // once parsed, failing with ERR_CERT_REVOKED and coalescing the updates on
+  // `cv_service_client` into a single OnCertVerifierChanged notification.
+  std::string crl_set_bytes;
+  ASSERT_TRUE(base::ReadFileToString(net::GetTestCertsDirectory().AppendASCII(
+                                         "crlset_by_root_subject_no_spki.raw"),
+                                     &crl_set_bytes));
+  cv_service_factory_remote->UpdateCRLSet(base::as_byte_span(crl_set_bytes),
+                                          base::DoNothing());
+  request1_run_loop.Run();
+  request2_run_loop.Run();
+
+  EXPECT_THAT(req1.net_error, IsError(net::ERR_CERT_REVOKED));
+  EXPECT_TRUE(req1.result.cert_status & net::CERT_STATUS_REVOKED);
+  EXPECT_THAT(req2.net_error, IsError(net::ERR_CERT_REVOKED));
+  EXPECT_TRUE(req2.result.cert_status & net::CERT_STATUS_REVOKED);
+
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+  EXPECT_NO_FATAL_FAILURE(cv_service_client2.WaitForCertVerifierChange(1u));
+  cv_service_remote.FlushForTesting();
+  cv_service_remote2.FlushForTesting();
+  EXPECT_EQ(cv_service_client.changed_count_, 1u);
+  EXPECT_EQ(cv_service_client2.changed_count_, 1u);
+}
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
+       WaitForAllComponentDataTypes) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  base::Time now = base::Time::Now();
+  leaf->SetValidity(now - base::Days(1), now + base::Days(1));
+  leaf->SetSubjectAltName("www.example.com");
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver(),
+      {ComponentDataType::kCRLSet, ComponentDataType::kPKIMetadata,
+       ComponentDataType::kMtcMetadata});
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+
+  base::RunLoop request_run_loop;
+  DummyCVServiceRequest req(request_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> req_receiver(&req);
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
+  cv_service_remote->Verify(
+      net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
+                                       "www.example.com", /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      net_log.source(), req_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req.is_completed);
+
+  // 1. Deliver CRLSet update; still waiting on PKIMetadata and MtcMetadata.
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl,
+                           "crlset_by_root_subject.raw");
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req.is_completed);
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // 2. Deliver PKIMetadata update trusting `root`; still waiting on
+  // MtcMetadata.
+  chrome_root_store::RootStore root_store;
+  root_store.set_version_major(net::CompiledChromeRootStoreVersion() + 1);
+  root_store.add_trust_anchors()->set_der(root->GetDER());
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store));
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req.is_completed);
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // A second CertVerifierService created after `root_store` was loaded (while
+  // still waiting on MtcMetadata) should also queue requests, and should not
+  // receive a redundant OnCertVerifierChanged notification when the empty
+  // MtcMetadata update unblocks it.
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote2;
+  DummyCVServiceClient cv_service_client2;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote2.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client2.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+
+  base::RunLoop request2_run_loop;
+  DummyCVServiceRequest req2(request2_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> req2_receiver(&req2);
+  cv_service_remote2->Verify(
+      net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
+                                       "www.example.com", /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      net_log.source(), req2_receiver.BindNewPipeAndPassRemote());
+  cv_service_remote2.FlushForTesting();
+  EXPECT_FALSE(req2.is_completed);
+
+  // 3. Deliver empty/nullopt MtcMetadata update; all component updates are now
+  // processed, so the queued requests unblock directly and succeed using
+  // `root` with a single coalesced OnCertVerifierChanged notification on the
+  // first client.
+  cv_service_factory_remote->UpdateMtcMetadata(std::nullopt, base::DoNothing());
+  request_run_loop.Run();
+  request2_run_loop.Run();
+
+  EXPECT_THAT(req.net_error, IsOk());
+  EXPECT_THAT(req2.net_error, IsOk());
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+  cv_service_remote.FlushForTesting();
+  cv_service_remote2.FlushForTesting();
+  EXPECT_EQ(cv_service_client.changed_count_, 1u);
+  EXPECT_EQ(cv_service_client2.changed_count_, 0u);
+}
+
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
+       WaitForComponentDataEmptyAndInvalidUpdatesUnblock) {
+  scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+  ASSERT_TRUE(test_root);
+  net::ScopedTestRoot scoped_test_root(test_root);
+  scoped_refptr<net::X509Certificate> ok_cert(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(ok_cert);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver(),
+      {ComponentDataType::kCRLSet, ComponentDataType::kPKIMetadata,
+       ComponentDataType::kMtcMetadata});
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+
+  base::RunLoop request_run_loop;
+  DummyCVServiceRequest req(request_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> req_receiver(&req);
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
+  cv_service_remote->Verify(
+      net::CertVerifier::RequestParams(ok_cert, "127.0.0.1", /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      net_log.source(), req_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req.is_completed);
+
+  // Empty PKIMetadataUpdate and invalid MtcMetadata / CRLSet payloads must
+  // still count as processed updates and unblock queued verifications without
+  // firing spurious OnCertVerifierChanged notifications.
+  {
+    base::RunLoop run_loop;
+    cv_service_factory_remote->UpdatePKIMetadata(
+        mojom::PKIMetadataUpdate::New(), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_FALSE(req.is_completed);
+
+  {
+    base::RunLoop run_loop;
+    // Pass a RootStore proto where MtcMetadata is expected so parsing fails.
+    cv_service_factory_remote->UpdateMtcMetadata(
+        mojo_base::ProtoWrapper(chrome_root_store::RootStore()),
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_FALSE(req.is_completed);
+
+  std::string invalid_crl_set(64, '\xff');
+  cv_service_factory_remote->UpdateCRLSet(base::as_byte_span(invalid_crl_set),
+                                          base::DoNothing());
+  request_run_loop.Run();
+
+  EXPECT_THAT(req.net_error, IsOk());
+  cv_service_remote.FlushForTesting();
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
+       WaitForComponentDataAndAdditionalCertificates) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  base::Time now = base::Time::Now();
+  base::TimeTicks ticks_now = base::TimeTicks::Now();
+  // Configure leaf so it requires the updated network time AND `root` from
+  // UpdateAdditionalCertificates to verify successfully.
+  leaf->SetValidity(now - base::Days(3), now - base::Days(1));
+  leaf->SetSubjectAltName("www.example.com");
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver(),
+      {ComponentDataType::kCRLSet});
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  mojo::Remote<mojom::CertVerifierServiceUpdater> cv_service_updater_remote;
+  DummyCVServiceClient cv_service_client;
+  auto creation_params = mojom::CertVerifierCreationParams::New();
+  creation_params->wait_for_update = true;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      cv_service_updater_remote.BindNewPipeAndPassReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(creation_params));
+
+  base::RunLoop request_run_loop;
+  DummyCVServiceRequest req(request_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> req_receiver(&req);
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
+  cv_service_remote->Verify(
+      net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
+                                       "www.example.com", /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      net_log.source(), req_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req.is_completed);
+
+  // Update factory params and finish component data waiting first; the request
+  // must remain queued until UpdateAdditionalCertificates is also called.
+  cv_service_factory_impl.UpdateNetworkTime(now, ticks_now, now - base::Days(2),
+                                            kNetworkTimeUncertainty);
+  {
+    base::RunLoop run_loop;
+    cv_service_factory_remote->UpdateCRLSet(mojo_base::BigBuffer(),
+                                            run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  cv_service_remote.FlushForTesting();
+  EXPECT_FALSE(req.is_completed);
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Now supply `root` via UpdateAdditionalCertificates; the request should
+  // unblock and succeed with a single verifier update notification.
+  auto additional_certs = mojom::AdditionalCertificates::New();
+  base::span<const uint8_t> root_bytes = net::x509_util::CryptoBufferAsSpan(
+      root->GetX509Certificate()->cert_buffer());
+  additional_certs->trust_anchors.emplace_back(root_bytes.begin(),
+                                               root_bytes.end());
+  cv_service_updater_remote->UpdateAdditionalCertificates(
+      std::move(additional_certs));
+
+  request_run_loop.Run();
+  EXPECT_THAT(req.net_error, IsOk());
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+  cv_service_remote.FlushForTesting();
+  EXPECT_EQ(cv_service_client.changed_count_, 1u);
 }
 
 #if BUILDFLAG(IS_CT_SUPPORTED) || BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED) || \

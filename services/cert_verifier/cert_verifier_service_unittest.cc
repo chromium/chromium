@@ -128,7 +128,10 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       const net::CertVerifyProc::ImplParams& impl_params,
       const net::CertVerifyProc::InstanceParams& instance_params) override {
-    has_updated_proc_data_ = true;
+    update_proc_data_count_++;
+    if (on_update_proc_data_) {
+      on_update_proc_data_.Run();
+    }
   }
 
   void RespondToRequest(const net::CertVerifier::RequestParams& params) {
@@ -151,7 +154,11 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
     return dummy_requests_.find(params) != dummy_requests_.end();
   }
 
-  bool HasUpdatedProcData() { return has_updated_proc_data_; }
+  bool HasUpdatedProcData() const { return update_proc_data_count_ > 0; }
+  unsigned update_proc_data_count() const { return update_proc_data_count_; }
+  void set_on_update_proc_data(base::RepeatingClosure callback) {
+    on_update_proc_data_ = std::move(callback);
+  }
 
   bool WasRequestCancelled(const net::CertVerifier::RequestParams& params) {
     return cancelled_requests_.find(params) != cancelled_requests_.end();
@@ -182,7 +189,8 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
 
   net::CertVerifier::Config config_;
   raw_ptr<CertVerifier::Observer> observer_ = nullptr;
-  bool has_updated_proc_data_ = false;
+  unsigned update_proc_data_count_ = 0;
+  base::RepeatingClosure on_update_proc_data_;
 };
 
 struct DummyCVServiceRequest : public mojom::CertVerifierRequest {
@@ -226,9 +234,10 @@ class CertVerifierServiceTest : public PlatformTest,
             std::make_unique<CertVerifierServiceFactoryImpl>(
                 cv_service_factory_remote_.BindNewPipeAndPassReceiver())) {}
 
-  void CreateImpl(
-      bool wait_for_update,
-      scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher = nullptr) {
+  internal::CertVerifierServiceImpl* CreateImpl(
+      bool wait_for_additional_certificates,
+      scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher = nullptr,
+      bool wait_for_component_data = false) {
     dummy_cv_ = new DummyCertVerifier;
     // NOTE: CertVerifierServiceImpl is self-deleting.
     auto* cvs_impl = new internal::CertVerifierServiceImpl(
@@ -238,10 +247,12 @@ class CertVerifierServiceTest : public PlatformTest,
         cv_service_client_.BindNewPipeAndPassRemote(),
         std::move(cert_net_fetcher),
         /*instance_params=*/{},
-        /*wait_for_update=*/wait_for_update);
+        /*wait_for_additional_certificates=*/wait_for_additional_certificates,
+        /*wait_for_component_data=*/wait_for_component_data);
 
     cvs_impl->SetCertVerifierServiceFactory(
         cv_service_factory_impl_->GetWeakPtr());
+    return cvs_impl;
   }
 
   void SetUp() override { ASSERT_TRUE(GetTestCert()); }
@@ -336,27 +347,27 @@ class CertVerifierServiceTest : public PlatformTest,
 
 }  // namespace
 TEST_F(CertVerifierServiceTest, TestSingleCompletion) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   TestCompletions(1, false);
 }
 
 TEST_F(CertVerifierServiceTest, TestMultipleSimultaneousCompletions) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   TestCompletions(5, false);
 }
 
 TEST_F(CertVerifierServiceTest, TestSingleSyncCompletion) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   TestCompletions(1, true);
 }
 
 TEST_F(CertVerifierServiceTest, TestMultipleSimultaneousSyncCompletions) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   TestCompletions(5, true);
 }
 
 TEST_F(CertVerifierServiceTest, TestInvalidIntermediate) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   auto leaf = GetTestCert();
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
@@ -405,7 +416,7 @@ TEST_F(CertVerifierServiceTest, TestInvalidIntermediate) {
 }
 
 TEST_F(CertVerifierServiceTest, TestRequestDisconnectionCancelsCVRequest) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
                                                 /*ocsp_response=*/std::string(),
                                                 /*sct_list=*/std::string());
@@ -436,7 +447,7 @@ TEST_F(CertVerifierServiceTest, TestRequestDisconnectionCancelsCVRequest) {
 }
 
 TEST_F(CertVerifierServiceTest, TestCVServiceDisconnection) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
                                                 /*ocsp_response=*/std::string(),
                                                 /*sct_list=*/std::string());
@@ -470,7 +481,7 @@ TEST_F(CertVerifierServiceTest, TestCVServiceDisconnection) {
 // Check that calling SetConfig() on the Mojo interface results in a SetConfig
 // call to the underlying net::CertVerifier.
 TEST_F(CertVerifierServiceTest, StoresConfig) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   ASSERT_FALSE(dummy_cv()->config()->require_rev_checking_local_anchors);
 
   net::CertVerifier::Config config;
@@ -486,7 +497,7 @@ TEST_F(CertVerifierServiceTest, StoresConfig) {
 // CertVerifier and when that observer is notified, it should proxy the
 // notifications to the CertVerifierServiceClient.
 TEST_F(CertVerifierServiceTest, ObserverIsRegistered) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   ASSERT_TRUE(dummy_cv()->GetObserver());
 
   EXPECT_EQ(cv_service_client_changed_count(), 0u);
@@ -501,7 +512,7 @@ TEST_F(CertVerifierServiceTest, ObserverIsRegistered) {
 }
 
 TEST_F(CertVerifierServiceTest, TestSingleRequestQueued) {
-  CreateImpl(/*wait_for_update=*/true);
+  CreateImpl(/*wait_for_additional_certificates=*/true);
   net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
                                                 /*ocsp_response=*/std::string(),
                                                 /*sct_list=*/std::string());
@@ -528,8 +539,147 @@ TEST_F(CertVerifierServiceTest, TestSingleRequestQueued) {
   ASSERT_TRUE(dummy_cv()->HasUpdatedProcData());
 }
 
+TEST_F(CertVerifierServiceTest, TestRequestQueuedWaitingForComponentData) {
+  internal::CertVerifierServiceImpl* cvs_impl = CreateImpl(
+      /*wait_for_additional_certificates=*/false, /*cert_net_fetcher=*/nullptr,
+      /*wait_for_component_data=*/true);
+  net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
+                                                /*ocsp_response=*/std::string(),
+                                                /*sct_list=*/std::string());
+  DummyCVServiceRequest cv_service_req;
+  mojo::Receiver<mojom::CertVerifierRequest> cv_request_receiver(
+      &cv_service_req);
+
+  cv_service_remote()->Verify(
+      dummy_params,
+      net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB, 1234,
+                        base::TimeTicks::Now()),
+      cv_request_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote().FlushForTesting();
+  EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+  EXPECT_FALSE(dummy_cv()->HasUpdatedProcData());
+
+  // Unblocking when no verifier data updates occurred should dispatch the
+  // queued request without rebuilding the verifier proc.
+  cvs_impl->OnComponentDataLoaded();
+  EXPECT_TRUE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 0u);
+}
+
+TEST_F(CertVerifierServiceTest,
+       TestRequestQueuedWaitingForComponentDataWithDeferredUpdate) {
+  internal::CertVerifierServiceImpl* cvs_impl = CreateImpl(
+      /*wait_for_additional_certificates=*/false, /*cert_net_fetcher=*/nullptr,
+      /*wait_for_component_data=*/true);
+  net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
+                                                /*ocsp_response=*/std::string(),
+                                                /*sct_list=*/std::string());
+  DummyCVServiceRequest cv_service_req;
+  mojo::Receiver<mojom::CertVerifierRequest> cv_request_receiver(
+      &cv_service_req);
+
+  // Verify that UpdateVerifyProcData runs before the queued request is started.
+  dummy_cv()->set_on_update_proc_data(base::BindLambdaForTesting([&]() {
+    EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+  }));
+
+  cv_service_remote()->Verify(
+      dummy_params,
+      net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB, 1234,
+                        base::TimeTicks::Now()),
+      cv_request_receiver.BindNewPipeAndPassRemote());
+
+  cv_service_remote().FlushForTesting();
+  EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+
+  // Multiple UpdateVerifierData calls while waiting should be coalesced and
+  // deferred until OnComponentDataLoaded().
+  cvs_impl->UpdateVerifierData(net::CertVerifyProc::ImplParams());
+  cvs_impl->UpdateVerifierData(net::CertVerifyProc::ImplParams());
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 0u);
+  EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+
+  cvs_impl->OnComponentDataLoaded();
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 1u);
+  EXPECT_TRUE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+}
+
+TEST_F(CertVerifierServiceTest,
+       TestRequestQueuedWaitingForBoth_AdditionalCertsFirst) {
+  internal::CertVerifierServiceImpl* cvs_impl = CreateImpl(
+      /*wait_for_additional_certificates=*/true, /*cert_net_fetcher=*/nullptr,
+      /*wait_for_component_data=*/true);
+  net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
+                                                /*ocsp_response=*/std::string(),
+                                                /*sct_list=*/std::string());
+  DummyCVServiceRequest cv_service_req;
+  mojo::Receiver<mojom::CertVerifierRequest> cv_request_receiver(
+      &cv_service_req);
+
+  cv_service_remote()->Verify(
+      dummy_params,
+      net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB, 1234,
+                        base::TimeTicks::Now()),
+      cv_request_receiver.BindNewPipeAndPassRemote());
+  cv_service_remote().FlushForTesting();
+  EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+
+  base::test::TestFuture<void> update_future;
+  cv_service_updater_remote()->WaitUntilNextUpdateForTesting(
+      update_future.GetCallback());
+  cv_service_updater_remote()->UpdateAdditionalCertificates(
+      cert_verifier::mojom::AdditionalCertificates::New());
+  ASSERT_TRUE(update_future.Wait());
+
+  // Still waiting on component data.
+  EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 0u);
+
+  cvs_impl->UpdateVerifierData(net::CertVerifyProc::ImplParams());
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 0u);
+
+  cvs_impl->OnComponentDataLoaded();
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 1u);
+  EXPECT_TRUE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+}
+
+TEST_F(CertVerifierServiceTest,
+       TestRequestQueuedWaitingForBoth_ComponentDataFirst) {
+  internal::CertVerifierServiceImpl* cvs_impl = CreateImpl(
+      /*wait_for_additional_certificates=*/true, /*cert_net_fetcher=*/nullptr,
+      /*wait_for_component_data=*/true);
+  net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
+                                                /*ocsp_response=*/std::string(),
+                                                /*sct_list=*/std::string());
+  DummyCVServiceRequest cv_service_req;
+  mojo::Receiver<mojom::CertVerifierRequest> cv_request_receiver(
+      &cv_service_req);
+
+  cv_service_remote()->Verify(
+      dummy_params,
+      net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB, 1234,
+                        base::TimeTicks::Now()),
+      cv_request_receiver.BindNewPipeAndPassRemote());
+  cv_service_remote().FlushForTesting();
+  EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+
+  cvs_impl->UpdateVerifierData(net::CertVerifyProc::ImplParams());
+  cvs_impl->OnComponentDataLoaded();
+
+  // Still waiting on UpdateAdditionalCertificates.
+  EXPECT_FALSE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 0u);
+
+  cv_service_updater_remote()->UpdateAdditionalCertificates(
+      cert_verifier::mojom::AdditionalCertificates::New());
+  cv_service_updater_remote().FlushForTesting();
+  EXPECT_EQ(dummy_cv()->update_proc_data_count(), 1u);
+  EXPECT_TRUE(dummy_cv()->HasPendingAsyncRequest(dummy_params));
+}
+
 TEST_F(CertVerifierServiceTest, TestSingleRequestQueuedWithDisconnection) {
-  CreateImpl(/*wait_for_update=*/true);
+  CreateImpl(/*wait_for_additional_certificates=*/true);
   net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
                                                 /*ocsp_response=*/std::string(),
                                                 /*sct_list=*/std::string());
@@ -564,7 +714,7 @@ TEST_F(CertVerifierServiceTest, TestSingleRequestQueuedWithDisconnection) {
 }
 
 TEST_F(CertVerifierServiceTest, TestSingleQueuedRequestCVServiceDisconnection) {
-  CreateImpl(/*wait_for_update=*/true);
+  CreateImpl(/*wait_for_additional_certificates=*/true);
   net::CertVerifier::RequestParams dummy_params(GetTestCert(), "example.com", 0,
                                                 /*ocsp_response=*/std::string(),
                                                 /*sct_list=*/std::string());
@@ -600,7 +750,7 @@ TEST_F(CertVerifierServiceTest, TestSingleQueuedRequestCVServiceDisconnection) {
 }
 
 TEST_F(CertVerifierServiceTest, EnableNetworkAccessTwiceReportsBadMessage) {
-  CreateImpl(/*wait_for_update=*/false);
+  CreateImpl(/*wait_for_additional_certificates=*/false);
   mojo::test::BadMessageObserver bad_message_observer;
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote1;
   std::ignore = pending_remote1.InitWithNewPipeAndPassReceiver();
@@ -618,7 +768,7 @@ TEST_F(CertVerifierServiceTest, EnableNetworkAccessTwiceReportsBadMessage) {
 
 TEST_F(CertVerifierServiceTest,
        EnableNetworkAccessTwiceWithFetcherReportsBadMessage) {
-  CreateImpl(/*wait_for_update=*/false,
+  CreateImpl(/*wait_for_additional_certificates=*/false,
              base::MakeRefCounted<CertNetFetcherURLLoader>());
 
   mojo::test::BadMessageObserver bad_message_observer;

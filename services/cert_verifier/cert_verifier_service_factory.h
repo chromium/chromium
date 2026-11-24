@@ -5,6 +5,9 @@
 #ifndef SERVICES_CERT_VERIFIER_CERT_VERIFIER_SERVICE_FACTORY_H_
 #define SERVICES_CERT_VERIFIER_CERT_VERIFIER_SERVICE_FACTORY_H_
 
+#include <set>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +19,7 @@
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_creation.h"
 #include "services/cert_verifier/cert_verifier_service.h"
+#include "services/cert_verifier/public/cpp/component_data_type.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -37,9 +41,13 @@ namespace cert_verifier {
 class CertVerifierServiceFactoryImpl
     : public mojom::CertVerifierServiceFactory {
  public:
-  // Creates a CertVerifierServiceFactoryImpl.
+  // Creates a CertVerifierServiceFactoryImpl. If `wait_for_component_data` is
+  // non-empty, certificate verification requests on created services will be
+  // queued until an update IPC has been processed for every type in
+  // `wait_for_component_data`.
   explicit CertVerifierServiceFactoryImpl(
-      mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver);
+      mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver,
+      ComponentDataTypeSet wait_for_component_data = {});
   ~CertVerifierServiceFactoryImpl() override;
 
   // mojom::CertVerifierServiceFactory implementation:
@@ -69,8 +77,9 @@ class CertVerifierServiceFactoryImpl
                        UpdateCtLogListCallback callback) override;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  void UpdateMtcMetadata(mojo_base::ProtoWrapper new_mtc_metadata,
-                         UpdateMtcMetadataCallback callback) override;
+  void UpdateMtcMetadata(
+      std::optional<mojo_base::ProtoWrapper> new_mtc_metadata,
+      UpdateMtcMetadataCallback callback) override;
   // Will not return anchors that are not trusted for the current running
   // version of Chrome.
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
@@ -125,7 +134,11 @@ class CertVerifierServiceFactoryImpl
   bool UpdateChromeRootStoreImpl(
       const mojo_base::ProtoWrapper& new_root_store,
       const std::optional<mojo_base::ProtoWrapper>& new_mtc_config);
+  void UpdateMtcMetadataImpl(mojo_base::ProtoWrapper new_mtc_metadata);
 #endif
+
+  bool IsWaitingForComponentData() const;
+  void OnComponentDataLoaded(ComponentDataType type);
 
   // Update all the `verifier_services_` with the current data.
   void UpdateVerifierServices();
@@ -133,6 +146,7 @@ class CertVerifierServiceFactoryImpl
   void OnCRLSetParsed(scoped_refptr<net::CRLSet> parsed_crl_set);
 
   net::CertVerifyProc::ImplParams proc_params_;
+  ComponentDataTypeSet pending_component_data_;
 
   mojo::Receiver<mojom::CertVerifierServiceFactory> receiver_;
 

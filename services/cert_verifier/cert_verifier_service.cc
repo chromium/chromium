@@ -4,6 +4,9 @@
 
 #include "services/cert_verifier/cert_verifier_service.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -95,14 +98,16 @@ CertVerifierServiceImpl::CertVerifierServiceImpl(
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher,
     net::CertVerifyProc::InstanceParams instance_params,
-    bool wait_for_update)
+    bool wait_for_additional_certificates,
+    bool wait_for_component_data)
     : instance_params_(std::move(instance_params)),
       verifier_(std::move(verifier)),
       service_receiver_(this, std::move(service_receiver)),
       updater_receiver_(this, std::move(updater_receiver)),
       client_(std::move(client)),
       cert_net_fetcher_(std::move(cert_net_fetcher)),
-      waiting_for_update_(wait_for_update) {
+      waiting_for_additional_certificates_(wait_for_additional_certificates),
+      waiting_for_component_data_(wait_for_component_data) {
   // base::Unretained is safe because |this| owns |receiver_|, so deleting
   // |this| will prevent |receiver_| from calling this callback.
   service_receiver_.set_disconnect_handler(
@@ -149,21 +154,9 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
 void CertVerifierServiceImpl::UpdateAdditionalCertificates(
     mojom::AdditionalCertificatesPtr additional_certificates) {
   UpdateCertVerifierInstanceParams(additional_certificates, &instance_params_);
-  // TODO(hchao, mattm): figure out what to do if the CertVerifierServiceFactory
-  // is destroyed before the CertVerifierService (or if this is not possible in
-  // normal circumstances, add a DCHECK or CHECK here).
-  verifier_->UpdateVerifyProcData(cert_net_fetcher_,
-                                  service_factory_impl_->get_impl_params(),
-                                  instance_params_);
-  waiting_for_update_ = false;
-
-  // Empty queue if necessary
-  for (auto& queued_request : queued_requests_) {
-    VerifyHelper(queued_request.params, queued_request.net_log_source,
-                 std::move(queued_request.cert_verifier_request));
-  }
-
-  queued_requests_.clear();
+  waiting_for_additional_certificates_ = false;
+  pending_verifier_data_update_ = true;
+  MaybeUpdateVerifierAndRunQueuedRequests();
 
   if (update_complete_callback_) {
     std::move(update_complete_callback_).Run();
@@ -184,6 +177,7 @@ void CertVerifierServiceImpl::SetCTPolicy(
   require_ct_delegate->UpdateCTPolicies(ct_policy->excluded_hosts,
                                         ct_policy->excluded_spkis);
   instance_params_.require_ct_delegate = std::move(require_ct_delegate);
+  CHECK(service_factory_impl_);
   UpdateVerifierData(service_factory_impl_->get_impl_params());
 }
 #endif
@@ -196,8 +190,46 @@ void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
 
 void CertVerifierServiceImpl::UpdateVerifierData(
     const net::CertVerifyProc::ImplParams& impl_params) {
+  if (IsWaiting()) {
+    pending_verifier_data_update_ = true;
+    return;
+  }
+  pending_verifier_data_update_ = false;
   verifier_->UpdateVerifyProcData(cert_net_fetcher_, impl_params,
                                   instance_params_);
+}
+
+void CertVerifierServiceImpl::OnComponentDataLoaded() {
+  if (!waiting_for_component_data_) {
+    return;
+  }
+  waiting_for_component_data_ = false;
+  MaybeUpdateVerifierAndRunQueuedRequests();
+}
+
+bool CertVerifierServiceImpl::IsWaiting() const {
+  return waiting_for_additional_certificates_ || waiting_for_component_data_;
+}
+
+void CertVerifierServiceImpl::MaybeUpdateVerifierAndRunQueuedRequests() {
+  if (IsWaiting()) {
+    return;
+  }
+
+  if (pending_verifier_data_update_) {
+    pending_verifier_data_update_ = false;
+    // TODO(hchao, mattm): figure out what to do if the
+    // CertVerifierServiceFactory is destroyed before the CertVerifierService.
+    CHECK(service_factory_impl_);
+    verifier_->UpdateVerifyProcData(cert_net_fetcher_,
+                                    service_factory_impl_->get_impl_params(),
+                                    instance_params_);
+  }
+
+  for (auto& queued_request : std::exchange(queued_requests_, {})) {
+    VerifyHelper(queued_request.params, queued_request.net_log_source,
+                 std::move(queued_request.cert_verifier_request));
+  }
 }
 
 void CertVerifierServiceImpl::Verify(
@@ -207,10 +239,10 @@ void CertVerifierServiceImpl::Verify(
   DVLOG(3) << "Received certificate validation request for hostname: "
            << params.hostname();
 
-  if (waiting_for_update_) {
-    DVLOG(3)
-        << "initial cert update not received, queueing request for hostname: "
-        << params.hostname();
+  if (IsWaiting()) {
+    DVLOG(3) << "initial cert update or component data not received, queueing "
+                "request for hostname: "
+             << params.hostname();
     QueuedCertVerifyRequest queued_request;
     queued_request.params = std::move(params);
     queued_request.net_log_source = std::move(net_log_source);

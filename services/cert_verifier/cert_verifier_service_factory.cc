@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,6 +85,7 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
     const net::CertVerifyProc::ImplParams& impl_params,
+    bool waiting_for_component_data,
     scoped_refptr<CertNetFetcherURLLoader>* out_cert_net_fetcher) {
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher;
 
@@ -134,7 +134,7 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
       std::move(cert_verifier), std::move(service_receiver),
       std::move(updater_receiver), std::move(client),
       std::move(cert_net_fetcher), std::move(instance_params),
-      creation_params->wait_for_update);
+      creation_params->wait_for_update, waiting_for_component_data);
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -262,8 +262,10 @@ void ComputeCTLogInfo(
 }  // namespace
 
 CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
-    mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver,
+    ComponentDataTypeSet wait_for_component_data)
+    : pending_component_data_(wait_for_component_data),
+      receiver_(this, std::move(receiver)) {}
 
 CertVerifierServiceFactoryImpl::~CertVerifierServiceFactoryImpl() = default;
 
@@ -276,6 +278,7 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
   internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
       std::move(service_receiver), std::move(updater_receiver),
       std::move(client), std::move(creation_params), proc_params_,
+      IsWaitingForComponentData(),
       /*out_cert_net_fetcher=*/nullptr);
 
   verifier_services_.insert(service_impl);
@@ -289,15 +292,32 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
     mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
   InitializeRootStoreDataIfNecessary();
-  GetNewCertVerifierImpl(std::move(service_receiver),
-                         std::move(updater_receiver), std::move(client),
-                         std::move(creation_params), proc_params_,
-                         cert_net_fetcher_ptr);
+  GetNewCertVerifierImpl(
+      std::move(service_receiver), std::move(updater_receiver),
+      std::move(client), std::move(creation_params), proc_params_,
+      /*waiting_for_component_data=*/false, cert_net_fetcher_ptr);
 }
 
 void CertVerifierServiceFactoryImpl::UpdateCRLSet(
     mojo_base::BigBuffer crl_set,
     mojom::CertVerifierServiceFactory::UpdateCRLSetCallback callback) {
+  if (crl_set.size() == 0) {
+    // Note that this is synchronous, while the unblock through OnCRLSetParsed
+    // is asynchronous.  This potentially could cut ahead of an in-flight
+    // posttask for OnCRLSetParsed and unblock verification before the earlier
+    // data was loaded. In practice this is expected to never happen since the
+    // only time an empty value would be sent would be the initial unblock when
+    // there isn't pre-cached component data, so there is nothing to cut ahead
+    // of.
+    // TODO(crbug.com/370696616): To ensure this, could update
+    // crl_set_component_installer.cc so that the only case it can call with
+    // empty value is on the unblock (should skip calling UpdateCRLSet if
+    // reading the file returned empty in other cases).
+    OnComponentDataLoaded(ComponentDataType::kCRLSet);
+    std::move(callback).Run();
+    return;
+  }
+
   // Posting to thread pool might fail if the browser is in shutdown. Wrap the
   // callback so that it will be invoked anyway to avoid violating Mojo
   // expectations. This is a little misleading since the CRLSet was not
@@ -383,19 +403,15 @@ void CertVerifierServiceFactoryImpl::UpdateKeyPinsListImpl(
 
 void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
     scoped_refptr<net::CRLSet> parsed_crl_set) {
-  if (!parsed_crl_set) {
-    return;
+  // Only apply valid CRLSets with a newer sequence number (don't allow
+  // downgrades, and don't refresh CRLSets that are identical since the sequence
+  // is globally unique for all CRLSets).
+  if (parsed_crl_set &&
+      proc_params_.crl_set->sequence() < parsed_crl_set->sequence()) {
+    proc_params_.crl_set = std::move(parsed_crl_set);
+    UpdateVerifierServices();
   }
-
-  if (proc_params_.crl_set->sequence() >= parsed_crl_set->sequence()) {
-    // Don't allow downgrades, and don't refresh CRLSets that are identical
-    // (the sequence is globally unique for all CRLSets).
-    return;
-  }
-
-  proc_params_.crl_set = std::move(parsed_crl_set);
-
-  UpdateVerifierServices();
+  OnComponentDataLoaded(ComponentDataType::kCRLSet);
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -499,11 +515,17 @@ CertVerifierServiceFactoryImpl::ParseMtcConfigProto(
 }
 
 void CertVerifierServiceFactoryImpl::UpdateMtcMetadata(
-    mojo_base::ProtoWrapper new_mtc_metadata,
+    std::optional<mojo_base::ProtoWrapper> new_mtc_metadata,
     UpdateMtcMetadataCallback callback) {
-  // Ensure the callback is run regardless which return path is used.
-  base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
+  if (new_mtc_metadata.has_value()) {
+    UpdateMtcMetadataImpl(std::move(*new_mtc_metadata));
+  }
+  OnComponentDataLoaded(ComponentDataType::kMtcMetadata);
+  std::move(callback).Run();
+}
 
+void CertVerifierServiceFactoryImpl::UpdateMtcMetadataImpl(
+    mojo_base::ProtoWrapper new_mtc_metadata) {
   auto message = new_mtc_metadata.As<chrome_root_store::MtcMetadata>();
   if (!message.has_value()) {
     LOG(ERROR) << "error parsing proto for MTC Metadata";
@@ -615,6 +637,7 @@ void CertVerifierServiceFactoryImpl::UpdatePKIMetadata(
   if (updated) {
     UpdateVerifierServices();
   }
+  OnComponentDataLoaded(ComponentDataType::kPKIMetadata);
   std::move(callback).Run();
 }
 #endif
@@ -664,6 +687,23 @@ void CertVerifierServiceFactoryImpl::InitializeRootStoreDataIfNecessary() {
         net::ChromeRootStoreData::CreateFromCompiledRootStore();
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+}
+
+bool CertVerifierServiceFactoryImpl::IsWaitingForComponentData() const {
+  return !pending_component_data_.empty();
+}
+
+void CertVerifierServiceFactoryImpl::OnComponentDataLoaded(
+    ComponentDataType type) {
+  if (!pending_component_data_.Has(type)) {
+    return;
+  }
+  pending_component_data_.Remove(type);
+  if (!IsWaitingForComponentData()) {
+    for (internal::CertVerifierServiceImpl* service : verifier_services_) {
+      service->OnComponentDataLoaded();
+    }
+  }
 }
 
 void CertVerifierServiceFactoryImpl::UpdateVerifierServices() {

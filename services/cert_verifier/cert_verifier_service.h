@@ -45,6 +45,19 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
                                 public mojom::CertVerifierServiceUpdater,
                                 public net::CertVerifier::Observer {
  public:
+  // Create a CertVerifierServiceImpl that will verify certificates requested
+  // through `service_receiver` using `verifier`. The verifier parameters may
+  // be updated through `updater_receiver` as well as the public methods such
+  // as `UpdateVerifierData`. Observers will be notified of updates through
+  // `client`.
+  // `cert_net_fetcher` may be used for network requests during verification,
+  // once `EnableNetworkAccess` has been called.
+  // `instance_params` is the initial set of InstanceParams used by `verifier`.
+  // If `wait_for_additional_certificates` is true, `Verify` calls will be
+  // blocked until the first `UpdateAdditionalCertificates` call. If
+  // `wait_for_component_data` is true, `Verify` calls will be blocked until
+  // `OnComponentDataLoaded` is called. If both are true, verifications will be
+  // blocked until both conditions are satisfied.
   explicit CertVerifierServiceImpl(
       std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier,
       mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
@@ -52,7 +65,8 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher,
       net::CertVerifyProc::InstanceParams instance_params,
-      bool wait_for_update);
+      bool wait_for_additional_certificates,
+      bool wait_for_component_data);
 
   // mojom::CertVerifierService implementation:
   void Verify(const net::CertVerifier::RequestParams& params,
@@ -90,6 +104,10 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
   // Update the wrapped verifier with CRLSet and ChromeRootStoreData.
   void UpdateVerifierData(const net::CertVerifyProc::ImplParams& impl_params);
 
+  // Called when all initial component data that the factory was waiting for has
+  // finished loading.
+  void OnComponentDataLoaded();
+
  private:
   struct QueuedCertVerifyRequest {
     QueuedCertVerifyRequest();
@@ -109,6 +127,9 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
 
   void OnDisconnectFromService();
 
+  bool IsWaiting() const;
+  void MaybeUpdateVerifierAndRunQueuedRequests();
+
   void VerifyHelper(
       const net::CertVerifier::RequestParams& params,
       const net::NetLogSource& net_log_source,
@@ -122,8 +143,10 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher_;
   base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>
       service_factory_impl_;
-  // Will queue requests for processing until this is false.
-  bool waiting_for_update_;
+  // Requests are queued while either of these is true.
+  bool waiting_for_additional_certificates_;
+  bool waiting_for_component_data_;
+  bool pending_verifier_data_update_ = false;
   bool enable_network_access_called_ = false;
   std::vector<QueuedCertVerifyRequest> queued_requests_;
   WaitUntilNextUpdateForTestingCallback update_complete_callback_;
