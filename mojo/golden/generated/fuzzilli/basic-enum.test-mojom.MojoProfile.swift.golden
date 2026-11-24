@@ -176,6 +176,14 @@ private func hideSentEndpoints(_ b: ProgramBuilder, in arguments: [Variable]) {
     }
 }
 
+/// Finds or generates arguments for a call with `signature`.
+private func findOrGenerateMojoArguments(
+    _ b: ProgramBuilder, forSignature signature: Signature
+) -> [Variable] {
+    return b.findOrGenerateArguments(
+        forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
+}
+
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
 /// "Mojo" objects instead of all the objects in the JavaScript environment,
 /// most of which are unrelated to the interface. This generator emits random
@@ -192,7 +200,7 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     let methodName = b.type(of: obj).randomMethod()!
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
-    let arguments = b.findOrGenerateArguments(forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
+    let arguments = findOrGenerateMojoArguments(b, forSignature: signature)
     hideSentEndpoints(b, in: arguments)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
