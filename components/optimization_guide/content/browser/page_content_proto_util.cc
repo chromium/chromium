@@ -341,6 +341,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODELESS;
     case blink::mojom::AIPageContentAttributeType::kMath:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_MATH;
+    case blink::mojom::AIPageContentAttributeType::kLabel:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL;
   }
   NOTREACHED();
 }

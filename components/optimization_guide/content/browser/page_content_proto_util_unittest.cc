@@ -1416,6 +1416,23 @@ TEST_F(PageContentProtoUtilTest, ConvertDialogAttributeTypes) {
             optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODELESS);
 }
 
+TEST_F(PageContentProtoUtilTest, ConvertLabelAttributeType) {
+  auto root_content = CreatePageContent();
+  root_content->root_node->children_nodes.emplace_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kLabel));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
+}
+
 TEST_F(PageContentProtoUtilTest, ConvertMathData) {
   auto root_content = CreatePageContent();
   auto math_node =

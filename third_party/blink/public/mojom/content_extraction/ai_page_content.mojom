@@ -60,6 +60,9 @@ enum AIPageContentAttributeType {
 
   // MathML root (<math>) elements.
   kMath,
+
+  // Labels, captions, and legends (e.g. <legend>, <caption>, <label>).
+  kLabel,
 };
 
 enum AIPageContentAnnotatedRole {

@@ -60,6 +60,8 @@ const char* AttributeTypeToString(
       return "DialogModeless";
     case mojom::blink::AIPageContentAttributeType::kMath:
       return "Math";
+    case mojom::blink::AIPageContentAttributeType::kLabel:
+      return "Label";
   }
   return "Unknown";
 }

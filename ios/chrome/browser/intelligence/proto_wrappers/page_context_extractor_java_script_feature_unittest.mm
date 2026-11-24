@@ -1522,9 +1522,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
 
   std::optional<double> label_attribute_type =
       label_node->FindDoubleByDottedPath("contentAttributes.attributeType");
-  ASSERT_EQ(label_attribute_type,
-            static_cast<double>(
-                optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER));
+  ASSERT_EQ(
+      label_attribute_type,
+      static_cast<double>(optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL));
 
   std::optional<double> input_attribute_type =
       input_node->FindDoubleByDottedPath("contentAttributes.attributeType");

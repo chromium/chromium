@@ -7984,7 +7984,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_LabelForDomNodeId) {
   const auto& input_node = root.children_nodes(1);
 
   ASSERT_EQ(label_node.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
   ASSERT_EQ(input_node.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
 
@@ -8004,6 +8004,81 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_LabelForDomNodeId) {
                     .text_data()
                     .text_content(),
             "My Label");
+}
+
+// Tests that <legend>, <caption>, <figcaption>, and <label> emit
+// CONTENT_ATTRIBUTE_LABEL, while explicit ARIA form-control roles take
+// precedence.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_LabelLegendCaptionFigcaptionAndAriaRoles) {
+  if (!IsRefactored()) {
+    return;
+  }
+  auto page_structure = HtmlPage(
+      "LabelsAndRoles",
+      RawHtml("<fieldset><legend>Legend text</legend></fieldset>"
+              "<table><caption>Table caption</caption>"
+              "<tr><td>Cell</td></tr></table>"
+              "<figure><figcaption>Figure caption</figcaption></figure>"
+              "<label role='checkbox'>Check</label>"
+              "<label role='region'>Region label</label>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& root = response.value()->annotated_page_content().root_node();
+  ASSERT_EQ(root.children_nodes_size(), 5);
+
+  const auto& fieldset_node = root.children_nodes(0);
+  ASSERT_EQ(fieldset_node.children_nodes_size(), 1);
+  EXPECT_EQ(
+      fieldset_node.children_nodes(0).content_attributes().attribute_type(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
+  EXPECT_TRUE(fieldset_node.children_nodes(0)
+                  .content_attributes()
+                  .annotated_roles()
+                  .empty());
+
+  const auto& table_node = root.children_nodes(1);
+  ASSERT_EQ(table_node.children_nodes_size(), 2);
+  EXPECT_EQ(table_node.content_attributes().table_data().table_name(),
+            "Table caption");
+  EXPECT_EQ(table_node.children_nodes(0).content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
+  EXPECT_TRUE(table_node.children_nodes(0)
+                  .content_attributes()
+                  .annotated_roles()
+                  .empty());
+
+  const auto& figure_node = root.children_nodes(2);
+  ASSERT_EQ(figure_node.children_nodes_size(), 1);
+  EXPECT_EQ(figure_node.children_nodes(0).content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
+  EXPECT_TRUE(figure_node.children_nodes(0)
+                  .content_attributes()
+                  .annotated_roles()
+                  .empty());
+
+  EXPECT_EQ(root.children_nodes(3).content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  EXPECT_TRUE(
+      root.children_nodes(3).content_attributes().annotated_roles().empty());
+
+  const auto& region_label = root.children_nodes(4);
+  EXPECT_EQ(region_label.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
+  EXPECT_THAT(
+      region_label.content_attributes().annotated_roles(),
+      testing::Contains(optimization_guide::proto::ANNOTATED_ROLE_SECTION));
 }
 
 // Tests that ARIA roles and content-visibility are correctly populated in the

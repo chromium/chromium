@@ -612,6 +612,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
           optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
 
   const auto& label = ActionableContentRootNode().children_nodes()[1];
+  EXPECT_EQ(label.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
   ASSERT_TRUE(label.content_attributes().has_interaction_info());
   EXPECT_TRUE(label.content_attributes()
                   .interaction_info()
@@ -772,6 +774,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
 
   const auto& label = ActionableContentRootNode().children_nodes()[1];
+  EXPECT_EQ(label.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LABEL);
   ASSERT_TRUE(label.content_attributes().has_interaction_info());
   const auto& label_interaction = label.content_attributes().interaction_info();
   EXPECT_TRUE(label_interaction.clickability_reasons().empty());

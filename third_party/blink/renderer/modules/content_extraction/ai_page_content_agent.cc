@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
@@ -3304,6 +3305,14 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   } else if (element &&
              ProcessAriaFormControlNode(*element, aria_role, attributes)) {
     // ProcessAriaFormControlNode sets the attribute type and data.
+  } else if (element &&
+             RuntimeEnabledFeatures::AIPageContentIncludeLabelEnabled() &&
+             (element->HasTagName(html_names::kLabelTag) ||
+              element->HasTagName(html_names::kLegendTag) ||
+              element->HasTagName(html_names::kCaptionTag) ||
+              element->HasTagName(html_names::kFigcaptionTag))) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kLabel;
   } else if (element && IsHeadingTag(*element)) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kHeading;

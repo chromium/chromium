@@ -406,6 +406,11 @@
       name: "AIPageContentEmitInterestingAria",
       status: "stable",
     },
+    // Emit <label>, <legend>, <caption>, and <figcaption> with kLabel.
+    {
+      name: "AIPageContentIncludeLabel",
+      status: "stable",
+    },
     {
       name: "AIPageContentIncludeMathML",
       status: "stable",

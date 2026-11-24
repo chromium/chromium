@@ -125,6 +125,8 @@ export enum PageContentAttributeType {
   VIDEO = 27,
   DIALOG_MODAL = 28,
   DIALOG_MODELESS = 29,
+  // 30 (MATH) is skipped.
+  LABEL = 31,
 }
 
 // The numbers are aligned with the CssPosition enum in
