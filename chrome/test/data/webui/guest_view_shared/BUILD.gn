@@ -19,11 +19,11 @@ build_webui_tests("build") {
   ]
 
   ts_path_mappings = [
-    "//glic/shared/guest_view/*|" +
+    "//glic-experimental-opt-in/shared/guest_view/*|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/guest_view_shared/tsc/*",
             target_gen_dir),
-    "//glic/strings.m.js|" +
+    "//glic-experimental-opt-in/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
                     target_gen_dir),
   ]

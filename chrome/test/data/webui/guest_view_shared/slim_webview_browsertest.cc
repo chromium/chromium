@@ -8,6 +8,8 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -53,10 +55,14 @@ class GuestWebContentsObserver : public content::WebContentsObserver {
 class SlimWebviewBrowserTest : public WebUIMochaBrowserTest,
                                public content::WebContentsObserver {
  public:
-  // While these tests are independent of Glic, we use the Glic host as a
-  // convenient way to get a WebUI instance that has all the sources and
-  // bindings set up correctly.
-  SlimWebviewBrowserTest() { set_test_loader_host(chrome::kChromeUIGlicHost); }
+  // While these tests are independent of Glic, we use the Glic experimental
+  // opt-in host as a convenient way to get a WebUI instance that has all the
+  // SlimWebView sources and bindings set up correctly.
+  SlimWebviewBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicExperimentalTriggering}, {});
+    set_test_loader_host(chrome::kChromeUIGlicExperimentalOptInHost);
+  }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     WebUIMochaBrowserTest::SetUpDefaultCommandLine(command_line);
@@ -174,7 +180,9 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest,
   std::vector<std::unique_ptr<GuestWebContentsObserver>> guest_observers_;
   std::map<std::string, net::test_server::HttpRequest::HeaderMap>
       captured_headers_;
-  base::test::ScopedFeatureList scoped_feature_list_{features::kGlic};
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      bypass_glic_enablement_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SlimWebviewBrowserTest, All) {

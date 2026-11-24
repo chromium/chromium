@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//glic/shared/guest_view/slim_webview.js';
+import '//glic-experimental-opt-in/shared/guest_view/slim_webview.js';
 
-import {OnBeforeSendHeadersParams, OriginCheckParams} from '//glic/shared/guest_view/request_throttlers.js';
-import {PermissionRequestEvent} from '//glic/shared/guest_view/slim_webview.js';
-import type {LoadAbortEvent, LoadEvent, NewWindowEvent, SlimWebviewElement, ZoomChangeEvent} from '//glic/shared/guest_view/slim_webview.js';
+import {OnBeforeSendHeadersParams, OriginCheckParams} from '//glic-experimental-opt-in/shared/guest_view/request_throttlers.js';
+import {PermissionRequestEvent} from '//glic-experimental-opt-in/shared/guest_view/slim_webview.js';
+import type {LoadAbortEvent, LoadEvent, NewWindowEvent, SlimWebviewElement, ZoomChangeEvent} from '//glic-experimental-opt-in/shared/guest_view/slim_webview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

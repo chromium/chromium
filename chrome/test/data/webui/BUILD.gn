@@ -478,6 +478,8 @@ source_set("browser_tests") {
   if (!enable_extensions_core && enable_guest_view) {
     sources += [ "guest_view_shared/slim_webview_browsertest.cc" ]
     deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/public:provider_features",
       "//chrome/browser/permissions",
       "//components/zoom",
       "//net:test_support",
