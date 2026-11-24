@@ -369,9 +369,17 @@ bool IsGuestModeEnabled(const Profile& profile) {
 }
 
 bool IsProfileLocked(const base::FilePath& profile_path) {
+  // `g_browser_process` or `profile_manager()` may be null during browser
+  // teardown or in unit tests that instantiate a standalone `TestingProfile`
+  // without a `ProfileManager`.
+  ProfileManager* profile_manager =
+      g_browser_process ? g_browser_process->profile_manager() : nullptr;
+  if (!profile_manager) {
+    return false;
+  }
+
   ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
+      profile_manager->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path);
   if (!entry) {
     return false;

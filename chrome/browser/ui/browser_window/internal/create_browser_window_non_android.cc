@@ -11,6 +11,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 
@@ -177,7 +178,8 @@ BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
 
   if (!IncognitoModePrefs::CanOpenBrowser(&profile) ||
       !profile.AllowsBrowserWindows() ||
-      IsProfileDirectoryMarkedForDeletion(profile.GetPath())) {
+      IsProfileDirectoryMarkedForDeletion(profile.GetPath()) ||
+      profiles::IsProfileLocked(profile.GetPath())) {
     return BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable;
   }
 

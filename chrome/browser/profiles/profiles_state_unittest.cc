@@ -15,8 +15,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -37,6 +39,9 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 #include "chrome/browser/startup_data.h"
+#else
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/signin/signin_util.h"
 #endif
 
 namespace {
@@ -188,6 +193,54 @@ TEST_P(IsGuestModeEnabledTest, MixedProfiles) {
 INSTANTIATE_TEST_SUITE_P(ProfilesState,
                          IsGuestModeEnabledTest,
                          testing::Bool());
+
+TEST(IsProfileLockedTest, NullBrowserProcess) {
+  TestingBrowserProcess::DeleteInstance();
+  ASSERT_EQ(nullptr, g_browser_process);
+  EXPECT_FALSE(profiles::IsProfileLocked(base::FilePath::FromASCII(kProfile1)));
+  TestingBrowserProcess::CreateInstance();
+}
+
+TEST(IsProfileLockedTest, NullProfileManager) {
+  ASSERT_EQ(nullptr, TestingBrowserProcess::GetGlobal()->profile_manager());
+  EXPECT_FALSE(profiles::IsProfileLocked(base::FilePath::FromASCII(kProfile1)));
+}
+
+TEST(IsProfileLockedTest, LockedAndUnlockedProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  EXPECT_FALSE(profiles::IsProfileLocked(
+      profile_manager.profiles_dir().AppendASCII("UnknownProfile")));
+
+  Profile* profile = profile_manager.CreateTestingProfile(kProfile1);
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(profiles::IsProfileLocked(profile->GetPath()));
+
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  EXPECT_FALSE(profiles::IsProfileLocked(
+      profile_manager.profiles_dir().AppendASCII("UnknownProfile")));
+  EXPECT_FALSE(
+      profiles::IsProfileLocked(ProfileManager::GetGuestProfilePath()));
+
+  ProfileAttributesEntry* entry =
+      profile_manager.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(nullptr, entry);
+
+  entry->LockForceSigninProfile(true);
+  EXPECT_TRUE(profiles::IsProfileLocked(profile->GetPath()));
+
+  entry->LockForceSigninProfile(false);
+  EXPECT_FALSE(profiles::IsProfileLocked(profile->GetPath()));
+
+  // A new unsigned-in profile created while ForceSignin is enabled starts
+  // locked.
+  Profile* new_profile = profile_manager.CreateTestingProfile("Profile 2");
+  ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(profiles::IsProfileLocked(new_profile->GetPath()));
+}
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

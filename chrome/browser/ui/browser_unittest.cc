@@ -6,9 +6,15 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -98,6 +104,66 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
   EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,
             GetBrowserWindowCreationStatusForProfile(
                 *profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+}
+
+TEST_F(BrowserUnitTest, CreateBrowserFailsIfProfileIsLocked) {
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  TestingProfile* test_profile =
+      profile_manager.CreateTestingProfile("locked_profile");
+  ASSERT_TRUE(test_profile);
+  Profile* otr_profile =
+      test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  ProfileAttributesEntry* entry =
+      profile_manager.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(test_profile->GetPath());
+  ASSERT_NE(nullptr, entry);
+
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,
+            GetBrowserWindowCreationStatusForProfile(*test_profile));
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,
+            GetBrowserWindowCreationStatusForProfile(*otr_profile));
+
+  entry->LockForceSigninProfile(true);
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable,
+            GetBrowserWindowCreationStatusForProfile(*test_profile));
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable,
+            GetBrowserWindowCreationStatusForProfile(*otr_profile));
+
+  // Even when Incognito mode is forced by policy, a locked profile cannot open
+  // an OTR browser window.
+  IncognitoModePrefs::SetAvailability(
+      test_profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable,
+            GetBrowserWindowCreationStatusForProfile(*otr_profile));
+
+  // Shutdown status takes precedence over profile suitability errors.
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kErrorShuttingDown,
+            GetBrowserWindowCreationStatusForProfile(*test_profile));
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(false);
+
+  // Guest off-the-record sessions have no ProfileAttributesEntry and remain
+  // allowed when ForceSignin is active.
+  TestingProfile* guest_profile = profile_manager.CreateGuestProfile();
+  ASSERT_TRUE(guest_profile);
+  Profile* guest_otr =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(guest_otr);
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,
+            GetBrowserWindowCreationStatusForProfile(*guest_otr));
+
+  IncognitoModePrefs::SetAvailability(
+      test_profile->GetPrefs(), policy::IncognitoModeAvailability::kEnabled);
+  entry->LockForceSigninProfile(false);
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,
+            GetBrowserWindowCreationStatusForProfile(*test_profile));
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,
+            GetBrowserWindowCreationStatusForProfile(*otr_profile));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

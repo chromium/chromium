@@ -83,6 +83,7 @@ source_set("internal") {
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",
+      "//chrome/browser/profiles",
       "//chrome/browser/signin",
       "//chrome/browser/skills:public",
       "//chrome/browser/tab_group_sync:factories",
