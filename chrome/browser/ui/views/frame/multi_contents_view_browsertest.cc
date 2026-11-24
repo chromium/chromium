@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
@@ -834,4 +835,36 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
                   initial_bounds.width(), drop_target_height));
     CompareLayouts(expected_child_layouts, actual_child_layouts);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, TopSeparatorLayerUsage) {
+  MultiContentsView* view = multi_contents_view();
+  view->SetShouldShowTopSeparator(true);
+  RunScheduledLayouts();
+
+  // In normal single-tab mode, background_view_ is hidden so top_separator
+  // should not paint to its own layer.
+  EXPECT_FALSE(view->contents_separators_.top_separator->layer());
+
+  // Showing the drop target makes background_view_ visible, so top_separator
+  // should switch to a layer to stay above background_view_.
+  view->drop_target_view_->Show(
+      MultiContentsDropTargetView::DropSide::START,
+      MultiContentsDropTargetView::DropTargetState::kFull,
+      MultiContentsDropTargetView::DragType::kLink);
+  view->drop_target_view_->animation_for_testing().End();
+  RunScheduledLayouts();
+  EXPECT_TRUE(view->contents_separators_.top_separator->layer());
+
+  // Hiding the drop target hides background_view_, so top_separator should
+  // destroy its layer.
+  view->drop_target_view_->Hide(/*suppress_animation=*/true);
+  RunScheduledLayouts();
+  EXPECT_FALSE(view->contents_separators_.top_separator->layer());
+
+  // In split view, top_separator is hidden so it should not have a layer.
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  RunScheduledLayouts();
+  EXPECT_FALSE(view->contents_separators_.top_separator->layer());
 }

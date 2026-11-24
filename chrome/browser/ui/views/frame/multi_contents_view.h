@@ -25,6 +25,7 @@
 #include "ui/views/view.h"
 
 class BrowserView;
+class ContentsSeparator;
 class ContentsWebView;
 class CustomFloatingCorner;
 class MultiContentsBackgroundView;
@@ -226,12 +227,14 @@ class MultiContentsView
                            LeadingSeparatorLayout);
   FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest,
                            TrailingSeparatorLayout);
+  FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest,
+                           TopSeparatorLayerUsage);
 
   // Encapsulates the views required to draw a separator around contents.
   struct ContentsSeparators {
     void Reset();
 
-    raw_ptr<views::View> top_separator = nullptr;
+    raw_ptr<ContentsSeparator> top_separator = nullptr;
     raw_ptr<views::View> leading_separator = nullptr;
     raw_ptr<views::View> trailing_separator = nullptr;
     raw_ptr<CustomFloatingCorner> corner_separator = nullptr;
@@ -247,6 +250,10 @@ class MultiContentsView
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
   void BeforeApplyLayout(const views::ProposedLayout& layout) override;
+
+  // Puts the top separator on its own layer only while `background_view_` is
+  // also visible in `layout`, so that it stays above the background's layer.
+  void UpdateTopSeparatorLayer(const views::ProposedLayout& layout);
 
   // Adds the drop target layout to the given list and return the remaining
   // available space after the layout.

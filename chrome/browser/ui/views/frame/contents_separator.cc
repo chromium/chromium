@@ -13,6 +13,17 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
+namespace {
+
+std::unique_ptr<views::Background> CreateSeparatorBackground(bool use_layer) {
+  return use_layer
+             ? views::CreateLayerBasedSolidBackground(
+                   kColorToolbarContentAreaSeparator)
+             : views::CreateSolidBackground(kColorToolbarContentAreaSeparator);
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<ContentsSeparator>
 ContentsSeparator::CreateLayerBasedContentsSeparator() {
@@ -27,16 +38,25 @@ ContentsSeparator::CreateContentsSeparator() {
       new ContentsSeparator(/*create_layer=*/false));
 }
 
-ContentsSeparator::ContentsSeparator(bool create_layer) {
-  SetBackground(create_layer ? views::CreateLayerBasedSolidBackground(
-                                   kColorToolbarContentAreaSeparator)
-                             : views::CreateSolidBackground(
-                                   kColorToolbarContentAreaSeparator));
+ContentsSeparator::ContentsSeparator(bool create_layer)
+    : use_layer_(create_layer) {
+  SetBackground(CreateSeparatorBackground(create_layer));
 
   // BrowserViewLayout will respect either the height or width of this,
   // depending on orientation, not simultaneously both.
   SetPreferredSize(
       gfx::Size(views::Separator::kThickness, views::Separator::kThickness));
+}
+
+void ContentsSeparator::SetUseLayer(bool use_layer) {
+  if (use_layer_ == use_layer) {
+    return;
+  }
+  use_layer_ = use_layer;
+  if (!use_layer_) {
+    DestroyLayer();
+  }
+  SetBackground(CreateSeparatorBackground(use_layer_));
 }
 
 BEGIN_METADATA(ContentsSeparator)

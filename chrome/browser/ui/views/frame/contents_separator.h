@@ -20,8 +20,12 @@ class ContentsSeparator : public views::View {
   static std::unique_ptr<ContentsSeparator> CreateLayerBasedContentsSeparator();
   static std::unique_ptr<ContentsSeparator> CreateContentsSeparator();
 
+  void SetUseLayer(bool use_layer);
+
  private:
   explicit ContentsSeparator(bool create_layer);
+
+  bool use_layer_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_SEPARATOR_H_

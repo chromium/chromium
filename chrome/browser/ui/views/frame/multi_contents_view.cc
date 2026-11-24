@@ -99,7 +99,7 @@ MultiContentsView::MultiContentsView(
           browser_view_->browser()->GetTabStripModel());
 
   contents_separators_.top_separator =
-      AddChildView(ContentsSeparator::CreateLayerBasedContentsSeparator());
+      AddChildView(ContentsSeparator::CreateContentsSeparator());
   contents_separators_.top_separator->SetProperty(
       views::kElementIdentifierKey, kContentsSeparatorTopEdgeElementId);
 
@@ -559,6 +559,8 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
 }
 
 void MultiContentsView::BeforeApplyLayout(const views::ProposedLayout& layout) {
+  UpdateTopSeparatorLayer(layout);
+
   if (!target_content_bounds_) {
     for (auto& contents : contents_container_views_) {
       contents->SetTargetContentBounds(std::nullopt);
@@ -617,6 +619,17 @@ void MultiContentsView::BeforeApplyLayout(const views::ProposedLayout& layout) {
 
   first->SetTargetContentBounds(first_outsets);
   second->SetTargetContentBounds(second_outsets);
+}
+
+void MultiContentsView::UpdateTopSeparatorLayer(
+    const views::ProposedLayout& layout) {
+  const auto* top_separator_layout =
+      layout.GetLayoutFor(contents_separators_.top_separator);
+  const auto* background_layout = layout.GetLayoutFor(background_view_);
+  const bool use_layer_for_top_separator =
+      top_separator_layout && top_separator_layout->visible &&
+      background_layout && background_layout->visible;
+  contents_separators_.top_separator->SetUseLayer(use_layer_for_top_separator);
 }
 
 gfx::Rect MultiContentsView::CalculateDropTargetLayout(

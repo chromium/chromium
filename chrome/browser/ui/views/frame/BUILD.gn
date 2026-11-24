@@ -2257,6 +2257,7 @@ source_set("browser_tests") {
     ":browser_view_header",
     ":browser_view_layout",
     ":browser_view_layout_delegate_impl",
+    ":contents_separator",
     ":custom_corners_background",
     ":custom_floating_corner",
     ":horizontal_tab_strip_region_view",
