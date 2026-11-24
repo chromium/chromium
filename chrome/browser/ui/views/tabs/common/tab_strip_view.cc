@@ -632,7 +632,7 @@ void TabStripView::SetTrailingOverlap(int trailing_overlap) {
   }
 }
 
-gfx::Rect TabStripView::GetScrollViewUnmaskedBounds(
+gfx::Rect TabStripView::GetUnmirroredScrollViewUnmaskedBounds(
     const views::ScrollView* scroll_view) const {
   CHECK(scroll_view);
   gfx::Rect bounds = scroll_view->GetLocalBounds();
@@ -658,7 +658,42 @@ gfx::Rect TabStripView::GetScrollViewUnmaskedBounds(
     }
   }
   bounds.Inset(gfx::Insets::TLBR(0, left_inset, 0, right_inset));
-  return scroll_view->GetMirroredRect(bounds);
+  return bounds;
+}
+
+gfx::Rect TabStripView::GetScrollViewUnmaskedBounds(
+    const views::ScrollView* scroll_view) const {
+  CHECK(scroll_view);
+  return scroll_view->GetMirroredRect(
+      GetUnmirroredScrollViewUnmaskedBounds(scroll_view));
+}
+
+void TabStripView::UpdateScrollViewViewportClip(
+    views::ScrollView* scroll_view) {
+  CHECK(scroll_view);
+  views::View* const contents = scroll_view->contents();
+  if (!contents) {
+    return;
+  }
+  views::View* const viewport = contents->parent();
+  CHECK(viewport);
+  ui::Layer* const viewport_layer = viewport->layer();
+  CHECK(viewport_layer);
+
+  const gfx::Rect unmasked_bounds =
+      GetUnmirroredScrollViewUnmaskedBounds(scroll_view);
+  if (unmasked_bounds == scroll_view->GetLocalBounds()) {
+    viewport_layer->SetClipRect(gfx::Rect());
+    return;
+  }
+  if (unmasked_bounds.IsEmpty()) {
+    // An empty clip rect means unclipped, so use a 1x1 rect at (-2, -2),
+    // safely outside the (0, 0) origin, to clip the entire viewport.
+    constexpr gfx::Rect kFullyClippedRect(-2, -2, 1, 1);
+    viewport_layer->SetClipRect(kFullyClippedRect);
+    return;
+  }
+  viewport_layer->SetClipRect(unmasked_bounds);
 }
 
 void TabStripView::SetCollapsedState(bool is_collapsed) {
@@ -740,7 +775,10 @@ views::View* TabStripView::AddScrollViewContents(
                   &TabStripView::SchedulePaintPinnedTrailingSeparator,
                   base::Unretained(this)));
     }
-    return unpinned_tabs_scroll_view_->SetContents(std::move(view));
+    views::View* const added =
+        unpinned_tabs_scroll_view_->SetContents(std::move(view));
+    UpdateScrollViewViewportClip(unpinned_tabs_scroll_view_);
+    return added;
   }
   // `view` should only ever be UnpinnedTabContainerView or
   // PinnedTabContainerView.
@@ -748,19 +786,27 @@ views::View* TabStripView::AddScrollViewContents(
   CHECK(container);
   CHECK(!pinned_tabs_container_view_);
   pinned_tabs_container_view_ = container;
-  return pinned_tabs_scroll_view_->SetContents(std::move(view));
+  views::View* const added =
+      pinned_tabs_scroll_view_->SetContents(std::move(view));
+  UpdateScrollViewViewportClip(pinned_tabs_scroll_view_);
+  return added;
 }
 
 void TabStripView::RemoveScrollViewContents(views::View* view) {
+  CHECK(view);
+  CHECK(view->parent());
+  CHECK(view->parent()->layer());
   if (views::IsViewClass<UnpinnedTabContainerView>(view)) {
     CHECK_EQ(view, unpinned_tabs_container_view_);
     unpinned_leading_edge_paint_scheduled_subscription_ = {};
+    view->parent()->layer()->SetClipRect(gfx::Rect());
     unpinned_tabs_container_view_ = nullptr;
     unpinned_tabs_scroll_view_->SetContents(nullptr);
     return;
   }
   if (views::IsViewClass<PinnedTabContainerView>(view)) {
     CHECK_EQ(view, pinned_tabs_container_view_);
+    view->parent()->layer()->SetClipRect(gfx::Rect());
     pinned_tabs_container_view_ = nullptr;
     pinned_tabs_scroll_view_->SetContents(nullptr);
     return;
@@ -789,30 +835,27 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
     scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
     scroll_view->SetDrawOverflowIndicator(false);
 
-    BrowserView* const browser_view =
-        collection_node_->GetController()->GetBrowserView();
     auto left_indicator =
         std::make_unique<HorizontalTabStripOverflowIndicatorView>(
-            views::OverflowIndicatorAlignment::kLeft, browser_view);
+            views::OverflowIndicatorAlignment::kLeft);
+    HorizontalTabStripOverflowIndicatorView* const left_indicator_ptr =
+        left_indicator.get();
     if (scroll_view == pinned_tabs_scroll_view_) {
-      pinned_left_overflow_indicator_ = left_indicator.get();
+      pinned_left_overflow_indicator_ = left_indicator_ptr;
     } else if (scroll_view == unpinned_tabs_scroll_view_) {
-      unpinned_left_overflow_indicator_ = left_indicator.get();
+      unpinned_left_overflow_indicator_ = left_indicator_ptr;
     }
     scroll_view->SetCustomOverflowIndicator(
         views::OverflowIndicatorAlignment::kLeft, std::move(left_indicator),
         HorizontalTabStripOverflowIndicatorView::GetMaxTotalThickness(),
         /*fills_opaquely=*/false);
-    if (scroll_view == unpinned_tabs_scroll_view_) {
-      callback_subscriptions_.emplace_back(
-          unpinned_left_overflow_indicator_->AddVisibleChangedCallback(
-              base::BindRepeating(&TabStripView::UpdateScrollViewLayers,
-                                  base::Unretained(this))));
-    }
+    callback_subscriptions_.emplace_back(
+        left_indicator_ptr->AddVisibleChangedCallback(base::BindRepeating(
+            &TabStripView::UpdateScrollViewLayers, base::Unretained(this))));
 
     auto right_indicator =
         std::make_unique<HorizontalTabStripOverflowIndicatorView>(
-            views::OverflowIndicatorAlignment::kRight, browser_view);
+            views::OverflowIndicatorAlignment::kRight);
     if (scroll_view == pinned_tabs_scroll_view_) {
       pinned_right_overflow_indicator_ = right_indicator.get();
     } else if (scroll_view == unpinned_tabs_scroll_view_) {
@@ -1144,6 +1187,8 @@ void TabStripView::UpdateScrollViewLayers() {
     unpinned_left_overflow_indicator_->SetOpaqueThickness(
         has_pinned ? seam_unpinned_opaque_thickness : leading_opaque_thickness);
   }
+  UpdateScrollViewViewportClip(pinned_tabs_scroll_view_);
+  UpdateScrollViewViewportClip(unpinned_tabs_scroll_view_);
 
   const bool draw_pinned_above_unpinned = ShouldDrawPinnedAboveUnpinned();
   if (draw_pinned_above_unpinned != is_drawing_pinned_above_unpinned_) {

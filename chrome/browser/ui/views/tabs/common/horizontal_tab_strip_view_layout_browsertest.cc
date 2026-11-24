@@ -33,10 +33,19 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/paint_info.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -766,4 +775,104 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
 
   EXPECT_EQ(unpinned_scroll->GetVisibleRect().x(), 0);
   EXPECT_FALSE(unpinned_left_indicator->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
+                       OverflowViewportClipAndTransparentIndicatorSeam) {
+  SetWindowWidth(560);
+  AddTabsUntilScrollable();
+  auto* region_view = GetTabStripRegionView();
+  auto* tab_strip_view = GetTabStripView();
+  auto* pinned_scroll = tab_strip_view->pinned_tabs_scroll_view();
+  auto* unpinned_scroll = tab_strip_view->unpinned_tabs_scroll_view();
+  auto* unpinned_left_indicator =
+      tab_strip_view->GetUnpinnedLeftOverflowIndicatorForTesting();
+  ui::Layer* pinned_viewport_layer =
+      pinned_scroll->contents()->parent()->layer();
+  ui::Layer* unpinned_viewport_layer =
+      unpinned_scroll->contents()->parent()->layer();
+
+  unpinned_scroll->ScrollToOffset(gfx::PointF(50, 0));
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  const gfx::Rect initial_region_bounds = region_view->bounds();
+  const int leading_overlap = tab_strip_view->leading_overlap();
+  ASSERT_GT(leading_overlap, 0);
+  gfx::Rect narrow_region_bounds = initial_region_bounds;
+  narrow_region_bounds.set_width(
+      initial_region_bounds.width() -
+      (unpinned_scroll->width() - leading_overlap / 2));
+  region_view->SetBoundsRect(narrow_region_bounds);
+
+  ASSERT_GT(unpinned_scroll->width(), 0);
+  ASSERT_LE(unpinned_scroll->width(), leading_overlap);
+  EXPECT_FALSE(unpinned_viewport_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(gfx::IntersectRects(unpinned_scroll->GetLocalBounds(),
+                                  unpinned_viewport_layer->clip_rect())
+                  .IsEmpty());
+
+  region_view->SetBoundsRect(initial_region_bounds);
+  AppendPinnedTab();
+  AppendPinnedTab();
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  unpinned_scroll->ScrollToOffset(gfx::PointF(50, 0));
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  SkBitmap indicator_bitmap;
+  {
+    ui::CanvasPainter painter(&indicator_bitmap,
+                              unpinned_left_indicator->size(), 1.0f,
+                              SK_ColorTRANSPARENT, /*is_pixel_canvas=*/true);
+    unpinned_left_indicator->Paint(views::PaintInfo::CreateRootPaintInfo(
+        painter.context(), unpinned_left_indicator->size()));
+  }
+
+  const int seam_width = TabStyle::Get()->GetTabOverlap();
+  ASSERT_TRUE(unpinned_left_indicator->GetVisible());
+  ASSERT_EQ(unpinned_left_indicator->opaque_thickness(), seam_width);
+  const int y = unpinned_left_indicator->GetContentsBounds().CenterPoint().y();
+  for (int x = 0; x < seam_width; ++x) {
+    EXPECT_EQ(SkColorGetA(indicator_bitmap.getColor(x, y)),
+              SK_AlphaTRANSPARENT);
+  }
+  EXPECT_GT(SkColorGetA(indicator_bitmap.getColor(seam_width, y)),
+            SK_AlphaTRANSPARENT);
+  EXPECT_EQ(unpinned_viewport_layer->clip_rect(),
+            gfx::Rect(seam_width, 0, unpinned_scroll->width() - seam_width,
+                      unpinned_scroll->height()));
+  EXPECT_TRUE(pinned_viewport_layer->clip_rect().IsEmpty());
+
+  unpinned_scroll->ScrollToOffset(gfx::PointF(0, 0));
+  EXPECT_TRUE(unpinned_viewport_layer->clip_rect().IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
+                       PinnedOverflowViewportClipMatchesUnmaskedBoundsInRTL) {
+  SetWindowWidth(560);
+  AddTabsUntilScrollable();
+  AddPinnedTabsUntilScrollable();
+  auto* tab_strip_view = GetTabStripView();
+  auto* pinned_scroll = tab_strip_view->pinned_tabs_scroll_view();
+  auto* unpinned_scroll = tab_strip_view->unpinned_tabs_scroll_view();
+  ui::Layer* pinned_viewport_layer =
+      pinned_scroll->contents()->parent()->layer();
+  ui::Layer* unpinned_viewport_layer =
+      unpinned_scroll->contents()->parent()->layer();
+
+  base::i18n::ScopedRTLForTesting rtl(true);
+  pinned_scroll->ScrollToOffset(gfx::PointF(20, 0));
+  unpinned_scroll->ScrollToOffset(gfx::PointF(50, 0));
+  pinned_scroll->InvalidateLayout();
+  unpinned_scroll->InvalidateLayout();
+  tab_strip_view->InvalidateLayout();
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  const int leading_inset = TabStyle::Get()->GetBottomExtensionWidth();
+  const int trailing_inset = TabStyle::Get()->GetTabOverlap() / 2;
+  EXPECT_EQ(pinned_viewport_layer->clip_rect(),
+            gfx::Rect(leading_inset, 0,
+                      pinned_scroll->width() - leading_inset - trailing_inset,
+                      pinned_scroll->height()));
+  EXPECT_EQ(gfx::ToRoundedRect(pinned_viewport_layer->transform().MapRect(
+                gfx::RectF(pinned_viewport_layer->clip_rect()))),
+            tab_strip_view->GetScrollViewUnmaskedBounds(pinned_scroll));
+  EXPECT_TRUE(unpinned_viewport_layer->clip_rect().IsEmpty());
 }

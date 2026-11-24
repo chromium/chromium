@@ -161,14 +161,17 @@ class TabStripView final : public views::View,
 
   gfx::Rect GetBoundsInScrollViewContents(views::View* view,
                                           views::ScrollView* scroll_view);
+  gfx::Rect GetUnmirroredScrollViewUnmaskedBounds(
+      const views::ScrollView* scroll_view) const;
+  void UpdateScrollViewViewportClip(views::ScrollView* scroll_view);
   gfx::Rect GetOpaqueVisibleRectForScrollTarget(
       views::ScrollView* scroll_view,
       const gfx::Rect& target_bounds) const;
 
   bool ShouldDrawPinnedAboveUnpinned() const;
 
-  // Updates overflow indicator opaque widths and layer z-order for the pinned
-  // and unpinned scroll views.
+  // Updates overflow indicator opaque widths, viewport layer clips, and layer
+  // z-order for the pinned and unpinned scroll views.
   void UpdateScrollViewLayers();
   void OnContentsScrolled();
   void HideHoverCardOnScroll();
