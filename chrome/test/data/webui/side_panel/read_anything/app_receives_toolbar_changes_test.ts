@@ -793,6 +793,24 @@ suite('AppReceivesToolbarChanges', () => {
         audioBrowserProxy.wordHighlighting, toolbar.highlightGranularity);
   });
 
+  test(
+      'restoreSettingsFromPrefs updates line focus without propagating change',
+      async () => {
+        visualBrowserProxy.reset();
+        visualBrowserProxy.lineFocusOn = true;
+        visualBrowserProxy.lineFocusLastNonDisabledValue =
+            visualBrowserProxy.lineFocusCursorLine;
+
+        visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
+        await microtasksFinished();
+
+        const toolbar = app.$.toolbar;
+        assertTrue(toolbar.lineFocusEnabled);
+        assertEquals(LineFocusStyle.UNDERLINE, toolbar.lineFocusStyle);
+        assertEquals(LineFocusMovement.CURSOR, toolbar.lineFocusMovement);
+        assertEquals(0, visualBrowserProxy.getCallCount('onLineFocusChanged'));
+      });
+
   suite('on links toggle', () => {
     const linkId = 44;
     const textId = 45;

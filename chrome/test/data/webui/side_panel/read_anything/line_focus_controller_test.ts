@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {LineFocusController, LineFocusModel, LineFocusMovement, LineFocusStyle, LineFocusType, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {applyContainerStyles, createShortContainer, setupTestEnvironment} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -308,6 +308,19 @@ suite('LineFocusController', () => {
     assertTrue(lineFocusModesChanged);
   });
 
+  test('restoreFromPrefs does not propagate line focus mode', () => {
+    visualBrowserProxy.reset();
+    lineFocusController.restoreFromPrefs(
+        visualBrowserProxy.lineFocusCursorLine, /*isOn=*/ true,
+        defaultContainer, defaultHeight);
+    assertEquals(0, visualBrowserProxy.getCallCount('onLineFocusChanged'));
+
+    lineFocusController.restoreFromPrefs(
+        visualBrowserProxy.lineFocusLargeCursorWindow, /*isOn=*/ false,
+        defaultContainer, defaultHeight);
+    assertEquals(0, visualBrowserProxy.getCallCount('onLineFocusChanged'));
+  });
+
   test('onScrollEnd initiated by line focus, recalculates window', () => {
     const height = 50;
     const scroller = document.createElement('div');
@@ -582,6 +595,26 @@ suite('LineFocusController', () => {
       lineFocusController.toggle(true, defaultContainer, defaultHeight);
 
       assertFalse(lineFocusModesChanged);
+    });
+
+    test('propagates line focus mode', async () => {
+      visualBrowserProxy.reset();
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+      assertArrayEquals(
+          [
+            visualBrowserProxy.lineFocusMediumStaticWindow,
+            visualBrowserProxy.lineFocusMediumStaticWindow,
+          ],
+          await visualBrowserProxy.whenCalled('onLineFocusChanged'));
+
+      visualBrowserProxy.reset();
+      lineFocusController.toggle(false, defaultContainer, defaultHeight);
+      assertArrayEquals(
+          [
+            visualBrowserProxy.lineFocusOff,
+            visualBrowserProxy.lineFocusMediumStaticWindow,
+          ],
+          await visualBrowserProxy.whenCalled('onLineFocusChanged'));
     });
   });
 });

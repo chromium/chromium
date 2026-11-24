@@ -130,6 +130,8 @@ export class LineFocusController implements MoveModeDelegate {
     const lineFocusValues = getLineFocusValues();
     const lastEnabled = lineFocusValues[lastEnabledValue];
     if (lastEnabled) {
+      // Skip propagating back to C++ since these values were just restored from
+      // prefs.
       this.setStyleAndMovement_(
           lastEnabled.style, lastEnabled.movement, container, height, isOn);
       this.listeners_.forEach(l => l.onLineFocusModesChanged());
@@ -140,6 +142,7 @@ export class LineFocusController implements MoveModeDelegate {
     this.setStyleAndMovement_(
         style, this.getCurrentLineFocusMovement(), container, height,
         this.model_.isSessionActive());
+    this.propagateLineFocus_();
   }
 
   onMovementChange(
@@ -147,6 +150,7 @@ export class LineFocusController implements MoveModeDelegate {
     this.setStyleAndMovement_(
         this.getCurrentLineFocusStyle(), movement, container, height,
         this.model_.isSessionActive());
+    this.propagateLineFocus_();
   }
 
   private setStyleAndMovement_(
@@ -154,9 +158,6 @@ export class LineFocusController implements MoveModeDelegate {
       container: HTMLElement, height: number, isOn: boolean) {
     this.updateStrategies_(style, movement, isOn);
     this.model_.getCurrentMoveMode().onActivated(container, height);
-    // Propagating line focus should be last so it captures the newly activated
-    // move mode above.
-    this.propagateLineFocus_(style, movement, isOn);
   }
 
   private updateStrategies_(
@@ -180,10 +181,12 @@ export class LineFocusController implements MoveModeDelegate {
     this.model_.setCurrentMoveMode(moveMode);
   }
 
-  private propagateLineFocus_(
-      style: LineFocusStyle, movement: LineFocusMovement, isOn: boolean) {
-    const lineFocusValue = isOn ? this.lineFocusToEnumValue_(style, movement) :
-                                  this.visualBrowserProxy_.getLineFocusOff();
+  private propagateLineFocus_() {
+    const style = this.getCurrentLineFocusStyle();
+    const movement = this.getCurrentLineFocusMovement();
+    const lineFocusValue = this.isEnabled() ?
+        this.lineFocusToEnumValue_(style, movement) :
+        this.visualBrowserProxy_.getLineFocusOff();
     const lastNonDisabledLineFocus =
         this.lineFocusToEnumValue_(style, movement);
     if (lineFocusValue !== null && lastNonDisabledLineFocus !== null) {
@@ -208,14 +211,15 @@ export class LineFocusController implements MoveModeDelegate {
     }
 
     const wasActive = this.model_.isSessionActive();
-    // Setting the style and movement must come *before* ending the session
-    // because setStyleAndMovement_ propagates the new value to the C++ which
-    // also handles logging the session. It checks the current line focus value
+    // Setting the style and movement and propagating the new value must come
+    // *before* ending the session because propagating notifies C++, which also
+    // handles logging the session. It checks the current line focus value
     // there first, so if `onSessionEnd()` came first, it would not actually log
     // the session.
     this.setStyleAndMovement_(
         this.getCurrentLineFocusStyle(), this.getCurrentLineFocusMovement(),
         container, height, isOn);
+    this.propagateLineFocus_();
     if (!isOn && wasActive) {
       this.onSessionEnd();
     }
