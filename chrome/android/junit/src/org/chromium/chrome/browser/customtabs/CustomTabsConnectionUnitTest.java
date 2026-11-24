@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,13 +77,17 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.SplashImageHolder;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
+import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationData;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 /** Tests for some parts of {@link CustomTabsConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -478,5 +483,56 @@ public class CustomTabsConnectionUnitTest {
         } finally {
             ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         }
+    }
+
+    @Test
+    public void testExtractInternalExtras_returnsNullByDefault() {
+        assertNull(mConnection.extractInternalExtras(new Intent()));
+    }
+
+    @Test
+    public void testIntentDataProviderOverloads_delegateToIntentOverloads() {
+        CustomTabsConnection connection = spy(mConnection);
+        BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
+        Intent intent = new Intent("test_action");
+        when(provider.getIntent()).thenReturn(intent);
+        when(provider.getClientPackageName()).thenReturn("com.example.client");
+
+        Profile profile = mock(Profile.class);
+        ProfileProvider profileProvider = mock(ProfileProvider.class);
+        Supplier<ProfileProvider> profileProviderSupplier = () -> profileProvider;
+        MismatchNotificationData mimData = new MismatchNotificationData();
+
+        doReturn(true).when(connection).isAppForAccountMismatchNotification(intent);
+        doReturn(true)
+                .when(connection)
+                .shouldShowAccountMismatchNotification(intent, profile, "acct", 123L, mimData);
+        doReturn("acct@example.com").when(connection).getAppAccountName(intent);
+
+        connection.showSignInToastIfNecessary(provider, profileProviderSupplier);
+        verify(connection).showSignInToastIfNecessary(intent, profileProviderSupplier);
+
+        assertTrue(connection.isAppForAccountMismatchNotification(provider));
+        verify(connection).isAppForAccountMismatchNotification(intent);
+
+        assertTrue(
+                connection.shouldShowAccountMismatchNotification(
+                        provider, profile, "acct", 123L, mimData));
+        verify(connection)
+                .shouldShowAccountMismatchNotification(intent, profile, "acct", 123L, mimData);
+
+        assertEquals("acct@example.com", connection.getAppAccountName(provider));
+        verify(connection).getAppAccountName(intent);
+
+        connection.updateAppAccountForAccountPreview(profile, provider);
+        verify(connection).updateAppAccountForAccountPreview(profile, intent, "com.example.client");
+
+        BrowserServicesIntentDataProvider nullIntentProvider =
+                mock(BrowserServicesIntentDataProvider.class);
+        when(nullIntentProvider.getIntent()).thenReturn(null);
+        connection.showSignInToastIfNecessary(nullIntentProvider, profileProviderSupplier);
+        assertNull(connection.getAppAccountName(nullIntentProvider));
+        connection.updateAppAccountForAccountPreview(profile, nullIntentProvider);
+        verify(connection, never()).updateAppAccountForAccountPreview(eq(profile), eq(null), any());
     }
 }

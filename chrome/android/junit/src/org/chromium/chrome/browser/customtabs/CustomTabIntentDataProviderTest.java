@@ -126,6 +126,80 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void testInternalExtras_extractedAndPreservedAcrossRecreation() {
+        Bundle internalExtras = new Bundle();
+        internalExtras.putString("internal_key", "internal_value");
+        CustomTabsConnection connection = mock(CustomTabsConnection.class);
+        when(connection.extractInternalExtras(any())).thenReturn(internalExtras);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent regularIntent = new CustomTabsIntent.Builder().build().intent;
+        CustomTabIntentDataProvider regularOriginal =
+                new CustomTabIntentDataProvider(regularIntent, mContext, COLOR_SCHEME_LIGHT);
+        assertNotNull(regularOriginal.getInternalExtras());
+        assertEquals(
+                "internal_value", regularOriginal.getInternalExtras().getString("internal_key"));
+
+        Intent incognitoIntent = new CustomTabsIntent.Builder().build().intent;
+        IncognitoCustomTabIntentDataProvider incognitoOriginal =
+                new IncognitoCustomTabIntentDataProvider(
+                        incognitoIntent, mContext, COLOR_SCHEME_LIGHT);
+        assertNotNull(incognitoOriginal.getInternalExtras());
+        assertEquals(
+                "internal_value", incognitoOriginal.getInternalExtras().getString("internal_key"));
+
+        Intent authIntent = new AuthTabIntent.Builder().build().intent;
+        AuthTabIntentDataProvider authOriginal =
+                new AuthTabIntentDataProvider(authIntent, mContext, COLOR_SCHEME_LIGHT);
+        assertNotNull(authOriginal.getInternalExtras());
+        assertEquals("internal_value", authOriginal.getInternalExtras().getString("internal_key"));
+
+        Mockito.verify(connection).extractInternalExtras(regularIntent);
+        Mockito.verify(connection).extractInternalExtras(incognitoIntent);
+        Mockito.verify(connection).extractInternalExtras(authIntent);
+
+        Mockito.clearInvocations(connection);
+
+        CustomTabIntentDataHolder regularRestoredHolder =
+                roundTripHolder(regularOriginal.getCustomTabIntentDataHolder());
+        CustomTabIntentDataHolder incognitoRestoredHolder =
+                roundTripHolder(incognitoOriginal.getCustomTabIntentDataHolder());
+        CustomTabIntentDataHolder authRestoredHolder =
+                roundTripHolder(authOriginal.getCustomTabIntentDataHolder());
+
+        CustomTabIntentDataProvider regularRestored =
+                new CustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_LIGHT, regularRestoredHolder);
+        IncognitoCustomTabIntentDataProvider incognitoRestored =
+                new IncognitoCustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_LIGHT, incognitoRestoredHolder);
+        AuthTabIntentDataProvider authRestored =
+                new AuthTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_LIGHT, authRestoredHolder);
+
+        assertNotNull(regularRestored.getInternalExtras());
+        assertEquals(
+                "internal_value", regularRestored.getInternalExtras().getString("internal_key"));
+        assertNotNull(incognitoRestored.getInternalExtras());
+        assertEquals(
+                "internal_value", incognitoRestored.getInternalExtras().getString("internal_key"));
+        assertNotNull(authRestored.getInternalExtras());
+        assertEquals("internal_value", authRestored.getInternalExtras().getString("internal_key"));
+        Mockito.verify(connection, never()).extractInternalExtras(any());
+    }
+
+    private static CustomTabIntentDataHolder roundTripHolder(CustomTabIntentDataHolder holder) {
+        Parcel parcel = Parcel.obtain();
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            return CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+    }
+
+    @Test
     public void testReconstructFromSavedDataHolder_newPersistedExtrasAndUmaGating() {
         PendingIntent timeoutPi =
                 PendingIntent.getBroadcast(

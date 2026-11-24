@@ -125,6 +125,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final @Nullable Integer mMaxResumptionTabs;
     public final @Nullable Long mResumptionTabTtlMs;
     public final @Nullable Integer mFedCmId;
+    public final @Nullable Bundle mInternalExtras;
 
     private CustomTabIntentDataHolder(Builder builder) {
         mSessionHolder = builder.mSessionHolder;
@@ -202,6 +203,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mMaxResumptionTabs = builder.mMaxResumptionTabs;
         mResumptionTabTtlMs = builder.mResumptionTabTtlMs;
         mFedCmId = builder.mFedCmId;
+        mInternalExtras = builder.mInternalExtras;
     }
 
     private CustomTabIntentDataHolder(Parcel in) {
@@ -285,6 +287,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mMaxResumptionTabs = readNullableInt(in);
         mResumptionTabTtlMs = readNullableLong(in);
         mFedCmId = readNullableInt(in);
+        mInternalExtras = in.readBundle(classLoader);
     }
 
     @Override
@@ -369,6 +372,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         writeNullableInt(dest, mMaxResumptionTabs);
         writeNullableLong(dest, mResumptionTabTtlMs);
         writeNullableInt(dest, mFedCmId);
+        dest.writeBundle(mInternalExtras);
     }
 
     @Override
@@ -681,6 +685,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         private @Nullable Integer mMaxResumptionTabs;
         private @Nullable Long mResumptionTabTtlMs;
         private @Nullable Integer mFedCmId;
+        private @Nullable Bundle mInternalExtras;
 
         public Builder setSessionHolder(@Nullable SessionHolder sessionHolder) {
             mSessionHolder = sessionHolder;
@@ -1064,6 +1069,11 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setFedCmId(@Nullable Integer fedCmId) {
             mFedCmId = fedCmId;
+            return this;
+        }
+
+        public Builder setInternalExtras(@Nullable Bundle internalExtras) {
+            mInternalExtras = internalExtras;
             return this;
         }
 

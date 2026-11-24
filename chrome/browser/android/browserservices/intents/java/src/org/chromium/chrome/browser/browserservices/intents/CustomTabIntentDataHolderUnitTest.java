@@ -159,6 +159,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertNull(restored.mMaxResumptionTabs);
         assertNull(restored.mResumptionTabTtlMs);
         assertNull(restored.mFedCmId);
+        assertNull(restored.mInternalExtras);
         assertSame(
                 restored.mLightColorSchemeParams,
                 restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT));
@@ -219,6 +220,17 @@ public class CustomTabIntentDataHolderUnitTest {
         PendingIntent timeoutPi =
                 PendingIntent.getBroadcast(
                         context, 9, new Intent("timeout_action"), PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent internalPi =
+                PendingIntent.getBroadcast(
+                        context, 10, new Intent("test_action"), PendingIntent.FLAG_IMMUTABLE);
+        Bundle nestedBundle = new Bundle();
+        nestedBundle.putString("nested_key", "nested_val");
+        Bundle internalExtras = new Bundle();
+        internalExtras.putString("string_key", "string_val");
+        internalExtras.putBoolean("bool_key", true);
+        internalExtras.putInt("int_key", 24);
+        internalExtras.putParcelable("parcelable_key", internalPi);
+        internalExtras.putBundle("bundle_key", nestedBundle);
         CustomButtonParams shareButton =
                 CustomButtonParamsImpl.createShareButton(context, Color.BLACK);
         CustomButtonParams bottomBarButton =
@@ -346,6 +358,7 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setMaxResumptionTabs(30)
                         .setResumptionTabTtlMs(3_000_000_000L)
                         .setFedCmId(77)
+                        .setInternalExtras(internalExtras)
                         .build();
 
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
@@ -501,6 +514,14 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(Integer.valueOf(30), restored.mMaxResumptionTabs);
         assertEquals(Long.valueOf(3_000_000_000L), restored.mResumptionTabTtlMs);
         assertEquals(Integer.valueOf(77), restored.mFedCmId);
+        assertNotNull(restored.mInternalExtras);
+        assertEquals("string_val", restored.mInternalExtras.getString("string_key"));
+        assertTrue(restored.mInternalExtras.getBoolean("bool_key"));
+        assertEquals(24, restored.mInternalExtras.getInt("int_key"));
+        assertEquals(internalPi, restored.mInternalExtras.getParcelable("parcelable_key"));
+        Bundle restoredNested = restored.mInternalExtras.getBundle("bundle_key");
+        assertNotNull(restoredNested);
+        assertEquals("nested_val", restoredNested.getString("nested_key"));
     }
 
     @Test
@@ -515,6 +536,7 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setMaxResumptionTabs(null)
                         .setResumptionTabTtlMs(null)
                         .setFedCmId(null)
+                        .setInternalExtras(null)
                         .build();
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
 
@@ -526,6 +548,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertNull(restored.mMaxResumptionTabs);
         assertNull(restored.mResumptionTabTtlMs);
         assertNull(restored.mFedCmId);
+        assertNull(restored.mInternalExtras);
     }
 
     @Test

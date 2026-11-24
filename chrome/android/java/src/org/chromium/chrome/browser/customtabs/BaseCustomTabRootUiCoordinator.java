@@ -362,8 +362,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Nullable MismatchNotificationChecker createMismatchNotificationChecker(
             @Nullable String appId) {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        Intent intent = mIntentDataProvider.get().getIntent();
-        if (!connection.isAppForAccountMismatchNotification(intent)) return null;
+        BrowserServicesIntentDataProvider intentDataProvider = mIntentDataProvider.get();
+        if (!connection.isAppForAccountMismatchNotification(intentDataProvider)) return null;
         if (appId == null) return null;
 
         // Note: Signin 'Add Account' results may be lost if suppression state flips after restart.
@@ -405,10 +405,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mimData != null ? mimData : new MismatchNotificationData();
                     boolean show =
                             connection.shouldShowAccountMismatchNotification(
-                                    intent, profile, accountId, lastShownTime, nonNullMimData);
+                                    intentDataProvider,
+                                    profile,
+                                    accountId,
+                                    lastShownTime,
+                                    nonNullMimData);
                     if (show) {
-                        assert intent != null;
-                        var accountName = connection.getAppAccountName(intent);
+                        var accountName = connection.getAppAccountName(intentDataProvider);
                         assert accountName != null;
                         MismatchNotificationController.get(
                                         mWindowAndroid, profile, accountName, signinDelegate)
@@ -542,10 +545,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         BrowserServicesIntentDataProvider intentDataProvider =
                 assumeNonNull(mIntentDataProvider.get());
         CustomTabsConnection.getInstance()
-                .updateAppAccountForAccountPreview(
-                        currentlySelectedProfile,
-                        assumeNonNull(intentDataProvider.getIntent()),
-                        intentDataProvider.getClientPackageName());
+                .updateAppAccountForAccountPreview(currentlySelectedProfile, intentDataProvider);
     }
 
     public @Nullable CustomTabHistoryIphController getHistoryIphController() {

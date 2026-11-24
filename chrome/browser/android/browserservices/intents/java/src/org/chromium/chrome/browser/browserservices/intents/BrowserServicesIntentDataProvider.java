@@ -16,6 +16,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import androidx.annotation.ColorInt;
@@ -939,6 +940,13 @@ public abstract class BrowserServicesIntentDataProvider {
 
     /** Returns the FedCM request identifier associated with the intent, or null if not set. */
     public @Nullable Integer getFedCmId() {
+        return null;
+    }
+
+    /**
+     * Returns internal-only intent extras preserved across Activity recreation, or null if none.
+     */
+    public @Nullable Bundle getInternalExtras() {
         return null;
     }
 }

@@ -18,6 +18,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -110,6 +111,8 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                                 IncognitoCctCallerId.OTHER_CHROME_FEATURES));
             }
             CustomTabIntentDataProvider.populateColorSchemeAndTimeoutExtras(builder, intent);
+            builder.setInternalExtras(
+                    CustomTabsConnection.getInstance().extractInternalExtras(intent));
 
             mDataHolder = builder.build();
         }
@@ -368,5 +371,10 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     @Override
     public @Nullable PendingIntent getTimeoutPendingIntent() {
         return mDataHolder.mTimeoutPendingIntent;
+    }
+
+    @Override
+    public @Nullable Bundle getInternalExtras() {
+        return mDataHolder.mInternalExtras;
     }
 }

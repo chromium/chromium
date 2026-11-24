@@ -504,7 +504,9 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         .build();
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
+        when(connection.isAppForAccountMismatchNotification(
+                        any(BrowserServicesIntentDataProvider.class)))
+                .thenReturn(true);
         mProfileSupplier.set(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
@@ -513,11 +515,15 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
 
         // Not the right app
-        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(false);
+        when(connection.isAppForAccountMismatchNotification(
+                        any(BrowserServicesIntentDataProvider.class)))
+                .thenReturn(false);
         assertNull(
                 "Should NOT create a checker for a wrong app",
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
-        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
+        when(connection.isAppForAccountMismatchNotification(
+                        any(BrowserServicesIntentDataProvider.class)))
+                .thenReturn(true);
 
         // Nulled-out app ID
         assertNull(

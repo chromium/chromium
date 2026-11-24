@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.auth.AuthTabIntent;
@@ -119,6 +120,8 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                             intent, CustomTabsIntent.COLOR_SCHEME_DARK));
             builder.setUrlToLoad(IntentHandler.getUrlFromIntent(intent));
             CustomTabIntentDataProvider.populateColorSchemeAndTimeoutExtras(builder, intent);
+            builder.setInternalExtras(
+                    CustomTabsConnection.getInstance().extractInternalExtras(intent));
 
             mDataHolder = builder.build();
         }
@@ -316,5 +319,10 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     @Override
     public @Nullable PendingIntent getTimeoutPendingIntent() {
         return mDataHolder.mTimeoutPendingIntent;
+    }
+
+    @Override
+    public @Nullable Bundle getInternalExtras() {
+        return mDataHolder.mInternalExtras;
     }
 }

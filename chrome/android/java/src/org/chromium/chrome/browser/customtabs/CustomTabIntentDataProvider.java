@@ -844,6 +844,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 }
             }
 
+            builder.setInternalExtras(
+                    CustomTabsConnection.getInstance().extractInternalExtras(intent));
+
             mDataHolder = builder.build();
         }
 
@@ -2238,5 +2241,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public @Nullable Integer getFedCmId() {
         return mDataHolder.mFedCmId;
+    }
+
+    @Override
+    public @Nullable Bundle getInternalExtras() {
+        return mDataHolder.mInternalExtras;
     }
 }
