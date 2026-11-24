@@ -16,6 +16,14 @@
 namespace cc {
 ScopedRasterFlags::~ScopedRasterFlags() = default;
 
+absl::InlinedVector<ImageProvider::ScopedResult, 1>
+ScopedRasterFlags::ReleaseDecodedImages() {
+  if (!decode_stashing_image_provider_) {
+    return {};
+  }
+  return decode_stashing_image_provider_->TakeDecodedImages();
+}
+
 void ScopedRasterFlags::DecodeImageShader(const SkMatrix& ctm) {
   if (!flags()->HasShader() ||
       flags()->getShader()->shader_type() != PaintShader::Type::kImage)

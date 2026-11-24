@@ -33,4 +33,9 @@ void DecodeStashingImageProvider::Reset() {
   decoded_images_.clear();
 }
 
+absl::InlinedVector<ImageProvider::ScopedResult, 1>
+DecodeStashingImageProvider::TakeDecodedImages() {
+  return std::exchange(decoded_images_, {});
+}
+
 }  // namespace cc

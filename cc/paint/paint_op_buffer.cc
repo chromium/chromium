@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/image_provider.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op.h"
@@ -25,6 +26,7 @@
 #include "cc/paint/raster_inducing_values.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "cc/paint/skottie_serialization_history.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
@@ -530,6 +532,63 @@ PaintRecord PaintOpBuffer::ReleaseAsRecord() {
   return PaintRecord(std::move(result));
 }
 
+namespace {
+
+// Keeps image decodes from SaveLayerOp/SaveLayerFiltersOp alive until the
+// matching layer is restored, since SkCanvas evaluates layer filters and
+// shaders during restore() rather than saveLayer().
+class ScopedSaveLayerDecodes {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedSaveLayerDecodes(SkCanvas* canvas) : canvas_(canvas) {}
+  ScopedSaveLayerDecodes(const ScopedSaveLayerDecodes&) = delete;
+  ScopedSaveLayerDecodes& operator=(const ScopedSaveLayerDecodes&) = delete;
+
+  ~ScopedSaveLayerDecodes() {
+    PopRestored();
+    if (!entries_.empty()) {
+      // Restore any remaining stashed layers before unlocking their decodes,
+      // even if unbalanced RestoreOps lowered the save count below the
+      // caller's SkAutoCanvasRestore.
+      canvas_->restoreToCount(entries_.front().save_count - 1);
+    }
+  }
+
+  void Push(int save_count_before,
+            int save_count_after,
+            absl::InlinedVector<ImageProvider::ScopedResult, 1> decodes) {
+    PopRestored(save_count_before);
+    DCHECK_GT(save_count_after, save_count_before);
+    DCHECK(!decodes.empty());
+    DCHECK(entries_.empty() || entries_.back().save_count < save_count_after);
+    entries_.push_back({save_count_after, std::move(decodes)});
+  }
+
+  void PopRestored() {
+    if (!entries_.empty()) {
+      PopRestored(canvas_->getSaveCount());
+    }
+  }
+
+ private:
+  struct Entry {
+    int save_count = 0;
+    absl::InlinedVector<ImageProvider::ScopedResult, 1> decodes;
+  };
+
+  void PopRestored(int save_count) {
+    while (!entries_.empty() && entries_.back().save_count > save_count) {
+      entries_.pop_back();
+    }
+  }
+
+  SkCanvas* const canvas_;
+  std::vector<Entry> entries_;
+};
+
+}  // namespace
+
 void PaintOpBuffer::Playback(SkCanvas* canvas,
                              const PlaybackParams& params,
                              bool local_ctm,
@@ -538,6 +597,11 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
     return;
   if (offsets && offsets->empty())
     return;
+
+  // Declared before `save_restore` so `save_restore` restores pending saves
+  // above entry count first while stashed decodes are still alive.
+  ScopedSaveLayerDecodes save_layer_decodes(canvas);
+
   // Make sure the there are no pending saves after we are done. Add a save if
   // this `PaintOpBuffer` isn't meant to impact the global CTM (to prevent
   // PaintOps from having side effects back into the canvas)
@@ -598,15 +662,29 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
       }
 
       const auto& flags_op = static_cast<const PaintOpWithFlags&>(*op);
-      const ScopedRasterFlags scoped_flags(
+      ScopedRasterFlags scoped_flags(
           &flags_op.flags, new_params.image_provider, canvas->getTotalMatrix(),
           max_texture_size, iter.alpha(), new_params.raster_inducing_values);
-      if (const auto* raster_flags = scoped_flags.flags())
+      if (const auto* raster_flags = scoped_flags.flags()) {
+        const bool track_save_layer =
+            !op->IsDrawOp() && scoped_flags.HasDecodedImages();
+        const int save_count_before =
+            track_save_layer ? canvas->getSaveCount() : 0;
         flags_op.RasterWithFlags(canvas, raster_flags, new_params);
+        if (track_save_layer) {
+          const int save_count_after = canvas->getSaveCount();
+          if (save_count_after > save_count_before) {
+            save_layer_decodes.Push(save_count_before, save_count_after,
+                                    scoped_flags.ReleaseDecodedImages());
+          }
+        }
+      }
     } else {
       DCHECK_EQ(iter.alpha(), 1.0f);
       op->Raster(canvas, new_params);
     }
+
+    save_layer_decodes.PopRestored();
 
     if (!new_params.callbacks.did_draw_op_callback.is_null()) {
       new_params.callbacks.did_draw_op_callback.Run();

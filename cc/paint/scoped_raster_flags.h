@@ -11,6 +11,7 @@
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace cc {
 
@@ -60,14 +61,27 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
 
   ScopedRasterFlags& operator=(const ScopedRasterFlags&) = delete;
 
-  // The usage of these flags should not extend beyond the lifetime of this
-  // object.
+  // The returned PaintFlags* must not outlive this object. Copies of *flags()
+  // or Skia objects derived from it (e.g. an SkPaint passed to
+  // SkCanvas::saveLayer()) may outlive this object only if the caller retains
+  // any stashed image decodes via ReleaseDecodedImages() until their usage
+  // completes.
   const PaintFlags* flags() const {
     if (decode_failed_)
       return nullptr;
 
     return modified_flags_ ? &*modified_flags_ : original_flags_;
   }
+
+  // Returns true if any decoded images are currently stashed by this object.
+  bool HasDecodedImages() const {
+    return decode_stashing_image_provider_ &&
+           decode_stashing_image_provider_->HasDecodedImages();
+  }
+
+  // Moves out any stashed image decodes so the caller can keep them alive
+  // beyond the lifetime of this ScopedRasterFlags instance.
+  absl::InlinedVector<ImageProvider::ScopedResult, 1> ReleaseDecodedImages();
 
  private:
   void DecodeImageShader(const SkMatrix& ctm);

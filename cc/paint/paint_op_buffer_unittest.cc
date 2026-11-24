@@ -5829,4 +5829,91 @@ TEST(PaintOpBufferTest, SerializationResolvesDeferredColor) {
               Pointee(ElementsAre(PaintOpEq<DrawRectOp>(rect, expected))));
 }
 
+TEST(PaintOpBufferTest, SaveLayerRetainsDecodedImagesUntilRestore) {
+  // Simulates SoftwareImageDecodeCache's discardable memory lifetime: decoded
+  // SkImages borrow raw pixel memory without owning a cache reference, and the
+  // backing pixels are overwritten as soon as the cache entry is unlocked.
+  class LifetimeTrackingImageProvider : public ImageProvider {
+   public:
+    LifetimeTrackingImageProvider() {
+      bitmap_.allocN32Pixels(10, 10);
+      bitmap_.eraseColor(SK_ColorBLACK);
+    }
+    ~LifetimeTrackingImageProvider() override { EXPECT_EQ(ref_count_, 0); }
+
+    ScopedResult GetRasterContent(const DrawImage& draw_image) override {
+      if (ref_count_++ == 0) {
+        bitmap_.eraseColor(SK_ColorGREEN);
+      }
+      sk_sp<SkImage> image = SkImages::RasterFromPixmap(
+          bitmap_.pixmap(), [](const void*, void*) {}, nullptr);
+      return ScopedResult(
+          DecodedDrawImage(std::move(image), nullptr, SkSize::MakeEmpty(),
+                           SkSize::Make(1.0f, 1.0f),
+                           draw_image.filter_quality(),
+                           /*is_budgeted=*/true),
+          base::BindOnce(&LifetimeTrackingImageProvider::UnrefImage,
+                         base::Unretained(this)));
+    }
+
+    int ref_count() const { return ref_count_; }
+
+   private:
+    void UnrefImage() {
+      CHECK_GT(ref_count_, 0);
+      if (--ref_count_ == 0) {
+        bitmap_.eraseColor(SK_ColorRED);
+      }
+    }
+
+    SkBitmap bitmap_;
+    int ref_count_ = 0;
+  };
+
+  PaintImage filter_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
+  auto image_filter = sk_make_sp<ImagePaintFilter>(
+      filter_image, SkRect::MakeWH(10, 10), SkRect::MakeWH(10, 10),
+      PaintFlags::FilterQuality::kNone);
+  // Combine SourceGraphic (nullptr) with the image filter so
+  // SkCanvas::saveLayer defers filter evaluation until SkCanvas::restore().
+  std::array<sk_sp<PaintFilter>, 2> merge_inputs = {nullptr, image_filter};
+  auto merge_filter = sk_make_sp<MergePaintFilter>(merge_inputs);
+  merge_filter->set_has_animated_images(true);
+
+  PaintFlags layer_flags;
+  layer_flags.setImageFilter(merge_filter);
+  PaintFlags rect_flags;
+  rect_flags.setColor(SK_ColorBLUE);
+
+  PaintOpBuffer buffer;
+  buffer.push<SaveLayerOp>(SkRect::MakeWH(10, 10), layer_flags);
+  buffer.push<SaveOp>();
+  buffer.push<DrawRectOp>(SkRect::MakeWH(10, 10), rect_flags);
+  buffer.push<RestoreOp>();
+  buffer.push<DrawImageOp>(CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.0f,
+                           0.0f);
+  buffer.push<RestoreOp>();
+  buffer.push<NoopOp>();
+
+  LifetimeTrackingImageProvider provider;
+  std::vector<int> ref_counts_after_op;
+  PlaybackCallbacks callbacks;
+  callbacks.did_draw_op_callback = base::BindLambdaForTesting(
+      [&]() { ref_counts_after_op.push_back(provider.ref_count()); });
+
+  SkBitmap output;
+  output.allocN32Pixels(10, 10);
+  output.eraseColor(SK_ColorTRANSPARENT);
+  SkCanvas canvas(output);
+
+  buffer.Playback(&canvas, PlaybackParams(&provider, SkM44(), callbacks));
+
+  // The filter decode must remain referenced across SaveLayerOp, nested
+  // SaveOp/DrawRectOp/RestoreOp, and the in-layer DrawImageOp (which releases
+  // its own decode immediately), and be released upon the outer RestoreOp.
+  EXPECT_THAT(ref_counts_after_op, ElementsAre(1, 1, 1, 1, 1, 0, 0));
+  EXPECT_EQ(provider.ref_count(), 0);
+  EXPECT_EQ(output.getColor(5, 5), SK_ColorGREEN);
+}
+
 }  // namespace cc

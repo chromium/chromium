@@ -34,6 +34,12 @@ class CC_PAINT_EXPORT DecodeStashingImageProvider : public ImageProvider {
   // unlock any images acquired before this.
   void Reset();
 
+  // Returns true if any decoded images are currently stashed.
+  bool HasDecodedImages() const { return !decoded_images_.empty(); }
+
+  // Transfers ownership of all stashed images to the caller.
+  absl::InlinedVector<ScopedResult, 1> TakeDecodedImages();
+
  private:
   ImageProvider* source_provider_ = nullptr;
   absl::InlinedVector<ScopedResult, 1> decoded_images_;
