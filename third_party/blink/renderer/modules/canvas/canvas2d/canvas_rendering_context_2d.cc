@@ -453,11 +453,15 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
           mojom::blink::ScrollBehavior::kAuto));
 }
 
-sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
+void CanvasRenderingContext2D::UpdateStyleForFilterIfNeeded() {
   HTMLCanvasElement* const element = canvas();
   if (GetState().HasCSSFilterWithUrl() && element->GetDocument().GetFrame()) {
     element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kCanvas);
   }
+}
+
+sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
+  HTMLCanvasElement* const element = canvas();
   return GetState().GetFilter(element, element->Size(), this);
 }
 

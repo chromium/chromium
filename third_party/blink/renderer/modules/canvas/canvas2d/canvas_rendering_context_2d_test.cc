@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_data_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float16array_float32array_uint8clampedarray.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2043)
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
@@ -73,6 +74,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -105,6 +107,9 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -4375,6 +4380,271 @@ TEST_P(CanvasRenderingContext2DTest, TaintedCanvasResetFlushesClear) {
   EXPECT_FALSE(context->OriginClean());
   EXPECT_TRUE(context->HasBacking());
   EXPECT_FALSE(context->clear_frame());
+}
+
+namespace {
+
+class CallbackAnnotationAgentObserver final
+    : public GarbageCollected<CallbackAnnotationAgentObserver>,
+      public AnnotationAgentContainerImpl::Observer {
+ public:
+  explicit CallbackAnnotationAgentObserver(base::RepeatingClosure callback)
+      : callback_(std::move(callback)) {}
+
+  void WillPerformAttach() override { callback_.Run(); }
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
+}  // namespace
+
+// Tests for script running during canvas filter resolution. Resolving a CSS
+// url() filter performs a synchronous style and layout update; the
+// AnnotationAgentContainerImpl observer hook is called from within that update
+// and stands in for page script (e.g. resetting a canvas or changing its
+// filter).
+class CanvasRenderingContext2DFilterReentrancyTest
+    : public CanvasRenderingContext2DTest {
+ protected:
+  void SetUp() override {
+    CanvasRenderingContext2DTest::SetUp();
+
+    CreateContext(kNormalLatency);
+    source_canvas_ =
+        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("d")));
+    ASSERT_NE(source_canvas_, nullptr);
+    CreateContext(
+        kNormalLatency,
+        CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
+        source_canvas_);
+    SourceContext()->fillRect(0, 0, 10, 10);
+
+    // Reference filters: `clean` does not taint, `taint` does (currentColor).
+    Element* svg = GetDocument().CreateRawElement(html_names::kDivTag);
+    svg->SetInnerHTMLWithoutTrustedTypes(
+        "<svg><filter id='clean'><feFlood flood-color='#00ff00'/></filter>"
+        "<filter id='taint'><feFlood flood-color='currentColor'/></filter>"
+        "</svg>");
+    GetDocument().body()->AppendChild(svg);
+    UpdateAllLifecyclePhasesForTest();
+
+    // A url() filter forces a style and layout update on every draw.
+    SetFilter("url(#none)");
+
+    container_ = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
+    ASSERT_NE(container_, nullptr);
+    observer_ = MakeGarbageCollected<CallbackAnnotationAgentObserver>(
+        base::BindLambdaForTesting([this] { OnLayout(); }));
+    container_->AddObserver(observer_);
+  }
+
+  void TearDown() override {
+    if (container_) {
+      container_->RemoveObserver(observer_);
+    }
+    observer_ = nullptr;
+    container_ = nullptr;
+    source_canvas_ = nullptr;
+    CanvasRenderingContext2DTest::TearDown();
+  }
+
+  CanvasRenderingContext2D* SourceContext() const {
+    return static_cast<CanvasRenderingContext2D*>(
+        source_canvas_->RenderingContext());
+  }
+
+  // Runs `action` from within the `layout_pass`-th style and layout update
+  // after this call.
+  void RunDuringFilterResolution(base::OnceClosure action,
+                                 int layout_pass = 1) {
+    action_ = std::move(action);
+    layouts_until_action_ = layout_pass;
+    action_ran_ = false;
+  }
+
+  bool ActionRan() const { return action_ran_; }
+
+  void SetFilter(const char* filter) {
+    Context2D()->setFilter(
+        GetScriptState(),
+        MakeGarbageCollected<V8UnionCanvasFilterOrString>(filter));
+  }
+
+  // Same-size width assignments, which reset the canvas and its origin taint.
+  void ResetDestination() {
+    CanvasElement().setWidth(CanvasElement().width(), ASSERT_NO_EXCEPTION);
+  }
+  void ResetSource() {
+    source_canvas_->setWidth(source_canvas_->width(), ASSERT_NO_EXCEPTION);
+  }
+
+  void DrawImageFromSource() {
+    Context2D()->drawImage(source_canvas_.Get(), 0, 0, 10, 10, 0, 0, 10, 10,
+                           ASSERT_NO_EXCEPTION);
+  }
+
+  void DrawMeshFromSource() {
+    auto* vertices = MakeGarbageCollected<Mesh2DVertexBuffer>(
+        base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+            std::vector<SkPoint>{{0, 0}, {100, 0}, {100, 100}, {0, 100}}));
+    auto* uvs = MakeGarbageCollected<Mesh2DUVBuffer>(
+        base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+            std::vector<SkPoint>{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+    auto* indices = MakeGarbageCollected<Mesh2DIndexBuffer>(
+        base::MakeRefCounted<cc::RefCountedBuffer<uint16_t>>(
+            std::vector<uint16_t>{0, 1, 2, 0, 2, 3}));
+    Context2D()->drawMesh(
+        vertices, uvs, indices,
+        MakeGarbageCollected<V8CanvasImageSource>(source_canvas_.Get()),
+        ASSERT_NO_EXCEPTION);
+  }
+
+  Persistent<HTMLCanvasElement> source_canvas_;
+
+ private:
+  void OnLayout() {
+    if (!action_ || --layouts_until_action_ > 0) {
+      return;
+    }
+    action_ran_ = true;
+    std::move(action_).Run();
+  }
+
+  Persistent<AnnotationAgentContainerImpl> container_;
+  Persistent<CallbackAnnotationAgentObserver> observer_;
+  base::OnceClosure action_;
+  int layouts_until_action_ = 0;
+  bool action_ran_ = false;
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DFilterReentrancyTest);
+
+// drawImage with a tainted source must leave the canvas tainted if the
+// destination is reset during filter resolution.
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       DrawImageDestinationResetPreservesTaint) {
+  source_canvas_->SetOriginTainted();
+
+  RunDuringFilterResolution(
+      base::BindLambdaForTesting([this] { ResetDestination(); }));
+  DrawImageFromSource();
+  ASSERT_TRUE(ActionRan());
+
+  EXPECT_FALSE(CanvasElement().OriginClean());
+}
+
+// drawMesh with a tainted source must leave the canvas tainted if the
+// destination is reset during filter resolution.
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       DrawMeshDestinationResetPreservesTaint) {
+  source_canvas_->SetOriginTainted();
+
+  RunDuringFilterResolution(
+      base::BindLambdaForTesting([this] { ResetDestination(); }));
+  DrawMeshFromSource();
+  ASSERT_TRUE(ActionRan());
+
+  EXPECT_FALSE(CanvasElement().OriginClean());
+}
+
+// beginLayer with a tainting layer filter must leave the canvas tainted if the
+// destination is reset while resolving the context filter. A CSS url() layer
+// filter triggers its own (1st) style and layout update; the context filter
+// resolution performs the 2nd.
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       BeginLayerDestinationResetPreservesTaint) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  BeginLayerOptions* options = BeginLayerOptions::Create();
+  options->setFilter(
+      MakeGarbageCollected<V8CanvasFilterInput>(String("url(#taint)")));
+
+  RunDuringFilterResolution(
+      base::BindLambdaForTesting([this] { ResetDestination(); }),
+      /*layout_pass=*/2);
+  Context2D()->beginLayer(GetScriptState(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(ActionRan());
+  Context2D()->endLayer(ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(CanvasElement().OriginClean());
+}
+
+// The image is captured before filter resolution, so its taint is decided
+// then: resetting a tainted source (making it origin-clean) during filter
+// resolution must still taint the destination.
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       DrawImageSourceResetPreservesTaint) {
+  source_canvas_->SetOriginTainted();
+
+  RunDuringFilterResolution(
+      base::BindLambdaForTesting([this] { ResetSource(); }));
+  DrawImageFromSource();
+  ASSERT_TRUE(ActionRan());
+  ASSERT_TRUE(source_canvas_->OriginClean());
+
+  EXPECT_FALSE(CanvasElement().OriginClean());
+}
+
+// Conversely, tainting a clean source during filter resolution must not taint
+// the destination: the drawn image was captured while the source was clean.
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       DrawImageSourceTaintedDuringResolutionDoesNotTaint) {
+  RunDuringFilterResolution(base::BindLambdaForTesting(
+      [this] { source_canvas_->SetOriginTainted(); }));
+  DrawImageFromSource();
+  ASSERT_TRUE(ActionRan());
+  ASSERT_FALSE(source_canvas_->OriginClean());
+
+  EXPECT_TRUE(CanvasElement().OriginClean());
+}
+
+// A draw with an origin-clean source must not re-taint a previously tainted
+// canvas that is reset during filter resolution: the reset discards the
+// tainted content.
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       CleanDrawImageDestinationResetClearsTaint) {
+  // Taint the destination with an earlier draw, then make the source clean.
+  source_canvas_->SetOriginTainted();
+  DrawImageFromSource();
+  ASSERT_FALSE(CanvasElement().OriginClean());
+  ResetSource();
+  SourceContext()->fillRect(0, 0, 10, 10);
+  ASSERT_TRUE(source_canvas_->OriginClean());
+
+  RunDuringFilterResolution(
+      base::BindLambdaForTesting([this] { ResetDestination(); }));
+  DrawImageFromSource();
+  ASSERT_TRUE(ActionRan());
+
+  EXPECT_TRUE(CanvasElement().OriginClean());
+}
+
+// The filter is resolved after the style and layout update, so its own taint
+// (e.g. from secondary inputs) reflects changes made during that update:
+// switching to a tainting filter taints the destination...
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       FilterBecomesTaintingDuringResolutionTaints) {
+  SetFilter("url(#clean)");
+
+  RunDuringFilterResolution(
+      base::BindLambdaForTesting([this] { SetFilter("url(#taint)"); }));
+  DrawImageFromSource();
+  ASSERT_TRUE(ActionRan());
+
+  EXPECT_FALSE(CanvasElement().OriginClean());
+}
+
+// ...and switching away from a tainting filter does not.
+TEST_P(CanvasRenderingContext2DFilterReentrancyTest,
+       FilterBecomesCleanDuringResolutionDoesNotTaint) {
+  SetFilter("url(#taint)");
+
+  RunDuringFilterResolution(
+      base::BindLambdaForTesting([this] { SetFilter("url(#clean)"); }));
+  DrawImageFromSource();
+  ASSERT_TRUE(ActionRan());
+
+  EXPECT_TRUE(CanvasElement().OriginClean());
 }
 
 }  // namespace blink

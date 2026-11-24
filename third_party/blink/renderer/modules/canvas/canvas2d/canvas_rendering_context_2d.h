@@ -199,6 +199,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   scoped_refptr<StaticBitmapImage> GetImage() final;
 
+  void UpdateStyleForFilterIfNeeded() final;
   sk_sp<PaintFilter> StateGetFilter() final;
 
   void FinalizeFrame(FlushReason) override;

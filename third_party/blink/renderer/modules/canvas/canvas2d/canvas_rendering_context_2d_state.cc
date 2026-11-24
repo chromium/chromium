@@ -578,7 +578,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
       return nullptr;
     // Update the filter value to the proper base URL if needed. Style and
     // layout have already been updated by
-    // `CanvasRenderingContext2D::StateGetFilter`.
+    // `CanvasRenderingContext2D::UpdateStyleForFilterIfNeeded`.
     if (css_filter_value_->MayContainUrl()) {
       css_filter_value_->ReResolveUrl(document);
     }

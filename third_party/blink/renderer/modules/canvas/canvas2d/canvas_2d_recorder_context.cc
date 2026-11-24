@@ -445,7 +445,7 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
     return;
   }
 
-  sk_sp<PaintFilter> filter;
+  std::optional<FilterOperations> filter_operations;
   if (options != nullptr) {
     CHECK(exception_state != nullptr);
     if (const V8CanvasFilterInput* filter_input = options->filter();
@@ -453,29 +453,12 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
       AddLayerFilterUserCount(filter_input);
 
       HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
-      FilterOperations filter_operations = CanvasFilter::CreateFilterOperations(
+      filter_operations = CanvasFilter::CreateFilterOperations(
           *filter_input, AccessFont(canvas_for_filter), canvas_for_filter,
           CHECK_DEREF(ExecutionContext::From(script_state)), *exception_state);
       if (exception_state->HadException()) {
         return;
       }
-
-      const gfx::SizeF canvas_viewport(Width(), Height());
-      FilterEffectBuilder filter_effect_builder(
-          gfx::RectF(canvas_viewport), canvas_viewport,
-          1.0f,  // Deliberately ignore zoom on the canvas element.
-          Color::kBlack, mojom::blink::ColorScheme::kLight,
-          // 2D context filters rely on origin tainting, not subtree scoping.
-          /*is_in_canvas_subtree=*/false);
-
-      FilterEffect* filter_effect = filter_effect_builder.BuildFilterEffect(
-          std::move(filter_operations), !OriginClean());
-      if (filter_effect && filter_effect->OriginTainted() &&
-          !origin_tainted_by_content_) {
-        SetOriginTaintedByContent();
-      }
-      filter =
-          paint_filter_builder::Build(filter_effect, kInterpolationSpaceSRGB);
     }
   }
 
@@ -483,6 +466,27 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
   // and layout updates), which may reset the canvas recorder or state stack.
   // Do this before acquiring `layer_canvas` and `state`.
   ResolveFilterIfNeeded();
+
+  sk_sp<PaintFilter> filter;
+  if (filter_operations) {
+    const gfx::SizeF canvas_viewport(Width(), Height());
+    FilterEffectBuilder filter_effect_builder(
+        gfx::RectF(canvas_viewport), canvas_viewport,
+        1.0f,  // Deliberately ignore zoom on the canvas element.
+        Color::kBlack, mojom::blink::ColorScheme::kLight,
+        // 2D context filters rely on origin tainting, not subtree scoping.
+        /*is_in_canvas_subtree=*/false);
+
+    FilterEffect* filter_effect = filter_effect_builder.BuildFilterEffect(
+        *filter_operations, !OriginClean());
+    if (filter_effect && filter_effect->OriginTainted() &&
+        !origin_tainted_by_content_) {
+      SetOriginTaintedByContent();
+      EnsureStateFilterResolved();
+    }
+    filter =
+        paint_filter_builder::Build(filter_effect, kInterpolationSpaceSRGB);
+  }
 
   // Create the `PaintCanvas` AFTER parsing the filter. It's possible for
   // filters to reset the canvas, using a custom object property getter for
@@ -2246,6 +2250,31 @@ void Canvas2DRecorderContext::SetOriginTaintedByContent() {
   }
 }
 
+void Canvas2DRecorderContext::EnsureStateFilterResolved() {
+  if (IsTransformInvertible() && GetState().IsFilterUnresolved()) {
+    StateGetFilter();
+  }
+}
+
+void Canvas2DRecorderContext::ResolveFilterAndEnsureOriginTaintedByContent(
+    CanvasImageSource* image_source) {
+  const bool would_taint_origin = WouldTaintCanvasOrigin(image_source);
+  if (!origin_tainted_by_content_ && would_taint_origin) {
+    SetOriginTaintedByContent();
+  }
+
+  // Resolving or updating a filter can synchronously execute script (via style
+  // and layout updates), which may reset the canvas recorder, state stack, or
+  // origin-clean flag. The image was captured before filter resolution, so
+  // re-apply the taint decided above if a reset cleared it.
+  ResolveFilterIfNeeded();
+
+  if (would_taint_origin && !origin_tainted_by_content_) {
+    SetOriginTaintedByContent();
+    EnsureStateFilterResolved();
+  }
+}
+
 void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
                                         double sx,
                                         double sy,
@@ -2350,9 +2379,8 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
 
   WillDrawImage(image_source, image && image->IsTextureBacked());
 
-  if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
-    SetOriginTaintedByContent();
-  }
+  const bool is_opaque = image_source->IsOpaque();
+  ResolveFilterAndEnsureOriginTaintedByContent(image_source);
 
   Draw<OverdrawOp::kDrawImage>(
       /*draw_func=*/
@@ -2370,9 +2398,9 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
         return RectContainsTransformedRect(dst_rect, clip_bounds);
       },
       /*bounds=*/dst_rect, CanvasRenderingContext2DState::kImagePaintType,
-      image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
-                               : CanvasRenderingContext2DState::kNonOpaqueImage,
-      CanvasPerformanceMonitor::DrawType::kImage, /*resolve_filter=*/true);
+      is_opaque ? CanvasRenderingContext2DState::kOpaqueImage
+                : CanvasRenderingContext2DState::kNonOpaqueImage,
+      CanvasPerformanceMonitor::DrawType::kImage, /*resolve_filter=*/false);
 }
 
 bool Canvas2DRecorderContext::RectContainsTransformedRect(
@@ -2648,9 +2676,8 @@ void Canvas2DRecorderContext::drawMesh(
 
   WillDrawImage(image_source, image && image->IsTextureBacked());
 
-  if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
-    SetOriginTaintedByContent();
-  }
+  const bool is_opaque = image_source->IsOpaque();
+  ResolveFilterAndEnsureOriginTaintedByContent(image_source);
 
   SkRect bounds = SkRect::BoundsOrEmpty(vertex_data->data());
 
@@ -2670,9 +2697,9 @@ void Canvas2DRecorderContext::drawMesh(
       NoOverdraw,
       gfx::RectF(bounds.x(), bounds.y(), bounds.width(), bounds.height()),
       CanvasRenderingContext2DState::PaintType::kFillPaintType,
-      image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
-                               : CanvasRenderingContext2DState::kNonOpaqueImage,
-      CanvasPerformanceMonitor::DrawType::kOther, /*resolve_filter=*/true);
+      is_opaque ? CanvasRenderingContext2DState::kOpaqueImage
+                : CanvasRenderingContext2DState::kNonOpaqueImage,
+      CanvasPerformanceMonitor::DrawType::kOther, /*resolve_filter=*/false);
 }
 
 bool Canvas2DRecorderContext::ComputeDirtyRect(const gfx::RectF& local_rect,

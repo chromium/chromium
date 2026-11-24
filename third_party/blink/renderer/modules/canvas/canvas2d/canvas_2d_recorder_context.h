@@ -486,12 +486,14 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   virtual void WillDraw(const gfx::Rect& dirty_rect,
                         CanvasPerformanceMonitor::DrawType) = 0;
 
+  virtual void UpdateStyleForFilterIfNeeded() {}
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
   ALWAYS_INLINE void ResolveFilterIfNeeded() {
     if (IsTransformInvertible() &&
         (GetState().IsFilterUnresolved() || GetState().HasCSSFilterWithUrl()))
         [[unlikely]] {
-      StateGetFilter();
+      UpdateStyleForFilterIfNeeded();
+      EnsureStateFilterResolved();
     }
   }
 
@@ -515,6 +517,10 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   void SetOriginTaintedByContent();
 
  private:
+  void EnsureStateFilterResolved();
+  void ResolveFilterAndEnsureOriginTaintedByContent(
+      CanvasImageSource* image_source);
+
   void FillImpl(SkPathFillType winding_rule);
   void FillPathImpl(Path2D* dom_path, SkPathFillType winding_rule);
 
@@ -807,6 +813,9 @@ void Canvas2DRecorderContext::Draw(
   if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds)) {
     return;
   }
+
+  DCHECK(!origin_tainted_by_content_ || !GetCanvasRenderingContextHost() ||
+         !OriginClean());
 
   const CanvasRenderingContext2DState& state = GetState();
   SkBlendMode global_composite = state.GlobalComposite();
