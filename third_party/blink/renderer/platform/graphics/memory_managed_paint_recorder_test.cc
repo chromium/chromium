@@ -67,4 +67,20 @@ TEST(MemoryManagedPaintRecorderTest,
   EXPECT_FALSE(recorder.HasSideRecording());
 }
 
+TEST(MemoryManagedPaintRecorderTest, ReleaseExcessCapacityKeepsRecording) {
+  MemoryManagedPaintRecorder recorder(gfx::Size(10, 10), nullptr);
+  recorder.ReleaseExcessCapacity();
+
+  recorder.getRecordingCanvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  recorder.ReleaseExcessCapacity();
+  EXPECT_EQ(recorder.TotalOpCount(), 1u);
+
+  recorder.ReleaseMainRecording();
+  recorder.ReleaseExcessCapacity();
+  EXPECT_FALSE(recorder.HasRecordedDrawOps());
+
+  recorder.getRecordingCanvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  EXPECT_EQ(recorder.ReleaseMainRecording().size(), 1u);
+}
+
 }  // namespace blink

@@ -5,6 +5,7 @@
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
+#include <bit>
 #include <limits>
 #include <utility>
 
@@ -730,6 +731,19 @@ void PaintOpBuffer::ShrinkToFit() {
   // avoiding quarantine churn on the old backing buffer.
   base::ScopedSafetyChecksExclusion excluded;
   ReallocIfNeededToFit();
+}
+
+void PaintOpBuffer::ReleaseExcessCapacity() {
+  // Stay on the sizes AllocatePaintOpSlowPath() grows through.
+  size_t new_size = std::max<size_t>(kInitialBufferSize, std::bit_ceil(used_));
+  if (new_size >= data_.size()) {
+    return;
+  }
+  // Frees excess internal `AlignedAlloc` backing bytes, with no JS/DOM
+  // callbacks or escaping untrusted pointers, avoiding quarantine churn on the
+  // old backing buffer.
+  base::ScopedSafetyChecksExclusion excluded;
+  ReallocBuffer(new_size);
 }
 
 PaintOpBuffer::BufferData PaintOpBuffer::ReallocIfNeededToFit() {

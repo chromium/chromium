@@ -262,6 +262,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void PruneLocalFontCache(size_t target_size);
 
+  // Frees the unused capacity of the main recording buffer. Skipped while draw
+  // ops are pending, as they would be copied only to be flushed soon after.
+  void ShrinkRecordingIfFlushed();
+
   void ScrollPathIntoViewInternal(const Path&);
 
   void DrawFocusIfNeededInternal(const Path&, Element*);

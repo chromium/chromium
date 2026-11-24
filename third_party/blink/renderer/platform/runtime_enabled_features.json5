@@ -1143,6 +1143,12 @@
       status: "stable",
     },
     {
+      // Kill switch for freeing unused 2D canvas recording memory when the
+      // page is hidden.
+      name: "Canvas2dShrinkRecordingWhenHidden",
+      status: "stable",
+    },
+    {
       // https://github.com/WICG/html-in-canvas/blob/main/README.md
       // Note the API name has changed to `drawElementImage`.
       name: "CanvasDrawElement",

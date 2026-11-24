@@ -253,6 +253,11 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // Resize the PaintOpBuffer to exactly fit the current amount of used space.
   void ShrinkToFit();
 
+  // Like ShrinkToFit(), but keeps a power-of-two size of at least
+  // kInitialBufferSize, so that reusing the buffer doesn't have to reallocate
+  // right away.
+  void ReleaseExcessCapacity();
+
   // Takes the contents of this as a PaintRecord. The result is shrunk to fit.
   // If the shrinking-to-fit allocates a new data buffer, this PaintOpBuffer
   // retains the original data buffer for future use.

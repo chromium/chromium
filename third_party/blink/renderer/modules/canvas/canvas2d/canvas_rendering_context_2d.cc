@@ -857,6 +857,17 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 
   if (!element->IsPageVisible()) {
     PruneLocalFontCache(0);
+    ShrinkRecordingIfFlushed();
+  }
+}
+
+void CanvasRenderingContext2D::ShrinkRecordingIfFlushed() {
+  if (!RuntimeEnabledFeatures::Canvas2dShrinkRecordingWhenHiddenEnabled()) {
+    return;
+  }
+  MemoryManagedPaintRecorder* recorder = Recorder();
+  if (recorder && !recorder->HasReleasableDrawOps()) {
+    recorder->ReleaseExcessCapacity();
   }
 }
 
@@ -1162,6 +1173,10 @@ bool CanvasRenderingContext2D::InitializeBacking() {
 void CanvasRenderingContext2D::ResetBacking() {
   BaseRenderingContext2D::ResetBacking();
   last_recording_ = std::nullopt;
+  // Hibernation has just flushed the recording.
+  if (IsHibernating()) {
+    ShrinkRecordingIfFlushed();
+  }
 }
 
 void CanvasRenderingContext2D::DropAndRecreateExistingBacking() {

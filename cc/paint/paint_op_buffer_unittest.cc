@@ -5449,6 +5449,39 @@ TEST(PaintOpBufferTest, ShrinkToFit) {
   EXPECT_EQ(data_buffer, buffer.DataBufferForTesting());
 }
 
+TEST(PaintOpBufferTest, ReleaseExcessCapacity) {
+  constexpr size_t kInitialSize = PaintOpBuffer::kInitialBufferSize;
+  PaintOpBuffer buffer;
+  buffer.ReleaseExcessCapacity();
+  EXPECT_FALSE(buffer.DataBufferForTesting());
+
+  // Grow the buffer to 4 * kInitialSize.
+  while (buffer.paint_ops_size() <= 2 * kInitialSize) {
+    buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
+  }
+  EXPECT_EQ(sizeof(PaintOpBuffer) + 4 * kInitialSize, buffer.bytes_used());
+
+  // The ops in use are kept, in a power-of-two size.
+  buffer.Reset();
+  while (buffer.paint_ops_size() <= kInitialSize) {
+    buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
+  }
+  size_t op_count = buffer.size();
+  buffer.ReleaseExcessCapacity();
+  EXPECT_EQ(sizeof(PaintOpBuffer) + 2 * kInitialSize, buffer.bytes_used());
+  EXPECT_EQ(op_count, buffer.size());
+
+  // Without ops, kInitialSize is kept, and reusing it doesn't reallocate.
+  buffer.Reset();
+  buffer.ReleaseExcessCapacity();
+  EXPECT_EQ(sizeof(PaintOpBuffer) + kInitialSize, buffer.bytes_used());
+  const uint8_t* data_buffer = buffer.DataBufferForTesting();
+  buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
+  buffer.ReleaseExcessCapacity();
+  EXPECT_EQ(sizeof(PaintOpBuffer) + kInitialSize, buffer.bytes_used());
+  EXPECT_EQ(data_buffer, buffer.DataBufferForTesting());
+}
+
 TEST(PaintOpBufferTest, ReleaseAsRecord) {
   PaintOpBuffer buffer;
   PaintRecord record = buffer.ReleaseAsRecord();

@@ -57,6 +57,10 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   // flushed later.
   cc::PaintRecord ReleaseMainRecording();
 
+  // Frees the unused capacity of the main recording buffer above its initial
+  // size. Otherwise the buffer keeps its largest size for reuse.
+  void ReleaseExcessCapacity() { main_canvas_.ReleaseExcessCapacity(); }
+
   // Drop all the draw ops recorded in the current layer level. This is used
   // when we are about to draw over the whole canvas or layer, masking away all
   // previously recorded paint ops at that level.

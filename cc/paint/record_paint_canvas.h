@@ -50,6 +50,9 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   size_t TotalOpCount() const { return buffer_.total_op_count(); }
   size_t OpBytesUsed() const { return buffer_.paint_ops_size(); }
 
+  // See PaintOpBuffer::ReleaseExcessCapacity().
+  void ReleaseExcessCapacity() { buffer_.ReleaseExcessCapacity(); }
+
   void* accessTopLayerPixels(SkImageInfo* info,
                              size_t* rowBytes,
                              SkIPoint* origin = nullptr) override;
