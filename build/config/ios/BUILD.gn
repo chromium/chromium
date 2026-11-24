@@ -62,10 +62,7 @@ config("compiler") {
   cflags = common_flags
   swiftflags = common_flags
 
-  swiftflags += [
-    "-swift-version",
-    "6",
-  ]
+  swiftflags += [ "-swift-version=6" ]
 
   cflags_objcc = [
     # When using -std=c++20 or higher, clang automatically returns true for
