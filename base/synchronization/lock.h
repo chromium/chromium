@@ -9,7 +9,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/synchronization/lock_subtle.h"
-#include "base/thread_annotations.h"
+#include "base/thread_annotations.h"  // IWYU pragma: export
 #include "build/build_config.h"
 #include "third_party/crubit/support/annotations.h"
 

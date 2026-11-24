@@ -10,7 +10,7 @@
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/macros/uniquify.h"
-#include "base/thread_annotations.h"
+#include "base/thread_annotations.h"  // IWYU pragma: export
 #include "base/threading/thread_checker_impl.h"
 
 // ThreadChecker is a helper class used to help verify that some methods of a

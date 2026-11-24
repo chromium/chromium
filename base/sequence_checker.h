@@ -9,6 +9,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/macros/uniquify.h"
 #include "base/sequence_checker_impl.h"
+#include "base/thread_annotations.h"  // IWYU pragma: export
 
 // SequenceChecker verifies mutual exclusion between calls to its
 // `CalledOnValidSequence()` method. Mutual exclusion is guaranteed if all calls
