@@ -205,6 +205,48 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
       "Translate.OnDeviceTranslation.CreateFailed.LanguagePair", 0);
 }
 
+// Tests that a successful translator creation records the engine latency,
+// split by whether the service was already running.
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorRecordsEngineLatencyByServiceState) {
+  base::HistogramTester histogram_tester;
+  FakeOnDeviceTranslationService fake_service;
+  EXPECT_CALL(*mock_launcher_, Launch)
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      first_future;
+  service_controller_->CreateTranslator("en", "es", first_future.GetCallback());
+  ASSERT_TRUE(first_future.Get().has_value());
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.CreateTranslator.EngineLatency."
+      "ServiceStarted",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.CreateTranslator.EngineLatency."
+      "ServiceRunning",
+      0);
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      second_future;
+  service_controller_->CreateTranslator("es", "en",
+                                        second_future.GetCallback());
+  ASSERT_TRUE(second_future.Get().has_value());
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.CreateTranslator.EngineLatency."
+      "ServiceStarted",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.CreateTranslator.EngineLatency."
+      "ServiceRunning",
+      1);
+}
+
 TEST_F(OnDeviceTranslationServiceControllerTest,
        CreateTranslatorFailsWhenLibraryInstallFails) {
   FakeOnDeviceTranslationService fake_service;

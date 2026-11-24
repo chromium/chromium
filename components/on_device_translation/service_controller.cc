@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -55,6 +56,10 @@ constexpr std::string_view kCreateTranslatorMetricActionName =
 constexpr std::string_view kCanTranslateMetricActionName = "CanTranslate";
 constexpr std::string_view kCreateFailedLanguagePairMetricName =
     "Translate.OnDeviceTranslation.CreateFailed.LanguagePair";
+// Time from sending `CreateTranslator()` to the service, including starting
+// the service if needed, to its successful reply.
+constexpr std::string_view kCreateTranslatorEngineLatencyMetricName =
+    "Translate.OnDeviceTranslation.CreateTranslator.EngineLatency";
 
 constexpr std::string_view
     kCreateTranslatorSourceLanguageIsSupportedMetricName =
@@ -250,6 +255,10 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
   mojo::PendingRemote<mojom::OnDeviceTranslator> pending_remote;
   auto pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
 
+  // Whether this request reuses a running service, or pays for a process
+  // launch, the library load and the pack config.
+  const bool service_was_running = IsServiceRunning();
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   if (!MaybeStartService()) {
     // If the service can't be started, returns
     // `kExceedsServiceCountLimitation` error.
@@ -264,6 +273,7 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(
               [](const std::string& source_lang, const std::string& target_lang,
+                 bool service_was_running, base::TimeTicks start_time,
                  base::OnceCallback<void(
                      base::expected<
                          mojo::PendingRemote<mojom::OnDeviceTranslator>,
@@ -271,6 +281,11 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
                  mojo::PendingRemote<mojom::OnDeviceTranslator> pending_remote,
                  CreateTranslatorResult result) {
                 if (result == CreateTranslatorResult::kSuccess) {
+                  base::UmaHistogramMediumTimes(
+                      base::StrCat({kCreateTranslatorEngineLatencyMetricName,
+                                    service_was_running ? ".ServiceRunning"
+                                                        : ".ServiceStarted"}),
+                      base::TimeTicks::Now() - start_time);
                   std::move(callback).Run(std::move(pending_remote));
                 } else {
                   RecordLanguagePairUma(kCreateFailedLanguagePairMetricName,
@@ -279,8 +294,8 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
                       base::unexpected(ToCreateTranslatorError(result)));
                 }
               },
-              source_lang, target_lang, std::move(callbacks.first),
-              std::move(pending_remote)),
+              source_lang, target_lang, service_was_running, start_time,
+              std::move(callbacks.first), std::move(pending_remote)),
           base::BindOnce(
               std::move(callbacks.second),
               base::unexpected(CreateTranslatorError::kServiceCrashed))));

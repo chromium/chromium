@@ -277,6 +277,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Translate.OnDeviceTranslation.CreateTranslator.EngineLatency.{ServiceState}"
+    units="ms" expires_after="2027-10-01">
+  <owner>jaeone@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    The time from the browser sending CreateTranslator to the on-device
+    translation service until the service replies with success. Recorded once
+    per successful translator creation, after any language pack download has
+    finished. {ServiceState}
+  </summary>
+  <token key="ServiceState">
+    <variant name="ServiceRunning"
+        summary="The service pipe was already bound (including requests sent
+                 while the process was still starting), so this time is
+                 mostly the model load, or less if the service still had the
+                 model of the language pair."/>
+    <variant name="ServiceStarted"
+        summary="The service was started for this request, so this time also
+                 includes the process launch, the TranslateKit library load
+                 and the language pack config."/>
+  </token>
+</histogram>
+
 <histogram name="Translate.OnDeviceTranslation.Download.LanguagePair"
     units="int" expires_after="2027-03-01">
   <owner>evliu@google.com</owner>
