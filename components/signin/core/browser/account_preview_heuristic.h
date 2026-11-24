@@ -9,10 +9,15 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "google_apis/gaia/gaia_id.h"
+
+#if DCHECK_IS_ON()
+#include <string>
+#endif
 
 namespace signin {
 
@@ -25,6 +30,11 @@ ComputeAccountPreviewPreference(const GaiaId& gaia_id,
 // Input context needed by the heuristic to evaluate an account.
 struct AccountPreviewHeuristicContext {
   GaiaId gaia_id;
+#if DCHECK_IS_ON()
+  // Stored when `DCHECK_IS_ON()` is enabled to identify the account in a
+  // debugger.
+  std::string email;
+#endif
   raw_ptr<const AccountPreviewData> preview_data = nullptr;
   bool is_primary = false;
   bool is_managed = false;

@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/signin/core/browser/account_preview_data.h"
@@ -1439,5 +1440,18 @@ TEST_F(AccountPreviewHeuristicTest,
   ASSERT_TRUE(res.preference.has_value());
   EXPECT_EQ(res.preference->gaia_id, GaiaId("sec_medium_eligible"));
 }
+
+#if DCHECK_IS_ON()
+// Verifies that `AccountPreviewHeuristicContext` stores `email` when
+// `DCHECK_IS_ON()` is enabled.
+TEST_F(AccountPreviewHeuristicTest, ContextStoresEmail) {
+  AccountPreviewHeuristicContext context{
+      .gaia_id = GaiaId("user1"),
+      .email = "user1@example.com",
+  };
+  EXPECT_EQ(context.gaia_id, GaiaId("user1"));
+  EXPECT_EQ(context.email, "user1@example.com");
+}
+#endif
 
 }  // namespace signin

@@ -7,11 +7,13 @@
 #include <absl/container/flat_hash_set.h>
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -33,6 +35,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -896,6 +899,9 @@ AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
 
     contexts.push_back(AccountPreviewHeuristicContext{
         .gaia_id = account.GetGaiaId(),
+#if DCHECK_IS_ON()
+        .email = std::string(account.GetEmail()),
+#endif
         .preview_data = preview_data,
         .is_primary = is_primary,
         .is_managed = account.IsManaged() == signin::Tribool::kTrue,
