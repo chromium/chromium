@@ -5071,4 +5071,22 @@ TEST_F(StyleCascadeTest, LineClampCascadeOrder) {
     EXPECT_EQ(nullptr, cascade.ComputedValue("-webkit-line-clamp"));
   }
 }
+
+TEST_F(StyleCascadeTest, DisabledInheritCrash) {
+  ScopedCSSInheritFunctionForTest enable(false);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #outer { --anim: foo; }
+      #inner {
+        --in: --anim;
+        animation-name: inherit(var(--in));
+      }
+    </style>
+    <div id="outer">
+      <div id="inner"></div>
+    </div>
+  )HTML");
+  // Should not crash
+}
+
 }  // namespace blink

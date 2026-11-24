@@ -1684,7 +1684,8 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveVarInto(stream, tree_scope, resolver, context,
                                 function_context, out);
-    } else if (token.FunctionId() == CSSValueID::kInherit) {
+    } else if (token.FunctionId() == CSSValueID::kInherit &&
+               RuntimeEnabledFeatures::CSSInheritFunctionEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveInheritInto(stream, tree_scope, resolver, context,
                                     function_context, out);
