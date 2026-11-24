@@ -85,6 +85,9 @@ blink::mojom::CanCreateTranslatorResult GetBlinkCanCreateTranslatorResult(
           kNoExceedsServiceCountLimitation;
     case OnDeviceTranslationController::CanTranslateResult::kNoServiceCrashed:
       return blink::mojom::CanCreateTranslatorResult::kNoServiceCrashed;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoUnsupportedDevice:
+      return blink::mojom::CanCreateTranslatorResult::kNoUnsupportedDevice;
   }
 }
 
@@ -337,6 +340,9 @@ blink::mojom::CreateTranslatorError GetBlinkCreateTranslateError(
       return blink::mojom::CreateTranslatorError::kNotEnoughDiskSpace;
     case OnDeviceTranslationController::CreateTranslatorError::kOffline:
       return blink::mojom::CreateTranslatorError::kOffline;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kUnsupportedDevice:
+      return blink::mojom::CreateTranslatorError::kUnsupportedDevice;
   }
 }
 

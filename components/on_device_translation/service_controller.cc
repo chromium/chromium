@@ -201,6 +201,13 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       kCreateTranslatorMetricActionName, *best_fit_source_language,
       *best_fit_target_language);
 
+  if (!installer_->IsSupported()) {
+    // Don't download language packs that can't be used.
+    std::move(callback).Run(
+        base::unexpected(CreateTranslatorError::kUnsupportedDevice));
+    return;
+  }
+
   LanguagePackRequirements language_pack_requirements =
       GetLanguagePackRequirements(*best_fit_source_language,
                                   *best_fit_target_language);
@@ -342,6 +349,10 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
     return CanTranslateResult::kNoNotSupportedLanguage;
   }
 
+  if (!installer_->IsSupported()) {
+    return CanTranslateResult::kNoUnsupportedDevice;
+  }
+
   if (language_pack_requirements.required_not_installed_packs.empty()) {
     // All required language packages are installed.
     if (!installer_->IsInit()) {
@@ -380,10 +391,13 @@ void OnDeviceTranslationServiceController::OnLibraryInstallFailed(
     return;
   }
   // Every pending task waits for the library, so none of them can complete.
-  RejectPendingTasks(
-      [](const PendingTask&) { return true; },
-      ToCreateTranslatorError(error,
-                              CreateTranslatorError::kLibraryInstallFailed));
+  // If the device has no usable library, report `kUnsupportedDevice`.
+  const CreateTranslatorError translator_error =
+      !installer_->IsSupported()
+          ? CreateTranslatorError::kUnsupportedDevice
+          : ToCreateTranslatorError(
+                error, CreateTranslatorError::kLibraryInstallFailed);
+  RejectPendingTasks([](const PendingTask&) { return true; }, translator_error);
 }
 
 void OnDeviceTranslationServiceController::OnLanguagePackInstallFailed(

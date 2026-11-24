@@ -29,6 +29,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
+#include "chrome/browser/on_device_translation/library_source.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -319,6 +320,24 @@ TEST_F(OnDeviceTranslationInstallerTest, InitWithNullCallback) {
   EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()->IsInit());
   // A null callback for an installed library must not be run.
   OnDeviceTranslationInstaller::GetInstance()->Init(base::RepeatingClosure());
+}
+
+// Tests that `Init()` fails right away when the library can never be
+// installed, instead of keeping the callback forever.
+TEST_F(OnDeviceTranslationInstallerTest, InitFailsWhenUnsupported) {
+  installer_.reset();
+  installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>(
+      std::make_unique<FixedPathLibrarySource>(base::FilePath()));
+  ASSERT_FALSE(installer_->IsSupported());
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
+  testing::NiceMock<MockObserver> observer;
+  installer_->AddObserver(&observer);
+  EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kFailed));
+  base::MockCallback<base::RepeatingClosure> on_ready;
+  EXPECT_CALL(on_ready, Run()).Times(0);
+  installer_->Init(on_ready.Get());
+  task_environment_.RunUntilIdle();
+  installer_->RemoveObserver(&observer);
 }
 
 // Tests that a failed on-demand update of the library is reported.

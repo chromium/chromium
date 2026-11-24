@@ -99,6 +99,7 @@ Availability HandleTranslatorAvailabilityCheckResult(
     case mojom::blink::CanCreateTranslatorResult::
         kNoExceedsServiceCountLimitation:
     case mojom::blink::CanCreateTranslatorResult::kNoInvalidStoragePartition:
+    case mojom::blink::CanCreateTranslatorResult::kNoUnsupportedDevice:
       return HandleModelAvailabilityCheckResult(
           execution_context, AIMetrics::AISessionType::kTranslator,
           mojom::blink::ModelAvailabilityCheckResult::

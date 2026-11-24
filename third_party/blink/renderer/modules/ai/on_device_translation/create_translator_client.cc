@@ -56,6 +56,8 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
     case CreateTranslatorError::kOffline:
       return "The translation model must be downloaded, but the device is "
              "offline.";
+    case CreateTranslatorError::kUnsupportedDevice:
+      return "Translation is not supported on this device.";
   }
 }
 
@@ -84,6 +86,9 @@ String ConvertCanCreateTranslatorResultToDebugString(
     case CanCreateTranslatorResult::kNoInvalidStoragePartition:
       equivalent_error = CreateTranslatorError::kInvalidStoragePartition;
       break;
+    case CanCreateTranslatorResult::kNoUnsupportedDevice:
+      equivalent_error = CreateTranslatorError::kUnsupportedDevice;
+      break;
   }
   return ConvertCreateTranslatorErrorToDebugString(equivalent_error);
 }
@@ -103,6 +108,7 @@ bool RequiresUserActivation(CanCreateTranslatorResult result) {
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
     case CanCreateTranslatorResult::kNoInvalidStoragePartition:
+    case CanCreateTranslatorResult::kNoUnsupportedDevice:
       return false;
   }
 }
@@ -121,6 +127,7 @@ bool TranslatorIsUnavailable(CanCreateTranslatorResult result) {
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
     case CanCreateTranslatorResult::kNoInvalidStoragePartition:
+    case CanCreateTranslatorResult::kNoUnsupportedDevice:
       return true;
   }
 }

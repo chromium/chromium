@@ -190,6 +190,7 @@ TEST_F(TranslationManagerImplTest, RecordsCreateTranslatorError) {
           {ControllerError::kNotEnoughDiskSpace,
            BlinkError::kNotEnoughDiskSpace},
           {ControllerError::kOffline, BlinkError::kOffline},
+          {ControllerError::kUnsupportedDevice, BlinkError::kUnsupportedDevice},
       });
 
   base::HistogramTester histogram_tester;

@@ -2189,6 +2189,8 @@ Unknown properties are collapsed to zero. -->
   <int value="15" label="CreateTranslator: Language pack download failed"/>
   <int value="16" label="CreateTranslator: Not enough disk space"/>
   <int value="17" label="CreateTranslator: Offline"/>
+  <int value="18" label="CanTranslate: Unsupported device"/>
+  <int value="19" label="CreateTranslator: Unsupported device"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/live_caption/translation_dispatcher_on_device.h:OnDeviceTranslationErrorReason) -->

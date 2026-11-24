@@ -23,6 +23,7 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   ~FakeOnDeviceTranslationInstaller() override;
   explicit FakeOnDeviceTranslationInstaller(base::FilePath fake_install_dir);
 
+  bool IsSupported() const override;
   bool IsInit() const override;
   std::set<LanguagePackKey> RegisteredLanguagePacks() const override;
   std::set<LanguagePackKey> InstalledLanguagePacks() const override;
@@ -36,6 +37,7 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
+  void set_supported(bool supported) { supported_ = supported; }
   // Forces initialization to happen right away.
   void InitNow(base::RepeatingClosure on_ready_callback);
   // Forces installation to happen right away.
@@ -54,6 +56,7 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
 
  private:
   base::FilePath fake_install_dir_;
+  bool supported_ = true;
   bool is_init_ = false;
   std::set<LanguagePackKey> installed_lang_packs_;
   std::set<LanguagePackKey> registered_lang_packs_;

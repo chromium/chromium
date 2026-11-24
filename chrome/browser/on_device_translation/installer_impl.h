@@ -34,6 +34,7 @@ class OnDeviceTranslationInstallerImpl
   ~OnDeviceTranslationInstallerImpl() override;
 
   // OnDeviceTranslationInstaller:
+  bool IsSupported() const override;
   bool IsInit() const override;
   std::set<LanguagePackKey> InstalledLanguagePacks() const override;
   std::set<LanguagePackKey> RegisteredLanguagePacks() const override;

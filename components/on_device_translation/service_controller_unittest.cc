@@ -356,6 +356,32 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
 }
 
 TEST_F(OnDeviceTranslationServiceControllerTest,
+       UnavailableWhenLibraryIsNotSupported) {
+  fake_installer_->set_supported(false);
+  EXPECT_CALL(*mock_launcher_, Launch).Times(0);
+
+  base::test::TestFuture<OnDeviceTranslationController::CanTranslateResult>
+      can_translate_future;
+  service_controller_->CanTranslate("en", "es",
+                                    can_translate_future.GetCallback());
+  EXPECT_EQ(
+      can_translate_future.Get(),
+      OnDeviceTranslationController::CanTranslateResult::kNoUnsupportedDevice);
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      create_future;
+  service_controller_->CreateTranslator("en", "es",
+                                        create_future.GetCallback());
+  ASSERT_TRUE(create_future.IsReady());
+  EXPECT_EQ(create_future.Get().error(),
+            CreateTranslatorError::kUnsupportedDevice);
+
+  // No language pack download starts.
+  EXPECT_TRUE(fake_installer_->RegisteredLanguagePacks().empty());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
        LibraryInstallFailureIgnoredWhenLibraryIsInstalled) {
   fake_installer_->InitNow(base::DoNothing());
 

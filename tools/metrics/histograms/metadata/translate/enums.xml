@@ -378,6 +378,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="kLanguagePackDownloadFailed"/>
   <int value="14" label="kNotEnoughDiskSpace"/>
   <int value="15" label="kOffline"/>
+  <int value="16" label="kUnsupportedDevice"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/on_device_translation/translation_manager.mojom:CreateTranslatorError) -->

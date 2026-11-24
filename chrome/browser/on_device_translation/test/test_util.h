@@ -112,6 +112,7 @@ class TestInstallerAdapter : public OnDeviceTranslationInstaller {
   TestInstallerAdapter();
   ~TestInstallerAdapter() override;
 
+  bool IsSupported() const override;
   bool IsInit() const override;
   std::set<LanguagePackKey> RegisteredLanguagePacks() const override;
   std::set<LanguagePackKey> InstalledLanguagePacks() const override;

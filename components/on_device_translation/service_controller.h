@@ -46,6 +46,7 @@ class OnDeviceTranslationController {
     kLanguagePackDownloadFailed,
     kNotEnoughDiskSpace,
     kOffline,
+    kUnsupportedDevice,
   };
 
   enum class CanTranslateResult {
@@ -56,6 +57,7 @@ class OnDeviceTranslationController {
     kNoNotSupportedLanguage,
     kNoExceedsServiceCountLimitation,
     kNoServiceCrashed,
+    kNoUnsupportedDevice,
   };
 
   using CreateTranslatorCallback = base::OnceCallback<void(

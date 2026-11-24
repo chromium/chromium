@@ -30,6 +30,10 @@ MockComponentManager::~MockComponentManager() = default;
 TestInstallerAdapter::TestInstallerAdapter() = default;
 TestInstallerAdapter::~TestInstallerAdapter() = default;
 
+bool TestInstallerAdapter::IsSupported() const {
+  return OnDeviceTranslationInstaller::GetInstance()->IsSupported();
+}
+
 bool TestInstallerAdapter::IsInit() const {
   return OnDeviceTranslationInstaller::GetInstance()->IsInit();
 }

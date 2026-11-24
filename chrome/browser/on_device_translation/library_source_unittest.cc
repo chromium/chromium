@@ -190,6 +190,12 @@ TEST_F(TranslateKitLibrarySourceTest, CreateUsesPathFromCommandLine) {
   EXPECT_EQ(library_source->GetLibraryPath(), base::FilePath(kLibraryPath));
 }
 
+TEST_F(TranslateKitLibrarySourceTest, FixedPathSourceWithoutPathIsUnsupported) {
+  EXPECT_TRUE(
+      FixedPathLibrarySource(base::FilePath(kLibraryPath)).IsSupported());
+  EXPECT_FALSE(FixedPathLibrarySource(base::FilePath()).IsSupported());
+}
+
 TEST_F(TranslateKitLibrarySourceTest, ComponentUpdaterSourceReadsPref) {
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>(

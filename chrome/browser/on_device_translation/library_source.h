@@ -47,6 +47,10 @@ class TranslateKitLibrarySource {
   // outlive this object.
   void SetClient(Client* client);
 
+  // Returns whether this source can provide a library on this device. If not,
+  // translation is unavailable.
+  virtual bool IsSupported() const;
+
   // Returns the absolute path of the library, or an empty path if it isn't
   // installed. Callers use this on every availability check, so it must not
   // block.
@@ -67,13 +71,15 @@ class TranslateKitLibrarySource {
 
 // A source that provides a library at a fixed path. The path comes from the
 // `--translate-kit-binary-path` switch, which developers and tests use to load
-// a local build of the library.
+// a local build of the library. With an empty path, the source stands for a
+// build that has no library, and translation is unavailable.
 class FixedPathLibrarySource : public TranslateKitLibrarySource {
  public:
   explicit FixedPathLibrarySource(base::FilePath library_path);
   ~FixedPathLibrarySource() override;
 
   // TranslateKitLibrarySource:
+  bool IsSupported() const override;
   base::FilePath GetLibraryPath() const override;
   void Install() override;
 

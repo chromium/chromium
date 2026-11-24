@@ -72,6 +72,9 @@ class OnDeviceTranslationInstaller {
   // `OnDeviceTranslationInstaller`.
   static OnDeviceTranslationInstaller* GetInstance();
 
+  // Returns whether the TranslateKit library can be installed and run on this
+  // device. If not, translation is unavailable.
+  virtual bool IsSupported() const = 0;
   // Returns whether the OnDeviceTranslation has completed initialization.
   virtual bool IsInit() const = 0;
   // Returns the set of registered language packs.

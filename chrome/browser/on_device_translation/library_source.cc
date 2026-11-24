@@ -29,17 +29,26 @@ void TranslateKitLibrarySource::SetClient(Client* client) {
   client_ = client;
 }
 
+bool TranslateKitLibrarySource::IsSupported() const {
+  return true;
+}
+
 FixedPathLibrarySource::FixedPathLibrarySource(base::FilePath library_path)
     : library_path_(std::move(library_path)) {}
 
 FixedPathLibrarySource::~FixedPathLibrarySource() = default;
+
+bool FixedPathLibrarySource::IsSupported() const {
+  return !library_path_.empty();
+}
 
 base::FilePath FixedPathLibrarySource::GetLibraryPath() const {
   return library_path_;
 }
 
 void FixedPathLibrarySource::Install() {
-  // The library is always installed.
+  // The library is installed if the path is set. Otherwise it never will be,
+  // and `OnDeviceTranslationInstallerImpl::Init()` fails before it gets here.
 }
 
 }  // namespace on_device_translation

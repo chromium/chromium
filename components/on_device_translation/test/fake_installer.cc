@@ -18,6 +18,9 @@ FakeOnDeviceTranslationInstaller::FakeOnDeviceTranslationInstaller(
     base::FilePath fake_install_dir)
     : fake_install_dir_(fake_install_dir) {}
 
+bool FakeOnDeviceTranslationInstaller::IsSupported() const {
+  return supported_;
+}
 bool FakeOnDeviceTranslationInstaller::IsInit() const {
   return is_init_;
 }

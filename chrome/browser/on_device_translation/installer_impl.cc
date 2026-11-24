@@ -371,6 +371,10 @@ OnDeviceTranslationInstallerImpl::RegisteredLanguagePacks() const {
   return registered_pack_keys;
 }
 
+bool OnDeviceTranslationInstallerImpl::IsSupported() const {
+  return library_source_->IsSupported();
+}
+
 bool OnDeviceTranslationInstallerImpl::IsInit() const {
   return !library_source_->GetLibraryPath().empty();
 }
@@ -381,6 +385,11 @@ void OnDeviceTranslationInstallerImpl::Init(
     if (on_ready_callback) {
       on_ready_callback.Run();
     }
+    return;
+  }
+  if (!IsSupported()) {
+    // The library can't be installed, so the callback would never run.
+    FailLibraryInstall(InstallError::kFailed);
     return;
   }
   // Callers that only start the install pass a null callback, so that repeated

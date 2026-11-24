@@ -79,6 +79,8 @@ OnDeviceTranslationErrorReason ToOnDeviceTranslationErrorReason(
           kCreateTranslatorNotEnoughDiskSpace;
     case Error::kOffline:
       return OnDeviceTranslationErrorReason::kCreateTranslatorOffline;
+    case Error::kUnsupportedDevice:
+      return OnDeviceTranslationErrorReason::kCreateTranslatorUnsupportedDevice;
   }
   return OnDeviceTranslationErrorReason::kCreateTranslatorUnknownError;
 }
@@ -161,6 +163,12 @@ void TranslationDispatcherOnDevice::OnCanTranslate(
       ResetCreationAndNotifyFailure(
           std::move(callback), OnDeviceTranslationErrorReason::
                                    kCanTranslateExceedsServiceCountLimitation);
+      return;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoUnsupportedDevice:
+      ResetCreationAndNotifyFailure(
+          std::move(callback),
+          OnDeviceTranslationErrorReason::kCanTranslateUnsupportedDevice);
       return;
   }
 }
