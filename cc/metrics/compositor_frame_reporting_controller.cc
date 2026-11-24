@@ -596,6 +596,11 @@ void CompositorFrameReportingController::StoreEventMetricsFromDroppedFrames(
   // be reported with the first following presented frame.
   auto main_reporter_events_metrics = reporter.TakeMainBlockedEventsMetrics();
   auto remaining_reporter_events_metrics = reporter.TakeEventsMetrics();
+  if (main_reporter_events_metrics.empty() &&
+      remaining_reporter_events_metrics.empty()) {
+    return;
+  }
+
   EventMetricsSet& frame_events_metrics =
       events_metrics_from_dropped_frames_[frame_token];
 

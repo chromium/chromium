@@ -3529,5 +3529,21 @@ TEST_F(CompositorFrameReportingControllerTest,
                                     0);
 }
 
+TEST_F(CompositorFrameReportingControllerTest,
+       EmptyFailedFramesDoNotAllocateDroppedFrameEntries) {
+  viz::FrameTimingDetails failed_details;
+  failed_details.presentation_feedback = gfx::PresentationFeedback::Failure();
+
+  for (int i = 0; i < 10; ++i) {
+    SimulateSubmitCompositorFrame({});
+    reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                    failed_details);
+  }
+
+  EXPECT_TRUE(
+      reporting_controller_.events_metrics_from_dropped_frames_for_testing()
+          .empty());
+}
+
 }  // namespace
 }  // namespace cc

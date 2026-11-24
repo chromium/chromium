@@ -108,6 +108,11 @@ class CC_EXPORT CompositorFrameReportingController {
     return reporters_;
   }
 
+  const std::map<uint32_t, EventMetricsSet>&
+  events_metrics_from_dropped_frames_for_testing() const {
+    return events_metrics_from_dropped_frames_;
+  }
+
   void SetFrameSorter(FrameSorter* frame_sorter) {
     frame_sorter_ = frame_sorter;
   }
