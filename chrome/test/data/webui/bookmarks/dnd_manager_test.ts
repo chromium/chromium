@@ -613,4 +613,23 @@ suite('drag and drop', function() {
     move(dragTarget);
     assertDragStyle(dragTarget, DragStyle.NONE);
   });
+
+  test(
+      'ignores drop if parent became unmodifiable after dragover',
+      async function() {
+        const dragElement = getListItem('13');
+        const dragTarget = getListItem('14');
+
+        await simulateDragStart(dragElement);
+        move(dragTarget);
+        assertDragStyle(dragTarget, DragStyle.ON);
+
+        // The drop destination is validated on dragover only.
+        store.data.prefs.canEdit = false;
+        store.notifyObservers();
+
+        dispatchDragEvent('drop', dragTarget);
+        await microtasksFinished();
+        assertEquals(0, bookmarkManagerApi.getCallCount('drop'));
+      });
 });

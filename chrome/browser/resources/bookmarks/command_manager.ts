@@ -328,7 +328,9 @@ export class BookmarksCommandManagerElement extends
           return isRootNode(node.id);
         });
       case Command.PASTE:
-        return this.canPaste_;
+        // Recheck the list since menus opened from the sidebar tree don't
+        // refresh `canPaste_`.
+        return this.canPaste_ && this.canChangeList_();
       default:
         return true;
     }
@@ -341,6 +343,17 @@ export class BookmarksCommandManagerElement extends
     const state = this.getState();
     return state.search.term === '' &&
         canReorderChildren(state, state.selectedFolder);
+  }
+
+  private async updateCanPaste_(): Promise<void> {
+    // Synthetic headings have no legacy ID and can't accept pasted items.
+    if (!this.canChangeList_()) {
+      this.canPaste_ = false;
+      return;
+    }
+    const state = this.getState();
+    this.canPaste_ = await BookmarkManagerApiProxyImpl.getInstance().canPaste(
+        getLegacyId(state.nodes[state.selectedFolder]));
   }
 
   private async ensureEditDialog_(): Promise<BookmarksEditDialogElement> {
@@ -462,11 +475,14 @@ export class BookmarksCommandManagerElement extends
         const selectedFolder = state.selectedFolder;
         const selectedItems = state.selection.items;
         trackUpdatedItems();
+        // The folder can be removed while the paste is in flight. Swallow the
+        // rejection so `highlightUpdatedItems()` still runs to reset tracking.
         BookmarkManagerApiProxyImpl.getInstance()
             .paste(
                 getLegacyId(state.nodes[selectedFolder]),
                 Array.from(selectedItems)
                     .map(id => getLegacyId(state.nodes[id])))
+            .catch(() => {})
             .then(highlightUpdatedItems);
         break;
       case Command.SORT:
@@ -895,10 +911,7 @@ export class BookmarksCommandManagerElement extends
       e: CustomEvent<OpenCommandMenuDetail>): Promise<void> {
     this.isActiveTabInSplit_ =
         await BookmarkManagerApiProxyImpl.getInstance().isActiveTabInSplit();
-    if (e.detail.targetId) {
-      this.canPaste_ = await BookmarkManagerApiProxyImpl.getInstance().canPaste(
-          getLegacyId(this.getState().nodes[e.detail.targetId]));
-    }
+    await this.updateCanPaste_();
     if (e.detail.targetElement) {
       this.openCommandMenuAtElement(e.detail.targetElement, e.detail.source);
     } else {

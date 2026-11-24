@@ -425,15 +425,26 @@ export class DndManager {
       const index = dropInfo.index !== -1 ? dropInfo.index : undefined;
       const shouldHighlight = this.shouldHighlight_(this.dropDestination_);
 
+      // `dropDestination_` is only validated on dragover, so the parent may no
+      // longer accept children by the time the drop lands (e.g. it was
+      // removed or editing was disabled by policy).
+      const state = Store.getInstance().data;
+      if (!canReorderChildren(state, dropInfo.parentId)) {
+        this.clearDragData_();
+        return;
+      }
+
       if (shouldHighlight) {
         trackUpdatedItems();
       }
 
-      const state = Store.getInstance().data;
       const legacyParentId = getLegacyId(state.nodes[dropInfo.parentId]);
 
+      // The parent can be removed while the drop is in flight. Swallow the
+      // rejection so `highlightUpdatedItems()` still runs to reset tracking.
       BookmarkManagerApiProxyImpl.getInstance()
           .drop(legacyParentId, index)
+          .catch(() => {})
           .then(shouldHighlight ? highlightUpdatedItems : undefined);
     }
     this.clearDragData_();

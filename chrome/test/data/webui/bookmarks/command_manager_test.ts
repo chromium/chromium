@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksFolderNodeElement, BookmarksItemElement, BookmarksListElement, SelectFolderAction, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDefaultSelectedFolder, getDisplayedList, MenuSource, selectFolder, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDefaultSelectedFolder, getDisplayedList, MenuSource, selectFolder, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -277,6 +277,18 @@ suite('<bookmarks-command-manager>', function() {
     document.dispatchEvent(new Event('paste'));
     const lastPaste = await bookmarkManagerProxy.whenCalled('paste');
     assertEquals('1', lastPaste);
+  });
+
+  test('paste is disabled while searching', async () => {
+    store.data.search.term = 'test';
+    store.data.search.results = ['11', '13'];
+    store.data.selection.items = new Set(['11']);
+    store.notifyObservers();
+    await microtasksFinished();
+
+    assertFalse(commandManager.canExecute(Command.PASTE, new Set(['11'])));
+    document.dispatchEvent(new Event('paste'));
+    assertEquals(0, bookmarkManagerProxy.getCallCount('paste'));
   });
 
   test('undo and redo commands trigger', function() {
@@ -847,6 +859,44 @@ suite('<bookmarks-item> CommandManager integration', function() {
     assertEquals(dialog, dropdown.shadowRoot.elementFromPoint(x, y));
     customClick(dialog, {clientX: x, clientY: y, button: 1}, 'contextmenu');
     assertFalse(dropdown.open);
+  });
+
+  test('disables paste while a heading folder is displayed', async function() {
+    store.data.nodes[ACCOUNT_HEADING_NODE_ID] = {
+      id: ACCOUNT_HEADING_NODE_ID,
+      title: 'In your Google Account',
+      parentId: '0',
+      children: ['1'],
+    };
+    store.data.nodes['1']!.parentId = ACCOUNT_HEADING_NODE_ID;
+    store.data.selectedFolder = ACCOUNT_HEADING_NODE_ID;
+    store.data.selection.items = new Set(['1']);
+    store.notifyObservers();
+    bookmarkManagerProxy.setCanPaste(true);
+
+    // Ctrl+V is ignored.
+    assertFalse(commandManager.canExecute(Command.PASTE, new Set(['1'])));
+    document.dispatchEvent(new Event('paste'));
+    assertEquals(0, bookmarkManagerProxy.getCallCount('paste'));
+
+    // The context menu on a permanent folder row shows Paste as disabled
+    // without querying the heading's (nonexistent) legacy ID.
+    document.dispatchEvent(new CustomEvent('open-command-menu', {
+      detail: {
+        x: 10,
+        y: 10,
+        source: MenuSource.ITEM,
+        targetId: '1',
+      },
+    }));
+    await microtasksFinished();
+    assertEquals(0, bookmarkManagerProxy.getCallCount('canPaste'));
+
+    const pasteItem =
+        commandManager.shadowRoot.querySelector<HTMLButtonElement>(
+            `[data-command='${Command.PASTE}']`);
+    assertTrue(!!pasteItem);
+    assertTrue(pasteItem.disabled);
   });
 });
 
