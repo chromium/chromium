@@ -18,6 +18,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
+#include "url/url_constants.h"
 
 namespace autofill {
 
@@ -148,7 +149,7 @@ void CustomFormControlScriptIndex::SetEntries(std::vector<Entry> entries) {
 std::optional<std::string> CustomFormControlScriptIndex::FindScript(
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
     return std::nullopt;
   }
   const std::string_view path_for_request = url.PathForRequestPiece();

@@ -29,7 +29,7 @@ namespace autofill {
 // The maximum size of a custom form control script.
 inline constexpr size_t kMaxCustomFormControlScriptSizeBytes = 64 * 1024;
 
-// Maps HTTP/HTTPS page URLs to custom form control scripts. There is one index
+// Maps HTTPS page URLs to custom form control scripts. There is one index
 // per browser process: in Chrome, it is owned by `GlobalFeatures`, which
 // creates it at startup if `features::kAutofillCustomFormControlScripts` is
 // enabled, and populates it via `InitializeFromDirectory()` from
@@ -45,7 +45,7 @@ class CustomFormControlScriptIndex final {
   // RE2 `url_filter` to `script` contents. `url_filter` is searched anywhere in
   // `url.PathForRequest()` (canonical path plus optional `?query`, excluding
   // `#fragment`); use `^`/`$` to anchor it. An empty `url_filter` matches all
-  // URLs on the host.
+  // HTTPS URLs on the host.
   struct Entry {
     std::string host;
     std::string url_filter;
@@ -90,7 +90,7 @@ class CustomFormControlScriptIndex final {
   // dropped. Entry order is preserved (the first matching entry wins).
   void SetEntries(std::vector<Entry> entries);
 
-  // Returns a copy of the script of the first entry matching `url` (HTTP/HTTPS
+  // Returns a copy of the script of the first entry matching `url` (HTTPS
   // only), or std::nullopt if none matches.
   std::optional<std::string> FindScript(const GURL& url) const;
 

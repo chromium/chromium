@@ -55,7 +55,7 @@ TEST(CustomFormControlScriptIndexTest, FindScriptMatchesHostAndPathForRequest) {
   // Matches normalized host, subdomains, custom ports, and path/query filter.
   EXPECT_THAT(index.FindScript(GURL("https://www.example.com:8443/checkout")),
               Optional(std::string("checkout_script")));
-  EXPECT_THAT(index.FindScript(GURL("http://a.b.example.com/shop/checkout")),
+  EXPECT_THAT(index.FindScript(GURL("https://a.b.example.com/shop/checkout")),
               Optional(std::string("checkout_script")));
   EXPECT_THAT(
       index.FindScript(GURL("https://example.com/index.php?cl=user&step=1")),
@@ -67,7 +67,9 @@ TEST(CustomFormControlScriptIndexTest, FindScriptMatchesHostAndPathForRequest) {
   EXPECT_THAT(index.FindScript(GURL("https://example.com/login#/checkout")),
               Optional(std::string("fallback_script")));
 
-  // Non-matching hosts and non-HTTP(S) schemes return nullopt.
+  // Non-matching hosts and non-HTTPS schemes return nullopt.
+  EXPECT_EQ(index.FindScript(GURL("http://example.com/checkout")),
+            std::nullopt);
   EXPECT_EQ(index.FindScript(GURL("https://notexample.com/checkout")),
             std::nullopt);
   EXPECT_EQ(index.FindScript(GURL("file:///checkout")), std::nullopt);
