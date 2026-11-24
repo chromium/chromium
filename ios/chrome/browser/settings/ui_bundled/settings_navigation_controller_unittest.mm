@@ -252,11 +252,9 @@ TEST_F(SettingsNavigationControllerTest,
   id strict_delegate =
       OCMStrictProtocolMock(@protocol(SettingsNavigationControllerDelegate));
   @autoreleasepool {
-    UIViewController* base_view_controller = [[UIViewController alloc] init];
     SettingsNavigationController* settings_controller =
         [SettingsNavigationController
             accountsControllerForBrowser:browser_.get()
-                      baseViewController:base_view_controller
                                 delegate:strict_delegate
                closeSettingsOnAddAccount:YES
                        showSignoutButton:YES
@@ -286,11 +284,9 @@ TEST_F(SettingsNavigationControllerTest,
   id strict_delegate =
       OCMStrictProtocolMock(@protocol(SettingsNavigationControllerDelegate));
   @autoreleasepool {
-    UIViewController* base_view_controller = [[UIViewController alloc] init];
     SettingsNavigationController* settings_controller =
         [SettingsNavigationController
             accountsControllerForBrowser:browser_.get()
-                      baseViewController:base_view_controller
                                 delegate:strict_delegate
                closeSettingsOnAddAccount:NO
                        showSignoutButton:NO

@@ -1252,7 +1252,6 @@ inline LayoutStateScenePassKey PassKey() {
 
   _settingsNavigationController = [SettingsNavigationController
       accountsControllerForBrowser:_regularBrowser.get()
-                baseViewController:baseViewController
                           delegate:self
          closeSettingsOnAddAccount:YES
                  showSignoutButton:YES

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/manage_sync/coordinator/manage_sync_settings_coordinator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -522,13 +524,15 @@ enum class ActionAfterReauth {
   // Stopping the manage accounts coordinator if it’s already opened. See
   // crbug.com/383373460
   [self stopManageAccountsNavigationController];
-  _manageAccountsNavigationController = [SettingsNavigationController
-      accountsControllerForBrowser:self.browser
-                baseViewController:self.viewController
-                          delegate:self
-         closeSettingsOnAddAccount:NO
-                 showSignoutButton:NO
-                    showDoneButton:YES];
+  _manageAccountsNavigationController =
+      [SettingsNavigationController accountsControllerForBrowser:self.browser
+                                                        delegate:self
+                                       closeSettingsOnAddAccount:NO
+                                               showSignoutButton:NO
+                                                  showDoneButton:YES];
+  [self.viewController presentViewController:_manageAccountsNavigationController
+                                    animated:YES
+                                  completion:nil];
 }
 
 - (void)showManageYourGoogleAccount {

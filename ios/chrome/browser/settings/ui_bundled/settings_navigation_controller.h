@@ -77,7 +77,6 @@ extern NSString* const kSettingsDoneButtonId;
 // have a "Done" button.
 + (instancetype)
     accountsControllerForBrowser:(Browser*)browser
-              baseViewController:(UIViewController*)baseViewController
                         delegate:
                             (id<SettingsNavigationControllerDelegate>)delegate
        closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount

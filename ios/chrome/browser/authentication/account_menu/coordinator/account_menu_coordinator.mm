@@ -318,13 +318,16 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
   // Manage Accounts allows to add an account, so we must be certain that the
   // Account Menu’s Add Account and reauth account coordinator are stopped.
   [self stopChildrenCoordinators];
-  _manageAccountsNavigationController = [SettingsNavigationController
-      accountsControllerForBrowser:self.browser
-                baseViewController:_navigationController
-                          delegate:self
-         closeSettingsOnAddAccount:NO
-                 showSignoutButton:NO
-                    showDoneButton:YES];
+  _manageAccountsNavigationController =
+      [SettingsNavigationController accountsControllerForBrowser:self.browser
+                                                        delegate:self
+                                       closeSettingsOnAddAccount:NO
+                                               showSignoutButton:NO
+                                                  showDoneButton:YES];
+  [_navigationController
+      presentViewController:_manageAccountsNavigationController
+                   animated:YES
+                 completion:nil];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
