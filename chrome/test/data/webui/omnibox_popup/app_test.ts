@@ -7,13 +7,12 @@ import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupAppElement, OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createAutocompleteResult, createSearchMatch, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -100,7 +99,7 @@ suite('AppTest', function() {
     testProxy.page.updateContentSharingPolicy(true);
 
     // Set autocomplete result with empty input.
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       input: '',
       matches: [],
     });
@@ -136,7 +135,7 @@ suite('AppTest', function() {
     testProxy.page.updateLensSearchEligibility(true);
 
     // Set autocomplete result with empty input.
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       input: '',
       matches: [],
     });
@@ -154,10 +153,10 @@ suite('AppTest', function() {
 
   test('OnlyShowsDropdownIfVisibleMatches', async () => {
     // Set autocomplete result with one visible match.
-    const shownResult = createAutocompleteResultForTesting({
+    const shownResult = createAutocompleteResult({
       matches: [
-        createSearchMatchForTesting({isHidden: false}),
-        createSearchMatchForTesting({isHidden: true}),
+        createSearchMatch({isHidden: false}),
+        createSearchMatch({isHidden: true}),
       ],
     });
     testProxy.page.autocompleteResultChanged(shownResult);
@@ -167,10 +166,10 @@ suite('AppTest', function() {
     assertTrue(isVisible(app.getDropdown()));
 
     // Set autocomplete result with no visible matches.
-    const hiddenResult = createAutocompleteResultForTesting({
+    const hiddenResult = createAutocompleteResult({
       matches: [
-        createSearchMatchForTesting({isHidden: true}),
-        createSearchMatchForTesting({isHidden: true}),
+        createSearchMatch({isHidden: true}),
+        createSearchMatch({isHidden: true}),
       ],
     });
     testProxy.page.autocompleteResultChanged(hiddenResult);
@@ -185,7 +184,7 @@ suite('AppTest', function() {
     assertTrue(isVisible(app.getDropdown()));
 
     // Set autocomplete result with no matches.
-    const noResult = createAutocompleteResultForTesting({matches: []});
+    const noResult = createAutocompleteResult({matches: []});
     testProxy.page.autocompleteResultChanged(noResult);
     await microtasksFinished();
 
@@ -199,8 +198,8 @@ suite('AppTest', function() {
     await microtasksFinished();
 
     const matches = [
-      createSearchMatchForTesting({suggestionGroupId: 1}),
-      createSearchMatchForTesting({suggestionGroupId: 100}),
+      createSearchMatch({suggestionGroupId: 1}),
+      createSearchMatch({suggestionGroupId: 100}),
     ];
     const suggestionGroupsMap = {
       1: {
@@ -215,12 +214,11 @@ suite('AppTest', function() {
       },
     };
 
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'test',
-          matches: matches,
-          suggestionGroupsMap: suggestionGroupsMap,
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      input: 'test',
+      matches: matches,
+      suggestionGroupsMap: suggestionGroupsMap,
+    }));
     await microtasksFinished();
 
     assertTrue(app.hasSecondarySide);
@@ -435,21 +433,20 @@ suite('AppTestSelectionControl', () => {
     localApp = document.createElement('omnibox-popup-app');
     document.body.appendChild(localApp);
     testProxy.initVisibilityPrefs();
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: [
-            createSearchMatchForTesting({
-              suggestTemplate: createSuggestTemplateInfo({primaryText: 'a'}),
-            }),
-            createSearchMatchForTesting({
-              suggestTemplate: createSuggestTemplateInfo({primaryText: 'b'}),
-              supportsDeletion: true,
-            }),
-            createSearchMatchForTesting({
-              suggestTemplate: createSuggestTemplateInfo({primaryText: 'c'}),
-            }),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      matches: [
+        createSearchMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'a'}),
+        }),
+        createSearchMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'b'}),
+          supportsDeletion: true,
+        }),
+        createSearchMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'c'}),
+        }),
+      ],
+    }));
     return microtasksFinished();
   });
 

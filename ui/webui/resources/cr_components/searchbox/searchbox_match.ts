@@ -6,6 +6,7 @@ import './searchbox_icon.js';
 import './searchbox_action.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {createAutocompleteMatch} from '//resources/cr_components/search/autocomplete_match_utils.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -16,7 +17,7 @@ import {KeywordActivationMethod, KeywordType, SelectionLineState, SideType} from
 import type {FormattedString, FormattedStringFragment} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {ActionIconType, ColorType, SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
-import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
+import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_match.css.js';
 import {getHtml} from './searchbox_match.html.js';

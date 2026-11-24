@@ -10,7 +10,7 @@ import type {ComposeboxSubmitElement} from 'chrome://resources/cr_components/com
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createAutocompleteResult, createSearchMatch} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {addTab, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, setupComposeboxTest} from './test_support.js';
@@ -151,14 +151,14 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
 
     // Trigger render containing inline hint.
     const hint = ' hint';
-    const matches = [createSearchMatchForTesting({
+    const matches = [createSearchMatch({
       fillIntoEdit: 'test',
       allowedToBeDefaultMatch: true,
     })];
     testProxy.element.lastQueriedInput = 'test';
     testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: testProxy.element.activeQueryId,
           input: 'test',
           matches,
@@ -198,7 +198,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     testProxy.element.lastQueriedInput = 'test hint';
     testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: testProxy.element.activeQueryId,
           input: 'test hint',
           matches,
@@ -235,7 +235,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     testProxy.element.lastQueriedInput = 'test hint and more';
     testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: testProxy.element.activeQueryId,
           input: 'test hint and more',
           matches,
@@ -296,10 +296,10 @@ suite('ComposeboxDelayedTabSubmitTest', () => {
 
   async function showMatch() {
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: testProxy.element.activeQueryId,
           input: 'test',
-          matches: [createSearchMatchForTesting({fillIntoEdit: 'test'})],
+          matches: [createSearchMatch({fillIntoEdit: 'test'})],
         }));
     await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();

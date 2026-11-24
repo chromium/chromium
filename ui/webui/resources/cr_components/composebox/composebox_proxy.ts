@@ -3,50 +3,8 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {IconType, SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {PageHandlerFactory, PageHandlerRemote} from './composebox.mojom-webui.js';
-
-export function createAutocompleteMatch(
-    config: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
-  return {
-    isHidden: false,
-    a11yLabel: '',
-    actions: [],
-    allowedToBeDefaultMatch: false,
-    isSearchType: false,
-    isEnterpriseSearchAggregatorPeopleType: false,
-    descriptionIconPath: '',
-    showSecondaryTextOnlyOnSelection: false,
-    supportsDeletion: false,
-    suggestionGroupId: -1,
-    destinationUrl: '',
-    inlineAutocompletion: '',
-    fillIntoEdit: '',
-    additionalText: '',
-    iconPath: '',
-    iconUrl: '',
-    removeButtonA11yLabel: '',
-    type: '',
-    tailSuggestCommonPrefix: null,
-    keywordModel: null,
-    suggestTemplate: {
-      primaryText: {text: '', fragments: [], a11yText: null},
-      secondaryText: null,
-      secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
-      image: null,
-      style: SuggestStyle.kUnspecified,
-      typeIcon: IconType.kIconTypeUnspecified,
-      fuseboxAction: null,
-      actionIcon: null,
-      typeIconBadge: null,
-    },
-    secondaryTextIsUrl: false,
-    urlEmphasis: null,
-    ...config,
-  };
-}
 
 export interface ComposeboxProxy {
   handler: PageHandlerRemote;

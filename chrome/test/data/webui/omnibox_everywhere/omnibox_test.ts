@@ -17,7 +17,6 @@ import {HelpBubbleArrowPosition} from 'chrome://resources/cr_components/help_bub
 import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {FreStage, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -26,6 +25,7 @@ import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createAutocompleteResult, createSearchMatch} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -301,17 +301,16 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     omnibox.setInputText('query');
     omnibox.activeQueryId = 0;
     omnibox.lastQueriedInput = 'query';
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: 0,
-          input: 'query',
-          matches: [
-            createSearchMatchForTesting({
-              allowedToBeDefaultMatch: true,
-              fillIntoEdit: 'query match',
-            }),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: 0,
+      input: 'query',
+      matches: [
+        createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: 'query match',
+        }),
+      ],
+    }));
     await microtasksFinished();
 
     const keyboardEvent = new KeyboardEvent('keydown', {
@@ -328,17 +327,16 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     omnibox.setInputText('query');
     omnibox.activeQueryId = 0;
     omnibox.lastQueriedInput = 'query';
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: 0,
-          input: 'query',
-          matches: [
-            createSearchMatchForTesting({
-              allowedToBeDefaultMatch: true,
-              fillIntoEdit: 'query match',
-            }),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: 0,
+      input: 'query',
+      matches: [
+        createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: 'query match',
+        }),
+      ],
+    }));
     await microtasksFinished();
 
     omnibox.openCtrlEnterMatch(0);
@@ -362,23 +360,22 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     omnibox.setInputText('query');
     omnibox.activeQueryId = 0;
     omnibox.lastQueriedInput = 'query';
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: 0,
-          input: 'query',
-          matches: [
-            createSearchMatchForTesting({
-              allowedToBeDefaultMatch: true,
-              fillIntoEdit: 'query match',
-              actions: [{
-                hint: 'Switch to this tab',
-                suggestionContents: '',
-                iconPath: 'icon.png',
-                a11yLabel: 'Switch to this tab',
-              }],
-            }),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: 0,
+      input: 'query',
+      matches: [
+        createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: 'query match',
+          actions: [{
+            hint: 'Switch to this tab',
+            suggestionContents: '',
+            iconPath: 'icon.png',
+            a11yLabel: 'Switch to this tab',
+          }],
+        }),
+      ],
+    }));
     await microtasksFinished();
     assertEquals('query', omnibox.$.input.inputElement.value);
 
@@ -409,9 +406,9 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       'updateDropdownVisibility suppresses dropdown when multiline input ' +
           'expands',
       () => {
-        omnibox.result = createAutocompleteResultForTesting({
+        omnibox.result = createAutocompleteResult({
           input: 'multiline text',
-          matches: [createSearchMatchForTesting()],
+          matches: [createSearchMatch()],
         });
         omnibox.dropdownIsVisible = true;
 
@@ -1060,8 +1057,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   test(
       'stepCyclesSelection returns false to cycle within popup like Omnibox',
       () => {
-        const match = createSearchMatchForTesting();
-        const result = createAutocompleteResultForTesting({matches: [match]});
+        const match = createSearchMatch();
+        const result = createAutocompleteResult({matches: [match]});
         const selection = {
           line: 0,
           state: SelectionLineState.kNormal,
@@ -1097,12 +1094,11 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     omnibox.virtualFocusEnabled = true;
     omnibox.dropdownIsVisible = true;
     omnibox.activeQueryId = 0;
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: 0,
-          input: 'query',
-          matches,
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: 0,
+      input: 'query',
+      matches,
+    }));
     await microtasksFinished();
   }
 
@@ -1132,7 +1128,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         const profileContainer = omnibox.$.profileIcon.$.profileContainer;
         assertEquals(0, profileContainer.tabIndex);
         await showDropdownWithVirtualFocus(
-            [createSearchMatchForTesting({allowedToBeDefaultMatch: true})]);
+            [createSearchMatch({allowedToBeDefaultMatch: true})]);
 
         // Like the other input row buttons, the profile button leaves the
         // native Tab order while virtual focus handles Tab.
@@ -1235,7 +1231,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       'Enter on virtually focused contextual entrypoint triggers ' +
           'showContextActionMenu',
       async () => {
-        await showDropdownWithVirtualFocus([createSearchMatchForTesting()]);
+        await showDropdownWithVirtualFocus([createSearchMatch()]);
 
         omnibox.setSelection({
           line: -1,
@@ -1270,9 +1266,9 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(omnibox.$.input.hasAttribute('force-single-line'));
         assertFalse(omnibox.$.input.isMultiline());
 
-        omnibox.result = createAutocompleteResultForTesting({
+        omnibox.result = createAutocompleteResult({
           input: 'm',
-          matches: [createSearchMatchForTesting({
+          matches: [createSearchMatch({
             allowedToBeDefaultMatch: true,
             inlineAutocompletion: 'essages.google.com',
           })],
@@ -1290,15 +1286,15 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(omnibox.$.input.singleLineOnInlineAutocomplete);
 
         omnibox.activeQueryId = 0;
-        omnibox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+        omnibox.onAutocompleteResultChanged(createAutocompleteResult({
           queryId: 0,
           input: 'query',
           matches: [
-            createSearchMatchForTesting({
+            createSearchMatch({
               allowedToBeDefaultMatch: true,
               fillIntoEdit: 'query',
             }),
-            createSearchMatchForTesting({
+            createSearchMatch({
               allowedToBeDefaultMatch: false,
               fillIntoEdit: 'query with a very long second suggestion text',
             }),
@@ -1326,7 +1322,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   test(
       'Enter on virtually focused voice and lens buttons activates them',
       async () => {
-        await showDropdownWithVirtualFocus([createSearchMatchForTesting()]);
+        await showDropdownWithVirtualFocus([createSearchMatch()]);
 
         let voiceSearchDispatched = false;
         omnibox.addEventListener('open-voice-search', () => {
@@ -1364,13 +1360,10 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       'profile button is the last available selection, only with the ' +
           'profile picker',
       async () => {
-        const defaultMatch =
-            createSearchMatchForTesting({allowedToBeDefaultMatch: true});
-        const match = createSearchMatchForTesting();
+        const defaultMatch = createSearchMatch({allowedToBeDefaultMatch: true});
+        const match = createSearchMatch();
         const getStates = (matches: AutocompleteMatch[]) =>
-            omnibox
-                .getAvailableSelections(
-                    createAutocompleteResultForTesting({matches}))
+            omnibox.getAvailableSelections(createAutocompleteResult({matches}))
                 .map(s => [s.line, s.state]);
 
         // Omitted when the profile picker is disabled.
@@ -1417,7 +1410,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         // While expanded, closing a clicked menu returns focus to the input
         // without announcing the profile button.
         await showDropdownWithVirtualFocus(
-            [createSearchMatchForTesting({allowedToBeDefaultMatch: true})]);
+            [createSearchMatch({allowedToBeDefaultMatch: true})]);
         profileIcon.$.profileContainer.focus();
         profileIcon.$.profileContainer.click();
         await microtasksFinished();
@@ -1623,7 +1616,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         // `#lensPlaceholder`.
         await advanceToNextPlaceholder();
         assertFalse(lensPlaceholder.hidden);
-        omnibox.selectedMatch = createSearchMatchForTesting({
+        omnibox.selectedMatch = createSearchMatch({
           fillIntoEdit: 'https://example.com',
         });
         await microtasksFinished();
@@ -4435,17 +4428,16 @@ suite('OmniboxEverywhereAppTest', () => {
     searchbox.setInputText('hello');
     searchbox.activeQueryId = 0;
     searchbox.lastQueriedInput = 'hello';
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: 0,
-          input: 'hello',
-          matches: [
-            createSearchMatchForTesting({
-              allowedToBeDefaultMatch: true,
-              fillIntoEdit: 'hello',
-            }),
-          ],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: 0,
+      input: 'hello',
+      matches: [
+        createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: 'hello',
+        }),
+      ],
+    }));
     await microtasksFinished();
     assertTrue(searchbox.hasAttribute('has-user-input'));
     assertTrue(searchbox.hasAttribute('dropdown-is-visible'));

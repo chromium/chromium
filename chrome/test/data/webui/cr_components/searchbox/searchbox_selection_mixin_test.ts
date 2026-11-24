@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createActionForTesting, createAutocompleteMatch, createAutocompleteResultForTesting, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
 import {kDefaultSelection} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -10,6 +10,8 @@ import type {AutocompleteResult} from 'chrome://resources/mojo/components/omnibo
 import {KeywordType, PageHandlerRemote, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+
+import {createAction, createAutocompleteResult, createMatchKeywordModel} from './searchbox_test_utils.js';
 
 interface MockInputElement {
   inputElement: {value: string};
@@ -87,7 +89,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
   test('getAvailableSelections', () => {
     const match1 = createAutocompleteMatch();
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [match1],
     });
 
@@ -133,7 +135,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const defaultMatch = createAutocompleteMatch({
       allowedToBeDefaultMatch: true,
     });
-    let result = createAutocompleteResultForTesting({
+    let result = createAutocompleteResult({
       matches: [defaultMatch],
     });
     let selections = element.getAvailableSelections(result);
@@ -149,10 +151,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     // kFocusedButtonAim so Tab navigates directly into keyword mode.
     const defaultMatchWithKeyword = createAutocompleteMatch({
       allowedToBeDefaultMatch: true,
-      keywordModel:
-          createMatchKeywordModelForTesting({type: KeywordType.kChip}),
+      keywordModel: createMatchKeywordModel({type: KeywordType.kChip}),
     });
-    result = createAutocompleteResultForTesting({
+    result = createAutocompleteResult({
       matches: [defaultMatchWithKeyword],
     });
     selections = element.getAvailableSelections(result);
@@ -172,9 +173,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     // Default match with actions excludes kFocusedButtonAim.
     const defaultMatchWithActions = createAutocompleteMatch({
       allowedToBeDefaultMatch: true,
-      actions: [createActionForTesting()],
+      actions: [createAction()],
     });
-    result = createAutocompleteResultForTesting({
+    result = createAutocompleteResult({
       matches: [defaultMatchWithActions],
     });
     selections = element.getAvailableSelections(result);
@@ -192,10 +193,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
     // Second match having instant keyword excludes kFocusedButtonAim.
     const secondMatchInstant = createAutocompleteMatch({
-      keywordModel:
-          createMatchKeywordModelForTesting({type: KeywordType.kInstant}),
+      keywordModel: createMatchKeywordModel({type: KeywordType.kInstant}),
     });
-    result = createAutocompleteResultForTesting({
+    result = createAutocompleteResult({
       matches: [defaultMatch, secondMatchInstant],
     });
     selections = element.getAvailableSelections(result);
@@ -209,7 +209,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
     // In keyword mode, kFocusedButtonAim is excluded.
     element.inKeywordModeValue = true;
-    result = createAutocompleteResultForTesting({
+    result = createAutocompleteResult({
       matches: [defaultMatch],
     });
     selections = element.getAvailableSelections(result);
@@ -223,7 +223,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const secondMatchPedal = createAutocompleteMatch({
       type: 'pedal',
     });
-    result = createAutocompleteResultForTesting({
+    result = createAutocompleteResult({
       matches: [defaultMatch, secondMatchPedal],
     });
     selections = element.getAvailableSelections(result);
@@ -276,7 +276,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const match1 = createAutocompleteMatch();
     const match2 = createAutocompleteMatch();
     const match3 = createAutocompleteMatch();
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [match1, match2, match3],
     });
 
@@ -309,7 +309,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
     // Edge case: match with trailing sub-button (e.g. remove suggestion).
     const matchWithDeletion = createAutocompleteMatch({supportsDeletion: true});
-    const resultWithDeletion = createAutocompleteResultForTesting({
+    const resultWithDeletion = createAutocompleteResult({
       matches: [match1, matchWithDeletion],
     });
     const availableWithDeletion =
@@ -336,12 +336,12 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
         null, available[0]!, SelectionDirection.kForward,
         SelectionStep.kStateOrLine));
 
-    const emptyResult = createAutocompleteResultForTesting({matches: []});
+    const emptyResult = createAutocompleteResult({matches: []});
     assertTrue(element.stepCyclesSelection(
         emptyResult, available[0]!, SelectionDirection.kForward,
         SelectionStep.kStateOrLine));
 
-    const singleMatchResult = createAutocompleteResultForTesting({
+    const singleMatchResult = createAutocompleteResult({
       matches: [match1],
     });
     const singleAvailable = element.getAvailableSelections(singleMatchResult);
@@ -370,7 +370,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const match1 = createAutocompleteMatch();
     const match2 = createAutocompleteMatch();
     const match3 = createAutocompleteMatch();
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [match1, match2, match3],
     });
 
@@ -393,7 +393,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const match1 = createAutocompleteMatch();
     const match2 = createAutocompleteMatch();
     const match3 = createAutocompleteMatch();
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [match1, match2, match3],
     });
 
@@ -416,7 +416,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const match2 = createAutocompleteMatch();
     match2.supportsDeletion = true;  // adds a focused button
     const match3 = createAutocompleteMatch();
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [match1, match2, match3],
     });
 
@@ -450,12 +450,11 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
   test('getNextSelection All SelectionLineState types', () => {
     const match = createAutocompleteMatch();
-    match.keywordModel =
-        createMatchKeywordModelForTesting({chipHint: 'Search keyword'});
-    match.actions = [createActionForTesting(), createActionForTesting()];
+    match.keywordModel = createMatchKeywordModel({chipHint: 'Search keyword'});
+    match.actions = [createAction(), createAction()];
     match.supportsDeletion = true;
 
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [match],
     });
 
@@ -541,7 +540,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const match1 = createAutocompleteMatch();
     match1.supportsDeletion = true;
     const match2 = createAutocompleteMatch();
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [match1, match2],
     });
 
@@ -580,7 +579,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
     // Test with 3 matches where middle match has a remove button.
     const match3 = createAutocompleteMatch();
-    const result3 = createAutocompleteResultForTesting({
+    const result3 = createAutocompleteResult({
       matches: [match2, match1, match3],
     });
     // result3 matches:
@@ -613,7 +612,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
     // Single match with remove button: pressing ArrowUp or ArrowDown falls back
     // to focusing the match itself since no other lines exist.
-    const singleMatchResult = createAutocompleteResultForTesting({
+    const singleMatchResult = createAutocompleteResult({
       matches: [match1],
     });
     const singleAvailable = element.getAvailableSelections(singleMatchResult);
@@ -638,7 +637,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     };
 
     // Empty result matches
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [],
     });
     assertDeepEquals(
@@ -688,13 +687,13 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
   test('instant keyword match selection', () => {
     const normalMatch = createAutocompleteMatch();
     const instantMatch = createAutocompleteMatch();
-    instantMatch.keywordModel = createMatchKeywordModelForTesting({
+    instantMatch.keywordModel = createMatchKeywordModel({
       type: KeywordType.kInstant,
       keyword: '@bookmarks',
       chipHint: 'Bookmarks',
     });
 
-    const result = createAutocompleteResultForTesting({
+    const result = createAutocompleteResult({
       matches: [normalMatch, instantMatch],
     });
 

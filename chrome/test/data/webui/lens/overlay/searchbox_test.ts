@@ -7,11 +7,12 @@ import 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 import type {LensSearchboxElement} from 'chrome-untrusted://lens/lens/shared/searchbox/lens_searchbox.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting, SearchboxBrowserProxy} from 'chrome-untrusted://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {SearchboxBrowserProxy} from 'chrome-untrusted://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome-untrusted://resources/js/util.js';
 import {SelectionLineState} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {createAutocompleteResult, createSearchMatch} from 'chrome-untrusted://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -528,11 +529,11 @@ suite('SearchboxThumbnails', () => {
     assertFalse(searchbox.showContextEntrypoint);
 
     const matches = [
-      createSearchMatchForTesting({fillIntoEdit: 'match 1'}),
-      createSearchMatchForTesting({fillIntoEdit: 'match 2'}),
+      createSearchMatch({fillIntoEdit: 'match 1'}),
+      createSearchMatch({fillIntoEdit: 'match 2'}),
     ];
 
-    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+    searchbox.onAutocompleteResultChanged(createAutocompleteResult({
       queryId: searchbox.activeQueryId,
       matches: matches,
     }));

@@ -10,10 +10,11 @@ import type {ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_compone
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 import type {ComposeboxEmbedderMixinInterface} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
-import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
+import {createAutocompleteMatch} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
@@ -25,7 +26,7 @@ import type {InputState} from 'chrome://resources/mojo/components/omnibox/compos
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createAutocompleteResultForTesting, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createAutocompleteResult, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -116,7 +117,7 @@ suite('ComposeboxMixinTest', () => {
     await microtasksFinished();
     element.input = originalInput;
     element.lastQueriedInput = originalInput;
-    element.result = createAutocompleteResultForTesting({
+    element.result = createAutocompleteResult({
       input: originalInput,
       matches: [
         createAutocompleteMatch({
@@ -914,7 +915,7 @@ suite('ComposeboxMixinTest', () => {
       // Verify that late async autocomplete responses do not overwrite the
       // typed input since activeQueryId is -1.
       searchboxCallbackRouterRemote.autocompleteResultChanged(
-          createAutocompleteResultForTesting({
+          createAutocompleteResult({
             input: originalInput,
             matches: [createAutocompleteMatch({
               allowedToBeDefaultMatch: true,
@@ -3289,7 +3290,7 @@ suite('ComposeboxMixinTest', () => {
   // `selectedMatchIndex` / `selectedMatch` are populated like in production.
   async function showAndSelectMatch(
       input: string, match: Partial<AutocompleteMatch> = {}) {
-    element.result = createAutocompleteResultForTesting({
+    element.result = createAutocompleteResult({
       input,
       matches: [createAutocompleteMatch({fillIntoEdit: input, ...match})],
     });

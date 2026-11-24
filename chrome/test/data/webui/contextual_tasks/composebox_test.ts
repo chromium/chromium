@@ -15,8 +15,8 @@ import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import {VoiceSearchAction, VoiceSearchQuerySource} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
+import {createAutocompleteMatch} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
 import {GlowAnimationState, VoiceSearchState} from 'chrome://resources/cr_components/search/constants.js';
-import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 /* clang-format off */
@@ -28,7 +28,7 @@ import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/br
 import type {AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createSuggestTemplateInfo, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {createAutocompleteResult, createSuggestTemplateInfo, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -735,7 +735,7 @@ suite('ContextualTasksComposeboxTest', () => {
       }),
     ];
     contextualComposebox.zeroStateSuggestionsForTesting =
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           input: '',
           matches: matches,
         });
@@ -1926,7 +1926,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
     const whenResultChanged = eventToPromise<CustomEvent<AutocompleteResult>>(
         'result-changed', innerComposebox);
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: parts.innerComposebox.activeQueryId,
           input: testQuery,
           matches: [createAutocompleteMatch({fillIntoEdit: 'm1'})],
@@ -1957,7 +1957,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
 
         // The response input does not match the last queried input.
         searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: parts.innerComposebox.activeQueryId + 1,
               input: 'stale',
               matches: [createAutocompleteMatch()],
@@ -1981,7 +1981,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
         // Zero-prefix-suggest results (empty input) keep the dropdown
         // shown; one match is a noncanned AIM suggestion.
         searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: parts.innerComposebox.activeQueryId,
               input: '',
               matches: [
@@ -2006,7 +2006,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
 
     // A noncanned AIM suggestion first surfaces the link.
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: parts.innerComposebox.activeQueryId,
           input: '',
           matches: [
@@ -2021,7 +2021,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
 
     // Ordinary results clear it; the wrapper keeps no residual link.
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: parts.innerComposebox.activeQueryId,
           input: '',
           matches: [
@@ -2050,7 +2050,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
 
     simulateUserInput(inputElement, testQuery);
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
+        createAutocompleteResult({
           queryId: parts.innerComposebox.activeQueryId,
           input: testQuery,
           matches: [
@@ -2140,7 +2140,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
           },
         };
         searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: innerComposebox.activeQueryId,
               input: '',
               matches: [
@@ -2166,7 +2166,7 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
         // Synchronous verbatim-only pass should carry over non-verbatim matches
         // and suggestionGroupsMap, and must not apply smartComposeInlineHint.
         searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
+            createAutocompleteResult({
               queryId: innerComposebox.activeQueryId,
               input: 'a',
               matches: [

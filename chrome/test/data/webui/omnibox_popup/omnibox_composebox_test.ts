@@ -14,12 +14,12 @@ import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolM
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createAutocompleteResult, createSearchMatch} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -204,15 +204,14 @@ suite('OmniboxComposeboxTest', () => {
 
     // Set results with matches.
     const matches = [
-      createSearchMatchForTesting({
+      createSearchMatch({
         allowedToBeDefaultMatch: false,
       }),
     ];
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: omniboxComposebox.activeQueryId,
-          matches: matches,
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: omniboxComposebox.activeQueryId,
+      matches: matches,
+    }));
     await testProxy.page.$.flushForTesting();
     await microtasksFinished();
 
@@ -220,11 +219,10 @@ suite('OmniboxComposeboxTest', () => {
     assertFalse(omniboxComposebox.$.matches.hidden);
 
     // Set empty results.
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: omniboxComposebox.activeQueryId,
-          matches: [],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: omniboxComposebox.activeQueryId,
+      matches: [],
+    }));
     await testProxy.page.$.flushForTesting();
     await microtasksFinished();
 
@@ -592,13 +590,12 @@ suite('OmniboxComposeboxTest', () => {
         assertFalse(omniboxComposebox.showDropdown);
         assertEquals(0, loadInAnimationCount());
 
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              queryId: omniboxComposebox.activeQueryId,
-              matches: [createSearchMatchForTesting({
-                allowedToBeDefaultMatch: false,
-              })],
-            }));
+        testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+          queryId: omniboxComposebox.activeQueryId,
+          matches: [createSearchMatch({
+            allowedToBeDefaultMatch: false,
+          })],
+        }));
         await testProxy.page.$.flushForTesting();
         await microtasksFinished();
 
@@ -625,13 +622,12 @@ suite('OmniboxComposeboxTest', () => {
             initialCallCount + 1,
             testProxy.handler.getCallCount('queryAutocomplete'));
 
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              queryId: omniboxComposebox.activeQueryId,
-              matches: [createSearchMatchForTesting({
-                allowedToBeDefaultMatch: false,
-              })],
-            }));
+        testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+          queryId: omniboxComposebox.activeQueryId,
+          matches: [createSearchMatch({
+            allowedToBeDefaultMatch: false,
+          })],
+        }));
         await testProxy.page.$.flushForTesting();
         await microtasksFinished();
 
@@ -660,13 +656,12 @@ suite('OmniboxComposeboxTest', () => {
         omniboxComposebox.addSearchContext(context as unknown as SearchContext);
         await microtasksFinished();
 
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              queryId: omniboxComposebox.activeQueryId,
-              matches: [createSearchMatchForTesting({
-                allowedToBeDefaultMatch: false,
-              })],
-            }));
+        testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+          queryId: omniboxComposebox.activeQueryId,
+          matches: [createSearchMatch({
+            allowedToBeDefaultMatch: false,
+          })],
+        }));
         await testProxy.page.$.flushForTesting();
         await microtasksFinished();
 
@@ -720,13 +715,12 @@ suite('OmniboxComposeboxTest', () => {
             initialCallCount + 1,
             testProxy.handler.getCallCount('queryAutocomplete'));
 
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              queryId: omniboxComposebox.activeQueryId,
-              matches: [createSearchMatchForTesting({
-                allowedToBeDefaultMatch: false,
-              })],
-            }));
+        testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+          queryId: omniboxComposebox.activeQueryId,
+          matches: [createSearchMatch({
+            allowedToBeDefaultMatch: false,
+          })],
+        }));
         await testProxy.page.$.flushForTesting();
         await microtasksFinished();
 
@@ -1265,14 +1259,12 @@ suite('OmniboxComposeboxTest', () => {
     omniboxComposebox.lastQueriedInput = 'test';
     await omniboxComposebox.updateComplete;
     await microtasksFinished();
-    const matches =
-        [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: omniboxComposebox.activeQueryId,
-          input: 'test',
-          matches,
-        }));
+    const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: omniboxComposebox.activeQueryId,
+      input: 'test',
+      matches,
+    }));
     await testProxy.page.$.flushForTesting();
     await microtasksFinished();
 
@@ -1837,13 +1829,12 @@ suite('OmniboxComposeboxTest', () => {
 
   test('suggestion activity link triggers navigation', async () => {
     // Mock results to show the link.
-    const matches = [createSearchMatchForTesting()];
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: omniboxComposebox.activeQueryId,
-          matches: matches,
-          showAimActivityLink: true,
-        }));
+    const matches = [createSearchMatch()];
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: omniboxComposebox.activeQueryId,
+      matches: matches,
+      showAimActivityLink: true,
+    }));
     await testProxy.page.$.flushForTesting();
     await microtasksFinished();
     await omniboxComposebox.updateComplete;
@@ -1881,13 +1872,12 @@ suite('OmniboxComposeboxTest', () => {
   test(
       'suggestion activity link hidden when suggestions are non canned',
       async () => {
-        const matches = [createSearchMatchForTesting()];
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              queryId: omniboxComposebox.activeQueryId,
-              matches: matches,
-              showAimActivityLink: false,
-            }));
+        const matches = [createSearchMatch()];
+        testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+          queryId: omniboxComposebox.activeQueryId,
+          matches: matches,
+          showAimActivityLink: false,
+        }));
         await testProxy.page.$.flushForTesting();
         await microtasksFinished();
         await omniboxComposebox.updateComplete;
@@ -1898,12 +1888,11 @@ suite('OmniboxComposeboxTest', () => {
       });
 
   test('suggestion activity link hidden once the user types', async () => {
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: omniboxComposebox.activeQueryId,
-          matches: [createSearchMatchForTesting()],
-          showAimActivityLink: true,
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: omniboxComposebox.activeQueryId,
+      matches: [createSearchMatch()],
+      showAimActivityLink: true,
+    }));
     await testProxy.page.$.flushForTesting();
     await microtasksFinished();
     await omniboxComposebox.updateComplete;
@@ -2408,12 +2397,11 @@ suite('OmniboxComposeboxTest', () => {
       const hint = 't';
 
       omniboxComposebox.haveReceivedSynchronousAutocompleteResponse = true;
-      testProxy.page.autocompleteResultChanged(
-          createAutocompleteResultForTesting({
-            queryId: omniboxComposebox.activeQueryId,
-            input: 'tes',
-            smartComposeInlineHint: hint,
-          }));
+      testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+        queryId: omniboxComposebox.activeQueryId,
+        input: 'tes',
+        smartComposeInlineHint: hint,
+      }));
       await testProxy.page.$.flushForTesting();
       await microtasksFinished();
 
@@ -2462,12 +2450,11 @@ suite('OmniboxComposeboxTest', () => {
 
             omniboxComposebox.haveReceivedSynchronousAutocompleteResponse =
                 true;
-            testProxy.page.autocompleteResultChanged(
-                createAutocompleteResultForTesting({
-                  queryId: omniboxComposebox.activeQueryId,
-                  input: 'tes.',
-                  smartComposeInlineHint: hint,
-                }));
+            testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+              queryId: omniboxComposebox.activeQueryId,
+              input: 'tes.',
+              smartComposeInlineHint: hint,
+            }));
             await testProxy.page.$.flushForTesting();
             await microtasksFinished();
 
@@ -2512,12 +2499,11 @@ suite('OmniboxComposeboxTest', () => {
 
             omniboxComposebox.haveReceivedSynchronousAutocompleteResponse =
                 true;
-            testProxy.page.autocompleteResultChanged(
-                createAutocompleteResultForTesting({
-                  queryId: omniboxComposebox.activeQueryId,
-                  input: 'tes.',
-                  smartComposeInlineHint: hint,
-                }));
+            testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+              queryId: omniboxComposebox.activeQueryId,
+              input: 'tes.',
+              smartComposeInlineHint: hint,
+            }));
             await testProxy.page.$.flushForTesting();
             await microtasksFinished();
 
@@ -2547,12 +2533,11 @@ suite('OmniboxComposeboxTest', () => {
           const hint = 'a';
 
           omniboxComposebox.haveReceivedSynchronousAutocompleteResponse = true;
-          testProxy.page.autocompleteResultChanged(
-              createAutocompleteResultForTesting({
-                queryId: omniboxComposebox.activeQueryId,
-                input: 'test',
-                smartComposeInlineHint: hint,
-              }));
+          testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+            queryId: omniboxComposebox.activeQueryId,
+            input: 'test',
+            smartComposeInlineHint: hint,
+          }));
           await testProxy.page.$.flushForTesting();
           await microtasksFinished();
 
@@ -3531,10 +3516,10 @@ suite('OmniboxComposeboxTest', () => {
 
   suite('RichImageSuggestions', () => {
     function createGridAutocompleteResult() {
-      return createAutocompleteResultForTesting({
+      return createAutocompleteResult({
         queryId: omniboxComposebox.activeQueryId,
         matches: [
-          createSearchMatchForTesting({
+          createSearchMatch({
             allowedToBeDefaultMatch: false,
             suggestionGroupId: 100,
           }),
@@ -3595,11 +3580,10 @@ suite('OmniboxComposeboxTest', () => {
 
       assertTrue(omniboxComposebox.hasAttribute('has-grid'));
 
-      testProxy.page.autocompleteResultChanged(
-          createAutocompleteResultForTesting({
-            queryId: omniboxComposebox.activeQueryId,
-            matches: [],
-          }));
+      testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+        queryId: omniboxComposebox.activeQueryId,
+        matches: [],
+      }));
       await testProxy.page.$.flushForTesting();
       await microtasksFinished();
 
@@ -3625,23 +3609,22 @@ suite('OmniboxComposeboxTest', () => {
     test(
         'does not set has-grid attribute for non-grid suggestions',
         async () => {
-          testProxy.page.autocompleteResultChanged(
-              createAutocompleteResultForTesting({
-                queryId: omniboxComposebox.activeQueryId,
-                matches: [
-                  createSearchMatchForTesting({
-                    allowedToBeDefaultMatch: false,
-                    suggestionGroupId: 100,
-                  }),
-                ],
-                suggestionGroupsMap: {
-                  100: {
-                    header: 'Default',
-                    renderType: RenderType.kDefaultVertical,
-                    sideType: SideType.kDefaultPrimary,
-                  },
-                },
-              }));
+          testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+            queryId: omniboxComposebox.activeQueryId,
+            matches: [
+              createSearchMatch({
+                allowedToBeDefaultMatch: false,
+                suggestionGroupId: 100,
+              }),
+            ],
+            suggestionGroupsMap: {
+              100: {
+                header: 'Default',
+                renderType: RenderType.kDefaultVertical,
+                sideType: SideType.kDefaultPrimary,
+              },
+            },
+          }));
           await testProxy.page.$.flushForTesting();
           await microtasksFinished();
 
@@ -3852,12 +3835,11 @@ suite('OmniboxComposeboxPersistentAimButtonTest', () => {
   test('focusin in SEND selects the first match', async () => {
     await createComposebox(true, false, 'TallBottomContext');
     await setInput('test');
-    testProxy.page.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          queryId: omniboxComposebox.activeQueryId,
-          input: 'test',
-          matches: [createSearchMatchForTesting({fillIntoEdit: 'test'})],
-        }));
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: omniboxComposebox.activeQueryId,
+      input: 'test',
+      matches: [createSearchMatch({fillIntoEdit: 'test'})],
+    }));
     await testProxy.page.$.flushForTesting();
     await microtasksFinished();
     assertEquals(-1, omniboxComposebox.selectedMatchIndex);
@@ -3942,10 +3924,10 @@ suite('OmniboxComposeboxPersistentAimButtonTest', () => {
           mockVoiceSearch();
           await createComposebox(true, false, 'TallBottomContext');
           await setInput('test');
-          await sendResult(createAutocompleteResultForTesting({
+          await sendResult(createAutocompleteResult({
             queryId: omniboxComposebox.activeQueryId,
             input: 'test',
-            matches: [createSearchMatchForTesting({fillIntoEdit: 'test'})],
+            matches: [createSearchMatch({fillIntoEdit: 'test'})],
           }));
 
           assertTrue(omniboxComposebox.hasAttribute('submit-enabled'));
@@ -3961,9 +3943,9 @@ suite('OmniboxComposeboxPersistentAimButtonTest', () => {
       mockVoiceSearch();
       await createComposebox(true, false, 'TallBottomContext');
       await setInput('test');
-      await sendResult(createAutocompleteResultForTesting({
+      await sendResult(createAutocompleteResult({
         queryId: omniboxComposebox.activeQueryId,
-        matches: [createSearchMatchForTesting({
+        matches: [createSearchMatch({
           allowedToBeDefaultMatch: false,
           suggestionGroupId: 100,
         })],
