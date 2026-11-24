@@ -25,15 +25,16 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -42,7 +43,6 @@ using content::BrowserThread;
 namespace drive::util {
 
 using user_manager::User;
-using user_manager::UserManager;
 
 namespace {
 
@@ -191,10 +191,14 @@ bool IsDriveFsBulkPinningAvailable(const Profile* const profile) {
   }
 
   // For Googlers, the bulk-pinning feature is available on any kind of device.
-  if (UserManager::IsInitialized()) {
-    if (const User* const user = UserManager::Get()->GetActiveUser();
-        user && gaia::IsGoogleInternalAccountEmail(
-                    user->GetAccountId().GetUserEmail())) {
+  // This asks about the account `profile` belongs to, like every other answer
+  // here, rather than about whoever happens to be the active user: in a
+  // multi-profile session they are not the same person, and the question is
+  // about this profile's Drive.
+  if (profile) {
+    const AccountId* const account_id = ash::AnnotatedAccountId::Get(profile);
+    if (account_id &&
+        gaia::IsGoogleInternalAccountEmail(account_id->GetUserEmail())) {
       return true;
     }
   }

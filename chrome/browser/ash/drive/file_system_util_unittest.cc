@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
@@ -60,6 +61,29 @@ class ProfileRelatedFileSystemUtilTest : public testing::Test {
       return nullptr;
     }
     user_session_test_environment_->LogIn(account_id);
+    return ProfileOf(user);
+  }
+
+  // Signs both users in, `second` last so that they are the active one, and
+  // returns their profiles in the same order. Every user has to be added
+  // before the first login, so the two cannot go through LogInRegularUser()
+  // one after the other.
+  [[nodiscard]] std::pair<Profile*, Profile*> LogInTwoRegularUsers(
+      const AccountId& first,
+      const AccountId& second) {
+    const user_manager::User* const first_user =
+        user_session_test_environment_->AddRegularUser(first);
+    const user_manager::User* const second_user =
+        user_session_test_environment_->AddRegularUser(second);
+    if (!first_user || !second_user) {
+      return {nullptr, nullptr};
+    }
+    user_session_test_environment_->LogIn(first);
+    user_session_test_environment_->LogIn(second);
+    return {ProfileOf(first_user), ProfileOf(second_user)};
+  }
+
+  Profile* ProfileOf(const user_manager::User* user) {
     return Profile::FromBrowserContext(
         ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   }
@@ -164,8 +188,27 @@ TEST_F(ProfileRelatedFileSystemUtilTest,
       "foobar@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
   ASSERT_TRUE(profile);
 
-  EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   EXPECT_TRUE(IsDriveFsBulkPinningAvailable(profile));
+  // Without a profile there is no user to be a Googler, whoever is signed in.
+  EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
+}
+
+TEST_F(ProfileRelatedFileSystemUtilTest,
+       IsDriveFsBulkPinningAvailableForGooglerDoesNotCoverOtherUsers) {
+  ScopedFeatureList features;
+  features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
+
+  auto [other_profile, googler_profile] = LogInTwoRegularUsers(
+      AccountId::FromUserEmailGaiaId("foobar@example.com",
+                                     GaiaId("1234567890")),
+      AccountId::FromUserEmailGaiaId(
+          "foobar@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
+  ASSERT_TRUE(other_profile);
+  ASSERT_TRUE(googler_profile);
+
+  EXPECT_TRUE(IsDriveFsBulkPinningAvailable(googler_profile));
+  // The other user shares the session with a Googler, not their Drive.
+  EXPECT_FALSE(IsDriveFsBulkPinningAvailable(other_profile));
 }
 
 TEST_F(ProfileRelatedFileSystemUtilTest,
