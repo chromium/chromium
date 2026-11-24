@@ -122,6 +122,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "screen_ai_install_state_unittest.cc",
+    "screen_ai_library_provider_impl_unittest.cc",
     "screen_ai_service_handler_unittest.cc",
   ]
   deps = [

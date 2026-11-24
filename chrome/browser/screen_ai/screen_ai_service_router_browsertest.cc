@@ -8,14 +8,17 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -301,6 +304,57 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
 
   EXPECT_EQ(waiter1.GetResult(), ExpectedInitializationResult(service));
   EXPECT_EQ(waiter2.GetResult(), ExpectedInitializationResult(service));
+}
+
+// Tests that the browser can shut down while a request waits for the library.
+// The library provider is never destroyed, so it has to stop observing the
+// install state when the request goes away with the profile. Otherwise the
+// install state would still observe the component updater at shutdown
+// (crbug.com/573217746).
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest, ShutdownWithPendingRequest) {
+  // A request only waits for the library when the library has to be
+  // downloaded and the download can start.
+  if (IsLibraryAvailableAtStartUp() || !IsOCREnabled() ||
+      !ScreenAIInstallState::IsDeviceCompatible()) {
+    return;
+  }
+
+  router()->GetServiceStateAsync(ScreenAIServiceRouter::Service::kOCR,
+                                 base::DoNothing());
+
+  // The request has started the download and waits for it.
+  EXPECT_EQ(ScreenAIInstallState::GetInstance()->get_state(),
+            ScreenAIInstallState::State::kDownloading);
+}
+
+// Tests that a caller can ask for a service again from the callback that tells
+// it that the service is not available. This also holds when that callback
+// runs before the first request returns.
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
+                       RequestFromCallbackOfFailedRequest) {
+  // The requests below only fail when the library has to be downloaded.
+  if (IsLibraryAvailableAtStartUp() || !IsOCREnabled()) {
+    return;
+  }
+
+  // Normally a request waits for the download to end. The download does not
+  // start for a device that cannot run the library, so here each request fails
+  // as soon as it asks for the library.
+  ScreenAIInstallState::SetDeviceCompatibleForTesting(false);
+
+  ResultsWaiter second_request_waiter;
+  router()->GetServiceStateAsync(
+      ScreenAIServiceRouter::Service::kOCR,
+      base::BindLambdaForTesting([&](bool successful) {
+        EXPECT_FALSE(successful);
+        router()->GetServiceStateAsync(
+            ScreenAIServiceRouter::Service::kOCR,
+            base::BindOnce(&ResultsWaiter::OnResultsCallback,
+                           second_request_waiter.GetWeakPtr()));
+      }));
+
+  second_request_waiter.WaitForResult();
+  EXPECT_FALSE(second_request_waiter.GetResult());
 }
 
 INSTANTIATE_TEST_SUITE_P(

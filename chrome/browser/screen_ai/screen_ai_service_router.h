@@ -8,9 +8,10 @@
 #include <memory>
 #include <optional>
 
-#include "base/scoped_observation.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_ocr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -23,8 +24,7 @@ class ScreenAILibraryProvider;
 
 // TODO(crbug.com/417378344): Split this class and its factory to two separate
 // classes for OCR and main content extraction.
-class ScreenAIServiceRouter : public KeyedService,
-                              ScreenAIInstallState::Observer {
+class ScreenAIServiceRouter : public KeyedService {
  public:
   enum class Service {
     kMainContentExtraction,
@@ -50,10 +50,6 @@ class ScreenAIServiceRouter : public KeyedService,
   // failed to initialize.
   void GetServiceStateAsync(Service service, ServiceStateCallback callback);
 
-  // ScreenAIInstallState::Observer:
-  void StateChanged(ScreenAIInstallState::State state) override;
-  void OnScreenAIInstallStateDestroying() override;
-
   // Returns true if the connection for `service` is bound.
   bool IsConnectionBoundForTesting(Service service);
 
@@ -63,20 +59,30 @@ class ScreenAIServiceRouter : public KeyedService,
  private:
   friend class ScreenAIServiceRouterFactory;
 
-  explicit ScreenAIServiceRouter(
-      std::unique_ptr<ScreenAILibraryProvider> library_provider);
+  // `library_provider` must not be null and must outlive this object.
+  explicit ScreenAIServiceRouter(ScreenAILibraryProvider* library_provider);
 
   ScreenAIServiceHandlerBase* GetHandler(Service service);
 
-  // Gives the handlers access to the library. Outlives them.
-  std::unique_ptr<ScreenAILibraryProvider> library_provider_;
+  // Tells the handlers if the library is available. Called by the library
+  // provider when it has an answer.
+  void OnLibraryAvailabilityChanged(bool available);
+
+  // Gives access to the library. Not owned: the provider outlives this object.
+  // In production it is a singleton that is never destroyed.
+  const raw_ptr<ScreenAILibraryProvider> library_provider_;
 
   std::unique_ptr<ScreenAIServiceHandlerOCR> ocr_handler_;
   std::unique_ptr<ScreenAIServiceHandlerMainContentExtraction> mce_handler_;
 
-  // Observes changes in Screen AI component download state.
-  base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
-      component_ready_observer_{this};
+  // True from the time the library provider is asked for the library until it
+  // answers.
+  bool waiting_for_library_ = false;
+
+  // Keeps the request to the library provider alive while it is pending.
+  base::CallbackListSubscription library_subscription_;
+
+  base::WeakPtrFactory<ScreenAIServiceRouter> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai

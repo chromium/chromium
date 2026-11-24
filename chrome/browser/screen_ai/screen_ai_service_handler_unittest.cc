@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -23,19 +25,25 @@ class FakeScreenAILibraryProvider : public ScreenAILibraryProvider {
  public:
   // ScreenAILibraryProvider:
   base::FilePath GetBinaryPath() const override { return binary_path_; }
-  void SetLastUsageTime() override { ++set_last_usage_time_count_; }
-  void Download() override { ++download_count_; }
+  void RecordUsage() override { ++record_usage_count_; }
+  base::CallbackListSubscription EnsureLibraryAvailable(
+      base::OnceCallback<void(bool)> callback) override {
+    ++library_request_count_;
+    return pending_callbacks_.Add(std::move(callback));
+  }
 
-  int set_last_usage_time_count() const { return set_last_usage_time_count_; }
-  int download_count() const { return download_count_; }
+  int record_usage_count() const { return record_usage_count_; }
+  int library_request_count() const { return library_request_count_; }
+  bool has_pending_callbacks() const { return !pending_callbacks_.empty(); }
   void set_binary_path(const base::FilePath& binary_path) {
     binary_path_ = binary_path;
   }
 
  private:
+  base::OnceCallbackList<void(bool)> pending_callbacks_;
   base::FilePath binary_path_;
-  int set_last_usage_time_count_ = 0;
-  int download_count_ = 0;
+  int record_usage_count_ = 0;
+  int library_request_count_ = 0;
 };
 
 class TestScreenAIServiceHandler : public ScreenAIServiceHandlerBase {
@@ -162,9 +170,19 @@ TEST_F(ScreenAIServiceShutdownHandlerTest, DownloadsLibraryWhenNotAvailable) {
   // binds the service before the download completes. The handler asks for the
   // download and tells the pending request that the service is not ready.
   InitializeService();
-  EXPECT_EQ(library_provider_.set_last_usage_time_count(), 1);
-  EXPECT_EQ(library_provider_.download_count(), 1);
+  EXPECT_EQ(library_provider_.record_usage_count(), 1);
+  EXPECT_EQ(library_provider_.library_request_count(), 1);
   EXPECT_FALSE(service_state.Get());
+}
+
+TEST_F(ScreenAIServiceShutdownHandlerTest,
+       DoesNotWaitForDownloadThatLaunchStarts) {
+  // A caller binds the service while the library is not on the device.
+  InitializeService();
+  EXPECT_EQ(library_provider_.library_request_count(), 1);
+
+  // The handler only starts the download. It does not wait for it.
+  EXPECT_FALSE(library_provider_.has_pending_callbacks());
 }
 
 TEST_F(ScreenAIServiceShutdownHandlerTest, DoesNotLaunchWithInvalidPath) {
@@ -179,7 +197,7 @@ TEST_F(ScreenAIServiceShutdownHandlerTest, DoesNotLaunchWithInvalidPath) {
     EXPECT_FALSE(service_state.Get());
     EXPECT_FALSE(handler.IsProcessRunningForTesting());
   }
-  EXPECT_EQ(library_provider_.download_count(), 0);
+  EXPECT_EQ(library_provider_.library_request_count(), 0);
 }
 
 TEST(ScreenAIComponentFilesTest, RejectsPathsOutsideOfComponentFolder) {

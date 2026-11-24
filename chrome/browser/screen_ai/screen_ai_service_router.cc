@@ -19,7 +19,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_library_provider.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
@@ -62,8 +61,8 @@ void RecordComponentAvailability(bool available) {
 namespace screen_ai {
 
 ScreenAIServiceRouter::ScreenAIServiceRouter(
-    std::unique_ptr<ScreenAILibraryProvider> library_provider)
-    : library_provider_(std::move(library_provider)) {
+    ScreenAILibraryProvider* library_provider)
+    : library_provider_(library_provider) {
   CHECK(library_provider_);
 }
 
@@ -83,14 +82,14 @@ ScreenAIServiceHandlerBase* ScreenAIServiceRouter::GetHandler(Service service) {
       if (!mce_handler_) {
         mce_handler_ =
             std::make_unique<ScreenAIServiceHandlerMainContentExtraction>(
-                library_provider_.get());
+                library_provider_);
       }
       return mce_handler_.get();
 
     case Service::kOCR:
       if (!ocr_handler_) {
-        ocr_handler_ = std::make_unique<ScreenAIServiceHandlerOCR>(
-            library_provider_.get());
+        ocr_handler_ =
+            std::make_unique<ScreenAIServiceHandlerOCR>(library_provider_);
       }
       return ocr_handler_.get();
   }
@@ -110,50 +109,36 @@ void ScreenAIServiceRouter::GetServiceStateAsync(
     return;
   }
 
-  auto* install_state = ScreenAIInstallState::GetInstance();
-
-  // If download has previously failed, reset it.
-  if (install_state->get_state() ==
-      ScreenAIInstallState::State::kDownloadFailed) {
-    install_state->SetState(ScreenAIInstallState::State::kNotDownloaded);
+  // Ask for the library, unless an earlier request already waits for it.
+  if (waiting_for_library_) {
+    return;
   }
-
-  // Observe component state if not already observed, otherwise trigger
-  // download. (Adding observer also triggers download.)
-  if (!component_ready_observer_.IsObserving()) {
-    component_ready_observer_.Observe(install_state);
-  } else {
-    install_state->DownloadComponent();
+  waiting_for_library_ = true;
+  base::WeakPtr<ScreenAIServiceRouter> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  base::CallbackListSubscription subscription =
+      library_provider_->EnsureLibraryAvailable(base::BindOnce(
+          &ScreenAIServiceRouter::OnLibraryAvailabilityChanged, weak_this));
+  // The provider can answer before it returns. The callbacks that are then
+  // told that the service is not available can destroy this object, or ask
+  // for the service again, which stores a new subscription. So keep this
+  // subscription only if it is still the request to wait for.
+  if (weak_this && waiting_for_library_ && !library_subscription_) {
+    library_subscription_ = std::move(subscription);
   }
 }
 
-void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
-  bool available = true;
-  switch (state) {
-    case ScreenAIInstallState::State::kNotDownloaded:
-    case ScreenAIInstallState::State::kDownloading:
-      return;
+void ScreenAIServiceRouter::OnLibraryAvailabilityChanged(bool available) {
+  waiting_for_library_ = false;
+  library_subscription_ = {};
 
-    case ScreenAIInstallState::State::kDownloadFailed:
-      available = false;
-      ABSL_FALLTHROUGH_INTENDED;
-    case ScreenAIInstallState::State::kDownloaded:
-      if (mce_handler_) {
-        mce_handler_->OnLibraryAvailablityChanged(available);
-      }
-      if (ocr_handler_) {
-        ocr_handler_->OnLibraryAvailablityChanged(available);
-      }
-      RecordComponentAvailability(available);
-      break;
+  if (mce_handler_) {
+    mce_handler_->OnLibraryAvailablityChanged(available);
   }
-
-  // No need to observe after library is downloaded or download has failed.
-  component_ready_observer_.Reset();
-}
-
-void ScreenAIServiceRouter::OnScreenAIInstallStateDestroying() {
-  component_ready_observer_.Reset();
+  if (ocr_handler_) {
+    ocr_handler_->OnLibraryAvailablityChanged(available);
+  }
+  RecordComponentAvailability(available);
 }
 
 void ScreenAIServiceRouter::BindScreenAIAnnotator(

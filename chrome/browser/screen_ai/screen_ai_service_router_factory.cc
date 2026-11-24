@@ -44,7 +44,7 @@ ScreenAIServiceRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* /*context*/) const {
   return base::WrapUnique<screen_ai::ScreenAIServiceRouter>(
       new screen_ai::ScreenAIServiceRouter(
-          std::make_unique<screen_ai::ScreenAILibraryProviderImpl>()));
+          screen_ai::ScreenAILibraryProviderImpl::GetInstance()));
 }
 
 // static

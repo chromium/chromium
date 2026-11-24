@@ -4,6 +4,7 @@
 
 #include "chrome/browser/screen_ai/screen_ai_service_handler_base.h"
 
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -237,7 +238,7 @@ void ScreenAIServiceHandlerBase::CallPendingStatusRequests(bool successful) {
 }
 
 void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
-  library_provider_->SetLastUsageTime();
+  library_provider_->RecordUsage();
   if (screen_ai_service_factory_.is_bound()) {
     return;
   }
@@ -253,7 +254,8 @@ void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
   if (binary_path.empty()) {
     VLOG(0) << "ScreenAI service launch triggered when component is not "
                "available.";
-    library_provider_->Download();
+    // Start the download of the library. Nobody waits for it here.
+    std::ignore = library_provider_->EnsureLibraryAvailable(base::DoNothing());
     return;
   }
 
