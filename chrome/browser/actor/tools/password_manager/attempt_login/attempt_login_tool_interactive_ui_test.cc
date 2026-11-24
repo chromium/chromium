@@ -196,6 +196,25 @@ class AttemptLoginToolInteractiveUiTest
 
     // Open glic window and track instance.
     RunTestSequence(OpenGlic());
+
+    RunTestSequence(InAnyContext(
+        WithElement(glic::kGlicContentsElementId, [](::ui::TrackedElement* el) {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          ASSERT_TRUE(content::ExecJs(glic_contents,
+                                      R"JS(
+              // Stub the navigation confirmation request handler to always
+              // allow navigation.
+              const handler = client.browser
+                  .selectNavigationConfirmationRequestHandler?.();
+              if (!window._navConfirmationSubscribed && handler) {
+                  window._navConfirmationSubscribed = true;
+                  handler.subscribe(req => req.onConfirmationDecision(
+                      {response: {permissionGranted: true}}));
+              }
+            )JS"));
+        })));
+
     TrackGlicInstanceWithTabIndex(
         InProcessBrowserTest::browser()->tab_strip_model()->active_index());
     // Create new task with instance as ActorTaskDelegate.

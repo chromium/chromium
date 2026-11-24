@@ -386,6 +386,8 @@ class ActorTask : public base::SupportsUserData {
   // This method does not change the task state.
   void OnActRequested();
 
+  void SetDelegateForTesting(base::WeakPtr<ActorTaskDelegate> delegate);
+
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
    public:

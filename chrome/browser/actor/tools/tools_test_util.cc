@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -37,6 +38,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
@@ -249,6 +251,8 @@ void ActorToolsTest::SetUpOnMainThread() {
   ui::ActorUiTabControllerAndroid::SetSuppressNavigationDialogsForTesting(true);
 #endif
 
+  // Mock NavigationConfirmationRequest handler with a fail-open, which
+  // simulates users which do not have a GLIC API request handler.
   task_id_ =
       ActorKeyedService::Get(GetProfile())
           ->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
@@ -421,6 +425,21 @@ gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
           .ExtractDouble();
 
   return gfx::RectF(x, y, width, height);
+}
+
+void ActorToolsTest::StubNavigationConfirmationRequest(
+    bool permission_granted) {
+  actor_task().SetDelegateForTesting(mock_task_delegate_.GetWeakPtr());
+  ON_CALL(mock_task_delegate_, RequestToConfirmNavigation)
+      .WillByDefault([permission_granted](
+                         TaskId, const url::Origin&,
+                         ActorTaskDelegate::NavigationConfirmationCallback
+                             callback) {
+        std::move(callback).Run(
+            webui::mojom::NavigationConfirmationResponse::New(
+                webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                    permission_granted)));
+      });
 }
 
 }  // namespace actor

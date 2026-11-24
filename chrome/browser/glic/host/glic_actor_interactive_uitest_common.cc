@@ -257,6 +257,15 @@ MultiStep GlicActorUiTest::CreateTask(
       Do([this, buffer_raw, title = std::string(title)]() {
         WebContents* glic_contents = GetGlicContents();
         EvalJsResult result = EvalJs(glic_contents, JsReplace(R"JS(
+                // Stub the navigation confirmation request handler to always
+                // allow navigation.
+                const handler = client.browser
+                    .selectNavigationConfirmationRequestHandler?.();
+                if (!window._navConfirmationSubscribed && handler) {
+                  window._navConfirmationSubscribed = true;
+                  handler.subscribe(req => req.onConfirmationDecision(
+                      {response: {permissionGranted: true}}));
+                }
                 (async () => {
                   try {
                     const id = await client.browser.createTask({title: $1});

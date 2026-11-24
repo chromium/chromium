@@ -88,6 +88,17 @@ void GlicActorFunctionalBrowserTestBase::SetUpOnMainThread() {
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
   RunTestSequence(OpenGlic());
+
+  // Mock the request handler for NavigationConfirmationRequest to fail-open.
+  ASSERT_TRUE(content::ExecJs(FindGlicGuestMainFrame(), R"(
+    (async () => {
+      await client.browser
+          .selectNavigationConfirmationRequestHandler?.()
+          ?.subscribe(
+              req => req.onConfirmationDecision(
+                  {response: {permissionGranted: true}}));
+    })();
+  )"));
 }
 
 base::CallbackListSubscription

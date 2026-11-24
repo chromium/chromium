@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -50,6 +51,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -143,6 +145,25 @@ ActorKeyedService* ActorKeyedServiceBrowserTest::actor_keyed_service() {
   return ActorKeyedService::Get(GetProfile());
 }
 
+MockActorTaskDelegate& ActorKeyedServiceBrowserTest::mock_task_delegate() {
+  return mock_task_delegate_;
+}
+
+void ActorKeyedServiceBrowserTest::StubNavigationConfirmationRequestHandler(
+    TaskId task_id) {
+  actor_keyed_service()->GetTask(task_id)->SetDelegateForTesting(
+      mock_task_delegate().GetWeakPtr());
+  ON_CALL(mock_task_delegate(), RequestToConfirmNavigation)
+      .WillByDefault([](TaskId, const url::Origin&,
+                        ActorTaskDelegate::NavigationConfirmationCallback
+                            callback) {
+        std::move(callback).Run(
+            webui::mojom::NavigationConfirmationResponse::New(
+                webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                    true)));
+      });
+}
+
 namespace {
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest, StartStopTask) {
@@ -169,6 +190,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        MAYBE_StartNavigateStopTask) {
   TaskId first_task_id = actor_keyed_service()->CreateTask(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  StubNavigationConfirmationRequestHandler(first_task_id);
   EXPECT_FALSE(first_task_id.is_null());
 
   PerformActionsFuture result_future;
@@ -348,6 +370,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        CreateActorTabInBackground) {
   TaskId task_id = actor_keyed_service()->CreateTask(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  StubNavigationConfirmationRequestHandler(task_id);
+
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       web_contents(),
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html")));

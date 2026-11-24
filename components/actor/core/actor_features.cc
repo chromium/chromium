@@ -53,7 +53,7 @@ BASE_FEATURE_PARAM(bool,
                    kGlicAllowImplicitToolOriginGrants,
                    &kGlicCrossOriginNavigationGating,
                    "allow_implicit_tool_origin_grants",
-                   true);
+                   false);
 
 BASE_FEATURE(kGlicAttachNavigationThrottleToPausedTasks,
              base::FEATURE_ENABLED_BY_DEFAULT);

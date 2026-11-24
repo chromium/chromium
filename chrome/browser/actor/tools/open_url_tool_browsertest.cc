@@ -38,8 +38,6 @@ class ActorOpenUrlToolBrowserTest : public ActorToolsTest,
                                     public testing::WithParamInterface<bool> {
  public:
   ActorOpenUrlToolBrowserTest() {
-    // Require confirmation for navigations to new origins so that tests fail
-    // if the tool's origin grant isn't applied.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kGlicCrossOriginNavigationGating,
         {{kGlicConfirmNavigationToNewOrigins.name, "true"}});
@@ -50,6 +48,12 @@ class ActorOpenUrlToolBrowserTest : public ActorToolsTest,
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
+
+    // Navigation confirmation request handler is stubbed and always returns
+    // `true`. This reflects the behavior of TtcActorTaskDelegate now that
+    // OpenUrl does not implicitly grant the agent the ability to navigate to a
+    // new origin.
+    StubNavigationConfirmationRequest(/*permission_granted=*/true);
   }
 
   bool OpenInNewTab() const { return GetParam(); }
@@ -121,8 +125,9 @@ IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolBrowserTest, OpenUrl) {
   EXPECT_EQ(navigated_tab->GetContents()->GetLastCommittedURL(), url_target);
 }
 
-// A cross-origin destination is allowed under navigation gating, because the
-// tool grants the destination's origin.
+// A cross-origin destination is still allowed under navigation gating because
+// the `NavigationConfirmationRequest` handler is stubbed to fail-open without
+// GLIC.
 IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolBrowserTest, CrossOrigin) {
   const GURL url_start =
       embedded_https_test_server().GetURL("/actor/blank.html?start");
@@ -225,6 +230,63 @@ IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolNoGatingBrowserTest, BlockedUrl) {
   EXPECT_EQ(tab_list()->GetTabCount(), initial_tab_count);
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_start);
 }
+
+class ActorOpenUrlToolExplicitGrantRequiredBrowserTest
+    : public ActorOpenUrlToolBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ActorOpenUrlToolBrowserTest::SetUpOnMainThread();
+
+    // Tests that some navigations are blocked when the navigation confirmation
+    // handler always returns `false`.
+    StubNavigationConfirmationRequest(/*permission_granted=*/false);
+  }
+};
+
+// Tests a same-origin navigation is ok as long as it is in the same tab.
+IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolExplicitGrantRequiredBrowserTest,
+                       OpenUrlBlockedInNewTab) {
+  const GURL url_start = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+  tabs::TabInterface* source_tab = active_tab();
+
+  std::unique_ptr<ToolRequest> action =
+      MakeOpenUrlRequest(*source_tab, url_target);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  if (OpenInNewTab()) {
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  } else {
+    ExpectOkResult(result);
+  }
+}
+
+// Tests a cross-origin navigation is blocked.
+IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolExplicitGrantRequiredBrowserTest,
+                       CrossSiteOpenUrlBlocked) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "bar.com", "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+  tabs::TabInterface* source_tab = active_tab();
+
+  std::unique_ptr<ToolRequest> action =
+      MakeOpenUrlRequest(*source_tab, url_target);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorOpenUrlToolExplicitGrantRequiredBrowserTest,
+                         testing::Bool(),
+                         &OpenUrlModeName);
 
 }  // namespace
 

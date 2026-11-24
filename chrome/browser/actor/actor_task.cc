@@ -1267,6 +1267,11 @@ void ActorTask::OnActRequested() {
       ui::UiEventDispatcher::ActRequested{.task_id = id_});
 }
 
+void ActorTask::SetDelegateForTesting(
+    base::WeakPtr<ActorTaskDelegate> delegate) {
+  delegate_ = std::move(delegate);
+}
+
 // static
 ActorTask::State ActorTask::GetTaskStateFromStoppedReason(
     StoppedReason stopped_reason) {

@@ -44,11 +44,15 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
   content::WebContents* web_contents();
   content::RenderFrameHost* main_frame();
   ActorKeyedService* actor_keyed_service();
+  MockActorTaskDelegate& mock_task_delegate();
+
+  void StubNavigationConfirmationRequestHandler(TaskId task_id);
 
  private:
   base::HistogramTester histogram_tester_for_init_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
+  MockActorTaskDelegate mock_task_delegate_;
 };
 
 }  // namespace actor

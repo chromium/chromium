@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -235,7 +236,10 @@ class ActorToolsTest : public PlatformBrowserTest {
       base::OnceClosure quit_closure,
       optimization_guide::AIPageContentResultOrError page_content);
 
+  void StubNavigationConfirmationRequest(bool permission_granted);
+
   TaskId task_id_;
+  testing::NiceMock<MockActorTaskDelegate> mock_task_delegate_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

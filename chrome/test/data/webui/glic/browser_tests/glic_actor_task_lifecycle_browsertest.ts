@@ -6,7 +6,7 @@
 // chrome/browser/glic/actor/glic_actor_task_lifecycle_browsertest.cc
 
 import {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, CancelActionsResult} from '/glic/glic_api/glic_api.js';
-import type {GmailOtpConfirmationRequest, GmailOtpOptInRequest} from '/glic/glic_api/glic_api.js';
+import type {GmailOtpConfirmationRequest, GmailOtpOptInRequest, NavigationConfirmationRequest} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertRejects, assertTrue, checkDefined, longWaitTimeMs, observeSequence, testMain} from './browser_test_base.js';
 
@@ -64,6 +64,12 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
         (mode: ConfirmationResponseMode) => {
           this.setGmailOtpConfirmationResponseMode(mode);
         };
+    this.host.selectNavigationConfirmationRequestHandler?.()?.subscribe(
+        (request: NavigationConfirmationRequest) => {
+          request.onConfirmationDecision({
+            response: {permissionGranted: true},
+          });
+        });
   }
 
   async getFocusedTabId(): Promise<string> {

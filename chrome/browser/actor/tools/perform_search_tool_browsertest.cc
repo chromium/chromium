@@ -63,6 +63,7 @@ class ActorPerformSearchToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     SetDefaultSearchProviderUrl(embedded_test_server()->GetURL(kSearchUrlPath));
+    StubNavigationConfirmationRequest(/*permission_granted=*/true);
   }
 
   void SetDefaultSearchProviderUrl(const GURL& search_url) {
@@ -110,9 +111,9 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
   EXPECT_EQ(web_contents()->GetURL(), GetDefaultSearchURLForQuery(kQuery));
 }
 
-// Verifies that PerformSearch grants the default search provider's origin in
-// AssociatedOriginGrant(), allowing cross-origin navigation when
-// kGlicConfirmNavigationToNewOrigins is enabled.
+// Verifies that PerformSearch grants the default search provider's origin
+// because the NavigationConfirmationRequest handler is stubbed to fail-open
+// without GLIC.
 IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
                        PerformSearchCrossOriginDefaultSearchProviderAllowed) {
   constexpr char kQuery[] = "test query";
@@ -140,6 +141,11 @@ class ActorPerformSearchToolExplicitGrantBrowserTest
         kGlicCrossOriginNavigationGating,
         {{kGlicAllowImplicitToolOriginGrants.name, "false"},
          {kGlicConfirmNavigationToNewOrigins.name, "true"}});
+  }
+
+  void SetUpOnMainThread() override {
+    ActorPerformSearchToolBrowserTest::SetUpOnMainThread();
+    StubNavigationConfirmationRequest(/*permission_granted=*/false);
   }
 
  private:
