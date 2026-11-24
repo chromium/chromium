@@ -112,12 +112,6 @@ BASE_FEATURE(kDetectSpaceChangeViaOcclusion, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Integrate input method specific settings to Chrome OS settings page.
-// https://crbug.com/895886.
-BASE_FEATURE(kSettingsShowsPerKeyboardSettings,
-             "InputMethodIntegratedSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeprecateAltClick, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDeprecateAltClickEnabled() {
