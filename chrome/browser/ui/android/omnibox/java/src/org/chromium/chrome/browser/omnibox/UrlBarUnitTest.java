@@ -1122,6 +1122,72 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void scrollToTLD_rtlOriginWiderThanViewport_keepsOriginEndVisible() {
+        // An origin whose final run is right-to-left and wider than the 100px viewport. Its
+        // logical end (the registrable domain) is drawn at the run's visual left edge.
+        String origin =
+                "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629.\u0645\u0635\u0631\u0641"
+                    + "\u0627\u0644\u0631\u0627\u062c\u062d\u064a.\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629."
+                        + TextUtils.join("", Collections.nCopies(10, "\u0627"))
+                        + ".\u0634\u0628\u0643\u0629";
+        showUnfocusedUrlScrolledToTld(origin + "/path", origin.length());
+        int visibleWidth = VIEWPORT_WIDTH;
+        float runWidth = mUrlBar.getLayout().getPaint().measureText(origin, 0, origin.length());
+        assertTrue(
+                "Precondition: the RTL origin must overflow the viewport", runWidth > visibleWidth);
+
+        // In the LTR paragraph the RTL run is drawn right-to-left: the TLD label occupies the
+        // run's visual left end, from the caret before its first character (its right edge) down
+        // to the caret before the origin's last character. Both must be inside the viewport.
+        float tldRightEdgeX = viewportXOf(origin.lastIndexOf(".") + 1);
+        float lastCharX = viewportXOf(origin.length() - 1);
+        assertTrue("TLD right edge out of view: " + tldRightEdgeX, tldRightEdgeX >= 0);
+        assertTrue("TLD right edge out of view: " + tldRightEdgeX, tldRightEdgeX <= visibleWidth);
+        assertTrue("Origin end out of view: " + lastCharX, lastCharX >= 0);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void scrollToTLD_rtlOriginWithDigitsWiderThanViewport_keepsOriginEndVisible() {
+        // Digits inside an RTL host (e.g. موقع24.مصر) resolve to an even bidi level (>= 2) and
+        // must not terminate the RTL run scan early, otherwise only ".مصر" is measured.
+        String origin =
+                "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629."
+                        + TextUtils.join("", Collections.nCopies(10, "\u0645"))
+                        + ".\u0645\u0648\u0642\u063924.\u0645\u0635\u0631";
+        showUnfocusedUrlScrolledToTld(origin + "/path", origin.length());
+        int visibleWidth = VIEWPORT_WIDTH;
+        float runWidth = mUrlBar.getLayout().getPaint().measureText(origin, 0, origin.length());
+        assertTrue(
+                "Precondition: the RTL origin must overflow the viewport", runWidth > visibleWidth);
+
+        float tldRightEdgeX = viewportXOf(origin.lastIndexOf(".") + 1);
+        float lastCharX = viewportXOf(origin.length() - 1);
+        assertTrue("TLD right edge out of view: " + tldRightEdgeX, tldRightEdgeX >= 0);
+        assertTrue("TLD right edge out of view: " + tldRightEdgeX, tldRightEdgeX <= visibleWidth);
+        assertTrue("Origin end out of view: " + lastCharX, lastCharX >= 0);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void scrollToTLD_rtlOriginWithRtlPath_keepsOriginEndVisible() {
+        String origin =
+                "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629.\u0645\u0635\u0631\u0641"
+                    + "\u0627\u0644\u0631\u0627\u062c\u062d\u064a.\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629."
+                        + TextUtils.join("", Collections.nCopies(10, "\u0627"))
+                        + ".\u0634\u0628\u0643\u0629";
+        String rtlPath = "/" + TextUtils.join("", Collections.nCopies(20, "\u0645"));
+        showUnfocusedUrlScrolledToTld(origin + rtlPath, origin.length());
+        int visibleWidth = VIEWPORT_WIDTH;
+        float tldRightEdgeX = viewportXOf(origin.lastIndexOf(".") + 1);
+        float lastCharX = viewportXOf(origin.length() - 1);
+        assertTrue("TLD right edge out of view: " + tldRightEdgeX, tldRightEdgeX >= 0);
+        assertTrue("TLD right edge out of view: " + tldRightEdgeX, tldRightEdgeX <= visibleWidth);
+        assertTrue("Origin end out of view: " + lastCharX, lastCharX >= 0);
+    }
+
+    @Test
     public void scrollToBeginning_rtlText_accountsForPadding() {
         String rtlText = "ابحث في Google أو اكتب عنوان URL";
         mUrlBar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);

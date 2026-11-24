@@ -75,6 +75,7 @@ import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.text.Bidi;
 import java.text.BreakIterator;
 import java.util.Objects;
 
@@ -1690,15 +1691,17 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         float endPointX = textLayout.getPrimaryHorizontal(originEndIndex);
-        // Compare the position offset of the last character and the character prior to determine
-        // the LTR-ness of the final component of the URL.
-        float priorToEndPointX =
-                urlTextLength == 1
-                        ? 0
-                        : textLayout.getPrimaryHorizontal(Math.max(0, originEndIndex - 1));
+        // Unfocused URL text is always laid out as an LTR paragraph (see fixupTextDirection()).
+        // A nested LTR run (e.g. digits in "موقع24.مصر") inside an RTL host resolves to an even
+        // bidi level >= 2, so Layout.isRtlCharAt() returns false for it even though it belongs to
+        // the surrounding RTL directional run. Using Bidi with DIRECTION_LEFT_TO_RIGHT lets us
+        // treat any level > 0 as part of the RTL run.
+        Bidi bidi = new Bidi(url.toString(), Bidi.DIRECTION_LEFT_TO_RIGHT);
+        boolean originEndsWithRtlRun =
+                originEndIndex > 0 && bidi.getLevelAt(originEndIndex - 1) > 0;
 
         float scrollPos;
-        if (priorToEndPointX < endPointX) {
+        if (!originEndsWithRtlRun) {
             // LTR
             scrollPos = Math.max(0, endPointX - measuredWidth);
             if (endPointX > measuredWidth) {
@@ -1748,34 +1751,30 @@ public class UrlBar extends AutocompleteEditText {
             // hint.
             mVisibleTextPrefixHint = null;
 
-            // To handle BiDirectional text, search backward from the two existing offsets to find
-            // the first LTR character.  Ensure the final RTL component of the domain is visible
-            // above any of the prior LTR pieces.
+            // The final RTL run of the origin is drawn right-to-left, so its logical end (the
+            // registrable domain) sits at the run's visual left edge. If the RTL run continues
+            // past originEndIndex into the path (e.g. '/' between two RTL segments), endPointX
+            // is already that visual left edge; otherwise endPointX is the run's right edge.
             int rtlStartIndexForEndingRun = originEndIndex - 1;
-            for (int i = originEndIndex - 2; i >= 0; i--) {
-                float indexOffsetDrawPosition = textLayout.getPrimaryHorizontal(i);
-                if (indexOffsetDrawPosition > endPointX) {
-                    rtlStartIndexForEndingRun = i;
-                } else {
-                    // getPrimaryHorizontal determines the index position for the next character
-                    // based on the previous characters.  In bi-directional text, the first RTL
-                    // character following LTR text will have an LTR-appearing horizontal offset
-                    // as it is based on the preceding LTR text.  Thus, the start of the RTL
-                    // character run will be after and including the first LTR horizontal index.
-                    rtlStartIndexForEndingRun = Math.max(0, rtlStartIndexForEndingRun - 1);
-                    break;
-                }
+            while (rtlStartIndexForEndingRun > 0
+                    && bidi.getLevelAt(rtlStartIndexForEndingRun - 1) > 0) {
+                rtlStartIndexForEndingRun--;
             }
-            float width =
+            float runWidth =
                     textLayout
                             .getPaint()
-                            .measureText(
-                                    url.subSequence(rtlStartIndexForEndingRun, originEndIndex)
-                                            .toString());
-            if (width < measuredWidth) {
-                scrollPos = Math.max(0, endPointX + width - measuredWidth);
+                            .measureText(url, rtlStartIndexForEndingRun, originEndIndex);
+            boolean rtlContinuesIntoPath =
+                    originEndIndex < urlTextLength && textLayout.isRtlCharAt(originEndIndex);
+            float runLeftX = rtlContinuesIntoPath ? endPointX : endPointX - runWidth;
+            float runRightX = rtlContinuesIntoPath ? endPointX + runWidth : endPointX;
+            if (runWidth < measuredWidth) {
+                // The whole run fits: align its right edge with the end of the viewport.
+                scrollPos = Math.max(0, runRightX - measuredWidth);
             } else {
-                scrollPos = endPointX + measuredWidth;
+                // The run overflows: anchor the viewport at the run's left edge so that the end
+                // of the origin stays visible, matching the LTR behavior.
+                scrollPos = Math.max(0, runLeftX);
             }
         }
         scrollTo((int) scrollPos, 0);
