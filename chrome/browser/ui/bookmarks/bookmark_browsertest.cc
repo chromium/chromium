@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -45,6 +46,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -686,6 +688,143 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, FaviconChangeDuringBookmarkDrag) {
       std::move(cb));
 
   run_loop->Run();
+}
+
+// Verifies that favicon invalidation while waiting for the dragged bookmark's
+// favicon to load does not prematurely launch the drag with an unloaded icon,
+// and that the drag callback runs asynchronously after BookmarkModel finishes
+// notifying all observers.
+IN_PROC_BROWSER_TEST_F(
+    BookmarkBrowsertest,
+    FaviconInvalidatedBeforeLoadAndDragDeferredOutsideObserver) {
+  BookmarkModel* model = WaitForBookmarkModel(browser()->GetProfile());
+  const std::u16string kPageTitle(u"foo");
+  const GURL kPageUrl("http://www.google.com");
+  const GURL kFaviconUrl("http://www.google.com/favicon.ico");
+  const BookmarkNode* root = model->bookmark_bar_node();
+  const BookmarkNode* node = model->AddURL(root, 0, kPageTitle, kPageUrl);
+  const int64_t node_id = node->id();
+  ASSERT_FALSE(node->is_favicon_loaded());
+  constexpr gfx::Point kExpectedPoint(100, 100);
+
+  base::RunLoop run_loop;
+  bool in_favicon_observer_notification = false;
+  bool trailing_observer_saw_loaded_favicon = false;
+  bool drag_started = false;
+
+  chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ui::OSExchangeData> drag_data,
+          gfx::NativeView native_view, ui::mojom::DragEventSource source,
+          gfx::Point point, int operation) {
+        drag_started = true;
+        EXPECT_FALSE(in_favicon_observer_notification);
+        EXPECT_TRUE(trailing_observer_saw_loaded_favicon);
+        const BookmarkNode* live_node =
+            bookmarks::GetBookmarkNodeByID(model, node_id);
+        ASSERT_NE(nullptr, live_node);
+        EXPECT_TRUE(live_node->is_favicon_loaded());
+        run_loop.Quit();
+      });
+
+  constexpr int kDragNodeIndex = 0;
+  chrome::DragBookmarksForTest(
+      browser()->GetProfile(),
+      {{node},
+       kDragNodeIndex,
+       browser()->GetTabStripModel()->GetActiveWebContents(),
+       ui::mojom::DragEventSource::kMouse,
+       kExpectedPoint},
+      std::move(cb));
+
+  // Register a trailing observer *after* DragBookmarksForTest() so it runs
+  // after BookmarkDragHelper in BookmarkModel::observers_.
+  testing::NiceMock<bookmarks::MockBookmarkModelObserver> trailing_observer;
+  base::ScopedObservation<BookmarkModel, bookmarks::BookmarkModelObserver>
+      trailing_observation(&trailing_observer);
+  trailing_observation.Observe(model);
+  ON_CALL(trailing_observer, BookmarkNodeFaviconChanged)
+      .WillByDefault([&](const BookmarkNode* changed_node) {
+        if (changed_node->id() != node_id) {
+          return;
+        }
+        in_favicon_observer_notification = true;
+        // Drag callback must not have run synchronously inside
+        // BookmarkDragHelper's earlier observer notification.
+        EXPECT_FALSE(drag_started);
+        if (changed_node->is_favicon_loaded()) {
+          trailing_observer_saw_loaded_favicon = true;
+        }
+        in_favicon_observer_notification = false;
+      });
+
+  // Invalidate the favicon while the initial load is still in flight; this
+  // must re-request the favicon rather than launching the drag prematurely.
+  model->OnFaviconsChanged({kPageUrl}, kFaviconUrl);
+  EXPECT_FALSE(drag_started);
+
+  run_loop.Run();
+  EXPECT_TRUE(drag_started);
+}
+
+// Verifies that removing the dragged bookmark before the deferred drag task
+// executes cleanly cancels the drag without UAF.
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
+                       DraggedBookmarkRemovedBeforeDeferredDragStarts) {
+  BookmarkModel* model = WaitForBookmarkModel(browser()->GetProfile());
+  const GURL kPageUrl("http://www.google.com");
+  const BookmarkNode* root = model->bookmark_bar_node();
+  const BookmarkNode* node = model->AddURL(root, 0, u"foo", kPageUrl);
+  const int64_t node_id = node->id();
+  ASSERT_FALSE(node->is_favicon_loaded());
+
+  // Register a leading observer *before* DragBookmarksForTest() so that when
+  // the favicon load finishes, it queues a non-reentrant BookmarkModel::Remove
+  // task ahead of BookmarkDragHelper's deferred drag task on the UI runner.
+  base::RunLoop favicon_loaded_loop;
+  testing::NiceMock<bookmarks::MockBookmarkModelObserver> leading_observer;
+  base::ScopedObservation<BookmarkModel, bookmarks::BookmarkModelObserver>
+      leading_observation(&leading_observer);
+  leading_observation.Observe(model);
+  ON_CALL(leading_observer, BookmarkNodeFaviconChanged)
+      .WillByDefault([&](const BookmarkNode* changed_node) {
+        if (changed_node->id() == node_id &&
+            changed_node->is_favicon_loaded()) {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindLambdaForTesting([&] {
+                if (const BookmarkNode* target =
+                        bookmarks::GetBookmarkNodeByID(model, node_id)) {
+                  model->Remove(target,
+                                bookmarks::metrics::BookmarkEditSource::kOther,
+                                FROM_HERE);
+                }
+                favicon_loaded_loop.Quit();
+              }));
+        }
+      });
+
+  bool drag_started = false;
+  chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ui::OSExchangeData>, gfx::NativeView,
+          ui::mojom::DragEventSource, gfx::Point,
+          int) { drag_started = true; });
+
+  chrome::DragBookmarksForTest(
+      browser()->GetProfile(),
+      {{node},
+       /*drag_node_index=*/0,
+       browser()->GetTabStripModel()->GetActiveWebContents(),
+       ui::mojom::DragEventSource::kMouse,
+       gfx::Point(100, 100)},
+      std::move(cb));
+
+  favicon_loaded_loop.Run();
+  // Post a trailing task on the FIFO UI task runner so the queued
+  // OnDelayedBookmarkIconLoaded task runs first, then confirm cancellation.
+  base::RunLoop drain_posted_task_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, drain_posted_task_loop.QuitClosure());
+  drain_posted_task_loop.Run();
+  EXPECT_FALSE(drag_started);
 }
 
 // Provides coverage for the Bookmark Manager bookmark drag and drag image

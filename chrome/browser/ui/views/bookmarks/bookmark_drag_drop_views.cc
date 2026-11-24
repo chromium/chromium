@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -12,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -23,6 +25,7 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -295,6 +298,17 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
     }
   }
 
+  void OnDelayedBookmarkIconLoaded(const ui::ImageModel& icon) {
+    const BookmarkNode* drag_node =
+        bookmarks::GetBookmarkNodeByID(model_, drag_node_id_);
+    if (!drag_node) {
+      delete this;
+      return;
+    }
+
+    OnBookmarkIconLoaded(drag_node, icon);
+  }
+
   base::WeakPtr<BookmarkDragHelper> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -305,15 +319,27 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
   void BookmarkModelBeingDeleted() override { delete this; }
 
   void BookmarkNodeFaviconChanged(const BookmarkNode* node) override {
-    if (icon_loaded_ || node->id() != drag_node_id_) {
+    if (icon_loaded_ || drag_scheduled_ || node->id() != drag_node_id_) {
       return;
     }
 
-    const ui::ImageModel& image =
-        ui::ImageModel::FromImage(model_->GetFavicon(node));
-    CHECK(node->is_favicon_loaded(), base::NotFatalUntil::M162);
+    if (!node->is_favicon_loaded()) {
+      // Favicon was invalidated before loading completed; re-request it and
+      // continue waiting for the load completion notification.
+      model_->GetFavicon(node);
+      return;
+    }
 
-    OnBookmarkIconLoaded(node, image);
+    drag_scheduled_ = true;
+    const ui::ImageModel image =
+        ui::ImageModel::FromImage(model_->GetFavicon(node));
+
+    // Defer launching the native drag loop so BookmarkModel finishes notifying
+    // observers before RunDragDropLoop() enters a nested UI message loop.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&BookmarkDragHelper::OnDelayedBookmarkIconLoaded,
+                       GetWeakPtr(), image));
   }
 
   raw_ptr<BookmarkModel> model_;
@@ -325,6 +351,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
   const gfx::Point start_point_;
   int operation_;
   bool icon_loaded_ = false;
+  bool drag_scheduled_ = false;
 
   DoBookmarkDragCallback do_drag_callback_;
 
