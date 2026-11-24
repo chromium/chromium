@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupCreatedCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
@@ -365,13 +365,15 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
 
         // Group tab 0 in destination activity.
         Token[] destGroupId = new Token[1];
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel destModel = destActivity.getCurrentTabModel();
-                    destModel.createSingleTabGroup(destModel.getTabAt(0));
-                    destGroupId[0] = destModel.getTabAt(0).getTabGroupId();
-                });
-        TabStripUtils.settleDownCompositor(destHelper);
+        mCurrentStation
+                .runOnUiThreadTo(
+                        () -> {
+                            TabModel destModel = destActivity.getCurrentTabModel();
+                            destModel.createSingleTabGroup(destModel.getTabAt(0));
+                            destGroupId[0] = destModel.getTabAt(0).getTabGroupId();
+                        })
+                .waitForAnd(new TabGroupCreatedCondition(mCurrentStation.tabModelElement))
+                .reach(mTabStrip.settled());
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -444,15 +446,18 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
 
         // Group tab 0 in destination activity and collapse it.
         Token[] destGroupId = new Token[1];
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel destModel = destActivity.getCurrentTabModel();
-                    destModel.createSingleTabGroup(destModel.getTabAt(0));
-                    destGroupId[0] = destModel.getTabAt(0).getTabGroupId();
-                    destModel.setTabGroupCollapsed(
-                            TabGroupId.fromRawToken(destGroupId[0]), /* isCollapsed= */ true);
-                });
-        TabStripUtils.settleDownCompositor(destHelper);
+        mCurrentStation
+                .runOnUiThreadTo(
+                        () -> {
+                            TabModel destModel = destActivity.getCurrentTabModel();
+                            destModel.createSingleTabGroup(destModel.getTabAt(0));
+                            destGroupId[0] = destModel.getTabAt(0).getTabGroupId();
+                            destModel.setTabGroupCollapsed(
+                                    TabGroupId.fromRawToken(destGroupId[0]),
+                                    /* isCollapsed= */ true);
+                        })
+                .waitForAnd(new TabGroupCreatedCondition(mCurrentStation.tabModelElement))
+                .reach(mTabStrip.settled());
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -513,12 +518,16 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_MultiTab_DragOutOfSourceGroup() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        TabStripTestUtils.createTabGroup(
-                sourceActivity,
-                /* isIncognito= */ false,
-                /* firstIndex= */ 0,
-                /* secondIndex= */ 1);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        mCurrentStation
+                .runTo(
+                        () ->
+                                TabStripTestUtils.createTabGroup(
+                                        sourceActivity,
+                                        /* isIncognito= */ false,
+                                        /* firstIndex= */ 0,
+                                        /* secondIndex= */ 1))
+                .waitForAnd(new TabGroupCreatedCondition(mCurrentStation.tabModelElement))
+                .reach(mTabStrip.settled());
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -985,25 +994,11 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
     public void testDragDrop_MultiTab_PinnedTabs_DroppedOverUnpinnedTab_ClampedToPinnedSection()
             throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel sourceModel = sourceActivity.getCurrentTabModel();
-                    int tab0Id = sourceModel.getTabAt(0).getId();
-                    int tab1Id = sourceModel.getTabAt(1).getId();
-                    sourceModel.pinTab(tab0Id, /* showUngroupDialog= */ false);
-                    sourceModel.pinTab(tab1Id, /* showUngroupDialog= */ false);
-                });
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        pinTabs(0, 1);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
-        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel destModel = destActivity.getCurrentTabModel();
-                    destModel.pinTab(destModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
-                });
-        TabStripUtils.settleDownCompositor(destHelper);
+        pinTabs(0);
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -1047,15 +1042,7 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
         StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel destModel = destActivity.getCurrentTabModel();
-                    int tab0Id = destModel.getTabAt(0).getId();
-                    int tab1Id = destModel.getTabAt(1).getId();
-                    destModel.pinTab(tab0Id, /* showUngroupDialog= */ false);
-                    destModel.pinTab(tab1Id, /* showUngroupDialog= */ false);
-                });
-        TabStripUtils.settleDownCompositor(destHelper);
+        pinTabs(0, 1);
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -1109,23 +1096,11 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
     public void testDragDrop_MultiTab_MixedPinnedAndUnpinned_DroppedOverUnpinnedTab()
             throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel sourceModel = sourceActivity.getCurrentTabModel();
-                    sourceModel.pinTab(
-                            sourceModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
-                });
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        pinTabs(0);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
-        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel destModel = destActivity.getCurrentTabModel();
-                    destModel.pinTab(destModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
-                });
-        TabStripUtils.settleDownCompositor(destHelper);
+        pinTabs(0);
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -1195,26 +1170,12 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
     public void testDragDrop_MultiTab_MixedPinnedAndUnpinned_DroppedOverPinnedTab()
             throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel sourceModel = sourceActivity.getCurrentTabModel();
-                    sourceModel.pinTab(
-                            sourceModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
-                });
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        pinTabs(0);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
         StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel destModel = destActivity.getCurrentTabModel();
-                    int tab0Id = destModel.getTabAt(0).getId();
-                    int tab1Id = destModel.getTabAt(1).getId();
-                    destModel.pinTab(tab0Id, /* showUngroupDialog= */ false);
-                    destModel.pinTab(tab1Id, /* showUngroupDialog= */ false);
-                });
-        TabStripUtils.settleDownCompositor(destHelper);
+        pinTabs(0, 1);
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
