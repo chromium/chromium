@@ -18,10 +18,9 @@ public interface BookmarkManagerOpener {
     /**
      * Shows the bookmark manager UI.
      *
-     * @param activity An activity to start the manager with, if null then the application context
-     *                 will be used instead.
-     * @param tab      The current tab if it exists.
-     * @param profile  The profile associated with the bookmarks.
+     * @param activity An activity to start the manager with.
+     * @param tab The current tab if it exists.
+     * @param profile The profile associated with the bookmarks.
      */
     default void showBookmarkManager(Activity activity, @Nullable Tab tab, Profile profile) {
         showBookmarkManager(activity, tab, profile, /* folderId= */ null);
@@ -30,15 +29,14 @@ public interface BookmarkManagerOpener {
     /**
      * Shows the bookmark manager UI.
      *
-     * @param activity An activity to start the manager with, if null then the application context
-     *                 will be used instead.
-     * @param tab      The current tab if it exists.
-     * @param profile  The profile associated with the bookmarks.
+     * @param activity An activity to start the manager with.
+     * @param tab The current tab if it exists.
+     * @param profile The profile associated with the bookmarks.
      * @param folderId The bookmark folder to open. If null, the bookmark manager will open the most
-     *                 recent folder. Can be null.
+     *     recent folder.
      */
-    void showBookmarkManager(Activity activity, @Nullable Tab tab, Profile profile,
-            @Nullable BookmarkId folderId);
+    void showBookmarkManager(
+            Activity activity, @Nullable Tab tab, Profile profile, @Nullable BookmarkId folderId);
 
     /**
      * Starts an {@link BookmarkEditActivity} for the given {@link BookmarkId}.
@@ -52,8 +50,7 @@ public interface BookmarkManagerOpener {
     /**
      * Starts an {@link BookmarkFolderPickerActivity} for the given {@link BookmarkId}s.
      *
-     * @param context A context to start the manager with, if null then the application context will
-     *     be used instead.
+     * @param context A context to start the folder picker activity with.
      * @param profile The profile associated with the bookmarks.
      * @param bookmarkIds The bookmarks that are being moved via the picker.
      */
@@ -66,7 +63,7 @@ public interface BookmarkManagerOpener {
     /**
      * Returns the last used URL for the bookmarks manager.
      *
-     * @param profile The URL for the profile associated with the bookmarks.
+     * @param profile The profile associated with the bookmarks.
      */
     String getLastUsedUrl(Profile profile);
 }

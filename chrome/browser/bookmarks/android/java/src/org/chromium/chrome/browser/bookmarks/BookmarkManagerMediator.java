@@ -165,8 +165,8 @@ class BookmarkManagerMediator
                         // in the list.
                         mPendingRefresh.post();
                     } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
-                        // If the folder is removed in folder mode, show the parent folder or falls
-                        // back to all bookmarks mode.
+                        // If the current folder is removed in folder mode, show the parent folder
+                        // or fall back to the default folder view location.
                         if (Objects.equals(id, getCurrentFolderId())) {
                             if (mBookmarkModel.getTopLevelFolderIds().contains(id)) {
                                 BookmarkId defaultFolder =
@@ -685,9 +685,6 @@ class BookmarkManagerMediator
 
     /** See BookmarkManager(Coordinator)#updateForUrl */
     void updateForUrl(String url) {
-        // Bookmark model is null if the manager has been destroyed.
-        if (mBookmarkModel == null) return;
-
         if (mBookmarkModel.isBookmarkModelLoaded()) {
             if (getCurrentUiState() != null && TextUtils.equals(url, getCurrentUiState().mUrl)) {
                 return;
@@ -959,10 +956,10 @@ class BookmarkManagerMediator
      * This is the ultimate internal method that updates UI and controls backstack. And it is the
      * only method that pushes states to {@link #mStateStack}.
      *
-     * <p>If the given state is not valid, all_bookmark state will be shown. Afterwards, this method
-     * checks the current state: if currently in loading state, it pops it out and adds the new
-     * state to the back stack. It also notifies the {@link #mNativePage} (if any) that the url has
-     * changed.
+     * <p>If the given state is not valid, the default folder state ({@link
+     * BookmarkModel#getDefaultFolderViewLocation()}) will be shown. Afterwards, this method checks
+     * the current state: if currently in loading state, it pops it out and adds the new state to
+     * the back stack. It also notifies the {@link #mNativePage} (if any) that the url has changed.
      *
      * <p>Also note that even if we store states to {@link #mStateStack}, on tablet the back
      * navigation and back button are not controlled by the manager: the tab handles back key and
@@ -1029,7 +1026,6 @@ class BookmarkManagerMediator
             // Loading and searching states may be pushed to the stack but should never be stored in
             // preferences.
             BookmarkUtils.setLastUsedUrl(state.mUrl);
-            // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
                 boolean replaceLastUrl = isOriginalBookmarksUrl(mNativePage.getUrl());
                 if (replaceLastUrl) {

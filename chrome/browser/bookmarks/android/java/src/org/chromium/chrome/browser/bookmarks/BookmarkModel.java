@@ -24,9 +24,10 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * A class that encapsulates {@link BookmarkBridge} and provides extra features such as undo, large
- * icon fetching, reader mode url redirecting, etc. This class should serve as the single class for
- * the UI to acquire data from the backend.
+ * Subclass of {@link BookmarkBridge} that provides UI-facing conveniences such as grouped bookmark
+ * deletion with undo notifications ({@link BookmarkDeleteObserver}), batch bookmark moves, and tab
+ * or folder lookup helpers. This class should serve as the single class for the UI to acquire data
+ * from the backend.
  */
 @NullMarked
 public class BookmarkModel extends BookmarkBridge {
@@ -168,7 +169,7 @@ public class BookmarkModel extends BookmarkBridge {
     }
 
     /**
-     * @see org.chromium.chrome.browser.bookmarks.BookmarkItem#getTitle()
+     * @see BookmarkItem#getTitle()
      */
     public String getBookmarkTitle(BookmarkId bookmarkId) {
         BookmarkItem bookmarkItem = getBookmarkById(bookmarkId);
@@ -202,7 +203,8 @@ public class BookmarkModel extends BookmarkBridge {
 
     /**
      * @param tab Tab whose current URL is checked against.
-     * @return BookmarkId or {@link null} if bookmark backend is not loaded.
+     * @return The most recently added user {@link BookmarkId} for the tab's URL, or {@code null} if
+     *     {@code tab} is null, the bridge is destroyed, or no user bookmark exists for the URL.
      */
     public @Nullable BookmarkId getUserBookmarkIdForTab(@Nullable Tab tab) {
         if (tab == null) return null;
@@ -219,7 +221,7 @@ public class BookmarkModel extends BookmarkBridge {
                 || Objects.equals(folderId, getAccountReadingListFolder());
     }
 
-    /** Returns whether the given id is a special folder. */
+    /** Returns whether the given item is a special folder. */
     public boolean isSpecialFolder(BookmarkItem item) {
         return item != null && Objects.equals(item.getParentId(), getRootFolderId());
     }
