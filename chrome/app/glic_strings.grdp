@@ -718,6 +718,9 @@
   <message name="IDS_GLIC_HOTKEY_G" desc="G key text" translateable="false" formatter_data="android_java">
     G
   </message>
+  <message name="IDS_GLIC_WHATS_NEW_QUIZZES_PROMPT" desc="Prompt to be sent to Gemini through the Gemini in Chrome side panel asking to generate a quiz about the current page.">
+    Create a simple 5 question quiz on this page
+  </message>
   <if expr="is_android">
     <message name="IDS_GLIC_FRE_DIALOG_TITLE" desc="Headline of the dialog that asks the user to turn on Gemini in Chrome the first time they open it." formatter_data="android_java">
       Ask anything, right where you are, with Gemini in Chrome
