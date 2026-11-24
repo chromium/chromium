@@ -56,7 +56,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
-#include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h"
@@ -137,7 +136,6 @@ class WebMediaStreamDeviceObserver;
 class WebNavigationControl;
 class WebPlugin;
 class WebPrescientNetworking;
-class WebRelatedAppsFetcher;
 class WebServiceWorkerProvider;
 class WebSocketHandshakeThrottle;
 class WebString;
@@ -478,11 +476,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // at a time.
   virtual void AbortClientNavigation(bool for_new_navigation) {}
 
-  // InstalledApp API ----------------------------------------------------
-
-  // Used to access the embedder for the InstalledApp API.
-  virtual WebRelatedAppsFetcher* GetRelatedAppsFetcher() { return nullptr; }
-
   // Editing -------------------------------------------------------------
 
   // These methods allow the client to intercept editing operations.
@@ -695,8 +688,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // layout that happened after an interesting document lifecycle change (see
   // WebMeaningfulLayout for details.)
   virtual void DidMeaningfulLayout(WebMeaningfulLayout) {}
-
-  virtual void OnFrameVisibilityChanged(mojom::FrameVisibility render_status) {}
 
   // Returns the last commited URL used for UKM. This is slightly different
   // than the document's URL because it will contain a data URL if a base URL
