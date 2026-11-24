@@ -118,7 +118,7 @@ export class ProfileCustomizationAppElement extends
         (icons: AvatarIcon[]) => this.setAvailableIcons_(icons));
     this.profileCustomizationBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
-    if (this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION)) {
+    if (this.shouldShowCustomizeAvatar_()) {
       this.profileCustomizationBrowserProxy_.getAvailableIcons().then(
           icons => this.setAvailableIcons_(icons));
     }
@@ -137,7 +137,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   // Whether the page is in the given `style`.
-  protected isStyle_(style: ProfileCustomizationStyle): boolean {
+  private isStyle_(style: ProfileCustomizationStyle): boolean {
     return this.style_ === style;
   }
 
@@ -174,6 +174,14 @@ export class ProfileCustomizationAppElement extends
     }
   }
 
+  // Whether the "edit" button on the avatar, which opens the avatar selection
+  // view, is shown. It takes priority over the work badge of managed profiles.
+  protected shouldShowCustomizeAvatar_(): boolean {
+    return this.isStyle_(
+               ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION) ||
+        this.isStyle_(ProfileCustomizationStyle.EDIT_PROFILE);
+  }
+
   // In signed-out profile creation, the secondary button deletes the profile
   // being created. Otherwise, it closes the page without saving the profile
   // name.
@@ -186,8 +194,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected onCustomizeAvatarClick_() {
-    assert(
-        this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION));
+    assert(this.shouldShowCustomizeAvatar_());
     this.$.viewManager.switchView('selectAvatarDialog');
   }
 
@@ -209,8 +216,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected onSelectAvatarConfirmClick_() {
-    assert(
-        this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION));
+    assert(this.shouldShowCustomizeAvatar_());
     assert(this.selectedAvatar_);
     if (this.selectedAvatar_.isGaiaAvatar) {
       // The Google Account picture (offered to signed-in profiles) is not a
@@ -225,8 +231,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected onSelectAvatarBackClick_() {
-    assert(
-        this.isStyle_(ProfileCustomizationStyle.SIGNED_OUT_PROFILE_CREATION));
+    assert(this.shouldShowCustomizeAvatar_());
     this.closeSelectAvatar_();
     this.selectedAvatar_ = this.confirmedAvatar_;
   }

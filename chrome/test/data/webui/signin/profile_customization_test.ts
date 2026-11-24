@@ -15,6 +15,30 @@ import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {TestProfileCustomizationBrowserProxy} from './test_profile_customization_browser_proxy.js';
 
+// Opens the avatar selection view, clicks the avatar with the given `label`
+// and confirms.
+// For the available labels see
+// `TestProfileCustomizationBrowserProxy.getAvailableIcons()`.
+async function selectAvatar(
+    app: ProfileCustomizationAppElement,
+    browserProxy: TestProfileCustomizationBrowserProxy, label: string) {
+  await browserProxy.whenCalled('getAvailableIcons');
+  await microtasksFinished();
+  app.shadowRoot.querySelector<CrIconButtonElement>(
+                    '#customizeAvatarIcon')!.click();
+  await microtasksFinished();
+
+  const selector = app.shadowRoot.querySelector('cr-profile-avatar-selector')!;
+  selector.shadowRoot
+      .querySelector<CrButtonElement>(
+          `.avatar[aria-label="${label}"]`)!.click();
+  await microtasksFinished();
+
+  app.shadowRoot.querySelector<CrButtonElement>(
+                    '#selectAvatarConfirmButton')!.click();
+  await microtasksFinished();
+}
+
 suite('ProfileCustomizationTest', function() {
   let app: ProfileCustomizationAppElement;
   let browserProxy: TestProfileCustomizationBrowserProxy;
@@ -254,36 +278,15 @@ suite('SignedOutProfileCreationTest', function() {
     return browserProxy.whenCalled('deleteProfile');
   });
 
-  // Opens the avatar selection view, clicks the avatar at `index` and confirms.
-  async function selectAvatar(index: number) {
-    await browserProxy.whenCalled('getAvailableIcons');
-    await microtasksFinished();
-    app.shadowRoot.querySelector<CrIconButtonElement>(
-                      '#customizeAvatarIcon')!.click();
-    await microtasksFinished();
-
-    const selector =
-        app.shadowRoot.querySelector('cr-profile-avatar-selector')!;
-    const avatars =
-        selector.shadowRoot.querySelectorAll<CrButtonElement>('.avatar');
-    assertEquals(4, avatars.length);
-    avatars[index]!.click();
-    await microtasksFinished();
-
-    app.shadowRoot.querySelector<CrButtonElement>(
-                      '#selectAvatarConfirmButton')!.click();
-    await microtasksFinished();
-  }
-
   test('SelectDefaultAvatar', async function() {
-    await selectAvatar(1);
+    await selectAvatar(app, browserProxy, 'fake-icon-1');
     assertEquals(1, await browserProxy.whenCalled('setAvatarIcon'));
     assertEquals(0, browserProxy.getCallCount('setGaiaPictureAsAvatar'));
   });
 
   // The Google Account picture is not a default avatar index.
   test('SelectGaiaAvatar', async function() {
-    await selectAvatar(3);
+    await selectAvatar(app, browserProxy, 'fake-gaia-icon');
     await browserProxy.whenCalled('setGaiaPictureAsAvatar');
     assertEquals(0, browserProxy.getCallCount('setAvatarIcon'));
   });
@@ -321,5 +324,29 @@ suite('EditProfileTest', function() {
         cancelButton.textContent.trim());
     cancelButton.click();
     return browserProxy.whenCalled('skip');
+  });
+
+  // Checks that the avatar can be changed to the Google Account picture.
+  test('SelectGaiaAvatar', async function() {
+    await initializeApp();
+    await selectAvatar(app, browserProxy, 'fake-gaia-icon');
+    await browserProxy.whenCalled('setGaiaPictureAsAvatar');
+    assertEquals(0, browserProxy.getCallCount('setAvatarIcon'));
+  });
+
+  // Checks that the "edit" button is shown instead of the work badge for
+  // managed profiles.
+  test('NoWorkBadge', async function() {
+    await initializeApp();
+    webUIListenerCallback('on-profile-info-changed', {
+      backgroundColor: 'rgb(0, 255, 0)',
+      pictureUrl: 'chrome://theme/IDR_PROFILE_AVATAR_1',
+      isManaged: true,
+      hasEnterpriseLabel: false,
+      welcomeTitle: '',
+    });
+    await microtasksFinished();
+    assertFalse(isChildVisible(app, '#workBadge'));
+    assertTrue(isChildVisible(app, '#customizeAvatarIcon'));
   });
 });
