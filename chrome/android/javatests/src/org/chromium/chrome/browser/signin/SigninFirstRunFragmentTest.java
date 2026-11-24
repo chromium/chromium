@@ -45,7 +45,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
@@ -74,16 +73,14 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewFinder;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
@@ -93,6 +90,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -125,7 +123,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -136,8 +133,7 @@ import org.chromium.ui.test.util.ViewUtils;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.FRE_STRING_CHANGES)
-@Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/584460317
+@DoNotBatch(reason = "Flaky on desktop freeform when batched; see crbug.com/584460317")
 public class SigninFirstRunFragmentTest {
     /** This class is used to test {@link SigninFirstRunFragment}. */
     public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
@@ -177,13 +173,10 @@ public class SigninFirstRunFragmentTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppCompatDelegate.setDefaultNightMode(
-                            nightModeEnabled
-                                    ? AppCompatDelegate.MODE_NIGHT_YES
-                                    : AppCompatDelegate.MODE_NIGHT_NO);
-                });
+        // Native initialization may create the global night mode state controller, which applies
+        // the default night mode from the theme setting. Keep both in sync.
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
     }
 
     @Before
@@ -250,6 +243,8 @@ public class SigninFirstRunFragmentTest {
                     prefService.clearPref(Pref.SIGNIN_ALLOWED);
                     LocalStatePrefs.get().clearPref(Pref.FORCE_BROWSER_SIGNIN);
                 });
+        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
@@ -1501,8 +1496,6 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @SigninTestRule.BlockGetAccounts
-    @RequiresRestart(
-            "Tests initial account loading state before IdentityManager loads refresh tokens")
     public void testFragmentWhenAccountsAreLoadedAfterChildStatusAndNativeAndPolicy() {
         launchActivityWithFragment();
         checkFragmentWhenLoading();
