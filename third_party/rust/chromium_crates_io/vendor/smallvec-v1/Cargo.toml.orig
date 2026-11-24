@@ -1,6 +1,6 @@
 [package]
 name = "smallvec"
-version = "1.16.4"
+version = "1.16.5"
 edition = "2018"
 authors = ["The Servo Project Developers"]
 license = "MIT OR Apache-2.0"
@@ -9,7 +9,13 @@ description = "'Small vector' optimization: store up to a small number of items 
 keywords = ["small", "vec", "vector", "stack", "no_std"]
 categories = ["data-structures"]
 documentation = "https://docs.rs/smallvec/"
-include = ["Cargo.toml", "LICENSE-MIT", "LICENSE-APACHE", "README.md", "src/**/*.rs"]
+include = [
+  "Cargo.toml",
+  "LICENSE-MIT",
+  "LICENSE-APACHE",
+  "README.md",
+  "src/**/*.rs",
+]
 
 [features]
 const_generics = []
@@ -37,7 +43,4 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs", "--generate-link-to-definition"]
 
 [workspace]
-members = [
-    ".",
-    "fuzz",		
-]
+members = [".", "fuzz"]

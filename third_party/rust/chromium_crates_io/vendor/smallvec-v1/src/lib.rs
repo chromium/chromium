@@ -831,15 +831,16 @@ unsafe impl<A: Array + Sync> Sync for SmallVecData<A> {}
 /// // `text` is dropped before `v`, whose elements still need it.
 /// ```
 pub struct SmallVec<A: Array> {
-    // The capacity field is used to determine which of the storage variants is active:
-    // If capacity <= Self::inline_capacity() then the inline variant is used and capacity holds
-    // the current length of the vector (number of elements actually in use). If capacity >
-    // Self::inline_capacity() then the heap variant is used and capacity holds the size of the
+    // The capacity field is used to determine which of the storage variants is
+    // active: If capacity <= Self::inline_capacity() then the inline variant is
+    // used and capacity holds the current length of the vector (number of
+    // elements actually in use). If capacity > Self::inline_capacity() then the
+    // heap variant is used and capacity holds the size of the
     // memory allocation.
     capacity: usize,
     data: SmallVecData<A>,
-    // Own A::Item, including when A has length zero and all items are on the heap.
-    // This is required for sound drop checking with #[may_dangle].
+    // Own A::Item, including when A has length zero and all items are on the
+    // heap. This is required for sound drop checking with #[may_dangle].
     _marker: PhantomData<A::Item>,
 }
 
@@ -1125,8 +1126,8 @@ impl<A: Array> SmallVec<A> {
                 tail_start: end,
                 tail_len: len - end,
                 iter: range_slice.iter(),
-                // Since self is a &mut, passing it to a function would invalidate the slice
-                // iterator.
+                // Since self is a &mut, passing it to a function would
+                // invalidate the slice iterator.
                 vec: NonNull::new_unchecked(self as *mut _),
             }
         }
