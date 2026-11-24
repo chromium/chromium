@@ -25,8 +25,9 @@ class Rect;
 
 namespace views {
 class FlexLayout;
-class MenuRunner;
 class ImageButton;
+class Label;
+class MenuRunner;
 }  // namespace views
 
 class BrowserView;
@@ -91,6 +92,7 @@ class CustomTabBarView : public views::AccessiblePaneView,
   // Methods for testing.
   std::u16string title_for_testing() const { return last_title_; }
   std::u16string location_for_testing() const { return last_location_; }
+  views::Label* title_label_for_testing() const;
   views::ImageButton* close_button_for_testing() const { return close_button_; }
   ui::SimpleMenuModel* context_menu_for_testing() const {
     return context_menu_model_.get();

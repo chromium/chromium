@@ -206,6 +206,8 @@ class CustomTabBarTitleOriginView : public views::View {
     return location_label_->GetElideBehavior();
   }
 
+  views::Label* title_label_for_testing() const { return title_label_; }
+
  private:
   // Can be nullptr.
   raw_ptr<views::Label> title_label_ = nullptr;
@@ -417,6 +419,18 @@ void CustomTabBarView::UpdateContents() {
           ? gfx::ElideBehavior::ELIDE_HEAD
           : gfx::ElideBehavior::ELIDE_TAIL;
 
+  // Only show the 'X' button if:
+  // a) The current url is not in scope (no point showing a back to app button
+  // while in scope).
+  // And b), if the window started in scope (this is
+  // important for popup windows, which may be opened outside the app).
+  // Compute this before updating child views: Label::SetText() synchronously
+  // fires native accessibility events that may close the tab and destroy
+  // `contents`, whereas the child view updates below are safe when detached.
+  const bool set_visible =
+      IsInitialUrlInAppScope(app_controller) &&
+      !IsUrlInAppScope(app_controller, contents->GetLastCommittedURL());
+
   title_origin_view_->Update(title, location, location_elide_behavior);
   location_icon_view_->Update(/*suppress animations = */ false);
 
@@ -426,14 +440,6 @@ void CustomTabBarView::UpdateContents() {
   last_title_ = title;
   last_location_ = location;
 
-  // Only show the 'X' button if:
-  // a) The current url is not in scope (no point showing a back to app button
-  // while in scope).
-  // And b), if the window started in scope (this is
-  // important for popup windows, which may be opened outside the app).
-  bool set_visible =
-      IsInitialUrlInAppScope(app_controller) &&
-      !IsUrlInAppScope(app_controller, contents->GetLastCommittedURL());
   close_button_->SetVisible(set_visible);
 
   DeprecatedLayoutImmediately();
@@ -499,6 +505,10 @@ bool CustomTabBarView::IsShowingOriginForTesting() const {
 
 bool CustomTabBarView::IsShowingCloseButtonForTesting() const {
   return close_button_->GetVisible();
+}
+
+views::Label* CustomTabBarView::title_label_for_testing() const {
+  return title_origin_view_->title_label_for_testing();  // IN-TEST
 }
 
 gfx::ElideBehavior CustomTabBarView::GetLocationElideBehaviorForTesting()

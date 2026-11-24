@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -47,10 +49,13 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/label.h"
 
 namespace {
 
@@ -1152,4 +1157,61 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                   .IsSameOriginWith(app_url));
   EXPECT_FALSE(popup_controller->ShouldShowCustomTabBar());
   EXPECT_FALSE(popup_bar->GetVisible());
+}
+
+// Verifies that synchronously closing all tabs in the app browser from within a
+// kTextChanged accessibility event callback during
+// CustomTabBarView::UpdateContents() completes cleanly without dereferencing
+// the destroyed WebContents.
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
+                       UpdateContentsHandlesSynchronousTabCloseOnTextChange) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("app.com", "/ssl/google.html");
+  const GURL out_of_scope_url = embedded_https_test_server().GetURL(
+      "example.com", "/ssl/blank_page.html");
+
+  InstallPWA(app_url);
+  ASSERT_TRUE(app_browser_);
+  EXPECT_EQ(app_browser_->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  ASSERT_TRUE(app_view);
+  CustomTabBarView* bar = app_view->toolbar()->custom_tab_bar();
+  ASSERT_TRUE(bar);
+
+  content::WebContents* web_contents = app_view->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  NavigateAndWait(web_contents, out_of_scope_url);
+  EXPECT_TRUE(app_controller_->ShouldShowCustomTabBar());
+  EXPECT_TRUE(bar->GetVisible());
+  EXPECT_TRUE(bar->close_button_for_testing()->GetVisible());
+
+  views::Label* title_label = bar->title_label_for_testing();
+  ASSERT_TRUE(title_label);
+
+  BrowserWindowInterface* app_browser = std::exchange(app_browser_, nullptr);
+  app_controller_ = nullptr;
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
+
+  TabStripModel* tab_strip_model = app_browser->GetTabStripModel();
+  web_contents->GetController().GetVisibleEntry()->SetTitle(u"Updated Title");
+
+  bool callback_invoked = false;
+  title_label->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](TabStripModel* model, bool* invoked,
+             const ui::AXPlatformNodeDelegate*, ax::mojom::Event event) {
+            if (event == ax::mojom::Event::kTextChanged && !*invoked) {
+              *invoked = true;
+              model->CloseAllTabs();
+              EXPECT_TRUE(model->empty());
+            }
+          },
+          tab_strip_model, &callback_invoked));
+
+  app_view->toolbar()->Update(/*tab=*/nullptr);
+  destroyed_observer.Wait();
+
+  EXPECT_TRUE(callback_invoked);
 }
