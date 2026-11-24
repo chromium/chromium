@@ -40,7 +40,12 @@ enum RTCSdpType {
 [
     Exposed=Window
 ] interface RTCSessionDescription {
-    [CallWith=ExecutionContext] constructor(optional RTCSessionDescriptionInit descriptionInitDict = {});
+    // TODO(crbug.com/488071544): |descriptionInitDict| should be non-optional
+    // and |descriptionInitDict.type| should be enforced by the IDL as a
+    // required dictionary member. Both are currently kept optional in the IDL
+    // so that the breaking change is fully guarded by
+    // RTCRequireSessionDescriptionType.
+    [CallWith=ExecutionContext, RaisesException] constructor(optional RTCSessionDescriptionInit descriptionInitDict = {});
     // TODO(foolip): |type| and |sdp| should be readonly and not nullable.
     // https://crbug.com/662898
     [Measure] attribute RTCSdpType? type;

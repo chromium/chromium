@@ -170,10 +170,19 @@ class MODULES_EXPORT RTCPeerConnection final
       const RTCSessionDescriptionInit*,
       ExceptionState&);
   ScriptPromise<IDLUndefined> setRemoteDescription(
+      ScriptState* script_state,
+      const RTCSessionDescriptionInit* session_description_init,
+      V8VoidFunction* success_callback,
+      ExceptionState& exception_state) {
+    return setRemoteDescription(script_state, session_description_init,
+                                success_callback, nullptr, exception_state);
+  }
+  ScriptPromise<IDLUndefined> setRemoteDescription(
       ScriptState*,
       const RTCSessionDescriptionInit*,
       V8VoidFunction*,
-      V8RTCPeerConnectionErrorCallback* = nullptr);
+      V8RTCPeerConnectionErrorCallback*,
+      ExceptionState&);
   RTCSessionDescription* remoteDescription() const;
   RTCSessionDescription* currentRemoteDescription() const;
   RTCSessionDescription* pendingRemoteDescription() const;

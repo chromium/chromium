@@ -38,22 +38,31 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 RTCSessionDescription* RTCSessionDescription::Create(
     ExecutionContext* context,
-    const RTCSessionDescriptionInit* description_init_dict) {
+    const RTCSessionDescriptionInit* description_init_dict,
+    ExceptionState& exception_state) {
   String type;
   if (description_init_dict->hasType()) {
     type = description_init_dict->type().AsString();
   } else {
     UseCounter::Count(context, WebFeature::kRTCSessionDescriptionInitNoType);
+    if (RuntimeEnabledFeatures::RTCRequireSessionDescriptionTypeEnabled()) {
+      exception_state.ThrowTypeError(
+          "Failed to read the 'type' property from "
+          "'RTCSessionDescriptionInit': Required member is undefined.");
+      return nullptr;
+    }
   }
 
   String sdp;

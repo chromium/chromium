@@ -42,6 +42,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class ExecutionContext;
 class RTCSessionDescriptionInit;
 class ScriptObject;
@@ -52,7 +53,8 @@ class RTCSessionDescription final : public ScriptWrappable {
 
  public:
   static RTCSessionDescription* Create(ExecutionContext*,
-                                       const RTCSessionDescriptionInit*);
+                                       const RTCSessionDescriptionInit*,
+                                       ExceptionState&);
   static RTCSessionDescription* Create(RTCSessionDescriptionPlatform*);
 
   explicit RTCSessionDescription(RTCSessionDescriptionPlatform*);

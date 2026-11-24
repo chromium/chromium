@@ -5931,6 +5931,10 @@
       origin_trial_feature_name: "RTCDiagnosticLogging",
       status: "experimental",
     },
+    {
+      name: "RTCRequireSessionDescriptionType",
+      status: "experimental",
+    },
     // Enables the use of |RTCRtpEncodingParameters.codec|
     {
       name: "RTCRtpEncodingParametersCodec",

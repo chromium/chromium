@@ -249,6 +249,22 @@ bool CallErrorCallbackIfSignalingStateClosed(
   return false;
 }
 
+// `type` is a required member of RTCSessionDescriptionInit. The IDL does not
+// enforce it yet so that it can be controlled with the
+// RTCRequireSessionDescriptionType runtime-enabled feature.
+bool ThrowIfSessionDescriptionTypeMissing(
+    const RTCSessionDescriptionInit* session_description_init,
+    ExceptionState& exception_state) {
+  if (session_description_init->hasType() ||
+      !RuntimeEnabledFeatures::RTCRequireSessionDescriptionTypeEnabled()) {
+    return false;
+  }
+  exception_state.ThrowTypeError(
+      "Failed to read the 'type' property from 'RTCSessionDescriptionInit': "
+      "Required member is undefined.");
+  return true;
+}
+
 bool IsIceCandidateMissingSdpMidAndMLineIndex(
     const RTCIceCandidateInit* candidate) {
   return (candidate->sdpMid().IsNull() &&
@@ -1331,6 +1347,13 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setRemoteDescription(
     ScriptState* script_state,
     const RTCSessionDescriptionInit* session_description_init,
     ExceptionState& exception_state) {
+  // Dictionary conversion happens before the method steps, so this must be
+  // checked first.
+  if (ThrowIfSessionDescriptionTypeMissing(session_description_init,
+                                           exception_state)) {
+    return EmptyPromise();
+  }
+
   if (closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kSignalingStateClosedMessage);
@@ -1374,7 +1397,16 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setRemoteDescription(
     ScriptState* script_state,
     const RTCSessionDescriptionInit* session_description_init,
     V8VoidFunction* success_callback,
-    V8RTCPeerConnectionErrorCallback* error_callback) {
+    V8RTCPeerConnectionErrorCallback* error_callback,
+    ExceptionState& exception_state) {
+  // Dictionary conversion happens before the method steps. For
+  // promise-returning methods, a conversion failure rejects the returned
+  // promise and the callbacks are not invoked.
+  if (ThrowIfSessionDescriptionTypeMissing(session_description_init,
+                                           exception_state)) {
+    return EmptyPromise();
+  }
+
   if (CallErrorCallbackIfSignalingStateClosed(
           ExecutionContext::From(script_state), signaling_state_,
           error_callback)) {

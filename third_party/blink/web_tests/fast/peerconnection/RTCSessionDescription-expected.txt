@@ -9,8 +9,9 @@ PASS initializer = JSON.parse(JSON.stringify(sessionDescription)); did not throw
 PASS sessionDescription = new RTCSessionDescription(initializer); did not throw exception.
 PASS sessionDescription.type is "offer"
 PASS sessionDescription.sdp is "foobar"
-PASS new RTCSessionDescription(); did not throw exception.
-PASS new RTCSessionDescription({}); did not throw exception.
+PASS new RTCSessionDescription(); threw exception TypeError: Failed to construct 'RTCSessionDescription': Failed to read the 'type' property from 'RTCSessionDescriptionInit': Required member is undefined..
+PASS new RTCSessionDescription({}); threw exception TypeError: Failed to construct 'RTCSessionDescription': Failed to read the 'type' property from 'RTCSessionDescriptionInit': Required member is undefined..
+PASS new RTCSessionDescription({sdp:'x'}); threw exception TypeError: Failed to construct 'RTCSessionDescription': Failed to read the 'type' property from 'RTCSessionDescriptionInit': Required member is undefined..
 PASS new RTCSessionDescription(5); threw exception TypeError: Failed to construct 'RTCSessionDescription': The provided value is not of type 'RTCSessionDescriptionInit'..
 PASS new RTCSessionDescription('foobar'); threw exception TypeError: Failed to construct 'RTCSessionDescription': The provided value is not of type 'RTCSessionDescriptionInit'..
 PASS new RTCSessionDescription({type:'foobar', sdp:'x'}); threw exception TypeError: Failed to construct 'RTCSessionDescription': Failed to read the 'type' property from 'RTCSessionDescriptionInit': The provided value 'foobar' is not a valid enum value of type RTCSdpType..

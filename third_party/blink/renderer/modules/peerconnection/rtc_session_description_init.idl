@@ -6,6 +6,11 @@
 
 dictionary RTCSessionDescriptionInit {
     // TODO(foolip): |type| should be required. https://crbug.com/662898
+    // Note: The RTCSessionDescription constructor and setRemoteDescription()
+    // enforce this in C++, guarded by RTCRequireSessionDescriptionType
+    // (crbug.com/488071544).
+    // setLocalDescription() must keep accepting a missing |type|, as per the
+    // spec it takes an RTCLocalSessionDescriptionInit.
     RTCSdpType type;
     DOMString sdp = "";
 };

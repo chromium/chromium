@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>RTCPeerConnection.setRemoteDescription requires type</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  await promise_rejects_js(t, TypeError, pc.setRemoteDescription({}));
+  await promise_rejects_js(
+      t, TypeError, pc.setRemoteDescription({sdp: 'v=0\r\n'}));
+}, 'setRemoteDescription() promise overload rejects with TypeError when type is missing');
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  pc.close();
+  await promise_rejects_js(t, TypeError, pc.setRemoteDescription({}));
+}, 'setRemoteDescription() promise overload prefers TypeError over InvalidStateError when closed');
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  let callbackCalled = false;
+  const onCallback = () => { callbackCalled = true; };
+
+  await promise_rejects_js(
+      t, TypeError, pc.setRemoteDescription({}, onCallback, onCallback));
+  await promise_rejects_js(
+      t, TypeError,
+      pc.setRemoteDescription({sdp: 'v=0\r\n'}, onCallback, onCallback));
+  await promise_rejects_js(
+      t, TypeError, pc.setRemoteDescription({}, onCallback));
+  assert_false(callbackCalled, 'callbacks must not be invoked');
+}, 'setRemoteDescription() legacy callback overload rejects with TypeError without invoking callbacks');
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  pc.close();
+  let callbackCalled = false;
+  const onCallback = () => { callbackCalled = true; };
+
+  await promise_rejects_js(
+      t, TypeError, pc.setRemoteDescription({}, onCallback, onCallback));
+  assert_false(callbackCalled, 'callbacks must not be invoked when closed');
+}, 'setRemoteDescription() legacy callback overload prefers TypeError over InvalidStateError when closed');
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  await pc.setLocalDescription({});
+  assert_equals(pc.localDescription.type, 'offer');
+}, 'setLocalDescription({}) still succeeds without type');
+</script>

@@ -104,7 +104,7 @@ enum RTCPeerConnectionState {
     [CallWith=ScriptState] Promise<undefined> setLocalDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
     // TODO(guidou): The failureCallback argument should be non-optional.
     // TODO(crbug.com/841185): |failureCallback| is not nullable in the spec.
-    [CallWith=ScriptState] Promise<undefined> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
     [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<undefined> addIceCandidate(RTCIceCandidateInit candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
 
     // https://w3c.github.io/webrtc-pc/#sec.stats-model

@@ -21,8 +21,9 @@ shouldNotThrow("sessionDescription = new RTCSessionDescription(initializer);");
 shouldBe('sessionDescription.type', '"offer"');
 shouldBe('sessionDescription.sdp', '"foobar"');
 
-shouldNotThrow("new RTCSessionDescription();");
-shouldNotThrow("new RTCSessionDescription({});");
+shouldThrow("new RTCSessionDescription();");
+shouldThrow("new RTCSessionDescription({});");
+shouldThrow("new RTCSessionDescription({sdp:'x'});");
 shouldThrow("new RTCSessionDescription(5);");
 shouldThrow("new RTCSessionDescription('foobar');");
 shouldThrow("new RTCSessionDescription({type:'foobar', sdp:'x'});");
