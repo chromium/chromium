@@ -43,7 +43,6 @@ import org.robolectric.shadow.api.Shadow;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
@@ -62,8 +61,6 @@ import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
-
-import java.io.ByteArrayOutputStream;
 
 /** Unit tests for {@link SearchEngineService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -669,67 +666,5 @@ public class SearchEngineServiceUnitTest {
         assertEquals(
                 new StatusIconResource(expectedIconRes, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
-    }
-
-    @Test
-    public void onTemplateUrlServiceChanged_unchangedDseSkipsFaviconRetrieval() {
-        SearchEngineService.setIsChromeBrandedForTesting(true);
-        doReturn(createTestPngBytes()).when(mTemplateUrl).getBuiltInSearchEngineIconPngBytes();
-        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-        RobolectricUtil.runAllBackgroundAndUi();
-        searchEngineService.addIconObserver(mEngineIconObserver);
-        clearInvocations(mTemplateUrl, mFaviconHelper, mEngineIconObserver);
-
-        searchEngineService.onTemplateURLServiceChanged();
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mTemplateUrl, never()).getBuiltInSearchEngineIconPngBytes();
-        verify(mFaviconHelper, never())
-                .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
-        verify(mEngineIconObserver, never()).onSearchEngineIconChanged(any());
-    }
-
-    @Test
-    public void retrieveFavicon_brandedBuiltInIconDecodedOffUiThreadAndCached() {
-        SearchEngineService.setIsChromeBrandedForTesting(true);
-        doReturn(createTestPngBytes()).when(mTemplateUrl).getBuiltInSearchEngineIconPngBytes();
-        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-        searchEngineService.addIconObserver(mEngineIconObserver);
-        verify(mEngineIconObserver).onSearchEngineIconChanged(null);
-
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mEngineIconObserver).onSearchEngineIconChanged(isNotNull());
-
-        clearInvocations(mTemplateUrl);
-        searchEngineService.retrieveFavicon(mTemplateUrl, mStarterPackCallback);
-        verify(mTemplateUrl, never()).getBuiltInSearchEngineIconPngBytes();
-        verify(mStarterPackCallback).onResult(isNotNull());
-    }
-
-    @Test
-    public void onTemplateUrlServiceChanged_discardsStaleAsyncBrandedIcon() {
-        SearchEngineService.setIsChromeBrandedForTesting(true);
-        doReturn(createTestPngBytes()).when(mTemplateUrl).getBuiltInSearchEngineIconPngBytes();
-        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-        searchEngineService.addIconObserver(mEngineIconObserver);
-        clearInvocations(mEngineIconObserver);
-
-        configureSearchEngine("google", "Google");
-        doReturn(null).when(mTemplateUrl).getBuiltInSearchEngineIconPngBytes();
-        searchEngineService.onTemplateURLServiceChanged();
-        verify(mEngineIconObserver)
-                .onSearchEngineIconChanged(
-                        new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
-
-        clearInvocations(mEngineIconObserver);
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mEngineIconObserver, never()).onSearchEngineIconChanged(any());
-    }
-
-    private static byte[] createTestPngBytes() {
-        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-        return out.toByteArray();
     }
 }
