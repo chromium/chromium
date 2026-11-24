@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
@@ -57,6 +59,20 @@ bool IsStyleDependent(const CSSValue* css_value) {
   return false;
 }
 
+void AssertKeyframeResolutionInvariants(
+    const Animation* animation,
+    const KeyframeEffect* effect,
+    const KeyframeEffectModelBase* model,
+    const Element* element,
+    const PropertyHandle& property_handle,
+    const PropertySpecificKeyframeVector* frames) {
+  DCHECK(element->GetComputedStyle());
+  DCHECK_EQ(animation->effect(), effect);
+  DCHECK_EQ(effect->EffectTarget(), element);
+  DCHECK_EQ(effect->Model(), model);
+  DCHECK_EQ(model->GetPropertySpecificKeyframes(property_handle), frames);
+}
+
 }  // end anonymous namespace
 
 bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
@@ -73,8 +89,16 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
   }
 
   Element* element = effect->EffectTarget();
+  if (!element || !element->GetComputedStyle() ||
+      element->GetDocument().NeedsLayoutTreeUpdate()) {
+    return false;
+  }
+
+  ScriptForbiddenScope forbid_script;
+  const PropertyHandle property_handle(PropertyName());
   const PropertySpecificKeyframeVector* frames =
-      model->GetPropertySpecificKeyframes(PropertyHandle(PropertyName()));
+      model->GetPropertySpecificKeyframes(property_handle);
+  CHECK(frames);
   for (const auto& frame : *frames) {
     double offset = frame->Offset();
     const TimingFunction& timing_function = frame->Easing();
@@ -84,12 +108,11 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
       if (!value_filter(element, PropertyName(), css_value, nullptr)) {
         return false;
       }
-      // Resolving a keyframe value may trigger a synchronous slot assignment
-      // recalculation that detaches the element from the layout tree.
       const CSSValue* computed_value =
           StyleResolver::ComputeValue(element, property_name_, *css_value);
-      if (!computed_value || !element->GetComputedStyle() ||
-          effect->EffectTarget() != element) {
+      AssertKeyframeResolutionInvariants(animation, effect, model, element,
+                                         property_handle, frames);
+      if (!computed_value) {
         return false;
       }
       if (IsStyleDependent(css_value)) {
@@ -130,25 +153,30 @@ CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
   CHECK(animation);
   KeyframeEffect* effect = To<KeyframeEffect>(animation->effect());
   const KeyframeEffectModelBase* model = effect->Model();
+  const PropertyHandle property_handle(PropertyName());
   const PropertySpecificKeyframeVector* frames =
-      model->GetPropertySpecificKeyframes(PropertyHandle(PropertyName()));
+      model->GetPropertySpecificKeyframes(property_handle);
   Element* element = effect->EffectTarget();
-  if (!element->GetComputedStyle()) {
+  if (!frames || !element || !element->GetComputedStyle() ||
+      element->GetDocument().NeedsLayoutTreeUpdate()) {
     // The computed style can be null if "display: none" was set during the last
-    // style update.
+    // style update. Also bail out if the style/layout tree is dirty (including
+    // dirty slot assignments) so resolving keyframe values cannot run on a
+    // dirty tree or trigger lazy slot assignment recalculation.
     return nullptr;
   }
+
+  ScriptForbiddenScope forbid_script;
   scoped_refptr<CompositorAnimationCurve> maybe_copy = nullptr;
   for (wtf_size_t index : style_dependent_keyframe_indices_) {
     const auto* css_keyframe =
-        DynamicTo<CSSPropertySpecificKeyframe>(frames->at(index).Get());
+        To<CSSPropertySpecificKeyframe>(frames->at(index).Get());
     const CSSValue* css_value = css_keyframe->Value();
     const CSSValue* computed_value =
         StyleResolver::ComputeValue(element, property_name_, *css_value);
-    // Computing the value can trigger a synchronous slot assignment
-    // recalculation that detaches the element or changes the effect target.
-    if (!computed_value || !element->GetComputedStyle() ||
-        effect->EffectTarget() != element) {
+    AssertKeyframeResolutionInvariants(animation, effect, model, element,
+                                       property_handle, frames);
+    if (!computed_value) {
       return nullptr;
     }
     UpdateKeyframe(maybe_copy, index, computed_value);

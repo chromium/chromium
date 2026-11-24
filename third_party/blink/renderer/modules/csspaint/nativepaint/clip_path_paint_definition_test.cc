@@ -15,9 +15,12 @@
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
@@ -2311,6 +2314,132 @@ TEST_F(ClipPathPaintDefinitionTest, AnimationOnTableCol) {
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kNotComposited, element, animation,
       UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+}
+
+TEST_F(ClipPathPaintDefinitionTest,
+       DirtySlotDefersCompositedClipPathAndRecovers) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes clippath {
+        0% { clip-path: circle(50% at 50% 50%); }
+        100% { clip-path: circle(30% at 30% 30%); }
+      }
+      .animation {
+        animation: clippath 4s steps(4, jump-end);
+      }
+    </style>
+    <div id="host"></div>
+    <div id="target" style="width: 100px; height: 100px"></div>
+  )HTML");
+
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot name='a'></slot>");
+  host->SetInnerHTMLWithoutTrustedTypes("<div id='slotted' slot='a'></div>");
+
+  Element* element = GetElementById("target");
+  Element* slotted = GetElementById("slotted");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+  ElementAnimations* element_animations = element->GetElementAnimations();
+
+  // Dirty an unrelated slot assignment while the clip-path animation is
+  // already composited. GetAnimationIfCompositable must return nullptr without
+  // triggering lazy slot recalc, downgrade status to kNotComposited for the
+  // current lifecycle, and schedule a microtask to reset to kNeedsRepaint.
+  slotted->setAttribute(html_names::kSlotAttr, AtomicString("b"));
+
+  EXPECT_FALSE(ClipPathPaintDefinition::GetAnimationIfCompositable(element));
+  EXPECT_TRUE(GetDocument().IsSlotAssignmentDirty());
+  EXPECT_EQ(element_animations->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNotComposited);
+  EXPECT_TRUE(animation->CompositorPendingCancel());
+
+  GetDocument().GetPendingAnimations().Update(
+      GetDocument().View()->GetPaintArtifactCompositor(),
+      /*start_on_compositor=*/true);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  // Microtask resets to kNeedsRepaint and invalidates paint/paint properties,
+  // re-compositing the animation once slot assignments are clean.
+  GetDocument().GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+  EXPECT_EQ(element_animations->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNeedsRepaint);
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+}
+
+TEST_F(ClipPathPaintDefinitionTest,
+       DirtySlotInPrePaintResolvesToNotCompositedAndRecoversAfterMicrotask) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes clippath {
+        0% { clip-path: circle(50% at 50% 50%); }
+        100% { clip-path: circle(30% at 30% 30%); }
+      }
+      .animation {
+        animation: clippath 4s steps(4, jump-end);
+      }
+    </style>
+    <div id="host"></div>
+    <div id="target" style="width: 100px; height: 100px"></div>
+  )HTML");
+
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot name='a'></slot>");
+  host->SetInnerHTMLWithoutTrustedTypes("<div id='slotted' slot='a'></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetElementById("target");
+  Element* slotted = GetElementById("slotted");
+  InitPaintArtifactCompositor();
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+  UpdateAndAdvanceTimeTo(0);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  Animation* animation = GetFirstAnimation(element);
+  ASSERT_TRUE(animation);
+  EXPECT_EQ(element_animations->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNeedsRepaint);
+
+  // Dirty an unrelated slot before PrePaint/Paint. GetAnimationIfCompositable
+  // must return nullptr, resolving status to kNotComposited for the current
+  // lifecycle and scheduling a microtask to reset to kNeedsRepaint.
+  slotted->setAttribute(html_names::kSlotAttr, AtomicString("b"));
+
+  EXPECT_FALSE(ClipPathPaintDefinition::GetAnimationIfCompositable(element));
+  EXPECT_TRUE(GetDocument().IsSlotAssignmentDirty());
+  EXPECT_EQ(element_animations->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNotComposited);
+
+  GetDocument().GetPendingAnimations().Update(
+      GetDocument().View()->GetPaintArtifactCompositor(),
+      /*start_on_compositor=*/true);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  // Microtask resets to kNeedsRepaint and invalidates paint/paint properties.
+  GetDocument().GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+  EXPECT_EQ(element_animations->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNeedsRepaint);
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 }
 
 }  // namespace blink

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -433,12 +434,13 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
 // static
 Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
-  if (!element->GetElementAnimations()) {
+  if (!element->GetComputedStyle() || !element->GetElementAnimations()) {
     return nullptr;
   }
 
+  ElementAnimations* element_animations = element->GetElementAnimations();
   Animation* compositable_animation =
-      element->GetElementAnimations()->PaintWorkletClipPathAnimation();
+      element_animations->PaintWorkletClipPathAnimation();
 
   if (!compositable_animation) {
     return nullptr;
@@ -446,7 +448,15 @@ Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
 
   DCHECK(compositable_animation->Affects(*element, GetCSSPropertyClipPath()));
 
-  if (element->GetElementAnimations()->CompositedClipPathStatus() ==
+  if (element->GetDocument().NeedsLayoutTreeUpdate()) {
+    if (NativePaintWorkletData* npw_data =
+            element_animations->GetClipPathNpwData()) {
+      npw_data->DeferCompositingDecision();
+    }
+    return nullptr;
+  }
+
+  if (element_animations->CompositedClipPathStatus() ==
       ElementAnimations::CompositedPaintStatus::kComposited) {
     DCHECK(AnimationIsValidForPaintWorklets(compositable_animation, element,
                                             GetCSSPropertyClipPath(),
@@ -459,11 +469,10 @@ Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
                                         ValidateClipPathValue)) {
     return nullptr;
   }
-  if (!element->GetComputedStyle() || !element->GetElementAnimations() ||
-      element->GetElementAnimations()->PaintWorkletClipPathAnimation() !=
-          compositable_animation) {
-    return nullptr;
-  }
+  DCHECK(element->GetComputedStyle());
+  DCHECK_EQ(element->GetElementAnimations(), element_animations);
+  DCHECK_EQ(element_animations->PaintWorkletClipPathAnimation(),
+            compositable_animation);
   return compositable_animation;
 }
 
@@ -556,6 +565,8 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     int worklet_id) {
   DCHECK(node.IsElementNode());
   const Element* element = To<Element>(&node);
+  DCHECK(!element->GetDocument().NeedsLayoutTreeUpdate());
+  ScriptForbiddenScope forbid_script;
   StyleResolverState state(element->GetDocument(),
                            *const_cast<Element*>(element));
   state.CreateNewClonedStyle(element->ComputedStyleRef());
@@ -654,6 +665,8 @@ std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
     const Element* element,
     const KeyframeEffect* effect,
     bool* rounded_inset_is_empty) {
+  DCHECK(!element->GetDocument().NeedsLayoutTreeUpdate());
+  ScriptForbiddenScope forbid_script;
   StyleResolverState state(element->GetDocument(),
                            *const_cast<Element*>(element));
   state.CreateNewClonedStyle(element->ComputedStyleRef());

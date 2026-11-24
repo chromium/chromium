@@ -5,8 +5,13 @@
 #include "third_party/blink/renderer/core/animation/native_paint_worklet_data.h"
 
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -43,12 +48,40 @@ bool NativePaintWorkletData::SetStatus(CompositedPaintStatus status) {
 }
 
 void NativePaintWorkletData::TriggerPaintInvalidation() {
-  if (element_->GetLayoutObject()) {
+  if (element_ && element_->GetLayoutObject()) {
     element_->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
     if (update_triggers_paint_property_update_) {
       element_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
     }
   }
+}
+
+void NativePaintWorkletData::DeferCompositingDecision() {
+  if (composited_paint_status_ == CompositedPaintStatus::kNoAnimation) {
+    return;
+  }
+  bool had_animation = animation_ != nullptr;
+  SetStatus(CompositedPaintStatus::kNotComposited);
+  if (!had_animation || !element_ || defer_compositing_decision_scheduled_) {
+    return;
+  }
+  defer_compositing_decision_scheduled_ = true;
+  element_->GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
+      BindOnce(&NativePaintWorkletData::ResetDeferredCompositingDecision,
+               WrapWeakPersistent(this)));
+}
+
+void NativePaintWorkletData::ResetDeferredCompositingDecision() {
+  defer_compositing_decision_scheduled_ = false;
+  if (!element_ || !element_->isConnected()) {
+    return;
+  }
+  ElementAnimations* element_animations = element_->GetElementAnimations();
+  if (!element_animations) {
+    return;
+  }
+  element_animations->RecalcCompositedStatus(
+      element_, Animation::CompositorPendingReason::kPendingUpdate);
 }
 
 bool NativePaintWorkletData::UpdateCompositedPaintStatus(
@@ -126,6 +159,11 @@ NativePaintWorkletData::GetAnimationCurve() {
     return nullptr;
   }
 
+  if (element_->GetDocument().NeedsLayoutTreeUpdate()) {
+    DeferCompositingDecision();
+    return nullptr;
+  }
+
 #if EXPENSIVE_DCHECKS_ARE_ON()
   bool update_expected = needs_keyframes_snapshot_update_;
   needs_keyframes_snapshot_update_ = false;
@@ -145,16 +183,10 @@ NativePaintWorkletData::GetAnimationCurve() {
   scoped_refptr<CompositorAnimationCurve> updated =
       prior_curve->UpdateKeyframeSnapshot(GetAnimation());
 
-  // Updating the keyframe snapshot can synchronously trigger slot assignment
-  // recalculation and layout tree detachment, which can cancel animations and
-  // reset or replace `animation_curve_`, or detach `element_`.
-  if (!animation_ || !element_ || !element_->GetComputedStyle()) {
-    SetAnimationCurve(nullptr);
-    return nullptr;
-  }
-  if (animation_curve_ != prior_curve) {
-    return animation_curve_;
-  }
+  DCHECK(animation_);
+  DCHECK(element_);
+  DCHECK(element_->GetComputedStyle());
+  DCHECK_EQ(animation_curve_, prior_curve);
   if (!updated) {
     SetAnimationCurve(nullptr);
     return nullptr;

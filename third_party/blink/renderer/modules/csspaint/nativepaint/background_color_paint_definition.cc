@@ -151,18 +151,22 @@ Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     return nullptr;
   }
 
+  if (element->GetDocument().NeedsLayoutTreeUpdate()) {
+    npw_data->DeferCompositingDecision();
+    return nullptr;
+  }
+
   if (npw_data->GetAnimationCurve() != nullptr) {
     // The keyframes have already been validated.
+    DCHECK_EQ(npw_data->GetAnimation(), candidate);
     return candidate;
-  }
-  if (npw_data->GetAnimation() != candidate) {
-    return nullptr;
   }
 
   scoped_refptr<CompositorAnimationColorCurve> color_curve =
       CompositorAnimationColorCurve::Create(
           candidate, CSSPropertyName(CSSPropertyID::kBackgroundColor));
-  if (color_curve && npw_data->GetAnimation() == candidate) {
+  DCHECK_EQ(npw_data->GetAnimation(), candidate);
+  if (color_curve) {
     npw_data->SetAnimationCurve(std::move(color_curve));
     return candidate;
   }

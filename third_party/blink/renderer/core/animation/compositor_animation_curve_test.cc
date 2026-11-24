@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -255,63 +256,103 @@ TEST_F(CompositorAnimationCurveTest,
   Animation* target_animation = GetAnimation("target");
   ASSERT_TRUE(target_animation);
   scoped_refptr<CompositorAnimationColorCurve> target_curve =
-      ExtractColorCurve(CSSPropertyID::kBackgroundColor, "target");
+      CompositorAnimationColorCurve::Create(
+          target_animation, CSSPropertyName(CSSPropertyID::kBackgroundColor));
   ASSERT_TRUE(target_curve);
   EXPECT_TRUE(target_curve->HasStyleDependency());
   EXPECT_EQ(target_curve->GetTypedKeyframe(0).value, Color(10, 20, 30));
 
+  Animation* sibling_animation = GetAnimation("sibling");
+  ASSERT_TRUE(sibling_animation);
+  scoped_refptr<CompositorAnimationColorCurve> initial_sibling_curve =
+      CompositorAnimationColorCurve::Create(
+          sibling_animation, CSSPropertyName(CSSPropertyID::kBackgroundColor));
+  ASSERT_TRUE(initial_sibling_curve);
+
   NativePaintWorkletData* npw_data =
       target->EnsureElementAnimations().EnsureBackgroundColorNpwData(target);
-  ASSERT_TRUE(npw_data);
   npw_data->SetStatus(
       NativePaintWorkletData::CompositedPaintStatus::kComposited);
   npw_data->SetAnimation(target_animation);
   npw_data->SetAnimationCurve(std::move(target_curve));
   npw_data->SetNeedsKeyframeSnapshot();
 
-  // Reassigning the slot marks slot assignment dirty without immediately
-  // detaching `target`'s layout tree. Resolving `currentcolor` inside
-  // `GetAnimationCurve()` -> `UpdateKeyframeSnapshot()` triggers slot
-  // assignment recalculation, detaching `target` and canceling its animation.
-  target->setAttribute(html_names::kSlotAttr, AtomicString("b"));
-  UpdateAllLifecyclePhasesForTest();
+  NativePaintWorkletData* sibling_npw_data =
+      sibling->EnsureElementAnimations().EnsureBackgroundColorNpwData(sibling);
+  sibling_npw_data->SetStatus(
+      NativePaintWorkletData::CompositedPaintStatus::kComposited);
+  sibling_npw_data->SetAnimation(sibling_animation);
+  sibling_npw_data->SetAnimationCurve(std::move(initial_sibling_curve));
+  sibling_npw_data->SetNeedsKeyframeSnapshot();
 
-  scoped_refptr<CompositorAnimationCurve> result_curve =
-      npw_data->GetAnimationCurve();
-  EXPECT_FALSE(result_curve);
+  // Reassigning `target`'s slot marks slot assignment (and layout tree update)
+  // dirty without immediately detaching `target`. `GetAnimationCurve()` marks
+  // both `target` and `sibling` `kNotComposited` for the current lifecycle and
+  // schedules a microtask reset rather than calling `StyleResolver` on a dirty
+  // tree.
+  target->setAttribute(html_names::kSlotAttr, AtomicString("b"));
+
+  EXPECT_FALSE(npw_data->GetAnimationCurve());
+  EXPECT_FALSE(sibling_npw_data->GetAnimationCurve());
+  EXPECT_TRUE(GetDocument().IsSlotAssignmentDirty());
+  EXPECT_TRUE(target->GetComputedStyle());
+  EXPECT_EQ(npw_data->GetCompositedPaintStatus(),
+            NativePaintWorkletData::CompositedPaintStatus::kNotComposited);
+  EXPECT_EQ(sibling_npw_data->GetCompositedPaintStatus(),
+            NativePaintWorkletData::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(npw_data->NeedsKeyframeSnapshotUpdate());
+
+  // Running the microtask checkpoint resets status to `kNeedsRepaint` and
+  // invalidates paint. After style and layout clean slot assignments, `target`
+  // detaches (`kNoAnimation`) while `sibling` remains slotted in
+  // `kNeedsRepaint` awaiting a fresh paint decision.
+  GetDocument().GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+  EXPECT_EQ(npw_data->GetCompositedPaintStatus(),
+            NativePaintWorkletData::CompositedPaintStatus::kNeedsRepaint);
+  EXPECT_EQ(sibling_npw_data->GetCompositedPaintStatus(),
+            NativePaintWorkletData::CompositedPaintStatus::kNeedsRepaint);
+  EXPECT_TRUE(sibling->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+
+  wrapper->classList().add({"updated"}, ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
   EXPECT_FALSE(target->GetComputedStyle());
   EXPECT_EQ(npw_data->GetCompositedPaintStatus(),
             NativePaintWorkletData::CompositedPaintStatus::kNoAnimation);
-  EXPECT_FALSE(npw_data->NeedsKeyframeSnapshotUpdate());
+  EXPECT_EQ(sibling_npw_data->GetCompositedPaintStatus(),
+            NativePaintWorkletData::CompositedPaintStatus::kNeedsRepaint);
 
-  // Verify that the remaining slotted element continues to update its
-  // style-dependent keyframe snapshot normally.
+  UpdateAllLifecyclePhasesForTest();
   scoped_refptr<CompositorAnimationColorCurve> sibling_curve =
-      ExtractColorCurve(CSSPropertyID::kBackgroundColor, "sibling");
+      CompositorAnimationColorCurve::Create(
+          sibling_animation, CSSPropertyName(CSSPropertyID::kBackgroundColor));
   ASSERT_TRUE(sibling_curve);
-  EXPECT_EQ(sibling_curve->GetTypedKeyframe(0).value, Color(10, 20, 30));
+  EXPECT_EQ(sibling_curve->GetTypedKeyframe(0).value, Color(40, 50, 60));
 
-  wrapper->classList().add({"updated"}, ASSERT_NO_EXCEPTION);
+  wrapper->classList().remove({"updated"}, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
-  Animation* sibling_animation = GetAnimation("sibling");
-  ASSERT_TRUE(sibling_animation);
   scoped_refptr<CompositorAnimationCurve> updated_sibling_curve =
       sibling_curve->UpdateKeyframeSnapshot(sibling_animation);
   ASSERT_TRUE(updated_sibling_curve);
   EXPECT_NE(sibling_curve.get(), updated_sibling_curve.get());
   auto* updated_color_curve =
       static_cast<CompositorAnimationColorCurve*>(updated_sibling_curve.get());
-  EXPECT_EQ(updated_color_curve->GetTypedKeyframe(0).value, Color(40, 50, 60));
+  EXPECT_EQ(updated_color_curve->GetTypedKeyframe(0).value, Color(10, 20, 30));
 
-  // Direct `UpdateKeyframeSnapshot` when a slot reassignment detaches the
-  // element mid-resolution should also return nullptr rather than a stale
-  // curve, and `Create` on the detached element should return nullptr.
+  // Direct `UpdateKeyframeSnapshot` and `Create` when slot assignment is dirty
+  // must bail out without triggering lazy slot assignment recalculation, and
+  // also return nullptr once the lifecycle update detaches the element.
   sibling->setAttribute(html_names::kSlotAttr, AtomicString("b"));
-  UpdateAllLifecyclePhasesForTest();
-
   EXPECT_FALSE(
       updated_sibling_curve->UpdateKeyframeSnapshot(sibling_animation));
+  EXPECT_FALSE(CompositorAnimationColorCurve::Create(
+      sibling_animation, CSSPropertyName(CSSPropertyID::kBackgroundColor)));
+  EXPECT_TRUE(GetDocument().IsSlotAssignmentDirty());
+  EXPECT_TRUE(sibling->GetComputedStyle());
+
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(sibling->GetComputedStyle());
   EXPECT_FALSE(CompositorAnimationColorCurve::Create(
       sibling_animation, CSSPropertyName(CSSPropertyID::kBackgroundColor)));

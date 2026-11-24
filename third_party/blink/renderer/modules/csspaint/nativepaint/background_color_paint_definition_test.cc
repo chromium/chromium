@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
@@ -23,12 +24,16 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
@@ -1475,6 +1480,183 @@ TEST_F(BackgroundColorPaintDefinitionTest, FinishOffscreen) {
   EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
             ElementAnimations::CompositedPaintStatus::kNotComposited);
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
+
+TEST_F(BackgroundColorPaintDefinitionTest,
+       DirtySlotDefersStartAndCompositesOnNextLifecycleUpdate) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes bgcolor {
+        0% { background-color: rgb(0, 200, 0); }
+        100% { background-color: rgb(200, 0, 0); }
+      }
+      .animate {
+        animation: bgcolor 4s linear;
+      }
+    </style>
+    <div id="host"></div>
+    <div id="target" style="width: 100px; height: 100px;"></div>
+  )HTML");
+
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot name='a'></slot>");
+  host->SetInnerHTMLWithoutTrustedTypes("<div id='slotted' slot='a'></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  Element* slotted = GetElementById("slotted");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(slotted);
+
+  // Start the animation and advance through style/layout only so the animation
+  // is in kNeedsRepaint prior to [Pre]Paint.
+  target->setAttribute(html_names::kClassAttr, AtomicString("animate"));
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  Animation* animation = GetAnimation(target);
+  ASSERT_TRUE(animation);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  // Dirty an unrelated slot assignment before evaluating compositability /
+  // PreCommit. The answer must be "no" (`kNotComposited`) for the current
+  // document lifecycle without triggering lazy slot recalc, and a microtask
+  // resets the status to `kNeedsRepaint` for the next lifecycle update.
+  slotted->setAttribute(html_names::kSlotAttr, AtomicString("b"));
+
+  EXPECT_FALSE(
+      BackgroundColorPaintDefinition::GetAnimationIfCompositable(target));
+  EXPECT_TRUE(GetDocument().IsSlotAssignmentDirty());
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+
+  GetDocument().GetPendingAnimations().Update(
+      GetDocument().View()->GetPaintArtifactCompositor(),
+      /*start_on_compositor=*/true);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  // Running the microtask resets status to kNeedsRepaint and invalidates paint,
+  // promoting the animation to the compositor on the next clean lifecycle pass.
+  GetDocument().GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+  EXPECT_TRUE(target->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+}
+
+TEST_F(BackgroundColorPaintDefinitionTest,
+       DirtySlotDowngradesCompositedAnimationAndRecoversAfterMicrotask) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes bgcolor {
+        0% { background-color: rgb(0, 200, 0); }
+        100% { background-color: rgb(200, 0, 0); }
+      }
+      #target {
+        width: 100px;
+        height: 100px;
+        animation: bgcolor 4s linear;
+      }
+    </style>
+    <div id="host"></div>
+    <div id="target"></div>
+  )HTML");
+
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot name='a'></slot>");
+  host->SetInnerHTMLWithoutTrustedTypes("<div id='slotted' slot='a'></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  Element* slotted = GetElementById("slotted");
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  Animation* animation = GetAnimation(target);
+  ASSERT_TRUE(animation);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Dirty an unrelated slot assignment while the animation is already running
+  // on the compositor. Querying compositability marks status kNotComposited for
+  // the current lifecycle and schedules a compositor downgrade + microtask.
+  slotted->setAttribute(html_names::kSlotAttr, AtomicString("b"));
+
+  EXPECT_FALSE(
+      BackgroundColorPaintDefinition::GetAnimationIfCompositable(target));
+  EXPECT_TRUE(GetDocument().IsSlotAssignmentDirty());
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_TRUE(animation->CompositorPendingCancel());
+
+  GetDocument().GetPendingAnimations().Update(
+      GetDocument().View()->GetPaintArtifactCompositor(),
+      /*start_on_compositor=*/true);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  // Microtask resets to kNeedsRepaint and subsequent clean lifecycle pass
+  // re-composites the animation.
+  GetDocument().GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+  EXPECT_TRUE(target->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+}
+
+TEST_F(BackgroundColorPaintDefinitionTest,
+       ScriptForbiddenDuringValidationAndKeyframePopulation) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 100px;"></div>
+  )HTML");
+  Element* element = GetElementById("target");
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
+
+  StringKeyframeVector keyframes(2);
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor, "red",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor, "green",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  auto* effect = MakeGarbageCollected<KeyframeEffect>(element, model, timing);
+  Animation* animation = GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+
+  static bool filter_called = false;
+  filter_called = false;
+  auto filter = [](const Element*, const CSSValue*,
+                   const TypedInterpolationValue*) {
+    filter_called = true;
+    EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+    return true;
+  };
+
+  EXPECT_FALSE(ScriptForbiddenScope::IsScriptForbidden());
+  EXPECT_TRUE(NativeCssPaintDefinition::AnimationIsValidForPaintWorklets(
+      animation, element, GetCSSPropertyBackgroundColor(), filter));
+  EXPECT_TRUE(filter_called);
+  EXPECT_FALSE(ScriptForbiddenScope::IsScriptForbidden());
 }
 
 }  // namespace blink

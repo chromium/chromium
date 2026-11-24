@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
@@ -74,6 +76,10 @@ bool NativeCssPaintDefinition::AnimationIsValidForPaintWorklets(
     const CSSProperty& property,
     ValueFilter filter) {
   const AnimationEffect* effect = compositable_animation->effect();
+  if (!effect || !element || !element->GetComputedStyle() ||
+      element->GetDocument().NeedsLayoutTreeUpdate()) {
+    return false;
+  }
 
   // TODO(crbug.com/1429770): Implement positive delay fix for bgcolor.
   if (effect->SpecifiedTiming().start_delay.AsTimeValue().InSecondsF() > 0.f) {
@@ -82,17 +88,25 @@ bool NativeCssPaintDefinition::AnimationIsValidForPaintWorklets(
     }
   }
 
-  DCHECK(effect->IsKeyframeEffect());
-  const KeyframeEffectModelBase* model =
-      static_cast<const KeyframeEffect*>(effect)->Model();
+  ScriptForbiddenScope forbid_script;
+  const auto* keyframe_effect = To<KeyframeEffect>(effect);
+  const KeyframeEffectModelBase* model = keyframe_effect->Model();
   if (model->AffectedByUnderlyingAnimations()) {
     return false;
   }
+  const PropertyHandle property_handle(property);
   const PropertySpecificKeyframeVector* frames =
-      model->GetPropertySpecificKeyframes(PropertyHandle(property));
+      model->GetPropertySpecificKeyframes(property_handle);
+  CHECK(frames);
   DCHECK_GE(frames->size(), 2u);
   for (const auto& frame : *frames) {
-    if (!CanGetValueFromKeyframe(element, frame, model, filter)) {
+    bool valid = CanGetValueFromKeyframe(element, frame, model, filter);
+    DCHECK(element->GetComputedStyle());
+    DCHECK_EQ(compositable_animation->effect(), effect);
+    DCHECK_EQ(keyframe_effect->EffectTarget(), element);
+    DCHECK_EQ(keyframe_effect->Model(), model);
+    DCHECK_EQ(model->GetPropertySpecificKeyframes(property_handle), frames);
+    if (!valid) {
       return false;
     }
   }

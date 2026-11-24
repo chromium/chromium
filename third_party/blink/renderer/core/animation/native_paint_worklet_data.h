@@ -80,6 +80,13 @@ class CORE_EXPORT NativePaintWorkletData
     return needs_keyframes_snapshot_update_;
   }
 
+  // Marks the animation as non-composited for the current document lifecycle
+  // when the style/layout tree is dirty (such as pending slot reassignments,
+  // avoiding lazy slot assignment recalculation during [Pre]Paint) and
+  // schedules a microtask to recalculate composited status and invalidate paint
+  // for the next lifecycle update.
+  void DeferCompositingDecision();
+
   // The final compositing decision is made during Animation::Precommit.
   // Even if the [Pre]Paint decision is kComposited, this is a recommendation
   // and not a mandate. If the animation is not composited, the compositor
@@ -93,6 +100,7 @@ class CORE_EXPORT NativePaintWorkletData
   void Trace(Visitor*) const;
 
  private:
+  void ResetDeferredCompositingDecision();
   void TriggerPaintInvalidation();
 
   WeakMember<Element> element_;
@@ -103,6 +111,7 @@ class CORE_EXPORT NativePaintWorkletData
   WeakMember<Animation> animation_;
   scoped_refptr<CompositorAnimationCurve> animation_curve_;
   bool needs_keyframes_snapshot_update_ = false;
+  bool defer_compositing_decision_scheduled_ = false;
 };
 
 }  // namespace blink
