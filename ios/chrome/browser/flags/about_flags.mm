@@ -3198,6 +3198,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFreLiveActivity,
                                     kFreLiveActivityVariations,
                                     "FreLiveActivity")},
+    {"autofill-fix-vcn-strike-database-fallback",
+     flag_descriptions::kAutofillFixVcnStrikeDatabaseFallbackName,
+     flag_descriptions::kAutofillFixVcnStrikeDatabaseFallbackDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillFixVcnStrikeDatabaseFallback)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

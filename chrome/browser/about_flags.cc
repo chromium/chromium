@@ -14092,6 +14092,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableServerControlledMandatoryReauth)},
 
+    {"autofill-fix-vcn-strike-database-fallback",
+     flag_descriptions::kAutofillFixVcnStrikeDatabaseFallbackName,
+     flag_descriptions::kAutofillFixVcnStrikeDatabaseFallbackDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillFixVcnStrikeDatabaseFallback)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -16760,6 +16760,7 @@ from previous Chrome versions.
   <int value="518908322" label="UseAndroidStagingSmds:enabled"/>
   <int value="519140642" label="SendWebUIJavaScriptErrorReports:enabled"/>
   <int value="519623921" label="SafeModeForCachedFlags:enabled"/>
+  <int value="519892253" label="AutofillFixVcnStrikeDatabaseFallback:enabled"/>
   <int value="520482092" label="AccessibilityManifestV3ChromeVox:enabled"/>
   <int value="520607007" label="AndroidWindowControlsOverlay:enabled"/>
   <int value="520738365" label="OmniboxPedalsBatch2NonEnglish:enabled"/>
@@ -17819,6 +17820,7 @@ from previous Chrome versions.
   <int value="825582537" label="ContextualCueingV2MultiSource:enabled"/>
   <int value="826644834" label="NtpRealboxCr23ConsistentRowHeight:disabled"/>
   <int value="826748470" label="NtpCalendarModule:enabled"/>
+  <int value="827352781" label="AutofillFixVcnStrikeDatabaseFallback:disabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
   <int value="828267476" label="AutofillEnableNewAmexNetworkArt:disabled"/>
   <int value="828678083" label="DynamicTopChrome:disabled"/>

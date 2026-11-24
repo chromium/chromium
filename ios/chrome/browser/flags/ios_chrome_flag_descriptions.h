@@ -326,6 +326,13 @@ inline constexpr char
         "When enabled, shows the Wallet Reminder Notice after submitting a "
         "form with a public pass.";
 
+inline constexpr char kAutofillFixVcnStrikeDatabaseFallbackName[] =
+    "Fix Autofill virtual card enrollment strike database fallback";
+inline constexpr char kAutofillFixVcnStrikeDatabaseFallbackDescription[] =
+    "When enabled, the virtual card enrollment strike database is checked "
+    "when deciding whether to offer virtual card enrollment, allowing other "
+    "flows to be offered if enrollment is blocked by strikes.";
+
 inline constexpr char kAutofillPaymentsFieldSwappingName[] =
     "Swap credit card suggestions";
 inline constexpr char kAutofillPaymentsFieldSwappingDescription[] =

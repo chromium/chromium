@@ -1377,6 +1377,11 @@
     "expiry_milestone": 161
   },
   {
+    "name": "autofill-fix-vcn-strike-database-fallback",
+    "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "autofill-ignore-payments-churned-users-strikes-for-testing",
     "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 160

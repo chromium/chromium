@@ -284,6 +284,13 @@ BASE_FEATURE(kAutofillEnableWalletGmailOffers,
 BASE_FEATURE(kAutofillEnableWalletReminderNotice,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the virtual card enrollment strike database is checked when
+// deciding whether to offer downstream virtual card enrollment. This allows
+// other post-submission flows (e.g., cardholder name update or CVC save) to be
+// offered as a fallback when virtual card enrollment is blocked by strikes.
+BASE_FEATURE(kAutofillFixVcnStrikeDatabaseFallback,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, skips empty CVCs in AutofillWalletCredentialSyncBridge instead
 // of failing a CHECK.
