@@ -14,6 +14,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -638,8 +639,17 @@ class ServiceWorkerGlobalScopeGCTest : public ServiceWorkerGlobalScopeTest {
 // across the Oilpan hash table allocation in
 // `pending_streaming_upload_fetch_events_.insert(...)` when a garbage
 // collection is triggered on allocation (crbug.com/565681452).
+// TODO(crbug.com/586910800): Re-enable once TSan and Fuchsia timeouts are
+// fixed.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RespondToFetchEventWithNoResponse_StreamingUploadGC \
+  DISABLED_RespondToFetchEventWithNoResponse_StreamingUploadGC
+#else
+#define MAYBE_RespondToFetchEventWithNoResponse_StreamingUploadGC \
+  RespondToFetchEventWithNoResponse_StreamingUploadGC
+#endif
 TEST_F(ServiceWorkerGlobalScopeGCTest,
-       RespondToFetchEventWithNoResponse_StreamingUploadGC) {
+       MAYBE_RespondToFetchEventWithNoResponse_StreamingUploadGC) {
   const KURL script_url("http://fake.url/");
   auto creation_params = GlobalScopeCreationParams::CreateForWorkerForTesting(
       security_origin_.get(), script_url);
