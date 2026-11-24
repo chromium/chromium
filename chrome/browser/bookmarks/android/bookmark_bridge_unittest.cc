@@ -11,7 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -32,26 +32,22 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/test_sync_user_settings.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaRef;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::ManagedBookmarkService;
-using bookmarks::android::JavaBookmarkIdGetId;
+using testing::ElementsAre;
 using testing::IsNull;
 using testing::NotNull;
 
@@ -143,7 +139,9 @@ class BookmarkBridgeTest : public testing::Test {
 
     activation_response->type_processor->OnUpdateReceived(
         state, {}, /*gc_directive=*/std::nullopt);
-    task_environment_.RunUntilIdle();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return dual_reading_list_model_->GetAccountModelIfSyncing() != nullptr;
+    }));
   }
 
   void CreateBookmarkBridge(bool enable_account_bookmarks,
@@ -456,8 +454,6 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   // folders that are returned.
   AddURL(bookmark_model()->bookmark_bar_node(), 0, u"first",
          GURL("http://foo.com"));
-  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
-      /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
   // Adding a bookmark node to mobile bookmarks will include it in the list.
   AddURL(bookmark_model()->mobile_node(), 0, u"second", GURL("http://foo.com"));
   // Adding to the local reading list will include it in the list.
@@ -642,12 +638,16 @@ TEST_F(BookmarkBridgeTest, TestMoveBookmark) {
 TEST_F(BookmarkBridgeTest, TestMoveBookmarkToOwnParentReturnsEarly) {
   GURL url = GURL("http://foo.com");
 
-  const BookmarkNode* node =
-      AddURL(bookmark_model()->other_node(), 0, u"test", url);
-  bookmark_bridge()->MoveBookmarkImpl(node, bookmarks::BOOKMARK_TYPE_NORMAL,
-                                      bookmark_model()->other_node(),
-                                      bookmarks::BOOKMARK_TYPE_NORMAL, 0);
-  // Early return means we don't hit a DCHECK.
+  const BookmarkNode* first = AddURL(bookmark_model()->other_node(),
+                                     /*index=*/0, /*title=*/u"first", url);
+  const BookmarkNode* second = AddURL(bookmark_model()->other_node(),
+                                      /*index=*/1, /*title=*/u"second", url);
+  bookmark_bridge()->MoveBookmarkImpl(
+      first, bookmarks::BOOKMARK_TYPE_NORMAL, bookmark_model()->other_node(),
+      bookmarks::BOOKMARK_TYPE_NORMAL, /*index=*/2);
+  EXPECT_THAT(
+      bookmark_bridge()->GetChildIdsImpl(bookmark_model()->other_node()),
+      ElementsAre(first, second));
 }
 
 TEST_F(BookmarkBridgeTest, TestMoveBookmarkToReadingList) {

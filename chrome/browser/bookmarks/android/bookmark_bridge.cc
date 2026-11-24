@@ -1770,8 +1770,8 @@ void BookmarkBridge::ReorderChildren(
   bookmark_model_->ReorderChildren(parent_node, ordered_nodes);
 }
 
-// Should destroy the bookmark bridge, if OTR profile is destroyed not to delete
-// related resources twice.
+// Tear down the Java and native bridge (via `destroyFromNative()` ->
+// `Destroy()`) before Profile KeyedServices shut down; may delete `this`.
 void BookmarkBridge::OnProfileWillBeDestroyed(Profile* profile) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   DestroyJavaObject();
