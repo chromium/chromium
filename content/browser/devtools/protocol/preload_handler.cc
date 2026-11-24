@@ -202,8 +202,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
           PrefetchFailedCrossOriginSubframe;
     case PrerenderFinalStatus::kUnexpectedMainFrameNavigation:
       return Preload::PrerenderFinalStatusEnum::UnexpectedMainFrameNavigation;
-    case PrerenderFinalStatus::kAudioOutput:
-      return Preload::PrerenderFinalStatusEnum::AudioOutput;
   }
 }
 

@@ -10,23 +10,16 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/media/media_devices_util.h"
-#include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/fake_audio_log_factory.h"
@@ -54,19 +47,6 @@ const char kInvalidDeviceId[] = "invalid-device-id";
 using MockAuthorizationCallback = base::MockCallback<
     AudioOutputAuthorizationHandler::AuthorizationCompletedCallback>;
 
-class TestAudioManager : public media::FakeAudioManager {
- public:
-  TestAudioManager(std::unique_ptr<media::AudioThread> audio_thread,
-                   media::AudioLogFactory* audio_log_factory)
-      : media::FakeAudioManager(std::move(audio_thread), audio_log_factory) {}
-  ~TestAudioManager() override = default;
-
-  std::string GetAssociatedOutputDeviceID(
-      const std::string& input_device_id) override {
-    return input_device_id;
-  }
-};
-
 class TestBrowserClient : public ContentBrowserClient {
  public:
   TestBrowserClient() : salt_(CreateRandomMediaDeviceIDSalt()) {}
@@ -90,9 +70,7 @@ class TestBrowserClient : public ContentBrowserClient {
 
 }  //  namespace
 
-class AudioOutputAuthorizationHandlerTest
-    : private test::ScopedPrerenderFeatureList,
-      public RenderViewHostTestHarness {
+class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
  public:
   AudioOutputAuthorizationHandlerTest()
       : RenderViewHostTestHarness(
@@ -115,7 +93,7 @@ class AudioOutputAuthorizationHandlerTest
     // Starts thread bundle:
     RenderViewHostTestHarness::SetUp();
     SetBrowserClientForTesting(&test_browser_client_);
-    audio_manager_ = std::make_unique<TestAudioManager>(
+    audio_manager_ = std::make_unique<media::FakeAudioManager>(
         std::make_unique<media::TestAudioThread>(true), &log_factory_);
     audio_system_ =
         std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
@@ -452,217 +430,6 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   SyncWithAllThreads();
   GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, handler.release());
   SyncWithAllThreads();
-}
-
-namespace {
-
-class ScopedDisallowAudioOutputFeatureList {
- protected:
-  explicit ScopedDisallowAudioOutputFeatureList(bool enabled) {
-    feature_list_.InitWithFeatureState(kDisallowAudioOutputDuringPrerendering,
-                                       enabled);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-}  // namespace
-
-class AudioOutputAuthorizationHandlerPrerenderTest
-    : private ScopedDisallowAudioOutputFeatureList,
-      public AudioOutputAuthorizationHandlerTest {
- public:
-  explicit AudioOutputAuthorizationHandlerPrerenderTest(
-      bool enable_feature = true)
-      : ScopedDisallowAudioOutputFeatureList(enable_feature) {}
-
- protected:
-  using AuthResultFuture = base::test::TestFuture<media::OutputDeviceStatus,
-                                                  const media::AudioParameters&,
-                                                  const std::string&,
-                                                  const std::string&>;
-  using HandlerPtr = std::unique_ptr<AudioOutputAuthorizationHandler,
-                                     BrowserThread::DeleteOnIOThread>;
-
-  void SetUp() override {
-    AudioOutputAuthorizationHandlerTest::SetUp();
-    web_contents_delegate_ =
-        std::make_unique<test::ScopedPrerenderWebContentsDelegate>(
-            *web_contents());
-  }
-
-  void TearDown() override {
-    web_contents_delegate_.reset();
-    DeleteContents();
-    AudioOutputAuthorizationHandlerTest::TearDown();
-  }
-
-  RenderFrameHost* StartPrerender() {
-    RenderFrameHost* prerender_rfh =
-        WebContentsTester::For(web_contents())
-            ->AddPrerenderAndCommitNavigation(kPrerenderUrl);
-    EXPECT_TRUE(prerender_rfh);
-    EXPECT_TRUE(prerender_rfh->IsInLifecycleState(
-        RenderFrameHost::LifecycleState::kPrerendering));
-    return prerender_rfh;
-  }
-
-  HandlerPtr CreateHandler(RenderFrameHost* rfh) {
-    return HandlerPtr(new AudioOutputAuthorizationHandler(
-        GetAudioSystem(), GetMediaStreamManager(), rfh->GetGlobalId()));
-  }
-
-  void RunOnIOThread(base::OnceClosure task) {
-    base::test::TestFuture<void> done;
-    GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, std::move(task),
-                                                done.GetCallback());
-    ASSERT_TRUE(done.Wait());
-  }
-
-  void ExpectCanceledForAudioOutput(test::PrerenderHostObserver& observer) {
-    observer.WaitForDestroyed();
-    EXPECT_FALSE(observer.was_activated());
-    histogram_tester_.ExpectUniqueSample(
-        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-        PrerenderFinalStatus::kAudioOutput, 1);
-  }
-
-  const GURL kPrerenderUrl{"http://localhost/prerender"};
-  base::HistogramTester histogram_tester_;
-
- private:
-  std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
-      web_contents_delegate_;
-};
-
-class AudioOutputAuthorizationHandlerPrerenderFeatureDisabledTest
-    : public AudioOutputAuthorizationHandlerPrerenderTest {
- public:
-  AudioOutputAuthorizationHandlerPrerenderFeatureDisabledTest()
-      : AudioOutputAuthorizationHandlerPrerenderTest(/*enable_feature=*/false) {
-  }
-};
-
-TEST_F(AudioOutputAuthorizationHandlerPrerenderTest,
-       AuthorizeNondefaultDeviceIdWhilePrerendering_NotAuthorized) {
-  RenderFrameHost* prerender_rfh = StartPrerender();
-  ASSERT_TRUE(prerender_rfh);
-  test::PrerenderHostObserver prerender_observer(*web_contents(),
-                                                 kPrerenderUrl);
-  HandlerPtr handler = CreateHandler(prerender_rfh);
-
-  AuthResultFuture auth_future;
-  auto auth_cb = auth_future.GetSequenceBoundCallback();
-  RunOnIOThread(base::BindLambdaForTesting([&]() {
-    handler->OverridePermissionsForTesting(true);
-    handler->SetAuthorizedDeviceIdForGlobalMediaControls(kInvalidDeviceId);
-    handler->RequestDeviceAuthorization(base::UnguessableToken(),
-                                        kInvalidDeviceId, std::move(auth_cb));
-  }));
-
-  EXPECT_EQ(auth_future.Get<0>(),
-            media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
-  ExpectCanceledForAudioOutput(prerender_observer);
-}
-
-// With the kill switch disabled, authorization is still rejected while
-// prerendering (GetMediaDeviceSaltAndOrigin() must not be called for
-// prerendering frames), but prerendering is not canceled.
-TEST_F(
-    AudioOutputAuthorizationHandlerPrerenderFeatureDisabledTest,
-    AuthorizeNondefaultDeviceIdWhilePrerenderingFeatureDisabled_NotAuthorized) {
-  RenderFrameHost* prerender_rfh = StartPrerender();
-  ASSERT_TRUE(prerender_rfh);
-  HandlerPtr handler = CreateHandler(prerender_rfh);
-
-  AuthResultFuture auth_future;
-  auto auth_cb = auth_future.GetSequenceBoundCallback();
-  RunOnIOThread(base::BindLambdaForTesting([&]() {
-    handler->OverridePermissionsForTesting(true);
-    handler->RequestDeviceAuthorization(base::UnguessableToken(),
-                                        kInvalidDeviceId, std::move(auth_cb));
-  }));
-
-  EXPECT_EQ(auth_future.Get<0>(),
-            media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
-  // CanAuthorizeOutputDeviceOnUIThread() runs on the UI thread before posting
-  // the reply back to the IO thread, so the prerender frame is still in
-  // kPrerendering when the kill switch is disabled.
-  EXPECT_TRUE(prerender_rfh->IsInLifecycleState(
-      RenderFrameHost::LifecycleState::kPrerendering));
-}
-
-TEST_F(AudioOutputAuthorizationHandlerPrerenderTest,
-       AuthorizeWithSessionIdAndMatchedDeviceWhilePrerendering_NotAuthorized) {
-  RenderFrameHost* prerender_rfh = StartPrerender();
-  ASSERT_TRUE(prerender_rfh);
-  test::PrerenderHostObserver prerender_observer(*web_contents(),
-                                                 kPrerenderUrl);
-  HandlerPtr handler = CreateHandler(prerender_rfh);
-
-  // Open() queries GetAssociatedOutputDeviceID() on the audio thread and
-  // registers the opened session on the IO thread. Waiting on a second query on
-  // the same task runners ensures the session is registered before authorizing.
-  base::UnguessableToken session_id;
-  base::test::TestFuture<const std::optional<std::string>&> open_ready;
-  auto open_ready_cb = open_ready.GetSequenceBoundCallback();
-  RunOnIOThread(base::BindLambdaForTesting([&]() {
-    session_id = GetMediaStreamManager()->audio_input_device_manager()->Open(
-        blink::MediaStreamDevice(
-            blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-            kDefaultDeviceId, "Fake input device"));
-    GetAudioSystem()->GetAssociatedOutputDeviceID(kDefaultDeviceId,
-                                                  std::move(open_ready_cb));
-  }));
-  ASSERT_TRUE(open_ready.Wait());
-
-  AuthResultFuture auth_future;
-  auto auth_cb = auth_future.GetSequenceBoundCallback();
-  RunOnIOThread(base::BindLambdaForTesting([&]() {
-    handler->RequestDeviceAuthorization(session_id, std::string(),
-                                        std::move(auth_cb));
-  }));
-
-  EXPECT_EQ(auth_future.Get<0>(),
-            media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
-  ExpectCanceledForAudioOutput(prerender_observer);
-
-  RunOnIOThread(base::BindLambdaForTesting([&]() {
-    GetMediaStreamManager()->audio_input_device_manager()->Close(session_id);
-  }));
-}
-
-TEST_F(AudioOutputAuthorizationHandlerPrerenderTest,
-       AuthorizeNondefaultDeviceIdAfterPrerenderActivation_Ok) {
-  RenderFrameHost* prerender_rfh = StartPrerender();
-  ASSERT_TRUE(prerender_rfh);
-
-  // Construct the handler while prerendering (as happens when a prerendered
-  // page queries default device parameters), then activate the page.
-  HandlerPtr handler = CreateHandler(prerender_rfh);
-  WebContentsTester::For(web_contents())
-      ->ActivatePrerenderedPage(kPrerenderUrl);
-  ASSERT_TRUE(prerender_rfh->IsActive());
-
-  std::string raw_nondefault_id = GetRawNondefaultId();
-  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> salt_future;
-  GetMediaDeviceSaltAndOrigin(prerender_rfh->GetGlobalId(),
-                              salt_future.GetCallback());
-  std::string hashed_id =
-      GetHMACForRawMediaDeviceID(salt_future.Get(), raw_nondefault_id);
-
-  AuthResultFuture auth_future;
-  auto auth_cb = auth_future.GetSequenceBoundCallback();
-  RunOnIOThread(base::BindLambdaForTesting([&]() {
-    handler->OverridePermissionsForTesting(true);
-    handler->RequestDeviceAuthorization(base::UnguessableToken(), hashed_id,
-                                        std::move(auth_cb));
-  }));
-
-  EXPECT_EQ(auth_future.Get<0>(), media::OUTPUT_DEVICE_STATUS_OK);
-  EXPECT_EQ(auth_future.Get<2>(), raw_nondefault_id);
-  EXPECT_EQ(auth_future.Get<3>(), std::string());
 }
 
 }  // namespace content

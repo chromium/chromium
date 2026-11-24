@@ -73,15 +73,11 @@ void RegisterNonAssociatedPolicies(MojoBinderPolicyMap& map) {
   map.SetNonAssociatedPolicy<blink::mojom::IDBFactory>(
       MojoBinderNonAssociatedPolicy::kGrant);
 
-  // Grant this interface because some sync web APIs (such as `new
-  // AudioContext()`) synchronously query default output device parameters on
-  // the renderer main thread; deferring it leads to deadlock. However,
-  // granting this interface does not mean that prerenders are allowed to
-  // authorize non-default devices or create output streams: while
-  // prerendering, AudioOutputAuthorizationHandler rejects non-default device
-  // authorization and RenderFrameAudioOutputStreamFactory defers output stream
-  // acquisition (`Acquire`) until activation, and both cancel the prerender
-  // via `RenderFrameHostImpl::CancelPrerendering()`.
+  // Grant this interface because some sync web APIs rely on it; deferring it
+  // leads to deadlock. However, granting this interface does not mean that
+  // prerenders are allowed to create output streams.
+  // RenderFrameAudioOutputStreamFactory understands which pages are
+  // prerendering and does not fulfill their requests for audio streams.
   map.SetNonAssociatedPolicy<blink::mojom::RendererAudioOutputStreamFactory>(
       MojoBinderNonAssociatedPolicy::kGrant);
   map.SetNonAssociatedPolicy<network::mojom::RestrictedCookieManager>(

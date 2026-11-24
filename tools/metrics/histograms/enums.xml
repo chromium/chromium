@@ -25392,7 +25392,6 @@ Called by update_net_error_codes.py.-->
   <int value="90" label="kCrossDocumentRestart"/>
   <int value="91" label="kPrefetchFailedCrossOriginSubframe"/>
   <int value="92" label="kUnexpectedMainFrameNavigation"/>
-  <int value="93" label="kAudioOutput"/>
 </enum>
 
 <enum name="PrintPreviewFailureType">

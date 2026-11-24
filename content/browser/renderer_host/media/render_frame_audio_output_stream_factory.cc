@@ -11,7 +11,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
@@ -27,15 +26,10 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
-#include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/preloading/prerender/prerender_metrics.h"
-#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "media/base/output_device_info.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
@@ -62,15 +56,6 @@ const char* OutputDeviceStatusToString(media::OutputDeviceStatus status) {
   }
 }
 
-void CancelPrerenderingForOutputStreamOnUIThread(
-    GlobalRenderFrameHostId frame_id) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (auto* frame = RenderFrameHostImpl::FromID(frame_id)) {
-    frame->CancelPrerendering(
-        PrerenderCancellationReason(PrerenderFinalStatus::kAudioOutput));
-  }
-}
-
 }  // namespace
 
 class RenderFrameAudioOutputStreamFactory::Core final
@@ -93,8 +78,6 @@ class RenderFrameAudioOutputStreamFactory::Core final
 
   void SetAuthorizedDeviceIdForGlobalMediaControls(
       std::string hashed_device_id);
-
-  void ReleaseRestriction();
 
   size_t current_number_of_providers_for_testing() {
     return stream_providers_.size();
@@ -132,8 +115,15 @@ class RenderFrameAudioOutputStreamFactory::Core final
                    "RenderFrameAudioOutputStreamFactory::ProviderImpl::Acquire",
                    "raw device id", device_id_);
 
-      owner_->CreateOutputStream(device_id_, params,
-                                 std::move(provider_client));
+      base::WeakPtr<ForwardingAudioStreamFactory::Core> factory =
+          owner_->forwarding_factory_;
+      if (factory) {
+        factory->CreateOutputStream(
+            owner_->process_id_,
+            owner_->global_render_frame_host_id_.frame_routing_id,
+            owner_->main_frame_token_, device_id_, params,
+            std::move(provider_client));
+      }
 
       // Since the stream creation has been propagated, |this| is no longer
       // needed.
@@ -174,28 +164,6 @@ class RenderFrameAudioOutputStreamFactory::Core final
       const std::string& raw_device_id,
       const std::string& device_id_for_renderer);
 
-  // Forwards output stream creation to `forwarding_factory_`, or defers it via
-  // `DeferOutputStreamUntilActivation()` while `is_prerendering_` is true.
-  void CreateOutputStream(
-      const std::string& device_id,
-      const media::AudioParameters& params,
-      mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
-          provider_client);
-
-  // Called by `CreateOutputStream()` while `is_prerendering_` is true. Queues
-  // the stream request in `pending_streams_` and, for the first queued
-  // request, asks the UI thread to cancel prerendering. If prerendering is
-  // cancelled, `this` is destroyed together with the frame and the queued
-  // requests are dropped. If it can't be cancelled (e.g. activation has
-  // already started), the queued requests are created by
-  // `ReleaseRestriction()` once the page is activated, so the renderer never
-  // ends up waiting for a stream that will not be created.
-  void DeferOutputStreamUntilActivation(
-      const std::string& device_id,
-      const media::AudioParameters& params,
-      mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
-          provider_client);
-
   void DeleteProvider(media::mojom::AudioOutputStreamProvider* stream_provider);
 
   // Helper method for storing native logs.
@@ -204,30 +172,6 @@ class RenderFrameAudioOutputStreamFactory::Core final
   const int process_id_;
   const GlobalRenderFrameHostId global_render_frame_host_id_;
   const GlobalRenderFrameHostToken main_frame_token_;
-  // True if the frame's FrameTree was prerendering when `this` was constructed
-  // on the UI thread and `ReleaseRestriction()` has not yet been called.
-  // Accessed on the IO thread after construction.
-  bool is_prerendering_;
-
-  // Stream requests received while `is_prerendering_` is true. Created by
-  // `ReleaseRestriction()`, or dropped if `this` is destroyed first.
-  struct PendingStream {
-    PendingStream(
-        const std::string& device_id,
-        const media::AudioParameters& params,
-        mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
-            provider_client);
-    PendingStream(PendingStream&&);
-    PendingStream& operator=(PendingStream&&);
-    ~PendingStream();
-
-    std::string device_id;
-    media::AudioParameters params;
-    mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
-        provider_client;
-  };
-  std::vector<PendingStream> pending_streams_;
-
   AudioOutputAuthorizationHandler authorization_handler_;
 
   mojo::Receiver<blink::mojom::RendererAudioOutputStreamFactory> receiver_{
@@ -284,39 +228,10 @@ void RenderFrameAudioOutputStreamFactory::
                      std::move(hashed_device_id)));
 }
 
-void RenderFrameAudioOutputStreamFactory::ReleaseRestriction() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI);
-  // base::Unretained(core_.get()) is safe here because |core_| is owned by
-  // RenderFrameAudioOutputStreamFactory and the
-  // RenderFrameAudioOutputStreamFactory destructor posts a task to delete
-  // |core_| on the IO thread. Since both tasks are posted to IO thread, the
-  // task posted here will always execute before the destruction task.
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Core::ReleaseRestriction, base::Unretained(core_.get())));
-}
-
 size_t
 RenderFrameAudioOutputStreamFactory::CurrentNumberOfProvidersForTesting() {
   return core_->current_number_of_providers_for_testing();
 }
-
-RenderFrameAudioOutputStreamFactory::Core::PendingStream::PendingStream(
-    const std::string& device_id,
-    const media::AudioParameters& params,
-    mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
-        provider_client)
-    : device_id(device_id),
-      params(params),
-      provider_client(std::move(provider_client)) {}
-
-RenderFrameAudioOutputStreamFactory::Core::PendingStream::PendingStream(
-    PendingStream&&) = default;
-RenderFrameAudioOutputStreamFactory::Core::PendingStream&
-RenderFrameAudioOutputStreamFactory::Core::PendingStream::operator=(
-    PendingStream&&) = default;
-RenderFrameAudioOutputStreamFactory::Core::PendingStream::~PendingStream() =
-    default;
 
 RenderFrameAudioOutputStreamFactory::Core::Core(
     RenderFrameHost* frame,
@@ -327,15 +242,6 @@ RenderFrameAudioOutputStreamFactory::Core::Core(
     : process_id_(frame->GetProcess()->GetDeprecatedID()),
       global_render_frame_host_id_(frame->GetGlobalId()),
       main_frame_token_(frame->GetMainFrame()->GetGlobalFrameToken()),
-      // Like `RenderFrameHostImpl`'s `mojo_binder_policy_applier_`, use the
-      // frame tree's prerendering state rather than the frame's lifecycle
-      // state, so that all documents in a prerendering page are covered, even
-      // ones not in `kPrerendering` state (e.g. while running unload handlers).
-      is_prerendering_(base::FeatureList::IsEnabled(
-                           kDisallowAudioOutputDuringPrerendering) &&
-                       static_cast<RenderFrameHostImpl*>(frame)
-                           ->frame_tree()
-                           ->is_prerendering()),
       authorization_handler_(audio_system,
                              media_stream_manager,
                              global_render_frame_host_id_) {
@@ -373,18 +279,6 @@ void RenderFrameAudioOutputStreamFactory::Core::
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
   authorization_handler_.SetAuthorizedDeviceIdForGlobalMediaControls(
       std::move(hashed_device_id));
-}
-
-void RenderFrameAudioOutputStreamFactory::Core::ReleaseRestriction() {
-  CHECK_CURRENTLY_ON(BrowserThread::IO);
-  is_prerendering_ = false;
-  // Create streams requested before this notification arrived, e.g. because
-  // prerendering couldn't be cancelled or the renderer's first `Acquire()`
-  // after activation raced with this task.
-  for (PendingStream& pending_stream : std::exchange(pending_streams_, {})) {
-    CreateOutputStream(pending_stream.device_id, pending_stream.params,
-                       std::move(pending_stream.provider_client));
-  }
 }
 
 void RenderFrameAudioOutputStreamFactory::Core::RequestDeviceAuthorization(
@@ -449,44 +343,6 @@ void RenderFrameAudioOutputStreamFactory::Core::AuthorizationCompleted(
     SendLogMessage(base::StringPrintf("%s => (ERROR: %s)", __func__,
                                       OutputDeviceStatusToString(status)));
   }
-}
-
-void RenderFrameAudioOutputStreamFactory::Core::CreateOutputStream(
-    const std::string& device_id,
-    const media::AudioParameters& params,
-    mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
-        provider_client) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (is_prerendering_) {
-    DeferOutputStreamUntilActivation(device_id, params,
-                                     std::move(provider_client));
-    return;
-  }
-  if (forwarding_factory_) {
-    forwarding_factory_->CreateOutputStream(
-        process_id_, global_render_frame_host_id_.frame_routing_id,
-        main_frame_token_, device_id, params, std::move(provider_client));
-  }
-}
-
-void RenderFrameAudioOutputStreamFactory::Core::
-    DeferOutputStreamUntilActivation(
-        const std::string& device_id,
-        const media::AudioParameters& params,
-        mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
-            provider_client) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO);
-  CHECK(is_prerendering_);
-  SendLogMessage(base::StringPrintf(
-      "%s => (stream acquisition deferred until prerender activation)",
-      __func__));
-  if (pending_streams_.empty()) {
-    // Only ask for cancellation once; repeated requests would be no-ops.
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CancelPrerenderingForOutputStreamOnUIThread,
-                                  global_render_frame_host_id_));
-  }
-  pending_streams_.emplace_back(device_id, params, std::move(provider_client));
 }
 
 void RenderFrameAudioOutputStreamFactory::Core::DeleteProvider(

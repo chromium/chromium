@@ -1722,7 +1722,6 @@ void PrerenderHost::SetFailureReason(const PrerenderCancellationReason& reason,
     case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
     case PrerenderFinalStatus::kCrossDocumentRestart:
     case PrerenderFinalStatus::kUnexpectedMainFrameNavigation:
-    case PrerenderFinalStatus::kAudioOutput:
       if (attempt_) {
         attempt_->SetFailureReason(
             ToPreloadingFailureReason(reason.final_status()));

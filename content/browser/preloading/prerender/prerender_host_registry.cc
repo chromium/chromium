@@ -335,7 +335,6 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
     case PrerenderFinalStatus::kPrefetchFailedCrossOriginSubframe:
     case PrerenderFinalStatus::kUnexpectedMainFrameNavigation:
-    case PrerenderFinalStatus::kAudioOutput:
       NOTREACHED();
   }
 

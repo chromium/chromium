@@ -15398,10 +15398,6 @@ void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
   CHECK(mojo_binder_policy_applier_)
       << "activating prerendering pages should have a policy applier";
   mojo_binder_policy_applier_->PrepareToGrantAll();
-
-  if (audio_service_audio_output_stream_factory_) {
-    audio_service_audio_output_stream_factory_->ReleaseRestriction();
-  }
 }
 
 void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
