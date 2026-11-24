@@ -17,6 +17,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
@@ -45,6 +47,7 @@
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/history_identity_state_watcher.h"
@@ -320,6 +323,33 @@ history::mojom::FilteringBehavior FilteringBehaviorToMojom(
   }
 }
 
+// Extracts the year from `time` in the local time zone.
+int LocalYear(base::Time time) {
+  base::Time::Exploded exploded;
+  time.LocalExplode(&exploded);
+  return exploded.year;
+}
+
+// Extracts the weekday from `time` in the local time zone.
+std::u16string TimeFormatWeekday(base::Time time) {
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      time, base::i18n::datetime_options::E::Long());
+}
+
+// Formats the date with the full month name but without the year,
+// e.g. "November 8".
+std::u16string TimeFormatDateWithoutYear(base::Time time) {
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      time, base::i18n::datetime_options::MD::Long());
+}
+
+// Formats the date with the full month name and the year,
+// e.g. "January 15, 2025".
+std::u16string TimeFormatDateWithYear(base::Time time) {
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      time, base::i18n::datetime_options::YMD::Long());
+}
+
 // Converts `entry` to a history::mojom::QueryResult to be owned by the caller.
 history::mojom::HistoryEntryPtr HistoryEntryToMojom(
     const BrowsingHistoryService::HistoryEntry& entry,
@@ -385,14 +415,27 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   if (entry.is_search_result) {
     snippet_string = entry.snippet;
   } else {
+    const base::Time now = clock->Now();
+    const bool is_refresh_enabled = features::IsHistoryPageRefreshEnabled();
+
     std::u16string date_str =
-        ui::TimeFormat::RelativeDate(entry.time, clock->Now().LocalMidnight());
-    if (date_str.empty()) {
-      date_str = base::TimeFormatFriendlyDate(entry.time);
+        ui::TimeFormat::RelativeDate(entry.time, now.LocalMidnight());
+    if (is_refresh_enabled) {
+      if (date_str.empty()) {
+        date_str = l10n_util::GetStringFUTF16(
+            IDS_HISTORY_WEEKDAY_WITH_DATE, TimeFormatWeekday(entry.time),
+            LocalYear(entry.time) == LocalYear(now)
+                ? TimeFormatDateWithoutYear(entry.time)
+                : TimeFormatDateWithYear(entry.time));
+      }
     } else {
-      date_str = l10n_util::GetStringFUTF16(
-          IDS_HISTORY_DATE_WITH_RELATIVE_TIME, date_str,
-          base::TimeFormatFriendlyDate(entry.time));
+      if (date_str.empty()) {
+        date_str = base::TimeFormatFriendlyDate(entry.time);
+      } else {
+        date_str = l10n_util::GetStringFUTF16(
+            IDS_HISTORY_DATE_WITH_RELATIVE_TIME, date_str,
+            base::TimeFormatFriendlyDate(entry.time));
+      }
     }
     date_relative_day = date_str;
     date_time_of_day = base::TimeFormatTimeOfDay(entry.time);

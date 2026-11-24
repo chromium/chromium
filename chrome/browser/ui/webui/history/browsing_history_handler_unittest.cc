@@ -18,6 +18,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,6 +46,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/glic_enums.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -75,6 +79,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
@@ -538,6 +543,92 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithClientIds) {
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/true, kClientIds,
                           /*domain=*/"", base::DoNothing());
+}
+
+TEST_F(BrowsingHistoryHandlerTest, DateRelativeDay) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHistoryPageRefresh);
+
+  const base::Time now = PretendNow();
+  BrowsingHistoryService::HistoryEntry today_entry;
+  today_entry.url = GURL("http://today.com");
+  today_entry.time = now - base::Hours(1);
+  BrowsingHistoryService::HistoryEntry older_entry;
+  older_entry.url = GURL("http://older.com");
+  older_entry.time = now - base::Days(5);
+
+  QueryOptions options;
+  MockHistoryServiceCall(u"", options, {today_entry, older_entry});
+  auto results_mojom = RunQueryHistory("");
+  ASSERT_EQ(2u, results_mojom->value.size());
+
+  // Today and yesterday: the relative day followed by the full date.
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF8(
+          IDS_HISTORY_DATE_WITH_RELATIVE_TIME,
+          ui::TimeFormat::RelativeDate(today_entry.time, now.LocalMidnight()),
+          base::TimeFormatFriendlyDate(today_entry.time)),
+      results_mojom->value[0]->date_relative_day);
+
+  // Older days: the full date.
+  EXPECT_EQ(base::UTF16ToUTF8(base::TimeFormatFriendlyDate(older_entry.time)),
+            results_mojom->value[1]->date_relative_day);
+}
+
+TEST_F(BrowsingHistoryHandlerTest, DateRelativeDayWithHistoryPageRefresh) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kWebuiRefresh2026, features::kHistoryPageRefresh}, {});
+
+  // Late in the year, so that there are older days of the same year.
+  const base::Time now = PretendNow() + base::Days(300);
+  handler()->test_clock()->SetNow(now);
+  BrowsingHistoryService::HistoryEntry today_entry;
+  today_entry.url = GURL("http://today.com");
+  today_entry.time = now - base::Hours(1);
+  BrowsingHistoryService::HistoryEntry yesterday_entry;
+  yesterday_entry.url = GURL("http://yesterday.com");
+  yesterday_entry.time = now - base::Days(1);
+  BrowsingHistoryService::HistoryEntry same_year_entry;
+  same_year_entry.url = GURL("http://same-year.com");
+  same_year_entry.time = now - base::Days(5);
+  BrowsingHistoryService::HistoryEntry previous_year_entry;
+  previous_year_entry.url = GURL("http://previous-year.com");
+  previous_year_entry.time = now - base::Days(400);
+
+  QueryOptions options;
+  MockHistoryServiceCall(
+      u"", options,
+      {today_entry, yesterday_entry, same_year_entry, previous_year_entry});
+  auto results_mojom = RunQueryHistory("");
+  ASSERT_EQ(4u, results_mojom->value.size());
+
+  // Today and yesterday: the relative day only.
+  EXPECT_EQ(base::UTF16ToUTF8(ui::TimeFormat::RelativeDate(
+                today_entry.time, now.LocalMidnight())),
+            results_mojom->value[0]->date_relative_day);
+  EXPECT_EQ(base::UTF16ToUTF8(ui::TimeFormat::RelativeDate(
+                yesterday_entry.time, now.LocalMidnight())),
+            results_mojom->value[1]->date_relative_day);
+
+  // Older days: the weekday followed by the date, which has the year only for
+  // the days of earlier years.
+  const auto& formatter =
+      base::i18n::IcuBridge::GetInstance().date_time_formatter();
+  EXPECT_EQ(l10n_util::GetStringFUTF8(
+                IDS_HISTORY_WEEKDAY_WITH_DATE,
+                formatter.Format(same_year_entry.time,
+                                 base::i18n::datetime_options::E::Long()),
+                formatter.Format(same_year_entry.time,
+                                 base::i18n::datetime_options::MD::Long())),
+            results_mojom->value[2]->date_relative_day);
+  EXPECT_EQ(l10n_util::GetStringFUTF8(
+                IDS_HISTORY_WEEKDAY_WITH_DATE,
+                formatter.Format(previous_year_entry.time,
+                                 base::i18n::datetime_options::E::Long()),
+                formatter.Format(previous_year_entry.time,
+                                 base::i18n::datetime_options::YMD::Long())),
+            results_mojom->value[3]->date_relative_day);
 }
 
 // Regression test for crbug.com/582436669. Destroying the handler while a
@@ -1780,4 +1871,5 @@ INSTANTIATE_TEST_SUITE_P(
             /*hats_trigger_=*/kHatsSurveyTriggerHistoryPageControl,
             /*hats_feature_=*/
             &features::kHappinessTrackingSurveysForDesktopHistoryPageControl)));
+
 }  // namespace history
