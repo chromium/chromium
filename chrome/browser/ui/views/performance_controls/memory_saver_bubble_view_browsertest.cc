@@ -339,8 +339,17 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewIsolatedTest,
             std::u16string());
 }
 
-IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
-                       ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
+// TODO(crbug.com/571175969): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ShouldCollapseChipAfterNavigatingTabsWithDialogOpen \
+  DISABLED_ShouldCollapseChipAfterNavigatingTabsWithDialogOpen
+#else
+#define MAYBE_ShouldCollapseChipAfterNavigatingTabsWithDialogOpen \
+  ShouldCollapseChipAfterNavigatingTabsWithDialogOpen
+#endif
+IN_PROC_BROWSER_TEST_F(
+    MemorySaverBubbleViewTest,
+    MAYBE_ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
   AddNewTab(kMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   EXPECT_EQ(2, tab_strip_model->count());
