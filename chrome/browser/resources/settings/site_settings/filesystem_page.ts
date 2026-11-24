@@ -5,60 +5,58 @@
 import './category_setting_exceptions.js';
 import './file_system_site_list.js';
 import './settings_category_default_radio_group.js';
-import './site_settings_shared.css.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import {ContentSettingsTypes} from '../site_settings/constants.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
-import {getTemplate} from './filesystem_page.html.js';
+import {getHtml} from './filesystem_page.html.js';
+import {getCss as getSiteSettingsSharedCss} from './site_settings_shared_lit.css.js';
 
-const FilesystemPageElementBase = SettingsViewMixin(PolymerElement);
+const FilesystemPageElementBase = SettingsViewMixinLit(CrLitElement);
 
 export class FilesystemPageElement extends FilesystemPageElementBase {
   static get is() {
     return 'settings-filesystem-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getSettingsSharedCss(),
+      getSiteSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
-    return {
-      searchTerm: String,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      // Expose ContentSettingsTypes enum to the HTML template.
-      contentSettingsTypesEnum_: {
-        type: Object,
-        value: ContentSettingsTypes,
-      },
+  static override get properties() {
+    return {
+      searchTerm_: {type: String},
 
       /**
        * Whether the File System Access Persistent Permissions UI should be
        * displayed.
        */
-      enablePersistentPermissions_: {
-        type: Boolean,
-        readOnly: true,
-        value: () => {
-          return loadTimeData.getBoolean('enablePersistentPermissions');
-        },
-      },
-
+      enablePersistentPermissions_: {type: Boolean},
     };
   }
 
-  declare searchTerm: string;
-  declare private enablePersistentPermissions_: boolean;
+  protected accessor searchTerm_: string = '';
+  protected accessor enablePersistentPermissions_: boolean =
+      loadTimeData.getBoolean('enablePersistentPermissions');
 
-  // SettingsViewMixin implementation.
+  protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
+    this.searchTerm_ = e.detail.value;
+  }
+
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

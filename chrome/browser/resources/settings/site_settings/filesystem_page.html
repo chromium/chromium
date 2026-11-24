@@ -1,25 +1,28 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsFileSystemWrite}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsFileSystemWriteDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
+      .category="${ContentSettingsTypes.FILE_SYSTEM_WRITE}"
       ask-option-label="$i18n{siteSettingsFileSystemWriteAsk}"
       ask-option-icon="privacy:file-save"
       block-option-label="$i18n{siteSettingsFileSystemWriteBlocked}"
       block-option-icon="privacy:file-save-off">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
+      .category="${ContentSettingsTypes.FILE_SYSTEM_WRITE}"
       read-only-list
       block-header="$i18n{siteSettingsFileSystemWriteBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
-  <template is="dom-if" if="[[enablePersistentPermissions_]]">
+  ${this.enablePersistentPermissions_ ? html`
     <file-system-site-list></file-system-site-list>
-  </template>
+  ` : ''}
 </settings-subpage>
