@@ -23,11 +23,17 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -301,10 +307,12 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
             @OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
         if (type == OverscrollAction.PULL_TO_REFRESH) {
-            if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
-            assumeNonNull(mSwipeRefreshLayout);
-            attachSwipeRefreshLayoutIfNecessary();
-            return mSwipeRefreshLayout.start();
+            if (!shouldSuppressPullToRefresh()) {
+                if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
+                assumeNonNull(mSwipeRefreshLayout);
+                attachSwipeRefreshLayoutIfNecessary();
+                return mSwipeRefreshLayout.start();
+            }
         } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
             if (mNavigationCoordinator != null) {
                 mNavigationCoordinator.startGesture();
@@ -321,6 +329,40 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
 
         mSwipeType = OverscrollAction.NONE;
         return false;
+    }
+
+    /**
+     * Returns whether pull-to-refresh should be suppressed so the first downward pull reveals the
+     * Omnibox instead of reloading.
+     *
+     * <p>Stays in sync with {@link
+     * TabStateBrowserControlsVisibilityDelegate#canKeepOmniboxHiddenInTab(Tab,
+     * BrowserControlsStateProvider)} so non-eligible tabs keep single-step pull-to-refresh. Relies
+     * on {@code BrowserControlsScrollSnapAnimation} emitting overscroll before the controls finish
+     * revealing so native {@code OverscrollRefresh} resets for the rest of the first pull.
+     */
+    private boolean shouldSuppressPullToRefresh() {
+        if (!BrowserControlsUtils.shouldSuppressPullToRefreshOnOmniboxReveal()) return false;
+        // Not cached: the provider belongs to the activity, and the tab can change windows.
+        BrowserControlsStateProvider provider =
+                BrowserControlsStateProviderSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
+        if (provider == null
+                || !TabStateBrowserControlsVisibilityDelegate.canKeepOmniboxHiddenInTab(
+                        mTab, provider)) {
+            return false;
+        }
+        // Fullscreen video forces HIDDEN so the Omnibox cannot scroll into view; keep single-step
+        // pull-to-refresh available.
+        if (TabBrowserControlsConstraintsHelper.getConstraints(mTab)
+                == BrowserControlsState.HIDDEN) {
+            return false;
+        }
+        // Top controls that cannot scroll (e.g. locked on large tablets where minHeight == height,
+        // or zero height) can briefly report a negative offset before the renderer syncs.
+        if (provider.getTopControlsHeight() <= provider.getTopControlsMinHeight()) return false;
+        // Only a negative offset means part of the toolbar is scrolled off; a height animation can
+        // produce a positive offset, whereas hidden ratio uses abs().
+        return provider.getTopControlOffset() < 0;
     }
 
     /** Sets {@link HistoryNavigationCoordinator} object. */

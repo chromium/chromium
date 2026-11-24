@@ -33,7 +33,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
@@ -280,7 +279,6 @@ public class SwipeRefreshHandlerUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544393")
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testPullToRefresh_SuppressedWhenControlsNotFullyVisible() {
         SwipeRefreshHandler handler =
@@ -322,7 +320,6 @@ public class SwipeRefreshHandlerUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544393")
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testPullToRefresh_TopControlsAtPositiveMinHeight() {
         SwipeRefreshHandler handler =
@@ -436,6 +433,69 @@ public class SwipeRefreshHandlerUnitTest {
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testPullToRefresh_AllowedOnXr() {
         DeviceInfo.setIsXrForTesting(true);
+
+        assertPullToRefreshSucceedsWithHiddenControls();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testPullToRefresh_AllowedWhenTopControlsHeightZero() {
+        // When topControlsHeight == 0, getTopControlHiddenRatio() returns 1.0f even though there
+        // are no top controls to reveal; single-pull reload must remain available.
+        mBrowserControlsManager.setTopControlsHeight(
+                /* topControlsHeight= */ 0, /* topControlsMinHeight= */ 0);
+        setTopControlsOffset(0);
+        assertFalse(BrowserControlsUtils.areTopControlsFullyVisible(mBrowserControlsManager));
+
+        SwipeRefreshHandler handler =
+                SwipeRefreshHandler.from(mTab, context -> mSwipeRefreshLayout);
+        handler.initWebContents(mWebContents);
+        assertTrue(handler.start(OverscrollAction.PULL_TO_REFRESH, BackGestureEventSwipeEdge.LEFT));
+        performPullAndRelease(handler);
+        assertTrue(mSwipeRefreshLayout.isRefreshing());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testPullToRefresh_AllowedWhenTopControlsOffsetPositive() {
+        // A height-shrink animation can move top controls below their resting position (offset >
+        // 0), where getTopControlHiddenRatio() is non-zero even though the toolbar is visible.
+        setTopControlsOffset(10);
+        assertEquals(10, mBrowserControlsManager.getTopControlOffset());
+
+        SwipeRefreshHandler handler =
+                SwipeRefreshHandler.from(mTab, context -> mSwipeRefreshLayout);
+        handler.initWebContents(mWebContents);
+        assertTrue(handler.start(OverscrollAction.PULL_TO_REFRESH, BackGestureEventSwipeEdge.LEFT));
+        performPullAndRelease(handler);
+        assertTrue(mSwipeRefreshLayout.isRefreshing());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testPullToRefresh_AllowedWhenTopControlsLockedWithNegativeOffset() {
+        // When top controls cannot scroll (e.g. TopControlsLockCoordinator sets minHeight ==
+        // height on large tablets), getTopControlOffset() can briefly stay negative before the
+        // renderer syncs; single-pull reload must remain available.
+        mBrowserControlsManager.setTopControlsHeight(
+                /* topControlsHeight= */ TOP_CONTROLS_HEIGHT,
+                /* topControlsMinHeight= */ TOP_CONTROLS_HEIGHT);
+        setTopControlsOffset(PARTIAL_REVEAL_TOP_CONTROLS_OFFSET);
+        assertEquals(
+                PARTIAL_REVEAL_TOP_CONTROLS_OFFSET, mBrowserControlsManager.getTopControlOffset());
+
+        SwipeRefreshHandler handler =
+                SwipeRefreshHandler.from(mTab, context -> mSwipeRefreshLayout);
+        handler.initWebContents(mWebContents);
+        assertTrue(handler.start(OverscrollAction.PULL_TO_REFRESH, BackGestureEventSwipeEdge.LEFT));
+        performPullAndRelease(handler);
+        assertTrue(mSwipeRefreshLayout.isRefreshing());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testPullToRefresh_AllowedWhenBrowserControlsProviderUnavailable() {
+        BrowserControlsStateProviderSupplier.destroy(mProviderSupplier);
 
         assertPullToRefreshSucceedsWithHiddenControls();
     }
