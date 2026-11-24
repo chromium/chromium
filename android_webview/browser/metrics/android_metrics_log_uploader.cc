@@ -14,8 +14,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser/metrics/aw_histograms_allowlist.h"
 #include "android_webview/browser_jni_headers/AndroidMetricsLogUploader_jni.h"
-#include "android_webview/common/aw_features.h"
-#include "base/feature_list.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -30,10 +28,7 @@ AndroidMetricsLogUploader::AndroidMetricsLogUploader(
 AndroidMetricsLogUploader::~AndroidMetricsLogUploader() = default;
 
 int32_t UploadLogWithUploader(std::string log_data) {
-  if (base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewCppMetricsFiltering)) {
-    AndroidMetricsLogUploader::MaybeFilterLog(log_data);
-  }
+  AndroidMetricsLogUploader::MaybeFilterLog(log_data);
   JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> java_data = ToJavaByteArray(env, log_data);
 

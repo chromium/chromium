@@ -14,7 +14,12 @@
 namespace android_webview {
 
 // Keeps a list of which histograms to upload if histograms filtering is
-// applied. Replicates the Java HistogramsAllowlist.
+// applied.
+//
+// The list contains histograms that will be sampled at 100%. This is not done
+// for all histograms in order to preserve network usage and storage. See
+// go/clank-webview-uma#histograms-allowlist-guidance for reasons to add your
+// histogram to it and how to do it safely.
 class AwHistogramsAllowlist {
  public:
   static AwHistogramsAllowlist* GetInstance();

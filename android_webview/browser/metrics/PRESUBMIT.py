@@ -1,7 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Presubmit tests for android_webview/java/res/raw"""
+"""Presubmit tests for android_webview/browser/metrics"""
 
 import os
 import sys
@@ -14,10 +14,8 @@ def CheckChangeOnUpload(input_api, output_api):
 
 
 def _CheckHistogramsAllowlist(input_api, output_api):
-  """Checks that HistogramsAllowlist.java contains valid histograms."""
-  src_path = os.path.join(
-    input_api.PresubmitLocalPath(), '..', '..', '..', '..'
-  )
+  """Checks that aw_histograms_allowlist.cc contains valid histograms."""
+  src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
   histograms_path = os.path.join(src_path, 'tools', 'metrics', 'histograms')
   sys.path.append(histograms_path)
 

@@ -38,7 +38,6 @@ BASE_DECLARE_FEATURE(kWebViewContentRestrictionSupport);
 extern const base::FeatureParam<base::TimeDelta>
     kWebViewContentRestrictionTimeout;
 BASE_DECLARE_FEATURE(kWebViewCookieManagerSimplerUrlFixups);
-BASE_DECLARE_FEATURE(kWebViewCppMetricsFiltering);
 BASE_DECLARE_FEATURE(kWebViewCrossOriginAllowlistApi);
 BASE_DECLARE_FEATURE(kWebViewDownloadFavicons);
 BASE_DECLARE_FEATURE(kWebViewEarlyStartupTracing);

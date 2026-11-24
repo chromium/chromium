@@ -52,29 +52,19 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
                             && AwFeatureMap.isEnabled(
                                     AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
 
-            boolean useCppFiltering =
-                    AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CPP_METRICS_FILTERING);
-
             if (metricServiceEnabledOnlySdkRuntime) {
                 AwMetricsLogUploader uploader = new AwMetricsLogUploader();
                 // Open a connection during startup while connecting to other services such as
                 // VariationSeedServer to try to avoid spinning the nonembedded ":webview_service"
                 // twice.
                 uploader.initialize();
-                AndroidMetricsLogConsumer consumer =
-                        useCppFiltering ? uploader : new MetricsFilteringDecorator(uploader);
-                AndroidMetricsLogUploader.setConsumer(consumer);
+                AndroidMetricsLogUploader.setConsumer(uploader);
             } else {
-                AndroidMetricsLogConsumer directUploader =
+                AndroidMetricsLogUploader.setConsumer(
                         data -> {
                             PlatformServiceBridge.getInstance().logMetrics(data);
                             return HttpURLConnection.HTTP_OK;
-                        };
-                AndroidMetricsLogConsumer consumer =
-                        useCppFiltering
-                                ? directUploader
-                                : new MetricsFilteringDecorator(directUploader);
-                AndroidMetricsLogUploader.setConsumer(consumer);
+                        });
             }
         }
     }

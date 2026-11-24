@@ -277,7 +277,7 @@ def CheckWebViewHistogramsAllowlistOnUpload(
   allowlist_path_override=None,
   xml_paths_override=None,
 ):
-  """Checks that HistogramsAllowlist.java contains valid histograms.
+  """Checks that aw_histograms_allowlist.cc contains valid histograms.
 
   This function is a wrapper around
   ExecuteCheckWebViewHistogramsAllowlistOnUpload that adds caching support.
@@ -300,7 +300,7 @@ def CheckWebViewHistogramsAllowlistOnUpload(
 def ExecuteCheckWebViewHistogramsAllowlistOnUpload(
   input_api, output_api, allowlist_path_override, xml_paths_override
 ):
-  """Checks that HistogramsAllowlist.java contains valid histograms."""
+  """Checks that aw_histograms_allowlist.cc contains valid histograms."""
   xml_filter = lambda f: pathlib.Path(f.LocalPath()).suffix == '.xml'
   xml_files = input_api.AffectedFiles(
     include_deletes=False, file_filter=xml_filter

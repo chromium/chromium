@@ -90,6 +90,23 @@ TEST(AndroidMetricsLogUploaderTest, MaybeFilterLog_ApplyFiltering) {
             parsed_proto.histogram_event(1).name_hash());
 }
 
+TEST(AndroidMetricsLogUploaderTest, MaybeFilterLog_MissingSystemProfile) {
+  ChromeUserMetricsExtension proto;
+  // No system profile, so no filtering status.
+  proto.add_histogram_event()->set_name_hash(
+      base::HashMetricName(kDisallowedHistogram1));
+  proto.add_user_action_event()->set_name_hash(12345);
+
+  std::string log_data;
+  proto.SerializeToString(&log_data);
+  std::string original_log_data = log_data;
+
+  AndroidMetricsLogUploader::MaybeFilterLog(log_data);
+
+  // Verify the log is unchanged.
+  EXPECT_EQ(original_log_data, log_data);
+}
+
 TEST(AndroidMetricsLogUploaderTest, MaybeFilterLog_InvalidProto) {
   std::string log_data = "invalid proto data";
   std::string original_log_data = log_data;

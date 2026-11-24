@@ -1325,9 +1325,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_ENABLE_DNS_PLATFORM,
                 "Enables the resolution of hostnames via platform DNS APIs in WebView."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_CPP_METRICS_FILTERING,
-                "Enables WebView UMA metrics filtering in C++ instead of Java."),
-        Flag.baseFeature(
                 "QuicIgnoreRedundantOnNetworkMadeDefault",
                 "When enabled, Quic will ignore redundant OnNetworkMadeDefault calls."),
         Flag.baseFeature(

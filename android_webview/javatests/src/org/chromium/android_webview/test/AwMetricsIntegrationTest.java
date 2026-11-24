@@ -27,14 +27,10 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwWindowCoverageTracker;
-import org.chromium.android_webview.common.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.metrics.AndroidMetricsLogConsumer;
 import org.chromium.android_webview.metrics.AndroidMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.InstallerPackageType;
-import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -116,18 +112,11 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                     // via MetricsUploadService to avoid unexpected failures due to service
                     // connections, IPCs ... etc in tests as testing the service behaviour is
                     // outside the scope of these integeration tests.
-                    AndroidMetricsLogConsumer directUploader =
+                    AndroidMetricsLogUploader.setConsumer(
                             data -> {
                                 PlatformServiceBridge.getInstance().logMetrics(data);
                                 return HttpURLConnection.HTTP_OK;
-                            };
-                    boolean useCppFiltering =
-                            AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CPP_METRICS_FILTERING);
-                    AndroidMetricsLogConsumer consumer =
-                            useCppFiltering
-                                    ? directUploader
-                                    : new MetricsFilteringDecorator(directUploader);
-                    AndroidMetricsLogUploader.setConsumer(consumer);
+                            });
 
                     // Need to configure the metrics delay first, because granting consent triggers
                     // MetricsService initialization.
