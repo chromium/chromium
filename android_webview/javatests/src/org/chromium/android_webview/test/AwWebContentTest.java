@@ -6,8 +6,12 @@ package org.chromium.android_webview.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import androidx.test.filters.SmallTest;
+
+import com.android.webview.chromium.WebContentContextWrapper;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,6 +59,23 @@ public class AwWebContentTest {
                     AwContents awContents = webContent.getAwContents();
                     assertNotNull(awContents);
                     assertEquals(Arrays.asList(null, awContents, null), boundAwContents);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testContextWrapperCannotBeReused() {
+        StartupController startupController = new StartupController(/* delegate= */ null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AwWebContent webContent = new AwWebContent(startupController);
+                    WebContentContextWrapper wrapper =
+                            new WebContentContextWrapper(
+                                    mActivityTestRule.getActivity(), webContent);
+
+                    assertSame(webContent, WebContentContextWrapper.getWebContent(wrapper));
+                    assertNull(WebContentContextWrapper.getWebContent(wrapper));
                 });
     }
 

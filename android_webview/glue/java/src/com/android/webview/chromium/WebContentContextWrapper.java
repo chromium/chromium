@@ -64,7 +64,7 @@ public class WebContentContextWrapper extends ContextWrapper {
     @UiThread
     public static @Nullable AwWebContent getWebContent(Context context) {
         WebContentContextWrapper wrapper = get(context);
-        if (wrapper != null) {
+        if (wrapper != null && !wrapper.wasUsed()) {
             wrapper.markAsUsed();
             return wrapper.getWebContent();
         }
