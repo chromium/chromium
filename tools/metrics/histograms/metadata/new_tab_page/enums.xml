@@ -662,6 +662,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/threads_rail.ts:NTPThreadsRailAction) -->
 
+<!-- LINT.IfChange(NTPThreadsRailExpandedAction) -->
+
+<enum name="NTPThreadsRailExpandedAction">
+  <summary>
+    User actions on the expanded threads rail forwarded to Chrome.
+  </summary>
+  <int value="0" label="Close clicked"/>
+  <int value="1" label="New thread clicked"/>
+  <int value="2" label="Navigate clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/new_tab_page/left_hand_side.ts:NTPThreadsRailExpandedAction) -->
+
 <enum name="NTPTileTitleSource">
   <summary>
     The source where the displayed title of an NTP tile originates from.

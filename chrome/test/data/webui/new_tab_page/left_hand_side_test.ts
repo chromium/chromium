@@ -9,11 +9,13 @@ import 'chrome://new-tab-page/lazy_load.js';
 import type {IframeElement, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
 import {LhsClientAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {LeftHandSideElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, ThreadsRailExpandedAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -24,6 +26,7 @@ const EXPANDED_LHS_URL = `${EXPANDED_LHS_ORIGIN}/search?nem=341`;
 
 suite('NewTabPageLeftHandSideTest', () => {
   let leftHandSide: LeftHandSideElement;
+  let metrics: MetricsTracker;
   let windowProxy: TestMock<WindowProxy>;
 
   function getExpandedIframe(): IframeElement|null {
@@ -71,6 +74,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       lhsRailConfig: {items: []},
       threadsRailPreloadDebounceMs: 0,
     });
+    metrics = fakeMetricsPrivate();
     windowProxy = installMock(WindowProxy);
     // Prevents the iframe from actually loading the LHS page.
     windowProxy.setResultFor('createIframeSrc', '');
@@ -411,29 +415,27 @@ suite('NewTabPageLeftHandSideTest', () => {
   });
 
   ['pointerleave', 'focusout'].forEach(eventName => {
-    test(
-        `cancels preload timer on ${eventName}`,
-        async () => {
-          loadTimeData.overrideValues({
-            threadsRailPreloadDebounceMs: 100,
-          });
-          windowProxy.setResultFor('setTimeout', 42);
-          await createLeftHandSide();
+    test(`cancels preload timer on ${eventName}`, async () => {
+      loadTimeData.overrideValues({
+        threadsRailPreloadDebounceMs: 100,
+      });
+      windowProxy.setResultFor('setTimeout', 42);
+      await createLeftHandSide();
 
-          const folded =
-              leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+      const folded =
+          leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
 
-          folded.dispatchEvent(new Event('pointerenter'));
-          await microtasksFinished();
-          assertEquals(1, windowProxy.getCallCount('setTimeout'));
+      folded.dispatchEvent(new Event('pointerenter'));
+      await microtasksFinished();
+      assertEquals(1, windowProxy.getCallCount('setTimeout'));
 
-          folded.dispatchEvent(new Event(eventName));
-          await microtasksFinished();
-          assertEquals(1, windowProxy.getCallCount('clearTimeout'));
-          assertEquals(42, windowProxy.getArgs('clearTimeout')[0]);
-          assertEquals(0, windowProxy.getCallCount('ensureLazyLoaded'));
-          assertFalse(!!getExpandedIframe());
-        });
+      folded.dispatchEvent(new Event(eventName));
+      await microtasksFinished();
+      assertEquals(1, windowProxy.getCallCount('clearTimeout'));
+      assertEquals(42, windowProxy.getArgs('clearTimeout')[0]);
+      assertEquals(0, windowProxy.getCallCount('ensureLazyLoaded'));
+      assertFalse(!!getExpandedIframe());
+    });
   });
 
   test(
@@ -483,26 +485,24 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertEquals(1, windowProxy.getCallCount('setTimeout'));
       });
 
-  test(
-      'cancels pending preload timer when disconnected',
-      async () => {
-        loadTimeData.overrideValues({
-          threadsRailPreloadDebounceMs: 100,
-        });
-        windowProxy.setResultFor('setTimeout', 42);
-        await createLeftHandSide();
+  test('cancels pending preload timer when disconnected', async () => {
+    loadTimeData.overrideValues({
+      threadsRailPreloadDebounceMs: 100,
+    });
+    windowProxy.setResultFor('setTimeout', 42);
+    await createLeftHandSide();
 
-        const folded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    const folded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
 
-        folded.dispatchEvent(new Event('pointerenter'));
-        await microtasksFinished();
-        assertEquals(1, windowProxy.getCallCount('setTimeout'));
+    folded.dispatchEvent(new Event('pointerenter'));
+    await microtasksFinished();
+    assertEquals(1, windowProxy.getCallCount('setTimeout'));
 
-        leftHandSide.remove();
-        assertEquals(1, windowProxy.getCallCount('clearTimeout'));
-        assertEquals(42, windowProxy.getArgs('clearTimeout')[0]);
-      });
+    leftHandSide.remove();
+    assertEquals(1, windowProxy.getCallCount('clearTimeout'));
+    assertEquals(42, windowProxy.getArgs('clearTimeout')[0]);
+  });
 
   test(
       'waits for ensureLazyLoaded before stamping expanded iframe',
@@ -791,13 +791,12 @@ suite('NewTabPageLeftHandSideTest', () => {
             lhsRtlRect.right, expandedRtlRect.right, LAYOUT_TOLERANCE_PX);
       });
 
-  test(
-      'does not post NTP_LHS_SET_THEME while collapsed', async () => {
-        await createLeftHandSide();
-        ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
-            new CustomEvent(COLOR_PROVIDER_CHANGED));
-        assertEquals(0, windowProxy.getCallCount('postMessage'));
-      });
+  test('does not post NTP_LHS_SET_THEME while collapsed', async () => {
+    await createLeftHandSide();
+    ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+        new CustomEvent(COLOR_PROVIDER_CHANGED));
+    assertEquals(0, windowProxy.getCallCount('postMessage'));
+  });
 
   function getHostWidthProperty(): string {
     return leftHandSide.style.getPropertyValue('--cr-left-hand-side-width');
@@ -911,5 +910,113 @@ suite('NewTabPageLeftHandSideTest', () => {
         },
         message);
     assertEquals(EXPANDED_LHS_ORIGIN, targetOrigin);
+  });
+
+  test('records expanded iframe loaded and shown metrics', async () => {
+    await createLeftHandSide();
+    const folded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+
+    assertEquals(
+        0, metrics.count('NewTabPage.ThreadsRail.ExpandedIframeLoaded'));
+    assertEquals(0, metrics.count('NewTabPage.ThreadsRail.ExpandedShown'));
+
+    // Preloading and receiving NTP_LHS_READY while collapsed records
+    // ExpandedIframeLoaded once without recording ExpandedShown.
+    folded.dispatchEvent(new Event('pointerenter'));
+    await microtasksFinished();
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 280});
+    await microtasksFinished();
+    assertEquals(
+        1, metrics.count('NewTabPage.ThreadsRail.ExpandedIframeLoaded', true));
+    assertEquals(0, metrics.count('NewTabPage.ThreadsRail.ExpandedShown'));
+
+    // First expand records ExpandedShown.
+    folded.click();
+    await microtasksFinished();
+    assertEquals(
+        1, metrics.count('NewTabPage.ThreadsRail.ExpandedShown', true));
+
+    // Closing and re-expanding records ExpandedShown again without
+    // re-recording ExpandedIframeLoaded.
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+    await microtasksFinished();
+    assertEquals(
+        1, metrics.count('NewTabPage.ThreadsRail.ExpandedShown', true));
+
+    folded.click();
+    await microtasksFinished();
+    assertEquals(
+        2, metrics.count('NewTabPage.ThreadsRail.ExpandedShown', true));
+    assertEquals(
+        1, metrics.count('NewTabPage.ThreadsRail.ExpandedIframeLoaded', true));
+  });
+
+  test(
+      'records ExpandedShown once when clicked repeatedly before ready',
+      async () => {
+        await createLeftHandSide();
+        const folded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+
+        folded.click();
+        folded.click();
+        await microtasksFinished();
+        assertEquals(0, metrics.count('NewTabPage.ThreadsRail.ExpandedShown'));
+
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
+        await microtasksFinished();
+        assertEquals(
+            1, metrics.count('NewTabPage.ThreadsRail.ExpandedShown', true));
+        assertEquals(
+            1,
+            metrics.count('NewTabPage.ThreadsRail.ExpandedIframeLoaded', true));
+      });
+
+  test('records ExpandedAction metrics', async () => {
+    await createLeftHandSide();
+    await expandLeftHandSide();
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
+    await microtasksFinished();
+
+    // 1. NTP_LHS_NEW_THREAD records NEW_THREAD_CLICKED.
+    const whenOpenComposebox = eventToPromise('open-composebox', leftHandSide);
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_NEW_THREAD});
+    await whenOpenComposebox;
+    assertEquals(1, metrics.count('NewTabPage.ThreadsRail.ExpandedAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.ExpandedAction',
+            ThreadsRailExpandedAction.NEW_THREAD_CLICKED));
+
+    // 2. Invalid NTP_LHS_NAVIGATE URLs do not record NAVIGATE_CLICKED, while
+    // valid http(s) URLs do.
+    postLhsMessage({
+      type: NtpLhsMessageType.NTP_LHS_NAVIGATE,
+      url: 'javascript:alert(1)',
+    });
+    postLhsMessage({
+      type: NtpLhsMessageType.NTP_LHS_NAVIGATE,
+      url: 'https://www.google.com/search?q=hello',
+    });
+    assertEquals(2, metrics.count('NewTabPage.ThreadsRail.ExpandedAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.ExpandedAction',
+            ThreadsRailExpandedAction.NAVIGATE_CLICKED));
+
+    // 3. NTP_LHS_CLOSE records CLOSE_CLICKED only while expanded.
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+    await microtasksFinished();
+    assertEquals(3, metrics.count('NewTabPage.ThreadsRail.ExpandedAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.ExpandedAction',
+            ThreadsRailExpandedAction.CLOSE_CLICKED));
   });
 });

@@ -15,9 +15,31 @@ import {loadTimeData} from './i18n_setup.js';
 import type {IframeElement} from './iframe.js';
 import {getCss} from './left_hand_side.css.js';
 import {getHtml} from './left_hand_side.html.js';
+import {recordBoolean, recordEnumeration} from './metrics_utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 const DEFAULT_EXPANDED_LHS_WIDTH_PX = 261;
+
+// LINT.IfChange(NTPThreadsRailExpandedAction)
+/**
+ * User actions within the expanded threads rail forwarded to Chrome. This enum
+ * must match the numbering for NTPThreadsRailExpandedAction in enums.xml. These
+ * values are persisted to logs. Entries should not be renumbered, removed or
+ * reused.
+ */
+export enum ThreadsRailExpandedAction {
+  CLOSE_CLICKED = 0,
+  NEW_THREAD_CLICKED = 1,
+  NAVIGATE_CLICKED = 2,
+  MAX_VALUE = NAVIGATE_CLICKED,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPThreadsRailExpandedAction)
+
+function recordThreadsRailExpandedAction(action: ThreadsRailExpandedAction) {
+  recordEnumeration(
+      'NewTabPage.ThreadsRail.ExpandedAction', action,
+      ThreadsRailExpandedAction.MAX_VALUE + 1);
+}
 
 type NtpLhsThemeKey = keyof NtpLhsThemePalette;
 
@@ -172,6 +194,10 @@ export class LeftHandSideElement extends CrLitElement {
     super.updated(changedProperties);
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('view_') &&
+        this.view_ === LhsView.EXPANDED) {
+      recordBoolean('NewTabPage.ThreadsRail.ExpandedShown', true);
+    }
     if (changedPrivateProperties.has('isExpanded_') ||
         changedPrivateProperties.has('expandedWidth_') ||
         changedPrivateProperties.has('collapsedWidth_')) {
@@ -288,6 +314,11 @@ export class LeftHandSideElement extends CrLitElement {
 
     switch (data.type) {
       case NtpLhsMessageType.NTP_LHS_READY: {
+        // Search posts NTP_LHS_READY once on initial mount; guard with
+        // !isExpandedReady_ to ensure at most one sample per NTP.
+        if (!this.isExpandedReady_) {
+          recordBoolean('NewTabPage.ThreadsRail.ExpandedIframeLoaded', true);
+        }
         this.postThemeColors_();
         this.expandedWidth_ = typeof data.width === 'number' && data.width > 0 ?
             data.width :
@@ -296,10 +327,16 @@ export class LeftHandSideElement extends CrLitElement {
         break;
       }
       case NtpLhsMessageType.NTP_LHS_CLOSE: {
+        if (this.isExpanded_) {
+          recordThreadsRailExpandedAction(
+              ThreadsRailExpandedAction.CLOSE_CLICKED);
+        }
         this.isExpanded_ = false;
         break;
       }
       case NtpLhsMessageType.NTP_LHS_NEW_THREAD: {
+        recordThreadsRailExpandedAction(
+            ThreadsRailExpandedAction.NEW_THREAD_CLICKED);
         this.fire('open-composebox');
         break;
       }
@@ -313,6 +350,8 @@ export class LeftHandSideElement extends CrLitElement {
         if (url.protocol !== 'http:' && url.protocol !== 'https:') {
           return;
         }
+        recordThreadsRailExpandedAction(
+            ThreadsRailExpandedAction.NAVIGATE_CLICKED);
         WindowProxy.getInstance().navigate(data.url);
         break;
       }

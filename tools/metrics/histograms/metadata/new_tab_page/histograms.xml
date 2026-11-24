@@ -2568,9 +2568,45 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs count of each type of user click action (configured rail items, logo
     button, and folded rail background) within the native folded threads rail.
-    Only logged on the 1P NTP when hybrid rail mode is enabled. Note that
-    Incognito and Guest mode NTPs are not considered 1P and don't log this
-    histogram.
+    Only logged on the 1P NTP. Note that Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.ExpandedAction"
+    enum="NTPThreadsRailExpandedAction" expires_after="2027-05-30">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs count of each type of user click action forwarded from the expanded
+    threads rail iframe to Chrome (close rail, start new thread in composebox,
+    and navigate). Only logged on the 1P NTP. Note that Incognito and Guest mode
+    NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.ExpandedIframeLoaded"
+    enum="BooleanLoaded" expires_after="2027-05-30">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Recorded once per NTP when the expanded threads rail iframe finishes loading
+    and posts its first NTP_LHS_READY message (triggered after preloading on
+    hover, focus, or expand of the folded rail). Only true (Loaded) is recorded.
+    Only logged on the 1P NTP. Note that Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.ExpandedShown" enum="BooleanShown"
+    expires_after="2027-05-30">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Recorded each time the expanded threads rail iframe becomes visible on the
+    New Tab Page (including subsequent expansions after closing). Only logged on
+    the 1P NTP. Note that Incognito and Guest mode NTPs are not considered 1P
+    and don't log this histogram.
   </summary>
 </histogram>
 
@@ -2581,9 +2617,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Recorded when the native folded threads rail is shown on the New Tab Page.
-    This is recorded once when the threads rail element is attached to DOM (when
-    hybrid rail mode is enabled). Only logged on the 1P NTP. Note that Incognito
-    and Guest mode NTPs are not considered 1P and don't log this histogram.
+    This is recorded once when the threads rail element is attached to DOM. Only
+    logged on the 1P NTP. Note that Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
   </summary>
 </histogram>
 
