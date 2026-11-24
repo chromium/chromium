@@ -335,6 +335,8 @@ blink::mojom::CreateTranslatorError GetBlinkCreateTranslateError(
     case OnDeviceTranslationController::CreateTranslatorError::
         kNotEnoughDiskSpace:
       return blink::mojom::CreateTranslatorError::kNotEnoughDiskSpace;
+    case OnDeviceTranslationController::CreateTranslatorError::kOffline:
+      return blink::mojom::CreateTranslatorError::kOffline;
   }
 }
 

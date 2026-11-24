@@ -110,6 +110,10 @@ enum CreateTranslatorError {
   // The translator cannot be created, because there is not enough free disk
   // space to download the translation model.
   kNotEnoughDiskSpace = 14,
+
+  // The translator cannot be created, because the translation model must be
+  // downloaded and the device is offline.
+  kOffline = 15,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/translate/enums.xml:TranslatorApiCreateTranslatorError)
 

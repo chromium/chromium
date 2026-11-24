@@ -45,6 +45,8 @@ source_set("on_device_translation") {
     "//components/prefs",
     "//components/update_client",
     "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
   ]
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/dbus/image_loader" ]
@@ -79,6 +81,9 @@ source_set("unit_tests") {
     "//components/update_client",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

@@ -94,6 +94,22 @@ OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
   }
 }
 
+// Converts an install error to the error of the `create()` calls that wait for
+// the install. `failed_error` is the error for `InstallError::kFailed`.
+OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
+    InstallError error,
+    OnDeviceTranslationController::CreateTranslatorError failed_error) {
+  switch (error) {
+    case InstallError::kFailed:
+      return failed_error;
+    case InstallError::kNotEnoughDiskSpace:
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kNotEnoughDiskSpace;
+    case InstallError::kOffline:
+      return OnDeviceTranslationController::CreateTranslatorError::kOffline;
+  }
+}
+
 }  // namespace
 
 OnDeviceTranslationServiceController::PendingTask::PendingTask(
@@ -183,12 +199,6 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   LanguagePackRequirements language_pack_requirements =
       GetLanguagePackRequirements(*best_fit_source_language,
                                   *best_fit_target_language);
-  for (const auto& language_pack :
-       language_pack_requirements.to_be_registered_packs) {
-    RecordLanguagePairUma("Translate.OnDeviceTranslation.Download.LanguagePair",
-                          GetSourceLanguageCode(language_pack),
-                          GetTargetLanguageCode(language_pack));
-  }
   // Ask for every missing language pack, including the ones that were
   // registered before, so that a download that failed earlier is retried and
   // reports its outcome to this request.
@@ -355,10 +365,10 @@ void OnDeviceTranslationServiceController::OnLibraryInstallFailed(
     return;
   }
   // Every pending task waits for the library, so none of them can complete.
-  RejectPendingTasks([](const PendingTask&) { return true; },
-                     error == InstallError::kNotEnoughDiskSpace
-                         ? CreateTranslatorError::kNotEnoughDiskSpace
-                         : CreateTranslatorError::kLibraryInstallFailed);
+  RejectPendingTasks(
+      [](const PendingTask&) { return true; },
+      ToCreateTranslatorError(error,
+                              CreateTranslatorError::kLibraryInstallFailed));
 }
 
 void OnDeviceTranslationServiceController::OnLanguagePackInstallFailed(
@@ -371,9 +381,8 @@ void OnDeviceTranslationServiceController::OnLanguagePackInstallFailed(
       [language_pack](const PendingTask& task) {
         return task.required_packs.contains(language_pack);
       },
-      error == InstallError::kNotEnoughDiskSpace
-          ? CreateTranslatorError::kNotEnoughDiskSpace
-          : CreateTranslatorError::kLanguagePackDownloadFailed);
+      ToCreateTranslatorError(
+          error, CreateTranslatorError::kLanguagePackDownloadFailed));
 }
 
 void OnDeviceTranslationServiceController::RejectPendingTasks(

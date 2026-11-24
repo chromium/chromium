@@ -45,6 +45,7 @@ class OnDeviceTranslationController {
     kLibraryInstallFailed,
     kLanguagePackDownloadFailed,
     kNotEnoughDiskSpace,
+    kOffline,
   };
 
   enum class CanTranslateResult {

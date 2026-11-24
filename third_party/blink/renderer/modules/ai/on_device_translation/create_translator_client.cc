@@ -53,6 +53,9 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
     case CreateTranslatorError::kNotEnoughDiskSpace:
       return "There is not enough free disk space to download the translation "
              "model.";
+    case CreateTranslatorError::kOffline:
+      return "The translation model must be downloaded, but the device is "
+             "offline.";
   }
 }
 

@@ -19,6 +19,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/browser/on_device_translation/component_update_util.h"
@@ -28,6 +29,7 @@
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/installer.h"
+#include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom-forward.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -36,7 +38,10 @@
 #include "components/on_device_translation/public/supported_languages.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/network_change_notifier.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -58,6 +63,26 @@ const char kTranslateKitPackagePaths[] = "translate-kit-packages";
 std::string GetLanguagePackComponentId(LanguagePackKey language_pack) {
   return crx_file::id_util::GenerateIdFromHash(
       GetLanguagePackComponentConfig(language_pack).public_key_sha);
+}
+
+// Runs `callback` asynchronously with whether the device has a network
+// connection. A connection of unknown type counts as online.
+void CheckOnline(base::OnceCallback<void(bool)> callback) {
+  auto on_connection_type =
+      [](base::OnceCallback<void(bool)> callback,
+         net::NetworkChangeNotifier::ConnectionType type) {
+        std::move(callback).Run(type !=
+                                net::NetworkChangeNotifier::CONNECTION_NONE);
+      };
+  auto callbacks = base::SplitOnceCallback(std::move(callback));
+  net::NetworkChangeNotifier::ConnectionType type;
+  if (content::GetNetworkConnectionTracker()->GetConnectionType(
+          &type,
+          base::BindOnce(on_connection_type, std::move(callbacks.first)))) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(on_connection_type, std::move(callbacks.second), type));
+  }
 }
 
 std::optional<LanguagePackKey> FindLanguagePackKey(
@@ -363,6 +388,37 @@ void OnDeviceTranslationInstallerImpl::Init(
   if (on_ready_callback) {
     on_ready_callbacks_.push_back(std::move(on_ready_callback));
   }
+  if (library_install_in_progress_) {
+    // The callback waits for the install that runs. Don't check the connection
+    // again: a short offline moment, for example a network handover, must not
+    // fail an install that continues. Still ask the source, which ignores the
+    // request while its install runs. The source doesn't report every end of
+    // an install, for example when the periodic update check ran at the same
+    // time, so this request is how the install starts again. Until the source
+    // reports the end of an install, an offline device gets the error of the
+    // source instead of `kOffline` at once.
+    library_source_->Install();
+    return;
+  }
+  if (library_check_in_progress_) {
+    return;
+  }
+  library_check_in_progress_ = true;
+  CheckOnline(
+      base::BindOnce(&OnDeviceTranslationInstallerImpl::OnLibraryOnlineChecked,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnDeviceTranslationInstallerImpl::OnLibraryOnlineChecked(bool online) {
+  library_check_in_progress_ = false;
+  if (IsInit() || library_install_in_progress_) {
+    return;
+  }
+  if (!online) {
+    FailLibraryInstall(InstallError::kOffline);
+    return;
+  }
+  library_install_in_progress_ = true;
   library_source_->Install();
 }
 
@@ -378,6 +434,36 @@ void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
     return;
   }
 
+  if (language_pack_updates_in_progress_.contains(language_pack)) {
+    // A download of the pack runs. Don't check the connection again: a short
+    // offline moment, for example a network handover, must not fail a download
+    // that continues.
+    return;
+  }
+  if (!language_pack_checks_in_progress_.insert(language_pack).second) {
+    return;
+  }
+  CheckOnline(base::BindOnce(
+      &OnDeviceTranslationInstallerImpl::OnLanguagePackOnlineChecked,
+      weak_ptr_factory_.GetWeakPtr(), language_pack));
+}
+
+void OnDeviceTranslationInstallerImpl::OnLanguagePackOnlineChecked(
+    LanguagePackKey language_pack,
+    bool online) {
+  language_pack_checks_in_progress_.erase(language_pack);
+  if (!online) {
+    if (!InstalledLanguagePacks().contains(language_pack)) {
+      notifier_->NotifyLanguagePackInstallFailed(language_pack,
+                                                 InstallError::kOffline);
+    }
+    return;
+  }
+  DownloadLanguagePack(language_pack);
+}
+
+void OnDeviceTranslationInstallerImpl::DownloadLanguagePack(
+    LanguagePackKey language_pack) {
   // Calculate component IDs to track progress
   const std::string component_id = GetLanguagePackComponentId(language_pack);
 
@@ -400,6 +486,9 @@ void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
   }
 
   // Registers the TranslateKit language pack component.
+  RecordLanguagePairUma("Translate.OnDeviceTranslation.Download.LanguagePair",
+                        GetSourceLanguageCode(language_pack),
+                        GetTargetLanguageCode(language_pack));
   notifier_->StartProgressTracking(language_pack, {component_id});
   language_pack_updates_in_progress_.insert(language_pack);
   component_updater::RegisterTranslateKitLanguagePackComponent(
@@ -463,6 +552,7 @@ void OnDeviceTranslationInstallerImpl::RemoveObserver(Observer* observer) {
 
 void OnDeviceTranslationInstallerImpl::OnLibraryChanged() {
   if (IsInit()) {
+    library_install_in_progress_ = false;
     std::vector<base::RepeatingClosure> callbacks =
         std::exchange(on_ready_callbacks_, {});
     for (auto& callback : callbacks) {
@@ -474,6 +564,11 @@ void OnDeviceTranslationInstallerImpl::OnLibraryChanged() {
 
 void OnDeviceTranslationInstallerImpl::OnLibraryInstallFailed(
     InstallError error) {
+  FailLibraryInstall(error);
+}
+
+void OnDeviceTranslationInstallerImpl::FailLibraryInstall(InstallError error) {
+  library_install_in_progress_ = false;
   if (IsInit()) {
     return;
   }

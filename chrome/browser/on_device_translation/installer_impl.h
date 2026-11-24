@@ -55,6 +55,14 @@ class OnDeviceTranslationInstallerImpl
   // Requests an on-demand update of a registered language pack, unless one is
   // already in progress.
   void UpdateLanguagePackOnDemand(LanguagePackKey language_pack);
+
+  // Checks connectivity before `DownloadLanguagePack()` starts a download.
+  void OnLanguagePackOnlineChecked(LanguagePackKey language_pack, bool online);
+  void DownloadLanguagePack(LanguagePackKey language_pack);
+  void OnLibraryOnlineChecked(bool online);
+
+  // Ends the library install that `Init()` started with `error`.
+  void FailLibraryInstall(InstallError error);
   void OnLanguagePackUpdateFinished(LanguagePackKey language_pack,
                                     update_client::Error error);
 
@@ -65,8 +73,17 @@ class OnDeviceTranslationInstallerImpl
   const std::unique_ptr<TranslateKitLibrarySource> library_source_;
   // Callbacks passed to `Init()` that wait for the library.
   std::vector<base::RepeatingClosure> on_ready_callbacks_;
+
+  // Whether a library install that `Init()` started still runs. While it runs,
+  // `Init()` doesn't check the connection again.
+  bool library_install_in_progress_ = false;
+  // Whether a library connectivity check started by `Init()` is in flight.
+  bool library_check_in_progress_ = false;
   // Language packs that are being registered or updated on demand.
   std::set<LanguagePackKey> language_pack_updates_in_progress_;
+
+  // Language packs that wait for the checks before the download.
+  std::set<LanguagePackKey> language_pack_checks_in_progress_;
   // We hide away the logic to notify observers.
   class Notifier;
   std::unique_ptr<Notifier> notifier_;

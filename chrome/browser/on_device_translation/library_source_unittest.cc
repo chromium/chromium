@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/on_device_translation/component_updater_library_source.h"
@@ -115,7 +116,11 @@ TEST_F(TranslateKitLibrarySourceTest, InitWaitsForInstall) {
   base::MockCallback<base::RepeatingClosure> on_ready2;
   installer_->Init(on_ready1.Get());
   installer_->Init(on_ready2.Get());
-  EXPECT_EQ(library_source_->install_count(), 2);
+
+  // Concurrent `Init()` calls coalesce into a single connectivity check and
+  // install request.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return library_source_->install_count() == 1; }));
 
   EXPECT_CALL(on_ready1, Run());
   EXPECT_CALL(on_ready2, Run());
@@ -123,6 +128,20 @@ TEST_F(TranslateKitLibrarySourceTest, InitWaitsForInstall) {
   library_source_->FinishInstall(base::FilePath(kLibraryPath));
   EXPECT_TRUE(installer_->IsInit());
   installer_->RemoveObserver(&observer);
+}
+
+// Tests that `Init()` asks the source again while an install runs. The source
+// ignores the request if its install still runs, and starts a new one if the
+// earlier one ended without a report.
+TEST_F(TranslateKitLibrarySourceTest, InitAsksSourceWhileInstallRuns) {
+  CreateInstaller();
+  installer_->Init(base::RepeatingClosure());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return library_source_->install_count() == 1; }));
+
+  installer_->Init(base::RepeatingClosure());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return library_source_->install_count() == 2; }));
 }
 
 TEST_F(TranslateKitLibrarySourceTest, InitDropsCallbacksWhenInstallFails) {
@@ -133,6 +152,8 @@ TEST_F(TranslateKitLibrarySourceTest, InitDropsCallbacksWhenInstallFails) {
   base::MockCallback<base::RepeatingClosure> on_ready1;
   EXPECT_CALL(on_ready1, Run()).Times(0);
   installer_->Init(on_ready1.Get());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return library_source_->install_count() == 1; }));
   EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kFailed));
   library_source_->FailInstall(InstallError::kFailed);
   EXPECT_FALSE(installer_->IsInit());
@@ -141,7 +162,8 @@ TEST_F(TranslateKitLibrarySourceTest, InitDropsCallbacksWhenInstallFails) {
   // The next `Init()` retries the install.
   base::MockCallback<base::RepeatingClosure> on_ready2;
   installer_->Init(on_ready2.Get());
-  EXPECT_EQ(library_source_->install_count(), 2);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return library_source_->install_count() == 2; }));
   EXPECT_CALL(on_ready2, Run());
   EXPECT_CALL(observer, OnInstallationChanged());
   library_source_->FinishInstall(base::FilePath(kLibraryPath));

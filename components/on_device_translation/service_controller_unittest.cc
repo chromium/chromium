@@ -294,6 +294,26 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
 }
 
 TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorFailsWhenOffline) {
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      library_future;
+  service_controller_->CreateTranslator("en", "es",
+                                        library_future.GetCallback());
+  fake_installer_->FailLibraryInstallNow(InstallError::kOffline);
+  EXPECT_EQ(library_future.Get().error(), CreateTranslatorError::kOffline);
+
+  fake_installer_->InitNow(base::DoNothing());
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      pack_future;
+  service_controller_->CreateTranslator("en", "es", pack_future.GetCallback());
+  fake_installer_->FailLanguagePackInstallNow(LanguagePackKey::kEn_Es,
+                                              InstallError::kOffline);
+  EXPECT_EQ(pack_future.Get().error(), CreateTranslatorError::kOffline);
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
        LibraryInstallFailureIgnoredWhenLibraryIsInstalled) {
   fake_installer_->InitNow(base::DoNothing());
 

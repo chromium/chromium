@@ -189,6 +189,7 @@ TEST_F(TranslationManagerImplTest, RecordsCreateTranslatorError) {
            BlinkError::kLanguagePackDownloadFailed},
           {ControllerError::kNotEnoughDiskSpace,
            BlinkError::kNotEnoughDiskSpace},
+          {ControllerError::kOffline, BlinkError::kOffline},
       });
 
   base::HistogramTester histogram_tester;
@@ -221,9 +222,9 @@ TEST_F(TranslationManagerImplTest, DoesNotRecordErrorWhenClientDisconnects) {
   client.ResetReceiver();
   task_environment_.RunUntilIdle();
 
-  std::move(callback).Run(base::unexpected(
-      OnDeviceTranslationController::CreateTranslatorError::
-          kLibraryInstallFailed));
+  std::move(callback).Run(
+      base::unexpected(OnDeviceTranslationController::CreateTranslatorError::
+                           kLibraryInstallFailed));
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(client.WasCalled());

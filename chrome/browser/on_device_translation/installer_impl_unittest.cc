@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_path_override.h"
@@ -43,6 +44,8 @@
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/network_change_notifier.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -121,6 +124,9 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    // Tests that go offline must not leak that into later tests.
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
 #if BUILDFLAG(IS_CHROMEOS)
     fake_image_loader_client_ = nullptr;
     ash::ImageLoaderClient::Shutdown();
@@ -203,7 +209,6 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
   // with a dangling pointer to the policy installer.
   scoped_refptr<update_client::CrxInstaller> captured_installer_;
   content::BrowserTaskEnvironment task_environment_;
-
 };
 
 class MockObserver : public OnDeviceTranslationInstaller::Observer {
@@ -481,6 +486,152 @@ TEST_F(OnDeviceTranslationInstallerTest,
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
   task_environment_.RunUntilIdle();
+}
+
+// Tests that the library install fails right away when the device is offline,
+// and concurrent `Init()` calls coalesce into a single failure notification.
+TEST_F(OnDeviceTranslationInstallerTest, InitFailsWhenOffline) {
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kOffline))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::DoNothing());
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::DoNothing());
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that a language pack download doesn't start when the device is
+// offline and doesn't emit the download histogram.
+TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePackFailsWhenOffline) {
+  base::HistogramTester histogram_tester;
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLanguagePackInstallFailed(LanguagePackKey::kEn_Ja,
+                                                    InstallError::kOffline))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  run_loop.Run();
+  EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()
+                  ->RegisteredLanguagePacks()
+                  .empty());
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.Download.LanguagePair", 0);
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that `Init()` asks for the library again when an on-demand update ends
+// without a result, for example because the periodic update check ran at the
+// same time.
+TEST_F(OnDeviceTranslationInstallerTest, InitRetriesAfterUpdateInProgress) {
+  component_updater::Callback second_update_callback;
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          update_client::Error::UPDATE_IN_PROGRESS))
+      .WillOnce([&second_update_callback](
+                    const std::string&,
+                    component_updater::OnDemandUpdater::Priority,
+                    component_updater::Callback callback) {
+        second_update_callback = std::move(callback);
+      });
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnLibraryInstallFailed).Times(0);
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::RepeatingClosure());
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(OnDeviceTranslationInstaller::GetInstance()->IsInit());
+
+  // The update ended without a result. The next `Init()` asks again.
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::RepeatingClosure());
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(second_update_callback);
+
+  // The new request reports its result.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kFailed))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  std::move(second_update_callback).Run(update_client::Error::UPDATE_DISABLED);
+  run_loop.Run();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that a short offline moment doesn't fail a library install that runs.
+TEST_F(OnDeviceTranslationInstallerTest, InitKeepsInstallThatRunsWhenOffline) {
+  component_updater::Callback update_callback;
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce([&update_callback](const std::string&,
+                                   component_updater::OnDemandUpdater::Priority,
+                                   component_updater::Callback callback) {
+        update_callback = std::move(callback);
+      });
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kOffline))
+      .Times(0);
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::RepeatingClosure());
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(update_callback);
+
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::RepeatingClosure());
+  task_environment_.RunUntilIdle();
+
+  // The install that runs reports its own result.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kFailed))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  std::move(update_callback).Run(update_client::Error::UPDATE_DISABLED);
+  run_loop.Run();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that a short offline moment doesn't fail a language pack download that
+// runs.
+TEST_F(OnDeviceTranslationInstallerTest,
+       InstallLanguagePackKeepsDownloadThatRunsWhenOffline) {
+  CreateFakeInstallation(install_dir_.GetPath());
+  component_updater::Callback pack_update_callback;
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE))
+      .WillOnce(
+          [&pack_update_callback](const std::string&,
+                                  component_updater::OnDemandUpdater::Priority,
+                                  component_updater::Callback callback) {
+            pack_update_callback = std::move(callback);
+          });
+  {
+    base::RunLoop run_loop;
+    OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnLanguagePackInstallFailed).Times(0);
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(pack_update_callback);
+
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  task_environment_.RunUntilIdle();
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
 }
 
 TEST_F(OnDeviceTranslationInstallerTest, InstallationChanged) {
