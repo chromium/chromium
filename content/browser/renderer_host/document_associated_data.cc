@@ -95,9 +95,12 @@ DocumentAssociatedData::~DocumentAssociatedData() {
   if (network_restrictions_id_->HasOneRef()) {
     StoragePartitionImpl* storage_partition =
         GetWeakPtr()->GetStoragePartition();
-    storage_partition->ClearNetworkRestrictionsAfterDelay({
-        network_restrictions_id_->data,
-    });
+    if (storage_partition->HasNetworkRestrictions(
+            network_restrictions_id_->data)) {
+      storage_partition->ClearNetworkRestrictionsAfterDelay({
+          network_restrictions_id_->data,
+      });
+    }
   }
 
   // Last in case any DocumentService / DocumentUserData service destructors try
@@ -113,6 +116,8 @@ void DocumentAssociatedData::set_navigation_or_document_handle(
 void DocumentAssociatedData::SetNetworkRestrictionsId(
     base::UnguessableToken network_restrictions_id) {
   CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
+  CHECK_EQ(network_restrictions_id_->data,
+           network::GetNoOpNetworkRestrictionsId(), base::NotFatalUntil::M165);
   network_restrictions_id_ =
       base::MakeRefCounted<base::RefCountedData<base::UnguessableToken>>(
           network_restrictions_id);
@@ -122,6 +127,8 @@ void DocumentAssociatedData::ShareNetworkRestrictionsId(
     scoped_refptr<base::RefCountedData<base::UnguessableToken>>
         network_restrictions_id) {
   CHECK(network_restrictions_id, base::NotFatalUntil::M165);
+  CHECK_EQ(network_restrictions_id_->data,
+           network::GetNoOpNetworkRestrictionsId(), base::NotFatalUntil::M165);
   network_restrictions_id_ = std::move(network_restrictions_id);
 }
 

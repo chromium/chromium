@@ -44,15 +44,7 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
     blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
     base::TimeDelta time_since_last_check,
     ServiceWorkerContextCore* context,
-    blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object,
-    // The network restriction ID of the creator (e.g., frame) from which this
-    // worker may inherit restrictions.
-    const std::optional<base::UnguessableToken>&
-        creator_network_restrictions_id,
-    // A unique token identifying the new version's network restrictions in the
-    // network service.
-    const base::UnguessableToken& network_restrictions_id,
-    PolicyContainerPolicies creator_policies)
+    blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object)
     : main_script_url_(main_script_url),
       main_script_resource_id_(main_script_resource_id),
       main_script_sha256_checksum_(main_script_sha256_checksum),
@@ -64,10 +56,7 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
       update_via_cache_(update_via_cache),
       time_since_last_check_(time_since_last_check),
       context_(context),
-      fetch_client_settings_object_(std::move(fetch_client_settings_object)),
-      creator_network_restrictions_id_(creator_network_restrictions_id),
-      network_restrictions_id_(network_restrictions_id),
-      creator_policies_(std::move(creator_policies)) {
+      fetch_client_settings_object_(std::move(fetch_client_settings_object)) {
   CHECK(context_, base::NotFatalUntil::M159);
   CHECK(fetch_client_settings_object_, base::NotFatalUntil::M159);
   // TODO(crbug.com/565874976): CHECK-exclusion: Convert to a CHECK once we
@@ -288,10 +277,6 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
           : ServiceWorkerSingleScriptUpdateChecker::ScriptChecksumUpdateOption::
                 kForceUpdate,
       version_to_update_->key(),
-      // Passed through to enable inheriting restrictions from the creator and
-      // establishing the new version's own restrictions during the script
-      // update check.
-      network_restrictions_id_, creator_policies_.Clone(),
       base::BindOnce(&ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished,
                      weak_factory_.GetWeakPtr(), resource_id));
 }

@@ -2474,6 +2474,11 @@ NavigationRequest::~NavigationRequest() {
       }
     }
     subframe_history_navigation_throttles_.clear();
+
+    if (network_restrictions_storage_partition_) {
+      network_restrictions_storage_partition_
+          ->ClearNetworkRestrictionsAfterDelay({network_restrictions_id_});
+    }
   }
 
   // If this NavigationRequest is the last one referencing the pending
@@ -3632,6 +3637,8 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
   navigation_handle_timing_ = NavigationHandleTiming();
 
   policy_container_builder_->ResetForCrossDocumentRestart();
+  CHECK(!network_restrictions_storage_partition_);
+  network_restrictions_id_ = network::GetNoOpNetworkRestrictionsId();
   commit_params_->soft_navigation_heuristics_task_id = std::nullopt;
 
   CheckSoftNavigationHeuristicsInvariants();
@@ -6122,6 +6129,16 @@ void NavigationRequest::OnRequestFailedInternal(
   // RenderFrameHost R2 to commit an error page after this, deleting R1 won't
   // try to delete this NavigationRequest along with it.
   render_frame_host_ = std::nullopt;
+
+  if (network_restrictions_storage_partition_) {
+    network_restrictions_storage_partition_->ClearNetworkRestrictionsAfterDelay(
+        {network_restrictions_id_});
+    network_restrictions_storage_partition_.reset();
+  }
+  // Browser-generated error pages commit unrestricted (with the NoOp ID) rather
+  // than keeping restrictions registered for a failed response or an unshared
+  // copy of the active document's ID from a failed same-document navigation.
+  network_restrictions_id_ = network::GetNoOpNetworkRestrictionsId();
 
   // Do not update ssl_info_ on HTTP_RESPONSE_CODE_FAILURE (e.g., HTTP 4xx/5xx
   // errors). In these cases, URLLoaderCompletionStatus does not have ssl_info.
@@ -9407,6 +9424,21 @@ void NavigationRequest::OnNavigationEventProcessed(
       return;
   }
   NOTREACHED();
+}
+
+void NavigationRequest::RegisterNetworkRestrictions(
+    network::ConnectionAllowlists allowlists,
+    base::OnceClosure on_complete) {
+  CHECK(!network_restrictions_id_.is_empty());
+  CHECK_NE(network_restrictions_id_, network::GetNoOpNetworkRestrictionsId());
+  CHECK(!network_restrictions_storage_partition_, base::NotFatalUntil::M165);
+  CHECK(GetRenderFrameHost());
+  StoragePartitionImpl* storage_partition =
+      GetRenderFrameHost()->GetStoragePartition();
+  network_restrictions_storage_partition_ = storage_partition->GetWeakPtr();
+  storage_partition->RestrictNetworkForIdsInNetworkContext(
+      {{network_restrictions_id_, std::move(allowlists)}},
+      std::move(on_complete));
 }
 
 void NavigationRequest::OnWillStartRequestProcessed(

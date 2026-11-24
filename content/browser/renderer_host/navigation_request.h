@@ -135,6 +135,7 @@ class PrerenderHostRegistry;
 class RenderFrameHostCSPContext;
 class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;
+class StoragePartitionImpl;
 class SubframeHistoryNavigationThrottle;
 
 enum class ErrorPageProcess;
@@ -1890,6 +1891,12 @@ class CONTENT_EXPORT NavigationRequest
       const base::UnguessableToken& network_restrictions_id) {
     network_restrictions_id_ = network_restrictions_id;
   }
+
+  // Registers `allowlists` for `network_restrictions_id_` in the target
+  // RenderFrameHost's StoragePartitionImpl and records the partition so the
+  // restrictions are cleared if this navigation fails or never commits.
+  void RegisterNetworkRestrictions(network::ConnectionAllowlists allowlists,
+                                   base::OnceClosure on_complete);
 
   bool HasResumeAfterDeferredCommitListener() const {
     return resume_after_deferred_commit_listener_.is_valid();
@@ -3929,6 +3936,15 @@ class CONTENT_EXPORT NavigationRequest
   // cross-document navigations.
   base::UnguessableToken network_restrictions_id_ =
       network::GetNoOpNetworkRestrictionsId();
+
+  // Tracks the StoragePartitionImpl where `network_restrictions_id_` was
+  // registered prior to commit so restrictions are cleared if the navigation
+  // fails or never commits.
+  // TODO(crbug.com/580435305): Wrap `network_restrictions_id_` and
+  // `WeakPtr<StoragePartitionImpl>` in a ref-counted RAII handle that clears
+  // registered restrictions on destruction, shared across NavigationRequest,
+  // DocumentAssociatedData, and worker hosts.
+  base::WeakPtr<StoragePartitionImpl> network_restrictions_storage_partition_;
 
   // Connection-Allowlist feature: set to true when this navigation is blocked
   // because the initiator's Connection-Allowlist disallows the destination URL

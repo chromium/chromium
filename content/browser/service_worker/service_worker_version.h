@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/sanitized_object.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -78,6 +79,7 @@ class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerInstalledScriptsSender;
 struct ServiceWorkerVersionInfo;
+class StoragePartitionImpl;
 
 namespace service_worker_controllee_request_handler_unittest {
 class ServiceWorkerControlleeRequestHandlerTest;
@@ -1486,6 +1488,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // A unique token identifying this worker's network restrictions in the
   // network service.
   base::UnguessableToken network_restrictions_id_;
+  // Cached so `~ServiceWorkerVersion()` can clear `network_restrictions_id_`
+  // even if `context_` was destroyed/recreated (e.g. `DeleteAndStartOver()`)
+  // while `StoragePartitionImpl` remains alive.
+  base::WeakPtr<StoragePartitionImpl> storage_partition_;
   // Whether the network restrictions for this worker have been registered with
   // the network service.
   bool network_restrictions_registered_ = false;

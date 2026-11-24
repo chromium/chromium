@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -32,6 +33,7 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_registry.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -89,8 +91,7 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
            creator_policy_container_policies_.connection_allowlists.report_only
                .has_value())
               ? base::UnguessableToken::Create()
-              : network::GetNoOpNetworkRestrictionsId()),
-      network_restrictions_id_(base::UnguessableToken::Create()) {
+              : network::GetNoOpNetworkRestrictionsId()) {
   CHECK(context_);
   CHECK(outside_fetch_client_settings_object_);
   CHECK(outside_fetch_client_settings_object_->policy_container_policies);
@@ -141,8 +142,7 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
            creator_policy_container_policies_.connection_allowlists.report_only
                .has_value())
               ? base::UnguessableToken::Create()
-              : network::GetNoOpNetworkRestrictionsId()),
-      network_restrictions_id_(base::UnguessableToken::Create()) {
+              : network::GetNoOpNetworkRestrictionsId()) {
   CHECK(context_);
   CHECK(outside_fetch_client_settings_object_);
   CHECK(outside_fetch_client_settings_object_->policy_container_policies);
@@ -152,10 +152,10 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
 ServiceWorkerRegisterJob::~ServiceWorkerRegisterJob() {
   DCHECK(phase_ == INITIAL || phase_ == COMPLETE || phase_ == ABORT)
       << "Jobs should only be interrupted during shutdown.";
-  if (creator_network_restrictions_id_ !=
-          network::GetNoOpNetworkRestrictionsId() &&
-      context_ && context_->wrapper() &&
-      context_->wrapper()->storage_partition()) {
+  if (context_ && context_->wrapper() &&
+      context_->wrapper()->storage_partition() &&
+      context_->wrapper()->storage_partition()->HasNetworkRestrictions(
+          creator_network_restrictions_id_)) {
     context_->wrapper()
         ->storage_partition()
         ->ClearNetworkRestrictionsAfterDelay(
@@ -458,11 +458,13 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
   }
 
   context_->registry().NotifyInstallingRegistration(registration());
-  // The network restriction IDs are passed to the new version to enable
-  // restrictions from the creator and establishing its own restrictions.
+  // `creator_policy_container_policies_` is passed to the new version to
+  // inherit policies from the creator; the new version mints its own
+  // `network_restrictions_id_`.
   context_->registry().CreateNewVersion(
       registration(), script_url_, worker_script_type_,
-      creator_network_restrictions_id_, network_restrictions_id_,
+      creator_network_restrictions_id_,
+      /*network_restrictions_id=*/std::nullopt,
       creator_policy_container_policies_.Clone(),
       base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
                      weak_factory_.GetWeakPtr()));
@@ -700,7 +702,8 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
                        weak_factory_.GetWeakPtr());
     context_->registry().CreateNewVersion(
         registration(), script_url_, worker_script_type_,
-        creator_network_restrictions_id_, network_restrictions_id_,
+        creator_network_restrictions_id_,
+        /*network_restrictions_id=*/std::nullopt,
         creator_policy_container_policies_.Clone(), std::move(next_task));
 
     return;
@@ -723,9 +726,7 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
       script_sha256_chekcsum, version_to_update, std::move(loader_factory),
       force_bypass_cache_, worker_script_type_,
       registration()->update_via_cache(), time_since_last_check, context_,
-      outside_fetch_client_settings_object_.Clone(),
-      creator_network_restrictions_id_, network_restrictions_id_,
-      creator_policy_container_policies_.Clone());
+      outside_fetch_client_settings_object_.Clone());
   update_checker_->Start(
       base::BindOnce(&ServiceWorkerRegisterJob::OnUpdateCheckFinished,
                      weak_factory_.GetWeakPtr()));

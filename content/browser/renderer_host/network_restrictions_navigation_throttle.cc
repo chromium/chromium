@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/network_restrictions_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -11,7 +13,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
-#include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/connection_allowlist_metrics.h"
 #include "services/network/public/cpp/features.h"
 
@@ -54,8 +55,7 @@ NetworkRestrictionsNavigationThrottle::NetworkRestrictionsResult
 NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
     NavigationRequest& navigation_request,
     base::OnceClosure on_complete) {
-  auto network_restrictions_id = navigation_request.network_restrictions_id();
-  CHECK(!network_restrictions_id.is_empty());
+  CHECK(!navigation_request.network_restrictions_id().is_empty());
 
   const auto& policy_container_policies =
       navigation_request.GetPolicyContainerPolicies();
@@ -101,11 +101,8 @@ NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
   // and obtained a document token.
   allowlists.reporting_source =
       navigation_request.GetRenderFrameHost()->GetReportingSource();
-  navigation_request.GetRenderFrameHost()
-      ->GetStoragePartition()
-      ->RestrictNetworkForIdsInNetworkContext(
-          {{network_restrictions_id, std::move(allowlists)}},
-          std::move(on_complete));
+  navigation_request.RegisterNetworkRestrictions(std::move(allowlists),
+                                                 std::move(on_complete));
 
   return NetworkRestrictionsResult::kDefer;
 }

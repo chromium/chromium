@@ -331,7 +331,12 @@ ServiceWorkerVersion::ServiceWorkerVersion(
       creator_network_restrictions_id_(creator_network_restrictions_id),
       creator_policies_(creator_policies.Clone()),
       network_restrictions_id_(
-          network_restrictions_id.value_or(base::UnguessableToken::Create())) {
+          network_restrictions_id.value_or(base::UnguessableToken::Create())),
+      storage_partition_(
+          (context_ && context_->wrapper() &&
+           context_->wrapper()->storage_partition())
+              ? context_->wrapper()->storage_partition()->GetWeakPtr()
+              : nullptr) {
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId, version_id);
   DCHECK(context_);
   DCHECK(registration);
@@ -373,6 +378,20 @@ ServiceWorkerVersion::~ServiceWorkerVersion() {
 
   if (context_) {
     context_->RemoveLiveVersion(version_id_);
+  }
+
+  // Note: `ServiceWorkerNewScriptFetcher` and `ServiceWorkerNewScriptLoader`
+  // hold a `scoped_refptr<ServiceWorkerVersion>`, so
+  // `NetworkRestrictionsWorkerThrottle` cannot register
+  // `network_restrictions_id_` after `~ServiceWorkerVersion()`.
+  // TODO(crbug.com/580435305): Guard `NetworkRestrictionsWorkerThrottle`
+  // registration with an owner `WeakPtr` (or ref-counted RAII handle) so
+  // in-flight `WorkerScriptFetcher` loads cannot register restrictions after
+  // `DedicatedWorkerHost` or `SharedWorkerHost` destruction.
+  if (storage_partition_ &&
+      storage_partition_->HasNetworkRestrictions(network_restrictions_id_)) {
+    storage_partition_->ClearNetworkRestrictionsAfterDelay(
+        {network_restrictions_id_});
   }
 
   embedded_worker_->RemoveObserver(this);

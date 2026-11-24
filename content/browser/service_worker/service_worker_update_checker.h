@@ -108,11 +108,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
       blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
       base::TimeDelta time_since_last_check,
       ServiceWorkerContextCore* context,
-      blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object,
-      const std::optional<base::UnguessableToken>&
-          creator_network_restrictions_id,
-      const base::UnguessableToken& network_restrictions_id,
-      PolicyContainerPolicies creator_policies);
+      blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object);
 
   ServiceWorkerUpdateChecker(const ServiceWorkerUpdateChecker&) = delete;
   ServiceWorkerUpdateChecker& operator=(const ServiceWorkerUpdateChecker&) =
@@ -195,10 +191,6 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
   const raw_ptr<ServiceWorkerContextCore> context_;
 
   blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object_;
-
-  const std::optional<base::UnguessableToken> creator_network_restrictions_id_;
-  const base::UnguessableToken network_restrictions_id_;
-  const PolicyContainerPolicies creator_policies_;
 
   base::WeakPtrFactory<ServiceWorkerUpdateChecker> weak_factory_{this};
 };

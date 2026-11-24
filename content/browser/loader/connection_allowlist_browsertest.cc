@@ -10,24 +10,32 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/request_service.h"
@@ -36,6 +44,8 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/email_verifier.h"
@@ -51,17 +61,20 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/service_worker_test_helpers.h"
+#include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_report.h"
@@ -74,10 +87,15 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/connection_allowlist_metrics.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/cpp/originating_process_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,6 +104,8 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/email_verification_request.mojom.h"
@@ -7038,6 +7058,553 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
   EXPECT_EQ(*connection, other_url.spec());
 }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+class ResponseTestThrottle : public NavigationThrottle {
+ public:
+  ResponseTestThrottle(NavigationThrottleRegistry& registry,
+                       const GURL& target_url,
+                       ThrottleAction action,
+                       base::OnceCallback<void(const base::UnguessableToken&)>
+                           on_will_process_response)
+      : NavigationThrottle(registry),
+        target_url_(target_url),
+        action_(action),
+        on_will_process_response_(std::move(on_will_process_response)) {}
+  ~ResponseTestThrottle() override = default;
+
+  ThrottleCheckResult WillProcessResponse() override {
+    if (navigation_handle()->GetURL() != target_url_) {
+      return PROCEED;
+    }
+    if (on_will_process_response_) {
+      std::move(on_will_process_response_)
+          .Run(NavigationRequest::From(navigation_handle())
+                   ->network_restrictions_id());
+    }
+    return action_;
+  }
+
+  const char* GetNameForLogging() override { return "ResponseTestThrottle"; }
+
+ private:
+  const GURL target_url_;
+  const ThrottleAction action_;
+  base::OnceCallback<void(const base::UnguessableToken&)>
+      on_will_process_response_;
+};
+
+int FetchWithNetworkRestrictionsId(
+    StoragePartitionImpl* storage_partition,
+    const base::UnguessableToken& network_restrictions_id,
+    const GURL& url) {
+  storage_partition->FlushNetworkInterfaceForTesting();
+
+  auto params = network::mojom::URLLoaderFactoryParams::New();
+  params->process_id = network::OriginatingProcessId::browser();
+  params->is_orb_enabled = false;
+  params->network_restrictions_id = network_restrictions_id;
+  params->isolation_info = net::IsolationInfo::CreateTransient(std::nullopt);
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  storage_partition->GetNetworkContext()->CreateURLLoaderFactory(
+      factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = url;
+
+  SimpleURLLoaderTestHelper loader_helper;
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(std::move(request),
+                                       TRAFFIC_ANNOTATION_FOR_TESTS);
+  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      factory.get(), loader_helper.GetCallback());
+  loader_helper.WaitForCallback();
+  return loader->NetError();
+}
+
+void WaitUntilNetworkRestrictionsCount(StoragePartitionImpl* storage_partition,
+                                       size_t expected_count) {
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return storage_partition->GetNetworkRestrictionsCountForTesting() ==
+           expected_count;
+  }));
+}
+
+// Regression test: navigations that register a `network_restrictions_id` and
+// then either (a) are aborted before commit or (b) fail in
+// `WillProcessResponse` and commit an error page must clear the registered
+// restrictions from both `StoragePartitionImpl` and `NetworkContext`, and
+// commit the error page with the NoOp `network_restrictions_id`.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       AbortedNavigationBeforeCommitClearsNetworkRestrictions) {
+  RegisterResponse("/unrestricted.html",
+                   ResponseEntry("<html><body>Unrestricted</body></html>", {}));
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Restricted</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse("/resource.txt",
+                   ResponseEntry("ok", {{"Access-Control-Allow-Origin", "*"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL unrestricted_url =
+      embedded_https_test_server().GetURL("a.test", "/unrestricted.html");
+  GURL restricted_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL cross_origin_resource_url =
+      embedded_https_test_server().GetURL("b.test", "/resource.txt");
+
+  ASSERT_TRUE(NavigateToURL(shell(), unrestricted_url));
+
+  auto* storage_partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
+  storage_partition->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), base::DoNothing());
+  EXPECT_EQ(0u, storage_partition->GetNetworkRestrictionsCountForTesting());
+
+  // (a) Cancel/stop the navigation while deferred at `WillProcessResponse`,
+  // exercising `!HasCommitted()` in `~NavigationRequest()`.
+  {
+    base::UnguessableToken aborted_id;
+    bool was_registered_at_response = false;
+    base::RunLoop response_loop;
+
+    TestNavigationThrottleInserter throttle_inserter(
+        shell()->web_contents(),
+        base::BindLambdaForTesting([&](NavigationThrottleRegistry& registry) {
+          registry.AddThrottle(std::make_unique<ResponseTestThrottle>(
+              registry, restricted_url, NavigationThrottle::DEFER,
+              base::BindLambdaForTesting([&](const base::UnguessableToken& id) {
+                aborted_id = id;
+                was_registered_at_response =
+                    storage_partition->HasNetworkRestrictions(id);
+                response_loop.Quit();
+              })));
+        }));
+
+    shell()->LoadURL(restricted_url);
+    response_loop.Run();
+
+    ASSERT_FALSE(aborted_id.is_empty());
+    EXPECT_TRUE(was_registered_at_response);
+    EXPECT_TRUE(storage_partition->HasNetworkRestrictions(aborted_id));
+    EXPECT_EQ(1u, storage_partition->GetNetworkRestrictionsCountForTesting());
+    EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+              FetchWithNetworkRestrictionsId(storage_partition, aborted_id,
+                                             cross_origin_resource_url));
+
+    shell()->Stop();
+    WaitUntilNetworkRestrictionsCount(storage_partition, 0u);
+
+    EXPECT_FALSE(storage_partition->HasNetworkRestrictions(aborted_id));
+    EXPECT_EQ(0u, storage_partition->GetNetworkRestrictionsCountForTesting());
+    EXPECT_EQ(net::OK,
+              FetchWithNetworkRestrictionsId(storage_partition, aborted_id,
+                                             cross_origin_resource_url));
+  }
+
+  // (b) Return `NavigationThrottle::BLOCK_RESPONSE` in `WillProcessResponse` so
+  // an error page commits via `OnRequestFailedInternal`.
+  {
+    base::UnguessableToken blocked_id;
+    bool was_registered_at_response = false;
+
+    TestNavigationThrottleInserter throttle_inserter(
+        shell()->web_contents(),
+        base::BindLambdaForTesting([&](NavigationThrottleRegistry& registry) {
+          registry.AddThrottle(std::make_unique<ResponseTestThrottle>(
+              registry, restricted_url, NavigationThrottle::BLOCK_RESPONSE,
+              base::BindLambdaForTesting([&](const base::UnguessableToken& id) {
+                blocked_id = id;
+                was_registered_at_response =
+                    storage_partition->HasNetworkRestrictions(id);
+              })));
+        }));
+
+    EXPECT_FALSE(NavigateToURL(shell(), restricted_url));
+    ASSERT_TRUE(
+        shell()->web_contents()->GetController().GetLastCommittedEntry());
+    EXPECT_EQ(PAGE_TYPE_ERROR, shell()
+                                   ->web_contents()
+                                   ->GetController()
+                                   .GetLastCommittedEntry()
+                                   ->GetPageType());
+    EXPECT_EQ(network::GetNoOpNetworkRestrictionsId(),
+              shell()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame()
+                  ->GetNetworkRestrictionsID());
+
+    WaitUntilNetworkRestrictionsCount(storage_partition, 0u);
+
+    ASSERT_FALSE(blocked_id.is_empty());
+    ASSERT_NE(blocked_id, network::GetNoOpNetworkRestrictionsId());
+    EXPECT_TRUE(was_registered_at_response);
+    EXPECT_FALSE(storage_partition->HasNetworkRestrictions(blocked_id));
+    EXPECT_EQ(0u, storage_partition->GetNetworkRestrictionsCountForTesting());
+    EXPECT_EQ(net::OK,
+              FetchWithNetworkRestrictionsId(storage_partition, blocked_id,
+                                             cross_origin_resource_url));
+  }
+}
+
+// Regression test:
+// 1. An identical Service Worker update check (`reg.update()` -> `kIdentical`)
+//    must not register or leak a candidate `network_restrictions_id`.
+// 2. Stopping and restarting an in-memory `ServiceWorkerVersion` preserves its
+//    single `network_restrictions_id_` registration, and stopping the worker
+//    once no live `ServiceWorkerRegistration` / `ServiceWorkerVersion`
+//    references remain clears its `network_restrictions_id_`.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    ServiceWorkerStopAndIdenticalUpdateCheckClearNetworkRestrictions) {
+  RegisterResponse("/imported.js",
+                   ResponseEntry("// imported script\n",
+                                 {{"Content-Type", "text/javascript"},
+                                  {"Connection-Allowlist", "()"}}));
+  RegisterResponse(
+      "/sw.js",
+      ResponseEntry(
+          "importScripts('/imported.js');\n"
+          "self.addEventListener('install', e => self.skipWaiting());\n"
+          "self.addEventListener('activate', e => "
+          "e.waitUntil(self.clients.claim()));\n"
+          "self.addEventListener('fetch', event => {\n"
+          "  if (event.request.url.includes('/sw-fetch-resource')) {\n"
+          "    event.respondWith(fetch(event.request));\n"
+          "  }\n"
+          "});\n",
+          {{"Content-Type", "text/javascript"},
+           {"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse("/page.html",
+                   ResponseEntry("<html><body>Unrestricted</body></html>", {}));
+  RegisterResponse("/sw-fetch-resource", ResponseEntry("ok", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL page_a_url = embedded_https_test_server().GetURL("a.test", "/page.html");
+  GURL page_b_url = embedded_https_test_server().GetURL("b.test", "/page.html");
+  GURL scope_url = embedded_https_test_server().GetURL("a.test", "/");
+  GURL same_origin_resource_url =
+      embedded_https_test_server().GetURL("a.test", "/sw-fetch-resource");
+  GURL cross_origin_resource_url =
+      embedded_https_test_server().GetURL("b.test", "/sw-fetch-resource");
+
+  auto* storage_partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
+  storage_partition->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), base::DoNothing());
+
+  URLLoaderMonitor monitor;
+  ASSERT_TRUE(NavigateToURL(shell(), page_a_url));
+  EXPECT_EQ(0u, storage_partition->GetNetworkRestrictionsCountForTesting());
+
+  // Register and activate `/sw.js` with `{updateViaCache: 'none'}`.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         R"(
+            (async () => {
+              const reg = await navigator.serviceWorker.register(
+                  '/sw.js', {updateViaCache: 'none'});
+              await new Promise(resolve => {
+                const worker = reg.installing || reg.waiting || reg.active;
+                if (worker.state === 'activated') {
+                  resolve();
+                } else {
+                  worker.addEventListener('statechange', () => {
+                    if (worker.state === 'activated') {
+                      resolve();
+                    }
+                  });
+                }
+              });
+              window.swReg = reg;
+              return !!navigator.serviceWorker.controller;
+            })();
+          )"));
+
+  EXPECT_EQ(1u, storage_partition->GetNetworkRestrictionsCountForTesting());
+
+  // Verify same-origin subresource fetch from SW succeeds while cross-origin
+  // fetch from SW fails with `ERR_NETWORK_ACCESS_REVOKED`.
+  EXPECT_EQ("ok", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         JsReplace("fetch($1).then(r => r.text())",
+                                   same_origin_resource_url)));
+  EXPECT_EQ("blocked", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              JsReplace(R"(
+            fetch($1).then(() => 'allowed').catch(() => 'blocked');
+          )",
+                                        cross_origin_resource_url)));
+  EXPECT_EQ(
+      net::ERR_NETWORK_ACCESS_REVOKED,
+      monitor.WaitForRequestCompletion(cross_origin_resource_url).error_code);
+
+  // Trigger `reg.update()` with unchanged scripts (`kIdentical`).
+  // `ServiceWorkerRegisterJob` (`UPDATE_JOB`) temporarily registers a
+  // `creator_network_restrictions_id_` cloned from the incumbent worker's
+  // policies and clears it via `ClearNetworkRestrictionsAfterDelay` in
+  // `~ServiceWorkerRegisterJob()`, so wait for the posted zero-delay clear task
+  // before checking.
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     R"(
+            (async () => {
+              await window.swReg.update();
+              delete window.swReg;
+            })();
+          )"));
+  WaitUntilNetworkRestrictionsCount(storage_partition, 1u);
+  EXPECT_EQ(1u, storage_partition->GetNetworkRestrictionsCountForTesting());
+  EXPECT_EQ("ok", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         JsReplace("fetch($1).then(r => r.text())",
+                                   same_origin_resource_url)));
+
+  scoped_refptr<ServiceWorkerContextWrapper> wrapper =
+      static_cast<ServiceWorkerContextWrapper*>(
+          storage_partition->GetServiceWorkerContext());
+
+  // Stopping and restarting the Service Worker while `page_a_url` still holds
+  // the registration alive in memory preserves its single network restrictions
+  // entry without leaking or duplicating IDs.
+  // TODO(crbug.com/581064649): Persist
+  // `PolicyContainerPolicies::connection_allowlists` in `ServiceWorkerDatabase`
+  // (and verify `MaybeStartNavigationPreload()` vs.
+  // `MaybeRegisterNetworkRestrictions()` ordering on cold start) so evicted
+  // Service Workers still enforce their allowlists after cold restoration.
+  {
+    base::RunLoop stop_loop;
+    wrapper->StopAllServiceWorkers(stop_loop.QuitClosure());
+    stop_loop.Run();
+  }
+  EXPECT_EQ(1u, storage_partition->GetNetworkRestrictionsCountForTesting());
+
+  {
+    base::RunLoop start_loop;
+    wrapper->StartActiveServiceWorker(
+        scope_url,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url)),
+        base::BindOnce(
+            [](base::OnceClosure quit, blink::ServiceWorkerStatusCode status) {
+              EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+              std::move(quit).Run();
+            },
+            start_loop.QuitClosure()));
+    start_loop.Run();
+  }
+  EXPECT_EQ(1u, storage_partition->GetNetworkRestrictionsCountForTesting());
+  EXPECT_EQ("ok", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         JsReplace("fetch($1).then(r => r.text())",
+                                   same_origin_resource_url)));
+
+  // Navigate away to cross-origin `b.test`, flush BFCache so `a.test` client is
+  // destroyed, and stop service workers so no live `ServiceWorkerRegistration`
+  // or `ServiceWorkerVersion` references remain.
+  ASSERT_EQ(1u, storage_partition->GetNetworkRestrictionsCountForTesting());
+  RenderFrameDeletedObserver rfh_a_deleted(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(NavigateToURL(shell(), page_b_url));
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  rfh_a_deleted.WaitUntilDeleted();
+
+  {
+    base::RunLoop stop_loop;
+    wrapper->StopAllServiceWorkers(stop_loop.QuitClosure());
+    stop_loop.Run();
+  }
+
+  WaitUntilNetworkRestrictionsCount(storage_partition, 0u);
+  EXPECT_EQ(0u, storage_partition->GetNetworkRestrictionsCountForTesting());
+}
+
+// Regression test for `kDifferent` Service Worker updates:
+// 1. When `/dynamic-sw.js` omits `Connection-Allowlist` while an imported
+//    script serves `Connection-Allowlist: ()` and changes during
+//    `reg.update()`, the new `ServiceWorkerVersion` must remain unrestricted
+//    rather than adopting the imported script's `Connection-Allowlist`.
+// 2. When `/dynamic-sw.js` subsequently updates to serve
+//    `Connection-Allowlist: (response-origin)`, the updated
+//    `ServiceWorkerVersion` registers and enforces its new allowlist via
+//    `OnReceiveResponse()` -> `PrepareForUpdate()` -> `StartWorker()`.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    ServiceWorkerUpdatedImportedScriptDoesNotApplyConnectionAllowlist) {
+  net::test_server::ControllableHttpResponse sw_response_1(
+      &embedded_https_test_server(), "/dynamic-sw.js");
+  net::test_server::ControllableHttpResponse sw_response_2(
+      &embedded_https_test_server(), "/dynamic-sw.js");
+  net::test_server::ControllableHttpResponse sw_response_3(
+      &embedded_https_test_server(), "/dynamic-sw.js");
+  net::test_server::ControllableHttpResponse imported_response_1(
+      &embedded_https_test_server(), "/dynamic-imported.js");
+  net::test_server::ControllableHttpResponse imported_response_2(
+      &embedded_https_test_server(), "/dynamic-imported.js");
+  net::test_server::ControllableHttpResponse imported_response_3(
+      &embedded_https_test_server(), "/dynamic-imported.js");
+
+  RegisterResponse("/page.html",
+                   ResponseEntry("<html><body>Unrestricted</body></html>", {}));
+  RegisterResponse("/sw-fetch-resource", ResponseEntry("ok", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  auto serve_sw_script =
+      [](net::test_server::ControllableHttpResponse& response, int sw_version,
+         std::optional<std::string> extra_header = std::nullopt) {
+        std::vector<std::string> extra_headers;
+        if (extra_header.has_value()) {
+          extra_headers.push_back(*std::move(extra_header));
+        }
+        response.WaitForRequest();
+        response.Send(
+            net::HTTP_OK, "text/javascript",
+            absl::StrFormat(
+                "self.swVersion = %d;\n"
+                "importScripts('/dynamic-imported.js');\n"
+                "self.addEventListener('install', e => self.skipWaiting());\n"
+                "self.addEventListener('activate', e => "
+                "e.waitUntil(self.clients.claim()));\n"
+                "self.addEventListener('fetch', event => {\n"
+                "  if (event.request.url.includes('/sw-fetch-resource')) {\n"
+                "    event.respondWith(\n"
+                "        fetch(event.request).then(r => r.text()).then(\n"
+                "            t => new Response(\n"
+                "                t + '-sw' + self.swVersion + '-v' +\n"
+                "                self.importedVersion)));\n"
+                "  }\n"
+                "});\n",
+                sw_version),
+            /*cookies=*/{}, extra_headers);
+        response.Done();
+      };
+  auto serve_imported_script =
+      [](net::test_server::ControllableHttpResponse& response,
+         int imported_version) {
+        response.WaitForRequest();
+        response.Send(
+            net::HTTP_OK, "text/javascript",
+            absl::StrFormat("self.importedVersion = %d;\n", imported_version),
+            /*cookies=*/{},
+            std::vector<std::string>{"Connection-Allowlist: ()"});
+        response.Done();
+      };
+
+  GURL page_url = embedded_https_test_server().GetURL("a.test", "/page.html");
+  GURL same_origin_resource_url =
+      embedded_https_test_server().GetURL("a.test", "/sw-fetch-resource");
+  GURL cross_origin_resource_url =
+      embedded_https_test_server().GetURL("b.test", "/sw-fetch-resource");
+
+  auto* storage_partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
+  storage_partition->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), base::DoNothing());
+
+  URLLoaderMonitor monitor;
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+
+  // Wait for both `controllerchange` and the new controller reaching
+  // `'activated'`. `OnSkippedWaiting()` fires `controllerchange` while the new
+  // version is still `ACTIVATING` and `ContinueActivation()` is queued on a 1s
+  // delay; starting the next `update()` before `ACTIVATE` completes can overlap
+  // `TriggerIdleTerminationAsap()` (`kStopping`) with `ContinueActivation()`,
+  // restarting the incumbent worker with a fresh 30s idle timer so the waiting
+  // worker's 30s idle timer expires first.
+  ExecuteScriptAsync(shell()->web_contents(), R"(
+    window.waitForActivatedWorker = worker => {
+      if (worker.state === 'activated') {
+        return Promise.resolve();
+      }
+      return new Promise(resolve => {
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'activated') {
+            resolve();
+          }
+        });
+      });
+    };
+    window.waitForActivatedUpdate = async () => {
+      const controllerChanged = new Promise(resolve => {
+        navigator.serviceWorker.addEventListener(
+            'controllerchange', resolve, {once: true});
+      });
+      await window.swReg.update();
+      await controllerChanged;
+      await window.waitForActivatedWorker(navigator.serviceWorker.controller);
+      return true;
+    };
+    window.regPromise = (async () => {
+      const reg = await navigator.serviceWorker.register(
+          '/dynamic-sw.js', {updateViaCache: 'none'});
+      await window.waitForActivatedWorker(
+          reg.installing || reg.waiting || reg.active);
+      window.swReg = reg;
+      return !!navigator.serviceWorker.controller;
+    })();
+  )");
+  serve_sw_script(sw_response_1, /*sw_version=*/1);
+  serve_imported_script(imported_response_1, /*imported_version=*/1);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "window.regPromise"));
+
+  EXPECT_EQ(0u, storage_partition->GetNetworkRestrictionsCountForTesting());
+  EXPECT_EQ("ok-sw1-v1", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                                JsReplace("fetch($1).then(r => r.text())",
+                                          same_origin_resource_url)));
+
+  // 1. Change `/dynamic-imported.js` while `/dynamic-sw.js` remains unchanged
+  // and without `Connection-Allowlist`. The `kDifferent` update must activate
+  // the new version without registering any network restrictions.
+  ExecuteScriptAsync(shell()->web_contents(), R"(
+    window.update1Promise = window.waitForActivatedUpdate();
+  )");
+  serve_sw_script(sw_response_2, /*sw_version=*/1);
+  serve_imported_script(imported_response_2, /*imported_version=*/2);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "window.update1Promise"));
+
+  EXPECT_EQ(0u, storage_partition->GetNetworkRestrictionsCountForTesting());
+  EXPECT_EQ("ok-sw1-v2", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                                JsReplace("fetch($1).then(r => r.text())",
+                                          same_origin_resource_url)));
+  EXPECT_EQ("ok-sw1-v2", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                                JsReplace("fetch($1).then(r => r.text())",
+                                          cross_origin_resource_url)));
+
+  // 2. Update `/dynamic-sw.js` (`kDifferent`) to serve
+  // `Connection-Allowlist: (response-origin)`. The updated version must
+  // register and enforce its new allowlist via `StartWorker()`.
+  ExecuteScriptAsync(shell()->web_contents(), R"(
+    window.update2Promise = (async () => {
+      await window.waitForActivatedUpdate();
+      delete window.swReg;
+      return true;
+    })();
+  )");
+  serve_sw_script(sw_response_3, /*sw_version=*/2,
+                  "Connection-Allowlist: (response-origin)");
+  serve_imported_script(imported_response_3, /*imported_version=*/2);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "window.update2Promise"));
+
+  EXPECT_EQ(1u, storage_partition->GetNetworkRestrictionsCountForTesting());
+  EXPECT_EQ("ok-sw2-v2", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                                JsReplace("fetch($1).then(r => r.text())",
+                                          same_origin_resource_url)));
+  monitor.ClearRequests();
+  EXPECT_EQ("blocked", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              JsReplace(R"(
+            fetch($1).then(() => 'allowed').catch(() => 'blocked');
+          )",
+                                        cross_origin_resource_url)));
+  EXPECT_EQ(
+      net::ERR_NETWORK_ACCESS_REVOKED,
+      monitor.WaitForRequestCompletion(cross_origin_resource_url).error_code);
+}
 
 }  // namespace
 

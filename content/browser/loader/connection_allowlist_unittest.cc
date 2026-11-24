@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -16,6 +21,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -30,11 +36,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
+#include "third_party/blink/public/mojom/commit_result/commit_result.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -156,6 +164,10 @@ class ConnectionAllowlistTestNetworkContext
 
   const std::vector<Report>& reports() const { return reports_; }
   void ClearReports() { reports_.clear(); }
+  const std::vector<std::vector<base::UnguessableToken>>&
+  cleared_network_restrictions_calls() const {
+    return cleared_network_restrictions_calls_;
+  }
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   mojo::PendingRemote<network::mojom::NetworkContext>
@@ -181,8 +193,15 @@ class ConnectionAllowlistTestNetworkContext
     std::move(callback).Run();
   }
 
+  void ClearNetworkRestrictions(const std::vector<base::UnguessableToken>&
+                                    network_restrictions_ids) override {
+    cleared_network_restrictions_calls_.push_back(network_restrictions_ids);
+  }
+
  private:
   std::vector<Report> reports_;
+  std::vector<std::vector<base::UnguessableToken>>
+      cleared_network_restrictions_calls_;
   mojo::Receiver<network::mojom::NetworkContext> receiver_{this};
 };
 
@@ -453,6 +472,203 @@ TEST_F(ConnectionAllowlistTest,
             disallowed_url.spec());
   EXPECT_EQ(*network_context.reports()[1].body.FindString("disposition"),
             "enforce");
+}
+
+TEST_F(ConnectionAllowlistTest, ClearNetworkRestrictionsSkipsUnregisteredIds) {
+  ConnectionAllowlistTestNetworkContext network_context;
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  storage_partition_impl->SetNetworkContextForTesting(
+      network_context.BindNewPipeAndPassRemote());
+
+  const base::UnguessableToken id_a = base::UnguessableToken::Create();
+  const base::UnguessableToken id_b = base::UnguessableToken::Create();
+  network::ConnectionAllowlists allowlists;
+  allowlists.enforced.emplace();
+
+  base::test::TestFuture<void> restricted;
+  storage_partition_impl->RestrictNetworkForIdsInNetworkContext(
+      {{id_a, std::move(allowlists)}}, restricted.GetCallback());
+  ASSERT_TRUE(restricted.Wait());
+  EXPECT_TRUE(storage_partition_impl->HasNetworkRestrictions(id_a));
+  EXPECT_FALSE(storage_partition_impl->HasNetworkRestrictions(id_b));
+
+  // Clearing `{id_a, id_b}` should only send `id_a` to `NetworkContext`.
+  {
+    base::test::TestFuture<void> cleared;
+    storage_partition_impl->SetClearNetworkRestrictionsParamsForTesting(
+        base::TimeDelta(), cleared.GetRepeatingCallback());
+    storage_partition_impl->ClearNetworkRestrictionsAfterDelay({id_a, id_b});
+    ASSERT_TRUE(cleared.Wait());
+  }
+  network_context.FlushForTesting();
+  EXPECT_FALSE(storage_partition_impl->HasNetworkRestrictions(id_a));
+  ASSERT_EQ(network_context.cleared_network_restrictions_calls().size(), 1u);
+  EXPECT_EQ(network_context.cleared_network_restrictions_calls()[0],
+            std::vector<base::UnguessableToken>{id_a});
+
+  // Clearing unregistered `id_b` (and already-cleared `id_a`) must not send any
+  // `ClearNetworkRestrictions` IPC.
+  {
+    base::test::TestFuture<void> cleared;
+    storage_partition_impl->SetClearNetworkRestrictionsParamsForTesting(
+        base::TimeDelta(), cleared.GetRepeatingCallback());
+    storage_partition_impl->ClearNetworkRestrictionsAfterDelay({id_b});
+    ASSERT_TRUE(cleared.Wait());
+  }
+  {
+    base::test::TestFuture<void> cleared;
+    storage_partition_impl->SetClearNetworkRestrictionsParamsForTesting(
+        base::TimeDelta(), cleared.GetRepeatingCallback());
+    storage_partition_impl->ClearNetworkRestrictionsAfterDelay({id_a});
+    ASSERT_TRUE(cleared.Wait());
+  }
+  storage_partition_impl->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), base::DoNothing());
+  network_context.FlushForTesting();
+  EXPECT_EQ(network_context.cleared_network_restrictions_calls().size(), 1u);
+
+  // Destroying an unrestricted committed document (which mints a non-NoOp
+  // `network_restrictions_id` that was never registered) must not schedule a
+  // delayed clear task in `~DocumentAssociatedData()`.
+  bool clear_callback_invoked = false;
+  storage_partition_impl->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(),
+      base::BindRepeating([](bool* invoked) { *invoked = true; },
+                          base::Unretained(&clear_callback_invoked)));
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://a.example/unrestricted1"));
+  EXPECT_NE(main_rfh()->GetNetworkRestrictionsID(),
+            network::GetNoOpNetworkRestrictionsId());
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://a.example/unrestricted2"));
+  controller().GetBackForwardCache().Flush();
+  base::RunLoop flush_ui_tasks;
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, flush_ui_tasks.QuitClosure());
+  flush_ui_tasks.Run();
+  EXPECT_FALSE(clear_callback_invoked);
+  storage_partition_impl->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), base::DoNothing());
+}
+
+TEST_F(ConnectionAllowlistTest,
+       SameDocumentRestartAndErrorPageResetNetworkRestrictionsId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(network::features::kConnectionAllowlists);
+
+  ConnectionAllowlistTestNetworkContext network_context;
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  storage_partition_impl->SetNetworkContextForTesting(
+      network_context.BindNewPipeAndPassRemote());
+  storage_partition_impl->SetClearNetworkRestrictionsParamsForTesting(
+      base::TimeDelta(), base::DoNothing());
+
+  // A cross-document navigation failing before response commits an error page
+  // with the NoOp ID rather than its provisional candidate ID.
+  {
+    auto failed_nav = NavigationSimulator::CreateBrowserInitiated(
+        GURL("https://b.example/fail"), web_contents());
+    failed_nav->Fail(net::ERR_CONNECTION_REFUSED);
+    failed_nav->CommitErrorPage();
+    EXPECT_EQ(failed_nav->GetFinalRenderFrameHost()->GetNetworkRestrictionsID(),
+              network::GetNoOpNetworkRestrictionsId());
+  }
+
+  // Commit a document with `Connection-Allowlist: ()` at `#1`, then navigate
+  // same-document to `#2`.
+  auto initial_nav = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://a.example/page#1"), web_contents());
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("Connection-Allowlist", "()");
+  initial_nav->SetResponseHeaders(response_headers);
+  initial_nav->Commit();
+
+  const base::UnguessableToken active_id =
+      main_rfh()->GetNetworkRestrictionsID();
+  ASSERT_NE(active_id, network::GetNoOpNetworkRestrictionsId());
+  EXPECT_TRUE(storage_partition_impl->HasNetworkRestrictions(active_id));
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://a.example/page#2"));
+  EXPECT_EQ(main_rfh()->GetNetworkRestrictionsID(), active_id);
+
+  // 1. Direct check on `ResetForCrossDocumentRestart()`: start a same-document
+  // history navigation back to `#1` (`active_id` is copied onto `request`),
+  // verify `ResetForCrossDocumentRestart()` resets `network_restrictions_id()`
+  // to NoOp, and abort the same-document commit cleanly.
+  {
+    auto history_sim = NavigationSimulator::CreateHistoryNavigation(
+        -1, web_contents(), /*is_renderer_initiated=*/false);
+    history_sim->Start();
+    NavigationRequest* request =
+        static_cast<NavigationRequest*>(history_sim->GetNavigationHandle());
+    ASSERT_TRUE(request);
+    ASSERT_TRUE(request->IsSameDocument());
+    EXPECT_EQ(request->network_restrictions_id(), active_id);
+    const base::UnguessableToken nav_token =
+        request->commit_params().navigation_token;
+
+    request->ResetForCrossDocumentRestart();
+    EXPECT_EQ(request->network_restrictions_id(),
+              network::GetNoOpNetworkRestrictionsId());
+
+    main_test_rfh()->SimulateOnSameDocumentCommitProcessed(
+        nav_token, /*should_replace_current_entry=*/false,
+        blink::mojom::CommitResult::Aborted);
+  }
+
+  // 2. End-to-end `RestartCrossDocument` + pre-response failure: restarting as
+  // cross-document replaces `active_id` with a fresh candidate ID, and failing
+  // into an error page resets it back to NoOp without touching `active_id`.
+  {
+    auto history_sim = NavigationSimulator::CreateHistoryNavigation(
+        -1, web_contents(), /*is_renderer_initiated=*/false);
+    history_sim->Start();
+    NavigationRequest* request =
+        static_cast<NavigationRequest*>(history_sim->GetNavigationHandle());
+    ASSERT_TRUE(request);
+    ASSERT_TRUE(request->IsSameDocument());
+    EXPECT_EQ(request->network_restrictions_id(), active_id);
+    const base::UnguessableToken nav_token =
+        request->commit_params().navigation_token;
+
+    main_test_rfh()->SimulateOnSameDocumentCommitProcessed(
+        nav_token, /*should_replace_current_entry=*/false,
+        blink::mojom::CommitResult::RestartCrossDocument);
+
+    NavigationRequest* restarted_request =
+        main_test_rfh()->frame_tree_node()->navigation_request();
+    ASSERT_TRUE(restarted_request);
+    EXPECT_FALSE(restarted_request->IsSameDocument());
+    EXPECT_NE(restarted_request->network_restrictions_id(), active_id);
+    EXPECT_NE(restarted_request->network_restrictions_id(),
+              network::GetNoOpNetworkRestrictionsId());
+
+    auto* url_loader = static_cast<TestNavigationURLLoader*>(
+        restarted_request->loader_for_testing());
+    ASSERT_TRUE(url_loader);
+    url_loader->SimulateError(net::ERR_CONNECTION_REFUSED);
+
+    TestRenderFrameHost* error_rfh = main_test_rfh();
+    if (error_rfh->navigation_requests().empty()) {
+      error_rfh =
+          static_cast<TestRenderFrameHost*>(error_rfh->frame_tree_node()
+                                                ->render_manager()
+                                                ->speculative_frame_host());
+    }
+    ASSERT_TRUE(error_rfh);
+    ASSERT_FALSE(error_rfh->navigation_requests().empty());
+    EXPECT_EQ(error_rfh->navigation_requests()
+                  .begin()
+                  ->first->network_restrictions_id(),
+              network::GetNoOpNetworkRestrictionsId());
+    AbortPendingErrorPageCommit();
+  }
+
+  // `main_rfh()` is still active and its `active_id` remains registered.
+  EXPECT_TRUE(storage_partition_impl->HasNetworkRestrictions(active_id));
 }
 
 }  // namespace content

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_SINGLE_SCRIPT_UPDATE_CHECKER_H_
 
 #include "base/byte_size.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_updated_script_loader.h"
@@ -161,8 +162,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       int64_t write_resource_id,
       ScriptChecksumUpdateOption script_checksum_update_option,
       const blink::StorageKey& storage_key,
-      const std::optional<base::UnguessableToken>& network_restrictions_id,
-      PolicyContainerPolicies creator_policies,
       ResultCallback callback);
 
   ServiceWorkerSingleScriptUpdateChecker(
@@ -253,9 +252,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   std::unique_ptr<blink::ThrottlingURLLoader> network_loader_;
 
   std::unique_ptr<ServiceWorkerCacheWriter> cache_writer_;
-
-  const std::optional<base::UnguessableToken> network_restrictions_id_;
-  const PolicyContainerPolicies creator_policies_;
 
   ResultCallback callback_;
 

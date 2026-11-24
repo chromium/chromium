@@ -234,7 +234,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   PolicyContainerPolicies creator_policy_container_policies_;
 
   const base::UnguessableToken creator_network_restrictions_id_;
-  const base::UnguessableToken network_restrictions_id_;
 
   base::WeakPtrFactory<ServiceWorkerRegisterJob> weak_factory_{this};
 };

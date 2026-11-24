@@ -1360,13 +1360,23 @@ void StoragePartitionImpl::ClearNetworkRestrictionsAfterDelay(
 
 void StoragePartitionImpl::ClearNetworkRestrictionsAfterDelayCallback(
     const std::vector<base::UnguessableToken>& network_restrictions_ids) {
-  GetNetworkContext()->ClearNetworkRestrictions(network_restrictions_ids);
-
+  std::vector<base::UnguessableToken> ids_to_clear;
   for (const auto& network_restrictions_id : network_restrictions_ids) {
-    network_restrictions_ids_.erase(network_restrictions_id);
+    if (network_restrictions_ids_.erase(network_restrictions_id) > 0) {
+      ids_to_clear.push_back(network_restrictions_id);
+    }
+  }
+
+  if (!ids_to_clear.empty()) {
+    GetNetworkContext()->ClearNetworkRestrictions(ids_to_clear);
   }
 
   clear_network_restrictions_callback_for_testing_.Run();  // IN-TEST
+}
+
+bool StoragePartitionImpl::HasNetworkRestrictions(
+    const base::UnguessableToken& network_restrictions_id) const {
+  return network_restrictions_ids_.contains(network_restrictions_id);
 }
 
 // static

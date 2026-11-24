@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -524,9 +525,17 @@ class CONTENT_EXPORT StoragePartitionImpl
   void ClearNetworkRestrictionsAfterDelay(
       const std::vector<base::UnguessableToken>& network_restrictions_ids);
 
+  // Returns true if restrictions are currently tracked for
+  // `network_restrictions_id` (including while a delayed clear is pending).
+  bool HasNetworkRestrictions(
+      const base::UnguessableToken& network_restrictions_id) const;
+
   void SetClearNetworkRestrictionsParamsForTesting(
       const base::TimeDelta& delay,
       base::RepeatingClosure callback);
+  size_t GetNetworkRestrictionsCountForTesting() const {
+    return network_restrictions_ids_.size();
+  }
 
   base::UnguessableToken GetPartitionUUIDPerStorageKey(
       const blink::StorageKey& storage_key);

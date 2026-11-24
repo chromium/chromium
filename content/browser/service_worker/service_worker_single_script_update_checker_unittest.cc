@@ -160,7 +160,6 @@ class ServiceWorkerSingleScriptUpdateCheckerTest : public testing::Test {
                                   net::SchemefulSite(scope),
                                   blink::mojom::AncestorChainBit::kSameSite,
                                   /*third_party_partitioning_allowed=*/true),
-        /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies(),
         std::move(callback));
   }
 
@@ -218,7 +217,6 @@ class ServiceWorkerSingleScriptUpdateCheckerTest : public testing::Test {
                                   net::SchemefulSite(scope),
                                   blink::mojom::AncestorChainBit::kSameSite,
                                   /*third_party_partitioning_allowed=*/true),
-        /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies(),
         base::BindOnce(
             [](std::optional<CheckResult>* out_check_result_param,
                const GURL& script_url,

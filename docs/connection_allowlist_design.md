@@ -89,11 +89,32 @@ the `network_restrictions_id` (a `base::UnguessableToken`).
     `network_restrictions_ids_`. In case of a Network Service crash, this map
     is used to restore the network restrictions on the new `NetworkContext`.
 * **Lifetime & Cleanup**:
-  * When a document's `DocumentAssociatedData` or worker is destroyed, if it
-    holds the last reference to the ref-counted `network_restrictions_id`, it
-    schedules a cleanup of the restriction mapping from the Network Service
-    and `StoragePartitionImpl` using
-    `StoragePartitionImpl::ClearNetworkRestrictionsAfterDelay`.
+  * Every registered `network_restrictions_id` has a clear owner responsible for
+    scheduling cleanup via
+    `StoragePartitionImpl::ClearNetworkRestrictionsAfterDelay` (which only sends
+    `NetworkContext::ClearNetworkRestrictions` IPCs for IDs actually present in
+    `StoragePartitionImpl::network_restrictions_ids_`):
+    * **Pre-commit navigations**: `NavigationRequest` tracks the
+      `StoragePartitionImpl` where its `network_restrictions_id` was registered
+      and clears it if the navigation fails (`OnRequestFailedInternal`, e.g.,
+      before committing an error page) or is destroyed without committing.
+    * **Committed documents**: `DocumentAssociatedData` clears its
+      ref-counted `network_restrictions_id` when the last document holding a
+      reference is destroyed (checking
+      `StoragePartitionImpl::HasNetworkRestrictions` first so unrestricted
+      documents do not queue delayed tasks).
+    * **Workers**: `DedicatedWorkerHost`, `SharedWorkerHost`, and
+      `ServiceWorkerVersion` clear their `network_restrictions_id` on
+      destruction (`ServiceWorkerVersion` and `ServiceWorkerRegisterJob` check
+      `StoragePartitionImpl::HasNetworkRestrictions` first so unrestricted
+      workers do not queue delayed tasks). During Service Worker registration
+      and update checks, `ServiceWorkerRegisterJob` clears
+      `creator_network_restrictions_id_` in its destructor. Script update checks
+      restrict script fetches via `creator_network_restrictions_id_` without
+      pre-registering a candidate worker ID; only when an update (`kDifferent`)
+      creates a new `ServiceWorkerVersion` does `StartWorker()` register that
+      version's `network_restrictions_id` via
+      `MaybeRegisterNetworkRestrictions()`.
   * **Selecting the ID at Calling Sites**:
     When a calling site initiates a request or creates a connection (e.g.
     WebSocket, WebTransport) that expects a `network_restrictions_id`, it
