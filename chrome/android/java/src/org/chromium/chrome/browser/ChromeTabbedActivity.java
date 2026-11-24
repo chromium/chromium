@@ -4287,8 +4287,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         TabWindowManagerSingleton.getInstance()
                 .keepAllTabModelsLoaded(
                         MultiWindowUtils.getUsableInstanceIds(PersistedInstanceType.ANY),
-                        originalProfile,
-                        getTabModelSelector());
+                        originalProfile);
 
         var modalDialogManager = assertNonNull(getModalDialogManager());
         VersioningMessageBanner.maybeShow(activity, messageDispatcher, modalDialogManager, profile);
@@ -5807,6 +5806,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     protected @TabDestroyStatus int destroyTabModels() {
         @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
         try {
+            if (mIsRecreating) {
+                TabWindowManager tabWindowManager =
+                        TabWindowManagerSingleton.getInstanceIfCreated();
+                if (tabWindowManager != null) {
+                    tabWindowManager.notifyActivityRecreating(this);
+                }
+            }
             TabModelOrchestrator orchestrator =
                     mTabModelOrchestrator != null
                             ? mTabModelOrchestrator

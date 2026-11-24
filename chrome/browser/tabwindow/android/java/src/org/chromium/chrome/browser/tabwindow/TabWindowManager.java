@@ -234,10 +234,17 @@ public interface TabWindowManager {
      *
      * @param windowIds Set of persisted, usable window ids.
      * @param profile Used to scope access.
-     * @param selector The current selector for the caller, used as a fallback when window
-     *     information is not available.
      */
-    void keepAllTabModelsLoaded(Set<Integer> windowIds, Profile profile, TabModelSelector selector);
+    void keepAllTabModelsLoaded(Set<Integer> windowIds, Profile profile);
+
+    /**
+     * Notifies this manager that a registered {@link Activity} is being destroyed for {@link
+     * Activity#recreate()}, so loaded-model teardown can be deferred across the transient
+     * destruction gap.
+     *
+     * @param activity The {@link Activity} being recreated.
+     */
+    default void notifyActivityRecreating(Activity activity) {}
 
     /**
      * Tries to discern the correct window id that contains a tab group. This may be a like activity

@@ -226,16 +226,22 @@ public class PersistentStoreCleaner implements Destroyable {
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         if (tabWindowManager.isAllTabStateInitialized()) {
             maybeCleanUnusedWindows();
-        } else if (unusedDataDeps.mTabWindowManagerObserver == null) {
-            unusedDataDeps.mTabWindowManagerObserver =
-                    new TabWindowManager.Observer() {
-                        @Override
-                        public void onAllTabModelStateInitialized() {
-                            maybeCleanUnusedWindows();
-                        }
-                    };
-            tabWindowManager.addObserver(unusedDataDeps.mTabWindowManagerObserver);
+        } else {
+            observeAllTabStateInitialized(unusedDataDeps, tabWindowManager);
         }
+    }
+
+    private void observeAllTabStateInitialized(
+            UnusedDataDeps deps, TabWindowManager tabWindowManager) {
+        if (deps.mTabWindowManagerObserver != null) return;
+        deps.mTabWindowManagerObserver =
+                new TabWindowManager.Observer() {
+                    @Override
+                    public void onAllTabModelStateInitialized() {
+                        maybeCleanUnusedWindows();
+                    }
+                };
+        tabWindowManager.addObserver(deps.mTabWindowManagerObserver);
     }
 
     /**
@@ -295,6 +301,11 @@ public class PersistentStoreCleaner implements Destroyable {
         if (tabWindowManager.getAllTabModelSelectors().isEmpty()
                 && tabWindowManager.getCustomTabsTabModelSelectors().isEmpty()) {
             cleanUnusedDeps();
+            return;
+        }
+        if (!tabWindowManager.isAllTabStateInitialized()) {
+            deps.mCleanupRunnable = null;
+            observeAllTabStateInitialized(deps, tabWindowManager);
             return;
         }
 

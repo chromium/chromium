@@ -75,6 +75,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
     public static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
     /**
+     * Bounded grace window allowing slow {@link Activity#recreate()} or tab-reparenting IPC to
+     * attach the replacement {@link Activity} before falling back to headless selectors or full
+     * teardown, matching {@code ArchivedTabModelOrchestrator}.
+     */
+    static final long RECREATION_GRACE_PERIOD_MS = 5000;
+
+    /**
      * Debugging enums representing activity state in {@link #assertIndicesMatch}. These values are
      * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
@@ -100,6 +107,18 @@ public class TabWindowManagerImpl implements TabWindowManager {
         int NUM_ENTRIES = 7;
     }
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        AllTabState.UNINITIALIZED,
+        AllTabState.PENDING_RELOAD,
+        AllTabState.INITIALIZED,
+    })
+    private @interface AllTabState {
+        int UNINITIALIZED = 0;
+        int PENDING_RELOAD = 1;
+        int INITIALIZED = 2;
+    }
+
     private final Map<@WindowId Integer, TabModelSelector> mWindowIdToSelectors = new HashMap<>();
     private final Map<TabModelSelector, @WindowId Integer> mSelectorsToWindowId = new HashMap<>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -114,11 +133,21 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
     private final CallbackController mCallbackController = new CallbackController();
+    // Windows whose host Activity was destroyed for recreation/reparenting and are within
+    // RECREATION_GRACE_PERIOD_MS awaiting a replacement Activity. Each value cancels that window's
+    // grace-period expiration task when it reattaches or loaded state resets.
+    private final Map<@WindowId Integer, CallbackController> mPendingRecreationTimers =
+            new HashMap<>();
+    // Registered Activities that signaled programmatic Activity#recreate() (where
+    // Activity#isChangingConfigurations() may be false) before their DESTROYED callback arrives;
+    // consumed on DESTROYED or cleared on state reset.
+    private final Set<Activity> mRecreatingActivities = new HashSet<>();
 
     private @Nullable TabModelSelector mArchivedTabModelSelector;
-    private boolean mKeepAllTabModelsLoaded;
+    private @Nullable Profile mKeepAllTabModelsLoadedProfile;
+    private @Nullable Runnable mPendingRestoreCompleteTask;
+    private @AllTabState int mAllTabState = AllTabState.UNINITIALIZED;
     private boolean mTabStateInitialized;
-    private boolean mIsAllTabStateInitialized;
     private boolean mIsDestroyed;
 
     TabWindowManagerImpl(
@@ -184,17 +213,21 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
 
         @WindowId int originalWindowId = windowId;
-        if (mWindowIdToSelectors.get(windowId) != null) {
-            if (shutdownIfHeadless(windowId)) {
-                // Can safely use requested window id now.
-            } else {
-                // Find the next valid/empty window id.
-                for (int i = 0; i < mMaxSelectors; i++) {
-                    if (mWindowIdToSelectors.get(i) == null) {
-                        windowId = i;
-                        break;
-                    }
+        if (mWindowIdToSelectors.get(windowId) != null && !shutdownIfHeadlessInternal(windowId)) {
+            // Find the next valid/empty window id, preferring slots not mid-recreation.
+            @WindowId int fallbackWindowId = INVALID_WINDOW_ID;
+            for (int i = 0; i < mMaxSelectors; i++) {
+                if (mWindowIdToSelectors.get(i) != null) continue;
+                if (!mPendingRecreationTimers.containsKey(i)) {
+                    fallbackWindowId = i;
+                    break;
                 }
+                if (fallbackWindowId == INVALID_WINDOW_ID) {
+                    fallbackWindowId = i;
+                }
+            }
+            if (fallbackWindowId != INVALID_WINDOW_ID) {
+                windowId = fallbackWindowId;
             }
         }
 
@@ -218,16 +251,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         nextTabPolicySupplier,
                         supportedProfileType);
 
-        mWindowIdToSelectors.put(assignedWindowId, selector);
-        mSelectorsToWindowId.put(selector, assignedWindowId);
         mActivityAssignments.put(activity, selector);
-
         Pair<@WindowId Integer, TabModelSelector> res =
                 Pair.<@WindowId Integer, TabModelSelector>create(assignedWindowId, selector);
         Log.i(
                 TAG_MULTI_INSTANCE,
                 "Returning new selector for " + activity + " with window id: " + res);
-        for (Observer obs : mObservers) obs.onTabModelSelectorAdded(selector);
+        registerSelector(assignedWindowId, selector);
         return res;
     }
 
@@ -244,15 +274,30 @@ public class TabWindowManagerImpl implements TabWindowManager {
                 mSelectorFactory.buildHeadlessSelector(windowId, profile);
         TabModelSelector selector = pair.first;
         mHeadlessAssignments.put(selector, pair.second);
-        mSelectorsToWindowId.put(selector, windowId);
-        mWindowIdToSelectors.put(windowId, selector);
-
-        for (Observer obs : mObservers) obs.onTabModelSelectorAdded(selector);
+        registerSelector(windowId, selector);
         return selector;
+    }
+
+    private void registerSelector(@WindowId int windowId, TabModelSelector selector) {
+        mWindowIdToSelectors.put(windowId, selector);
+        mSelectorsToWindowId.put(selector, windowId);
+        cancelWindowRecreationTimer(windowId);
+        if (!selector.isTabStateInitialized() && mAllTabState == AllTabState.INITIALIZED) {
+            mAllTabState = AllTabState.PENDING_RELOAD;
+        }
+        for (Observer obs : mObservers) obs.onTabModelSelectorAdded(selector);
+        TabModelUtils.runOnTabStateInitialized(
+                mCallbackController.makeCancelable(this::onSelectorTabStateInitialized), selector);
     }
 
     @Override
     public boolean shutdownIfHeadless(@WindowId int windowId) {
+        if (!shutdownIfHeadlessInternal(windowId)) return false;
+        onSelectorTabStateInitialized();
+        return true;
+    }
+
+    private boolean shutdownIfHeadlessInternal(@WindowId int windowId) {
         if (!mWindowIdToSelectors.containsKey(windowId)) return false;
         TabModelSelector selector = mWindowIdToSelectors.get(windowId);
 
@@ -608,13 +653,17 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public void setArchivedTabModelSelector(@Nullable TabModelSelector archivedTabModelSelector) {
+        mArchivedTabModelSelector = archivedTabModelSelector;
         if (archivedTabModelSelector != null) {
-            mArchivedTabModelSelector = archivedTabModelSelector;
+            if (!archivedTabModelSelector.isTabStateInitialized()
+                    && mAllTabState == AllTabState.INITIALIZED) {
+                mAllTabState = AllTabState.PENDING_RELOAD;
+            }
             TabModelUtils.runOnTabStateInitialized(
                     mCallbackController.makeCancelable(this::maybeMarkAllModelStateInitialized),
-                    mArchivedTabModelSelector);
-        } else {
-            mArchivedTabModelSelector = null;
+                    archivedTabModelSelector);
+        } else if (mAllTabState == AllTabState.PENDING_RELOAD) {
+            maybeMarkAllModelStateInitialized();
         }
     }
 
@@ -623,7 +672,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
         boolean isPossiblyAnArchivedTab = isPossiblyAnArchivedTab();
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.TabStateCleanupAbortedByArchive", isPossiblyAnArchivedTab);
-        return !isPossiblyAnArchivedTab && getTabById(tabId) == null;
+        return !isPossiblyAnArchivedTab
+                && !hasPendingWindowRecreationOrReload()
+                && getTabById(tabId) == null;
     }
 
     @Override
@@ -631,58 +682,72 @@ public class TabWindowManagerImpl implements TabWindowManager {
         boolean isPossiblyAnArchivedTab = isPossiblyAnArchivedTab();
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.TabThumbnailCleanupAbortedByArchive", isPossiblyAnArchivedTab);
-        return !isPossiblyAnArchivedTab && getTabById(tabId) == null;
+        return !isPossiblyAnArchivedTab
+                && !hasPendingWindowRecreationOrReload()
+                && getTabById(tabId) == null;
     }
 
     @Override
-    public void keepAllTabModelsLoaded(
-            Set<Integer> windowIds, Profile profile, TabModelSelector selector) {
-        if (mKeepAllTabModelsLoaded) return;
+    public void keepAllTabModelsLoaded(Set<Integer> windowIds, Profile profile) {
+        if (mKeepAllTabModelsLoadedProfile != null) return;
 
-        mKeepAllTabModelsLoaded = true;
-
-        List<TabModelSelector> tabModelSelectorList = new ArrayList<>();
-        if (windowIds.isEmpty()) {
-            tabModelSelectorList.add(selector);
-        } else {
-            for (@WindowId int windowId : windowIds) {
-                if (!mWindowIdToSelectors.containsKey(windowId)) {
-                    tabModelSelectorList.add(requestSelectorWithoutActivity(windowId, profile));
-                } else {
-                    tabModelSelectorList.add(mWindowIdToSelectors.get(windowId));
-                }
+        for (@WindowId int windowId : windowIds) {
+            if (!mWindowIdToSelectors.containsKey(windowId)
+                    && !mPendingRecreationTimers.containsKey(windowId)) {
+                requestSelectorWithoutActivity(windowId, profile);
             }
         }
 
-        TabModelUtils.runOnTabStateInitialized(
-                mCallbackController.makeCancelable(
-                        () -> onTabModelsInitialized(profile, tabModelSelectorList)),
-                tabModelSelectorList.toArray(new TabModelSelector[0]));
+        mKeepAllTabModelsLoadedProfile = profile;
+        onSelectorTabStateInitialized();
     }
 
-    private void onTabModelsInitialized(
-            Profile profile, List<TabModelSelector> tabModelSelectorList) {
-        if (!mKeepAllTabModelsLoaded || mSelectorsToWindowId.isEmpty()) return;
-        mTabStateInitialized = true;
-        for (Observer observer : mObservers) {
-            observer.onTabStateInitialized();
+    @Override
+    public void notifyActivityRecreating(Activity activity) {
+        if (mActivityAssignments.containsKey(activity)) {
+            mRecreatingActivities.add(activity);
         }
+    }
 
-        // TODO(https://crbug.com/420738506): Remove this post once the order is flipped.
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                mCallbackController.makeCancelable(
-                        () -> completeTabModelsInitializedPostTask(profile, tabModelSelectorList)));
+    private void onSelectorTabStateInitialized() {
+        Profile profile = mKeepAllTabModelsLoadedProfile;
+        if (profile != null
+                && !mSelectorsToWindowId.isEmpty()
+                && !hasPendingWindowRecreationOrReload()) {
+            if (!mTabStateInitialized) {
+                mTabStateInitialized = true;
+                mPendingRestoreCompleteTask = () -> completeTabModelsInitializedPostTask(profile);
+                for (Observer observer : mObservers) {
+                    observer.onTabStateInitialized();
+                }
+            }
+            if (mPendingRestoreCompleteTask != null) {
+                // TODO(https://crbug.com/420738506): Remove this post once the order is flipped.
+                PostTask.postTask(
+                        TaskTraits.UI_DEFAULT,
+                        mCallbackController.makeCancelable(
+                                this::maybeRunPendingRestoreCompleteTask));
+            }
+        }
         maybeMarkAllModelStateInitialized();
     }
 
-    private void completeTabModelsInitializedPostTask(
-            Profile profile, List<TabModelSelector> tabModelSelectorList) {
+    private void maybeRunPendingRestoreCompleteTask() {
+        Runnable task = mPendingRestoreCompleteTask;
+        if (task == null
+                || mSelectorsToWindowId.isEmpty()
+                || hasPendingWindowRecreationOrReload()) {
+            return;
+        }
+        mPendingRestoreCompleteTask = null;
+        task.run();
+    }
+
+    private void completeTabModelsInitializedPostTask(Profile profile) {
         if (profile.shutdownStarted()) return;
+        List<TabModelSelector> tabModelSelectorList =
+                new ArrayList<>(mSelectorsToWindowId.keySet());
         for (TabModelSelector s : tabModelSelectorList) {
-            if (!mSelectorsToWindowId.containsKey(s)) {
-                continue;
-            }
             TabModel model = s.getModel(/* incognito= */ false);
             if (!(model instanceof EmptyTabModel)) {
                 model.broadcastSessionRestoreComplete();
@@ -695,7 +760,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public boolean isAllTabStateInitialized() {
-        return mIsAllTabStateInitialized;
+        return mAllTabState == AllTabState.INITIALIZED;
     }
 
     @Override
@@ -717,14 +782,35 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     private void maybeMarkAllModelStateInitialized() {
-        if (!mTabStateInitialized || isPossiblyAnArchivedTab() || mIsAllTabStateInitialized) {
+        // During initial startup (UNINITIALIZED), conservatively wait while the archived selector
+        // may not yet be attached. During a subsequent reload (PENDING_RELOAD), the archived
+        // selector may legitimately remain null (e.g., idle teardown or archived tabs disabled), so
+        // only wait when a non-null archived selector has not finished initializing.
+        boolean waitingForArchived =
+                mAllTabState == AllTabState.UNINITIALIZED
+                        ? isPossiblyAnArchivedTab()
+                        : (mArchivedTabModelSelector != null
+                                && !mArchivedTabModelSelector.isTabStateInitialized());
+        if (!mTabStateInitialized
+                || mAllTabState == AllTabState.INITIALIZED
+                || mSelectorsToWindowId.isEmpty()
+                || waitingForArchived
+                || hasPendingWindowRecreationOrReload()) {
             return;
         }
 
-        mIsAllTabStateInitialized = true;
+        mAllTabState = AllTabState.INITIALIZED;
         for (Observer observer : mObservers) {
             observer.onAllTabModelStateInitialized();
         }
+    }
+
+    private boolean hasPendingWindowRecreationOrReload() {
+        if (!mPendingRecreationTimers.isEmpty()) return true;
+        for (TabModelSelector selector : mSelectorsToWindowId.keySet()) {
+            if (!selector.isTabStateInitialized()) return true;
+        }
+        return false;
     }
 
     private void unmapOrphanedTabGroups(
@@ -790,23 +876,83 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     private void onActivityStateChange(Activity activity, @ActivityState int newState) {
-        if (newState == ActivityState.DESTROYED) {
-            @WindowId
-            int windowId = clearSelectorAndWindowIdAssignments(activity, /* keepHeadless= */ true);
-            boolean everyActivityDestroyed = ApplicationStatus.isEveryActivityDestroyed();
-            // TODO(dtrainor): Move TabModelSelector#destroy() calls here.
-            if ((windowId != INVALID_WINDOW_ID && mActivityAssignments.isEmpty())
-                    || everyActivityDestroyed) {
-                resetLoadedTabModelsState(/* clearArchivedSelector= */ everyActivityDestroyed);
+        if (newState != ActivityState.DESTROYED) return;
+
+        boolean isNotifiedRecreating = mRecreatingActivities.remove(activity);
+        TabModelSelector selector = mActivityAssignments.get(activity);
+        if (selector == null) {
+            if (mPendingRecreationTimers.isEmpty()
+                    && ApplicationStatus.isEveryActivityDestroyed()) {
+                resetLoadedTabModelsState(/* clearArchivedSelector= */ true);
             }
+            return;
+        }
+
+        boolean isRecreating =
+                !activity.isFinishing()
+                        && (activity.isChangingConfigurations()
+                                || selector.isReparentingInProgress()
+                                || isNotifiedRecreating);
+        @WindowId
+        int windowId =
+                clearSelectorAndWindowIdAssignments(activity, /* keepHeadless= */ !isRecreating);
+        if (isRecreating && windowId != INVALID_WINDOW_ID) {
+            cancelWindowRecreationTimer(windowId);
+            CallbackController timer = new CallbackController();
+            mPendingRecreationTimers.put(windowId, timer);
+            if (mAllTabState == AllTabState.INITIALIZED) {
+                mAllTabState = AllTabState.PENDING_RELOAD;
+            }
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    timer.makeCancelable(
+                            () -> {
+                                mPendingRecreationTimers.remove(windowId);
+                                onRecreatingWindowExpired(windowId);
+                            }),
+                    RECREATION_GRACE_PERIOD_MS);
+        } else if (!mActivityAssignments.isEmpty()) {
+            onSelectorTabStateInitialized();
+        } else if (mPendingRecreationTimers.isEmpty()) {
+            // TODO(dtrainor): Move TabModelSelector#destroy() calls here.
+            resetLoadedTabModelsState(
+                    /* clearArchivedSelector= */ ApplicationStatus.isEveryActivityDestroyed());
+        }
+    }
+
+    private void cancelWindowRecreationTimer(@WindowId int windowId) {
+        CallbackController timer = mPendingRecreationTimers.remove(windowId);
+        if (timer != null) {
+            timer.destroy();
+        }
+    }
+
+    private void onRecreatingWindowExpired(@WindowId int expiredWindowId) {
+        if (mPendingRecreationTimers.isEmpty() && mActivityAssignments.isEmpty()) {
+            resetLoadedTabModelsState(
+                    /* clearArchivedSelector= */ ApplicationStatus.isEveryActivityDestroyed());
+            return;
+        }
+        Profile profile = findActiveProfile();
+        if (profile != null && !mWindowIdToSelectors.containsKey(expiredWindowId)) {
+            requestSelectorWithoutActivity(expiredWindowId, profile);
+        }
+        if (!mActivityAssignments.isEmpty()) {
+            onSelectorTabStateInitialized();
         }
     }
 
     private void resetLoadedTabModelsState(boolean clearArchivedSelector) {
         destroyAllHeadlessSelectors();
-        mKeepAllTabModelsLoaded = false;
+        for (CallbackController timer : mPendingRecreationTimers.values()) {
+            timer.destroy();
+        }
+        mPendingRecreationTimers.clear();
+        mRecreatingActivities.clear();
+        mKeepAllTabModelsLoadedProfile = null;
+        mPendingRestoreCompleteTask = null;
+        mAllTabState = AllTabState.UNINITIALIZED;
         mTabStateInitialized = false;
-        mIsAllTabStateInitialized = false;
         if (clearArchivedSelector) {
             mArchivedTabModelSelector = null;
         }
@@ -830,11 +976,12 @@ public class TabWindowManagerImpl implements TabWindowManager {
             Activity activity, boolean keepHeadless) {
         if (!mActivityAssignments.containsKey(activity)) return INVALID_WINDOW_ID;
         TabModelSelector selector = mActivityAssignments.remove(activity);
+        mRecreatingActivities.remove(activity);
         @WindowId int windowId = getWindowIdForSelectorChecked(selector);
         if (windowId >= 0) {
             mWindowIdToSelectors.remove(windowId);
             mSelectorsToWindowId.remove(selector);
-            if (keepHeadless && mKeepAllTabModelsLoaded) {
+            if (keepHeadless) {
                 Profile profile = findActiveProfile();
                 if (profile != null) {
                     requestSelectorWithoutActivity(windowId, profile);
@@ -845,13 +992,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     private @Nullable Profile findActiveProfile() {
-        for (TabModelSelector selector : mActivityAssignments.values()) {
-            Profile profile = selector.getModel(/* incognito= */ false).getProfile();
-            if (profile != null && !profile.isOffTheRecord()) {
-                return profile;
-            }
-        }
-        return null;
+        if (mActivityAssignments.isEmpty() && mPendingRecreationTimers.isEmpty()) return null;
+        Profile profile = mKeepAllTabModelsLoadedProfile;
+        return profile != null && !profile.isOffTheRecord() && !profile.shutdownStarted()
+                ? profile
+                : null;
     }
 
     private boolean isPossiblyAnArchivedTab() {

@@ -48,6 +48,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -69,6 +70,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 
 import java.util.ArrayList;
@@ -121,6 +123,10 @@ public class ChromeTabbedActivityUnitTest {
 
         public void setIsFinishing(boolean isFinishing) {
             mIsFinishing = isFinishing;
+        }
+
+        public void setIsRecreating(boolean isRecreating) {
+            mIsRecreating = isRecreating;
         }
 
         public void setDidFinishNativeInitialization(boolean didFinishNativeInitialization) {
@@ -276,6 +282,20 @@ public class ChromeTabbedActivityUnitTest {
         verify(orchestrator).destroy();
 
         assertFalse(IncognitoTabHostRegistry.getInstance().getHosts().contains(host));
+    }
+
+    @Test
+    public void testDestroyTabModels_notifiesTabWindowManagerWhenRecreating() {
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+
+        activity.destroyTabModels();
+        verify(tabWindowManager, never()).notifyActivityRecreating(any());
+
+        activity.setIsRecreating(true);
+        activity.destroyTabModels();
+        verify(tabWindowManager).notifyActivityRecreating(activity);
     }
 
     @Test
