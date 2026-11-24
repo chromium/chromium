@@ -365,8 +365,16 @@ TEST_P(ClientCertSourceWritableUnitTest, TriggerReloadOnKcerDbChange) {
 
 // Test importing from a PKCS #12 file and then deleting the imported cert,
 // with no policy set.
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/587062777): Re-enable once TestFuture timeout flake is fixed.
+#define MAYBE_ImportPkcs12AndGetCertificateInfosAndDelete \
+  DISABLED_ImportPkcs12AndGetCertificateInfosAndDelete
+#else
+#define MAYBE_ImportPkcs12AndGetCertificateInfosAndDelete \
+  ImportPkcs12AndGetCertificateInfosAndDelete
+#endif
 TEST_P(ClientCertSourceWritableUnitTest,
-       ImportPkcs12AndGetCertificateInfosAndDelete) {
+       MAYBE_ImportPkcs12AndGetCertificateInfosAndDelete) {
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
       ash::prefs::kNssChapsDualWrittenCertsExist));
