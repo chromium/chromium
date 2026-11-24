@@ -741,8 +741,6 @@ android_library("ui_java_test_support") {
     "//base/test:public_transit_java",
     "//components/browser_ui/modaldialog/android:java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-
-    # For androidx.test.espresso.ViewInteraction
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_activity_activity_java",

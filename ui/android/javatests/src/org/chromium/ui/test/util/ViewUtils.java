@@ -21,64 +21,18 @@ import android.widget.TextView;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
-import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewFinder;
-import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 
 /** Collection of utilities helping to clarify expectations on views in tests. */
 public class ViewUtils {
     private ViewUtils() {}
-
-    /**
-     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
-     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     *
-     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
-     *
-     * @param viewMatcher The matcher matching the view that should be waited for.
-     */
-    public static void waitForVisibleView(Matcher<View> viewMatcher) {
-        ViewFinder.waitForView(viewMatcher);
-    }
-
-    /**
-     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
-     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     *
-     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
-     *
-     * @param viewMatcher The matcher matching the view that should be waited for.
-     * @param options The options to override expectations for the View (e.g. displayed %).
-     * @return An interaction on the matching view.
-     */
-    public static ViewInteraction onViewWaiting(
-            Matcher<View> viewMatcher, ViewElement.Options options) {
-        ViewPresence<View> viewPresence = ViewFinder.waitForView(viewMatcher, options);
-        return viewPresence.onView();
-    }
-
-    /**
-     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
-     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     *
-     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
-     *
-     * @param viewMatcher The matcher matching the view that should be waited for.
-     * @return An interaction on the matching view.
-     */
-    public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
-        ViewPresence<View> viewPresence = ViewFinder.waitForView(viewMatcher);
-        return viewPresence.onView();
-    }
 
     /**
      * Wait until the specified view has finished layout updates.

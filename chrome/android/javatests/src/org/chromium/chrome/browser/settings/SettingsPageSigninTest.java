@@ -17,7 +17,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.Configuration;
 import android.view.View;
@@ -249,11 +248,12 @@ public class SettingsPageSigninTest {
         // Verify MainSettings header pane is visible, SignInPreference updated to the signed-out
         // state, and Account settings is not displayed.
         waitForView(withText(R.string.search_engine_settings));
-        onViewWaiting(
+        waitForView(
                         allOf(
                                 withId(R.id.recycler_view),
                                 isDescendantOfA(withId(R.id.preferences_header))))
-                .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
+                .performViewAction(
+                        scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
         onView(
                         allOf(
                                 isDescendantOfA(withId(R.id.preferences_header)),

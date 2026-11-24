@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.site_settings;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.preference.Preference;
@@ -47,7 +44,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.List;
 
@@ -129,21 +125,12 @@ public class RestrictYouTubeCookiesDeletionPolicyTest {
         SettingsActivity activity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(
                         createWebsiteWithCookies(origin, /* count= */ 1));
-        ViewUtils.onViewWaiting(withText(origin)).check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.button_preference),
-                                withText(R.string.website_reset_full)),
-                        expectedDeletionDisabled
-                                ? ViewElement.expectDisabledOption()
-                                : ViewElement.defaultOptions())
-                .check(
-                        matches(
-                                allOf(
-                                        isDisplayed(),
-                                        expectedDeletionDisabled
-                                                ? not(isEnabled())
-                                                : isEnabled())));
+        waitForView(withText(origin));
+        waitForView(
+                allOf(withId(R.id.button_preference), withText(R.string.website_reset_full)),
+                expectedDeletionDisabled
+                        ? ViewElement.expectDisabledOption()
+                        : ViewElement.defaultOptions());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SingleWebsiteSettings fragment =
@@ -173,23 +160,14 @@ public class RestrictYouTubeCookiesDeletionPolicyTest {
                                 createWebsiteWithCookies(MOBILE_YOUTUBE_ORIGIN, /* count= */ 1)));
         SettingsActivity groupActivity =
                 SiteSettingsTestUtils.startGroupedWebsitesPreferences(youtubeGroup);
-        ViewUtils.onViewWaiting(withText(YOUTUBE_DOMAIN)).check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.button_preference),
-                                withText(R.string.website_reset_full)),
-                        (expectedDeletionDisabled
-                                        ? ViewElement.newOptions().expectDisabled()
-                                        : ViewElement.newOptions())
-                                .displayingAtLeast(1)
-                                .build())
-                .check(
-                        matches(
-                                allOf(
-                                        isDisplayed(),
-                                        expectedDeletionDisabled
-                                                ? not(isEnabled())
-                                                : isEnabled())));
+        waitForView(withText(YOUTUBE_DOMAIN));
+        waitForView(
+                allOf(withId(R.id.button_preference), withText(R.string.website_reset_full)),
+                (expectedDeletionDisabled
+                                ? ViewElement.newOptions().expectDisabled()
+                                : ViewElement.newOptions())
+                        .displayingAtLeast(1)
+                        .build());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     GroupedWebsitesSettings fragment =
