@@ -132,7 +132,6 @@ class InternalsUIHandler
   void OnClearGmailOtpOptInPrefs(const base::ListValue& args);
   void OnDumpAddresses(const base::ListValue& args);
   void OnSetPasswordChangeOverrideUrl(const base::ListValue& args);
-  void CheckAtMemoryPermissions(const base::ListValue& args);
 #if !BUILDFLAG(IS_ANDROID)
   void CheckAutofillAiPermissions(const base::ListValue& args);
   void SetDomNodeId(const base::ListValue& args);

@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -179,10 +178,6 @@ void InternalsUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "removeAutofillAiCacheEntry",
       base::BindRepeating(&InternalsUIHandler::OnDeleteAutofillAiCacheEntry,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "checkAtMemoryPermissions",
-      base::BindRepeating(&InternalsUIHandler::CheckAtMemoryPermissions,
                           base::Unretained(this)));
 #if !BUILDFLAG(IS_ANDROID)
   web_ui()->RegisterMessageCallback(
@@ -498,70 +493,6 @@ void InternalsUIHandler::OnDumpAddresses(const base::ListValue& args) {
   if (std::optional<base::DictValue> result = log.RetrieveResult()) {
     LogEntry(*result);
   }
-}
-
-void InternalsUIHandler::CheckAtMemoryPermissions(const base::ListValue& args) {
-  if (args.size() < 1 || !args[0].is_string()) {
-    return;
-  }
-  std::optional<AtMemoryAction> action;
-  const std::string& action_str = args[0].GetString();
-  // LINT.IfChange(AtMemoryAction)
-  if (action_str == "kTriggerSearchUI") {
-    action = AtMemoryAction::kTriggerSearchUI;
-  } else if (action_str == "kShowAtMemoryInSettings") {
-    action = AtMemoryAction::kShowAtMemoryInSettings;
-  } else if (action_str == "kAllowCustomizeAtMemoryShortcut") {
-    action = AtMemoryAction::kAllowCustomizeAtMemoryShortcut;
-  } else if (action_str == "kShowIph") {
-    action = AtMemoryAction::kShowIph;
-  } else if (action_str == "kShowAutocompleteAtMemoryButton") {
-    action = AtMemoryAction::kShowAutocompleteAtMemoryButton;
-  } else if (action_str == "kRetrievePaymentsForFilling") {
-    action = AtMemoryAction::kRetrievePaymentsForFilling;
-  } else if (action_str == "kRetrieveContactInfoForFilling") {
-    action = AtMemoryAction::kRetrieveContactInfoForFilling;
-  } else if (action_str == "kRetrieveIdentityDocsForFilling") {
-    action = AtMemoryAction::kRetrieveIdentityDocsForFilling;
-  } else if (action_str == "kRetrieveTravelDataForFilling") {
-    action = AtMemoryAction::kRetrieveTravelDataForFilling;
-  } else if (action_str == "kRetrieveShoppingDataForFilling") {
-    action = AtMemoryAction::kRetrieveShoppingDataForFilling;
-  }
-  // LINT.ThenChange(/components/autofill/core/browser/at_memory/at_memory_enablement_util.h:AtMemoryAction)
-  if (!action.has_value()) {
-    return;
-  }
-
-  std::optional<GURL> url;
-  if (args.size() >= 2 && args[1].is_string() && !args[1].GetString().empty()) {
-    GURL parsed_url(args[1].GetString());
-    if (parsed_url.is_valid()) {
-      url = std::move(parsed_url);
-    }
-  }
-
-  ContentAutofillClient& client = CHECK_DEREF(
-      ContentAutofillClient::FromWebContents(web_ui()->GetWebContents()));
-  std::string debug_message;
-  const auto sources =
-      std::to_array({MemoryEntrySource{MemoryEntrySourceType::kAutofill}});
-  std::optional<RetrieveForFillingParams> retrieve_params;
-  if (IsRetrieveForFillingAction(*action)) {
-    retrieve_params =
-        RetrieveForFillingParams{.is_spii = false,
-                                 .sources = sources,
-                                 .is_context_secure = client.IsContextSecure()};
-  }
-
-  const bool may_perform = MayPerformAtMemoryAction(
-      *action, client, url, retrieve_params, &debug_message);
-  FireWebUIListener(
-      "on-at-memory-permission-check-done",
-      base::Value(may_perform
-                      ? "AtMemory action is allowed"
-                      : base::StrCat({"AtMemory action is not allowed: ",
-                                      debug_message})));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
