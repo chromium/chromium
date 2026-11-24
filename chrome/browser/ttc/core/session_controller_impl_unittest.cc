@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <numbers>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/task_traits.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/output_volume_monitor.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/states.h"
 #if BUILDFLAG(ENABLE_TTC_WEBUI)
@@ -909,5 +912,133 @@ TEST_F(TtcSessionControllerImplTest,
   EXPECT_EQ(controller.GetBrowserWindowInterface(), window2);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+constexpr OutputVolumeState kAudible{.muted = false, .level = 0.5f};
+
+}  // namespace
+
+class TtcSessionControllerImplSpeakerVolumeTest
+    : public TtcSessionControllerImplTest {
+ public:
+  // Stands in for the platform's monitor. Registers itself with the test while
+  // it lives, so the test can change the volume.
+  class FakeOutputVolumeMonitor : public OutputVolumeMonitor {
+   public:
+    FakeOutputVolumeMonitor(TtcSessionControllerImplSpeakerVolumeTest& test,
+                            StateChangedCallback callback)
+        : test_(test),
+          state_(test.initial_state_),
+          callback_(std::move(callback)) {
+      test_->monitor_ = this;
+    }
+    ~FakeOutputVolumeMonitor() override { test_->monitor_ = nullptr; }
+
+    std::optional<OutputVolumeState> GetState() const override {
+      return state_;
+    }
+
+    void SetState(const OutputVolumeState& state) {
+      state_ = state;
+      callback_.Run(state);
+    }
+
+   private:
+    const raw_ref<TtcSessionControllerImplSpeakerVolumeTest> test_;
+    std::optional<OutputVolumeState> state_;
+    const StateChangedCallback callback_;
+  };
+
+  TtcSessionControllerImplSpeakerVolumeTest() {
+    feature_list_.InitAndEnableFeature(kTtcSpeakerVolumeWarning);
+  }
+
+ protected:
+  std::unique_ptr<OutputVolumeMonitor> CreateMonitor(
+      OutputVolumeMonitor::StateChangedCallback callback) {
+    ++monitors_created_;
+    if (!platform_supported_) {
+      return nullptr;
+    }
+    return std::make_unique<FakeOutputVolumeMonitor>(*this,
+                                                     std::move(callback));
+  }
+
+  void SetVolume(const OutputVolumeState& state) {
+    ASSERT_TRUE(monitor_);
+    monitor_->SetState(state);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  // What the monitor reports when a session creates it.
+  std::optional<OutputVolumeState> initial_state_ = kAudible;
+  // Whether the platform can read the volume, i.e. `Create()` returns one.
+  bool platform_supported_ = true;
+  int monitors_created_ = 0;
+  // The live session's monitor, if any.
+  raw_ptr<FakeOutputVolumeMonitor> monitor_ = nullptr;
+  OutputVolumeMonitor::ScopedFactoryForTesting factory_{base::BindRepeating(
+      &TtcSessionControllerImplSpeakerVolumeTest::CreateMonitor,
+      base::Unretained(this))};
+};
+
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest, NoMonitorWithoutFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kTtcSpeakerVolumeWarning);
+  SessionControllerImpl controller(*service_);
+  EXPECT_EQ(monitors_created_, 0);
+}
+
+// The session follows the volume for as long as it lives.
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest, SessionOwnsMonitor) {
+  {
+    SessionControllerImpl controller(*service_);
+    EXPECT_EQ(monitors_created_, 1);
+    ASSERT_TRUE(monitor_);
+  }
+  EXPECT_FALSE(monitor_);
+}
+
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest, LogsVolumeToJournal) {
+  actor::ActorJournalRecorder recorder(
+      actor::ActorKeyedService::Get(&profile_)->GetJournal());
+  SessionControllerImpl controller(*service_);
+  SetVolume({.muted = true, .level = std::nullopt});
+
+  const std::vector<actor::ActorJournalRecorder::Entry> entries =
+      recorder.GetEntries("TtcSystemSpeakerVolume");
+  ASSERT_EQ(entries.size(), 2u);
+  // The state read when the session starts.
+  EXPECT_THAT(entries[0].details,
+              testing::Contains(testing::Pair("muted", "false")));
+  EXPECT_THAT(entries[0].details,
+              testing::Contains(testing::Pair("level", "0.5")));
+  // A change on a device without a volume level.
+  EXPECT_THAT(entries[1].details,
+              testing::Contains(testing::Pair("muted", "true")));
+  EXPECT_THAT(entries[1].details,
+              testing::Not(testing::Contains(testing::Key("level"))));
+}
+
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest,
+       UnknownInitialVolumeIsNotLogged) {
+  initial_state_ = std::nullopt;
+  actor::ActorJournalRecorder recorder(
+      actor::ActorKeyedService::Get(&profile_)->GetJournal());
+  SessionControllerImpl controller(*service_);
+  EXPECT_TRUE(recorder.GetEntries("TtcSystemSpeakerVolume").empty());
+
+  SetVolume(kAudible);
+  EXPECT_EQ(recorder.GetEntries("TtcSystemSpeakerVolume").size(), 1u);
+}
+
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest,
+       UnsupportedPlatformHasNoMonitor) {
+  platform_supported_ = false;
+  SessionControllerImpl controller(*service_);
+  EXPECT_EQ(monitors_created_, 1);
+  EXPECT_FALSE(monitor_);
+}
 
 }  // namespace ttc

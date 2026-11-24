@@ -109,6 +109,11 @@ inline constexpr base::FeatureParam<bool> kTtcGetPointerUseSelection{
 inline constexpr base::FeatureParam<bool> kTtcGetPointerShowMark{
     &kTtcGetPointer, "show_mark", false};
 
+// Warns the user with a toast when the system output is muted or very quiet,
+// so that they know why they don't hear the model. Only ChromeOS reads the
+// output volume so far; other platforms never warn.
+BASE_DECLARE_FEATURE(kTtcSpeakerVolumeWarning);
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_
