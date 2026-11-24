@@ -92,6 +92,7 @@ source_set("unit_tests") {
     "//components/ttc/app",
     "//components/ttc/app:test_support",
     "//components/ttc/app/public",
+    "//components/ttc/app/public:test_support",
     "//content/test:test_support",
     "//media",
     "//media:test_support",

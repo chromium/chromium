@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/ttc/app/public/tab_context_info.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,11 +41,7 @@ class MockTtcBackend : public TtcBackend {
   MOCK_METHOD(std::optional<std::string>, GetSessionId, (), (const, override));
   MOCK_METHOD(void, SendAudioChunk, (base::span<const int16_t>), (override));
   MOCK_METHOD(void, SendTextInput, (const std::string&), (override));
-  MOCK_METHOD(void,
-              SendContextUpdate,
-              (const TabContextInfo&,
-               const optimization_guide::proto::AnnotatedPageContent&),
-              (override));
+  MOCK_METHOD(void, SendContextUpdate, (PageContextUpdate), (override));
   MOCK_METHOD(void,
               ReportPlaybackStatus,
               (base::TimeDelta, bool, int64_t),

@@ -6,6 +6,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -30,7 +32,7 @@
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/ttc/app/public/tab_context_info.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "components/ttc/app/public/test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -279,8 +281,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, ActiveTabChanged) {
   StartSession();
   {
     base::test::TestFuture<void> initial_sent;
-    EXPECT_CALL(*conversation(),
-                SendContextUpdate(TabContextIs(second_url, "OK"), testing::_))
+    EXPECT_CALL(
+        *conversation(),
+        SendContextUpdate(SharedContextIs(TabContextIs(second_url, "OK"))))
         .WillOnce(base::test::RunOnceClosure(initial_sent.GetCallback()));
     EXPECT_TRUE(initial_sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -288,9 +291,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, ActiveTabChanged) {
 
   auto tab_changed = ExpectPageChange();
   base::test::TestFuture<void> first_tab_sent;
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(first_url, "Title Of Awesomeness"),
-                                testing::_))
+  EXPECT_CALL(*conversation(), SendContextUpdate(SharedContextIs(TabContextIs(
+                                   first_url, "Title Of Awesomeness"))))
       .WillOnce(base::test::RunOnceClosure(first_tab_sent.GetCallback()));
   tab_list()->ActivateTab(first_tab->GetHandle());
   EXPECT_TRUE(tab_changed.Wait());
@@ -307,8 +309,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, ActiveTabChanged) {
 
   auto switched_back = ExpectPageChange();
   base::test::TestFuture<void> second_tab_sent;
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(second_url, "OK"), testing::_))
+  EXPECT_CALL(
+      *conversation(),
+      SendContextUpdate(SharedContextIs(TabContextIs(second_url, "OK"))))
       .WillOnce(base::test::RunOnceClosure(second_tab_sent.GetCallback()));
   tab_list()->ActivateTab(second_tab->GetHandle());
   EXPECT_TRUE(switched_back.Wait());
@@ -394,10 +397,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     base::test::TestFuture<void> context_updated;
     // Only the page's origin may be sent, without its title or content.
     auto& expectation = EXPECT_CALL(
-        *conversation(),
-        SendContextUpdate(TabContextIs(url::Origin::Create(url).GetURL(),
-                                       std::string(), std::string()),
-                          IsEmptyPageContent()));
+        *conversation(), SendContextUpdate(SharedContextIs(
+                             TabContextIs(url::Origin::Create(url).GetURL(),
+                                          std::string(), std::string()),
+                             IsEmptyPageContent())));
     if (wait_for_context_update) {
       expectation.WillOnce(
           base::test::RunOnceClosure(context_updated.GetCallback()));
@@ -458,8 +461,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   const GURL supported_url = embedded_test_server()->GetURL("/simple.html");
   auto navigated = ExpectPageChange();
   base::test::TestFuture<void> sent;
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(supported_url, "OK"), testing::_))
+  EXPECT_CALL(
+      *conversation(),
+      SendContextUpdate(SharedContextIs(TabContextIs(supported_url, "OK"))))
       .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), supported_url));
   EXPECT_TRUE(navigated.Wait());
@@ -477,9 +481,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   StartSession();
   {
     base::test::TestFuture<void> sent;
-    EXPECT_CALL(
-        *conversation(),
-        SendContextUpdate(TabContextIs(url, "OK", "text/html"), testing::_))
+    EXPECT_CALL(*conversation(), SendContextUpdate(SharedContextIs(
+                                     TabContextIs(url, "OK", "text/html"))))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
     EXPECT_TRUE(sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -491,10 +494,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   {
     auto navigated = ExpectPageChange();
     base::test::TestFuture<void> sent;
-    EXPECT_CALL(
-        *conversation(),
-        SendContextUpdate(TabContextIs(second_url, "Title Of Awesomeness"),
-                          testing::_))
+    EXPECT_CALL(*conversation(), SendContextUpdate(SharedContextIs(TabContextIs(
+                                     second_url, "Title Of Awesomeness"))))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
 
     ASSERT_TRUE(content::NavigateToURL(web_contents(), second_url));
@@ -510,10 +511,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   StartSession();
   {
     base::test::TestFuture<void> sent;
-    EXPECT_CALL(
-        *conversation(),
-        SendContextUpdate(TabContextIs(second_url, "Title Of Awesomeness"),
-                          testing::_))
+    EXPECT_CALL(*conversation(), SendContextUpdate(SharedContextIs(TabContextIs(
+                                     second_url, "Title Of Awesomeness"))))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
     EXPECT_TRUE(sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -546,9 +545,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     ASSERT_TRUE(conversation());
     // Only the page's origin may be sent, without its title or content.
     EXPECT_CALL(*conversation(),
-                SendContextUpdate(
+                SendContextUpdate(SharedContextIs(
                     TabContextIs(testing::_, std::string(), std::string()),
-                    IsEmptyPageContent()))
+                    IsEmptyPageContent())))
         .Times(testing::AnyNumber());
     EXPECT_TRUE(ExpectPageChange().Wait());
   };
@@ -561,8 +560,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   StartSession();
   {
     base::test::TestFuture<void> sent;
-    EXPECT_CALL(*conversation(),
-                SendContextUpdate(TabContextIs(allowed_url, "OK"), testing::_))
+    EXPECT_CALL(
+        *conversation(),
+        SendContextUpdate(SharedContextIs(TabContextIs(allowed_url, "OK"))))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
     EXPECT_TRUE(sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -601,8 +601,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   // invalidate the context and send context for the new page.
   auto navigated = ExpectPageChange();
   base::test::TestFuture<void> sent;
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(allowed_url, "OK"), testing::_))
+  EXPECT_CALL(
+      *conversation(),
+      SendContextUpdate(SharedContextIs(TabContextIs(allowed_url, "OK"))))
       .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), allowed_url));
   EXPECT_TRUE(navigated.Wait());
@@ -620,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   {
     base::test::TestFuture<void> sent;
     EXPECT_CALL(*conversation(),
-                SendContextUpdate(TabContextIs(url, "OK"), testing::_))
+                SendContextUpdate(SharedContextIs(TabContextIs(url, "OK"))))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
     EXPECT_TRUE(sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -628,9 +629,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 
   base::test::TestFuture<void> sent;
   EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(url::Origin::Create(url).GetURL(),
-                                             std::string(), std::string()),
-                                IsEmptyPageContent()))
+              SendContextUpdate(SharedContextIs(
+                  TabContextIs(url::Origin::Create(url).GetURL(), std::string(),
+                               std::string()),
+                  IsEmptyPageContent())))
       .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   content::CrashTab(web_contents());
   EXPECT_TRUE(sent.Wait());
@@ -657,9 +659,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     ASSERT_TRUE(conversation());
     // Only the page's origin may be sent, without its title or content.
     EXPECT_CALL(*conversation(),
-                SendContextUpdate(
+                SendContextUpdate(SharedContextIs(
                     TabContextIs(testing::_, std::string(), std::string()),
-                    IsEmptyPageContent()))
+                    IsEmptyPageContent())))
         .Times(testing::AnyNumber());
     EXPECT_TRUE(ExpectPageChange().Wait());
   };
@@ -698,8 +700,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 
   auto navigated = ExpectPageChange();
   base::test::TestFuture<void> sent;
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(allowed_url, "OK"), testing::_))
+  EXPECT_CALL(
+      *conversation(),
+      SendContextUpdate(SharedContextIs(TabContextIs(allowed_url, "OK"))))
       .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), allowed_url));
   EXPECT_TRUE(navigated.Wait());
@@ -712,10 +715,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
       actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
   ASSERT_FALSE(IsUrlSupported(blocked_url, raw_checker));
 
-  EXPECT_CALL(
-      *conversation(),
-      SendContextUpdate(TabContextIs(testing::_, std::string(), std::string()),
-                        IsEmptyPageContent()))
+  EXPECT_CALL(*conversation(),
+              SendContextUpdate(SharedContextIs(
+                  TabContextIs(testing::_, std::string(), std::string()),
+                  IsEmptyPageContent())))
       .Times(testing::AnyNumber());
   navigated = ExpectPageChange();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
@@ -752,15 +755,12 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 
   optimization_guide::proto::AnnotatedPageContent page_content;
   base::test::TestFuture<void> sent;
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(url, "cross-site iframe test"),
-                                testing::_))
-      .WillOnce(
-          [&](const TabContextInfo&,
-              const optimization_guide::proto::AnnotatedPageContent& apc) {
-            page_content = apc;
-            sent.SetValue();
-          });
+  EXPECT_CALL(*conversation(), SendContextUpdate(SharedContextIs(TabContextIs(
+                                   url, "cross-site iframe test"))))
+      .WillOnce([&](PageContextUpdate update) {
+        page_content = std::move(std::get<SharedPageContext>(update).apc);
+        sent.SetValue();
+      });
 
   EXPECT_TRUE(sent.Wait());
 
@@ -791,9 +791,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 
   {
     base::test::TestFuture<void> initial_sent;
-    EXPECT_CALL(
-        *conversation(),
-        SendContextUpdate(TabContextIs(url, "Icon Button Test"), testing::_))
+    EXPECT_CALL(*conversation(), SendContextUpdate(SharedContextIs(
+                                     TabContextIs(url, "Icon Button Test"))))
         .WillOnce(base::test::RunOnceClosure(initial_sent.GetCallback()));
     EXPECT_TRUE(initial_sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -803,13 +802,11 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   base::test::TestFuture<void> refreshed_sent;
   EXPECT_CALL(
       *conversation(),
-      SendContextUpdate(TabContextIs(url, "Icon Button Test"), testing::_))
-      .WillOnce(
-          [&](const TabContextInfo&,
-              const optimization_guide::proto::AnnotatedPageContent& apc) {
-            page_content = apc;
-            refreshed_sent.SetValue();
-          });
+      SendContextUpdate(SharedContextIs(TabContextIs(url, "Icon Button Test"))))
+      .WillOnce([&](PageContextUpdate update) {
+        page_content = std::move(std::get<SharedPageContext>(update).apc);
+        refreshed_sent.SetValue();
+      });
 
   ttc_service().session_controller()->OnSpeakerChanged(Speaker::kUser);
 
@@ -842,9 +839,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, PdfSendsMimeType) {
   StartSession();
   {
     base::test::TestFuture<void> sent;
-    EXPECT_CALL(*conversation(),
-                SendContextUpdate(TabContextIs(html_url, "OK", "text/html"),
-                                  testing::_))
+    EXPECT_CALL(*conversation(), SendContextUpdate(SharedContextIs(TabContextIs(
+                                     html_url, "OK", "text/html"))))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
     EXPECT_TRUE(sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -857,9 +853,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, PdfSendsMimeType) {
   auto expect_pdf_context = [&](base::test::TestFuture<void>& sent,
                                 auto title_matcher) {
     EXPECT_CALL(*conversation(),
-                SendContextUpdate(
+                SendContextUpdate(SharedContextIs(
                     TabContextIs(pdf_url, title_matcher, "application/pdf"),
-                    IsEmptyPageContent()))
+                    IsEmptyPageContent())))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   };
 

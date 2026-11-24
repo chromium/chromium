@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/public/session_journal.h"
+#include "components/ttc/app/public/test_utils.h"
 #include "components/ttc/app/test_utils.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "content/public/test/browser_task_environment.h"
@@ -491,6 +492,16 @@ TEST_F(ConversationImplTest, SendTextInputForwardsToBackend) {
 
   EXPECT_CALL(backend(), SendTextInput("hello world")).Times(1);
   conversation.SendTextInput("hello world");
+}
+
+TEST_F(ConversationImplTest, SendContextUpdateForwardsToBackend) {
+  ConversationImpl& conversation = CreateConversation();
+
+  EXPECT_CALL(backend(), SendContextUpdate(RestrictedContextIs(
+                             PageRestrictionReason::kEnterprisePolicy)))
+      .Times(1);
+  conversation.SendContextUpdate(
+      RestrictedPageContext{PageRestrictionReason::kEnterprisePolicy});
 }
 
 TEST_F(ConversationImplTest, BackendInitializedSendsToolSetUpdate) {

@@ -344,14 +344,14 @@ TEST_F(TtcConversationTest, TestSendContextUpdateForwardsToBackend) {
   optimization_guide::proto::AnnotatedPageContent apc;
   apc.mutable_main_frame_data()->set_title("Article Title");
   EXPECT_CALL(*mock_backend_,
-              SendContextUpdate(
+              SendContextUpdate(ttc::SharedContextIs(
                   ttc::TabContextIs(url, "Article Title"),
                   testing::ResultOf(
                       [](const optimization_guide::proto::AnnotatedPageContent&
                              forwarded_apc) {
                         return forwarded_apc.main_frame_data().title();
                       },
-                      "Article Title")))
+                      "Article Title"))))
       .Times(1);
   conversation_->SendContextUpdate(url, "Article Title", apc);
 }

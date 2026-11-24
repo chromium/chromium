@@ -9,8 +9,8 @@
 
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "components/ttc/app/public/session_journal.h"
-#include "components/ttc/app/public/tab_context_info.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -24,11 +24,7 @@ class MockConversation : public Conversation {
   MOCK_METHOD(void, Start, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, SendTextInput, (const std::string&), (override));
-  MOCK_METHOD(void,
-              SendContextUpdate,
-              (const TabContextInfo&,
-               const optimization_guide::proto::AnnotatedPageContent&),
-              (override));
+  MOCK_METHOD(void, SendContextUpdate, (PageContextUpdate), (override));
   MOCK_METHOD(void, OnPageContextInvalidated, (), (override));
   MOCK_METHOD(void, SetMicMuted, (bool), (override));
   MOCK_METHOD(void, SetHotlAudioSink, (HotlAudioSinkCallback), (override));

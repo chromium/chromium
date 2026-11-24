@@ -650,15 +650,14 @@ TEST_F(TtcSessionControllerTest,
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
   EXPECT_TRUE(HasActivePageContextMonitor(controller));
 
-  EXPECT_CALL(
-      *mock_backend_ptr,
-      SendContextUpdate(ttc::TabContextIs(first_url, "First Tab"), testing::_))
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(ttc::SharedContextIs(
+                  ttc::TabContextIs(first_url, "First Tab"))))
       .Times(1);
   SimulateMonitorExtraction(controller, first_url, "First Tab");
 
-  EXPECT_CALL(
-      *mock_backend_ptr,
-      SendContextUpdate(ttc::TabContextIs(GURL(), std::string()), testing::_))
+  EXPECT_CALL(*mock_backend_ptr, SendContextUpdate(ttc::SharedContextIs(
+                                     ttc::TabContextIs(GURL(), std::string()))))
       .Times(1);
   CloseAllWebStates(*browser.GetWebStateList(),
                     WebStateList::ClosingReason::kDefault);
@@ -698,9 +697,9 @@ TEST_F(TtcSessionControllerTest,
   controller.OnConversationInitialized();
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), first_tab_ptr);
 
-  EXPECT_CALL(
-      *mock_backend_ptr,
-      SendContextUpdate(ttc::TabContextIs(first_url, "First Tab"), testing::_))
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(ttc::SharedContextIs(
+                  ttc::TabContextIs(first_url, "First Tab"))))
       .Times(1);
   SimulateMonitorExtraction(controller, first_url, "First Tab");
 
@@ -713,8 +712,8 @@ TEST_F(TtcSessionControllerTest,
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), second_tab_ptr);
 
   EXPECT_CALL(*mock_backend_ptr,
-              SendContextUpdate(ttc::TabContextIs(second_url, "Second Tab"),
-                                testing::_))
+              SendContextUpdate(ttc::SharedContextIs(
+                  ttc::TabContextIs(second_url, "Second Tab"))))
       .Times(1);
   SimulateMonitorExtraction(controller, second_url, "Second Tab");
 
@@ -726,8 +725,8 @@ TEST_F(TtcSessionControllerTest,
         return apc.ByteSizeLong() == 0;
       });
   EXPECT_CALL(*mock_backend_ptr,
-              SendContextUpdate(ttc::TabContextIs(second_url, "Second Tab"),
-                                is_empty_apc))
+              SendContextUpdate(ttc::SharedContextIs(
+                  ttc::TabContextIs(second_url, "Second Tab"), is_empty_apc)))
       .Times(2);
   controller.OnPageContextFetched(
       base::unexpected(PageContextWrapperError::kGenericError));
@@ -744,9 +743,9 @@ TEST_F(TtcSessionControllerTest,
     SCOPED_TRACE(static_cast<int>(error));
     EXPECT_CALL(
         *mock_backend_ptr,
-        SendContextUpdate(
+        SendContextUpdate(ttc::SharedContextIs(
             ttc::TabContextIs(GURL("https://example.com/"), std::string()),
-            is_empty_apc))
+            is_empty_apc)))
         .Times(1);
     controller.OnPageContextFetched(base::unexpected(error));
   }
@@ -759,18 +758,17 @@ TEST_F(TtcSessionControllerTest,
   fallback_context->set_url(fallback_url.spec());
   fallback_context->set_title("Fallback Title");
   fallback_context->mutable_annotated_page_content();
-  EXPECT_CALL(
-      *mock_backend_ptr,
-      SendContextUpdate(ttc::TabContextIs(fallback_url, "Fallback Title"),
-                        testing::_))
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(ttc::SharedContextIs(
+                  ttc::TabContextIs(fallback_url, "Fallback Title"))))
       .Times(1);
   controller.OnPageContextFetched(base::ok(std::move(fallback_context)));
 
   // Closing all tabs clears the controller's focused `WebState` and sends an
   // empty context update to clear stale page context in the backend.
-  EXPECT_CALL(
-      *mock_backend_ptr,
-      SendContextUpdate(ttc::TabContextIs(GURL(), std::string()), is_empty_apc))
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(ttc::SharedContextIs(
+                  ttc::TabContextIs(GURL(), std::string()), is_empty_apc)))
       .Times(1);
   CloseAllWebStates(*browser.GetWebStateList(),
                     WebStateList::ClosingReason::kDefault);

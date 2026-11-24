@@ -22,16 +22,12 @@
 #include "chrome/browser/ttc/app/speaker_tracker.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/ttc/app/public/conversation.h"
-#include "components/ttc/app/public/tab_context_info.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "components/ttc/app/ttc_backend.h"
 
 namespace media {
 class AudioParameters;
 }
-
-namespace optimization_guide::proto {
-class AnnotatedPageContent;
-}  // namespace optimization_guide::proto
 
 namespace ttc {
 
@@ -59,9 +55,7 @@ class ConversationImpl : public Conversation,
   void Start() override;
   void Stop() override;
   void SendTextInput(const std::string& text) override;
-  void SendContextUpdate(
-      const TabContextInfo& tab,
-      const optimization_guide::proto::AnnotatedPageContent& apc) override;
+  void SendContextUpdate(PageContextUpdate update) override;
   void OnPageContextInvalidated() override;
   void SetMicMuted(bool muted) override;
   void SetHotlAudioSink(HotlAudioSinkCallback sink) override;

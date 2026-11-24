@@ -25,7 +25,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ttc/app/public/conversation.h"
 #include "components/ttc/app/public/error_codes.h"
-#include "components/ttc/app/public/tab_context_info.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,9 +51,7 @@ class FakeConversation : public Conversation {
     }
   }
   void SendTextInput(const std::string& text) override {}
-  void SendContextUpdate(
-      const TabContextInfo& tab,
-      const optimization_guide::proto::AnnotatedPageContent& apc) override {}
+  void SendContextUpdate(PageContextUpdate update) override {}
   void OnPageContextInvalidated() override {}
   void SetMicMuted(bool muted) override {}
   void SetHotlAudioSink(HotlAudioSinkCallback sink) override {}

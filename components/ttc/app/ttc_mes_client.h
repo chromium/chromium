@@ -17,8 +17,8 @@
 #include "base/values.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "components/ttc/app/public/session_journal.h"
-#include "components/ttc/app/public/tab_context_info.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "components/ttc/app/ttc_backend.h"
 
@@ -50,9 +50,7 @@ class TtcMesClient
   void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override;
   void SendAudioChunk(base::span<const int16_t> audio_data) override;
   void SendTextInput(const std::string& text) override;
-  void SendContextUpdate(
-      const TabContextInfo& tab,
-      const optimization_guide::proto::AnnotatedPageContent& apc) override;
+  void SendContextUpdate(PageContextUpdate update) override;
   void ReportPlaybackStatus(base::TimeDelta playback_progress,
                             bool playback_complete,
                             int64_t generation_id) override;

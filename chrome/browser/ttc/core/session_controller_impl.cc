@@ -41,7 +41,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
 #include "components/ttc/app/public/error_codes.h"
-#include "components/ttc/app/public/tab_context_info.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -556,15 +556,15 @@ void SessionControllerImpl::OnPageContextFetched(
             : TabContextInfo(main_frame.GetLastCommittedURL(),
                              base::UTF16ToUTF8(contents->GetTitle()),
                              page.GetContentsMimeType());
-    conversation_->SendContextUpdate(tab, /*apc=*/{});
+    conversation_->SendContextUpdate(SharedPageContext(tab));
     return;
   }
   const optimization_guide::proto::AnnotatedPageContent& apc =
       result->annotated_page_content->data;
-  conversation_->SendContextUpdate(
+  conversation_->SendContextUpdate(SharedPageContext(
       TabContextInfo(GURL(apc.main_frame_data().url()),
                      apc.main_frame_data().title(), page.GetContentsMimeType()),
-      apc);
+      apc));
 }
 
 void SessionControllerImpl::OnInactivityTimeout() {

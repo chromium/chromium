@@ -25,7 +25,7 @@
 #import "base/strings/stringprintf.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#import "components/ttc/app/public/tab_context_info.h"
+#import "components/ttc/app/public/page_context_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
@@ -272,8 +272,8 @@ void TtcConversation::SendContextUpdate(
   if (backend_) {
     LogContextUpdateSent(url, title, apc);
     // TODO(crbug.com/585589352): Send the page's MIME type.
-    backend_->SendContextUpdate(
-        ttc::TabContextInfo(url, title, /*mime_type=*/std::string()), apc);
+    backend_->SendContextUpdate(ttc::SharedPageContext(
+        ttc::TabContextInfo(url, title, /*mime_type=*/std::string()), apc));
   }
 }
 

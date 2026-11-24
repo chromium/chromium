@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -32,6 +33,7 @@
 #include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/server_journal_event.h"
 #include "components/ttc/features.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ttc {
 
@@ -62,6 +64,23 @@ ToProtoVerbalization(ToolDefinition::Verbalization verbalization) {
           VERBALIZATION_SILENT_ACTION;
     case ToolDefinition::Verbalization::kStandard:
       return optimization_guide::proto::ToolDefinition::VERBALIZATION_STANDARD;
+  }
+}
+
+optimization_guide::proto::ContextUpdate_PageRestrictionReason
+ToProtoRestrictionReason(PageRestrictionReason reason) {
+  using ProtoReason = optimization_guide::proto::ContextUpdate;
+  switch (reason) {
+    case PageRestrictionReason::kOther:
+      return ProtoReason::PAGE_RESTRICTION_REASON_OTHER;
+    case PageRestrictionReason::kUnsupportedScheme:
+      return ProtoReason::PAGE_RESTRICTION_REASON_UNSUPPORTED_SCHEME;
+    case PageRestrictionReason::kEnterprisePolicy:
+      return ProtoReason::PAGE_RESTRICTION_REASON_ENTERPRISE_POLICY;
+    case PageRestrictionReason::kSafetyPolicy:
+      return ProtoReason::PAGE_RESTRICTION_REASON_SAFETY_POLICY;
+    case PageRestrictionReason::kRendererUnavailable:
+      return ProtoReason::PAGE_RESTRICTION_REASON_RENDERER_UNAVAILABLE;
   }
 }
 
@@ -582,20 +601,33 @@ void TtcMesClient::SendTextInput(const std::string& text) {
   SendFrame(frame);
 }
 
-void TtcMesClient::SendContextUpdate(
-    const TabContextInfo& tab,
-    const optimization_guide::proto::AnnotatedPageContent& apc) {
+void TtcMesClient::SendContextUpdate(PageContextUpdate update) {
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   auto* ctx = frame.mutable_context_update();
-  auto* active_tab = ctx->mutable_active_tab();
-  active_tab->set_url(tab.url.spec());
-  active_tab->set_title(tab.title);
-  active_tab->set_mime_type(tab.mime_type);
-  if (apc.ByteSizeLong() > 0) {
-    *ctx->mutable_annotated_page_content() = apc;
-  }
+  std::visit(absl::Overload{
+                 [&](SharedPageContext shared) {
+                   auto* active_tab = ctx->mutable_active_tab();
+                   active_tab->set_url(shared.tab.url.spec());
+                   active_tab->set_title(shared.tab.title);
+                   active_tab->set_mime_type(shared.tab.mime_type);
+                   if (shared.apc.ByteSizeLong() > 0) {
+                     *ctx->mutable_annotated_page_content() =
+                         std::move(shared.apc);
+                   }
+                 },
+                 [&](const RestrictedPageContext& restricted) {
+                   // An empty tab replaces the previous page's context on
+                   // servers that do not know `restriction_reason` yet.
+                   // TODO(crbug.com/585618943): Remove once the server supports
+                   // `restriction_reason`.
+                   ctx->mutable_active_tab();
+                   ctx->set_restriction_reason(
+                       ToProtoRestrictionReason(restricted.reason));
+                 },
+             },
+             std::move(update));
   SendFrame(frame);
 }
 
@@ -843,11 +875,19 @@ void TtcMesClient::LogClientFrame(
     case optimization_guide::proto::TtcClientFrame::kContextUpdate: {
       event_name = "ContextUpdate";
       const auto& ctx = frame.context_update();
-      details.Add("url", ctx.active_tab().url())
-          .Add("title", ctx.active_tab().title())
-          .Add("mime_type", ctx.active_tab().mime_type())
-          .Add("annotated_page_content_bytes",
-               ctx.annotated_page_content().ByteSizeLong());
+      if (ctx.restriction_reason() != optimization_guide::proto::ContextUpdate::
+                                          PAGE_RESTRICTION_REASON_UNSPECIFIED) {
+        details.Add("restriction_reason",
+                    EnumToString(ctx.restriction_reason(),
+                                 &optimization_guide::proto::
+                                     ContextUpdate_PageRestrictionReason_Name));
+      } else {
+        details.Add("url", ctx.active_tab().url())
+            .Add("title", ctx.active_tab().title())
+            .Add("mime_type", ctx.active_tab().mime_type())
+            .Add("annotated_page_content_bytes",
+                 ctx.annotated_page_content().ByteSizeLong());
+      }
       break;
     }
     case optimization_guide::proto::TtcClientFrame::kToolsetUpdate: {

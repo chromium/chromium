@@ -9,22 +9,23 @@ source_set("public") {
     "conversation.h",
     "debug_sink.h",
     "error_codes.h",
+    "page_context_types.h",
     "server_journal_event.h",
     "session_journal.h",
-    "tab_context_info.h",
     "tool_types.h",
     "turn_state_update.h",
   ]
   sources = [
     "error_codes.cc",
+    "page_context_types.cc",
     "server_journal_event.cc",
-    "tab_context_info.cc",
     "tool_types.cc",
   ]
   public_deps = [
     "//base",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/actor/public/mojom:mojo_bindings_shared",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//url",
   ]
 }

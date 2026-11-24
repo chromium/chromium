@@ -27,7 +27,7 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ttc/app/public/conversation.h"
-#include "components/ttc/app/public/tab_context_info.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -49,9 +49,7 @@ class FakeConversation : public Conversation {
   void Start() override {}
   void Stop() override {}
   void SendTextInput(const std::string& text) override {}
-  void SendContextUpdate(
-      const TabContextInfo& tab,
-      const optimization_guide::proto::AnnotatedPageContent& apc) override {}
+  void SendContextUpdate(PageContextUpdate update) override {}
   void OnPageContextInvalidated() override {}
   void SetMicMuted(bool muted) override {}
   void SetHotlAudioSink(HotlAudioSinkCallback sink) override {}

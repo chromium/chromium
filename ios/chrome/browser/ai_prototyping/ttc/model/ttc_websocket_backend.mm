@@ -281,9 +281,7 @@ void TtcWebSocketBackend::SendTextInput(const std::string& text) {
   [task_ sendMessage:message completionHandler:completion];
 }
 
-void TtcWebSocketBackend::SendContextUpdate(
-    const ttc::TabContextInfo& tab,
-    const optimization_guide::proto::AnnotatedPageContent& apc) {
+void TtcWebSocketBackend::SendContextUpdate(ttc::PageContextUpdate update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Context update streaming will be implemented in a subsequent change.
 }

@@ -61,10 +61,8 @@ void ConversationImpl::SendTextInput(const std::string& text) {
   backend_->SendTextInput(text);
 }
 
-void ConversationImpl::SendContextUpdate(
-    const TabContextInfo& tab,
-    const optimization_guide::proto::AnnotatedPageContent& apc) {
-  backend_->SendContextUpdate(tab, apc);
+void ConversationImpl::SendContextUpdate(PageContextUpdate update) {
+  backend_->SendContextUpdate(std::move(update));
 }
 
 void ConversationImpl::OnPageContextInvalidated() {

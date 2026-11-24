@@ -11,15 +11,11 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "components/ttc/app/public/tab_context_info.h"
+#include "components/ttc/app/public/page_context_types.h"
 
 namespace media {
 class AudioParameters;
 }  // namespace media
-
-namespace optimization_guide::proto {
-class AnnotatedPageContent;
-}  // namespace optimization_guide::proto
 
 namespace ttc {
 
@@ -43,13 +39,9 @@ class Conversation {
   // Sends user text, context, or tool messages to the model.
   virtual void SendTextInput(const std::string& text) = 0;
 
-  // Sends the context of the page the session is operating on to the model:
-  // `tab` describes the tab, and `apc` the page's content. Called by the
-  // SessionController whenever fresh page context is extracted, or with an
-  // empty `apc` when the page's content is unavailable.
-  virtual void SendContextUpdate(
-      const TabContextInfo& tab,
-      const optimization_guide::proto::AnnotatedPageContent& apc) = 0;
+  // Sends an active-tab page context update (either shared tab metadata +
+  // optional content, or a restricted-page marker) to the model.
+  virtual void SendContextUpdate(PageContextUpdate update) = 0;
 
   // Invoked when the page the session is operating on has changed, and so the
   // conversation's page context may be stale.
