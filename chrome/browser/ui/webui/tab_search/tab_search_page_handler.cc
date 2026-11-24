@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -183,7 +184,7 @@ TabSearchPageHandler::TabSearchPageHandler(
       receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_ui_(web_ui),
-      profile_(Profile::FromWebUI(web_ui_)),
+      profile_(webui::GetUserProfile(web_ui->GetWebContents())),
       webui_controller_(webui_controller),
       metrics_reporter_(metrics_reporter),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(

@@ -56,6 +56,9 @@ TEST_F(TopChromeWebUIProfileTest, UsesTopChromeWebUIProfileForMovedWebUIs) {
   EXPECT_EQ(GetTopChromeWebUIProfile(),
             &GetProfileForTopChromeWebUIContents(
                 &user_profile_, GURL(chrome::kChromeUIOmniboxPopupURL)));
+  EXPECT_EQ(GetTopChromeWebUIProfile(),
+            &GetProfileForTopChromeWebUIContents(
+                &user_profile_, GURL(chrome::kChromeUITabSearchURL)));
   EXPECT_EQ(&user_profile_,
             &GetProfileForTopChromeWebUIContents(
                 &user_profile_, GURL("chrome://not-moved.top-chrome/")));

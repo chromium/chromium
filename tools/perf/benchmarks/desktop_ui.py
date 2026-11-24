@@ -48,6 +48,10 @@ class DesktopUI(perf_benchmark.PerfBenchmark):
     options.AppendExtraBrowserArgs(
       '--enable-features=ui-debug-tools-enable-synthetic-events'
     )
+    # With TopChromeWebUISharedRenderer, Top Chrome WebUIs such as tab search
+    # are in TopChromeWebUIProfile, which disallows DevTools unless
+    # DebugTopChromeWebUI is enabled. The stories inspect them with DevTools.
+    options.AppendExtraBrowserArgs('--enable-features=DebugTopChromeWebUI')
 
   @classmethod
   def Name(cls):

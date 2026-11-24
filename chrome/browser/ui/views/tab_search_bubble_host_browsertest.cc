@@ -8,10 +8,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -19,16 +21,23 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -59,12 +68,16 @@ class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
   }
 
   void RunUntilBubbleWidgetDestroyed() {
-    ASSERT_NE(nullptr, bubble_manager()->GetBubbleWidget());
+    RunUntilBubbleWidgetDestroyed(bubble_manager());
+  }
+
+  void RunUntilBubbleWidgetDestroyed(WebUIBubbleManager* manager) {
+    ASSERT_NE(nullptr, manager->GetBubbleWidget());
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
-    ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
+    ASSERT_EQ(nullptr, manager->GetBubbleWidget());
   }
 
  private:
@@ -194,4 +207,76 @@ class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FullscreenTabSearchBubbleDialogTest, InvokeUi_default) {
   ShowAndVerifyUi();
+}
+
+class TabSearchBubbleHostSharedRendererBrowserTest
+    : public TabSearchBubbleHostBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kTopChromeWebUISharedRenderer};
+};
+
+// With kTopChromeWebUISharedRenderer, tab search is preloaded in
+// TopChromeWebUIProfile for the profile of the window, and the bubble shows
+// the preloaded WebContents.
+IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostSharedRendererBrowserTest,
+                       PreloadsAndShowsInTopChromeWebUIProfile) {
+  Profile* const user_profile = browser()->GetProfile();
+  WebUIContentsPreloadManagerTestAPI test_api;
+  test_api.PreloadUrl(user_profile, GURL(chrome::kChromeUITabSearchURL));
+  content::WebContents* preloaded =
+      WebUIContentsPreloadManager::GetInstance()->preloaded_web_contents();
+  ASSERT_TRUE(preloaded);
+  EXPECT_TRUE(Profile::FromBrowserContext(preloaded->GetBrowserContext())
+                  ->IsTopChromeWebUIProfile());
+  EXPECT_EQ(user_profile, webui::GetUserProfile(preloaded));
+
+  tab_search_bubble_host()->ShowTabSearchBubble();
+  ASSERT_TRUE(bubble_manager()->bubble_view_for_testing());
+  content::WebContents* shown = bubble_manager()
+                                    ->bubble_view_for_testing()
+                                    ->get_contents_wrapper_for_testing()
+                                    ->web_contents();
+  EXPECT_EQ(preloaded, shown);
+  EXPECT_TRUE(content::WaitForLoadStop(shown));
+  // The page handlers use the user profile.
+  EXPECT_TRUE(content::ExecJs(shown, "true"));
+
+  tab_search_bubble_host()->CloseTabSearchBubble();
+  RunUntilBubbleWidgetDestroyed();
+}
+
+// With kTopChromeWebUISharedRenderer, tab search isn't preloaded for an
+// Incognito window, but its bubble is still created in TopChromeWebUIProfile
+// for the Incognito profile.
+IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostSharedRendererBrowserTest,
+                       ShowsInTopChromeWebUIProfileWithoutPreloadForIncognito) {
+  BrowserWindowInterface* const incognito_browser = CreateIncognitoBrowser();
+  Profile* const incognito_profile = incognito_browser->GetProfile();
+  // Smart preloading would preload an engaged WebUI in a regular profile.
+  site_engagement::SiteEngagementService::Get(incognito_profile)
+      ->ResetBaseScoreForURL(GURL(chrome::kChromeUITabSearchURL), 50);
+  WebUIContentsPreloadManagerTestAPI test_api;
+  test_api.MaybePreloadForBrowserContext(incognito_profile);
+  content::WebContents* preloaded =
+      WebUIContentsPreloadManager::GetInstance()->preloaded_web_contents();
+  EXPECT_FALSE(preloaded &&
+               webui::GetUserProfile(preloaded) == incognito_profile);
+
+  TabSearchBubbleHost* host =
+      BrowserView::GetBrowserViewForBrowser(incognito_browser)
+          ->GetTabSearchBubbleHost();
+  host->ShowTabSearchBubble();
+  WebUIBubbleManager* manager = host->webui_bubble_manager_for_testing();
+  ASSERT_TRUE(manager->bubble_view_for_testing());
+  content::WebContents* shown = manager->bubble_view_for_testing()
+                                    ->get_contents_wrapper_for_testing()
+                                    ->web_contents();
+  EXPECT_TRUE(Profile::FromBrowserContext(shown->GetBrowserContext())
+                  ->IsTopChromeWebUIProfile());
+  EXPECT_EQ(incognito_profile, webui::GetUserProfile(shown));
+  EXPECT_TRUE(content::WaitForLoadStop(shown));
+  EXPECT_TRUE(content::ExecJs(shown, "true"));
+  host->CloseTabSearchBubble();
+  RunUntilBubbleWidgetDestroyed(manager);
 }

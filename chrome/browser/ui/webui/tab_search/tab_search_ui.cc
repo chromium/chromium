@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_group_shared_resources.h"
@@ -141,7 +142,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
-  web_ui->AddMessageHandler(std::make_unique<TabSearchSyncHandler>(profile));
+  // With kTopChromeWebUISharedRenderer, tab search is created in
+  // TopChromeWebUIProfile, which is shared by the windows of all profiles. The
+  // data sources are added to it, but the handlers use the user profile.
+  web_ui->AddMessageHandler(std::make_unique<TabSearchSyncHandler>(
+      webui::GetUserProfile(web_ui->GetWebContents())));
 
   page_handler_timer_ = base::ElapsedTimer();
   TRACE_EVENT_BEGIN("browser", "TabSearchPageHandlerConstructionDelay",
