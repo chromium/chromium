@@ -473,18 +473,18 @@ public class FullscreenManagerTest {
         View view = tab.getView();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
 
+        FullscreenManagerTestUtils.waitForBrowserControlsPosition(activity, 0);
         TouchCommon.singleClickView(view);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
 
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(activity, -browserControlsHeight);
+        FullscreenTestUtils.waitForFullscreenFlag(tab, true, activity);
 
         TestTouchUtils.sleepForDoubleTapTimeout(InstrumentationRegistry.getInstrumentation());
         TouchCommon.singleClickView(view);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
-        FullscreenManagerTestUtils.waitForBrowserControlsPosition(activity, 0);
-
-        FullscreenManagerTestUtils.scrollBrowserControls(activity, false);
-        FullscreenManagerTestUtils.scrollBrowserControls(activity, true);
+        FullscreenTestUtils.waitForFullscreenFlag(tab, false, activity);
+        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(activity);
     }
 
     @Test

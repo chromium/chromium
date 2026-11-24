@@ -28,6 +28,9 @@ import java.util.concurrent.TimeoutException;
 
 /** Utility methods for testing the {@link BrowserControlsManager}. */
 public class FullscreenManagerTestUtils {
+    private static final long DRAG_DURATION_MS = 500;
+    private static final int DRAG_DISPATCH_INTERVAL_MS = 16;
+
     /**
      * Scrolls the underlying web page to show or hide the browser controls.
      *
@@ -44,9 +47,10 @@ public class FullscreenManagerTestUtils {
 
         float dragX = 50f;
         // Use a larger scroll range than the height of the browser controls to ensure we overcome
-        // the delay in a scroll start being sent.
-        float dragStartY = browserControlsHeight * 3;
-        float dragEndY = dragStartY - browserControlsHeight * 2;
+        // the delay in a scroll start being sent, and keep the start coordinate below the status
+        // bar / cutout region when scrolling controls back into view.
+        float dragStartY = browserControlsHeight * 3.5f;
+        float dragEndY = browserControlsHeight * 1.5f;
         int expectedPosition = -browserControlsHeight;
 
         // The top back button toolbar will still be shown on automotive, even in fullscreen mode.
@@ -58,8 +62,17 @@ public class FullscreenManagerTestUtils {
                 dragEndY = tempDragStartY;
             }
         }
-        long downTime = SystemClock.uptimeMillis();
-        TouchCommon.performDragNoFling(activity, dragX, dragX, dragStartY, dragEndY, 100, downTime);
+        // Drag in real wall-clock time so the renderer's scroll resampler does not coalesce
+        // simulated-time events or drop trailing deltas and under-scroll.
+        TouchCommon.performWallClockDrag(
+                activity,
+                dragX,
+                dragX,
+                dragStartY,
+                dragEndY,
+                DRAG_DURATION_MS,
+                DRAG_DISPATCH_INTERVAL_MS,
+                /* preventFling= */ true);
         waitForBrowserControlsPosition(activity, expectedPosition);
     }
 
@@ -138,6 +151,8 @@ public class FullscreenManagerTestUtils {
     public static void waitForBrowserControlsToBeMoveable(
             ChromeActivity activity, boolean showControls) {
         waitForBrowserControlsPosition(activity, 0);
+        waitForPageToBeScrollable(
+                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab()));
 
         final CallbackHelper contentMovedCallback = new CallbackHelper();
         final BrowserControlsStateProvider browserControlsStateProvider =
@@ -180,10 +195,16 @@ public class FullscreenManagerTestUtils {
         for (int i = 0; i < 10; i++) {
             float dragEndY = dragStartY - browserControlsStateProvider.getTopControlsHeight();
 
-            long downTime = SystemClock.uptimeMillis();
             // Avoid fling so that the next drag has the chance to start with a non-moving content.
-            TouchCommon.performDragNoFling(
-                    activity, dragX, dragX, dragStartY, dragEndY, 100, downTime);
+            TouchCommon.performWallClockDrag(
+                    activity,
+                    dragX,
+                    dragX,
+                    dragStartY,
+                    dragEndY,
+                    DRAG_DURATION_MS,
+                    DRAG_DISPATCH_INTERVAL_MS,
+                    /* preventFling= */ true);
 
             try {
                 contentMovedCallback.waitForCallback(0, 1, 500, TimeUnit.MILLISECONDS);
