@@ -2192,6 +2192,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/ui/frame",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views:find_bar_views",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:contents_web_view",
@@ -2200,6 +2202,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_path_utils",
       "//chrome/test/base:chrome_test_utils",
+      "//components/web_modal",
+      "//content/public/browser",
       "//content/test:test_support",
       "//testing/gtest",
     ]

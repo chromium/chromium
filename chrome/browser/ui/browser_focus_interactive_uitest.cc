@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
@@ -61,8 +62,10 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -1211,6 +1214,71 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AppLocationBar) {
                                               false, false, false));
   base::RunLoop().RunUntilIdle();
   ui_test_utils::WaitForViewFocus(app_browser, VIEW_ID_TAB_CONTAINER, true);
+}
+
+// Regression test for crbug.com/40624231.
+IN_PROC_BROWSER_TEST_F(
+    BrowserFocusTest,
+    ClosingBackgroundSameProcessTabRestoresFocusToActiveWebContents) {
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* active_contents =
+      tab_strip_model->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  ASSERT_TRUE(content::ExecJs(
+      active_contents,
+      "document.body.innerHTML = '<input id=\"q\" autofocus>';"));
+  content::ExecuteScriptAsync(active_contents,
+                              R"JS(
+        let popupWin = window.open('', '_blank');
+        popupWin.document.open();
+        popupWin.document.write(
+            '<html><body onload="window.print()">HTML</body></html>');
+        popupWin.document.close();
+      )JS");
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return tab_strip_model->count() == 2; }));
+
+  content::WebContents* closing_contents = tab_strip_model->GetWebContentsAt(1);
+  ASSERT_TRUE(closing_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(closing_contents));
+  auto* dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(
+          closing_contents);
+  ASSERT_TRUE(dialog_manager);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return dialog_manager->IsDialogActive(); }));
+
+  // Put focus back on the opener and close the popup tab in the background.
+  tab_strip_model->ActivateTabAt(0);
+  ASSERT_EQ(active_contents, tab_strip_model->GetActiveWebContents());
+  ASSERT_EQ(active_contents->GetPrimaryMainFrame()->GetProcess(),
+            closing_contents->GetPrimaryMainFrame()->GetProcess())
+      << "Test relies on active and closing tabs sharing a renderer process.";
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  views::View* active_webview = browser_view->GetActiveContentsWebView();
+  ASSERT_TRUE(active_webview);
+  views::FocusManager* focus_manager = browser_view->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+
+  tab_strip_model->CloseWebContentsAt(1, CLOSE_USER_GESTURE);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return tab_strip_model->count() == 1; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::RenderWidgetHostView* rwhv =
+        active_contents->GetRenderWidgetHostView();
+    return rwhv && rwhv->HasFocus() &&
+           focus_manager->GetFocusedView() == active_webview;
+  }));
+
+  content::SimulateMouseClickOrTapElementWithId(active_contents, "q");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(active_contents, "document.activeElement.id") == "q";
+  }));
 }
 
 }  // namespace
