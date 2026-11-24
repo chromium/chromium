@@ -1569,7 +1569,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SessionStorage.DatabaseOnDiskSizeKB{DomStorageSqliteRolloutStage}"
-    units="KB" expires_after="2027-03-21">
+    units="KB" expires_after="2027-05-23">
   <owner>fergal@chromium.org</owner>
   <owner>rahsin@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>

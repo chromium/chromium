@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.AfterStartupTaskDelayedUntilTime" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>michaeln@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>

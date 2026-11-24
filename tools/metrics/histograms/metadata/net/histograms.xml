@@ -2770,7 +2770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTransaction.AttemptType" enum="DNS.AttemptType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4921,7 +4921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpTimeToFirstByte.ServerPadding" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>davidben@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
@@ -7040,7 +7040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.HandshakeConfirmedTime.ServerPadding"
-    units="Milliseconds" expires_after="2027-03-21">
+    units="Milliseconds" expires_after="2027-05-23">
   <owner>davidben@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -9994,7 +9994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSL_Connection_Latency_ServerPadding" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>davidben@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
@@ -10293,7 +10293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.Latency.Error" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

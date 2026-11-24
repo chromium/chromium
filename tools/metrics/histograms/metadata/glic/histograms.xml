@@ -1047,7 +1047,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Fre.UserInput.InvocationSource"
-    enum="GlicInvocationSource" expires_after="2027-03-21">
+    enum="GlicInvocationSource" expires_after="2027-05-23">
   <owner>erikchen@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2743,7 +2743,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Metrics.Error{Cause}"
-    enum="GlicInstanceMetricsError" expires_after="2027-03-21">
+    enum="GlicInstanceMetricsError" expires_after="2027-05-23">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>

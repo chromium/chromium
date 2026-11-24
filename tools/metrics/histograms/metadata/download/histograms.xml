@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.History.LoadedInSession" enum="BooleanLoaded"
-    expires_after="2027-03-18">
+    expires_after="2027-05-23">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-downloads@google.com</owner>
   <summary>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.History.LoadLatency" units="ms"
-    expires_after="2027-03-18">
+    expires_after="2027-05-23">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-downloads@google.com</owner>
   <summary>
@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.History.LoadTrigger"
-    enum="DownloadHistoryLoadTrigger" expires_after="2027-03-18">
+    enum="DownloadHistoryLoadTrigger" expires_after="2027-05-23">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-downloads@google.com</owner>
   <summary>
@@ -504,7 +504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.History.TimeToFirstLoad" units="ms"
-    expires_after="2027-03-18">
+    expires_after="2027-05-23">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-downloads@google.com</owner>
   <summary>

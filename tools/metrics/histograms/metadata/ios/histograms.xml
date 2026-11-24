@@ -2738,7 +2738,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.FileUploadPanel.ContextMenuActionVariant"
     enum="IOSFileUploadPanelContextMenuActionVariant"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -3354,7 +3354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Feedback" enum="IOSGeminiFeedback"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -3788,7 +3788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Response.Latency.WithoutContext" units="ms"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
   <summary>
@@ -4207,7 +4207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Background.Ntp.Loaded"
-    enum="IOSHomeCustomizationBackgroundStyle" expires_after="2027-03-21">
+    enum="IOSHomeCustomizationBackgroundStyle" expires_after="2027-05-23">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4252,7 +4252,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.HomeCustomization.Background.UserUploaded.ImageMemoryFootprint"
-    units="KB" expires_after="2027-03-21">
+    units="KB" expires_after="2027-05-23">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4326,7 +4326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Opened"
-    enum="IOSHomeCustomizationEntrypoint" expires_after="2027-03-21">
+    enum="IOSHomeCustomizationEntrypoint" expires_after="2027-05-23">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -7833,7 +7833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.ManageStorageAlert.Shown"
-    enum="BooleanShown" expires_after="2027-03-21">
+    enum="BooleanShown" expires_after="2027-05-23">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
@@ -7873,7 +7873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.Outcome" enum="IOSSaveToDriveOutcomeType"
-    expires_after="2027-03-21">
+    expires_after="2027-05-23">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
@@ -7898,7 +7898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.FinalState"
-    enum="IOSSaveToDriveUploadTaskStateType" expires_after="2027-03-21">
+    enum="IOSSaveToDriveUploadTaskStateType" expires_after="2027-05-23">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
