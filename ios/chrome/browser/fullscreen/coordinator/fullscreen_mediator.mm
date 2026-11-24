@@ -317,8 +317,8 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   CGFloat panTransDelta = panTranslation.y - _lastPanTranslationY;
   _lastPanTranslationY = panTranslation.y;
 
-  if (scrollView.isTracking && panTransDelta * delta < 0) {
-    _lastTrackingScrollDelta = delta;
+  if (delta == 0) {
+    return;
   }
 
   CGFloat minOffset = -scrollView.contentInset.top;
@@ -340,30 +340,24 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   // Ignore programmatic `contentOffset` adjustments triggered by WebKit layer
   // tree commits (e.g., `adjustMainFrameDelegatedScrollPosition` or
   // `contentSize` clamping) while a drag or deceleration is active. When WebKit
-  // snaps `contentOffset` against the active gesture or deceleration within the
-  // scrollable bounds, restore `previousContentOffset` so the page does not
-  // visibly jump.
+  // snaps `contentOffset` without pan gesture movement or against active
+  // deceleration within the scrollable bounds, restore `previousContentOffset`
+  // so the page does not visibly jump. Check `panTransDelta == 0` rather than
+  // requiring opposite signs because dragging the native scroll indicator moves
+  // the pan gesture in the same direction as `contentOffset`.
   if (contentHeightChanged) {
     return;
   }
 
-  BOOL canRestoreOffset =
-      previousContentOffset > minOffset && previousContentOffset < maxOffset;
-
-  if (scrollView.isTracking) {
-    if (panTransDelta * delta >= 0) {
-      if (delta != 0 && canRestoreOffset) {
-        _lastContentOffset = previousContentOffset;
-        _updatingInsets = YES;
-        scrollView.contentOffset =
-            CGPointMake(scrollView.contentOffset.x, previousContentOffset);
-        _updatingInsets = NO;
-      }
-      return;
-    }
-  } else if (scrollView.isDecelerating && _lastTrackingScrollDelta != 0 &&
-             delta * _lastTrackingScrollDelta <= 0) {
-    if (delta * _lastTrackingScrollDelta < 0 && canRestoreOffset) {
+  BOOL isProgrammaticTrackingScroll =
+      scrollView.isTracking && panTransDelta == 0;
+  BOOL isOpposingDecelerationScroll =
+      !scrollView.isTracking && scrollView.isDecelerating &&
+      _lastTrackingScrollDelta != 0 && delta * _lastTrackingScrollDelta < 0;
+  if (isProgrammaticTrackingScroll || isOpposingDecelerationScroll) {
+    BOOL canRestoreOffset =
+        previousContentOffset > minOffset && previousContentOffset < maxOffset;
+    if (canRestoreOffset) {
       _lastContentOffset = previousContentOffset;
       _updatingInsets = YES;
       scrollView.contentOffset =
@@ -373,18 +367,20 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
     return;
   }
 
+  if (scrollView.isTracking) {
+    _lastTrackingScrollDelta = delta;
+  }
+
   if (IsFullscreenEasedTransitionsEnabled() && _browserAgent->is_animating()) {
     return;
   }
   _handlingScroll = YES;
 
-  if (delta != 0) {
-    // If the direction changed, reset the _scrollTotal.
-    if ((delta > 0 && _scrollTotal < 0) || (delta < 0 && _scrollTotal > 0)) {
-      _scrollTotal = delta;
-    } else {
-      _scrollTotal += delta;
-    }
+  // If the direction changed, reset the _scrollTotal.
+  if ((delta > 0 && _scrollTotal < 0) || (delta < 0 && _scrollTotal > 0)) {
+    _scrollTotal = delta;
+  } else {
+    _scrollTotal += delta;
   }
 
   CGFloat scrollVelocity = 0.0;

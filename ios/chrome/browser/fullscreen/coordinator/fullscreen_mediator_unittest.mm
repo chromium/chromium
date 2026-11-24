@@ -486,9 +486,9 @@ TEST_F(FullscreenMediatorTest, ExitsFullscreenOnSecondScrollToBottom) {
 }
 
 // Tests that programmatic `contentOffset` adjustments (during `contentSize`
-// updates, active tracking, or momentum deceleration) are ignored and that
-// opposing adjustments during tracking or deceleration restore the previous
-// `contentOffset`.
+// updates, active tracking without pan movement, or opposing momentum
+// deceleration) are ignored and that adjustments during tracking or opposing
+// deceleration restore the previous `contentOffset`.
 TEST_F(FullscreenMediatorTest, IgnoresAndRestoresProgrammaticScrolls) {
   auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
   scroll_view.isTrackingOverride = YES;
@@ -519,11 +519,21 @@ TEST_F(FullscreenMediatorTest, IgnoresAndRestoresProgrammaticScrolls) {
   EXPECT_EQ(agent_->top_progress(), progress_after_user_scroll);
   EXPECT_EQ(scroll_view.contentOffset.y, kTrackedOffsetY);
 
-  // Finger lifts into downward deceleration; momentum scroll proceeds, while an
+  // A `contentSize.height` clamp moving in the opposite direction while
+  // tracking is ignored and does not poison the tracked scroll direction used
+  // during subsequent deceleration.
+  [scroll_view.panGestureRecognizer setTranslation:CGPointMake(0, -30.0)
+                                            inView:scroll_view];
+  scroll_view.contentSize = CGSizeMake(scroll_view.contentSize.width, 2050.0);
+  scroll_view.contentOffset = CGPointMake(0, 120.0);
+  EXPECT_EQ(agent_->top_progress(), progress_after_user_scroll);
+
+  // Finger lifts into downward deceleration (without a velocity override);
+  // momentum scroll proceeds in the tracked downward direction, while an
   // opposing programmatic adjustment is ignored and restored.
   CGPoint target_offset = CGPointMake(0, 300.0);
   [observer webViewScrollViewWillEndDragging:scroll_view_proxy
-                                withVelocity:CGPointMake(0, 1.5)
+                                withVelocity:CGPointZero
                          targetContentOffset:&target_offset];
   scroll_view.isTrackingOverride = NO;
   scroll_view.isDeceleratingOverride = YES;
@@ -536,6 +546,51 @@ TEST_F(FullscreenMediatorTest, IgnoresAndRestoresProgrammaticScrolls) {
   scroll_view.contentOffset = CGPointMake(0, 120.0);
   EXPECT_EQ(agent_->top_progress(), progress_after_deceleration);
   EXPECT_EQ(scroll_view.contentOffset.y, kDecelerationOffsetY);
+}
+
+// Tests that dragging the native scroll indicator, where `panGestureRecognizer`
+// translation moves in the same direction as `contentOffset`, is allowed to
+// scroll instead of being treated as a programmatic adjustment, while
+// programmatic scrolls without pan movement are still restored.
+TEST_F(FullscreenMediatorTest, AllowsScrollbarIndicatorScrubbing) {
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  scroll_view.isTrackingOverride = YES;
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+
+  // Dragging the scrollbar down increases both `panTranslation.y` and
+  // `contentOffset.y`.
+  [scroll_view.panGestureRecognizer setTranslation:CGPointMake(0, 10.0)
+                                            inView:scroll_view];
+  scroll_view.contentOffset = CGPointMake(0, 200.0);
+  EXPECT_EQ(scroll_view.contentOffset.y, 200.0);
+  CGFloat progress_after_scrub_down = agent_->top_progress();
+  EXPECT_LT(progress_after_scrub_down, 1.0);
+
+  // A programmatic scroll without pan movement mid-scrub is still ignored and
+  // restored.
+  scroll_view.contentOffset = CGPointMake(0, 180.0);
+  EXPECT_EQ(scroll_view.contentOffset.y, 200.0);
+  EXPECT_EQ(agent_->top_progress(), progress_after_scrub_down);
+
+  // Dragging the scrollbar back up decreases both `panTranslation.y` and
+  // `contentOffset.y`.
+  [scroll_view.panGestureRecognizer setTranslation:CGPointMake(0, 5.0)
+                                            inView:scroll_view];
+  scroll_view.contentOffset = CGPointMake(0, 150.0);
+  EXPECT_EQ(scroll_view.contentOffset.y, 150.0);
+  CGFloat progress_after_scrub_up = agent_->top_progress();
+  EXPECT_GT(progress_after_scrub_up, progress_after_scrub_down);
+
+  // Subsequent deceleration inherits the last upward scrub direction and
+  // rejects an opposing downward programmatic jump.
+  scroll_view.isTrackingOverride = NO;
+  scroll_view.isDeceleratingOverride = YES;
+  scroll_view.contentOffset = CGPointMake(0, 170.0);
+  EXPECT_EQ(scroll_view.contentOffset.y, 150.0);
+  EXPECT_EQ(agent_->top_progress(), progress_after_scrub_up);
 }
 
 // Tests that forced fullscreen prevents scroll snapping from exiting
