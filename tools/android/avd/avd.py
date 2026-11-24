@@ -61,7 +61,7 @@ def _detect_emulator_processes():
 
 
 def _avd_procs_for_config(path, avd_procs):
-  # Example: /usr/local/google/code/clankium1/src/.android_emulator/android_34_google_apis_x64_local/emulator/qemu/linux-x86_64/qemu-system-x86_64
+  # Example: /usr/local/google/code/clankium1/src/.android_emulator/android_34_google_apis_x64/emulator/qemu/linux-x86_64/qemu-system-x86_64
   avd_name = os.path.basename(path).removesuffix('.textpb')
   key = f'{avd_name}{os.path.sep}'
   return [p for p in avd_procs if key in p.cmd]
@@ -270,8 +270,7 @@ def main(raw_args):
   subparser.add_argument(
     '--require-fast-start',
     action='store_true',
-    help='Deprecated and will be removed soon. Please use '
-    '"proto/*_local.textpb" avd config files for local development.',
+    help='Deprecated and will be removed soon.',
   )
   subparser.add_argument(
     '--no-mouse-reposition',

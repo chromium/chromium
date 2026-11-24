@@ -218,7 +218,7 @@ class TimeallTest(unittest.TestCase):
         self.assertFalse(options.s)
 
     @unittest.mock.patch(
-        'random.choice', return_value='android_31_google_apis_x64_local.textpb'
+        'random.choice', return_value='android_31_google_apis_x64.textpb'
     )
     @unittest.mock.patch('random.shuffle', side_effect=lambda x: x)
     @unittest.mock.patch('timeall._run_benchmarks')
@@ -240,9 +240,7 @@ class TimeallTest(unittest.TestCase):
         last_options = benchmark_options[-1]
         self.assertEqual(last_options.benchmark, 'al_cc')
         self.assertEqual(last_options.r, 3)
-        self.assertEqual(
-            last_options.e, 'android_31_google_apis_x64_local.textpb'
-        )
+        self.assertEqual(last_options.e, 'android_31_google_apis_x64.textpb')
         self.assertFalse(last_options.n)
         self.assertTrue(last_options.s)
 

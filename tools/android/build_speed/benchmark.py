@@ -61,19 +61,8 @@ _SECONDS_TO_POLL_FOR_EMULATOR = 30
 
 # Anything not in this list is assumed to be x64.
 _X86_EMULATORS = {
-    'generic_android23.textpb': 'x86',
-    'generic_android24.textpb': 'x86',
-    'generic_android25.textpb': 'x86',
-    'generic_android26.textpb': 'x86',
-    'generic_android26_local.textpb': 'x86',
-    'generic_android27.textpb': 'x86',
-    'generic_android27_local.textpb': 'x86',
-    'android_28_google_apis_x86.textpb': 'x86',
-    'android_28_google_apis_x86_local.textpb': 'x86',
     'android_29_google_apis_x86.textpb': 'x86',
-    'android_29_google_apis_x86_local.textpb': 'x86',
     'android_30_google_apis_x86.textpb': 'x86',
-    'android_30_google_apis_x86_local.textpb': 'x86',
 }
 
 _GN_ARGS = [

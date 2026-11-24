@@ -33,24 +33,7 @@ avd_settings {
   # 4GB RAM for 34+ API AVDs
   ram_size: 4096
 }
-avd_variants {
-  key: "swarming"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
+
 min_sdk: 36
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86_64"

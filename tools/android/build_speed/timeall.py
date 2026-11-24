@@ -129,15 +129,15 @@ def run(debug: bool):
         random.shuffle(benchmarks)
 
     emulators = [  # base options, always do api34.
-        "android_34_google_apis_x64_local.textpb",
+        "android_34_google_apis_x64.textpb",
     ]
 
     if not debug:
         additional_emulators = [
-            "android_31_google_apis_x64_local.textpb",
-            "android_33_google_apis_x64_local.textpb",
-            "android_35_google_apis_x64_local.textpb",
-            "android_36_google_apis_x64_local.textpb",
+            "android_31_google_apis_x64.textpb",
+            "android_33_google_apis_x64.textpb",
+            "android_35_google_apis_x64.textpb",
+            "android_36_google_apis_x64.textpb",
         ]
         # Only compare two emulator each time.
         emulators += [random.choice(additional_emulators)]

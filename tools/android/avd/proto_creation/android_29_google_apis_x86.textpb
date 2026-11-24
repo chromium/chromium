@@ -33,24 +33,6 @@ avd_settings {
   # Increase RAM to 3072MB to reduce OOM errors.
   ram_size: 3072
 }
-avd_variants {
-  key: "swarming"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
 
 min_sdk: 29
 additional_apk {

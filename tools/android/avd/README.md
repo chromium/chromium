@@ -68,12 +68,11 @@ These files can be used by `./avd.py start` and `./avd.py install`, as well as
 the android test runner `build/android/test_runner.py`, via the flag
 `--avd-config`.
 
-There are two softlinks `android_google_apis_x64.textpb` and
-`android_google_apis_x64_local.textpb` under `./proto` that point to the AVD
-configs with the highest Android API level currently running on Chromium CQ
-(e.g. `try/android-x64-rel`), which is currently Android 36. Please update
-these softlinks accordingly when Chromium CQ migrates to a newer Android API
-level.
+There is a softlink `android_google_apis_x64.textpb` under `./proto` that points
+to the AVD config with the highest Android API level currently running on
+Chromium CQ (e.g. `try/android-x64-rel`), which is currently Android 36. Please
+update this softlink accordingly when Chromium CQ migrates to a newer Android
+API level.
 
 When updating these files, please make sure the versions of emulator
 and system image are the **same** as the tag values in the to-be-updated

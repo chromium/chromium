@@ -37,24 +37,6 @@ avd_settings {
   }
   ram_size: 2048
 }
-avd_variants {
-  key: "swarming"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
 
 min_sdk: 27
 additional_apk {

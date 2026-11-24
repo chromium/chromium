@@ -37,24 +37,6 @@ avd_settings {
     value: "512"
   }
 }
-avd_variants {
-  key: "swarming"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  },
-}
-avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
 
 min_sdk: 28
 additional_apk {

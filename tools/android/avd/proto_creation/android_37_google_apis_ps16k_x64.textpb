@@ -40,24 +40,6 @@ avd_settings {
   # 4GB RAM for 34+ API AVDs
   ram_size: 4096
 }
-avd_variants {
-  key: "swarming"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
 
 avd_launch_settings {
   gpu_mode: "lavapipe"

@@ -37,24 +37,6 @@ avd_settings {
   # (crbug.com/330259653):Increase RAM size to 6GB for Auto AVD
   ram_size: 6144
 }
-avd_variants {
-  key: "swarming"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
 
 avd_launch_settings {
   gpu_mode: "swangle_indirect"

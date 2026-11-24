@@ -85,46 +85,16 @@ avd_settings {
   }
 }
 avd_variants {
-  key: "swarming"
+  key: "portrait"
   value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
   }
 }
 avd_variants {
-  key: "swarming_landscape"
+  key: "landscape"
   value {
     screen {
       height: 1768
       width: 2208
-    }
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
-avd_variants {
-  key: "local_landscape"
-  value {
-    screen {
-      height: 1768
-      width: 2208
-    }
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
     }
   }
 }

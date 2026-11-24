@@ -1,13 +1,14 @@
 # Using an Android Emulator
-Always use x86 emulators (or x86\_64 for testing 64-bit APKs). Although arm
-emulators exist, they are so slow that they are not worth your time.
+Always use x86\_64 emulators (or x86 for Android 11 / API 30 and older).
+Although arm emulators exist, they are so slow that they are not worth your
+time.
 
 [TOC]
 
 ## Building for Emulation
 You need to target the correct architecture via GN args:
 ```gn
-target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
+target_cpu = "x64"  # or "x86" for Android 11 (API 30) and older emulators
 ```
 
 ## Running an Emulator
@@ -27,41 +28,46 @@ tools/android/avd/avd.py list
 ```
 
 | Configurations | Android Version | Form Factor | Builder |
-|:-------------- |:--------------- |:------- |:---------- |
-| `generic_android26.textpb` | 8.0 (O) | Phone | [android-oreo-x86-rel][android-oreo-x86-rel] |
-| `generic_android27.textpb` | 8.1 (O_MR1) | Phone | N/A |
-| `android_28_google_apis_x86.textpb` | 9 (P) | Phone | [android-pie-x86-rel][android-pie-x86-rel] |
-| `android_29_google_apis_x86.textpb` | 10 (Q) | Phone | N/A |
+|:-------------- |:--------------- |:----------- |:------- |
+| `android_29_google_apis_x86.textpb` | 10 (Q) | Phone | [android-10-x86-rel][android-10-x86-rel] |
 | `android_30_google_apis_x86.textpb` | 11 (R) | Phone | [android-11-x86-rel][android-11-x86-rel] |
 | `android_31_google_apis_x64.textpb` | 12 (S) | Phone | [android-12-x64-rel][android-12-x64-rel] |
 | `android_32_google_apis_x64_foldable.textpb` | 12L (S_V2) | Foldable Phone | [android-12l-x64-dbg-tests][android-12l-x64-dbg-tests] |
 | `android_32_google_apis_x64_foldable_landscape.textpb` | 12L (S_V2) | Foldable Phone (Landscape) | [android-12l-landscape-x64-dbg-tests][android-12l-landscape-x64-dbg-tests] |
 | `android_33_google_apis_x64.textpb` | 13 (T) | Phone | [android-13-x64-rel][android-13-x64-rel] |
 | `android_34_google_apis_x64.textpb` | 14 (U) | Phone | [android-14-x64-rel][android-14-x64-rel] |
+| `android_34_automotive_x64.textpb` | 14 (U) | Automotive (Landscape) | [android-14-automotive-landscape-x64-rel][android-14-automotive-landscape-x64-rel] |
 | `android_35_google_apis_x64.textpb` | 15 (V) | Phone | [android-15-x64-rel][android-15-x64-rel] |
-| `android_35_google_apis_x64_tablet.textpb` | 15 (V) | Tablet | [android-15-tablet-x64-dbg-tests][android-15-tablet-x64-dbg-tests] |
-| `android_35_google_apis_x64_tablet_landscape.textpb` | 15 (V) | Tablet (Landscape) | [android-15-tablet-landscape-x64-dbg-tests][android-15-tablet-landscape-x64-dbg-tests] |
+| `android_35_google_apis_x64_tablet.textpb` | 15 (V) | Tablet | [android-15-tablet-x64-rel][android-15-tablet-x64-rel] |
+| `android_35_google_apis_x64_tablet_landscape.textpb` | 15 (V) | Tablet (Landscape) | [android-15-tablet-landscape-x64-rel][android-15-tablet-landscape-x64-rel] |
+| `android_35_google_apis_tablet_x64_tablet_landscape.textpb` | 15 (V) | Desktop / Tablet (Landscape) | [android-desktop-x64-rel-15-tests][android-desktop-x64-rel-15-tests] |
+| `android_36_google_apis_x64.textpb` | 16 (B) | Phone | [android-16-x64-rel][android-16-x64-rel] |
+| `android_37_desktop_x64.textpb` | 17 | Desktop | [android-desktop-x64-rel-17-tests][android-desktop-x64-rel-17-tests] |
+| `android_37_google_apis_ps16k_x64.textpb` | 17 | Phone (16 KB page size) | [android-17-x64-rel][android-17-x64-rel] |
+| `android_canary_google_apis_x64.textpb` | Canary | Phone (16 KB page size) | [android-canary-x64-fyi-rel][android-canary-x64-fyi-rel] |
 
 You can use these configuration files to run the same emulator images locally.
+Note that `tools/android/avd/proto/android_google_apis_x64.textpb` is a symlink
+pointing to the highest Android API level currently running on Chromium CQ
+(`android_36_google_apis_x64.textpb`), so local workflows can use it without
+hardcoding an API version.
 
-[android-oreo-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-oreo-x86-rel
-[android-pie-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-pie-x86-rel
-[android-11-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-11-x86-rel
-[android-12-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-12-x64-rel
-[android-12l-x64-dbg-tests]: https://ci.chromium.org/p/chromium/builders/ci/android-12l-x64-dbg-tests
-[android-12l-landscape-x64-dbg-tests]: https://ci.chromium.org/p/chromium/builders/ci/android-12l-landscape-x64-dbg-tests
-[android-13-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-13-x64-rel
-[android-14-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-14-x64-rel
-[android-15-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-15-x64-rel
-[android-15-tablet-x64-dbg-tests]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-15-tablet-x64-dbg-tests
-[android-15-tablet-landscape-x64-dbg-tests]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-15-tablet-landscape-x64-dbg-tests
-
-> Note: New AVD configurations for LOCAL development are also available now,
-> whose file names end with `_local`, i.e. `*_local.textpb`.
->
-> The only difference is that these configs has 12GB storage space instead of
-> 4GB on the non-local ones. Larger storage space makes it easier for developers
-> to install large APKs without hitting the space issue.
+[android-10-x86-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-10-x86-rel
+[android-11-x86-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-11-x86-rel
+[android-12-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-12-x64-rel
+[android-12l-x64-dbg-tests]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-12l-x64-dbg-tests
+[android-12l-landscape-x64-dbg-tests]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-12l-landscape-x64-dbg-tests
+[android-13-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-13-x64-rel
+[android-14-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-14-x64-rel
+[android-14-automotive-landscape-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-14-automotive-landscape-x64-rel
+[android-15-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-15-x64-rel
+[android-15-tablet-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-15-tablet-x64-rel
+[android-15-tablet-landscape-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-15-tablet-landscape-x64-rel
+[android-desktop-x64-rel-15-tests]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-desktop-x64-rel-15-tests
+[android-16-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-16-x64-rel
+[android-desktop-x64-rel-17-tests]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-desktop-x64-rel-17-tests
+[android-17-x64-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-17-x64-rel
+[android-canary-x64-fyi-rel]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-canary-x64-fyi-rel
 
 #### Prerequisite
 
@@ -100,18 +106,29 @@ down. This is how builders run the emulator.
 
     ```
       $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb
     ```
 
  * `--emulator-count`
 
-    The test runner will launch one instance by default. To have it run multiple
-    instances, use `--emulator-count`:
+    The test runner will launch one instance by default (up to 16 instances are
+    supported). To have it run multiple instances, use `--emulator-count`:
 
     ```
       $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --emulator-count 4
+    ```
+
+ * `--emulator-debug-tags`
+
+    Enable comma-separated emulator debug tags (for example `init,snapshot`,
+    matching `avd.py`'s `--debug-tags` option):
+
+    ```
+      $ out/Debug/bin/run_base_unittests \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
+          --emulator-debug-tags init,snapshot
     ```
 
  * `--emulator-enable-network`
@@ -121,7 +138,7 @@ down. This is how builders run the emulator.
 
     ```
     $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --emulator-enable-network
     ```
 
@@ -132,14 +149,17 @@ down. This is how builders run the emulator.
 
     ```
       $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --emulator-window
     ```
 
 #### Running standalone
 
 The test runner will set up and tear down the emulator on each invocation.
-To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
+To manage emulator lifetime independently, use `tools/android/avd/avd.py`,
+which provides `list`, `install`, `uninstall`, `start`, and `stop`
+subcommands (`avd.py start` automatically installs the AVD packages if they
+are missing or out-of-date).
 
 ##### Options
 
@@ -149,11 +169,13 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb
     ```
 
     > Note: `avd.py start` will start an emulator instance and then terminate.
-    > To shut down the emulator, use `adb emu kill`.
+    > To shut down the emulator, use `tools/android/avd/avd.py stop`
+    > (optionally passing `--avd-config` to stop only that AVD) or
+    > `adb emu kill`.
 
  * `--enable-network`
 
@@ -162,7 +184,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --enable-network
     ```
 
@@ -173,7 +195,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --emulator-window
     ```
 
@@ -189,7 +211,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --no-read-only
     ```
 
@@ -200,9 +222,22 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --wipe-data
     ```
+
+ * `--disk-size`
+
+    Override the default userdata partition size (e.g. `--disk-size 12G`):
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
+          --disk-size 12G
+    ```
+
+    > Note: Overriding the disk size invalidates the quick-boot snapshot and
+    > triggers a cold boot.
 
  * `--writable-system`
 
@@ -216,14 +251,15 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
  * `--debug-tags`
 
     `avd.py` disables the emulator log by default. When this option is used,
-    emulator log will be enabled. It is useful when the emulator cannot be
-    launched correctly. See `emulator -help-debug-tags` for a full list of tags.
-    Use `--debug-tags=all` if you want to output all logs (warning: it is quite
-    verbose).
+    emulator log will be enabled. Passing `-v` (`--verbose`) without
+    `--debug-tags` defaults to `time,init`. It is useful when the emulator
+    cannot be launched correctly. See `emulator -help-debug-tags` for a full
+    list of tags. Use `--debug-tags=all` if you want to output all logs
+    (warning: it is quite verbose).
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
+          --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
           --debug-tags init,snapshot
     ```
 
@@ -246,7 +282,7 @@ Device**.
 
 #### Creating an Image
 
-You'll see a long list of Pixel phone names. You need to 2 decisions here:
+You'll see a long list of Pixel phone names. You need to make 2 decisions here:
 
 1. Which form factor (phone/tablet/etc.)? If you're not sure, a **phone** target
    is usually fine for most development.
@@ -282,8 +318,9 @@ Choosing different **Services** for the emulator:
 
 ##### Additional settings
 
-1. Internal storage: this needs to be at least 4000 MB (4 GB)
-   (component builds are really big).
+1. Internal storage: this needs to be at least 6000 MB (6 GB), which is the
+   default minimum enforced by API 24+ emulators (use 8-12 GB if installing
+   multiple debug APKs).
 2. Expanded storage: this needs to be at least 1000 MB (1 GB)
    (our tests push a lot of files to /sdcard).
 
@@ -323,8 +360,6 @@ You can run an emulator without creating a window on your desktop (useful for
 `ssh`):
 ```shell
 $ ~/Android/Sdk/emulator/emulator -no-window @EMULATOR_ID
-$ # This also works for new enough emulator builds:
-$ ~/Android/Sdk/emulator/emulator-headless @EMULATOR_ID
 ```
 
 #### Running Multiple Emulators
@@ -357,10 +392,6 @@ $ ~/Android/Sdk/emulator/emulator -writable-system @EMULATOR_ID
 ## Emulator pros and cons
 
 ### Pros
- * **Compiles are faster.** Many physical devices are arm64, whereas emulators
-   are typically x86 (32-bit). 64-bit builds may require 2 copies of the native
-   library (32-bit and 64-bit), so compiling for an arm64 phone is ~twice as
-   much work as for an emulator (for targets which support WebView).
  * **APKs install faster.** Since emulators run on your workstation, adb can
    push the APK onto the emulator without being [bandwidth-constrained by
    USB](https://youtu.be/Mzop8bXZI3E).
@@ -372,9 +403,9 @@ $ ~/Android/Sdk/emulator/emulator -writable-system @EMULATOR_ID
 ### Cons
  * If you're investigating a hardware-specific bug report, you'll need a
    physical device with the actual hardware to repro that issue.
- * x86 emulators need a separate out directory, so building for both physical
-   devices and emulators takes up more disk space (not a problem if you build
-   exclusively for the emulator).
+ * x64/x86 emulators need a separate out directory from arm64 physical devices,
+   so building for both physical devices and emulators takes up more disk space
+   (not a problem if you build exclusively for the emulator).
  * `userdebug`/`eng` emulators don't come with the Play Store installed, so you
    can't install third party applications. Sideloading is tricky, as not all
-   third-party apps support x86.
+   third-party apps support x86\_64/x86.

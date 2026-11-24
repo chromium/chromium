@@ -34,27 +34,6 @@ avd_settings {
   # Set 4GB for tablet form factor.
   ram_size: 4096
 }
-avd_variants {
-  key: "tablet_landscape_swarming"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "tablet_landscape_local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
-avd_launch_settings {
-  gpu_mode: "swangle_indirect"
-}
 
 min_sdk: 35
 additional_apk {

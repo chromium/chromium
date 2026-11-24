@@ -1033,6 +1033,11 @@ class AvdConfig:
 
     def _UpdateAvdConfigFile(self, config_file_path, avd_settings):
         config_contents = {
+            # Necessary for API <= 23 where avdmanager otherwise defaults to a
+            # tiny userdata partition (~200-550 MB), and when resizing a
+            # pre-built userdata.img on boot. For API >= 24, the emulator
+            # enforces a 6 GiB minimum during first-time setup and overrides
+            # smaller values to 6g.
             'disk.dataPartition.size': '4G',
             'hw.keyboard': 'yes',
             'hw.mainKeys': 'no',  # Show nav buttons on screen

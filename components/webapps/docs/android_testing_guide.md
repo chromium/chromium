@@ -93,7 +93,7 @@ and networking enabled):
 
 ```bash
 tools/android/avd/avd.py start -v \
-    --avd-config tools/android/avd/proto/android_google_apis_x64_local.textpb \
+    --avd-config tools/android/avd/proto/android_google_apis_x64.textpb \
     --emulator-window --no-read-only --enable-network
 ```
 

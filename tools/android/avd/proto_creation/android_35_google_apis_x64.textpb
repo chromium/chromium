@@ -34,78 +34,28 @@ avd_settings {
   ram_size: 4096
 }
 avd_variants {
-  key: "swarming"
+  key: "phone"
   value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
   }
 }
 avd_variants {
-  key: "local"
-  value {
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
-avd_variants {
-  key: "tablet_swarming"
+  key: "tablet"
   value {
     screen {
       density: 320
       height: 2560
       width: 1600
     }
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
   }
 }
 avd_variants {
-  key: "tablet_local"
-  value {
-    screen {
-      density: 320
-      height: 2560
-      width: 1600
-    }
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
-    }
-  }
-}
-avd_variants {
-  key: "tablet_landscape_swarming"
+  key: "tablet_landscape"
   value {
     # Medium Tablet - 10.05", 2560x1600, xhdpi
     screen {
       density: 320
       height: 1600
       width: 2560
-    }
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "4G"
-    }
-  }
-}
-avd_variants {
-  key: "tablet_landscape_local"
-  value {
-    # Medium Tablet - 10.05", 2560x1600, xhdpi
-    screen {
-      density: 320
-      height: 1600
-      width: 2560
-    }
-    avd_properties {
-      key: "disk.dataPartition.size"
-      value: "12G"
     }
   }
 }
