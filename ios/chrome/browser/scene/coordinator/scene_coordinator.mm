@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 
+#import <cstdint>
 #import <string>
 #import <utility>
 
@@ -251,6 +252,14 @@ inline LayoutStateScenePassKey PassKey() {
   // Coordinator for the Remote Actor credential bottom sheet.
   RemoteActorCredentialBottomSheetCoordinator*
       _remoteActorCredentialBottomSheetCoordinator;
+  // Monotonically increasing identifier used to cancel in-flight Remote Actor
+  // modal-dismissal callbacks when the flow is stopped, views are closed, or a
+  // newer request arrives.
+  uint64_t _remoteActorRequestID;
+  // YES while `-showRemoteActorCredentialBottomSheetWithRequest:` is initiating
+  // its own synchronous `-closePresentedViews:completion:` pass via
+  // `-dismissModalDialogsWithCompletion:`.
+  BOOL _preservingPendingRemoteActorRequest;
   // YES if the Settings view is being dismissed.
   BOOL _dismissingSettings;
   // The view controller to use as a the rootViewController for this scene's
@@ -1737,32 +1746,27 @@ inline LayoutStateScenePassKey PassKey() {
     (const remote_actor::proto::RemoteActorPasswordUploadRequest&)request {
   [self stopRemoteActorCredentialBottomSheetCoordinator];
 
-  UIViewController* baseViewController = self.activeViewController;
-  if (self.sceneState.activationLevel == SceneActivationLevelDisconnected ||
-      !self.currentBrowser || !baseViewController ||
-      !baseViewController.view.window ||
-      baseViewController.presentedViewController ||
-      baseViewController.isBeingDismissed) {
+  if (!_regularBrowser ||
+      self.sceneState.activationLevel == SceneActivationLevelDisconnected ||
+      self.currentBrowser != _regularBrowser.get()) {
     OpenGeminiCallbackURL(request.task_id(), RemoteActorCallbackStatus::kFailed,
                           RemoteActorCallbackReason::kUploadFailed,
                           base::DoNothing());
     return;
   }
 
-  std::string taskID = request.task_id();
+  uint64_t requestID = ++_remoteActorRequestID;
+  remote_actor::proto::RemoteActorPasswordUploadRequest requestCopy = request;
   __weak __typeof(self) weakSelf = self;
-  RemoteActorCredentialBottomSheetCompletion completion =
-      ^(password_manager::RemoteActorCredentialSharingResult result) {
-        [weakSelf remoteActorCredentialBottomSheetDidFinishWithResult:result
-                                                               taskID:taskID];
-      };
-  _remoteActorCredentialBottomSheetCoordinator =
-      [[RemoteActorCredentialBottomSheetCoordinator alloc]
-          initWithBaseViewController:baseViewController
-                             browser:self.currentBrowser
-                             request:request
-                          completion:completion];
-  [_remoteActorCredentialBottomSheetCoordinator start];
+  _preservingPendingRemoteActorRequest = YES;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf
+        showRemoteActorCredentialBottomSheetAfterModalDismissWithRequest:
+            requestCopy
+                                                               requestID:
+                                                                   requestID];
+  }];
+  _preservingPendingRemoteActorRequest = NO;
 }
 
 #pragma mark - Properties
@@ -2339,12 +2343,63 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 // Stops `_remoteActorCredentialBottomSheetCoordinator` without triggering a
-// callback URL when torn down externally.
+// callback URL when torn down externally, and cancels any in-flight modal
+// dismissal continuation unless initiated by the current request.
 - (void)stopRemoteActorCredentialBottomSheetCoordinator {
+  if (_preservingPendingRemoteActorRequest) {
+    _preservingPendingRemoteActorRequest = NO;
+  } else {
+    ++_remoteActorRequestID;
+  }
   RemoteActorCredentialBottomSheetCoordinator* coordinator =
       _remoteActorCredentialBottomSheetCoordinator;
   _remoteActorCredentialBottomSheetCoordinator = nil;
   [coordinator stop];
+}
+
+// Presents the Remote Actor credential bottom sheet for `request` if
+// `requestID` still matches `_remoteActorRequestID` after modal dialogs have
+// been dismissed, or reports a failure callback if the scene or active view
+// controller cannot present UI.
+- (void)
+    showRemoteActorCredentialBottomSheetAfterModalDismissWithRequest:
+        (const remote_actor::proto::RemoteActorPasswordUploadRequest&)request
+                                                           requestID:
+                                                               (uint64_t)
+                                                                   requestID {
+  if (requestID != _remoteActorRequestID) {
+    return;
+  }
+  [self stopRemoteActorCredentialBottomSheetCoordinator];
+
+  UIViewController* baseViewController = self.activeViewController;
+  Browser* currentBrowser = _regularBrowser ? self.currentBrowser : nullptr;
+  if (!_regularBrowser ||
+      self.sceneState.activationLevel == SceneActivationLevelDisconnected ||
+      currentBrowser != _regularBrowser.get() ||
+      !baseViewController.view.window ||
+      baseViewController.presentedViewController ||
+      baseViewController.beingDismissed) {
+    OpenGeminiCallbackURL(request.task_id(), RemoteActorCallbackStatus::kFailed,
+                          RemoteActorCallbackReason::kUploadFailed,
+                          base::DoNothing());
+    return;
+  }
+
+  std::string taskID = request.task_id();
+  __weak __typeof(self) weakSelf = self;
+  RemoteActorCredentialBottomSheetCompletion completion =
+      ^(password_manager::RemoteActorCredentialSharingResult result) {
+        [weakSelf remoteActorCredentialBottomSheetDidFinishWithResult:result
+                                                               taskID:taskID];
+      };
+  _remoteActorCredentialBottomSheetCoordinator =
+      [[RemoteActorCredentialBottomSheetCoordinator alloc]
+          initWithBaseViewController:baseViewController
+                             browser:currentBrowser
+                             request:request
+                          completion:completion];
+  [_remoteActorCredentialBottomSheetCoordinator start];
 }
 
 // Handles completion of `_remoteActorCredentialBottomSheetCoordinator` and
