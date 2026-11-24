@@ -13,7 +13,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -123,14 +122,13 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   if (from.secret().size() != to.secret.size()) {
     return std::nullopt;
   }
-  UNSAFE_TODO(memcpy(to.secret.data(), from.secret().data(), to.secret.size()));
+  base::span(to.secret).copy_from(base::as_byte_span(from.secret()));
 
   if (from.peer_public_key_x962().size() != to.peer_public_key_x962.size()) {
     return std::nullopt;
   }
-  UNSAFE_TODO(memcpy(to.peer_public_key_x962.data(),
-                     from.peer_public_key_x962().data(),
-                     to.peer_public_key_x962.size()));
+  base::span(to.peer_public_key_x962)
+      .copy_from(base::as_byte_span(from.peer_public_key_x962()));
 
   return to;
 }
