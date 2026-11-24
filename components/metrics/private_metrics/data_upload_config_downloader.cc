@@ -53,6 +53,7 @@ constexpr net::NetworkTrafficAnnotationTag kPrivateMetricsKeyNetworkTag =
             }
           }
           destination: GOOGLE_OWNED_SERVICE
+          static_content: true
           last_reviewed: "2025-08-21"
         }
         policy {
