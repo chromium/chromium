@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -78,8 +77,7 @@ std::unique_ptr<Logger> GetLoggerIfAvailable(
   return nullptr;
 }
 
-std::string GetReachFormPrompt(const std::string& domain,
-                               const std::string& username) {
+std::string GetReachFormPrompt(std::string_view url_spec) {
 #if defined(IDR_APC_PROMPTS_JSON)
   std::string json_data =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -105,8 +103,7 @@ std::string GetReachFormPrompt(const std::string& domain,
   }
 
   std::string final_prompt = *system_prompt;
-  base::ReplaceSubstringsAfterOffset(&final_prompt, 0, "{url_spec}", domain);
-  base::ReplaceSubstringsAfterOffset(&final_prompt, 0, "{username}", username);
+  base::ReplaceSubstringsAfterOffset(&final_prompt, 0, "{url_spec}", url_spec);
 
   return final_prompt;
 
@@ -141,6 +138,7 @@ std::optional<PasswordChangeActuator::State> ParseStateFromUpdateData(
        State::kChangePasswordFormNotFound},
       {"FAILED_TO_CHANGE_PASSWORD", State::kPasswordChangeFailed},
       {"USER_INTERVENTION_REQUIRED", State::kOtpDetected},
+      {"USER_LOGIN_REQUIRED", State::kChangePasswordFormNotFound},
       {"UNKNOWN_FAILURE", State::kPasswordChangeFailed},
   };
 
@@ -233,9 +231,7 @@ void GlicPasswordChangeActuator::Start() {
   }
 
   const GURL& target_url = change_password_url_match_.change_password_url;
-  std::string site_domain(target_url.host());
-  std::string reach_form_prompt = GetReachFormPrompt(
-      site_domain, base::UTF16ToUTF8(credential_.username_value));
+  std::string reach_form_prompt = GetReachFormPrompt(target_url.spec());
 
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(originator_.get());

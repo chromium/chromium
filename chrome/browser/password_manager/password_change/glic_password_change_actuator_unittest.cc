@@ -497,6 +497,26 @@ TEST_F(GlicPasswordChangeActuatorTest,
                        glic::mojom::SubscriberObservationType::kUpdate);
 }
 
+TEST_F(GlicPasswordChangeActuatorTest,
+       UserLoginRequiredNotifiesChangePasswordFormNotFound) {
+  testing::InSequence s;
+  EXPECT_CALL(
+      observer(),
+      OnActuationStateChanged(
+          PasswordChangeActuator::State::kWaitingForChangePasswordForm));
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kChangePasswordFormNotFound));
+
+  actuator()->Start();
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data = "USER_LOGIN_REQUIRED: sign-in page detected";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+}
+
 // Verifies that TaskPolicyConfig permits actuation on the target site and
 // its subdomains.
 TEST_F(GlicPasswordChangeActuatorTest,
