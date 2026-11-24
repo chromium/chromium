@@ -314,8 +314,6 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
 
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   size_t device_index = 0;
-  MapEdidIdToDisplaySnapshot edid_id_collision_map;
-  bool collision_detected = false;
   // Serial number based identifiers of external displays, excluding the ones
   // whose serial numbers are all placeholders.
   std::set<std::string> serial_number_identifiers;
@@ -365,30 +363,15 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
       display_snapshots.emplace_back(CreateDisplaySnapshot(
           *drm, display_info.get(), static_cast<uint8_t>(device_index)));
 
-      display::DisplaySnapshot* current_display_snapshot =
-          display_snapshots.back().get();
-      const auto colliding_display_snapshot_iter = edid_id_collision_map.find(
-          current_display_snapshot->edid_display_id());
-      if (colliding_display_snapshot_iter != edid_id_collision_map.end()) {
-        collision_detected = true;
-
-        current_display_snapshot->AddIndexToDisplayId();
-
-        display::DisplaySnapshot* colliding_display_snapshot =
-            colliding_display_snapshot_iter->second;
-        colliding_display_snapshot->AddIndexToDisplayId();
-        edid_id_collision_map[colliding_display_snapshot->edid_display_id()] =
-            colliding_display_snapshot;
-      }
-      edid_id_collision_map[current_display_snapshot->edid_display_id()] =
-          current_display_snapshot;
-
       // Ownership of |display_info| is handed over.
       displays_to_create.push_back(
-          {drm, std::move(display_info), current_display_snapshot});
+          {drm, std::move(display_info), display_snapshots.back().get()});
     }
     device_index++;
   }
+
+  const bool collision_detected =
+      display::DisplaySnapshot::ClearCollidingEdidDisplayIds(display_snapshots);
 
   // Create a new DrmDisplay with each of the corresponding display info and
   // display snapshot. Note: do not use |display_infos| beyond this point,

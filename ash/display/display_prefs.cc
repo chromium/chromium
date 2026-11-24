@@ -784,7 +784,10 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
 void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
   // NOTE: This number must change every time we add/remove/edit any fields to
   // force the device to resubmit a report with updated fields.
-  constexpr uint64_t kCurrentVersion = 1;
+  // Version 2: Reported displays are keyed by the new EDID-based display ID,
+  // or by the display ID without the output index if the display doesn't have
+  // one.
+  constexpr uint64_t kCurrentVersion = 2;
 
   auto cached_version =
       pref_service->GetUint64(prefs::kDisplayPopularityRevNumber);
@@ -806,7 +809,12 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
       continue;
     }
 
-    std::string display_id = base::NumberToString(display.edid_display_id());
+    // Neither key depends on the port the display is connected to, so that
+    // the display isn't reported again when it's moved to another port.
+    std::string display_id = base::NumberToString(
+        display.edid_display_id() != display::kInvalidDisplayId
+            ? display.edid_display_id()
+            : display::GetDisplayIdWithoutOutputIndex(id));
     // If we've already reported that display, don't report it again.
     if (cached_list.contains(display_id)) {
       continue;

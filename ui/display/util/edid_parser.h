@@ -82,15 +82,16 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   // display is attached to.
   int64_t GetIndexBasedDisplayId(uint8_t output_index) const;
 
-  // Generates a unique display ID out of a mix of |manufacturer_id_|,
-  // |product_id_|, |display_name_|, |week_of_manufacture_|,
-  // |year_of_manufacture_|, |max_image_size_|,
-  // |block_zero_serial_number_hash_|, and
-  // |descriptor_block_serial_number_hash_|. Note that a hash will be produced
-  // regardless of whether or not some (or all) of the fields are
-  // missing/empty/default.
-  // Here, uniqueness is solely based on a display's EDID and is not guaranteed
-  // due to known EDIDs' completeness and correctness issues.
+  // Generates a display ID that identifies an external display regardless of
+  // the connector it's attached to. It's a hash of |manufacturer_id_|,
+  // |product_id_|, |display_name_| (product name) and the serial numbers that
+  // are not placeholders (i.e. not missing, a repeating pattern, a sequential
+  // pattern or too short), which stay the same when the display is connected
+  // through a hub or a dock. The ID has kEdidBasedDisplayIdFlag set. Returns
+  // kInvalidDisplayId if the display is internal or has no such serial number.
+  // Identical displays that use the same serial number produce the same ID.
+  // The ID is persisted in the local state, so changing how it's generated
+  // invalidates the stored data.
   int64_t GetEdidBasedDisplayId() const;
 
   // Returns a string that identifies an external display by its manufacturer

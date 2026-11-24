@@ -19,7 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "crypto/obsolete/md5.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_constants.h"
@@ -34,9 +34,8 @@ namespace display {
 
 namespace {
 
-std::string Md5AsHex(std::string_view data) {
-  return base::HexEncodeLower(
-      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data)));
+std::string Sha256AsHex(std::string_view data) {
+  return base::HexEncodeLower(crypto::hash::Sha256(data));
 }
 
 // EDID with non-ascii char in display name.
@@ -301,9 +300,9 @@ const gfx::Size kNoMaxImageSize = gfx::Size(0, 0);
 constexpr uint8_t kNoWeekOfManufactureTag = 0x00;
 constexpr uint8_t kModelYearTag = 0xff;
 // 16843009 == 0x01010101
-const std::string kGenericBlockZeroHashedSerialNumber = Md5AsHex("16843009");
+const std::string kGenericBlockZeroHashedSerialNumber = Sha256AsHex("16843009");
 const std::string kNormalDisplayHashedDescriptorBlockSerialNumber =
-    Md5AsHex("CN4202137Q");
+    Sha256AsHex("CN4202137Q");
 
 // Primaries coordinates ({RX, RY, GX, GY, BX, BY, WX, WY}) calculated by hand
 // and rounded to 4 decimal places.
@@ -409,7 +408,7 @@ struct TestParams {
      .primaries = kNormalDisplayPrimaries,
      .product_code = 586181672,
      .index_based_display_id_zero = 9834990092472576,
-     .edid_based_display_id = 1713305697,
+     .edid_based_display_id = 4633467098881935981,
      .manufacturer_id_string = "HWP",
      .product_id_string = "286C",
      .supported_color_primary_matrix_ids = {},
@@ -436,7 +435,7 @@ struct TestParams {
      .primaries = kNormalDisplayPrimaries,
      .product_code = 586181672,
      .index_based_display_id_zero = 9834734971736576,
-     .edid_based_display_id = 51468448,
+     .edid_based_display_id = 4684161589437573303,
      .manufacturer_id_string = "HWP",
      .product_id_string = "286C",
      .supported_color_primary_matrix_ids = {},
@@ -463,7 +462,7 @@ struct TestParams {
      .primaries = kNormalDisplayPrimaries,
      .product_code = 586181672,
      .index_based_display_id_zero = 9834734971736576,
-     .edid_based_display_id = 403808854,
+     .edid_based_display_id = 4684161589437573303,
      .manufacturer_id_string = "HWP",
      .product_id_string = "286C",
      .supported_color_primary_matrix_ids = {},
@@ -489,7 +488,7 @@ struct TestParams {
      .primaries = kNormalDisplayPrimaries,
      .product_code = 586181672,
      .index_based_display_id_zero = 9834734971736576,
-     .edid_based_display_id = 3094128629,
+     .edid_based_display_id = kInvalidDisplayId,
      .manufacturer_id_string = "HWP",
      .product_id_string = "286C",
      .supported_color_primary_matrix_ids = {},
@@ -515,7 +514,7 @@ struct TestParams {
      .primaries = kNormalDisplayPrimaries,
      .product_code = 586181672,
      .index_based_display_id_zero = 9834734971736576,
-     .edid_based_display_id = 2769865770,
+     .edid_based_display_id = kInvalidDisplayId,
      .manufacturer_id_string = "HWP",
      .product_id_string = "286C",
      .supported_color_primary_matrix_ids = {},
@@ -542,7 +541,7 @@ struct TestParams {
      .primaries = kNormalDisplayPrimaries,
      .product_code = 586181672,
      .index_based_display_id_zero = 9834734971736576,
-     .edid_based_display_id = 4082014303,
+     .edid_based_display_id = 4684161589437573303,
      .manufacturer_id_string = "HWP",
      .product_id_string = "286C",
      .supported_color_primary_matrix_ids = {},
@@ -569,7 +568,7 @@ struct TestParams {
      .primaries = kNormalDisplayPrimaries,
      .product_code = 586181672,
      .index_based_display_id_zero = 9834734971736576,
-     .edid_based_display_id = 1070357245,
+     .edid_based_display_id = 4684161589437573303,
      .manufacturer_id_string = "HWP",
      .product_id_string = "286C",
      .supported_color_primary_matrix_ids = {},
@@ -595,7 +594,7 @@ struct TestParams {
      .primaries = kInternalDisplayPrimaries,
      .product_code = 1285767729,
      .index_based_display_id_zero = 21571318625337344,
-     .edid_based_display_id = 1646280528,
+     .edid_based_display_id = kInvalidDisplayId,
      .manufacturer_id_string = "SEC",
      .product_id_string = "3142",
      .supported_color_primary_matrix_ids = {},
@@ -621,7 +620,7 @@ struct TestParams {
      .primaries = kOverscanDisplayPrimaries,
      .product_code = 1278082568,
      .index_based_display_id_zero = 21442559853606400,
-     .edid_based_display_id = 3766836601,
+     .edid_based_display_id = kInvalidDisplayId,
      .manufacturer_id_string = "SAM",
      .product_id_string = "08FE",
      .supported_color_primary_matrix_ids = {},
@@ -635,8 +634,8 @@ struct TestParams {
      .manufacturer_id = 0x10ACu,
      .product_id = 0x6440u,
      .block_zero_serial_number_hash =
-         Md5AsHex("842018892"),  // == LSB of 0x4c, 0x30, 0x30, 0x32
-     .descriptor_block_serial_number_hash = Md5AsHex("PH5NY13N200L"),
+         Sha256AsHex("842018892"),  // == LSB of 0x4c, 0x30, 0x30, 0x32
+     .descriptor_block_serial_number_hash = Sha256AsHex("PH5NY13N200L"),
      .max_image_size = gfx::Size(64, 40),
      .display_name = "DELL U3011",
      .active_pixel_size = gfx::Size(1920, 1200),
@@ -648,7 +647,7 @@ struct TestParams {
      .primaries = kMisdetectedDisplayPrimaries,
      .product_code = 279733312,
      .index_based_display_id_zero = 4692848143772416,
-     .edid_based_display_id = 1487444765,
+     .edid_based_display_id = 9204857703469754762,
      .manufacturer_id_string = "DEL",
      .product_id_string = "4064",
      .supported_color_primary_matrix_ids =
@@ -665,7 +664,7 @@ struct TestParams {
      .manufacturer_id = 0x22f0u,
      .product_id = 0x7626u,
      .block_zero_serial_number_hash = kGenericBlockZeroHashedSerialNumber,
-     .descriptor_block_serial_number_hash = Md5AsHex("CNK80204HM"),
+     .descriptor_block_serial_number_hash = Sha256AsHex("CNK80204HM"),
      .max_image_size = gfx::Size(52, 33),
      .display_name = "HP LP2465",
      .active_pixel_size = gfx::Size(1920, 1200),
@@ -677,7 +676,7 @@ struct TestParams {
      .primaries = kLP2565APrimaries,
      .product_code = 586184230,
      .index_based_display_id_zero = 9834630174887424,
-     .edid_based_display_id = 1695949480,
+     .edid_based_display_id = 5862530086737758582,
      .manufacturer_id_string = "HWP",
      .product_id_string = "2676",
      .supported_color_primary_matrix_ids = {},
@@ -691,7 +690,7 @@ struct TestParams {
      .manufacturer_id = 0x22f0u,
      .product_id = 0x7526u,
      .block_zero_serial_number_hash = kGenericBlockZeroHashedSerialNumber,
-     .descriptor_block_serial_number_hash = Md5AsHex("CNK80204HM"),
+     .descriptor_block_serial_number_hash = Sha256AsHex("CNK80204HM"),
      .max_image_size = gfx::Size(52, 33),
      .display_name = "HP LP2465",
      .active_pixel_size = gfx::Size(1920, 1200),
@@ -703,7 +702,7 @@ struct TestParams {
      .primaries = kLP2565BPrimaries,
      .product_code = 586183974,
      .index_based_display_id_zero = 9834630174887424,
-     .edid_based_display_id = 3357789438,
+     .edid_based_display_id = 7854293631297740158,
      .manufacturer_id_string = "HWP",
      .product_id_string = "2675",
      .supported_color_primary_matrix_ids = {},
@@ -717,7 +716,7 @@ struct TestParams {
      .manufacturer_id = 0x22f0u,
      .product_id = 0x7532u,
      .block_zero_serial_number_hash = kGenericBlockZeroHashedSerialNumber,
-     .descriptor_block_serial_number_hash = Md5AsHex("CNC7270MW0"),
+     .descriptor_block_serial_number_hash = Sha256AsHex("CNC7270MW0"),
      .max_image_size = gfx::Size(70, 39),
      .display_name = "HP Z32x",
      .active_pixel_size = gfx::Size(3840, 2160),
@@ -729,7 +728,7 @@ struct TestParams {
      .primaries = kHPz32xPrimaries,
      .product_code = 586183986,
      .index_based_display_id_zero = 9834799315992832,
-     .edid_based_display_id = 129207725,
+     .edid_based_display_id = 7731784588933812399,
      .manufacturer_id_string = "HWP",
      .product_id_string = "3275",
      .supported_color_primary_matrix_ids = {},
@@ -755,7 +754,7 @@ struct TestParams {
      .primaries = kSamusPrimaries,
      .product_code = 820260356,
      .index_based_display_id_zero = 13761487533244416,
-     .edid_based_display_id = 2825178591,
+     .edid_based_display_id = kInvalidDisplayId,
      .manufacturer_id_string = "LGD",
      .product_id_string = "042E",
      .supported_color_primary_matrix_ids = {},
@@ -781,7 +780,7 @@ struct TestParams {
      .primaries = kEvePrimaries,
      .product_code = 1292929556,
      .index_based_display_id_zero = 21692109949126656,
-     .edid_based_display_id = 2755351929,
+     .edid_based_display_id = kInvalidDisplayId,
      .manufacturer_id_string = "SHP",
      .product_id_string = "148A",
      .supported_color_primary_matrix_ids = {},
@@ -795,7 +794,7 @@ struct TestParams {
      .manufacturer_id = 19501u,
      .product_id = 62989u,
      .block_zero_serial_number_hash =
-         Md5AsHex("16780800"),  // == LSB of 0x00, 0x0e, 0x00 0x01
+         Sha256AsHex("16780800"),  // == LSB of 0x00, 0x0e, 0x00 0x01
      .descriptor_block_serial_number_hash = kNoSerialNumber,
      .max_image_size = gfx::Size(95, 54),
      .display_name = "SAMSUNG",
@@ -808,7 +807,7 @@ struct TestParams {
      .primaries = kHDRPrimaries,
      .product_code = 1278080525,
      .index_based_display_id_zero = 21442559853606400,
-     .edid_based_display_id = 755395064,
+     .edid_based_display_id = 8266619211540184085,
      .manufacturer_id_string = "SAM",
      .product_id_string = "0DF6",
      .supported_color_primary_matrix_ids =
@@ -834,8 +833,9 @@ struct TestParams {
     {.test_name = "TiledDisplay",
      .manufacturer_id = 0x10ac,
      .product_id = 0x4741,
-     .block_zero_serial_number_hash = "d79ced90548d0c97fee4406b172c6fb9",
-     .descriptor_block_serial_number_hash = "684333ab7cf4f22ae964878f967d7a13",
+     .block_zero_serial_number_hash =
+         Sha256AsHex("1094136908"),  // == LSB of 0x4c, 0x34, 0x37, 0x41
+     .descriptor_block_serial_number_hash = Sha256AsHex("JHN4J33GA74L"),
      .max_image_size = gfx::Size(70, 39),
      .display_name = "DELL UP3218K",
      .active_pixel_size = gfx::Size(3840, 2160),
@@ -847,7 +847,7 @@ struct TestParams {
      .primaries = kDellTiledPrimaries,
      .product_code = 279725889,
      .index_based_display_id_zero = 4693236086999552,
-     .edid_based_display_id = 4170208605,
+     .edid_based_display_id = 8432046166901496291,
      .manufacturer_id_string = "DEL",
      .product_id_string = "4147",
      .supported_color_primary_matrix_ids = {},
@@ -874,8 +874,7 @@ struct TestParams {
      .primaries = SkColorSpacePrimaries(),
      .product_code = 0,
      .index_based_display_id_zero = 0,
-     // Not zero because we're still hashing some string of zero/empty values.
-     .edid_based_display_id = 710538554,
+     .edid_based_display_id = kInvalidDisplayId,
      .manufacturer_id_string = "@@@",
      .product_id_string = "0000",
      .supported_color_primary_matrix_ids = {},
@@ -928,7 +927,11 @@ TEST_P(EDIDParserTest, ParseEdids) {
   EXPECT_EQ(parser_.GetProductCode(), GetParam().product_code);
   EXPECT_EQ(parser_.GetIndexBasedDisplayId(0 /* product_index */),
             GetParam().index_based_display_id_zero);
-  EXPECT_EQ(parser_.GetEdidBasedDisplayId(), GetParam().edid_based_display_id);
+  // EDID-based display IDs are only generated for external displays.
+  EXPECT_EQ(parser_.GetEdidBasedDisplayId(), kInvalidDisplayId);
+  EXPECT_EQ(EdidParser(parser_.edid_blob(), /*is_external=*/true)
+                .GetEdidBasedDisplayId(),
+            GetParam().edid_based_display_id);
 
   EXPECT_EQ(EdidParser::ManufacturerIdToString(parser_.manufacturer_id()),
             GetParam().manufacturer_id_string);
@@ -1164,19 +1167,22 @@ TEST(EdidParserSerialNumberTypeTest, DescriptorBlockPadding) {
                                         test_case.expected_type, 1);
   }
 
-  // Trailing NUL bytes are stripped only for serial number classification, so
-  // `descriptor_block_serial_number_hash()` (used by `GetEdidBasedDisplayId()`)
-  // remains unchanged.
+  // Trailing NUL bytes are also stripped before hashing the serial number.
   constexpr std::array<uint8_t, 4u> kMissingBlockZero = {0x00, 0x00, 0x00,
                                                          0x00};
-  constexpr std::string_view kNulPaddedText =
-      base::MakeStringViewWithNulChars("1234\0");
   EdidParser nul_padded(
-      CreateEdidWithSerialNumbers(kMissingBlockZero, kNulPaddedText),
+      CreateEdidWithSerialNumbers(kMissingBlockZero,
+                                  base::MakeStringViewWithNulChars("1234\0")),
       /*is_external=*/true);
   EXPECT_EQ(nul_padded.descriptor_block_serial_number_hash(),
-            Md5AsHex(kNulPaddedText));
+            Sha256AsHex("1234"));
   EXPECT_FALSE(nul_padded.GetSerialNumberBasedIdentifier());
+
+  EdidParser nul_only(
+      CreateEdidWithSerialNumbers(kMissingBlockZero,
+                                  base::MakeStringViewWithNulChars("\0\0\0")),
+      /*is_external=*/true);
+  EXPECT_TRUE(nul_only.descriptor_block_serial_number_hash().empty());
 }
 
 TEST(EdidParserSerialNumberTypeTest, NoSerialNumberDescriptor) {
@@ -1239,6 +1245,53 @@ TEST(EdidParserSerialNumberTypeTest, SerialNumberBasedIdentifier) {
   EXPECT_EQ(both, get_identifier(kValidBlockZero, "CN4202137Q"));
   EXPECT_NE(both, get_identifier(kOtherValidBlockZero, "CN4202137Q"));
   EXPECT_NE(both, get_identifier(kValidBlockZero, "CN4202137R"));
+}
+
+TEST(EdidParserTest, EdidBasedDisplayId) {
+  constexpr std::array<uint8_t, 4u> kValidBlockZero = {0x12, 0x34, 0x56, 0x78};
+  constexpr std::array<uint8_t, 4u> kOtherValidBlockZero = {0x12, 0x34, 0x56,
+                                                            0x79};
+  constexpr std::array<uint8_t, 4u> kRepeatingBlockZero = {0x01, 0x01, 0x01,
+                                                           0x01};
+  constexpr std::array<uint8_t, 4u> kMissingBlockZero = {0x00, 0x00, 0x00,
+                                                         0x00};
+  auto get_id = [](base::span<const uint8_t, 4u> block_zero,
+                   std::string_view descriptor_serial_number) {
+    return EdidParser(
+               CreateEdidWithSerialNumbers(
+                   block_zero, ToDescriptorText(descriptor_serial_number)),
+               /*is_external=*/true)
+        .GetEdidBasedDisplayId();
+  };
+
+  // No ID without a valid serial number.
+  EXPECT_EQ(get_id(kRepeatingBlockZero, ""), kInvalidDisplayId);
+  EXPECT_EQ(get_id(kRepeatingBlockZero, "0123456789"), kInvalidDisplayId);
+
+  // Either valid serial number produces an ID with the flag set.
+  for (int64_t id :
+       {get_id(kValidBlockZero, ""), get_id(kRepeatingBlockZero, "CN4202137Q"),
+        get_id(kValidBlockZero, "CN4202137Q")}) {
+    EXPECT_GT(id, 0);
+    EXPECT_TRUE(id & kEdidBasedDisplayIdFlag);
+  }
+
+  // Placeholder serial numbers don't affect the ID, but valid ones do.
+  EXPECT_EQ(get_id(kRepeatingBlockZero, "CN4202137Q"),
+            get_id(kMissingBlockZero, "CN4202137Q"));
+  EXPECT_NE(get_id(kValidBlockZero, "CN4202137Q"),
+            get_id(kValidBlockZero, "CN4202137R"));
+  EXPECT_NE(get_id(kValidBlockZero, "CN4202137Q"),
+            get_id(kOtherValidBlockZero, "CN4202137Q"));
+
+  // Trailing NUL padding in the descriptor produces the same ID as standard
+  // line feed padding.
+  EXPECT_EQ(EdidParser(CreateEdidWithSerialNumbers(
+                           kMissingBlockZero,
+                           base::MakeStringViewWithNulChars("CN4202137Q\0")),
+                       /*is_external=*/true)
+                .GetEdidBasedDisplayId(),
+            get_id(kMissingBlockZero, "CN4202137Q"));
 }
 
 TEST(EdidParserSerialNumberTypeTest, NotRecordedForInternalDisplay) {

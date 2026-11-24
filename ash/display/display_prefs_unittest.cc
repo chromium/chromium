@@ -48,8 +48,10 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
 #include "ui/display/manager/util/display_manager_test_util.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/test/event_generator.h"
@@ -1852,6 +1854,52 @@ TEST_F(DisplayPrefsTest, IsDisplayAvailableInPref) {
   // Display is available in prefs after adding the display.
   UpdateDisplay("320x200");
   EXPECT_TRUE(display_prefs()->IsDisplayAvailableInPref(id));
+}
+
+// An external display is reported to the popularity metrics only once, even
+// when it's moved to another port.
+TEST_F(DisplayPrefsTest, PopularityMetricsReportedDisplays) {
+  LoggedInAsUser();
+  const int64_t internal_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
+  const display::ManagedDisplayInfo internal_info =
+      CreateDisplayInfo(internal_id, {320, 200});
+  // Connects a display with `port_id`, whose lower 8 bits are the output index.
+  auto connect_external_display = [&](int64_t port_id,
+                                      int64_t edid_display_id) {
+    display::ManagedDisplayInfo info = CreateDisplayInfo(port_id, {600, 500});
+    info.set_edid_display_id(edid_display_id);
+    display_manager()->OnNativeDisplaysChanged({internal_info, info});
+  };
+  auto reported_displays = [&]() {
+    std::vector<std::string> keys;
+    for (const base::Value& key : local_state()->GetList(
+             prefs::kDisplayPopularityUserReportedDisplays)) {
+      keys.push_back(key.GetString());
+    }
+    return keys;
+  };
+  EXPECT_THAT(reported_displays(), testing::IsEmpty());
+
+  // A display without an EDID-based display ID is keyed by its display ID
+  // without the output index.
+  constexpr int64_t kPortId1 = 0x1234501;
+  connect_external_display(kPortId1, display::kInvalidDisplayId);
+  const std::string key1 =
+      base::NumberToString(display::GetDisplayIdWithoutOutputIndex(kPortId1));
+  EXPECT_THAT(reported_displays(), ElementsAre(key1));
+  connect_external_display(kPortId1 + 1, display::kInvalidDisplayId);
+  EXPECT_THAT(reported_displays(), ElementsAre(key1));
+
+  // A display with an EDID-based display ID is keyed by it.
+  constexpr int64_t kPortId2 = 0x2345601;
+  constexpr int64_t kEdidId = display::kEdidBasedDisplayIdFlag | 0x1234;
+  connect_external_display(kPortId2, kEdidId);
+  const std::string key2 = base::NumberToString(kEdidId);
+  EXPECT_THAT(reported_displays(), ElementsAre(key1, key2));
+  connect_external_display(kPortId2 + 1, kEdidId);
+  EXPECT_THAT(reported_displays(), ElementsAre(key1, key2));
 }
 
 TEST_F(DisplayPrefsTest, ClampOverscanFromPrefs) {

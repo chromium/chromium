@@ -25,17 +25,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
-#include "crypto/obsolete/md5.h"
+#include "crypto/hash.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace display {
-
-std::string Md5AsHexForEdid(std::string_view data) {
-  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(data));
-}
 
 namespace {
 
@@ -95,6 +92,10 @@ enum class SerialNumberType {
   kMaxValue = kTooShort,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:EdidSerialNumberType)
+
+std::string Sha256AsHex(std::string_view data) {
+  return base::HexEncodeLower(crypto::hash::Sha256(data));
+}
 
 // Returns true if `data` consists of a 1 or 2 byte unit repeated at least
 // twice (e.g. 0x01010101, 0x12121212, "AAAA" or "ABAB").
@@ -228,13 +229,28 @@ int64_t EdidParser::GetIndexBasedDisplayId(uint8_t output_index) const {
 }
 
 int64_t EdidParser::GetEdidBasedDisplayId() const {
-  const std::string string_to_hash =
-      base::NumberToString(manufacturer_id_) +
-      base::NumberToString(product_id_) + display_name_ +
-      base::NumberToString(week_of_manufacture()) +
-      base::NumberToString(year_of_manufacture_) + max_image_size().ToString() +
-      block_zero_serial_number_hash() + descriptor_block_serial_number_hash();
-  return static_cast<int64_t>(base::PersistentHash(string_to_hash));
+  if (!is_external_display_ || (!has_valid_block_zero_serial_number_ &&
+                                !has_valid_descriptor_block_serial_number_)) {
+    return kInvalidDisplayId;
+  }
+  const std::string string_to_hash = base::StrCat(
+      {base::NumberToString(manufacturer_id_), ":",
+       base::NumberToString(product_id_), ":", display_name_, ":",
+       has_valid_block_zero_serial_number_ ? block_zero_serial_number_hash()
+                                           : "",
+       ":",
+       has_valid_descriptor_block_serial_number_
+           ? descriptor_block_serial_number_hash()
+           : ""});
+  const std::array<uint8_t, crypto::hash::kSha256Size> hash =
+      crypto::hash::Sha256(string_to_hash);
+  // Keep 62 bits of the digest so that the ID stays positive and doesn't
+  // overlap with kEdidBasedDisplayIdFlag.
+  constexpr uint64_t kHashMask =
+      static_cast<uint64_t>(kEdidBasedDisplayIdFlag - 1);
+  const uint64_t value =
+      base::U64FromBigEndian(base::span(hash).first<8u>()) & kHashMask;
+  return kEdidBasedDisplayIdFlag | static_cast<int64_t>(value);
 }
 
 std::optional<std::string> EdidParser::GetSerialNumberBasedIdentifier() const {
@@ -364,7 +380,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   const uint32_t serial_number = base::U32FromLittleEndian(serial_number_bytes);
   if (serial_number) {
     block_zero_serial_number_hash_ =
-        Md5AsHexForEdid(base::NumberToString(serial_number));
+        Sha256AsHex(base::NumberToString(serial_number));
   }
 
   // Constants are taken from "VESA Enhanced EDID Standard" Release A, Revision
@@ -647,21 +663,17 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
     if (edid[offset] == 0 && edid[offset + 1] == 0 && edid[offset + 2] == 0 &&
         edid[offset + 3] == kMonitorSerialNumberDescriptor &&
         edid[offset + 4] == 0) {
-      std::string serial_number_str(
-          reinterpret_cast<const char*>(&edid[offset + 5]),
-          kDescriptorLength - 5);
-      base::TrimWhitespaceASCII(serial_number_str, base::TRIM_TRAILING,
-                                &serial_number_str);
+      // Non-conforming EDIDs may pad the descriptor with NUL bytes; strip
+      // trailing whitespace and NULs.
+      const std::string_view serial_number_str = base::TrimString(
+          std::string_view(reinterpret_cast<const char*>(&edid[offset + 5]),
+                           kDescriptorLength - 5),
+          base::MakeStringViewWithNulChars("\0\t\n\v\f\r "),
+          base::TRIM_TRAILING);
       if (!serial_number_str.empty()) {
-        descriptor_block_serial_number_hash_ =
-            Md5AsHexForEdid(serial_number_str);
-        // Non-conforming EDIDs may pad the descriptor with NUL bytes; strip
-        // trailing whitespace and NULs when classifying the serial number.
+        descriptor_block_serial_number_hash_ = Sha256AsHex(serial_number_str);
         descriptor_block_serial_number_type =
-            GetDescriptorBlockSerialNumberType(base::TrimString(
-                serial_number_str,
-                base::MakeStringViewWithNulChars("\0\t\n\v\f\r "),
-                base::TRIM_TRAILING));
+            GetDescriptorBlockSerialNumberType(serial_number_str);
         has_valid_descriptor_block_serial_number_ =
             descriptor_block_serial_number_type == SerialNumberType::kNormal;
       }

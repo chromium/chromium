@@ -327,32 +327,17 @@ DrmDisplayHostManager::DrmDisplayHostManager(
   auto display_infos = GetAvailableDisplayControllerInfos(*primary_drm_device_);
   ConsolidateTiledDisplayInfo(display_infos);
   has_dummy_display_ = !display_infos.empty();
-  MapEdidIdToDisplaySnapshot edid_id_collision_map;
+  // Create dummy DisplaySnapshots. Displays that share an EDID-based display
+  // ID fall back to port-based display IDs.
+  MovableDisplaySnapshots display_snapshots;
   for (auto& display_info : display_infos) {
-    // Create a dummy DisplaySnapshot and resolve display ID collisions.
-    std::unique_ptr<display::DisplaySnapshot> current_display_snapshot =
-        CreateDisplaySnapshot(*primary_drm_device_, display_info.get(), 0);
-
-    const auto colliding_display_snapshot_iter =
-        edid_id_collision_map.find(current_display_snapshot->edid_display_id());
-    if (colliding_display_snapshot_iter != edid_id_collision_map.end()) {
-      // Resolve collisions by adding each colliding display's connector index
-      // to its display ID.
-      current_display_snapshot->AddIndexToDisplayId();
-
-      display::DisplaySnapshot* colliding_display_snapshot =
-          colliding_display_snapshot_iter->second;
-      colliding_display_snapshot->AddIndexToDisplayId();
-      edid_id_collision_map[colliding_display_snapshot->edid_display_id()] =
-          colliding_display_snapshot;
-    }
-
-    // Update the map with the new (or potentially resolved) display snapshot.
-    edid_id_collision_map[current_display_snapshot->edid_display_id()] =
-        current_display_snapshot.get();
-
+    display_snapshots.push_back(
+        CreateDisplaySnapshot(*primary_drm_device_, display_info.get(), 0));
+  }
+  display::DisplaySnapshot::ClearCollidingEdidDisplayIds(display_snapshots);
+  for (auto& display_snapshot : display_snapshots) {
     displays_.push_back(std::make_unique<DrmDisplayHost>(
-        proxy_, std::move(current_display_snapshot), true /* is_dummy */));
+        proxy_, std::move(display_snapshot), true /* is_dummy */));
   }
 }
 

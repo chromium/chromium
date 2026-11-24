@@ -8,6 +8,7 @@
 
 #include <sstream>
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -160,9 +161,28 @@ viz::SharedImageFormat DisplaySnapshot::PrimaryFormat() {
   return viz::SinglePlaneFormat::kBGRA_8888;
 }
 
-void DisplaySnapshot::AddIndexToDisplayId() {
-  // The EDID-based display ID occupies the first 32 bits of |edid_display_id_|.
-  edid_display_id_ |= static_cast<int64_t>(connector_index_) << 32;
+void DisplaySnapshot::ClearEdidDisplayId() {
+  edid_display_id_ = kInvalidDisplayId;
+}
+
+// static
+bool DisplaySnapshot::ClearCollidingEdidDisplayIds(
+    base::span<const std::unique_ptr<DisplaySnapshot>> snapshots) {
+  base::flat_map<int64_t, size_t> counts;
+  for (const auto& snapshot : snapshots) {
+    if (snapshot->edid_display_id() != kInvalidDisplayId) {
+      ++counts[snapshot->edid_display_id()];
+    }
+  }
+  bool collision_detected = false;
+  for (const auto& snapshot : snapshots) {
+    const int64_t edid_display_id = snapshot->edid_display_id();
+    if (edid_display_id != kInvalidDisplayId && counts[edid_display_id] > 1u) {
+      snapshot->ClearEdidDisplayId();
+      collision_detected = true;
+    }
+  }
+  return collision_detected;
 }
 
 bool DisplaySnapshot::IsVrrCapable() const {

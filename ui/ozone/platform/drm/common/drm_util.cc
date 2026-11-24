@@ -943,7 +943,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   std::string display_name;
   // Make sure the ID contains non index part.
   int64_t port_display_id = display_index | 0x100;
-  int64_t edid_display_id = port_display_id;
+  int64_t edid_display_id = display::kInvalidDisplayId;
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;

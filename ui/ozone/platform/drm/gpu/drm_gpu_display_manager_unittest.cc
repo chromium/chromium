@@ -98,8 +98,6 @@ constexpr unsigned char kNoSerialNumberDisplay[] =
     "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
     "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\x10"
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x71";
-constexpr size_t kNoSerialNumberDisplayLength =
-    std::size(kNoSerialNumberDisplay);
 
 constexpr unsigned char kTiledDisplay[] =
     "\x00\xff\xff\xff\xff\xff\xff\x00\x10\xac\x47\x41\x4c\x34\x37\x41"
@@ -523,87 +521,13 @@ TEST_F(DrmGpuDisplayManagerTest,
                                  display::ModesetFlag::kCommitModeset}));
 }
 
-TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
-  // One DRM device.
-  auto fake_drm = AddDrmDevice();
-  fake_drm->ResetStateWithAllProperties();
-
-  // First, add the internal display.
-  {
-    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
-
-    auto& encoder = fake_drm->AddEncoder();
-    encoder.possible_crtcs = 0b1;
-
-    auto& connector = fake_drm->AddConnector();
-    connector.connection = true;
-    connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[3]};
-    connector.encoders = std::vector<uint32_t>{encoder.id};
-    connector.edid_blob = std::vector<uint8_t>(
-        kInternalDisplay,
-        UNSAFE_TODO(kInternalDisplay + kInternalDisplayLength));
-  }
-
-  // Next, add two external displays that will produce an EDID-based ID
-  // collision, since their EDIDs do not include viable serial numbers.
-  {
-    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
-
-    auto& encoder = fake_drm->AddEncoder();
-    encoder.possible_crtcs = 0b10;
-
-    auto& connector = fake_drm->AddConnector();
-    connector.connection = true;
-    connector.modes = base::ToVector(kStandardModes);
-    connector.encoders = std::vector<uint32_t>{encoder.id};
-    connector.edid_blob = std::vector<uint8_t>(
-        kNoSerialNumberDisplay,
-        UNSAFE_TODO(kNoSerialNumberDisplay + kNoSerialNumberDisplayLength));
-  }
-
-  {
-    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
-
-    auto& encoder = fake_drm->AddEncoder();
-    encoder.possible_crtcs = 0b100;
-
-    auto& connector = fake_drm->AddConnector();
-    connector.connection = true;
-    connector.modes = base::ToVector(kStandardModes);
-    connector.encoders = std::vector<uint32_t>{encoder.id};
-    connector.edid_blob = std::vector<uint8_t>(
-        kNoSerialNumberDisplay,
-        UNSAFE_TODO(kNoSerialNumberDisplay + kNoSerialNumberDisplayLength));
-  }
-
-  fake_drm->InitializeState(/* use_atomic */ true);
-
-  auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
-  ASSERT_EQ(display_snapshots.size(), 3u);
-
-  // First, ensure all display IDs are unique.
-  ASSERT_NE(display_snapshots[0]->edid_display_id(),
-            display_snapshots[1]->edid_display_id());
-  ASSERT_NE(display_snapshots[0]->edid_display_id(),
-            display_snapshots[2]->edid_display_id());
-  ASSERT_NE(display_snapshots[1]->edid_display_id(),
-            display_snapshots[2]->edid_display_id());
-
-  // The EDID-based display IDs occupy the first 32 bits of the id field.
-  // Extract unresolved EDID IDs from the snapshots and show that they are
-  // equal, and thus have been successfully resolved.
-  const int64_t unresolved_display_id1 =
-      display_snapshots[1]->edid_display_id() & 0xffffffff;
-  const int64_t unresolved_display_id2 =
-      display_snapshots[2]->edid_display_id() & 0xffffffff;
-  ASSERT_EQ(unresolved_display_id1, unresolved_display_id2);
-}
-
 class DrmGpuDisplayManagerSerialNumberIdentifierTest
     : public DrmGpuDisplayManagerTest {
  protected:
   static constexpr char kMetric[] =
       "Display.MultipleDisplays.GenerateId.SerialNumberIdentifierCollision";
+  static constexpr char kEdidDisplayIdMetric[] =
+      "Display.MultipleDisplays.GenerateId.CollisionDetection";
 
   // `kHPz32x` has a placeholder block zero serial number (0x01010101) and a
   // valid serial number descriptor ("CNC7270MW0").
@@ -649,23 +573,27 @@ class DrmGpuDisplayManagerSerialNumberIdentifierTest
 TEST_F(DrmGpuDisplayManagerSerialNumberIdentifierTest, SameSerialNumber) {
   ConnectDisplays({HpZ32x(), HpZ32x()});
   histogram_tester_.ExpectUniqueSample(kMetric, true, 1);
+  histogram_tester_.ExpectUniqueSample(kEdidDisplayIdMetric, true, 1);
 }
 
 TEST_F(DrmGpuDisplayManagerSerialNumberIdentifierTest, DifferentSerialNumbers) {
   ConnectDisplays({HpZ32x(), HpZ32xWithOtherSerialNumber()});
   histogram_tester_.ExpectUniqueSample(kMetric, false, 1);
+  histogram_tester_.ExpectUniqueSample(kEdidDisplayIdMetric, false, 1);
 }
 
 // Not recorded when only one display has a serial number based identifier.
 TEST_F(DrmGpuDisplayManagerSerialNumberIdentifierTest, OneIdentifier) {
   ConnectDisplays({HpZ32x(), NoSerialNumber()});
   histogram_tester_.ExpectTotalCount(kMetric, 0);
+  histogram_tester_.ExpectUniqueSample(kEdidDisplayIdMetric, false, 1);
 }
 
 // Displays without valid serial numbers are excluded.
 TEST_F(DrmGpuDisplayManagerSerialNumberIdentifierTest, NoIdentifier) {
   ConnectDisplays({NoSerialNumber(), NoSerialNumber()});
   histogram_tester_.ExpectTotalCount(kMetric, 0);
+  histogram_tester_.ExpectUniqueSample(kEdidDisplayIdMetric, false, 1);
 }
 
 class DrmGpuDisplayManagerMockedDeviceTest : public DrmGpuDisplayManagerTest {

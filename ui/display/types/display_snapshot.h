@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -90,10 +91,11 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   int64_t display_id() const { return display_id_; }
 
-  // port_display_id() and edid_display_id() are required for
-  // backward-compatibility and will eventually be removed once the migration to
-  // EDID-based display IDs is completed. See http://b/193060019.
+  // Port-based display ID, which depends on the connector the display is
+  // attached to.
   int64_t port_display_id() const { return port_display_id_; }
+  // EDID-based display ID (see EdidParser::GetEdidBasedDisplayId()), or
+  // kInvalidDisplayId if not available.
   int64_t edid_display_id() const { return edid_display_id_; }
 
   uint16_t connector_index() const { return connector_index_; }
@@ -156,9 +158,11 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // Returns the SharedImageFormat to be used for the primary plane buffer.
   static viz::SharedImageFormat PrimaryFormat();
 
-  // Adds |connector_index_| to bits 33-48 of |edid_display_id_|. This function
-  // is not plumbed via mojom to limit and control usage across processes.
-  void AddIndexToDisplayId();
+  // Clears `edid_display_id()` to kInvalidDisplayId on any snapshots in
+  // `snapshots` that share the same valid EDID-based display ID. Returns true
+  // if such a collision was detected.
+  static bool ClearCollidingEdidDisplayIds(
+      base::span<const std::unique_ptr<DisplaySnapshot>> snapshots);
 
   // Returns whether the display is capable of enabling variable refresh rates.
   bool IsVrrCapable() const;
@@ -167,15 +171,19 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   bool IsVrrEnabled() const;
 
  private:
+  // Clears |edid_display_id_| when another connected display has the same
+  // EDID-based display ID. Only ClearCollidingEdidDisplayIds() calls this, so
+  // that all the displays sharing the ID are cleared together.
+  void ClearEdidDisplayId();
+
   // Display id for this output.
   const int64_t display_id_;
   // Port-based display ID.
   const int64_t port_display_id_;
-  // EDID-based display ID.
+  // EDID-based display ID, or kInvalidDisplayId if not available.
   int64_t edid_display_id_;
 
-  // Used by AddIndexToDisplayId() to resolve display ID collisions when two
-  // (or more) displays produce identical IDs due to incomplete EDIDs.
+  // Index of the connector the display is attached to.
   const uint16_t connector_index_;
 
   // Display's origin on the framebuffer.

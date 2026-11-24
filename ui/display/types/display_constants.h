@@ -33,6 +33,10 @@ constexpr gfx::Size GetMinimumDisplaySize(const gfx::Size& size) {
 // before display IDs are known.
 constexpr int64_t kInvalidDisplayId = -1;
 
+// Set in EDID-based display IDs (see EdidParser::GetEdidBasedDisplayId()) to
+// distinguish them from port-based display IDs, which never use this bit.
+inline constexpr int64_t kEdidBasedDisplayIdFlag = int64_t{1} << 62;
+
 // Display ID that represents a valid display to be used when there's no actual
 // display connected.
 constexpr int64_t kDefaultDisplayId = -2;
