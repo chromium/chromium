@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/pdf/pdf_service.h"
 #include "chrome/browser/policy/policy_util.h"
@@ -63,6 +62,7 @@
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
+#include "components/webrtc/media_capture_dispatcher.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -168,15 +168,15 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(callback), /* extension */ nullptr);
+  webrtc::MediaCaptureDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback));
 }
 
 bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
-  return MediaCaptureDevicesDispatcher::GetInstance()
+  return webrtc::MediaCaptureDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
 

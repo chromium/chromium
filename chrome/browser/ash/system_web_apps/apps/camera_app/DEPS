@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/webrtc/media_capture_dispatcher.h",
+]
+
 specific_include_rules = {
   "camera_app_integration_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",

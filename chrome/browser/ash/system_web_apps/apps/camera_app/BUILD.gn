@@ -65,6 +65,7 @@ static_library("camera_app") {
     "//components/services/app_service",
     "//components/session_manager/core",
     "//components/version_info",
+    "//components/webrtc:media_capture_dispatcher",
     "//content/public/common",
     "//extensions/common",
     "//services/screen_ai/public/mojom",
