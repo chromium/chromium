@@ -4,8 +4,8 @@ Tests event listener breakpoints.
 Running: testClickBreakpoint
 Script execution paused.
 Call stack:
-    0) testElementEventListener (event-listener-breakpoints.js:18)
-    1) addListenerAndClick (event-listener-breakpoints.js:25)
+    0) testElementEventListener (event-listener-breakpoints.js:3)
+    1) addListenerAndClick (event-listener-breakpoints.js:9)
     2)  (:1)
 Event target: INPUT
 Script execution resumed.
@@ -13,8 +13,8 @@ Script execution resumed.
 Running: testAuxclickBreakpoint
 Script execution paused.
 Call stack:
-    0) testElementEventListener (event-listener-breakpoints.js:18)
-    1) addListenerAndAuxclick (event-listener-breakpoints.js:32)
+    0) testElementEventListener (event-listener-breakpoints.js:3)
+    1) addListenerAndAuxclick (event-listener-breakpoints.js:15)
     2)  (:1)
 Event target: INPUT
 Script execution resumed.
@@ -22,28 +22,28 @@ Script execution resumed.
 Running: testTimerFiredBreakpoint
 Script execution paused.
 Call stack:
-    0) timerFired (event-listener-breakpoints.js:44)
+    0) timerFired (event-listener-breakpoints.js:25)
 Script execution resumed.
 
 Running: testLoadBreakpointOnXHR
 Script execution paused.
 Call stack:
-    0) loadCallback (event-listener-breakpoints.js:67)
+    0) loadCallback (event-listener-breakpoints.js:46)
 Event target: XMLHttpRequest
 Script execution resumed.
 
 Running: testMediaEventBreakpoint
 Script execution paused.
 Call stack:
-    0) onVideoPlay (event-listener-breakpoints.js:79)
+    0) onVideoPlay (event-listener-breakpoints.js:57)
 Event target: VIDEO
 Script execution resumed.
 
 Running: testPointerEventBreakpoint
 Script execution paused.
 Call stack:
-    0) testElementEventListener (event-listener-breakpoints.js:18)
-    1) addListenerAndPointerDown (event-listener-breakpoints.js:39)
+    0) testElementEventListener (event-listener-breakpoints.js:3)
+    1) addListenerAndPointerDown (event-listener-breakpoints.js:21)
     2)  (:1)
 Event target: INPUT
 Script execution resumed.
