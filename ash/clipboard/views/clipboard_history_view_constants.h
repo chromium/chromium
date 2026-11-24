@@ -5,6 +5,8 @@
 #ifndef ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_VIEW_CONSTANTS_H_
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_VIEW_CONSTANTS_H_
 
+#include <stddef.h>
+
 #include "ui/gfx/geometry/insets.h"
 
 namespace ash::ClipboardHistoryViews {
@@ -63,6 +65,11 @@ constexpr int kBitmapItemPlaceholderIconSize = 32;
 
 // The preferred height of `ClipboardHistoryLabel`.
 constexpr int kLabelPreferredHeight = 20;
+
+// The maximum number of lines shown in the hover tooltip for a multi-link
+// `ClipboardHistoryItemView`. ChromeOS system tooltips render at most three
+// lines.
+inline constexpr size_t kMaxTooltipLines = 3u;
 
 // The preferred height of the image view showing on
 // `ClipboardHistoryBitmapItemView`.

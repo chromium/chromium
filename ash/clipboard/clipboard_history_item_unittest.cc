@@ -4,6 +4,8 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 
+#include <utility>
+
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -20,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
@@ -169,15 +172,27 @@ TEST_F(ClipboardHistoryItemTest, DisplayText) {
 }
 
 TEST_F(ClipboardHistoryItemTest, MultipleLinks) {
-  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
-
   ui::ClipboardData data;
   data.set_bookmarks({{.url = GURL("https://a.test/"), .title = u"A"},
                       {.url = GURL("https://b.test/"), .title = u"B"}});
   ClipboardHistoryItem item(std::move(data));
-  EXPECT_EQ(item.display_text(), u"2 links");
+  EXPECT_EQ(item.link_count(), 2u);
+  EXPECT_EQ(item.display_text(), u"A");
+  EXPECT_EQ(item.display_text_elide_behavior(), std::nullopt);
+  EXPECT_THAT(item.display_text_max_lines(), Optional(1u));
   ASSERT_TRUE(item.icon());
   EXPECT_EQ(item.icon()->GetVectorIcon().vector_icon(), &kTwoFilesIcon);
+}
+
+TEST_F(ClipboardHistoryItemTest, MultipleLinksUntitledFallback) {
+  ui::ClipboardData data;
+  data.set_bookmarks({{.url = GURL("https://a.test/page"), .title = u""},
+                      {.url = GURL("https://b.test/"), .title = u"B"}});
+  ClipboardHistoryItem item(std::move(data));
+  EXPECT_EQ(item.link_count(), 2u);
+  EXPECT_EQ(item.display_text(), u"https://a.test/page");
+  EXPECT_THAT(item.display_text_elide_behavior(), Optional(gfx::ELIDE_MIDDLE));
+  EXPECT_THAT(item.display_text_max_lines(), Optional(1u));
 }
 
 // Base class for tests parameterized by the type of item being tested, based on

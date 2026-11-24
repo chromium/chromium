@@ -20,6 +20,7 @@
 namespace ui {
 class ClipboardData;
 enum class ClipboardInternalFormat;
+struct ClipboardUrlInfo;
 }  // namespace ui
 
 namespace ash {
@@ -82,6 +83,7 @@ enum MenuViewID {
   kFooterContentViewID,
   kFooterContentV2LabelID,
   kFooterContentV2ViewID,
+  kMoreLinksLabelID,
 };
 
 // Modes for specifying a clipboard history pause's semantics.
@@ -184,6 +186,10 @@ ASH_EXPORT bool IsEnabledByPolicy();
 // entries (files or links). Requires `count` >= 2, and counts above 9 share
 // `kMoreThanNineFilesIcon`.
 ASH_EXPORT ui::ImageModel GetIconForItemCount(size_t count);
+
+// Returns `url_info.title` if non-empty, or `url_info.url` otherwise.
+ASH_EXPORT std::u16string GetBookmarkDisplayText(
+    const ui::ClipboardUrlInfo& url_info);
 
 // Returns a placeholder image to display for HTML items while their previews
 // render.

@@ -72,6 +72,11 @@ class ASH_EXPORT ClipboardHistoryItem {
     return display_text_max_lines_;
   }
   size_t file_count() const { return file_count_; }
+  size_t link_count() const {
+    return main_format_ == ui::ClipboardInternalFormat::kBookmark
+               ? data_.bookmarks().size()
+               : 0u;
+  }
   const std::optional<ui::ImageModel>& icon() const { return icon_; }
 
  private:
@@ -114,8 +119,7 @@ class ASH_EXPORT ClipboardHistoryItem {
   // Indicates the count of copied files in the underlying clipboard data.
   const size_t file_count_;
 
-  // Cached image model for the item's icon. Currently, there will be no value
-  // for non-file items.
+  // Cached image model for the item's icon.
   const std::optional<ui::ImageModel> icon_;
 
   // Mutable to allow const access from `AddDisplayImageUpdatedCallback()`.

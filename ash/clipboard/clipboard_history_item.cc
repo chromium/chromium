@@ -20,6 +20,8 @@
 #include "base/time/time.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
+#include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
@@ -131,14 +133,10 @@ std::u16string DetermineDisplayText(const ClipboardHistoryItem& item) {
       return base::UTF8ToUTF16(item.data().svg_data());
     case ui::ClipboardInternalFormat::kRtf:
       return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_RTF_CONTENT);
-    case ui::ClipboardInternalFormat::kBookmark: {
-      const auto& bookmarks = item.data().bookmarks();
-      if (bookmarks.size() == 1u) {
-        return bookmarks.front().title;
-      }
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_ASH_CLIPBOARD_HISTORY_LINK_COUNT, bookmarks.size());
-    }
+    case ui::ClipboardInternalFormat::kBookmark:
+      CHECK(!item.data().bookmarks().empty());
+      return clipboard_history_util::GetBookmarkDisplayText(
+          item.data().bookmarks().front());
     case ui::ClipboardInternalFormat::kWeb:
       return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE);
     case ui::ClipboardInternalFormat::kFilenames:
@@ -157,16 +155,16 @@ std::optional<gfx::ElideBehavior> DetermineDisplayTextElideBehavior(
 
 std::optional<size_t> DetermineDisplayTextMaxLines(
     const ClipboardHistoryItem& item) {
-  return chromeos::clipboard_history::IsUrl(item.display_text())
-             ? std::make_optional(1u)
-             : std::nullopt;
+  if (item.link_count() > 1u ||
+      chromeos::clipboard_history::IsUrl(item.display_text())) {
+    return 1u;
+  }
+  return std::nullopt;
 }
 
 std::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
-  const size_t link_count = item.data().bookmarks().size();
-  if (item.main_format() == ui::ClipboardInternalFormat::kBookmark &&
-      link_count > 1u) {
-    return clipboard_history_util::GetIconForItemCount(link_count);
+  if (item.link_count() > 1u) {
+    return clipboard_history_util::GetIconForItemCount(item.link_count());
   }
   return chromeos::clipboard_history::GetIconForDescriptor(
       clipboard_history_util::ItemToDescriptor(item));

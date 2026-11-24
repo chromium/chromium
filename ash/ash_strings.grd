@@ -6309,10 +6309,20 @@ No devices connected.
          =1 {1 file}
          other {# files}}
       </message>
-      <message name="IDS_ASH_CLIPBOARD_HISTORY_LINK_COUNT" desc="The number of links copied in a single copy action, as presented in a menu item summarizing the copied data. [ICU Syntax]">
+      <message name="IDS_ASH_CLIPBOARD_HISTORY_LINK_COUNT" is_accessibility_with_no_ui="true" desc="Accessibility name for a clipboard history menu item summarizing multiple copied links. Spoken by screen readers, not visually rendered. [ICU Syntax]">
         {NUM_LINKS, plural,
          =1 {1 link}
          other {# links}}
+      </message>
+      <message name="IDS_ASH_CLIPBOARD_HISTORY_MORE_LINKS" desc="Second line of a clipboard history menu item that holds several links, counting the additional links beyond the first one shown. [ICU Syntax]">
+        {NUM_LINKS, plural,
+         =1 {+1 more link}
+         other {+# more links}}
+      </message>
+      <message name="IDS_ASH_CLIPBOARD_HISTORY_TOOLTIP_MORE_LINKS" desc="Final line of the tooltip on a multi-link clipboard history item when more links exist than fit in the tooltip. [ICU Syntax]">
+        {NUM_LINKS, plural,
+         =1 {+1 more}
+         other {+# more}}
       </message>
       <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE" desc="The label used for the multipaste nudge, to be seen once the user copies and pastes multiple times in a short time span.">
         Press <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view your clipboard. The last 5 items you've copied are saved to your clipboard.

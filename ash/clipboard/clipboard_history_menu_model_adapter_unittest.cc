@@ -5,11 +5,14 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
+#include <vector>
 
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -17,6 +20,8 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/span.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,16 +29,19 @@
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -118,6 +126,40 @@ class ClipboardHistoryMenuModelAdapterRefreshTest : public AshTestBase {
       scw.WriteText(str);
     }
     EXPECT_TRUE(operation_confirmed_future_.Take());
+  }
+
+  void WriteUrlsToClipboardAndConfirm(
+      base::span<const ui::ClipboardUrlInfo> urls) {
+    EXPECT_FALSE(operation_confirmed_future_.IsReady());
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteURLs(urls);
+    }
+    EXPECT_TRUE(operation_confirmed_future_.Take());
+  }
+
+  static ClipboardHistoryItemView* GetItemView(
+      const views::MenuItemView* menu_item) {
+    for (views::View* child : menu_item->children()) {
+      if (ClipboardHistoryItemView* item_view =
+              views::AsViewClass<ClipboardHistoryItemView>(child)) {
+        return item_view;
+      }
+    }
+    return nullptr;
+  }
+
+  static std::u16string GetTooltipForView(views::View* root,
+                                          views::View* target) {
+    gfx::Point center = target->GetLocalBounds().CenterPoint();
+    views::View::ConvertPointToTarget(target, root, &center);
+    views::View* handler = root->GetTooltipHandlerForPoint(center);
+    if (!handler) {
+      return std::u16string();
+    }
+    gfx::Point handler_point = center;
+    views::View::ConvertPointToTarget(root, handler, &handler_point);
+    return handler->GetRenderedTooltipText(handler_point);
   }
 
  private:
@@ -223,6 +265,76 @@ TEST_F(ClipboardHistoryMenuModelAdapterRefreshTest,
               Property(&views::Label::GetMaxLines, Eq(max_lines)),
               Property(&views::Label::GetMultiLine, Eq(max_lines > 1u))));
   }
+}
+
+TEST_F(ClipboardHistoryMenuModelAdapterRefreshTest, MultiLinkItems) {
+  WriteUrlsToClipboardAndConfirm(std::array<ui::ClipboardUrlInfo, 1>{
+      {{.url = GURL("https://single.test/"), .title = u"Single Link"}}});
+  std::vector<ui::ClipboardUrlInfo> truncated_links;
+  for (size_t i = 1u; i <= ClipboardHistoryViews::kMaxTooltipLines + 1u; ++i) {
+    truncated_links.push_back(
+        {.url = GURL("https://example" + base::NumberToString(i) + ".test/"),
+         .title = u"Title " + base::NumberToString16(i)});
+  }
+  WriteUrlsToClipboardAndConfirm(truncated_links);
+  WriteUrlsToClipboardAndConfirm(std::array<ui::ClipboardUrlInfo, 2>{
+      {{.url = GURL("https://a.test/"), .title = u"Title 1"},
+       {.url = GURL("https://b.test/"), .title = u""}}});
+
+  ClipboardHistoryControllerImpl* const controller =
+      GetClipboardHistoryController();
+  ASSERT_TRUE(controller);
+  EXPECT_TRUE(controller->ShowMenu(
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone, ShowSource::kUnknown));
+  const ClipboardHistoryMenuModelAdapter* const adapter =
+      controller->context_menu_for_test();
+  ASSERT_THAT(
+      adapter,
+      Property(&ClipboardHistoryMenuModelAdapter::GetMenuItemsCount, Eq(3u)));
+
+  constexpr size_t kHeaderOffset = 1u;
+
+  // 2-link item (titled + untitled, index 0): singular subtitle, a11y
+  // name/description, delete-button name, and non-truncated tooltip.
+  ClipboardHistoryItemView* two_link_view =
+      GetItemView(adapter->GetMenuItemViewAtForTest(0u + kHeaderOffset));
+  ASSERT_TRUE(two_link_view);
+  views::Label* title_label = views::AsViewClass<views::Label>(
+      two_link_view->GetViewByID(clipboard_history_util::kDisplayTextLabelID));
+  views::Label* more_links_label = views::AsViewClass<views::Label>(
+      two_link_view->GetViewByID(clipboard_history_util::kMoreLinksLabelID));
+  views::View* delete_button =
+      two_link_view->GetViewByID(clipboard_history_util::kDeleteButtonViewID);
+  ASSERT_TRUE(title_label);
+  ASSERT_TRUE(more_links_label);
+  ASSERT_TRUE(delete_button);
+  EXPECT_EQ(title_label->GetText(), u"Title 1");
+  EXPECT_EQ(more_links_label->GetText(), u"+1 more link");
+  EXPECT_EQ(two_link_view->GetViewAccessibility().GetCachedName(), u"2 links");
+  EXPECT_EQ(two_link_view->GetViewAccessibility().GetCachedDescription(),
+            u"Title 1, https://b.test/");
+  EXPECT_EQ(delete_button->GetViewAccessibility().GetCachedName(),
+            u"Remove 2 links.");
+  EXPECT_EQ(GetTooltipForView(two_link_view, title_label),
+            u"Title 1\nhttps://b.test/");
+
+  // Truncated multi-link item (index 1): plural subtitle and "+N more" tooltip.
+  ClipboardHistoryItemView* truncated_view =
+      GetItemView(adapter->GetMenuItemViewAtForTest(1u + kHeaderOffset));
+  ASSERT_TRUE(truncated_view);
+  views::View* truncated_title =
+      truncated_view->GetViewByID(clipboard_history_util::kDisplayTextLabelID);
+  views::Label* truncated_more_links = views::AsViewClass<views::Label>(
+      truncated_view->GetViewByID(clipboard_history_util::kMoreLinksLabelID));
+  ASSERT_TRUE(truncated_title);
+  ASSERT_TRUE(truncated_more_links);
+  EXPECT_EQ(truncated_more_links->GetText(), u"+3 more links");
+  EXPECT_EQ(GetTooltipForView(truncated_view, truncated_title),
+            u"Title 1\nTitle 2\n+2 more");
+
+  // Single-link item (index 2): no secondary "+N more links" label.
+  EXPECT_FALSE(adapter->GetMenuItemViewAtForTest(2u + kHeaderOffset)
+                   ->GetViewByID(clipboard_history_util::kMoreLinksLabelID));
 }
 
 // Base class for `ClipboardHistoryMenuModelAdapter` tests that verify the

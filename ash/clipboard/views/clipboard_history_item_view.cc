@@ -4,7 +4,11 @@
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 
+#include <stddef.h>
+
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/clipboard/clipboard_history.h"
@@ -15,17 +19,24 @@
 #include "ash/clipboard/views/clipboard_history_main_button.h"
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/containers/linear_find.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -68,6 +79,25 @@ std::unique_ptr<views::Label> CreateCtrlVLabel() {
       .SetID(clipboard_history_util::kCtrlVLabelID)
       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
       .Build();
+}
+
+std::u16string GetLinkCountText(size_t link_count) {
+  return l10n_util::GetPluralStringFUTF16(IDS_ASH_CLIPBOARD_HISTORY_LINK_COUNT,
+                                          link_count);
+}
+
+std::u16string BuildMultiLinkTooltipText(
+    const std::vector<std::u16string>& link_texts) {
+  if (link_texts.size() <= ClipboardHistoryViews::kMaxTooltipLines) {
+    return base::JoinString(link_texts, u"\n");
+  }
+  const size_t displayed_count = ClipboardHistoryViews::kMaxTooltipLines - 1u;
+  return base::StrCat(
+      {base::JoinString(base::span(link_texts).first(displayed_count), u"\n"),
+       u"\n",
+       l10n_util::GetPluralStringFUTF16(
+           IDS_ASH_CLIPBOARD_HISTORY_TOOLTIP_MORE_LINKS,
+           link_texts.size() - displayed_count)});
 }
 }  // namespace
 
@@ -395,6 +425,17 @@ void ClipboardHistoryItemView::Init() {
           views::Builder<views::View>(std::make_unique<DisplayView>(this)))
       .BuildChildren();
 
+  const ClipboardHistoryItem* const item = GetClipboardHistoryItem();
+  CHECK(item);
+  if (item->link_count() > 1u) {
+    const std::vector<std::u16string> link_texts =
+        base::ToVector(item->data().bookmarks(),
+                       &clipboard_history_util::GetBookmarkDisplayText);
+    GetViewAccessibility().SetName(GetLinkCountText(item->link_count()));
+    GetViewAccessibility().SetDescription(base::JoinString(link_texts, u", "));
+    main_button_->SetTooltipText(BuildMultiLinkTooltipText(link_texts));
+  }
+
   subscription_ = container_->AddSelectedChangedCallback(base::BindRepeating(
       &ClipboardHistoryItemView::OnSelectionChanged, base::Unretained(this)));
 }
@@ -433,19 +474,22 @@ Action ClipboardHistoryItemView::CalculateActionForMainButtonClick() const {
 }
 
 std::unique_ptr<views::View> ClipboardHistoryItemView::CreateDeleteButton() {
-  const auto* const item = GetClipboardHistoryItem();
+  const ClipboardHistoryItem* const item = GetClipboardHistoryItem();
   CHECK(item);
+  const std::u16string item_text = item->link_count() > 1u
+                                       ? GetLinkCountText(item->link_count())
+                                       : item->display_text();
 
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-      .AddChild(views::Builder<views::Button>(
-                    std::make_unique<ClipboardHistoryDeleteButton>(
-                        this, item->display_text()))
-                    // Delete buttons are fully top-right aligned.
-                    .SetProperty(views::kMarginsKey, gfx::Insets())
-                    .CopyAddressTo(&delete_button_))
+      .AddChild(
+          views::Builder<views::Button>(
+              std::make_unique<ClipboardHistoryDeleteButton>(this, item_text))
+              // Delete buttons are fully top-right aligned.
+              .SetProperty(views::kMarginsKey, gfx::Insets())
+              .CopyAddressTo(&delete_button_))
       .Build();
 }
 

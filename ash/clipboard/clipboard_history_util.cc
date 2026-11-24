@@ -26,6 +26,7 @@
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -275,6 +276,12 @@ ui::ImageModel GetIconForItemCount(size_t count) {
       &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
   return ui::ImageModel::FromVectorIcon(
       *kIcons[std::min(count - 2, kIcons.size() - 1)], ui::kColorSysSecondary);
+}
+
+std::u16string GetBookmarkDisplayText(const ui::ClipboardUrlInfo& url_info) {
+  return !url_info.title.empty()
+             ? url_info.title
+             : base::UTF8ToUTF16(url_info.url.possibly_invalid_spec());
 }
 
 ui::ImageModel GetHtmlPreviewPlaceholder() {

@@ -8,13 +8,17 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_label.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
@@ -52,7 +56,7 @@ class ClipboardHistoryTextItemView::TextContentsView
 
  public:
   explicit TextContentsView(const ClipboardHistoryTextItemView* container) {
-    const auto* item = container->GetClipboardHistoryItem();
+    const ClipboardHistoryItem* item = container->GetClipboardHistoryItem();
     const auto display_text_elide_behavior = GetDisplayTextElideBehavior(item);
     const auto display_text_max_lines = GetDisplayTextMaxLines(item);
 
@@ -61,8 +65,10 @@ class ClipboardHistoryTextItemView::TextContentsView
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
+    views::BoxLayoutView* labels_container = nullptr;
     AddChildView(
         views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&labels_container)
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
             .SetProperty(views::kBoxLayoutFlexKey,
@@ -73,6 +79,20 @@ class ClipboardHistoryTextItemView::TextContentsView
                               display_text_max_lines))
                           .SetID(clipboard_history_util::kDisplayTextLabelID))
             .Build());
+
+    if (item && item->link_count() > 1u) {
+      labels_container->AddChildView(
+          views::Builder<views::Label>(
+              bubble_utils::CreateLabel(
+                  TypographyToken::kCrosAnnotation1,
+                  l10n_util::GetPluralStringFUTF16(
+                      IDS_ASH_CLIPBOARD_HISTORY_MORE_LINKS,
+                      item->link_count() - 1),
+                  cros_tokens::kCrosSysSecondary))
+              .SetID(clipboard_history_util::kMoreLinksLabelID)
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .Build());
+    }
   }
 
   TextContentsView(const TextContentsView& rhs) = delete;
