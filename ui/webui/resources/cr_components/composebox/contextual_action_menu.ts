@@ -239,6 +239,12 @@ export class ContextualActionMenuElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.close();
+    window.removeEventListener('blur', this.onWindowBlur_);
+    if (this.layoutResizeObserver_) {
+      this.layoutResizeObserver_.disconnect();
+      this.layoutResizeObserver_ = null;
+    }
     this.resetShareTabsFlyout_();
   }
 
@@ -272,6 +278,13 @@ export class ContextualActionMenuElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
+    if (changedProperties.has('unboundedMenuEnabled') &&
+        this.unboundedMenuEnabled) {
+      // CrActionMenuElement.setUnbounded() is one-way; unboundedMenuEnabled is
+      // a static feature-flag gate and is not toggled back to false.
+      void this.$.menu.setUnbounded();
+    }
+
     if (this.contextManagementInComposeboxEnabled) {
       if (changedProperties.has('selectedTabIds') ||
           changedProperties.has('aimThreadRestoredTabs')) {
@@ -291,7 +304,7 @@ export class ContextualActionMenuElement extends
 
       if (this.open && this.anchor_) {
         if (changedProperties.has('tabSuggestions') &&
-            !this.shareTabsFlyoutOpen) {
+            !this.shareTabsFlyoutOpen && !this.unboundedMenuEnabled) {
           this.showAt(this.anchor_);
         } else {
           this.reposition_();
@@ -351,12 +364,14 @@ export class ContextualActionMenuElement extends
   }
 
   close() {
+    this.unboundedOpenRequestId_++;
     this.$.menu.close();
   }
 
   private onWindowBlur_ = this.close.bind(this);
   private layoutResizeObserver_?: ResizeObserver|null = null;
   private lastConfig_?: Parameters<CrActionMenuElement['showAt']>[1];
+  private unboundedOpenRequestId_: number = 0;
 
   private reposition_() {
     if (!this.anchor_ || !this.open || !this.lastConfig_) {
@@ -368,6 +383,16 @@ export class ContextualActionMenuElement extends
       return;
     }
     const height = rect.height;
+
+    if (this.unboundedMenuEnabled &&
+        this.$.menu.getDialog().hasAttribute('unbounded')) {
+      // Unbounded menus use CSS anchor positioning; do not stamp JS inline
+      // coordinates via positionDialog_().
+      if (this.shareTabsFlyoutOpen) {
+        this.updateFlyoutPosition_();
+      }
+      return;
+    }
 
     const doc = document.scrollingElement || document.documentElement;
     const scrollLeft = doc.scrollLeft;
@@ -402,9 +427,12 @@ export class ContextualActionMenuElement extends
 // Determines where menu can be placed automatically by renderer
 // based on the menu's set max/min heights.
   private constrainMenuHeight_(maxHeight: number) {
-    // Height limit is either the constant, or window size (minus buffer).
+    // Height limit is either the constant, or window/screen size (minus
+    // buffer).
+    const boundHeight = this.unboundedMenuEnabled ? window.screen.availHeight :
+                                                    window.innerHeight;
     const defaultMaxHeight =
-        Math.min(DEFAULT_MAX_MENU_HEIGHT_PX, window.innerHeight - VIEWPORT_BUFFER_PX);
+        Math.min(DEFAULT_MAX_MENU_HEIGHT_PX, boundHeight - VIEWPORT_BUFFER_PX);
     // Cap menu height based on the limit. Make sure it is above minimum.
     const constrainedHeight =
         Math.max(MIN_MENU_HEIGHT_PX, Math.min(defaultMaxHeight, maxHeight));
@@ -449,6 +477,16 @@ export class ContextualActionMenuElement extends
     const menuWidth = this.computeMenuWidth_();
     // Clear any previous max height limit before measuring natural full height.
     this.$.menu.style.removeProperty('--contextual-menu-max-height');
+
+    if (this.unboundedMenuEnabled &&
+        'showUnboundedElement' in HTMLElement.prototype) {
+      if (!this.$.menu.getDialog().hasAttribute('unbounded')) {
+        void this.ensureUnboundedAndOpen_(anchor);
+        return;
+      }
+      this.openUnboundedMenu_(anchor);
+      return;
+    }
 
     // Show the menu initially to render it and measure its natural height.
     this.$.menu.showAt(anchor, {
@@ -542,6 +580,37 @@ export class ContextualActionMenuElement extends
     this.lastConfig_ = config;
     this.$.menu.showAt(anchor, config);
     this.reposition_();
+    this.finalizeMenuOpen_();
+  }
+
+  private async ensureUnboundedAndOpen_(anchor: HTMLElement) {
+    const requestId = ++this.unboundedOpenRequestId_;
+    await this.$.menu.setUnbounded();
+    if (!this.isConnected || !anchor.isConnected ||
+        requestId !== this.unboundedOpenRequestId_) {
+      return;
+    }
+    this.openUnboundedMenu_(anchor);
+  }
+
+  private openUnboundedMenu_(anchor: HTMLElement) {
+    this.constrainMenuHeight_(window.screen.availHeight - VIEWPORT_BUFFER_PX);
+    const config: ShowAtConfig = {
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      noOffset: true,
+    };
+    this.lastConfig_ = config;
+    if (this.open) {
+      this.reposition_();
+    } else {
+      this.$.menu.showAt(anchor, config);
+    }
+    this.isOpen_ = true;
+    this.finalizeMenuOpen_();
+  }
+
+  private finalizeMenuOpen_() {
     window.addEventListener('blur', this.onWindowBlur_);
 
     if (this.layoutResizeObserver_) {
@@ -1135,11 +1204,21 @@ export class ContextualActionMenuElement extends
       const triggerRect = trigger.getBoundingClientRect();
       const flyoutWidth = flyout.offsetWidth || DEFAULT_FLYOUT_WIDTH_PX;
       const viewportWidth = window.innerWidth;
+      const availLeft =
+          (window.screen as Screen & {availLeft?: number}).availLeft ?? 0;
+      const availTop =
+          (window.screen as Screen & {availTop?: number}).availTop ?? 0;
+      const spaceRight = this.unboundedMenuEnabled ?
+          (availLeft + window.screen.availWidth -
+           (window.screenX + triggerRect.right)) :
+          (viewportWidth - triggerRect.right);
+      const spaceLeft = this.unboundedMenuEnabled ?
+          (window.screenX + triggerRect.left - availLeft) :
+          triggerRect.left;
 
-      if (flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <=
-          viewportWidth - triggerRect.right) {
+      if (flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <= spaceRight) {
         this.shareTabsFlyoutPosition_ = 'right';
-      } else if (triggerRect.left >= flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX) {
+      } else if (spaceLeft >= flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX) {
         this.shareTabsFlyoutPosition_ = 'left';
       } else {
         this.shareTabsFlyoutPosition_ = 'bottom';
@@ -1196,7 +1275,10 @@ export class ContextualActionMenuElement extends
         flyoutTop = triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX;
       }
 
-      const spaceBelow = window.innerHeight - flyoutTop;
+      const spaceBelow = this.unboundedMenuEnabled ?
+          (availTop + window.screen.availHeight -
+           (window.screenY + flyoutTop)) :
+          (window.innerHeight - flyoutTop);
       const maxFlyoutHeight = Math.max(
           MIN_MENU_HEIGHT_PX,
           Math.min(
@@ -1239,6 +1321,9 @@ export class ContextualActionMenuElement extends
   }
 
   private updateScrollable_() {
+    if (this.unboundedMenuEnabled) {
+      return;
+    }
     this.updateComplete.then(() => {
       const dialog = this.$.menu.getDialog();
       if (this.open && dialog) {

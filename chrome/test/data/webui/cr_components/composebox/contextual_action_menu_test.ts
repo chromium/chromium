@@ -4516,6 +4516,159 @@ suite('ContextualActionMenu', () => {
 
           assertFalse(actionMenu.$.menu.open);
         });
+
+    test(
+        'calls setUnbounded and uses screen bounds when ' +
+            'unboundedMenuEnabled is true',
+        async () => {
+          const hadShowUnbounded =
+              'showUnboundedElement' in HTMLElement.prototype;
+          if (!hadShowUnbounded) {
+            Object.defineProperty(
+                HTMLElement.prototype, 'showUnboundedElement', {
+                  configurable: true,
+                  value: () => Promise.resolve(),
+                });
+          }
+          let setUnboundedCalled = false;
+          const origSetUnbounded =
+              actionMenu.$.menu.setUnbounded.bind(actionMenu.$.menu);
+          actionMenu.$.menu.setUnbounded = async () => {
+            setUnboundedCalled = true;
+            return origSetUnbounded();
+          };
+
+          try {
+            actionMenu.unboundedMenuEnabled = true;
+            await microtasksFinished();
+            assertTrue(setUnboundedCalled);
+
+            actionMenu.showAt(actionMenu);
+            await microtasksFinished();
+            assertTrue(actionMenu.$.menu.open);
+            assertTrue(!!actionMenu.$.menu.style.getPropertyValue(
+                '--contextual-menu-max-height'));
+          } finally {
+            actionMenu.close();
+            if (!hadShowUnbounded) {
+              delete (
+                  HTMLElement.prototype as unknown as
+                  Record<string, unknown>)['showUnboundedElement'];
+            }
+          }
+        });
+
+    test(
+        'ensureUnboundedAndOpen_ ignores stale anchor when showAt is called again',
+        async () => {
+          actionMenu.close();
+          await microtasksFinished();
+          const anchor1 = document.createElement('button');
+          const anchor2 = document.createElement('button');
+          document.body.appendChild(anchor1);
+          document.body.appendChild(anchor2);
+
+          const menu = actionMenu.$.menu;
+          const origSetUnbounded = menu.setUnbounded;
+          const origShowAt = menu.showAt;
+          const hadShowUnbounded =
+              'showUnboundedElement' in HTMLElement.prototype;
+          if (!hadShowUnbounded) {
+            Object.defineProperty(
+                HTMLElement.prototype, 'showUnboundedElement', {
+                  configurable: true,
+                  value: () => {},
+                });
+          }
+
+          const resolvers: Array<(value: boolean) => void> = [];
+          const shownAnchors: HTMLElement[] = [];
+          menu.setUnbounded = () => new Promise<boolean>(resolve => {
+            resolvers.push(resolve);
+          });
+          menu.showAt = (target, config) => {
+            shownAnchors.push(target);
+            origShowAt.call(menu, target, config);
+          };
+
+          try {
+            actionMenu.unboundedMenuEnabled = true;
+            await microtasksFinished();
+            // Clear the initial setUnbounded() call from updated().
+            resolvers.shift()?.(true);
+            await microtasksFinished();
+
+            actionMenu.showAt(anchor1);
+            actionMenu.showAt(anchor2);
+            assertEquals(2, resolvers.length);
+
+            // Resolving the first in-flight call must not open with anchor1.
+            resolvers[0]!(true);
+            await microtasksFinished();
+            assertEquals(0, shownAnchors.length);
+
+            // Resolving the latest call opens with anchor2.
+            resolvers[1]!(true);
+            await microtasksFinished();
+            assertEquals(1, shownAnchors.length);
+            assertEquals(anchor2, shownAnchors[0]);
+          } finally {
+            actionMenu.close();
+            menu.setUnbounded = origSetUnbounded;
+            menu.showAt = origShowAt;
+            if (!hadShowUnbounded) {
+              delete (
+                  HTMLElement.prototype as unknown as
+                  Record<string, unknown>)['showUnboundedElement'];
+            }
+            anchor1.remove();
+            anchor2.remove();
+          }
+        });
+
+    test(
+        'close cancels pending unbounded open before setUnbounded resolves',
+        async () => {
+          const hadShowUnbounded =
+              'showUnboundedElement' in HTMLElement.prototype;
+          if (!hadShowUnbounded) {
+            Object.defineProperty(
+                HTMLElement.prototype, 'showUnboundedElement', {
+                  configurable: true,
+                  value: () => Promise.resolve(),
+                });
+          }
+          const resolvers: Array<(value: boolean) => void> = [];
+          const origSetUnbounded = actionMenu.$.menu.setUnbounded;
+          actionMenu.$.menu.setUnbounded = () =>
+              new Promise<boolean>(resolve => {
+                resolvers.push(resolve);
+              });
+
+          try {
+            actionMenu.unboundedMenuEnabled = true;
+            await microtasksFinished();
+            // Resolve the initial setUnbounded() call from updated().
+            resolvers.shift()?.(true);
+            await microtasksFinished();
+
+            actionMenu.showAt(actionMenu);
+            assertEquals(1, resolvers.length);
+            actionMenu.close();
+            resolvers[0]!(true);
+            await microtasksFinished();
+
+            assertFalse(actionMenu.$.menu.open);
+          } finally {
+            actionMenu.close();
+            actionMenu.$.menu.setUnbounded = origSetUnbounded;
+            if (!hadShowUnbounded) {
+              delete (
+                  HTMLElement.prototype as unknown as
+                  Record<string, unknown>)['showUnboundedElement'];
+            }
+          }
+        });
   });
 
   suite('SmartTabSharingMetrics', () => {
@@ -4978,4 +5131,134 @@ suite('ContextualActionMenu', () => {
           assertFalse(!!isActive);
         });
   });
+
+  test(
+      'unbounded reposition_ skips positionDialog_ and updateFlyoutPosition_ ' +
+          'respects secondary monitor bounds',
+      async () => {
+        const hadShowUnbounded =
+            'showUnboundedElement' in HTMLElement.prototype;
+        if (!hadShowUnbounded) {
+          Object.defineProperty(HTMLElement.prototype, 'showUnboundedElement', {
+            configurable: true,
+            value: () => Promise.resolve(),
+          });
+        }
+        const hadHideUnbounded =
+            'hideUnboundedElement' in HTMLElement.prototype;
+        if (!hadHideUnbounded) {
+          Object.defineProperty(HTMLElement.prototype, 'hideUnboundedElement', {
+            configurable: true,
+            value: () => Promise.resolve(),
+          });
+        }
+
+        actionMenu.unboundedMenuEnabled = true;
+        actionMenu.contextManagementInComposeboxEnabled = true;
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+        actionMenu.tabSuggestions = [createTabSuggestion({tabId: 1})];
+        const anchor = document.createElement('button');
+        anchor.style.position = 'fixed';
+        anchor.style.top = '40px';
+        anchor.style.left = '40px';
+        anchor.style.width = '24px';
+        anchor.style.height = '24px';
+        document.body.appendChild(anchor);
+
+        const origScrollingElement =
+            Object.getOwnPropertyDescriptor(document, 'scrollingElement');
+        const origScreen = window.screen;
+        const origScreenX = Object.getOwnPropertyDescriptor(window, 'screenX');
+        const origScreenY = Object.getOwnPropertyDescriptor(window, 'screenY');
+
+        try {
+          await actionMenu.showAt(anchor);
+          await microtasksFinished();
+
+          Object.defineProperty(document, 'scrollingElement', {
+            configurable: true,
+            value: {scrollLeft: 150, scrollTop: 300},
+          });
+          let positionDialogCalled = false;
+          const menuInternal = (actionMenu.$.menu as unknown) as {
+            positionDialog_: (c: {top?: number, left?: number}) => void,
+          };
+          const origPositionDialog =
+              menuInternal.positionDialog_.bind(actionMenu.$.menu);
+          menuInternal.positionDialog_ = (c) => {
+            positionDialogCalled = true;
+            origPositionDialog(c);
+          };
+
+          asInternal(actionMenu).reposition_();
+          assertFalse(positionDialogCalled);
+          const dialog = actionMenu.$.menu.getDialog();
+          assertEquals('', dialog.style.left);
+          assertEquals('', dialog.style.top);
+          assertEquals('', dialog.style.right);
+
+          Object.defineProperty(window, 'screen', {
+            configurable: true,
+            value: {
+              availLeft: 1920,
+              availTop: 100,
+              availWidth: 1280,
+              availHeight: 720,
+            },
+          });
+          Object.defineProperty(window, 'screenX', {
+            configurable: true,
+            value: 3050,
+          });
+          Object.defineProperty(window, 'screenY', {
+            configurable: true,
+            value: 150,
+          });
+
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          assertTrue(!!trigger);
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const flyout = actionMenu.shadowRoot.querySelector<HTMLElement>(
+              '.share-tabs-flyout');
+          assertTrue(!!flyout);
+          assertEquals('left', flyout.getAttribute('data-position'));
+        } finally {
+          actionMenu.close();
+          anchor.remove();
+          if (!hadShowUnbounded) {
+            Reflect.deleteProperty(
+                HTMLElement.prototype, 'showUnboundedElement');
+          }
+          if (!hadHideUnbounded) {
+            Reflect.deleteProperty(
+                HTMLElement.prototype, 'hideUnboundedElement');
+          }
+          if (origScrollingElement) {
+            Object.defineProperty(
+                document, 'scrollingElement', origScrollingElement);
+          } else {
+            delete (
+                document as unknown as
+                Record<string, unknown>)['scrollingElement'];
+          }
+          Object.defineProperty(window, 'screen', {
+            configurable: true,
+            value: origScreen,
+          });
+          if (origScreenX) {
+            Object.defineProperty(window, 'screenX', origScreenX);
+          } else {
+            delete (window as unknown as Record<string, unknown>)['screenX'];
+          }
+          if (origScreenY) {
+            Object.defineProperty(window, 'screenY', origScreenY);
+          } else {
+            delete (window as unknown as Record<string, unknown>)['screenY'];
+          }
+        }
+      });
 });

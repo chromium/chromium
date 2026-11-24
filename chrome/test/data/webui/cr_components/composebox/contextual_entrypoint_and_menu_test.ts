@@ -14,6 +14,7 @@ import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/s
 import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -401,6 +402,26 @@ suite('ContextualEntrypointAndMenu', () => {
           entrypointAndMenu.composeboxContextMenuTooltipsEnabled = false;
           await microtasksFinished();
           assertFalse(entrypointAndMenu.$.menu.contextMenuTooltipsEnabled);
+        });
+
+    test(
+        'closeMenu cancels pending open timeout while tab suggestions load',
+        async () => {
+          entrypointAndMenu.tabSuggestionsState = TabSuggestionsState.LOADING;
+          await microtasksFinished();
+
+          const mockTimer = new MockTimer();
+          mockTimer.install();
+          try {
+            entrypointAndMenu.openMenu();
+            entrypointAndMenu.closeMenu();
+            mockTimer.tick(entrypointAndMenu.menuOpenDelayMs);
+          } finally {
+            mockTimer.uninstall();
+          }
+          await microtasksFinished();
+
+          assertFalse(entrypointAndMenu.$.menu.$.menu.open);
         });
   });
 });

@@ -189,7 +189,16 @@ export class ContextualEntrypointAndMenuElement extends
   }
 
   closeMenu() {
+    if (this.openTimeoutId_ !== null) {
+      window.clearTimeout(this.openTimeoutId_);
+      this.openTimeoutId_ = null;
+      this.onMenuClose_();
+    }
     this.$.menu.close();
+  }
+
+  openMenu() {
+    this.onContextMenuEntrypointClick_();
   }
 
   protected onMenuClose_() {

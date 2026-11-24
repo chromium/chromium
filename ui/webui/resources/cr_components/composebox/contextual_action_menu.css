@@ -60,15 +60,14 @@
 
 :host([unbounded-menu-enabled]) #menu {
   --cr-action-menu-overflow: visible;
+  --cr-action-menu-padding: 0;
 }
 
 :host([unbounded-menu-enabled]) #menu::part(dialog) {
   background: transparent;
   border: none;
   box-shadow: none;
-  margin: -16px;
   overflow: visible;
-  padding: 16px;
   z-index: 1001;
 }
 
@@ -110,18 +109,21 @@
   position: relative;
 }
 
-#menu[scrollable]::part(dialog)::-webkit-scrollbar {
+#menu[scrollable]::part(dialog)::-webkit-scrollbar,
+:host([unbounded-menu-enabled]) .main-menu-card::-webkit-scrollbar {
   width: 12px;
 }
 
-#menu[scrollable]::part(dialog)::-webkit-scrollbar-thumb {
+#menu[scrollable]::part(dialog)::-webkit-scrollbar-thumb,
+:host([unbounded-menu-enabled]) .main-menu-card::-webkit-scrollbar-thumb {
   background-color: var(--color-sys-surface-variant, #E1E3E1);
   background-clip: padding-box;
   border: 4px solid transparent;
   border-radius: 100px;
 }
 
-#menu[scrollable]::part(dialog)::-webkit-scrollbar-track {
+#menu[scrollable]::part(dialog)::-webkit-scrollbar-track,
+:host([unbounded-menu-enabled]) .main-menu-card::-webkit-scrollbar-track {
   margin-bottom: 15px;
   margin-top: 15px;
 }
