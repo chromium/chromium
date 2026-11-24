@@ -172,20 +172,12 @@ class [[nodiscard]] SCOPED_LOCKABLE BasicAutoLock {
   STACK_ALLOCATED();
 
  public:
-  struct AlreadyAcquired {};
-
   explicit BasicAutoLock(
       LockType& lock,
       subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
       EXCLUSIVE_LOCK_FUNCTION(lock)
       : lock_(lock) {
     lock_.Acquire(tracking);
-  }
-
-  BasicAutoLock(LockType& lock, const AlreadyAcquired&)
-      EXCLUSIVE_LOCKS_REQUIRED(lock)
-      : lock_(lock) {
-    lock_.AssertAcquired();
   }
 
   BasicAutoLock(const BasicAutoLock&) = delete;

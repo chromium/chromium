@@ -119,8 +119,6 @@ class [[nodiscard]] SCOPED_LOCKABLE BASE_EXPORT TaggedMetricAutoLock {
   STACK_ALLOCATED();
 
  public:
-  struct AlreadyAcquired {};
-
   explicit TaggedMetricAutoLock(
       TaggedMetricLock& lock,
       subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
@@ -137,12 +135,6 @@ class [[nodiscard]] SCOPED_LOCKABLE BASE_EXPORT TaggedMetricAutoLock {
       EXCLUSIVE_LOCK_FUNCTION(lock)
       : lock_(lock) {
     lock_.Acquire(custom_tag, tracking);
-  }
-
-  TaggedMetricAutoLock(TaggedMetricLock& lock, const AlreadyAcquired&)
-      EXCLUSIVE_LOCKS_REQUIRED(lock)
-      : lock_(lock) {
-    lock_.AssertAcquired();
   }
 
   TaggedMetricAutoLock(const TaggedMetricAutoLock&) = delete;

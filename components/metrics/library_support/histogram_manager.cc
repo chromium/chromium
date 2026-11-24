@@ -31,8 +31,7 @@ void HistogramManager::RecordDelta(const base::HistogramBase& histogram,
 }
 
 bool HistogramManager::GetDeltas(std::vector<uint8_t>* data) {
-  if (get_deltas_lock_.Try()) {
-    base::AutoLock lock(get_deltas_lock_, base::AutoLock::AlreadyAcquired());
+  if (base::AutoTryLock lock(get_deltas_lock_); lock.is_acquired()) {
     // Clear the protobuf between calls.
     uma_proto_.Clear();
     // "false" indicates to *not* include histograms held in persistent storage
