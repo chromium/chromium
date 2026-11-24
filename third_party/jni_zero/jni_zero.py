@@ -25,19 +25,12 @@ _ROOT_DIR = posixpath.dirname(posixpath.dirname(_THIS_DIR))
 def _add_io_args(parser, *, is_final=False, is_javap=False):
   inputs = parser.add_argument_group(title='Inputs')
   outputs = parser.add_argument_group(title='Outputs')
-  inputs.add_argument('--type-catalog',
-                      action='append',
-                      dest='type_catalogs',
-                      help='Path to input type catalog JSON files.')
-  inputs.add_argument(
-      '--type-catalogs-file',
-      help='JSON file containing a list of paths to type catalog JSON files.')
   if is_final:
     inputs.add_argument(
         '--java-sources-file',
         required=True,
-        help='JSON file containing paths to .java, .kt, or .jni.pickle files '
-        'and their module names, taken from Java dependency tree.')
+        help='JSON file listing .jni.pickle files produced by from-source, '
+        'taken from Java dependency tree.')
     inputs.add_argument(
         '--priority-java-sources-file',
         help='Same format as java-sources-file, only used by multiplexing to '
@@ -49,8 +42,8 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
         'omitting switch_num for unique signatures.')
     inputs.add_argument(
         '--native-sources-file',
-        help='JSON file containing paths to .java, .kt, or .jni.pickle files '
-        'and their module names, taken from Native dependency tree.')
+        help='Same format as java-sources-file, taken from Native dependency '
+        'tree.')
   else:
     if is_javap:
       inputs.add_argument(
@@ -60,6 +53,16 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
 
       help_text = 'Paths within the .jar'
     else:
+      inputs.add_argument(
+          '--dep-jni-pickle',
+          action='append',
+          dest='dep_jni_pickles',
+          help='Path to .jni.pickle files from dependencies (for resolving '
+          '@JniType tokens).')
+      inputs.add_argument(
+          '--dep-jni-pickles-file',
+          help='JSON file containing a list of paths to .jni.pickle files from '
+          'dependencies.')
       help_text = 'Paths to .java or .kt files to parse.'
     inputs.add_argument('--input-file',
                         action='append',
@@ -69,17 +72,17 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
     outputs.add_argument(
         '--shared-header-name',
         action='append',
-        required=True,
+        required=is_javap,
         dest='shared_header_names',
         help='Output filenames of shared headers within output directory.')
     outputs.add_argument(
         '--unshared-header-name',
         action='append',
-        required=True,
+        required=is_javap,
         dest='unshared_header_names',
         help='Output filenames of unshared headers within output directory.')
     outputs.add_argument('--output-dir',
-                         required=True,
+                         required=is_javap,
                          help='Output directory. '
                          'Existing .h files in this directory will be assumed '
                          'stale and removed.')
@@ -90,6 +93,10 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
       outputs.add_argument('--resolved-types-path',
                            help='Path to output list of resolved types '
                            '(for use by the annotation processor)')
+      outputs.add_argument('--jni-pickle',
+                           help='Path to write the parsed form of input files '
+                           'to (for use by generate-final and downstream '
+                           'from-source actions).')
 
   outputs.add_argument('--header-path', help='Path to output header file.')
 
@@ -100,15 +107,9 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
         '--srcjar-path',
         help='Path to output srcjar for GEN_JNI.java (and J/N.java if proxy'
         ' hash is enabled).')
-    outputs.add_argument('--jni-pickle',
-                         help='Path to write intermediate .jni.pickle file.')
-    outputs.add_argument('--output-type-catalog',
-                         help='Path to output type catalog JSON file.')
   if is_final:
     outputs.add_argument('--impl-path',
                          help='Path to output C++ implementation file.')
-  outputs.add_argument('--depfile',
-                       help='Path to depfile (for use with ninja build system)')
 
 
 def _add_codegen_args(parser, *, is_final=False, is_javap=False):
@@ -170,6 +171,10 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         help='When using --enable-jni-multiplexing, emit weak definitions for '
         '@CalledByNative methods, so that they will function even if no '
         'generate_final_jni() exists.')
+    group.add_argument(
+        '--enable-safe-pointers',
+        action='store_true',
+        help='Enables parsing and generation of safe JNI pointers.')
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',
@@ -185,10 +190,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         '--enable-jni-multiplexing',
         action='store_true',
         help='Enables JNI multiplexing for Java native methods')
-    group.add_argument(
-        '--enable-safe-pointers',
-        action='store_true',
-        help='Enables parsing and generation of safe JNI pointers.')
     group.add_argument(
         '--package-prefix',
         help='Adds a prefix to the classes fully qualified-name. Effectively '

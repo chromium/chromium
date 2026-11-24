@@ -53,20 +53,23 @@ _cronet_renaming_extra_args = [
 ]
 
 template("jni_sources_list") {
+  # Writes a JSON list of all transitive .jni.pickle paths for
+  # generate_final_jni() and generate_jni_impl().
   generated_file(target_name) {
+    # walk_deps may be native libraries, apks, or non-JNI deps (which would
+    # delay codegen or create a dependency cycle), so they are walked without
+    # being depended on. Instead, depend only on the generate_jni() actions
+    # that create the .jni.pickle files.
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
-                                 "deps",
+                                 "walk_deps",
                                  "walk_keys",
                                ])
+    dep_keys = [ "jni_deps" ]
     outputs = [ invoker.output ]
-    data_keys = [ "jni_targets" ]
+    data_keys = [ "jni_pickles" ]
+    rebase = root_build_dir
     output_conversion = "json"
-    metadata = {
-      # This target is just collecting source files used - this is not a
-      # legitimate dependency.
-      shared_libraries_barrier = []
-    }
   }
 }
 
@@ -84,9 +87,9 @@ template("_invoke_jni_zero") {
 # the native methods of all dependent java files. It can also create a .h file
 # for use with manual JNI registration.
 #
-# The script does not scan any generated sources (those within .srcjars, or
-# within root_build_dir). This could be fixed by adding deps & logic to scan
-# .srcjars, but isn't currently needed.
+# The script does not parse any source files. Instead, it reads the .jni.pickle
+# files written by the generate_jni() targets that are found by walking
+# java_targets and native_deps.
 #
 # See third_party/jni_zero/jni_registration_generator.py for more info
 # about the format of the header file.
@@ -120,20 +123,21 @@ template("generate_final_jni") {
 
   if (current_toolchain == default_toolchain) {
     if (defined(invoker.native_deps)) {
-      _native_sources_list = "$target_gen_dir/$_target_name.nativesources.txt"
+      _native_sources_list =
+          "$target_gen_dir/$_target_name.native.jni_pickles.json"
 
       jni_sources_list("${_target_name}__native_sources") {
         forward_variables_from(invoker, [ "testonly" ])
-        deps = invoker.native_deps
+        walk_deps = invoker.native_deps
         output = _native_sources_list
       }
     }
 
-    _java_sources_list = "$target_gen_dir/$_target_name.javasources.txt"
+    _java_sources_list = "$target_gen_dir/$_target_name.java.jni_pickles.json"
 
     jni_sources_list("${_target_name}__java_sources") {
       forward_variables_from(invoker, [ "testonly" ])
-      deps = invoker.java_targets
+      walk_deps = invoker.java_targets
       output = _java_sources_list
 
       # When apk or bundle module targets are uses, do not pull metadata from
@@ -146,11 +150,11 @@ template("generate_final_jni") {
       # is becuase WebView's java is a strict subset of it's native, so we don't
       # need to take the intersection of it's native and java.
       _priority_java_sources_list =
-          "$target_gen_dir/$_target_name.priority_javasources.txt"
+          "$target_gen_dir/$_target_name.priority_java.jni_pickles.json"
 
       jni_sources_list("${_target_name}__priority_java_sources") {
         forward_variables_from(invoker, [ "testonly" ])
-        deps = invoker.priority_java_targets
+        walk_deps = invoker.priority_java_targets
         output = _priority_java_sources_list
 
         # When apk or bundle module targets are uses, do not pull metadata from
@@ -164,33 +168,28 @@ template("generate_final_jni") {
       if (defined(visibility) && _needs_cpp_codegen) {
         visibility += [ ":${_target_name}_source_set" ]
       }
-      gen_deps = [ ":${_target_name}__java_sources" ]
+      deps = [ ":${_target_name}__java_sources" ]
+      inputs = [ _java_sources_list ]
       if (defined(_native_sources_list)) {
-        gen_deps += [ ":${_target_name}__native_sources" ]
+        deps += [ ":${_target_name}__native_sources" ]
+        inputs += [ _native_sources_list ]
       }
       if (defined(_priority_java_sources_list)) {
-        gen_deps += [ ":${_target_name}__priority_java_sources" ]
+        deps += [ ":${_target_name}__priority_java_sources" ]
+        inputs += [ _priority_java_sources_list ]
       }
-
-      # Cannot depend on jni_sources_list targets since they likely depend on
-      # this target via srcjar_deps. Depfiles are used to add the dep instead.
-      deps = []
       _srcjar_output = "$target_gen_dir/$_target_name.srcjar"
       outputs = [ _srcjar_output ]
       if (_needs_cpp_codegen) {
         outputs += [ _cc_output ]
       }
-      depfile = "$target_gen_dir/$_target_name.d"
 
       args = [
         "generate-final",
         "--srcjar-path",
         rebase_path(_srcjar_output, root_build_dir),
-        "--depfile",
-        rebase_path(depfile, root_build_dir),
         "--java-sources-file",
         rebase_path(_java_sources_list, root_build_dir),
-        "--enable-safe-pointers",
       ]
 
       if (_needs_cpp_codegen) {
@@ -382,13 +381,6 @@ template("generate_jar_jni_registration") {
 template("generate_jni_impl") {
   public_configs = []
 
-  # A hack to prevent GN from treating this dep as a java dep, since we depend
-  # onto the invoke_jni_zero action from a java_library, which unfortunately
-  # checks to see if a given dep is a java dep by searching for the strings
-  # "java" or "junit".
-  _target_name_without_java_or_junit =
-      string_replace(string_replace(target_name, "_java", "_J"), "_junit", "_U")
-  _jni_zero_action_target_name = _target_name_without_java_or_junit + "__action"
   if (current_toolchain != default_toolchain && target_os == "android") {
     # Rather than regenerating .h files in secondary toolchains, re-use the
     # ones from the primary toolchain by depending on it and adding the
@@ -399,14 +391,24 @@ template("generate_jni_impl") {
       not_needed(invoker, "*")
       public_configs +=
           [ "//third_party/jni_zero:jni_include_dir($default_toolchain)" ]
-
-      # Depending on the action name to avoid cross-toolchain native deps.
-      public_deps = [ ":$_jni_zero_action_target_name($default_toolchain)" ]
+      public_deps = [ ":$target_name($default_toolchain)" ]
       metadata = {
+        # Consumed by Android APK/Robolectric shared_libraries metadata walks to
+        # prevent them from crossing toolchains.
         shared_libraries_barrier = []
       }
     }
   } else {
+    # A hack to prevent GN from treating this dep as a java dep, since we depend
+    # onto the invoke_jni_zero action from a java_library, which unfortunately
+    # checks to see if a given dep is a java dep by searching for the strings
+    # "java" or "junit".
+    _target_name_without_java_or_junit =
+        string_replace(string_replace(target_name, "_java", "_J"),
+                       "_junit",
+                       "_U")
+    _jni_zero_action_target_name =
+        _target_name_without_java_or_junit + "__action"
     _target_name = target_name
     if (defined(invoker.classes)) {
       _from_source = false
@@ -417,31 +419,33 @@ template("generate_jni_impl") {
       _srcjar_output = "$target_gen_dir/$_target_name.srcjar"
       _placeholder_srcjar_output =
           "$target_gen_dir/${_target_name}_placeholder.srcjar"
-      _type_catalog_output = "$target_gen_dir/${_target_name}.type_catalog.json"
-      _type_catalogs_file =
-          "$target_gen_dir/${_target_name}__type_catalogs.json"
+      _jni_pickle_output = "$target_gen_dir/${_target_name}.jni.pickle"
 
-      # Must not match java_target_patterns (e.g. "*:*_java_*"), same reason as
-      # _jni_zero_action_target_name above.
-      _type_catalogs_target =
-          "${_target_name_without_java_or_junit}__type_catalogs"
-      _type_catalog_depfile = "$target_gen_dir/${_target_name}.type_catalog.d"
-    }
+      _dep_pickles_walk_deps = []
+      if (defined(invoker.deps)) {
+        _dep_pickles_walk_deps += invoker.deps
+      }
+      if (defined(invoker.public_deps)) {
+        _dep_pickles_walk_deps += invoker.public_deps
+      }
+      if (_dep_pickles_walk_deps != []) {
+        _dep_pickles_file =
+            "$target_gen_dir/${_target_name}__dep.jni_pickles.json"
 
-    if (_from_source) {
-      # Aggregates the type catalogs published by all dependency targets.
-      generated_file(_type_catalogs_target) {
-        forward_variables_from(invoker, [ "testonly" ])
-        visibility = [ ":*" ]
-        outputs = [ _type_catalogs_file ]
-        data_keys = [ "jni_type_catalogs" ]
-        output_conversion = "json"
-        deps = []
-        if (defined(invoker.deps)) {
-          deps += invoker.deps
-        }
-        if (defined(invoker.public_deps)) {
-          deps += invoker.public_deps
+        # Must not match java_target_patterns (e.g. "*:*_java_*"), same reason
+        # as _jni_zero_action_target_name above.
+        _dep_pickles_target =
+            "${_target_name_without_java_or_junit}__dep_pickles"
+
+        # Lists the .jni.pickle files written by transitive generate_jni() deps
+        # so this target can resolve @JniType converters across targets without
+        # waiting on non-JNI deps. Note: deps are not forwarded transitively;
+        # use public_deps to re-export type catalogs or headers.
+        jni_sources_list(_dep_pickles_target) {
+          forward_variables_from(invoker, [ "testonly" ])
+          visibility = [ ":*" ]
+          output = _dep_pickles_file
+          walk_deps = _dep_pickles_walk_deps
         }
       }
     }
@@ -454,38 +458,8 @@ template("generate_jni_impl") {
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "public_deps",
-                             ])
-      if (!defined(public_deps)) {
-        public_deps = []
-      }
-      if (_from_source) {
-        if (!defined(deps)) {
-          deps = []
-        }
-        deps += [ ":$_type_catalogs_target" ]
-      }
-      _metadata = {
-      }
-      if (defined(invoker.metadata)) {
-        _metadata = invoker.metadata
-      }
-      if (_from_source) {
-        assert(!defined(_metadata.jni_type_catalogs),
-               "jni_type_catalogs metadata is reserved for JNI Zero")
-        _metadata.jni_type_catalogs =
-            [ rebase_path(_type_catalog_output, root_build_dir) ]
-      }
-      metadata = _metadata
       public_configs += [ "//third_party/jni_zero:jni_include_dir" ]
-
       inputs = []
-      if (_from_source) {
-        inputs += [ _type_catalogs_file ]
-      }
       outputs = []
       args = []
       if (_from_source) {
@@ -510,24 +484,48 @@ template("generate_jni_impl") {
       if (_from_source) {
         assert(defined(invoker.sources))
 
-        depfile = _type_catalog_depfile
+        if (defined(_dep_pickles_target)) {
+          # Dependency .jni.pickle files (for @JniType resolution) are the only
+          # outputs of deps that are needed. public_deps are forwarded on the
+          # group() target below.
+          deps = [ ":$_dep_pickles_target" ]
+          inputs += [ _dep_pickles_file ]
+          args += [
+            "--dep-jni-pickles-file",
+            rebase_path(_dep_pickles_file, root_build_dir),
+          ]
+        }
+        metadata = {
+          if (is_cronet_build) {
+            # Consumed by Cronet's gn2bp to collect JNI Java sources from `gn
+            # desc` (rebased to root_build_dir because gn2bp strips "../../").
+            jni_targets = [
+              {
+                java_files = rebase_path(invoker.sources, root_build_dir)
+              },
+            ]
+          }
+
+          # Consumed by generate_final_jni() and downstream generate_jni_impl()
+          # targets (via jni_sources_list()) to read parsed sources and
+          # @JniType tokens, and to depend only on this action without
+          # depending on the targets they walk.
+          jni_pickles = [ _jni_pickle_output ]
+          jni_deps = [ ":$_jni_zero_action_target_name" ]
+        }
         args += [
           "--enable-safe-pointers",
-          "--type-catalogs-file",
-          rebase_path(_type_catalogs_file, root_build_dir),
           "--srcjar-path",
           rebase_path(_srcjar_output, root_build_dir),
           "--placeholder-srcjar-path",
           rebase_path(_placeholder_srcjar_output, root_build_dir),
-          "--output-type-catalog",
-          rebase_path(_type_catalog_output, root_build_dir),
-          "--depfile",
-          rebase_path(_type_catalog_depfile, root_build_dir),
+          "--jni-pickle",
+          rebase_path(_jni_pickle_output, root_build_dir),
         ]
         outputs += [
           _srcjar_output,
           _placeholder_srcjar_output,
-          _type_catalog_output,
+          _jni_pickle_output,
         ]
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
@@ -559,6 +557,11 @@ template("generate_jni_impl") {
           args += _cronet_renaming_extra_args
         }
       } else {
+        forward_variables_from(invoker,
+                               [
+                                 "deps",
+                                 "public_deps",
+                               ])
         if (is_robolectric) {
           not_needed(invoker, [ "jar_file" ])
         } else {
@@ -585,9 +588,6 @@ template("generate_jni_impl") {
         }
       }
 
-      # Appended after the from-source outputs so that outputs[0] stays
-      # _srcjar_output, which must match the depfile target that
-      # jni_generator.py writes.
       if (defined(_resolved_types_path)) {
         outputs += [ _resolved_types_path ]
       }
@@ -657,6 +657,9 @@ template("generate_jni_impl") {
     # targets in jni_zero/BUILD.gn.
     group(_target_name) {
       public_deps = [ ":$_jni_zero_action_target_name" ]
+      if (_from_source && defined(invoker.public_deps)) {
+        public_deps += invoker.public_deps
+      }
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (defined(visibility)) {
         visibility += [
@@ -710,21 +713,6 @@ template("generate_jni") {
 
     # TODO(http://crbug.com/330720762): Change to False and migrate.
     allow_private_called_by_natives = true
-    metadata = {
-      # keep as abspath as this is used by cronet team
-      # to convert JNI registration targets from GN to BP (GN2BP).
-      jni_targets = [
-        {
-          java_files = rebase_path(sources, root_build_dir)
-          if (defined(invoker.module_name)) {
-            module_name = invoker.module_name
-          }
-          if (use_weak_called_by_natives) {
-            use_weak_called_by_natives = true
-          }
-        },
-      ]
-    }
   }
 }
 

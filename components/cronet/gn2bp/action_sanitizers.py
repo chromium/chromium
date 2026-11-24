@@ -282,31 +282,26 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
             '--input-file', self._add_location_tag_to_filepath
         )
 
-        # Strip jni_zero's GN metadata type catalog plumbing. The catalog lets a
-        # safe JNI pointer resolve a @JniType token that is declared in another
-        # target; it has no Soong equivalent and each of these flags would break
-        # the genrule at build time:
-        # * --type-catalogs-file points at a `*__type_catalogs.json` file that
-        #   GN's generated_file() writes at `gn gen` time (with no Ninja rule).
-        #   That file does not exist in the Android checkout, and jni_zero reads
-        #   it unconditionally, so it would raise FileNotFoundError.
-        # * --output-type-catalog writes the catalog this target publishes for
-        #   its dependents. Nothing consumes it once the above is gone, and we
-        #   drop it from the declared outputs (see get_outputs), so generating
-        #   it would leave an undeclared file behind in $(genDir).
-        # * --depfile makes jni_zero write a depfile keyed on --srcjar-path,
-        #   which we rewrite to $(genDir)/... . Soong expands $(genDir) to an
-        #   absolute sandbox path, tripping the "Found abs path in depfile"
-        #   assertion. JniRegistrationGeneratorSanitizer drops it for the same
-        #   reason.
+        # Strip jni_zero's GN metadata .jni.pickle plumbing. Pickles let a
+        # safe JNI pointer resolve a @JniType token declared in another target
+        # and let generate-final avoid re-parsing sources, but Soong genrules
+        # cannot consume each other's .jni.pickle outputs:
+        # * --dep-jni-pickles-file points at a `*__dep.jni_pickles.json` file
+        #   that GN's generated_file() writes at `gn gen` time (with no Ninja
+        #   rule). That file does not exist in the Android checkout, and
+        #   jni_zero reads it unconditionally, so it would raise
+        #   FileNotFoundError.
+        # * --jni-pickle writes the .jni.pickle output for downstream
+        #   generate_jni() and generate_final_jni() targets. We drop it from the
+        #   declared outputs (see get_outputs), and
+        #   JniRegistrationGeneratorSanitizer creates its own .jni.pickle.
         # Note --enable-safe-pointers is deliberately kept: safe pointers whose
-        # token is annotated in the same .java file resolve without a catalog.
+        # token is annotated in the same .java file resolve without dep pickles.
         # Cross-target tokens will fail loudly at Soong build time with
         # "does not resolve to a C++ type", at which point we need to teach
-        # gn2bp to propagate catalogs between generate_jni targets.
-        self.args.remove_flag('--type-catalogs-file', throw_if_absent=False)
-        self.args.remove_flag('--output-type-catalog', throw_if_absent=False)
-        self.args.remove_flag('--depfile', throw_if_absent=False)
+        # gn2bp to propagate pickles between generate_jni targets.
+        self.args.remove_flag('--dep-jni-pickles-file', throw_if_absent=False)
+        self.args.remove_flag('--jni-pickle', throw_if_absent=False)
 
         self.args.remove_flag('--package-prefix', throw_if_absent=False)
         self.args.remove_flag('--package-prefix-filter', throw_if_absent=False)
@@ -323,13 +318,12 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     def get_outputs(self):
         outputs = set()
         for out in super().get_outputs():
-            if out.endswith('.type_catalog.json'):
-                # jni_zero's generate_jni() declares a
-                # `<target>.type_catalog.json` output holding the target's
-                # class-level @JniType annotations, so that dependents can
-                # resolve safe JNI pointer tokens across target boundaries. We
-                # don't generate it in Soong (see _sanitize_args), so declaring
-                # it would make the genrule fail its output verification.
+            if out.endswith('.jni.pickle'):
+                # jni_zero's generate_jni() declares a `.jni.pickle` output for
+                # cross-target @JniType resolution and generate-final
+                # registration. We don't generate it in Soong (see
+                # _sanitize_args), so declaring it would make the genrule fail
+                # its output verification.
                 continue
             # fix target.output directory to match #include statements.
             outputs.add(re.sub('^jni_headers/', '', out))
@@ -433,7 +427,6 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
         return out.endswith(".srcjar")
 
     def _sanitize_args(self):
-        self.args.update_flag_value('--depfile', self._sanitize_filepath)
         self.args.update_flag_value('--srcjar-path', self._sanitize_filepath)
         self.args.update_flag_value(
             '--header-path', self._sanitize_filepath, throw_if_absent=False
@@ -444,7 +437,6 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
         self.args.update_flag_value(
             '--placeholder-srcjar-path', self._sanitize_filepath, False
         )
-        self.args.remove_flag('--depfile', False)
         self.args.set_flag_value(
             '--java-sources-file', '$(genDir)/java_sources.json'
         )
@@ -460,46 +452,38 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
 
     def get_cmd(self):
         base_cmd = super().get_base_cmd()
-        # Path in the original sources file does not work in genrule.
-        # So creating sources file in cmd based on the srcs of this target.
-        # Adding ../$(current_dir)/ to the head because jni_registration_generator.py uses the files
-        # whose path startswith(..)
-        module_name = ''
-        if self.args.has_arg('--module-name'):
-            module_name = self.args.get_flag_value('--module-name')
 
-        # This script is used to generate a `java_sources.json` file which is
-        # required by the `jni_registration_generator.py` script.
-        # It takes the current directory name as the first argument, and the list
-        # of java source files as the remaining arguments.
-        # It outputs a JSON structure representing the input sources, prepending
-        # '../<current_dir>/' to each file path because the generator expects
-        # paths relative to the build directory.
-        jni_registration_helper_script = """
-import json
-import sys
-d = {"java_files": [f"../{sys.argv[1]}/{f}" for f in sys.argv[2:]]}
-"""
-        if module_name:
-            jni_registration_helper_script += (
-                f'd["module_name"] = "{module_name}"\n'
-            )
-        jni_registration_helper_script += "print(json.dumps([d]))"
-
-        # Convert the multi-line script into a single semicolon-separated line.
-        # This is necessary because Soong's `cmd` field format doesn't support
-        # literal newlines inside string literals without breaking.
-        python_script = '; '.join(
-            line.strip()
-            for line in jni_registration_helper_script.strip().split('\n')
-            if line.strip()
+        # generate-final reads the parsed form of sources from a .jni.pickle,
+        # which in GN is written by each generate_jni() action. Soong genrules
+        # cannot consume each other's .jni.pickle outputs, so this creates one
+        # by running from-source on all sources (with the same parsing flags as
+        # generate_jni()).
+        from_source_cmd = [
+            f'python3 {base_cmd[0]}',
+            'from-source',
+            '--jni-pickle',
+            '$(genDir)/sources.jni.pickle',
+            '--allow-private-called-by-natives',
+            '--enable-safe-pointers',
+        ]
+        for flag in ('--module-name', '--package-prefix'):
+            if self.args.has_arg(flag):
+                val = self.args.get_flag_value(flag)
+                if val:
+                    from_source_cmd += [flag, shlex.quote(val)]
+        from_source_cmd.append(
+            '`for f in $(in); do echo --input-file=$$f; done` &&'
         )
 
-        base_cmd = [
-            "current_dir=`basename \\`pwd\\``;",
-            f"python3 -c '{python_script}' $$current_dir $(in) > $(genDir)/java_sources.json;",
-            f"python3 {base_cmd[0]}",
-        ] + base_cmd[1:]
+        base_cmd = (
+            from_source_cmd
+            + [
+                'echo \'["$(genDir)/sources.jni.pickle"]\' > '
+                '$(genDir)/java_sources.json &&',
+                f'python3 {base_cmd[0]}',
+            ]
+            + base_cmd[1:]
+        )
 
         return self.get_pre_cmd() + base_cmd
 

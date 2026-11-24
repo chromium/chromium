@@ -3,12 +3,8 @@
 # found in the LICENSE file.
 """Entry point for "link" command."""
 
-import collections
-import functools
 import hashlib
-import itertools
 import json
-import multiprocessing
 import os
 import pickle
 import re
@@ -21,85 +17,36 @@ from codegen import header_common
 from codegen import natives_header
 from codegen import register_natives
 import common
-import java_parse
-import java_types
 import jni_generator
-import kotlin_parse
-import parse_common
 import proxy
 
 _THIS_DIR = os.path.dirname(__file__)
 
 
-def _ParseHelper(package_prefix, package_prefix_filter, enable_safe_pointers,
-                 path):
-  parse_func = (kotlin_parse.parse_kotlin_file
-                if path.endswith('.kt') else java_parse.parse_java_file)
-  try:
-    # The link step emits only JNI boundary types, so safe pointer inner types
-    # are never resolved to C++ types here.
-    return parse_common.parse_file(path,
-                                   parse_func,
-                                   package_prefix=package_prefix,
-                                   package_prefix_filter=package_prefix_filter,
-                                   allow_private_called_by_natives=True,
-                                   enable_safe_pointers=enable_safe_pointers)
-  except Exception as e:
-    return e
+def _LoadJniObjs(pickle_paths, namespace, target_module_name):
+  """Loads the ParsedFiles that generate_jni() wrote to .jni.pickle files.
 
-
-def _LoadJniObjs(paths,
-                 namespace,
-                 package_prefix,
-                 package_prefix_filter,
-                 *,
-                 weak_cbns_by_path=None,
-                 enable_safe_pointers=False):
+  These may have more types resolved than the link step needs (since
+  generate_jni() has type catalogs), but the link step emits only JNI boundary
+  types, so this does not affect outputs.
+  """
   ret = {}
-  weak_cbns_by_path = weak_cbns_by_path or {}
-  if all(p.endswith('.jni.pickle') for p in paths):
-    for pickle_path in paths:
-      with open(pickle_path, 'rb') as f:
-        module_name, use_weak_cbns, parsed_files = pickle.load(f)
-      ret[pickle_path] = [
-          jni_generator.JniObject(pf,
-                                  from_javap=False,
-                                  default_namespace=namespace,
-                                  module_name=module_name,
-                                  use_weak_called_by_natives=use_weak_cbns)
-          for pf in parsed_files
-      ]
-  else:
-    func = functools.partial(_ParseHelper, package_prefix,
-                             package_prefix_filter, enable_safe_pointers)
-    # Python 3.14 changed the default start method on Linux from "fork" to
-    # "forkserver", which is much slower here because each worker must
-    # re-import modules.
-    mp_context = multiprocessing.get_context('fork' if sys.platform ==
-                                             'linux' else None)
-    with mp_context.Pool() as pool:
-      errors = []
-      for res in pool.imap_unordered(func, paths, chunksize=64):
-        if isinstance(res, Exception):
-          errors.append(res)
-        else:
-          use_weak_cbns = weak_cbns_by_path.get(res.filename, False)
-          ret[res.filename] = [
-              jni_generator.JniObject(res,
-                                      from_javap=False,
-                                      default_namespace=namespace,
-                                      use_weak_called_by_natives=use_weak_cbns)
-          ]
-      if errors:
-        for e in errors:
-          sys.stderr.write(f"\n--- JNI Parsing Error ---\n{e}\n")
-        sys.exit(1)
-
+  for pickle_path in pickle_paths:
+    with open(pickle_path, 'rb') as f:
+      module_name, use_weak_cbns, parsed_files = pickle.load(f)
+    if module_name != target_module_name:
+      ret[pickle_path] = {}
+      continue
+    ret[pickle_path] = {
+        pf.filename:
+        jni_generator.JniObject(pf,
+                                from_javap=False,
+                                default_namespace=namespace,
+                                module_name=module_name,
+                                use_weak_called_by_natives=use_weak_cbns)
+        for pf in parsed_files
+    }
   return ret
-
-
-def _Flatten(jni_objs_by_path, paths):
-  return itertools.chain(*(jni_objs_by_path[p] for p in paths))
 
 
 def _CollectNatives(jni_objs, jni_mode):
@@ -117,11 +64,10 @@ def _CollectNatives(jni_objs, jni_mode):
 
 def _Generate(args,
               jni_mode,
-              native_sources,
-              java_sources,
-              priority_java_sources,
+              native_pickle_paths,
+              java_pickle_paths,
+              priority_pickle_paths,
               *,
-              weak_cbns_by_path=None,
               never_omit_switch_num=False):
   """Generates files required to perform JNI registration.
 
@@ -134,41 +80,43 @@ def _Generate(args,
   Args:
     args: argparse.Namespace object.
     jni_mode: JniMode object.
-    native_sources: A list of .jni.pickle or .java file paths taken from native
+    native_pickle_paths: A list of .jni.pickle file paths taken from native
         dependency tree. The source of truth.
-    java_sources: A list of .jni.pickle or .java file paths. Used to assert
-        against native_sources.
-    priority_java_sources: A list of .jni.pickle or .java file paths. Used to
-        put these listed java files first in multiplexing.
+    java_pickle_paths: A list of .jni.pickle file paths. Used to assert against
+        native_pickle_paths.
+    priority_pickle_paths: A list of .jni.pickle file paths. Used to put these
+        listed java files first in multiplexing.
     never_omit_switch_num: Relevent for multiplexing. Necessary when the
         native library must be interchangeable with another that uses
         priority_java_sources (aka, webview).
   """
-  native_sources_list = native_sources.get(args.module_name, [])
-  java_sources_list = java_sources.get(args.module_name, [])
+  all_pickle_paths = (set(native_pickle_paths) | set(java_pickle_paths)
+                      | set(priority_pickle_paths))
+  jni_objs_by_pickle = _LoadJniObjs(all_pickle_paths, args.namespace,
+                                    args.module_name)
 
-  native_sources_set = set(native_sources_list)
-  java_sources_set = set(java_sources_list)
+  # The same source file can be listed in multiple generate_jni() targets, so
+  # results are keyed by source file rather than by .jni.pickle.
+  java_objs = {}
+  for p in java_pickle_paths:
+    java_objs.update(jni_objs_by_pickle[p])
 
-  jni_objs_by_path = _LoadJniObjs(
-      native_sources_set | java_sources_set,
-      args.namespace,
-      args.package_prefix,
-      args.package_prefix_filter,
-      weak_cbns_by_path=weak_cbns_by_path,
-      enable_safe_pointers=args.enable_safe_pointers)
+  native_objs = {}
+  for p in native_pickle_paths:
+    native_objs.update(jni_objs_by_pickle[p])
 
-  present_jni_objs = list(
-      _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))
+  present_jni_objs = [
+      obj for path, obj in native_objs.items() if path in java_objs
+  ]
 
   # Can contain path not in present_jni_objs.
-  priority_sources_list = priority_java_sources.get(
-      args.module_name, []) if priority_java_sources else []
-  priority_set = set(priority_sources_list)
+  priority_set = set()
+  for p in priority_pickle_paths:
+    priority_set.update(jni_objs_by_pickle[p])
   # native_jni_objs contains all JniObjects referenced by the native library.
   # They might not be in present_jni_objs because there is no requirement that
   # the java side depend on the generate_jni() rule.
-  native_jni_objs = list(_Flatten(jni_objs_by_path, native_sources_set))
+  native_jni_objs = list(native_objs.values())
   # Sort for determinism and to put priority_java_sources first.
   present_jni_objs.sort(
       key=lambda o: (o.filename not in priority_set, o.java_class))
@@ -188,9 +136,7 @@ def _Generate(args,
         never_omit_switch_num=never_omit_switch_num,
         include_test_only=args.include_test_only)
 
-  java_only_jni_objs = _CheckForJavaNativeMismatch(args, jni_objs_by_path,
-                                                   native_sources_set,
-                                                   java_sources_set)
+  java_only_jni_objs = _CheckForJavaNativeMismatch(args, native_objs, java_objs)
 
   present_proxy_natives = _CollectNatives(present_jni_objs, jni_mode)
   absent_proxy_natives = _CollectNatives(java_only_jni_objs, jni_mode)
@@ -275,15 +221,13 @@ def _Generate(args,
                                             absent_proxy_natives))
 
 
-def _CheckForJavaNativeMismatch(args, jni_objs_by_path, native_sources_set,
-                                java_sources_set):
-  native_only = native_sources_set - java_sources_set
-  java_only = java_sources_set - native_sources_set
-
-  java_only_jni_objs = sorted(_Flatten(jni_objs_by_path, java_only),
-                              key=lambda jni_obj: jni_obj.filename)
-  native_only_jni_objs = sorted(_Flatten(jni_objs_by_path, native_only),
-                                key=lambda jni_obj: jni_obj.filename)
+def _CheckForJavaNativeMismatch(args, native_objs, java_objs):
+  java_only_jni_objs = [
+      java_objs[p] for p in sorted(java_objs.keys() - native_objs.keys())
+  ]
+  native_only_jni_objs = [
+      native_objs[p] for p in sorted(native_objs.keys() - java_objs.keys())
+  ]
 
   # Ignore files that have only @CalledByNatives in them, since they do not
   # effect GEN_JNI.
@@ -460,18 +404,18 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
   return sb.to_string()
 
 
-def _ParseMetadataJson(path):
+def _ParsePicklePaths(path):
   with open(path) as f:
     data = json.load(f)
-  sources_by_module = collections.defaultdict(list)
-  use_weaks_by_path = {}
+  ret = []
   for item in data:
-    module_name = item.get('module_name') or ''
-    use_weak_cbns = item.get('use_weak_called_by_natives', False)
-    for src in item['java_files']:
-      sources_by_module[module_name].append(src)
-      use_weaks_by_path[src] = use_weak_cbns
-  return sources_by_module, use_weaks_by_path
+    if isinstance(item, str):
+      ret.append(item)
+    else:
+      # Support callers (e.g. Bazel rules) that wrap .jni.pickle paths in
+      # {"java_files": [...]}.
+      ret.extend(item['java_files'])
+  return ret
 
 
 def main(parser, args, jni_mode):
@@ -494,46 +438,25 @@ def main(parser, args, jni_mode):
       # --priority-java-sources.
       parser.error('--priority-java-sources requires --never-omit-switch-num.')
 
-  java_sources, java_weak_cbns_by_path = _ParseMetadataJson(
-      args.java_sources_file)
+  java_pickle_paths = _ParsePicklePaths(args.java_sources_file)
   if args.native_sources_file:
-    native_sources, native_weak_cbns_by_path = _ParseMetadataJson(
-        args.native_sources_file)
+    native_pickle_paths = _ParsePicklePaths(args.native_sources_file)
   else:
     if args.add_stubs_for_missing_native:
       # This will create a fully stubbed out GEN_JNI.
-      native_sources = {}
-      native_weak_cbns_by_path = {}
+      native_pickle_paths = []
     else:
       # Just treating it like we have perfect alignment between native and java
       # when only looking at java.
-      native_sources = java_sources
-      native_weak_cbns_by_path = java_weak_cbns_by_path
+      native_pickle_paths = java_pickle_paths
   if args.priority_java_sources_file:
-    priority_java_sources, _ = _ParseMetadataJson(
-        args.priority_java_sources_file)
+    priority_pickle_paths = _ParsePicklePaths(args.priority_java_sources_file)
   else:
-    priority_java_sources = None
-
-  weak_cbns_by_path = {}
-  weak_cbns_by_path.update(java_weak_cbns_by_path)
-  weak_cbns_by_path.update(native_weak_cbns_by_path)
+    priority_pickle_paths = []
 
   _Generate(args,
             jni_mode,
-            native_sources,
-            java_sources,
-            priority_java_sources,
-            weak_cbns_by_path=weak_cbns_by_path,
+            native_pickle_paths,
+            java_pickle_paths,
+            priority_pickle_paths,
             never_omit_switch_num=args.never_omit_switch_num)
-
-  if args.depfile:
-    # GN does not declare a dep on the sources files to avoid circular
-    # dependencies, so they need to be listed here.
-    all_inputs = []
-    all_inputs.extend(native_sources.get(args.module_name, []))
-    all_inputs.extend(java_sources.get(args.module_name, []))
-    all_inputs.append(args.java_sources_file)
-    if args.native_sources_file:
-      all_inputs.append(args.native_sources_file)
-    common.write_depfile(args.depfile, args.srcjar_path, all_inputs)

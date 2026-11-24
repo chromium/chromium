@@ -120,7 +120,7 @@ def _get_jni_registration_deps(gn_target_name, gn_desc):
     # for the auto-generated target name.
     jni_registration_java_target = f'{gn_target_name}__java_sources'
     if jni_registration_java_target in gn_desc.keys():
-        return gn_desc[jni_registration_java_target]["deps"]
+        return gn_desc[jni_registration_java_target].get("walk_deps", ())
     return set()
 
 
@@ -949,7 +949,7 @@ class GnParser:
                 deps = list(metadata.get("java_library_deps", []))
         elif target.type == 'generated_file':
             # generated_file() targets are evaluated by GN at `gn gen` time:
-            # they write a file (e.g. jni_zero's `*__type_catalogs.json`) by
+            # they write a file (e.g. jni_zero's `*__dep.jni_pickles.json`) by
             # walking the metadata of their deps. They have no Ninja build step
             # and no Soong equivalent, so we never emit a module for them (see
             # create_modules_from_target). Their deps merely define the scope of

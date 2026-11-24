@@ -20,6 +20,7 @@ import json
 import logging
 import os
 import pathlib
+import pickle
 import re
 import shlex
 import subprocess
@@ -34,6 +35,7 @@ _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
 _EXTRA_INCLUDES = 'extra_include.h'
 _JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'java', 'src', 'org', 'jni_zero')
+sys.path.append(os.path.normpath(os.path.join(_SCRIPT_DIR, os.pardir)))
 sys.path.append(
     os.path.join(_SCRIPT_DIR, os.pardir, os.pardir, os.pardir, 'build',
                  'android'))
@@ -78,9 +80,8 @@ class CliOptions:
     self.class_blocklist = None
     self.enable_jni_multiplexing = False
     self.enable_safe_pointers = False
-    self.output_type_catalog = None
-    self.type_catalogs = None
-    self.type_catalogs_file = None
+    self.dep_jni_pickles = None
+    self.dep_jni_pickles_file = None
     self.weak_called_by_natives = False
     self.package_prefix = None
     self.package_prefix_filter = None
@@ -151,15 +152,13 @@ class CliOptions:
       ret += ['--module-name', self.module_name]
     if self.remove_uncalled_methods:
       ret.append('--remove-uncalled-methods')
-    if self.enable_safe_pointers:
+    if self.enable_safe_pointers and self.action != 'generate-final':
       ret.append('--enable-safe-pointers')
-    if self.output_type_catalog:
-      ret += ['--output-type-catalog', self.output_type_catalog]
-    if self.type_catalogs:
-      for cat in self.type_catalogs:
-        ret += ['--type-catalog', cat]
-    if self.type_catalogs_file:
-      ret += ['--type-catalogs-file', self.type_catalogs_file]
+    if self.dep_jni_pickles:
+      for pickle_path in self.dep_jni_pickles:
+        ret += ['--dep-jni-pickle', pickle_path]
+    if self.dep_jni_pickles_file:
+      ret += ['--dep-jni-pickles-file', self.dep_jni_pickles_file]
     if self.action == 'gen-register-natives':
       ret += self.jar_files
     if self.needs_javap:
@@ -177,21 +176,56 @@ def _MakePrefixes(options):
   return package_prefix, module_prefix
 
 
-def _WriteMetadataJson(path, sources, use_weak=False):
-  modules = collections.defaultdict(list)
-  for src in sources:
-    module = 'module' if 'SampleModule.java' in src else ''
-    modules[module].append(src)
+def _WriteMetadataJson(path, pickle_paths, *, bazel_format):
+  if bazel_format:
+    data = [{'java_files': pickle_paths, 'module_name': ''}]
+  else:
+    data = pickle_paths
+  path.write_text(json.dumps(data))
 
-  metadata = []
-  for module, files in modules.items():
-    m = {'java_files': files}
-    if module:
-      m['module_name'] = module
-    if use_weak:
-      m['use_weak_called_by_natives'] = True
-    metadata.append(m)
-  path.write_text(json.dumps(metadata))
+
+def _WriteJniPickle(pickle_path, sources, **kwargs):
+  """Runs from-source on |sources| to create a .jni.pickle."""
+  from_source_options = CliOptions(input_files=sources,
+                                   jni_pickle=pickle_path,
+                                   **kwargs)
+  cmd = from_source_options.to_args() + ['--allow-private-called-by-natives']
+  logging.info('Running: %s', shlex.join(cmd))
+  subprocess.check_call(cmd)
+
+
+def _WriteUnusedTypePickle(tdir):
+  """Creates a .jni.pickle defining an unused @JniType token."""
+  unused_java = os.path.join(tdir, 'SampleTypeUnused.java')
+  pathlib.Path(unused_java).write_text(
+      'package org.jni_zero;\n'
+      '@JniType("::my::cpp::Unused")\n'
+      'public interface SampleTypeUnused extends JniTypeToken {}\n')
+  pickle_path = os.path.join(tdir, 'catalog1.jni.pickle')
+  _WriteJniPickle(pickle_path, [unused_java], enable_safe_pointers=True)
+  return pickle_path
+
+
+def _SourcesToPickles(tdir, prefix, sources, options):
+  """Converts .java/.kt/.jni.pickle paths into .jni.pickle paths."""
+  ret = []
+  by_module = collections.defaultdict(list)
+  for src in dict.fromkeys(sources):
+    if src.endswith('.jni.pickle'):
+      ret.append(src)
+    else:
+      module_name = 'module' if 'SampleModule.java' in src else None
+      by_module[module_name].append(os.path.join(_JAVA_SRC_DIR, src))
+  for idx, (module_name, srcs) in enumerate(by_module.items()):
+    pickle_path = os.path.join(tdir, f'{prefix}_{idx}.jni.pickle')
+    _WriteJniPickle(pickle_path,
+                    srcs,
+                    module_name=module_name,
+                    package_prefix=options.package_prefix,
+                    package_prefix_filter=options.package_prefix_filter,
+                    enable_safe_pointers=options.enable_safe_pointers)
+    ret.append(pickle_path)
+  return ret
 
 
 class BaseTest(unittest.TestCase):
@@ -299,6 +333,7 @@ class BaseTest(unittest.TestCase):
                          golden_name=None,
                          src_files_for_asserts_and_stubs=None,
                          priority_java_files=None,
+                         bazel_metadata_format=False,
                          inspection_func=None,
                          **kwargs):
     golden_name = golden_name or self._testMethodName
@@ -319,40 +354,34 @@ class BaseTest(unittest.TestCase):
       impl_golden = f'{golden_name}-Final.cc.golden'
 
     with tempfile.TemporaryDirectory() as tdir:
-      native_sources = [
-          f if f.endswith('.jni.pickle') else os.path.join(_JAVA_SRC_DIR, f)
-          for f in input_files
-      ]
-
+      native_pickles = _SourcesToPickles(tdir, 'native', input_files, options)
       if src_files_for_asserts_and_stubs:
-        java_sources = [
-            f if f.endswith('.jni.pickle') else os.path.join(_JAVA_SRC_DIR, f)
-            for f in src_files_for_asserts_and_stubs
-        ]
+        java_pickles = _SourcesToPickles(tdir, 'java',
+                                         src_files_for_asserts_and_stubs,
+                                         options)
       else:
-        java_sources = native_sources
+        java_pickles = native_pickles
+      priority_pickles = _SourcesToPickles(tdir, 'priority', priority_java_files
+                                           or [], options)
 
       cmd = options.to_args()
 
       java_sources_file = pathlib.Path(tdir) / 'java_sources.json'
       _WriteMetadataJson(java_sources_file,
-                         java_sources,
-                         use_weak=options.weak_called_by_natives)
+                         java_pickles,
+                         bazel_format=bazel_metadata_format)
       cmd += ['--java-sources-file', str(java_sources_file)]
-      if native_sources:
+      if native_pickles:
         native_sources_file = pathlib.Path(tdir) / 'native_sources.json'
         _WriteMetadataJson(native_sources_file,
-                           native_sources,
-                           use_weak=options.weak_called_by_natives)
+                           native_pickles,
+                           bazel_format=bazel_metadata_format)
         cmd += ['--native-sources-file', str(native_sources_file)]
-      if priority_java_files:
-        priority_java_sources = [
-            os.path.join(_JAVA_SRC_DIR, f) for f in priority_java_files
-        ]
+      if priority_pickles:
         priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.json'
         _WriteMetadataJson(priority_java_file,
-                           priority_java_sources,
-                           use_weak=options.weak_called_by_natives)
+                           priority_pickles,
+                           bazel_format=bazel_metadata_format)
         cmd += ['--priority-java-sources-file', str(priority_java_file)]
       if priority_java_files is not None:
         cmd += ['--never-omit-switch-num']
@@ -647,17 +676,23 @@ class Tests(BaseTest):
                             enable_jni_multiplexing=True,
                             weak_called_by_natives=True,
                             jni_pickle=sample_for_tests_pickle)
+      self.assertEqual(
+          pathlib.Path(sample_for_tests_pickle).read_bytes()[:2],
+          bytes([0x80, pickle.HIGHEST_PROTOCOL]))
       sample_for_annotation_processor_pickle = os.path.join(
           tdir, 'sample_for_annotation_processor.jni.pickle')
       self._TestGenerateJni(['SampleForAnnotationProcessor.java'],
                             enable_jni_multiplexing=True,
                             srcjar=True,
                             jni_pickle=sample_for_annotation_processor_pickle)
-      self._TestGenerateFinal([
-          sample_for_annotation_processor_pickle,
-          sample_for_tests_pickle,
-      ],
-                              enable_jni_multiplexing=True)
+      for bazel_metadata_format in (False, True):
+        with self.subTest(bazel_metadata_format=bazel_metadata_format):
+          self._TestGenerateFinal([
+              sample_for_annotation_processor_pickle,
+              sample_for_tests_pickle,
+          ],
+                                  bazel_metadata_format=bazel_metadata_format,
+                                  enable_jni_multiplexing=True)
 
   def testGenRegisterNatives(self):
     with tempfile.TemporaryDirectory() as tdir:
@@ -779,31 +814,32 @@ class MyFile {
 
   def testTypeCatalog(self):
     with tempfile.TemporaryDirectory() as tdir:
+      pickle_path = os.path.join(tdir, "define.jni.pickle")
       options_def = CliOptions(
           input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeDefine.java")],
           output_dir=tdir,
           shared_header_files=["SampleTypeDefine_shared_jni.h"],
           unshared_header_files=["SampleTypeDefine_jni.h"],
-          output_type_catalog=os.path.join(tdir, "catalog.json"),
+          jni_pickle=pickle_path,
           enable_safe_pointers=True)
-      cmd_def = options_def.to_args()
-      subprocess.check_call(cmd_def)
-
-      catalog_path = os.path.join(tdir, "catalog.json")
-      self.assertTrue(os.path.exists(catalog_path))
-      self.AssertGoldenTextEquals(
-          pathlib.Path(catalog_path).read_text(),
-          'testTypeCatalog-catalog.json.golden')
+      subprocess.check_call(options_def.to_args())
+      self.assertTrue(os.path.exists(pickle_path))
+      with open(pickle_path, 'rb') as f:
+        _, _, parsed_files = pickle.load(f)
+      catalog = {}
+      for pf in parsed_files:
+        catalog.update(pf.type_tokens)
+      self.AssertGoldenTextEquals(json.dumps(catalog, indent=2, sort_keys=True),
+                                  'testTypeCatalog-catalog.json.golden')
 
       options_use = CliOptions(
           input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")],
           output_dir=tdir,
           shared_header_files=["SampleTypeUse_shared_jni.h"],
           unshared_header_files=["SampleTypeUse_jni.h"],
-          type_catalogs=[catalog_path],
+          dep_jni_pickles=[pickle_path],
           enable_safe_pointers=True)
-      cmd_use = options_use.to_args()
-      subprocess.check_call(cmd_use)
+      subprocess.check_call(options_use.to_args())
 
       header_path = os.path.join(tdir, "SampleTypeUse_jni.h")
       self.assertTrue(os.path.exists(header_path))
@@ -825,27 +861,25 @@ class MyFile {
 
   def testTypeCatalogAggregation(self):
     with tempfile.TemporaryDirectory() as tdir:
-      catalog1_path = os.path.join(tdir, "catalog1.json")
-      catalog2_path = os.path.join(tdir, "catalog2.json")
-      with open(catalog1_path, "w") as f:
-        # Not referenced by SampleTypeUse.java: exercises merging of
-        # unrelated catalogs.
-        json.dump({"org/jni_zero/SampleTypeUnused": "::my::cpp::Unused"}, f)
-      with open(catalog2_path, "w") as f:
-        # Only present in the second catalog, so resolution succeeds only if
-        # both catalogs merged.
-        json.dump(
-            {
-                "org/jni_zero/SampleTypeDefine": "::my::cpp::Define",
-                "org/jni_zero/SampleTypeDefine$Nested": "::my::cpp::Nested",
-            }, f)
+      # Not referenced by SampleTypeUse.java: exercises merging of
+      # unrelated dep pickles.
+      pickle1_path = _WriteUnusedTypePickle(tdir)
+      # Only present in the second pickle, so resolution succeeds only if
+      # both pickles merged.
+      pickle2_path = os.path.join(tdir, "catalog2.jni.pickle")
+      _WriteJniPickle(pickle2_path,
+                      [os.path.join(_JAVA_SRC_DIR, "SampleTypeDefine.java")],
+                      enable_safe_pointers=True)
+
+      dep_pickles_file = pathlib.Path(tdir) / "dep_pickles.json"
+      dep_pickles_file.write_text(json.dumps([pickle1_path, pickle2_path]))
 
       options_multi = CliOptions(
           input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")],
           output_dir=tdir,
           shared_header_files=["SampleTypeUse_shared_jni.h"],
           unshared_header_files=["SampleTypeUse_jni.h"],
-          type_catalogs=[catalog1_path, catalog2_path],
+          dep_jni_pickles_file=str(dep_pickles_file),
           enable_safe_pointers=True)
       subprocess.check_call(options_multi.to_args())
 
@@ -857,15 +891,13 @@ class MyFile {
 
   def testTypeCatalogAggregation_PartialCatalogFails(self):
     with tempfile.TemporaryDirectory() as tdir:
-      catalog1_path = os.path.join(tdir, "catalog1.json")
-      with open(catalog1_path, "w") as f:
-        json.dump({"org/jni_zero/SampleTypeUnused": "::my::cpp::Unused"}, f)
+      pickle1_path = _WriteUnusedTypePickle(tdir)
       options_partial = CliOptions(
           input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")],
           output_dir=tdir,
           shared_header_files=["SampleTypeUse_shared_jni.h"],
           unshared_header_files=["SampleTypeUse_jni.h"],
-          type_catalogs=[catalog1_path],
+          dep_jni_pickles=[pickle1_path],
           enable_safe_pointers=True)
       with self.assertRaises(subprocess.CalledProcessError):
         subprocess.check_call(options_partial.to_args(),
@@ -873,7 +905,7 @@ class MyFile {
 
   def testTypeTokensFromCurrentTargetInputs(self):
     # Resolution must succeed for either input ordering via post-parse
-    # resolution, without any external --type-catalog. SampleTypeDefine.java
+    # resolution, without any external --dep-jni-pickle. SampleTypeDefine.java
     # also has no native methods, so this covers _CheckNotEmpty.
     use_file = os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")
     define_file = os.path.join(_JAVA_SRC_DIR, "SampleTypeDefine.java")
@@ -905,6 +937,18 @@ class MyFile {
     # depend on a token's C++ type. A golden makes any such dependence visible.
     self._TestGenerateFinal(['SampleTypeUse.java', 'SampleTypeDefine.java'],
                             enable_safe_pointers=True)
+
+  def testDuplicateSourceAcrossPickles(self):
+    with tempfile.TemporaryDirectory() as tdir:
+      src = os.path.join(_JAVA_SRC_DIR, 'SampleForAnnotationProcessor.java')
+      native_pickle = os.path.join(tdir, 'native.jni.pickle')
+      java_pickle = os.path.join(tdir, 'java.jni.pickle')
+      _WriteJniPickle(native_pickle, [src])
+      _WriteJniPickle(java_pickle, [src])
+      self._TestGenerateFinal([native_pickle],
+                              golden_name='testEndToEndProxyHashed',
+                              src_files_for_asserts_and_stubs=[java_pickle],
+                              use_proxy_hash=True)
 
 
 def _IterTests(suite):

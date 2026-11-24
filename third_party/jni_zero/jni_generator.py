@@ -791,22 +791,57 @@ def _WriteResolvedTypes(resolved_types_path, jni_objs):
     f.write('\n'.join(sorted(resolved_classes)) + '\n')
 
 
-def GenerateFromSource(parser, args, jni_mode):
-  if args.depfile and not (args.srcjar_path or args.output_type_catalog):
-    parser.error('--depfile requires --srcjar-path or --output-type-catalog')
+def _MergeTypeCatalogs(target_catalog, new_tokens, source_desc):
+  """Merges new_tokens into target_catalog, checking for conflicts."""
+  for key, value in new_tokens.items():
+    prev = target_catalog.get(key)
+    if prev is not None and prev != value:
+      raise Exception(
+          f'Conflicting @JniType for {key}: {prev!r} (already loaded) vs '
+          f'{value!r} (from {source_desc})')
+    target_catalog[key] = value
 
-  # Remove existing headers so that moving .java source files but not updating
-  # the corresponding C++ include will be a compile failure (otherwise
-  # incremental builds will usually not catch this).
-  _RemoveStaleHeaders(args.output_dir, args.shared_header_names,
-                      args.unshared_header_names)
+
+def _LoadTypeCatalogs(dep_jni_pickles_file, dep_jni_pickles):
+  """Returns the merged type catalog dict from dependency .jni.pickle files."""
+  paths = []
+  if dep_jni_pickles_file:
+    contents = pathlib.Path(dep_jni_pickles_file).read_text().strip()
+    if contents:
+      paths.extend(json.loads(contents))
+  if dep_jni_pickles:
+    paths.extend(dep_jni_pickles)
+
+  type_catalog = {}
+  for path in dict.fromkeys(paths):
+    with open(path, 'rb') as f:
+      _, _, parsed_files = pickle.load(f)
+    for pf in parsed_files:
+      _MergeTypeCatalogs(type_catalog, pf.type_tokens, pf.filename)
+  return type_catalog
+
+
+def GenerateFromSource(parser, args, jni_mode):
+  header_args = (args.output_dir, args.shared_header_names,
+                 args.unshared_header_names)
+  if any(header_args) and not all(header_args):
+    parser.error(
+        '--output-dir, --shared-header-name, and --unshared-header-name must '
+        'either all be passed or all be omitted.')
+
+  if args.output_dir:
+    # Remove existing headers so that moving .java source files but not updating
+    # the corresponding C++ include will be a compile failure (otherwise
+    # incremental builds will usually not catch this).
+    _RemoveStaleHeaders(args.output_dir, args.shared_header_names,
+                        args.unshared_header_names)
 
   try:
     errors = []
     parsed_files = []
-    type_catalog, loaded_type_catalogs = common.load_type_catalogs(
-        type_catalogs_file=args.type_catalogs_file,
-        type_catalogs=args.type_catalogs)
+    type_catalog = _LoadTypeCatalogs(
+        dep_jni_pickles_file=args.dep_jni_pickles_file,
+        dep_jni_pickles=args.dep_jni_pickles)
 
     for f in args.input_files:
       parse_func = (kotlin_parse.parse_kotlin_file
@@ -833,18 +868,10 @@ def GenerateFromSource(parser, args, jni_mode):
     _CheckNotEmpty(parsed_files)
 
     for pf in parsed_files:
-      common.merge_type_catalogs(type_catalog, pf.type_tokens, pf.filename)
+      _MergeTypeCatalogs(type_catalog, pf.type_tokens, pf.filename)
 
     if args.enable_safe_pointers:
       java_parse.resolve_safe_pointers(parsed_files, type_catalog)
-
-    if args.output_type_catalog:
-      local_type_catalog = {}
-      for parsed_file in parsed_files:
-        common.merge_type_catalogs(local_type_catalog, parsed_file.type_tokens,
-                                   parsed_file.filename)
-      with common.atomic_output(args.output_type_catalog, 'w') as f:
-        json.dump(local_type_catalog, f, indent=2, sort_keys=True)
 
     jni_objs = [
         JniObject(x,
@@ -854,29 +881,27 @@ def GenerateFromSource(parser, args, jni_mode):
                   use_weak_called_by_natives=args.weak_called_by_natives)
         for x in parsed_files
     ]
-    if args.depfile:
-      first_out = args.srcjar_path or args.output_type_catalog
-      common.write_depfile(args.depfile, first_out, loaded_type_catalogs)
     if args.resolved_types_path:
       _WriteResolvedTypes(args.resolved_types_path, jni_objs)
   except parse_common.ParseError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
-  gen_jni_class = proxy.get_gen_jni_class(
-      short=jni_mode.is_hashing or jni_mode.is_muxing,
-      name_prefix=args.module_name,
-      package_prefix=args.package_prefix,
-      package_prefix_filter=args.package_prefix_filter)
+  if args.output_dir:
+    gen_jni_class = proxy.get_gen_jni_class(
+        short=jni_mode.is_hashing or jni_mode.is_muxing,
+        name_prefix=args.module_name,
+        package_prefix=args.package_prefix,
+        package_prefix_filter=args.package_prefix_filter)
 
-  _WriteHeaders(jni_mode,
-                jni_objs,
-                args.shared_header_names,
-                args.unshared_header_names,
-                args.output_dir,
-                include_path_prefix=args.include_path_prefix,
-                gen_jni_class=gen_jni_class,
-                extra_includes=args.extra_includes)
+    _WriteHeaders(jni_mode,
+                  jni_objs,
+                  args.shared_header_names,
+                  args.unshared_header_names,
+                  args.output_dir,
+                  include_path_prefix=args.include_path_prefix,
+                  gen_jni_class=gen_jni_class,
+                  extra_includes=args.extra_includes)
 
   jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
   # Write .srcjar
@@ -897,9 +922,9 @@ def GenerateFromSource(parser, args, jni_mode):
       zipfile.ZipFile(args.srcjar_path, 'w').close()
   if args.jni_pickle:
     with common.atomic_output(args.jni_pickle, 'wb') as f:
-      pickle.dump(
-          (args.module_name, getattr(args, 'weak_called_by_natives',
-                                     False), parsed_files), f)
+      pickle.dump((args.module_name, args.weak_called_by_natives, parsed_files),
+                  f,
+                  protocol=pickle.HIGHEST_PROTOCOL)
 
   if args.placeholder_srcjar_path:
     if jni_objs_with_proxy_natives:
