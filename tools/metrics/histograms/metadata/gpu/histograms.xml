@@ -2777,6 +2777,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.DisplayLink.CADisplayLink.CreationTimeUs.{Order}{Result}"
+    units="microseconds" expires_after="2027-05-18">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time elapsed in microseconds (up to 25 seconds) to create and configure
+    a CADisplayLink via SLSGetDisplayLink() in
+    CADisplayLinkMac::GetForDisplay(), recorded on {Order} that resulted in
+    {Result}. Recorded once per display. Only reported on Mac clients, which
+    always have high-resolution clocks.
+  </summary>
+  <token key="Order">
+    <variant name="First"
+        summary="the first creation attempt in the process (including initial
+                 SkyLight display-link setup)"/>
+    <variant name="Subsequent"
+        summary="the first creation attempt for each additional display in
+                 the process"/>
+  </token>
+  <token key="Result">
+    <variant name="" summary="either success or failure"/>
+    <variant name=".Failure" summary="failure"/>
+    <variant name=".Success" summary="success"/>
+  </token>
+</histogram>
+
 <histogram name="Viz.DisplayLink.Create.GPU.{Source}" enum="BooleanSuccess"
     expires_after="2027-03-30">
   <owner>magchen@chromium.org</owner>
@@ -2794,6 +2821,25 @@ chromium-metrics-reviews@google.com.
     <variant name="ExternalDisplayLink"
         summary="ExternalDisplayLink using CADisplayLink in the Browser
                  process"/>
+  </token>
+</histogram>
+
+<histogram name="Viz.DisplayLink.CVDisplayLink.CreationTimeUs{Result}"
+    units="microseconds" expires_after="2027-05-18">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time elapsed in microseconds (up to 25 seconds) to create and configure
+    a CVDisplayLink via CVDisplayLinkCreateWithCGDisplay() in
+    CVDisplayLinkMac::GetForDisplay(), recorded on the first creation attempt
+    for each display that resulted in {Result}. Only reported on Mac clients,
+    which always have high-resolution clocks.
+  </summary>
+  <token key="Result">
+    <variant name="" summary="either success or failure"/>
+    <variant name=".Failure" summary="failure"/>
+    <variant name=".Success" summary="success"/>
   </token>
 </histogram>
 
