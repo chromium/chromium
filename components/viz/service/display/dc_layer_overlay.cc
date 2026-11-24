@@ -278,27 +278,6 @@ bool IsOccluded(const gfx::RectF& target_quad,
   return false;
 }
 
-bool HasOccludingDamageRect(
-    const SharedQuadState* shared_quad_state,
-    const SurfaceDamageRectList& surface_damage_rect_list,
-    const gfx::Rect& quad_rect_in_target_space) {
-  if (!shared_quad_state->overlay_damage_index.has_value())
-    return !quad_rect_in_target_space.IsEmpty();
-
-  size_t overlay_damage_index = shared_quad_state->overlay_damage_index.value();
-  CHECK_LT(overlay_damage_index, surface_damage_rect_list.size());
-
-  // Damage rects in surface_damage_rect_list are arranged from top to bottom.
-  // surface_damage_rect_list[0] is the one on the very top.
-  // surface_damage_rect_list[overlay_damage_index] is the damage rect of
-  // this overlay surface.
-  gfx::Rect occluding_damage_rect = gfx::UnionRects(
-      base::span(surface_damage_rect_list).first(overlay_damage_index));
-  occluding_damage_rect.Intersect(quad_rect_in_target_space);
-
-  return !occluding_damage_rect.IsEmpty();
-}
-
 void RecordVideoDCLayerResult(DCLayerResult result,
                               gfx::ProtectedVideoType protected_video_type) {
   switch (protected_video_type) {
@@ -340,29 +319,26 @@ void RecordDCLayerResult(DCLayerResult result, const DrawQuad* quad) {
   }
 }
 
-// This function records the damage rect rect of the current frame.
+// Records the damage rect histogram for the current frame if all promoted
+// overlays are on top (i.e., no underlays are present).
 void RecordOverlayHistograms(
     const DCLayerOverlayProcessor::RenderPassOverlayDataMap&
-        render_pass_overlay_data_map,
-    bool has_occluding_surface_damage) {
-  // If an underlay is found, we record the damage rect of this frame as an
-  // underlay.
-  bool is_overlay = true;
-  for (auto& [render_pass, overlay_data] : render_pass_overlay_data_map) {
-    is_overlay = std::ranges::all_of(
+        render_pass_overlay_data_map) {
+  for (const auto& [render_pass, overlay_data] : render_pass_overlay_data_map) {
+    const bool is_overlay = std::ranges::all_of(
         overlay_data.promoted_overlays,
         [](const auto& dc_layer) { return dc_layer.plane_z_order > 0; });
     if (!is_overlay) {
-      break;
+      return;
     }
   }
 
-  bool damage_rects_empty = std::ranges::all_of(
+  const bool damage_rects_empty = std::ranges::all_of(
       render_pass_overlay_data_map,
       [](const auto& data) { return data.second.damage_rect.IsEmpty(); });
 
-  OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
-      is_overlay, has_occluding_surface_damage, damage_rects_empty);
+  OverlayProcessorInterface::RecordOverlayDamageRectHistogram(
+      damage_rects_empty);
 }
 
 QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
@@ -938,14 +914,6 @@ void DCLayerOverlayProcessor::PromoteCandidates(
       }
     }
 
-    // Used by a histogram.
-    global_overlay_state.has_occluding_damage_rect =
-        global_overlay_state.has_occluding_damage_rect ||
-        (!is_overlay &&
-         HasOccludingDamageRect(it->shared_quad_state,
-                                current_frame_state.surface_damage_rect_list,
-                                quad_rect_in_target_space));
-
     UpdateDCLayerOverlays(resource_provider, render_pass, it,
                           quad_rect_in_target_space, previous_frame_state,
                           is_overlay, is_page_fullscreen_mode, overlay_data,
@@ -1069,8 +1037,7 @@ void DCLayerOverlayProcessor::Process(
         /*sample=*/global_overlay_state.processed_yuv_overlay_count,
         /*exclusive_max=*/10);
 
-    RecordOverlayHistograms(render_pass_overlay_data_map,
-                            global_overlay_state.has_occluding_damage_rect);
+    RecordOverlayHistograms(render_pass_overlay_data_map);
   }
 }
 

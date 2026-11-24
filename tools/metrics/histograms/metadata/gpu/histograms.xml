@@ -2698,15 +2698,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Viz.DisplayCompositor.RootDamageRect.Underlay"
-    enum="UnderlayDamageRect" expires_after="2025-07-21">
-  <owner>magchen@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    The root damage type excluding underlay damage in the current frame.
-  </summary>
-</histogram>
-
 <histogram name="Viz.DisplayLink.CADisplayLink.CreationTimeUs.{Order}{Result}"
     units="microseconds" expires_after="2027-05-18">
   <owner>magchen@chromium.org</owner>

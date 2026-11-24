@@ -228,9 +228,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
     // overlays.
     bool has_non_clear_video_overlays = false;
 
-    // Used for recording overlay histograms.
-    bool has_occluding_damage_rect = false;
-
     // Whether to reject all overlays for this frame. This can be true if we
     // have more than one overlay quad and not all of them are promoted to
     // overlays.

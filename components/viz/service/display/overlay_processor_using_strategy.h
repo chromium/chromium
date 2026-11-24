@@ -164,7 +164,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
     gfx::Rect overlay_rect;
     gfx::RectF damage_rect;
     uint32_t damage_index;
-    float damage_area_estimate;
     bool has_mask_filter;
     int plane_z_order;
     bool is_underlay;

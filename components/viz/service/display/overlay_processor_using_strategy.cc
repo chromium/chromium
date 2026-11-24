@@ -454,7 +454,6 @@ OverlayProcessorUsingStrategy::OverlayStatus::OverlayStatus(
   overlay_rect = ToEnclosedRect(candidate.display_rect);
   damage_rect = candidate.damage_rect;
   damage_index = candidate.overlay_damage_index;
-  damage_area_estimate = candidate.damage_area_estimate;
   has_mask_filter = candidate.has_mask_filter;
   plane_z_order = candidate.plane_z_order;
   is_underlay = candidate.plane_z_order < 0;
@@ -549,13 +548,11 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
     }
   }
 
-  // Record each on top and underlay candidate.
-  for (auto it : curr_overlays_) {
+  // Record each on-top overlay candidate.
+  for (const auto& it : curr_overlays_) {
     const auto& status = it.second;
-    if (status.plane_z_order != 0) {
-      RecordOverlayDamageRectHistograms(status.plane_z_order > 0,
-                                        status.damage_area_estimate != 0.f,
-                                        damage_rect.IsEmpty());
+    if (status.plane_z_order > 0) {
+      RecordOverlayDamageRectHistogram(damage_rect.IsEmpty());
     }
   }
 }

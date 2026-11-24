@@ -1460,13 +1460,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Precompilation won a race with Precompilation"/>
 </enum>
 
-<enum name="UnderlayDamageRect">
-  <int value="0" label="Zero Damage Rect"/>
-  <int value="1" label="Non-Occluding Damage Only"/>
-  <int value="2" label="Occluding Damage Only (Deprecated)"/>
-  <int value="3" label="Occluding and Non-Occluding Damages"/>
-</enum>
-
 <!-- LINT.IfChange(WebGPUReachTier) -->
 
 <enum name="WebGPUReachTier">

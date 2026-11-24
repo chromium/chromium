@@ -35,9 +35,9 @@
 #endif
 
 namespace viz {
+#if BUILDFLAG(IS_OZONE)
 namespace {
 
-#if BUILDFLAG(IS_OZONE)
 class SharedImageManagerPixmapProvider
     : public OverlayProcessorOzone::PixmapProvider {
  public:
@@ -53,49 +53,15 @@ class SharedImageManagerPixmapProvider
 
   const raw_ptr<gpu::SharedImageManager> manager_;
 };
+
+}  // namespace
 #endif
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class UnderlayDamage {
-  kZeroDamageRect,
-  kNonOccludingDamageOnly,
-  kOccludingDamageOnly,  // deprecated
-  kOccludingAndNonOccludingDamages,
-  kMaxValue = kOccludingAndNonOccludingDamages,
-};
-}  // namespace
-
-// Record UMA histograms for overlays
-// 1. Underlay vs. Overlay
-// 2. Full screen mode vs. Non Full screen (Windows) mode
-// 3. Overlay zero damage rect vs. non zero damage rect
-// 4. Underlay zero damage rect, non-zero damage rect with non-occluding damage
-//   only, non-zero damage rect with occluding damage, and non-zero damage rect
-//   with both damages
-
 // static
-void OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
-    bool is_overlay,
-    bool has_occluding_surface_damage,
+void OverlayProcessorInterface::RecordOverlayDamageRectHistogram(
     bool zero_damage_rect) {
-  if (is_overlay) {
-    UMA_HISTOGRAM_BOOLEAN("Viz.DisplayCompositor.RootDamageRect.Overlay",
-                          !zero_damage_rect);
-  } else {  // underlay
-    UnderlayDamage underlay_damage = UnderlayDamage::kZeroDamageRect;
-    if (zero_damage_rect) {
-      underlay_damage = UnderlayDamage::kZeroDamageRect;
-    } else {
-      if (has_occluding_surface_damage) {
-        underlay_damage = UnderlayDamage::kOccludingAndNonOccludingDamages;
-      } else {
-        underlay_damage = UnderlayDamage::kNonOccludingDamageOnly;
-      }
-    }
-    UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.RootDamageRect.Underlay",
-                              underlay_damage);
-  }
+  UMA_HISTOGRAM_BOOLEAN("Viz.DisplayCompositor.RootDamageRect.Overlay",
+                        !zero_damage_rect);
 }
 
 std::unique_ptr<OverlayProcessorInterface>
