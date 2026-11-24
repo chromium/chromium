@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Emmanuele Bassi <ebassi@igalia.com>
+Date: Fri, 30 Oct 2026 00:00:00 +0000
+Subject: [PATCH] Fix key pattern parsing and validate node document in keys.c
+
+In xsltAddKey, skip string literals when splitting the match pattern on
+'|' and check the leading character after skipping whitespace so that
+quoted brackets or pipes do not desynchronize union branch splitting.
+
+In xsltInitCtxtKey, verify that matched nodes belong to the target
+document (cur->doc == idoc->doc) before adding them to the document's
+key table.
+
+Bug: 573533411
+---
+ libxslt/keys.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/libxslt/keys.c b/libxslt/keys.c
+index f23cc4e9fca9d..656cd9170a837 100644
+--- a/libxslt/keys.c
++++ b/libxslt/keys.c
+@@ -283,7 +283,7 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
+ 	   const xmlChar *use, xmlNodePtr inst) {
+     xsltKeyDefPtr key;
+     xmlChar *pattern = NULL;
+-    int current, end, start, i = 0;
++    int current, end, i = 0;
+ 
+     if ((style == NULL) || (name == NULL) || (match == NULL) || (use == NULL))
+ 	return(-1);
+@@ -311,7 +311,6 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
+      */
+     current = end = 0;
+     while (match[current] != 0) {
+-	start = current;
+ 	while (xmlIsBlank_ch(match[current]))
+ 	    current++;
+ 	end = current;
+@@ -325,6 +324,15 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
+ 		    if (style != NULL) style->errors++;
+ 		    goto error;
+ 		}
++	    } else if ((match[end] == '\'') || (match[end] == '"')) {
++	        end = skipString(match, end);
++		if (end <= 0) {
++		    xsltTransformError(NULL, style, inst,
++		        "xsl:key : 'match' pattern is malformed: %s",
++		        key->match);
++		    if (style != NULL) style->errors++;
++		    goto error;
++		}
+ 	    } else
+ 		end++;
+ 	}
+@@ -334,14 +342,14 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
+ 	    if (style != NULL) style->errors++;
+ 	    goto error;
+ 	}
+-	if (match[start] != '/') {
++	if (match[current] != '/') {
+ 	    pattern = xmlStrcat(pattern, (xmlChar *)"//");
+ 	    if (pattern == NULL) {
+ 		if (style != NULL) style->errors++;
+ 		goto error;
+ 	    }
+ 	}
+-	pattern = xmlStrncat(pattern, &match[start], end - start);
++	pattern = xmlStrncat(pattern, &match[current], end - current);
+ 	if (pattern == NULL) {
+ 	    if (style != NULL) style->errors++;
+ 	    goto error;
+@@ -770,7 +778,7 @@ fprintf(stderr, "xsltInitCtxtKey %s : %d\n", keyDef->name, ctxt->keyInitLevel);
+ 
+     for (i = 0; i < matchList->nodeNr; i++) {
+ 	cur = matchList->nodeTab[i];
+-	if (! IS_XSLT_REAL_NODE(cur))
++	if ((! IS_XSLT_REAL_NODE(cur)) || (cur->doc != idoc->doc))
+ 	    continue;
+         ctxt->node = cur;
+ 	xpctxt->node = cur;
+-- 

@@ -536,6 +536,96 @@ TEST_F(XMLDocumentParserSimTest, XsltSortWithLongLocaleIdentifier) {
   EXPECT_EQ(result->textContent(), "ab-ab-ab-ab-ab");
 }
 
+TEST_F(XMLDocumentParserSimTest,
+       XsltKeyMatchPatternStringLiteralsAndDocumentCheck) {
+  ScopedXSLTForTest enable_xslt(true);
+
+  // Verify that a key match pattern containing '[' inside a string literal
+  // does not allow a subsequent union branch with a function call to compile
+  // as a top-level expression or populate the document key table with
+  // temporary RVT nodes.
+  {
+    SimRequest main_resource("https://example.com/test1.xml",
+                             "application/xml");
+    SimSubresourceRequest sheet_resource("https://example.com/sheet1.xsl",
+                                         "text/xsl");
+    LoadURL("https://example.com/test1.xml");
+    main_resource.Write(
+        "<?xml version=\"1.0\"?>\n"
+        "<?xml-stylesheet type=\"text/xsl\" href=\"sheet1.xsl\"?>\n"
+        "<root><item>sample_data</item></root>");
+    main_resource.Finish();
+
+    sheet_resource.Complete(
+        "<xsl:stylesheet version=\"1.0\" "
+        "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" "
+        "xmlns:e=\"http://exslt.org/common\">"
+        "<xsl:key name=\"k\" "
+        "match='processing-instruction(\"[\") | "
+        "e:node-set(\"sample_data\")[\"]\"]' "
+        "use=\".\"/>"
+        "<xsl:template match=\"/\">"
+        "<html><body>"
+        "<xsl:if test=\"key('k', 'sample_data')\"><p id=\"p1\">1</p></xsl:if>"
+        "<xsl:if test=\"key('k', 'sample_data')\"><p id=\"p2\">2</p></xsl:if>"
+        "</body></html>"
+        "</xsl:template>"
+        "</xsl:stylesheet>");
+    test::RunPendingTasks();
+
+    Document* transformed_doc = MainFrame().GetFrame()->GetDocument();
+    ASSERT_TRUE(transformed_doc);
+    EXPECT_EQ(transformed_doc->body(), nullptr);
+  }
+
+  // Verify that valid key match patterns containing '[' or '|' inside string
+  // literals and union branches with leading whitespace before '/' compile
+  // and match the expected nodes in the source document.
+  {
+    SimRequest main_resource("https://example.com/test2.xml",
+                             "application/xml");
+    SimSubresourceRequest sheet_resource("https://example.com/sheet2.xsl",
+                                         "text/xsl");
+    LoadURL("https://example.com/test2.xml");
+    main_resource.Write(
+        "<?xml version=\"1.0\"?>\n"
+        "<?xml-stylesheet type=\"text/xsl\" href=\"sheet2.xsl\"?>\n"
+        "<root>"
+        "<?pi-target target-pi?>"
+        "<item>first<extra>nested-extra</extra></item>"
+        "<extra>root-extra</extra>"
+        "</root>");
+    main_resource.Finish();
+
+    sheet_resource.Complete(
+        "<xsl:stylesheet version=\"1.0\" "
+        "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
+        "<xsl:key name=\"k\" "
+        "match=\"processing-instruction('pi-a|b') | "
+        "processing-instruction('[') | "
+        "processing-instruction('pi-target') | item | /*/extra\" "
+        "use=\".\"/>"
+        "<xsl:template match=\"/\">"
+        "<html><body>"
+        "<div id=\"valid\">"
+        "<xsl:value-of select=\"key('k', 'target-pi')\"/>|"
+        "<xsl:value-of select=\"key('k', 'firstnested-extra')\"/>|"
+        "<xsl:value-of select=\"key('k', 'root-extra')\"/>|"
+        "<xsl:value-of select=\"key('k', 'nested-extra')\"/>"
+        "</div>"
+        "</body></html>"
+        "</xsl:template>"
+        "</xsl:stylesheet>");
+    test::RunPendingTasks();
+
+    Document* transformed_doc = MainFrame().GetFrame()->GetDocument();
+    ASSERT_TRUE(transformed_doc);
+    Element* valid = transformed_doc->getElementById(AtomicString("valid"));
+    ASSERT_TRUE(valid);
+    EXPECT_EQ(valid->textContent(), "target-pi|firstnested-extra|root-extra|");
+  }
+}
+
 }  // namespace
 
 }  // namespace blink

@@ -283,7 +283,7 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
 	   const xmlChar *use, xmlNodePtr inst) {
     xsltKeyDefPtr key;
     xmlChar *pattern = NULL;
-    int current, end, start, i = 0;
+    int current, end, i = 0;
 
     if ((style == NULL) || (name == NULL) || (match == NULL) || (use == NULL))
 	return(-1);
@@ -311,13 +311,21 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
      */
     current = end = 0;
     while (match[current] != 0) {
-	start = current;
 	while (xmlIsBlank_ch(match[current]))
 	    current++;
 	end = current;
 	while ((match[end] != 0) && (match[end] != '|')) {
 	    if (match[end] == '[') {
 	        end = skipPredicate(match, end);
+		if (end <= 0) {
+		    xsltTransformError(NULL, style, inst,
+		        "xsl:key : 'match' pattern is malformed: %s",
+		        key->match);
+		    if (style != NULL) style->errors++;
+		    goto error;
+		}
+	    } else if ((match[end] == '\'') || (match[end] == '"')) {
+	        end = skipString(match, end);
 		if (end <= 0) {
 		    xsltTransformError(NULL, style, inst,
 		        "xsl:key : 'match' pattern is malformed: %s",
@@ -334,14 +342,14 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
 	    if (style != NULL) style->errors++;
 	    goto error;
 	}
-	if (match[start] != '/') {
+	if (match[current] != '/') {
 	    pattern = xmlStrcat(pattern, (xmlChar *)"//");
 	    if (pattern == NULL) {
 		if (style != NULL) style->errors++;
 		goto error;
 	    }
 	}
-	pattern = xmlStrncat(pattern, &match[start], end - start);
+	pattern = xmlStrncat(pattern, &match[current], end - current);
 	if (pattern == NULL) {
 	    if (style != NULL) style->errors++;
 	    goto error;
@@ -770,7 +778,7 @@ fprintf(stderr, "xsltInitCtxtKey %s : %d\n", keyDef->name, ctxt->keyInitLevel);
 
     for (i = 0; i < matchList->nodeNr; i++) {
 	cur = matchList->nodeTab[i];
-	if (! IS_XSLT_REAL_NODE(cur))
+	if ((! IS_XSLT_REAL_NODE(cur)) || (cur->doc != idoc->doc))
 	    continue;
         ctxt->node = cur;
 	xpctxt->node = cur;
