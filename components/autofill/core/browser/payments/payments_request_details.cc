@@ -23,8 +23,10 @@ UnmaskDetails& UnmaskDetails::operator=(const UnmaskDetails& other) {
   } else {
     fido_request_options = other.fido_request_options.Clone();
   }
+  fido_creation_options = other.fido_creation_options.Clone();
   fido_eligible_card_ids = other.fido_eligible_card_ids;
   verified_instrument_ids = other.verified_instrument_ids;
+  mandatory_reauth_status = other.mandatory_reauth_status;
   return *this;
 }
 

@@ -31,6 +31,17 @@ namespace autofill::payments {
 // Details for card unmasking, such as the suggested method of authentication,
 // along with any information required to facilitate the authentication.
 struct UnmaskDetails {
+  // The state of the mandatory re-authentication setting that the Payments
+  // server stores for a device.
+  enum class MandatoryReauthStatus {
+    // The setting has not been chosen for the device.
+    kUnknown,
+    // The user turned the setting off.
+    kDisabled,
+    // The setting is on: FIDO authentication is required to unmask a card.
+    kEnabled,
+  };
+
   UnmaskDetails();
   UnmaskDetails(const UnmaskDetails&);
   UnmaskDetails(UnmaskDetails&&);
@@ -47,11 +58,20 @@ struct UnmaskDetails {
   // Public Key Credential Request Options required for authentication.
   // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
   base::DictValue fido_request_options;
+  // Public Key Credential Creation Options required for enrolling this device
+  // into FIDO authentication while unmasking a card. Empty unless the server
+  // expects a new credential to be created.
+  // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialcreationoptions
+  base::DictValue fido_creation_options;
   // Set of credit cards ids that are eligible for FIDO Authentication.
   std::set<std::string> fido_eligible_card_ids;
   // Set of card instrument IDs that have already been CVC-verified on this
   // device.
   base::flat_set<int64_t> verified_instrument_ids;
+  // The mandatory re-authentication status of this device. Not set if the
+  // server did not report one, which means that the server does not control
+  // mandatory re-authentication.
+  std::optional<MandatoryReauthStatus> mandatory_reauth_status;
 };
 
 // A collection of the information required to make a credit card unmask

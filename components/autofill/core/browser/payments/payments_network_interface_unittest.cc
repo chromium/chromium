@@ -16,6 +16,7 @@
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -516,7 +517,80 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUnmaskDetailsSuccess) {
             PaymentsAutofillClient::UnmaskAuthMethod::kCvc);
   EXPECT_THAT(unmask_details()->verified_instrument_ids,
               testing::UnorderedElementsAre(12345, 9223372036854775807));
+  // The response carried neither a mandatory re-auth status nor FIDO creation
+  // options.
+  EXPECT_FALSE(unmask_details()->mandatory_reauth_status.has_value());
+  EXPECT_TRUE(unmask_details()->fido_creation_options.empty());
 }
+
+// Ensures the FIDO creation options, which the server returns for a device
+// that can be enrolled into FIDO authentication while unmasking a card, are
+// parsed.
+TEST_F(PaymentsNetworkInterfaceTest,
+       GetUnmaskDetailsParsesFidoCreationOptions) {
+  StartGettingUnmaskDetails();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                 R"({ "offer_fido_opt_in": false,
+                      "authentication_method": "CVC",
+                      "mandatory_reauth_status":
+                          "MANDATORY_REAUTH_STATUS_UNKNOWN",
+                      "fido_creation_options": {
+                        "challenge": "fake_challenge",
+                        "relying_party_id": "google.com"
+                      } })");
+
+  EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+  const std::string* challenge =
+      unmask_details()->fido_creation_options.FindString("challenge");
+  ASSERT_TRUE(challenge);
+  EXPECT_EQ(*challenge, "fake_challenge");
+  EXPECT_TRUE(unmask_details()->fido_request_options.empty());
+  EXPECT_EQ(unmask_details()->mandatory_reauth_status,
+            UnmaskDetails::MandatoryReauthStatus::kUnknown);
+}
+
+struct MandatoryReauthStatusTestCase {
+  // The value of `mandatory_reauth_status` in the server response.
+  const char* response_value;
+  // The status expected to be parsed from `response_value`.
+  std::optional<UnmaskDetails::MandatoryReauthStatus> expected_status;
+};
+
+class GetUnmaskDetailsMandatoryReauthStatusTest
+    : public PaymentsNetworkInterfaceTest,
+      public ::testing::WithParamInterface<MandatoryReauthStatusTestCase> {};
+
+// Ensures every mandatory re-auth status the server can report is parsed, and
+// that a status this client does not know is treated like a missing one.
+TEST_P(GetUnmaskDetailsMandatoryReauthStatusTest, ParsesStatus) {
+  StartGettingUnmaskDetails();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                 base::StrCat({R"({ "authentication_method": "CVC", )",
+                               R"("mandatory_reauth_status": ")",
+                               GetParam().response_value, R"(" })"}));
+
+  EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+  EXPECT_EQ(unmask_details()->mandatory_reauth_status,
+            GetParam().expected_status);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetUnmaskDetailsMandatoryReauthStatusTest,
+    testing::Values(
+        MandatoryReauthStatusTestCase{
+            "MANDATORY_REAUTH_STATUS_UNKNOWN",
+            UnmaskDetails::MandatoryReauthStatus::kUnknown},
+        MandatoryReauthStatusTestCase{
+            "MANDATORY_REAUTH_DISABLED",
+            UnmaskDetails::MandatoryReauthStatus::kDisabled},
+        MandatoryReauthStatusTestCase{
+            "MANDATORY_REAUTH_ENABLED",
+            UnmaskDetails::MandatoryReauthStatus::kEnabled},
+        MandatoryReauthStatusTestCase{"MANDATORY_REAUTH_FUTURE_STATUS",
+                                      std::nullopt}));
 
 TEST_F(PaymentsNetworkInterfaceTest,
        GetUnmaskDetailsIncludesChromeUserContext) {

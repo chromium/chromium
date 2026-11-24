@@ -84,6 +84,11 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::DictValue& response) {
   if (dictionary_value)
     unmask_details_.fido_request_options = dictionary_value->Clone();
 
+  if (const base::DictValue* creation_options =
+          response.FindDict("fido_creation_options")) {
+    unmask_details_.fido_creation_options = creation_options->Clone();
+  }
+
   const auto* fido_eligible_card_ids =
       response.FindList("fido_eligible_card_id");
   if (fido_eligible_card_ids) {
@@ -101,6 +106,22 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::DictValue& response) {
           base::StringToInt64(result.GetString(), &instrument_id)) {
         unmask_details_.verified_instrument_ids.insert(instrument_id);
       }
+    }
+  }
+
+  // A status that is missing or not recognized leaves
+  // `mandatory_reauth_status` unset, so that the client keeps treating
+  // mandatory re-authentication as not controlled by the server.
+  if (const std::string* status =
+          response.FindString("mandatory_reauth_status")) {
+    using MandatoryReauthStatus = UnmaskDetails::MandatoryReauthStatus;
+    if (*status == "MANDATORY_REAUTH_STATUS_UNKNOWN") {
+      unmask_details_.mandatory_reauth_status = MandatoryReauthStatus::kUnknown;
+    } else if (*status == "MANDATORY_REAUTH_DISABLED") {
+      unmask_details_.mandatory_reauth_status =
+          MandatoryReauthStatus::kDisabled;
+    } else if (*status == "MANDATORY_REAUTH_ENABLED") {
+      unmask_details_.mandatory_reauth_status = MandatoryReauthStatus::kEnabled;
     }
   }
 }
