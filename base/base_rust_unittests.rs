@@ -16,6 +16,9 @@ mod file_path_unittest;
 #[path = "command_line_unittest.rs"]
 mod command_line_unittest;
 
+#[path = "debug/dump_without_crashing_unittest.rs"]
+mod dump_without_crashing_unittest;
+
 #[path = "location_unittest.rs"]
 mod location_unittest;
 

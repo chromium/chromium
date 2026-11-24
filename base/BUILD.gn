@@ -2715,6 +2715,7 @@ group("base_rust") {
   public_deps = [
     ":callback",
     ":command_line",
+    ":dump_without_crashing",
     ":feature",
     ":file_path",
     ":histogram",
@@ -2838,6 +2839,26 @@ rust_static_library("command_line") {
   allow_unsafe = true
   deps = [
     ":command_line_shim",
+    "//base",
+  ]
+}
+
+source_set("dump_without_crashing_shim") {
+  sources = [
+    "debug/dump_without_crashing_rust_shim.cc",
+    "debug/dump_without_crashing_rust_shim.h",
+  ]
+  deps = [ "//base" ]
+}
+
+rust_static_library("dump_without_crashing") {
+  sources = [ "debug/dump_without_crashing.rs" ]
+  crate_root = "debug/dump_without_crashing.rs"
+  cxx_bindings = [ "debug/dump_without_crashing.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":dump_without_crashing_shim",
+    ":location",
     "//base",
   ]
 }
@@ -2996,6 +3017,7 @@ rust_static_library("base_rust_unittests") {
   sources = [
     "base_rust_unittests.rs",
     "command_line_unittest.rs",
+    "debug/dump_without_crashing_unittest.rs",
     "files/file_path_unittest.rs",
     "location_unittest.rs",
     "metrics/histogram_unittest.rs",
@@ -3005,6 +3027,7 @@ rust_static_library("base_rust_unittests") {
   crate_root = "base_rust_unittests.rs"
   deps = [
     ":command_line",
+    ":dump_without_crashing",
     ":file_path",
     ":histogram",
     ":location",
@@ -3012,6 +3035,7 @@ rust_static_library("base_rust_unittests") {
     ":sequenced",
     ":sequenced_task_runner",
     ":sequenced_task_runner_test_bridge",
+    "//base/test:dump_without_crashing_tester",
     "//base/test:histogram_tester",
     "//base/test:task_environment",
     "//testing/rust_gtest_interop",

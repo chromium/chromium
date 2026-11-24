@@ -101,6 +101,27 @@ source_set("scoped_feature_list_shim") {
   ]
 }
 
+source_set("dump_without_crashing_tester_shim") {
+  testonly = true
+  sources = [
+    "dump_without_crashing_tester_rust_shim.cc",
+    "dump_without_crashing_tester_rust_shim.h",
+  ]
+  deps = [ "//base" ]
+}
+
+rust_static_library("dump_without_crashing_tester") {
+  testonly = true
+  sources = [ "dump_without_crashing_tester.rs" ]
+  crate_root = "dump_without_crashing_tester.rs"
+  cxx_bindings = [ "dump_without_crashing_tester.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":dump_without_crashing_tester_shim",
+    "//base",
+  ]
+}
+
 source_set("histogram_tester_shim") {
   testonly = true
   sources = [
@@ -116,6 +137,7 @@ source_set("histogram_tester_shim") {
 group("test_support_rust") {
   testonly = true
   public_deps = [
+    ":dump_without_crashing_tester",
     ":histogram_tester",
     ":scoped_feature_list",
     ":task_environment",
