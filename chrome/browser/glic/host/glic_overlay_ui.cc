@@ -137,7 +137,6 @@ GlicOverlayUI::GlicOverlayUI(content::WebUI* web_ui)
                           GetResourceID(IDR_GEIC_BUTTON_ICON));
   source->AddLocalizedStrings(kStrings);
 
-  source->AddBoolean("isNoWebview", true);
   source->AddBoolean("isAndroidMobile", false);
   source->AddBoolean("showErrorAllowed", IsShowErrorAllowed(profile));
 

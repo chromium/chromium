@@ -38,23 +38,15 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#else
-#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
-#endif
 
 namespace glic {
 

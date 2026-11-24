@@ -124,7 +124,6 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "google_apis/gaia/gaia_id.h"
 #else
 #include "base/android/device_info.h"

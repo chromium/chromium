@@ -48,7 +48,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -63,12 +62,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_PRINTING)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#else
-#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
-#endif
 
 namespace glic {
 
