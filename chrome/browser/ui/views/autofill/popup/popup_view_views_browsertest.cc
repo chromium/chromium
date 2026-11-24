@@ -223,15 +223,6 @@ Suggestion CreateBnplFootnoteSuggestion() {
   return bnpl_footnote;
 }
 
-Suggestion CreateAtMemoryFetchingSuggestion() {
-  Suggestion suggestion(l10n_util::GetStringUTF16(
-                            IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE),
-                        SuggestionType::kAtMemoryFetching);
-  suggestion.acceptability =
-      Suggestion::Acceptability::kSelectableButUnacceptable;
-  return suggestion;
-}
-
 class PopupViewViewsBrowsertestBase
     : public PopupPixelTest<PopupViewViews, MockAutofillPopupController> {
  public:
@@ -538,15 +529,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AtMemoryFetching) {
-  PrepareSuggestions({CreateAtMemoryFetchingSuggestion()});
-  ShowAndVerifyUi(
-      /*popup_has_parent=*/false,
-      AutofillPopupView::SearchBarConfig{.placeholders = {u"Find and fill"},
-                                         .initial_value = {},
-                                         .no_results_message = u""});
-}
-
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_MultiSuggestionNotice) {
   ON_CALL(controller(), GetMainFillingProduct())
@@ -563,23 +545,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
       {std::move(fill_suggestion), Suggestion(SuggestionType::kSeparator),
        std::move(notice_suggestion), std::move(manage_suggestion)});
   ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_AtMemory_PersonalContextNotice) {
-  ON_CALL(controller(), GetMainFillingProduct())
-      .WillByDefault(Return(FillingProduct::kAtMemory));
-  Suggestion search_result(u"Passport number",
-                           SuggestionType::kAtMemorySearchResult);
-  Suggestion notice_suggestion(SuggestionType::kPersonalContextNotice);
-  PrepareSuggestions({std::move(search_result),
-                      Suggestion(SuggestionType::kSeparator),
-                      std::move(notice_suggestion)});
-  ShowAndVerifyUi(
-      /*popup_has_parent=*/false,
-      AutofillPopupView::SearchBarConfig{.placeholders = {u"Find and fill"},
-                                         .initial_value = {},
-                                         .no_results_message = u""});
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,

@@ -20,12 +20,9 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
-#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/test_renderer_host.h"
@@ -115,7 +112,6 @@ class PopupNoticeViewTest : public ChromeViewsTestBase {
   }
 
  protected:
-  TestingProfile* profile() { return profile_.get(); }
   PopupNoticeView& view() { return *view_; }
   MockAutofillPopupController& controller() { return controller_; }
   views::Widget& widget() { return *widget_; }
@@ -639,69 +635,6 @@ TEST_F(PopupNoticeViewTest, CreatePersonalContextNoticeViewAmbientAutofill) {
             std::u16string::npos);
 }
 
-// Tests that Personal Context Notice view is created with proper histograms
-// and texts for AtMemory with MQLS logging enabled.
-TEST_F(PopupNoticeViewTest,
-       CreatePersonalContextNoticeViewAtMemoryWithLogging) {
-  ON_CALL(controller(), GetMainFillingProduct())
-      .WillByDefault(Return(FillingProduct::kAtMemory));
-  profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      static_cast<int>(optimization_guide::EnterprisePolicyValue::kAllow));
-
-  base::HistogramTester histogram_tester;
-  controller().set_suggestions(
-      {Suggestion(SuggestionType::kPersonalContextNotice)});
-  auto view = CreatePersonalContextNoticeView(
-      mock_a11y_selection_delegate(), mock_announce_callback().Get(),
-      controller().GetWeakPtr(), kNoticePosition);
-  ASSERT_TRUE(view);
-  histogram_tester.ExpectUniqueSample(
-      "PersonalContext.AtMemory.NoticeInteractions",
-      AutofillMetrics::PopupNoticeInteractions::kShown, 1);
-  EXPECT_NE(
-      test_api(*view).description()->GetText().find(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING)),
-      std::u16string::npos);
-
-  ui::AXNodeData node_data;
-  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
-                .find(l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS)),
-            std::u16string::npos);
-}
-
-// Tests that Personal Context Notice view is created with proper texts for
-// AtMemory without logging.
-TEST_F(PopupNoticeViewTest,
-       CreatePersonalContextNoticeViewAtMemoryWithoutLogging) {
-  ON_CALL(controller(), GetMainFillingProduct())
-      .WillByDefault(Return(FillingProduct::kAtMemory));
-  profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      static_cast<int>(
-          optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging));
-
-  controller().set_suggestions(
-      {Suggestion(SuggestionType::kPersonalContextNotice)});
-  auto view = CreatePersonalContextNoticeView(
-      mock_a11y_selection_delegate(), mock_announce_callback().Get(),
-      controller().GetWeakPtr(), kNoticePosition);
-  ASSERT_TRUE(view);
-  EXPECT_NE(
-      test_api(*view).description()->GetText().find(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE)),
-      std::u16string::npos);
-
-  ui::AXNodeData node_data;
-  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
-                .find(l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS)),
-            std::u16string::npos);
-}
-
 // Tests that clicking the link in the Personal Context notice view for Ambient
 // Autofill logs the link click and acknowledgement and removes the suggestion.
 TEST_F(PopupNoticeViewTest,
@@ -730,38 +663,6 @@ TEST_F(PopupNoticeViewTest,
       AutofillMetrics::PopupNoticeInteractions::kAcknowledged, 1);
   histogram_tester.ExpectTotalCount(
       "PersonalContext.AmbientAutofill.NoticeInteractions", 3);
-}
-
-// Tests that clicking the link in the Personal Context notice view for AtMemory
-// logs the link click and acknowledgement and removes the suggestion.
-TEST_F(PopupNoticeViewTest,
-       ClickLinkInPersonalContextNoticeViewAtMemoryAcknowledgesNotice) {
-  // Prevents opening the settings page, which requires a browser window.
-  ON_CALL(controller(), GetWebContents()).WillByDefault(Return(nullptr));
-  ON_CALL(controller(), GetMainFillingProduct())
-      .WillByDefault(Return(FillingProduct::kAtMemory));
-  controller().set_suggestions(
-      {Suggestion(SuggestionType::kPersonalContextNotice)});
-  base::HistogramTester histogram_tester;
-  ShowView(CreatePersonalContextNoticeView(
-      mock_a11y_selection_delegate(), mock_announce_callback().Get(),
-      controller().GetWeakPtr(), kNoticePosition));
-
-  EXPECT_CALL(controller(), RemoveSuggestion(kNoticePosition))
-      .WillOnce(Return(true));
-  ClickLink();
-
-  histogram_tester.ExpectBucketCount(
-      "PersonalContext.AtMemory.NoticeInteractions",
-      AutofillMetrics::PopupNoticeInteractions::kShown, 1);
-  histogram_tester.ExpectBucketCount(
-      "PersonalContext.AtMemory.NoticeInteractions",
-      AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked, 1);
-  histogram_tester.ExpectBucketCount(
-      "PersonalContext.AtMemory.NoticeInteractions",
-      AutofillMetrics::PopupNoticeInteractions::kAcknowledged, 1);
-  histogram_tester.ExpectTotalCount(
-      "PersonalContext.AtMemory.NoticeInteractions", 3);
 }
 
 // Tests that Autofill AI Private Inference Notice view is created with valid

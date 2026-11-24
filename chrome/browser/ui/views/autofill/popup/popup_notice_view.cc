@@ -24,13 +24,10 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
-#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -157,12 +154,8 @@ PopupNoticeView::PopupNoticeView(
                                 kRowVerticalMargin, kRowHorizontalMargin));
 
   // When shown on its own, the notice suggestion has a slightly different UI.
-  // AtMemory is an exception as it always has a searchbox and the notice should
-  // be rendered as a pop-up in such cases.
   const bool has_other_content =
-      controller_ &&
-      (controller_->GetSuggestions().size() > 1 ||
-       controller_->GetMainFillingProduct() == FillingProduct::kAtMemory);
+      controller_ && controller_->GetSuggestions().size() > 1;
   if (has_other_content) {
     SetBackground(views::CreateRoundedRectBackground(
         ui::kColorSysSurface3, /*radius=*/kBackgroundCornerRadius));
@@ -426,38 +419,14 @@ PopupNoticeView::~PopupNoticeView() = default;
 BEGIN_METADATA(PopupNoticeView)
 END_METADATA
 
-namespace {
-
-// TODO(b/524157152): Refactor AutofillPopupController to provide this.
-bool IsLoggingDisabledByPolicy(const AutofillPopupController* controller) {
-  if (!controller || !controller->GetWebContents()) {
-    return false;
-  }
-  Profile* profile = Profile::FromBrowserContext(
-      controller->GetWebContents()->GetBrowserContext());
-  if (!profile || !profile->GetPrefs()) {
-    return false;
-  }
-  const int policy_value = profile->GetPrefs()->GetInteger(
-      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
-  return policy_value ==
-         std::to_underlying(
-             optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging);
-}
-
-}  // namespace
-
 std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     base::RepeatingCallback<void(const std::u16string&, bool)>
         announce_callback,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number) {
-  std::string histogram_name =
-      controller &&
-              controller->GetMainFillingProduct() == FillingProduct::kAtMemory
-          ? "PersonalContext.AtMemory.NoticeInteractions"
-          : "PersonalContext.AmbientAutofill.NoticeInteractions";
+  static constexpr char kHistogramName[] =
+      "PersonalContext.AmbientAutofill.NoticeInteractions";
   std::u16string title_text = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
   std::u16string subtitle_text = l10n_util::GetStringUTF16(
@@ -470,17 +439,9 @@ std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON_A11Y_LABEL);
   std::u16string a11y_instructions =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS);
-  if (controller) {
-    if (controller->GetMainFillingProduct() == FillingProduct::kAtMemory &&
-        !IsLoggingDisabledByPolicy(controller.get())) {
-      subtitle_text = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING);
-    }
-  }
   // Clicking the link acknowledges the notice and opens the settings.
   auto on_link_clicked = base::BindRepeating(
-      [](base::WeakPtr<AutofillPopupController> controller, int line_number,
-         const std::string& histogram_name) {
+      [](base::WeakPtr<AutofillPopupController> controller, int line_number) {
         if (!controller) {
           return;
         }
@@ -491,18 +452,18 @@ std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
             web_contents
                 ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
                 : nullptr;
-        AcknowledgeNotice(*controller, line_number, histogram_name);
+        AcknowledgeNotice(*controller, line_number, kHistogramName);
         if (profile) {
           chrome::ShowSettingsSubPageForProfile(
               profile, chrome::kSuggestionsFromGeminiSubPage);
         }
       },
-      controller, line_number, histogram_name);
+      controller, line_number);
   return std::make_unique<PopupNoticeView>(
       a11y_selection_delegate, announce_callback, std::move(controller),
       line_number, title_text, subtitle_text, link_text, accept_button_text,
       accept_button_a11y_label, a11y_instructions, std::move(on_link_clicked),
-      histogram_name);
+      kHistogramName);
 }
 
 std::unique_ptr<PopupNoticeView> CreateAutofillAiPrivateInferenceNoticeView(
