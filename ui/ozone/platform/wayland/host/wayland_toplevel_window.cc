@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/hit_test.h"
@@ -23,6 +25,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_appmenu.h"
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"
@@ -184,7 +187,12 @@ void WaylandToplevelWindow::Show(bool inactive) {
     Activate();
   }
 
+  auto weak_this = AsWeakPtr();
   WaylandWindow::Show(inactive);
+  if (!weak_this) {
+    return;
+  }
+  MaybeUpdateOcclusionState();
 }
 
 void WaylandToplevelWindow::Hide() {
@@ -201,6 +209,7 @@ void WaylandToplevelWindow::Hide() {
             this, base::BindOnce(&WaylandToplevelWindow::OnDeferredHide,
                                  weak_ptr_factory_.GetWeakPtr()))) {
       hide_deferred_ = true;
+      MaybeUpdateOcclusionState();
       return;
     }
   }
@@ -256,6 +265,10 @@ void WaylandToplevelWindow::HideNow() {
   // makes sense only if the xdg_toplevel object is going to be reused, which is
   // not the case here.
   xdg_toplevel_.reset();
+  if (is_suspended_) {
+    is_suspended_ = false;
+    frame_manager()->OnWindowSuspensionChanged();
+  }
   minimize_sync_callback_.reset();
   fullscreen_sync_callback_.reset();
   last_sent_geometry_size_dip_ = gfx::Size();
@@ -264,7 +277,14 @@ void WaylandToplevelWindow::HideNow() {
   appmenu_.reset();
 
   WaylandWindow::Hide();
+  if (!weak_this) {
+    return;
+  }
   ClearInFlightRequestsSerial();
+  MaybeUpdateOcclusionState();
+  if (!weak_this) {
+    return;
+  }
 
   connection()->Flush();
 }
@@ -927,6 +947,7 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   }
   if (prev_suspended != is_suspended_) {
     frame_manager()->OnWindowSuspensionChanged();
+    MaybeUpdateOcclusionState();
   }
 }
 
@@ -1049,6 +1070,16 @@ bool WaylandToplevelWindow::IsActive() const {
 
 bool WaylandToplevelWindow::IsSuspended() const {
   return is_suspended_;
+}
+
+void WaylandToplevelWindow::OnFrameCallbackOcclusionChanged() {
+  // Called from WaylandFrameManager while it plays back frames or handles a
+  // frame callback, so notify the delegate asynchronously rather than
+  // re-entering aura from there.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WaylandToplevelWindow::MaybeUpdateOcclusionState,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool WaylandToplevelWindow::IsSurfaceConfigured() {
@@ -1559,6 +1590,26 @@ void WaylandToplevelWindow::TryAnnounceAppmenu() {
       appmenu_ = appmenu_manager->Create(root_surface()->surface());
       appmenu_->SetAddress(appmenu_service_name_, appmenu_object_path_);
     }
+  }
+}
+
+void WaylandToplevelWindow::MaybeUpdateOcclusionState() {
+  if (!IsWaylandWindowOcclusionEnabled() || shutting_down()) {
+    return;
+  }
+
+  PlatformWindowOcclusionState occlusion_state =
+      (is_suspended_ || frame_manager()->is_frame_callback_occluded())
+          ? PlatformWindowOcclusionState::kOccluded
+          : PlatformWindowOcclusionState::kVisible;
+
+  if (!IsVisible()) {
+    occlusion_state = PlatformWindowOcclusionState::kHidden;
+  }
+
+  if (occlusion_state != occlusion_state_) {
+    occlusion_state_ = occlusion_state;
+    delegate()->OnOcclusionStateChanged(occlusion_state);
   }
 }
 

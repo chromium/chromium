@@ -1285,6 +1285,8 @@ bool WaylandWindow::IsSuspended() const {
   return false;
 }
 
+void WaylandWindow::OnFrameCallbackOcclusionChanged() {}
+
 WaylandBubble* WaylandWindow::AsWaylandBubble() {
   return nullptr;
 }

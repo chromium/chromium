@@ -423,6 +423,9 @@ class WaylandWindow : public PlatformWindow,
   // activation status of delegate()->OnActivationChanged() as bubble.
   virtual bool IsActive() const;
   virtual bool IsSuspended() const;
+  // Called by WaylandFrameManager when its frame callback occlusion state
+  // changes.
+  virtual void OnFrameCallbackOcclusionChanged();
 
   // WaylandWindow can be any type of object - WaylandBubble,
   // WaylandToplevelWindow, WaylandPopup. The following methods cast itself to
@@ -597,6 +600,7 @@ class WaylandWindow : public PlatformWindow,
   // create a StateRequest for this pending State.
   PendingConfigureState pending_configure_state_;
 
+  bool shutting_down() const { return shutting_down_; }
   void set_shutting_down() { shutting_down_ = true; }
 
   // Drag controllers might need to take ownership of the dnd origin surface
