@@ -21,10 +21,11 @@ void AnnounceInActiveBrowser(const std::u16string& message) {
   }
 
   if (!browser->IsActive()) {
-    // If the inactive browser is waiting for the initial WebUI to finish, we
-    // will defer this announcement.
-    if (InitialWebUIManager* manager = InitialWebUIManager::From(browser)) {
-      manager->RequestDeferShow(base::BindOnce(
+    // If the inactive browser has a deferred show waiting for the initial WebUI
+    // to finish, defer this announcement until it is ready.
+    if (InitialWebUIManager* manager = InitialWebUIManager::From(browser);
+        manager && manager->IsShowPending()) {
+      manager->RegisterWebUIReadyCallback(base::BindOnce(
           [](std::u16string msg, BrowserWindowInterface* b) {
             BrowserView* browser_view =
                 BrowserView::GetBrowserViewForBrowser(b);

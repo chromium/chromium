@@ -87,23 +87,24 @@ void InitialWebUIManager::ConfigureToolbarWebContents(
   webui::SetBrowserWindowInterface(web_contents, browser);
 }
 
+bool InitialWebUIManager::ShouldDeferShow() const {
+  return base::FeatureList::IsEnabled(features::kWebUIReloadButton) &&
+         features::kWebUIReloadButtonDeferBrowserViewShow.Get() &&
+         is_initial_web_ui_pending_;
+}
+
 bool InitialWebUIManager::RequestDeferShow(base::OnceClosure unsafe_callback) {
   if (metrics_manager_) {
     metrics_manager_->OnBrowserWindowShowRequested(base::TimeTicks::Now());
   }
-  if (!base::FeatureList::IsEnabled(features::kWebUIReloadButton) ||
-      !features::kWebUIReloadButtonDeferBrowserViewShow.Get()) {
-    // Do not defer if the experiment is disabled or the param is false.
+  if (!ShouldDeferShow()) {
     return false;
   }
-  if (is_initial_web_ui_pending_) {
-    is_show_pending_ = true;
-    if (unsafe_callback) {
-      web_ui_ready_callbacks_.AddUnsafe(std::move(unsafe_callback));
-    }
-    return true;
+  is_show_pending_ = true;
+  if (unsafe_callback) {
+    web_ui_ready_callbacks_.AddUnsafe(std::move(unsafe_callback));
   }
-  return false;
+  return true;
 }
 
 bool InitialWebUIManager::RegisterWebUIReadyCallback(

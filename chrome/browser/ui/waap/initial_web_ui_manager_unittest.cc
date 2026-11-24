@@ -7,10 +7,15 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
@@ -67,6 +72,121 @@ TEST_F(InitialWebUIManagerTest, RequestDeferShow_ReloadButtonDisabled) {
 
   InitialWebUIManager manager(&browser_window_);
   EXPECT_EQ(manager.RequestDeferShow(base::DoNothing()), false);
+}
+
+TEST_F(InitialWebUIManagerTest, ShouldDeferShow_ReloadButtonDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kInitialWebUI},
+                                       {features::kWebUIReloadButton});
+
+  InitialWebUIManager manager(&browser_window_);
+  EXPECT_FALSE(manager.ShouldDeferShow());
+}
+
+TEST_F(InitialWebUIManagerTest,
+       ShouldDeferShow_ReloadButtonEnabledWithoutDeferral) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kInitialWebUI, {}},
+       {features::kWebUIReloadButton,
+        {{"WebUIReloadButtonDeferBrowserViewShow", "false"}}}},
+      {});
+
+  InitialWebUIManager manager(&browser_window_);
+  EXPECT_FALSE(manager.ShouldDeferShow());
+}
+
+TEST_F(InitialWebUIManagerTest,
+       ShouldDeferShow_ReloadButtonEnabledWithDeferral) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kInitialWebUI, {}},
+       {features::kWebUIReloadButton,
+        {{"WebUIReloadButtonDeferBrowserViewShow", "true"}}}},
+      {});
+
+  InitialWebUIManager manager(&browser_window_);
+  EXPECT_TRUE(manager.ShouldDeferShow());
+  EXPECT_FALSE(manager.IsShowPending());
+
+  manager.OnWebUIToolbarLoaded();
+  EXPECT_FALSE(manager.ShouldDeferShow());
+  EXPECT_FALSE(manager.IsInitialWebUIPending());
+}
+
+TEST_F(InitialWebUIManagerTest,
+       RegisterWebUIReadyCallback_DoesNotSetShowPendingOrRecordShowRequested) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kInitialWebUI, {}},
+       {features::kWebUIReloadButton,
+        {{"WebUIReloadButtonDeferBrowserViewShow", "true"}}}},
+      {});
+
+  InitialWebUIWindowMetricsManager::ResetForTesting();
+  InitialWebUIWindowMetricsManager metrics_manager(&browser_window_);
+  metrics_manager.SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
+  metrics_manager.SkipStartupForTesting();
+
+  InitialWebUIManager manager(&browser_window_);
+  EXPECT_TRUE(manager.ShouldDeferShow());
+
+  bool callback_called = false;
+  EXPECT_TRUE(manager.RegisterWebUIReadyCallback(
+      base::BindLambdaForTesting([&] { callback_called = true; })));
+  EXPECT_FALSE(manager.IsShowPending());
+  EXPECT_FALSE(callback_called);
+
+  base::HistogramTester histogram_tester;
+  metrics_manager.OnBrowserWindowFirstPresentation(base::TimeTicks::Now() +
+                                                   base::Milliseconds(10));
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "ShowRequestedToFirstPaint3",
+      0);
+
+  manager.OnWebUIToolbarLoaded();
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(manager.IsShowPending());
+  EXPECT_FALSE(manager.ShouldDeferShow());
+  EXPECT_FALSE(manager.RegisterWebUIReadyCallback(base::DoNothing()));
+}
+
+TEST_F(InitialWebUIManagerTest,
+       RequestDeferShow_SetsShowPendingAndRecordsShowRequested) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kInitialWebUI, {}},
+       {features::kWebUIReloadButton,
+        {{"WebUIReloadButtonDeferBrowserViewShow", "true"}}}},
+      {});
+
+  InitialWebUIWindowMetricsManager::ResetForTesting();
+  InitialWebUIWindowMetricsManager metrics_manager(&browser_window_);
+  metrics_manager.SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
+  metrics_manager.SkipStartupForTesting();
+
+  InitialWebUIManager manager(&browser_window_);
+  bool callback_called = false;
+  EXPECT_TRUE(manager.RequestDeferShow(
+      base::BindLambdaForTesting([&] { callback_called = true; })));
+  EXPECT_TRUE(manager.IsShowPending());
+  EXPECT_FALSE(callback_called);
+
+  base::HistogramTester histogram_tester;
+  metrics_manager.OnBrowserWindowFirstPresentation(base::TimeTicks::Now() +
+                                                   base::Milliseconds(10));
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "ShowRequestedToFirstPaint3",
+      1);
+
+  manager.OnWebUIToolbarLoaded();
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(manager.IsShowPending());
+  EXPECT_FALSE(manager.ShouldDeferShow());
 }
 
 void InitFeaturesForRefill(base::test::ScopedFeatureList& feature_list,

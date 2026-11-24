@@ -120,12 +120,18 @@ void ProfileLaunchObserver::MaybeActivateProfile() {
     }
     BrowserWindowInterface* browser =
         ProfileBrowserCollection::GetForProfile(*i)->GetLastActiveBrowser();
-    // Defer the profile activation if the initial WebUI is pending.
-    if (browser && InitialWebUIManager::From(browser) &&
-        InitialWebUIManager::From(browser)->RequestDeferShow(
-            base::BindOnce(&ProfileLaunchObserver::MaybeActivateProfile,
-                           weak_ptr_factory_.GetWeakPtr()))) {
-      return;
+    // Defer the profile activation if show deferral is active and the initial
+    // WebUI is still pending. Use `RegisterWebUIReadyCallback()` instead of
+    // `RequestDeferShow()` so we do not prematurely record a window-show
+    // request or mark the browser as show-pending before `BrowserView::Show()`.
+    if (browser) {
+      if (InitialWebUIManager* manager = InitialWebUIManager::From(browser);
+          manager && manager->ShouldDeferShow() &&
+          manager->RegisterWebUIReadyCallback(
+              base::BindOnce(&ProfileLaunchObserver::MaybeActivateProfile,
+                             weak_ptr_factory_.GetWeakPtr()))) {
+        return;
+      }
     }
   }
   // Asynchronous post to give a chance to the last window to completely

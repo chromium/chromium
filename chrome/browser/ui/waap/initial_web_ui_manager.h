@@ -35,10 +35,25 @@ class InitialWebUIManager {
   static void ConfigureToolbarWebContents(content::WebContents* web_contents,
                                           BrowserWindowInterface* browser);
 
+  // Returns true if showing the browser window should be deferred because
+  // `features::kWebUIReloadButton` with `WebUIReloadButtonDeferBrowserViewShow`
+  // is enabled and the initial WebUI is still pending. Unlike
+  // `RequestDeferShow()`, this has no side effects and does not mark
+  // `is_show_pending_` or record a window-show request.
+  bool ShouldDeferShow() const;
+
   // Requests to defer showing the browser window until the initial WebUI
-  // finishes loading. Returns true if the deferral was successful and the state
-  // was updated. In this case, `unsafe_callback` will be invoked when the WebUI
-  // is ready. Returns false if deferral is not applicable or not needed.
+  // finishes loading. Always records a window-show request via
+  // `InitialWebUIWindowMetricsManager::OnBrowserWindowShowRequested()`, and
+  // when `ShouldDeferShow()` is true, sets `is_show_pending_` to true, queues
+  // `unsafe_callback` to be invoked when the WebUI is ready, and returns true.
+  // Returns false if deferral is not applicable or not needed.
+  //
+  // Only actual window show/activation calls should use this method. Non-show
+  // callers waiting for initial WebUI readiness should gate on
+  // `ShouldDeferShow()` or `IsShowPending()` and call
+  // `RegisterWebUIReadyCallback()` instead.
+  //
   // Note: the callback is unsafe since it will be added to the list and maybe
   // invoked after the caller is already destructed. The caller should ensure
   // the safety (e.g. by binding it to a weak pointer).
