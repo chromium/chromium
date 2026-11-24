@@ -157,6 +157,39 @@ public class UrlBarDataUnitTest {
     }
 
     @Test
+    public void forUrlAndText_lookupPathInUppercaseScheme() {
+        var url = new GURL("HTTPS://www.a.com/1234-5678");
+        var displayText = "HTTPS://www.a.com/1234-5678";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        assertEquals(url, data.url);
+        assertEquals(displayText, data.displayText);
+        assertEquals(0, data.originStartIndex);
+        assertEquals("HTTPS://www.a.com".length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_lookupPathInUppercaseOuterBlobScheme() {
+        var url = new GURL("BLOB:https://www.a.com/1234-5678");
+        var displayText = "BLOB:https://www.a.com/1234-5678";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        assertEquals(url, data.url);
+        assertEquals(displayText, data.displayText);
+        assertEquals(0, data.originStartIndex);
+        assertEquals("BLOB:https://www.a.com".length(), data.originEndIndex);
+    }
+
+    @Test
+    public void forUrlAndText_lookupPathInUppercaseInnerBlobScheme() {
+        var url = new GURL("blob:HTTPS://www.a.com/1234-5678");
+        var displayText = "blob:HTTPS://www.a.com/1234-5678";
+        UrlBarData data = UrlBarData.forUrlAndText(url, displayText);
+        assertEquals(url, data.url);
+        assertEquals(displayText, data.displayText);
+        assertEquals(0, data.originStartIndex);
+        assertEquals("blob:HTTPS://www.a.com".length(), data.originEndIndex);
+    }
+
+    @Test
     public void forUrlAndText_skipPathInNonEligibleBlobScheme() {
         var url = new GURL("blob:object://www.a.com/1234-5678");
         var displayText = "blob:object://www.a.com/1234-5678";

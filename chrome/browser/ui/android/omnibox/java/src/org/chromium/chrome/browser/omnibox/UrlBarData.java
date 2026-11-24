@@ -18,6 +18,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
+import java.util.Locale;
 import java.util.Set;
 
 /** Encapsulates all data that is necessary for the URL bar to display its contents. */
@@ -130,11 +131,16 @@ public class UrlBarData {
         // displayText begins with what we know to be the current URL scheme.
         String scheme = url.getScheme();
         int pathSearchOffset = 0;
-        if (!scheme.isEmpty() && displayTextStr.startsWith(scheme + ":")) {
+        if (!scheme.isEmpty()
+                && displayTextStr.regionMatches(
+                        /* ignoreCase= */ true, 0, scheme, 0, scheme.length())
+                && displayTextStr.length() > scheme.length()
+                && displayTextStr.charAt(scheme.length()) == ':') {
             if (!SCHEMES_TO_SPLIT.contains(scheme)) {
                 return create(url, displayTextStr, 0, displayTextStr.length(), editingText);
             }
 
+            int schemeEndOffset = scheme.length();
             if (UrlConstants.BLOB_SCHEME.equals(scheme)) {
                 int innerSchemeSearchOffset =
                         findFirstIndexAfterSchemeSeparator(displayTextStr, scheme.length());
@@ -142,14 +148,14 @@ public class UrlBarData {
                 String innerScheme = innerUri.getScheme();
                 // Substitute the scheme to allow for proper display of end of inner origin.
                 if (!TextUtils.isEmpty(innerScheme)) {
-                    scheme = innerScheme;
+                    scheme = innerScheme.toLowerCase(Locale.ROOT);
+                    schemeEndOffset = innerSchemeSearchOffset + scheme.length();
                 }
             }
 
             if (ACCEPTED_SCHEMES.contains(scheme)) {
                 pathSearchOffset =
-                        findFirstIndexAfterSchemeSeparator(
-                                displayTextStr, displayTextStr.indexOf(scheme) + scheme.length());
+                        findFirstIndexAfterSchemeSeparator(displayTextStr, schemeEndOffset);
             }
         }
         int pathOffset = -1;
