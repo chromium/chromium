@@ -1171,7 +1171,9 @@ void ClipboardWin::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
 }
 
 void ClipboardWin::WriteWebSmartPaste() {
-  CHECK_NE(clipboard_owner_->hwnd(), nullptr, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586645271): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(clipboard_owner_->hwnd(), nullptr);
   ::SetClipboardData(
       ClipboardFormatType::WebKitSmartPasteType().ToFormatEtc().cfFormat,
       nullptr);
