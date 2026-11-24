@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_browser_api_monitor.h"
 
 #import <UIKit/UIKit.h>
 
@@ -16,15 +16,13 @@
 #import "base/time/time.h"
 #import "base/time/time_override.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_types.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-
-namespace default_status {
 
 namespace {
 
@@ -84,20 +82,22 @@ SucceedingSystemCall(UIApplicationCategoryDefaultStatus status)
 
 }  // namespace
 
-// Test fixture for testing the default status helper through its public seam.
-class DefaultStatusHelperTest : public PlatformTest {
+// Test fixture for `DefaultBrowserAPIMonitor`.
+class DefaultBrowserAPIMonitorTest : public PlatformTest {
  public:
-  DefaultStatusHelperTest() {
+  DefaultBrowserAPIMonitorTest() {
     now_override_ = base::Time();
     ClearDefaultBrowserPromoData();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kRunDefaultStatusCheck},
         /*disabled_features=*/{});
-    RegisterDefaultStatusPrefs(pref_service_.registry());
+    DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(pref_service_.registry());
+    monitor_.emplace(pref_service_);
     ForceFirstRunRecency(100);
   }
 
-  ~DefaultStatusHelperTest() override {
+  ~DefaultBrowserAPIMonitorTest() override {
+    ResetFirstRunSentinel();
     ClearDefaultBrowserPromoData();
     now_override_ = base::Time();
   }
@@ -115,18 +115,19 @@ class DefaultStatusHelperTest : public PlatformTest {
   }
 
  protected:
-  TestingPrefServiceSimple* prefs() { return &pref_service_; }
+  DefaultBrowserAPIMonitor& monitor() { return *monitor_; }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
+  std::optional<DefaultBrowserAPIMonitor> monitor_;
   static base::Time now_override_;
 };
 
-base::Time DefaultStatusHelperTest::now_override_;
+base::Time DefaultBrowserAPIMonitorTest::now_override_;
 
-// Tests that `TriggerDefaultStatusCheckForTesting` does not query the system
-// API or record metrics when `kRunDefaultStatusCheck` is disabled.
-TEST_F(DefaultStatusHelperTest, DisabledFeatureDoesNotQuerySystem)
+// Tests that `RunCohortCheckIfDueForTesting` does not query the system API or
+// record metrics when `kRunDefaultStatusCheck` is disabled.
+TEST_F(DefaultBrowserAPIMonitorTest, DisabledFeatureDoesNotQuerySystem)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
@@ -136,12 +137,12 @@ API_AVAILABLE(ios(18.4)) {
   disabled_feature_list.InitAndDisableFeature(kRunDefaultStatusCheck);
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   SetNowFromUTCString("2025-01-15");
 
   base::HistogramTester histogram_tester;
-  TriggerDefaultStatusCheckForTesting(prefs(), UnexpectedSystemCall(),
-                                      /*cohort_override=*/1);
+  monitor().RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                          /*cohort_override=*/1);
 
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 0);
   histogram_tester.ExpectTotalCount(
@@ -149,31 +150,31 @@ API_AVAILABLE(ios(18.4)) {
   ExpectSuccessHistogramsToHaveNoSamples(histogram_tester);
 }
 
-// Tests that `TriggerDefaultStatusCheckForTesting` does not assign a cohort or
-// query the system API when the client completed First Run less than 28 days
-// ago, and proceeds once the client is at least 28 days old.
-TEST_F(DefaultStatusHelperTest, NewClientDoesNotAssignCohortOrQuerySystem)
+// Tests that `RunCohortCheckIfDueForTesting` does not assign a cohort or query
+// the system API when the client completed First Run less than 28 days ago, and
+// proceeds once the client is at least 28 days old.
+TEST_F(DefaultBrowserAPIMonitorTest, NewClientDoesNotAssignCohortOrQuerySystem)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   SetNowFromUTCString("2025-01-15");
 
   base::HistogramTester histogram_tester;
 
   // Missing First Run sentinel is treated as a new client.
   ResetFirstRunSentinel();
-  TriggerDefaultStatusCheckForTesting(prefs(), UnexpectedSystemCall(),
-                                      /*cohort_override=*/1);
+  monitor().RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                          /*cohort_override=*/1);
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 0);
 
   // 27 days since First Run is still below the 28-day threshold.
   ForceFirstRunRecency(27);
-  TriggerDefaultStatusCheckForTesting(prefs(), UnexpectedSystemCall(),
-                                      /*cohort_override=*/1);
+  monitor().RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                          /*cohort_override=*/1);
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 0);
 
   // Advance to February and mark First Run as 29 days old. Because no cohort
@@ -181,8 +182,7 @@ API_AVAILABLE(ios(18.4)) {
   // effect and queries immediately in February.
   SetNowFromUTCString("2025-02-15");
   ForceFirstRunRecency(29);
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/2);
 
@@ -193,32 +193,31 @@ API_AVAILABLE(ios(18.4)) {
 }
 
 // Tests that once a cohort is assigned, subsequent calls to
-// `TriggerDefaultStatusCheckForTesting` keep the existing cohort assignment.
-TEST_F(DefaultStatusHelperTest, CohortAssignmentPersistsAcrossCalls)
+// `RunCohortCheckIfDueForTesting` keep the existing cohort assignment.
+TEST_F(DefaultBrowserAPIMonitorTest, CohortAssignmentPersistsAcrossCalls)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   base::HistogramTester histogram_tester;
 
   // Assign Cohort 2 in January (before Cohort 2's February window).
   SetNowFromUTCString("2025-01-15");
-  TriggerDefaultStatusCheckForTesting(prefs(), UnexpectedSystemCall(),
-                                      /*cohort_override=*/2);
+  monitor().RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                          /*cohort_override=*/2);
 
   // Calling again in January with `cohort_override = 1` must not overwrite the
   // existing Cohort 2 assignment or trigger a January query.
-  TriggerDefaultStatusCheckForTesting(prefs(), UnexpectedSystemCall(),
-                                      /*cohort_override=*/1);
+  monitor().RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                          /*cohort_override=*/1);
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 0);
 
   // In February, the persisted Cohort 2 assignment triggers as expected.
   SetNowFromUTCString("2025-02-15");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/1);
   histogram_tester.ExpectBucketCount(
@@ -229,14 +228,14 @@ API_AVAILABLE(ios(18.4)) {
 
 // Tests that omitting `cohort_override` randomly assigns a valid cohort in
 // `1..4` that queries the system API exactly once during a 4-month cycle.
-TEST_F(DefaultStatusHelperTest, RandomCohortAssignmentQueriesWithinCycle)
+TEST_F(DefaultBrowserAPIMonitorTest, RandomCohortAssignmentQueriesWithinCycle)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
 
   static constexpr const char* kCycleDates[] = {"2025-01-15", "2025-02-15",
                                                 "2025-03-15", "2025-04-15"};
@@ -244,13 +243,14 @@ API_AVAILABLE(ios(18.4)) {
   for (int i = 0; i < 50; ++i) {
     SCOPED_TRACE(base::StringPrintf("Iteration %d", i));
     TestingPrefServiceSimple iteration_prefs;
-    RegisterDefaultStatusPrefs(iteration_prefs.registry());
+    DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(
+        iteration_prefs.registry());
+    DefaultBrowserAPIMonitor iteration_monitor(iteration_prefs);
     base::HistogramTester histogram_tester;
 
     for (const char* date_str : kCycleDates) {
       SetNowFromUTCString(date_str);
-      TriggerDefaultStatusCheckForTesting(
-          &iteration_prefs,
+      iteration_monitor.RunCohortCheckIfDueForTesting(
           SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
           /*cohort_override=*/std::nullopt);
     }
@@ -269,14 +269,14 @@ API_AVAILABLE(ios(18.4)) {
 // month's cohort immediately queries the system API and schedules its next
 // retry for the 1st of the cohort's month in the next cycle (including year
 // rollover).
-TEST_F(DefaultStatusHelperTest, CohortSchedulingWhenAssignedInOwnMonth)
+TEST_F(DefaultBrowserAPIMonitorTest, CohortSchedulingWhenAssignedInOwnMonth)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
 
   struct ScheduleCase {
     const char* assign_date;
@@ -298,13 +298,13 @@ API_AVAILABLE(ios(18.4)) {
                                     test_case.assign_date, test_case.cohort,
                                     test_case.next_window_start));
     TestingPrefServiceSimple case_prefs;
-    RegisterDefaultStatusPrefs(case_prefs.registry());
+    DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(case_prefs.registry());
+    DefaultBrowserAPIMonitor case_monitor(case_prefs);
     base::HistogramTester histogram_tester;
 
     // Initial check in the cohort's own month executes immediately.
     SetNowFromUTCString(test_case.assign_date);
-    TriggerDefaultStatusCheckForTesting(
-        &case_prefs,
+    case_monitor.RunCohortCheckIfDueForTesting(
         SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
         test_case.cohort);
     histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 1);
@@ -315,14 +315,13 @@ API_AVAILABLE(ios(18.4)) {
 
     // One day before the next cycle's window, the client is still on cooldown.
     SetNowOverride(next_window - base::Days(1));
-    TriggerDefaultStatusCheckForTesting(&case_prefs, UnexpectedSystemCall(),
-                                        test_case.cohort);
+    case_monitor.RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                               test_case.cohort);
     histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 1);
 
     // On the exact first day of the next cycle's window, the query executes.
     SetNowOverride(next_window);
-    TriggerDefaultStatusCheckForTesting(
-        &case_prefs,
+    case_monitor.RunCohortCheckIfDueForTesting(
         SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
         test_case.cohort);
     histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 2);
@@ -330,16 +329,17 @@ API_AVAILABLE(ios(18.4)) {
 }
 
 // Tests that for all 12 calendar months and all cohorts whose window is not the
-// current month, `TriggerDefaultStatusCheckForTesting` defers querying until
-// the 1st of the cohort's next reporting month (including year rollover).
-TEST_F(DefaultStatusHelperTest, CohortSchedulingWhenAssignedOutsideOwnMonth)
+// current month, `RunCohortCheckIfDueForTesting` defers querying until the 1st
+// of the cohort's next reporting month (including year rollover).
+TEST_F(DefaultBrowserAPIMonitorTest,
+       CohortSchedulingWhenAssignedOutsideOwnMonth)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
 
   struct DeferredScheduleCase {
     const char* assign_date;
@@ -403,14 +403,15 @@ API_AVAILABLE(ios(18.4)) {
                                     test_case.assign_date, test_case.cohort,
                                     test_case.first_window_start));
     TestingPrefServiceSimple case_prefs;
-    RegisterDefaultStatusPrefs(case_prefs.registry());
+    DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(case_prefs.registry());
+    DefaultBrowserAPIMonitor case_monitor(case_prefs);
     base::HistogramTester histogram_tester;
 
     // Initial check outside the cohort's month assigns the cohort without
     // querying the system API.
     SetNowFromUTCString(test_case.assign_date);
-    TriggerDefaultStatusCheckForTesting(&case_prefs, UnexpectedSystemCall(),
-                                        test_case.cohort);
+    case_monitor.RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                               test_case.cohort);
     histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 0);
 
     base::Time first_window;
@@ -419,25 +420,24 @@ API_AVAILABLE(ios(18.4)) {
 
     // One day before the cohort's first window, the client is still waiting.
     SetNowOverride(first_window - base::Days(1));
-    TriggerDefaultStatusCheckForTesting(&case_prefs, UnexpectedSystemCall(),
-                                        test_case.cohort);
+    case_monitor.RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                               test_case.cohort);
     histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 0);
 
     // On the exact first day of the cohort's window, the query executes.
     SetNowOverride(first_window);
-    TriggerDefaultStatusCheckForTesting(
-        &case_prefs,
+    case_monitor.RunCohortCheckIfDueForTesting(
         SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
         test_case.cohort);
     histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 1);
   }
 }
 
-// Tests that `TriggerDefaultStatusCheckForTesting` records `kCooldownError` and
+// Tests that `RunCohortCheckIfDueForTesting` records `kCooldownError` and
 // `IOS.DefaultStatusAPI.CooldownError.DaysLeft` when the system API returns a
 // rate-limited error, suppresses calls during the cooldown period, and retries
 // once the retry date is reached.
-TEST_F(DefaultStatusHelperTest,
+TEST_F(DefaultBrowserAPIMonitorTest,
        SystemCooldownErrorSchedulesRetryAndRecordsDaysLeft)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
@@ -445,14 +445,13 @@ API_AVAILABLE(ios(18.4)) {
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   SetNowFromUTCString("2025-01-15");
 
   base::HistogramTester histogram_tester;
   base::Time retry_date = base::Time::Now() + base::Days(100);
 
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       base::BindOnce(
           [](base::Time target_retry, NSError** error) {
             NSDictionary* error_info = @{
@@ -477,14 +476,13 @@ API_AVAILABLE(ios(18.4)) {
 
   // Calling before `retry_date` does not invoke the system callback.
   SetNowOverride(retry_date - base::Days(1));
-  TriggerDefaultStatusCheckForTesting(prefs(), UnexpectedSystemCall(),
-                                      /*cohort_override=*/1);
+  monitor().RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                          /*cohort_override=*/1);
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 1);
 
   // Calling at `retry_date` invokes the system callback.
   SetNowOverride(retry_date);
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/1);
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 2);
@@ -492,22 +490,22 @@ API_AVAILABLE(ios(18.4)) {
                                      DefaultStatusAPIOutcomeType::kSuccess, 1);
 }
 
-// Tests that `TriggerDefaultStatusCheckForTesting` records `kOtherError` when
-// the system API returns an unknown error and allows retrying on the next check
+// Tests that `RunCohortCheckIfDueForTesting` records `kOtherError` when the
+// system API returns an unknown error and allows retrying on the next check
 // without advancing the cooldown timestamp.
-TEST_F(DefaultStatusHelperTest, SystemUnknownErrorDoesNotAdvanceCooldown)
+TEST_F(DefaultBrowserAPIMonitorTest, SystemUnknownErrorDoesNotAdvanceCooldown)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   SetNowFromUTCString("2025-01-15");
 
   base::HistogramTester histogram_tester;
-  TriggerDefaultStatusCheckForTesting(
-      prefs(), base::BindOnce([](NSError** error) {
+  monitor().RunCohortCheckIfDueForTesting(
+      base::BindOnce([](NSError** error) {
         *error =
             [NSError errorWithDomain:UIApplicationCategoryDefaultErrorDomain
                                 code:123456
@@ -527,8 +525,7 @@ API_AVAILABLE(ios(18.4)) {
 
   // Because the unknown error did not advance the retry timestamp, a subsequent
   // check at the same timestamp immediately retries the system call.
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/1);
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 2);
@@ -540,19 +537,18 @@ API_AVAILABLE(ios(18.4)) {
 // window records `kSuccess`, `IsDefaultBrowser`, `IsDefaultBrowser.Cohort1`,
 // `IsDefaultBrowser.StrictCohorts`, and heuristic assessments, without
 // recording `DaysSinceLastSuccessfulCall` or `DefaultStatusRetention`.
-TEST_F(DefaultStatusHelperTest, StrictCohort1IsDefaultFirstTime)
+TEST_F(DefaultBrowserAPIMonitorTest, StrictCohort1IsDefaultFirstTime)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   SetNowFromUTCString("2025-01-15");
 
   base::HistogramTester histogram_tester;
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/1);
 
@@ -598,20 +594,19 @@ API_AVAILABLE(ios(18.4)) {
 // logs `IsDefaultBrowser` and `IsDefaultBrowser.Cohort2` without logging
 // `IsDefaultBrowser.StrictCohorts`, and schedules its next retry for Cohort 2's
 // next reporting window.
-TEST_F(DefaultStatusHelperTest, NonStrictCohort2IsNotDefaultRecurring)
+TEST_F(DefaultBrowserAPIMonitorTest, NonStrictCohort2IsNotDefaultRecurring)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
 
   // First successful query in February (Cohort 2's strict window) with
   // `IsDefault`. Next retry is scheduled for `2025-06-01`.
   SetNowFromUTCString("2025-02-03");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/2);
 
@@ -619,8 +614,7 @@ API_AVAILABLE(ios(18.4)) {
   // (`2025-07-03`), which is outside Cohort 2's reporting window.
   SetNowFromUTCString("2025-07-03");
   base::HistogramTester histogram_tester;
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusNotDefault),
       /*cohort_override=*/2);
 
@@ -646,11 +640,10 @@ API_AVAILABLE(ios(18.4)) {
 
   // Next retry is scheduled for Cohort 2's October window (`2025-10-01`).
   SetNowFromUTCString("2025-09-30");
-  TriggerDefaultStatusCheckForTesting(prefs(), UnexpectedSystemCall(),
-                                      /*cohort_override=*/2);
+  monitor().RunCohortCheckIfDueForTesting(UnexpectedSystemCall(),
+                                          /*cohort_override=*/2);
   SetNowFromUTCString("2025-10-01");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusNotDefault),
       /*cohort_override=*/2);
   histogram_tester.ExpectTotalCount("IOS.DefaultStatusAPI.OutcomeType", 2);
@@ -659,20 +652,20 @@ API_AVAILABLE(ios(18.4)) {
 // Tests Cohort 3 and Cohort 4 reporting along with all four
 // `DefaultStatusRetention` transitions (`kRemainedDefault`,
 // `kBecameNonDefault`, `kRemainedNonDefault`, `kBecameDefault`).
-TEST_F(DefaultStatusHelperTest, StrictCohorts3And4AndAllRetentionTransitions)
+TEST_F(DefaultBrowserAPIMonitorTest,
+       StrictCohorts3And4AndAllRetentionTransitions)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   base::HistogramTester histogram_tester;
 
   // 1. Cohort 3 initial call in March (`kIsDefault`).
   SetNowFromUTCString("2025-03-15");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/3);
   histogram_tester.ExpectBucketCount(
@@ -685,8 +678,7 @@ API_AVAILABLE(ios(18.4)) {
   // 2. Cohort 3 second call in July (`kIsDefault` -> `kIsDefault`:
   // `kRemainedDefault`).
   SetNowFromUTCString("2025-07-15");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/3);
   histogram_tester.ExpectBucketCount(
@@ -696,8 +688,7 @@ API_AVAILABLE(ios(18.4)) {
   // 3. Cohort 3 third call in November (`kIsDefault` -> `kIsNotDefault`:
   // `kBecameNonDefault`).
   SetNowFromUTCString("2025-11-15");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusNotDefault),
       /*cohort_override=*/3);
   histogram_tester.ExpectBucketCount(
@@ -707,8 +698,7 @@ API_AVAILABLE(ios(18.4)) {
   // 4. Cohort 3 fourth call in March 2026 (`kIsNotDefault` -> `kIsNotDefault`:
   // `kRemainedNonDefault`).
   SetNowFromUTCString("2026-03-15");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusNotDefault),
       /*cohort_override=*/3);
   histogram_tester.ExpectBucketCount(
@@ -718,8 +708,7 @@ API_AVAILABLE(ios(18.4)) {
   // 5. Cohort 3 fifth call in July 2026 (`kIsNotDefault` -> `kIsDefault`:
   // `kBecameDefault`).
   SetNowFromUTCString("2026-07-15");
-  TriggerDefaultStatusCheckForTesting(
-      prefs(),
+  monitor().RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
       /*cohort_override=*/3);
   histogram_tester.ExpectBucketCount(
@@ -730,27 +719,27 @@ API_AVAILABLE(ios(18.4)) {
 
   // Verify Cohort 4 strict reporting on a separate preference store.
   TestingPrefServiceSimple cohort4_prefs;
-  RegisterDefaultStatusPrefs(cohort4_prefs.registry());
+  DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(cohort4_prefs.registry());
+  DefaultBrowserAPIMonitor cohort4_monitor(cohort4_prefs);
   SetNowFromUTCString("2026-08-15");
-  TriggerDefaultStatusCheckForTesting(
-      &cohort4_prefs,
+  cohort4_monitor.RunCohortCheckIfDueForTesting(
       SucceedingSystemCall(UIApplicationCategoryDefaultStatusNotDefault),
       /*cohort_override=*/4);
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultStatusAPI.IsDefaultBrowser.Cohort4", false, 1);
 }
 
-// Tests that `TriggerDefaultStatusCheckForTesting` records the expected
+// Tests that `RunCohortCheckIfDueForTesting` records the expected
 // `DefaultStatusHeuristicAssessment` across all 8 lookback windows (`1, 3, 7,
 // 14, 21, 28, 35, 42` days) as `lastHTTPURLOpenTime` ages.
-TEST_F(DefaultStatusHelperTest, HeuristicAssessmentsAcrossLookbackWindows)
+TEST_F(DefaultBrowserAPIMonitorTest, HeuristicAssessmentsAcrossLookbackWindows)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
     return;
   }
 
   base::subtle::ScopedTimeClockOverrides time_override(
-      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+      &DefaultBrowserAPIMonitorTest::NowOverride, nullptr, nullptr);
   SetNowFromUTCString("2025-05-15");
 
   static constexpr int kWindows[] = {1, 3, 7, 14, 21, 28, 35, 42};
@@ -776,10 +765,10 @@ API_AVAILABLE(ios(18.4)) {
     // active windows are `kTruePositive`.
     {
       TestingPrefServiceSimple call_prefs;
-      RegisterDefaultStatusPrefs(call_prefs.registry());
+      DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(call_prefs.registry());
+      DefaultBrowserAPIMonitor call_monitor(call_prefs);
       base::HistogramTester histogram_tester;
-      TriggerDefaultStatusCheckForTesting(
-          &call_prefs,
+      call_monitor.RunCohortCheckIfDueForTesting(
           SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
           /*cohort_override=*/1);
       for (int window : kWindows) {
@@ -797,10 +786,10 @@ API_AVAILABLE(ios(18.4)) {
     // `kTrueNegative`, active windows are `kFalsePositive`.
     {
       TestingPrefServiceSimple call_prefs;
-      RegisterDefaultStatusPrefs(call_prefs.registry());
+      DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(call_prefs.registry());
+      DefaultBrowserAPIMonitor call_monitor(call_prefs);
       base::HistogramTester histogram_tester;
-      TriggerDefaultStatusCheckForTesting(
-          &call_prefs,
+      call_monitor.RunCohortCheckIfDueForTesting(
           SucceedingSystemCall(UIApplicationCategoryDefaultStatusNotDefault),
           /*cohort_override=*/1);
       for (int window : kWindows) {
@@ -815,5 +804,3 @@ API_AVAILABLE(ios(18.4)) {
     }
   }
 }
-
-}  // namespace default_status

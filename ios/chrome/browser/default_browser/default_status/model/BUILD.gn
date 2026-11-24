@@ -9,9 +9,9 @@ assert(target_environment != "catalyst")
 
 source_set("model") {
   sources = [
-    "default_status_helper.h",
-    "default_status_helper.mm",
-    "default_status_helper_types.h",
+    "default_browser_api_monitor.h",
+    "default_browser_api_monitor.mm",
+    "default_status_types.h",
   ]
   deps = [
     "//components/prefs",
@@ -25,7 +25,7 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "default_status_helper_unittest.mm" ]
+  sources = [ "default_browser_api_monitor_unittest.mm" ]
   deps = [
     ":model",
     "//base/test:test_support",

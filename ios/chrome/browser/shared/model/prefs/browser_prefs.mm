@@ -153,7 +153,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_browser_api_monitor.h"
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
 namespace {
@@ -309,7 +309,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   feature_engagement::RegisterLocalStatePrefs(registry);
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-  default_status::RegisterDefaultStatusPrefs(registry);
+  DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(registry);
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
   // Preferences related to the profile manager.

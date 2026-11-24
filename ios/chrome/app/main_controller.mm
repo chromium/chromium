@@ -182,7 +182,7 @@
 #endif
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_browser_api_monitor.h"
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
 namespace {
@@ -1542,11 +1542,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
 - (void)scheduleDefaultBrowserStatusCheck {
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-  [_appState.deferredRunner
-      enqueueBlockNamed:kDefaultBrowserStatusCheck
-                  block:^{
-                    default_status::TriggerDefaultStatusCheck();
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kDefaultBrowserStatusCheck
+                                        block:^{
+                                          TriggerDefaultStatusCheck();
+                                        }];
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 }
 

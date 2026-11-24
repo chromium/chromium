@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_browser_api_monitor.h"
 
 #import <UIKit/UIKit.h>
 
@@ -11,6 +11,7 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -20,13 +21,11 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_types.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-
-namespace default_status {
 
 namespace {
 
@@ -338,7 +337,6 @@ void RunDefaultStatusCheck(
     base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>
         system_call,
     std::optional<int> cohort_override) API_AVAILABLE(ios(18.4)) {
-  CHECK(local_state);
   if (IsNewClient() || !IsRunDefaultStatusCheckEnabled()) {
     return;
   }
@@ -349,7 +347,14 @@ void RunDefaultStatusCheck(
 
 }  // namespace
 
-void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry) {
+DefaultBrowserAPIMonitor::DefaultBrowserAPIMonitor(PrefService& local_state)
+    : local_state_(local_state) {}
+
+DefaultBrowserAPIMonitor::~DefaultBrowserAPIMonitor() = default;
+
+// static
+void DefaultBrowserAPIMonitor::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kDefaultStatusAPICohort, 0);
   registry->RegisterTimePref(kDefaultStatusAPILastSuccessfulCall, base::Time());
   registry->RegisterTimePref(kDefaultStatusAPINextRetry, base::Time());
@@ -358,22 +363,25 @@ void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry) {
       static_cast<int>(DefaultStatusAPIResult::kUnknown));
 }
 
-void TriggerDefaultStatusCheck() {
-  if (@available(iOS 18.4, *)) {
-    ApplicationContext* application_context = GetApplicationContext();
-    RunDefaultStatusCheck(application_context->GetLocalState(),
-                          base::BindOnce(&QuerySystemDefaultStatus),
-                          /*cohort_override=*/std::nullopt);
-  }
+void DefaultBrowserAPIMonitor::RunCohortCheckIfDue() {
+  RunDefaultStatusCheck(&local_state_.get(),
+                        base::BindOnce(&QuerySystemDefaultStatus),
+                        /*cohort_override=*/std::nullopt);
 }
 
-void TriggerDefaultStatusCheckForTesting(
-    PrefService* local_state,
+void DefaultBrowserAPIMonitor::RunCohortCheckIfDueForTesting(
     base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>
         system_call,
-    std::optional<int> cohort_override) API_AVAILABLE(ios(18.4)) {
+    std::optional<int> cohort_override) {
   CHECK_IS_TEST();
-  RunDefaultStatusCheck(local_state, std::move(system_call), cohort_override);
+  RunDefaultStatusCheck(&local_state_.get(), std::move(system_call),
+                        cohort_override);
 }
 
-}  // namespace default_status
+void TriggerDefaultStatusCheck() {
+  if (@available(iOS 18.4, *)) {
+    DefaultBrowserAPIMonitor monitor(
+        CHECK_DEREF(GetApplicationContext()->GetLocalState()));
+    monitor.RunCohortCheckIfDue();
+  }
+}
