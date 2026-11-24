@@ -507,6 +507,39 @@ class CheckNewColorIntroductionTest(unittest.TestCase):
         self.assertEqual(len(results), 0)
 
 
+class CheckUmbrellaHeaderUsageTest(unittest.TestCase):
+    """Test the _CheckUmbrellaHeaderUsage presubmit check."""
+
+    def testNonFrameworkHeadersExempted(self):
+        good_lines = [
+            '#import <Foundation/Foundation.h>',
+            '#import <objc/runtime.h>',
+            '#import <sys/sysctl.h>',
+            '#import <os/log.h>',
+            '#import <CommonCrypto/CommonDigest.h>',
+        ]
+        bad_lines = [
+            '#import <Foundation/NSString.h>',
+            '#import <UIKit/UIView.h>',
+        ]
+
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/path/foo.mm', good_lines + bad_lines
+            ),
+        ]
+
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckUmbrellaHeaderUsage(mock_input, mock_output)
+
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('warning', errors[0].type)
+        self.assertEqual(len(errors[0].items), 2)
+        self.assertTrue(any('ios/path/foo.mm:6' in e for e in errors[0].items))
+        self.assertTrue(any('ios/path/foo.mm:7' in e for e in errors[0].items))
+
+
 def testUmbrellaHeaderUsage(self):
     good_lines = [
         '#import <Foundation/Foundation.h>',

@@ -22,6 +22,24 @@ IOS_PACKAGE_PATTERN = r'^ios'
 BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 USER_DEFAULTS_PATTERN = r'\[NSUserDefaults standardUserDefaults]'
 UMBRELLA_HEADER_PATTERN = r'#import\s+<([\w]+)\/(?!\1\.h)[^>]+>'
+# System include directories under `/usr/include/` that are not Apple
+# frameworks and do not provide a single umbrella header (e.g. `<objc/objc.h>`
+# does not include `<objc/runtime.h>`).
+_NON_FRAMEWORK_HEADER_DIRS = frozenset(
+    {
+        'CommonCrypto',
+        'arpa',
+        'libkern',
+        'mach',
+        'net',
+        'netinet',
+        'netinet6',
+        'objc',
+        'os',
+        'sys',
+        'xpc',
+    }
+)
 UNITTEST_FILE_PATTERN = r'_unittests?\.(mm|cc)$'
 CHROME_COORDINATOR_SUBCLASSING_IMPORT_PATTERN = (
     r'^\s*#\s*(import|include)\s+"ios/chrome/browser/shared/coordinator/'
@@ -622,6 +640,8 @@ def _CheckUmbrellaHeaderUsage(input_api, output_api):
             match = umbrella_regex.search(line)
             if match:
                 framework_name = match.group(1)
+                if framework_name in _NON_FRAMEWORK_HEADER_DIRS:
+                    continue
                 errors.append(
                     '%s:%s (Found: %s. Use <%s/%s.h> instead)'
                     % (
