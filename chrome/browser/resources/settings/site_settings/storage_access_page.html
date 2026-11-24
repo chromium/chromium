@@ -1,13 +1,16 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSetting, ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsStorageAccess}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{storageAccessDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
+      .category="${ContentSettingsTypes.STORAGE_ACCESS}"
       ask-option-label="$i18n{storageAccessAsk}"
       ask-option-icon="privacy:vr180-create2d"
       block-option-label="$i18n{storageAccessBlocked}"
@@ -21,13 +24,13 @@
     </div>
   </div>
   <storage-access-site-list
-      category-subtype="[[contentSettingEnum_.BLOCK]]"
+      .categorySubtype="${ContentSetting.BLOCK}"
       category-header="$i18n{storageAccessBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </storage-access-site-list>
   <storage-access-site-list
-      category-subtype="[[contentSettingEnum_.ALLOW]]"
+      .categorySubtype="${ContentSetting.ALLOW}"
       category-header="$i18n{storageAccessAllowedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </storage-access-site-list>
 </settings-subpage>
