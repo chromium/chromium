@@ -59,6 +59,7 @@
 #elif BUILDFLAG(IS_WIN)
 #include "net/http/mock_sspi_library_win.h"
 #elif BUILDFLAG(USE_EXTERNAL_GSSAPI)
+#include "net/http/http_auth_gssapi_posix.h"
 #include "net/http/mock_gssapi_library_posix.h"
 #else
 #error "use_kerberos is true, but no Kerberos implementation available."
@@ -1920,13 +1921,15 @@ TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
   base::HistogramTester histogram_tester;
   RecordingNetLogObserver net_log_observer;
 
-  gss_OID_desc ntlmssp_mech_oid = {
-      10, const_cast<char*>("\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a")};
-  gss_OID_desc user_name_oid = {
-      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")};
+  PaddedOidDesc ntlmssp_mech_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a")}};
+  PaddedOidDesc user_name_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")}};
   test::GssContextMockImpl context("localhost", "HTTP@alias.test", 23,
-                                   ntlmssp_mech_oid, 0, 1, 1);
-  context.targ_name_type = user_name_oid;
+                                   ntlmssp_mech_oid.desc, 0, 1, 1);
+  context.targ_name_type = user_name_oid.desc;
   static constexpr char kNtlmToken[] = "NTLMSSP";
   MockAuthLibrary::SecurityContextQuery query("Negotiate", GSS_S_COMPLETE, 0,
                                               context, nullptr, kNtlmToken);
@@ -2085,11 +2088,12 @@ TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
        PartiallyEstablishedSpnegoNtlmTargetMatchesUrl) {
   base::HistogramTester histogram_tester;
 
-  gss_OID_desc hostbased_service_oid = {
-      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")};
+  PaddedOidDesc hostbased_service_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")}};
   test::GssContextMockImpl context("localhost", "HTTP/alias.test", 23,
                                    *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, 0);
-  context.targ_name_type = hostbased_service_oid;
+  context.targ_name_type = hostbased_service_oid.desc;
   static constexpr char kNtlmToken[] = "NTLMSSP";
   MockAuthLibrary::SecurityContextQuery query(
       "Negotiate", GSS_S_CONTINUE_NEEDED, 0, context, nullptr, kNtlmToken);
@@ -2126,12 +2130,14 @@ TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
        PartiallyEstablishedSpnegoKerberosUserPrincipalRejected) {
   const struct {
     const char* label;
-    gss_OID_desc oid;
+    PaddedOidDesc oid;
   } kNameTypes[] = {
       {"GSS_C_NT_USER_NAME",
-       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")}},
+       {.desc = {10, const_cast<char*>(
+                         "\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")}}},
       {"GSS_KRB5_NT_PRINCIPAL_NAME",
-       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x02\x01")}},
+       {.desc = {10, const_cast<char*>(
+                         "\x2a\x86\x48\x86\xf7\x12\x01\x02\x02\x01")}}},
   };
   for (const auto& name_type : kNameTypes) {
     SCOPED_TRACE(name_type.label);
@@ -2139,7 +2145,7 @@ TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
     test::GssContextMockImpl context("localhost", "HTTP@alias.test", 23,
                                      *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1,
                                      /*open=*/0);
-    context.targ_name_type = name_type.oid;
+    context.targ_name_type = name_type.oid.desc;
     static constexpr char kSpnegoToken[] = "SPNEGO";
     MockAuthLibrary::SecurityContextQuery query(
         "Negotiate", GSS_S_CONTINUE_NEEDED, 0, context, nullptr, kSpnegoToken);

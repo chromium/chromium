@@ -43,25 +43,11 @@ using DelegationType = HttpAuth::DelegationType;
 
 namespace {
 
-// On x86 macOS, Apple's gssapi.h wraps gss_OID_desc in `#pragma pack(2)`,
-// which places `elements` at a 4-byte-aligned address. A statically
-// initialized pointer that isn't 8-byte aligned can straddle a page boundary,
-// which Mach-O chained fixups can't represent. Pad the descriptor so that
-// `gss_OID_desc::elements` is 8-byte aligned on all platforms.
-struct alignas(8) PaddedOidDesc {
-  uint32_t padding;
-  gss_OID_desc desc;
-};
-static_assert(
-    (offsetof(PaddedOidDesc, desc) + offsetof(gss_OID_desc, elements)) % 8 ==
-    0);
-
 // Exported mechanism for GSSAPI. We always use SPNEGO:
 
 // iso.org.dod.internet.security.mechanism.snego (1.3.6.1.5.5.2)
 PaddedOidDesc CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL = {
-    0,
-    {6, const_cast<char*>("\x2b\x06\x01\x05\x05\x02")}};
+    .desc = {6, const_cast<char*>("\x2b\x06\x01\x05\x05\x02")}};
 
 base::span<const uint8_t> GssBufferToSpan(const gss_buffer_desc& buffer) {
   if (!buffer.value) {
@@ -1076,11 +1062,12 @@ int HttpAuthGSSAPI::GetNextSecurityToken(const std::string& spn,
   // Even if the OID pointer is const, the inner |elements| pointer is still
   // non-const.
   //
-  // This is deliberately not static: a static gss_OID_desc would be statically
-  // initialized data with a 4-byte-aligned pointer on x86 macOS (see the
-  // comment on PaddedOidDesc), while a local is built on the stack by code.
-  gss_OID_desc kGSS_C_NT_HOSTBASED_SERVICE = {
-      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")};
+  // Wrap in `PaddedOidDesc` because Clang lowers even a non-static
+  // `gss_OID_desc` aggregate initializer into `__DATA,__const` with a
+  // 4-byte-aligned `elements` pointer on x86 macOS.
+  PaddedOidDesc hostbased_service_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")}};
 
   // Create a name for the principal
   // TODO(cbentzel): Just do this on the first pass?
@@ -1091,9 +1078,8 @@ int HttpAuthGSSAPI::GetNextSecurityToken(const std::string& spn,
   OM_uint32 minor_status = 0;
   gss_name_t principal_name = GSS_C_NO_NAME;
 
-  OM_uint32 major_status =
-      library_->import_name(&minor_status, &spn_buffer,
-                            &kGSS_C_NT_HOSTBASED_SERVICE, &principal_name);
+  OM_uint32 major_status = library_->import_name(
+      &minor_status, &spn_buffer, &hostbased_service_oid.desc, &principal_name);
   net_log.AddEvent(NetLogEventType::AUTH_LIBRARY_IMPORT_NAME, [&] {
     return ImportNameErrorParams(library_.get(), spn, major_status,
                                  minor_status);

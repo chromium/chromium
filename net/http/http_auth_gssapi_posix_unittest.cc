@@ -44,8 +44,11 @@ void EstablishInitialContext(test::MockGSSAPILibrary* library) {
       1,                                   // Locally initiated
       0);                                  // Open
   gss_buffer_desc in_buffer = {0, nullptr};
-  gss_buffer_desc out_buffer = {std::size(kInitialAuthResponse),
-                                const_cast<char*>(kInitialAuthResponse)};
+  // `gss_buffer_desc` is also `#pragma pack(2)` on x86 macOS; keep any lowered
+  // `__DATA,__const` initializer 8-byte aligned so `value` cannot straddle a
+  // page boundary.
+  alignas(8) gss_buffer_desc out_buffer = {
+      std::size(kInitialAuthResponse), const_cast<char*>(kInitialAuthResponse)};
   library->ExpectSecurityContext(
       "Negotiate",
       GSS_S_CONTINUE_NEEDED,
@@ -345,9 +348,10 @@ TEST(HttpAuthGSSAPITest, OidToValue_NIL) {
 }
 
 TEST(HttpAuthGSSAPITest, OidToValue_Known) {
-  gss_OID_desc known = {6, const_cast<char*>("\x2b\x06\01\x05\x06\x03")};
+  PaddedOidDesc known = {
+      .desc = {6, const_cast<char*>("\x2b\x06\01\x05\x06\x03")}};
 
-  auto actual = OidToValue(const_cast<const gss_OID>(&known));
+  auto actual = OidToValue(const_cast<const gss_OID>(&known.desc));
   auto expected = base::JSONReader::Read(R"(
       {
         "oid"   : "GSS_C_NT_ANONYMOUS",
@@ -361,8 +365,9 @@ TEST(HttpAuthGSSAPITest, OidToValue_Known) {
 }
 
 TEST(HttpAuthGSSAPITest, OidToValue_Unknown) {
-  gss_OID_desc unknown = {6, const_cast<char*>("\x2b\x06\01\x05\x06\x05")};
-  auto actual = OidToValue(const_cast<const gss_OID>(&unknown));
+  PaddedOidDesc unknown = {
+      .desc = {6, const_cast<char*>("\x2b\x06\01\x05\x06\x05")}};
+  auto actual = OidToValue(const_cast<const gss_OID>(&unknown.desc));
   auto expected = base::JSONReader::Read(R"(
       {
         "length": 6,
@@ -648,20 +653,24 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   // Before establishing a context, no principal is reported.
   EXPECT_EQ(auth_gssapi.GetTargetPrincipalHost(), kNotReported);
 
-  gss_OID_desc hostbased_service_oid = {
-      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")};
-  gss_OID_desc hostbased_service_x_oid = {
-      6, const_cast<char*>("\x2b\x06\x01\x05\x06\x02")};
-  gss_OID_desc user_name_oid = {
-      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")};
-  gss_OID_desc krb5_principal_oid = {
-      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x02\x01")};
-  gss_OID_desc unknown_name_oid = {
-      6, const_cast<char*>("\x2b\x06\x01\x05\x06\x05")};
-  gss_OID_desc krb5_mech_oid = {
-      9, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x02")};
-  gss_OID_desc ntlmssp_mech_oid = {
-      10, const_cast<char*>("\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a")};
+  PaddedOidDesc hostbased_service_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")}};
+  PaddedOidDesc hostbased_service_x_oid = {
+      .desc = {6, const_cast<char*>("\x2b\x06\x01\x05\x06\x02")}};
+  PaddedOidDesc user_name_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")}};
+  PaddedOidDesc krb5_principal_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x02\x01")}};
+  PaddedOidDesc unknown_name_oid = {
+      .desc = {6, const_cast<char*>("\x2b\x06\x01\x05\x06\x05")}};
+  PaddedOidDesc krb5_mech_oid = {
+      .desc = {9, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x02")}};
+  PaddedOidDesc ntlmssp_mech_oid = {
+      .desc = {10,
+               const_cast<char*>("\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a")}};
   gss_OID_desc empty_oid = {0, nullptr};
 
   auto test_context = [&](test::GssContextMockImpl context_info,
@@ -717,12 +726,12 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
 
   // NTLMSSP fallback under SPNEGO (`1.3.6.1.4.1.311.2.2.10`) skips Kerberos
   // principal validation whatever name `display_name()` reports.
-  test_target("HTTP/canonical.example.com", kNotReported, hostbased_service_oid,
-              ntlmssp_mech_oid);
-  test_target("HTTP@canonical.example.com", kNotReported, user_name_oid,
-              ntlmssp_mech_oid);
+  test_target("HTTP/canonical.example.com", kNotReported,
+              hostbased_service_oid.desc, ntlmssp_mech_oid.desc);
+  test_target("HTTP@canonical.example.com", kNotReported, user_name_oid.desc,
+              ntlmssp_mech_oid.desc);
   test_target("HTTP@canonical.example.com", kNotReported, empty_oid,
-              ntlmssp_mech_oid);
+              ntlmssp_mech_oid.desc);
 
   // `inquire_context()`, `display_name()`, or empty-buffer failures on an
   // established non-NTLM context.
@@ -772,32 +781,32 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   test_target(std::string_view("HTTP/canonical.example.com@REALM\0", 33),
               "canonical.example.com");
   test_target("HTTP/canonical.example.com@REALM", "canonical.example.com",
-              empty_oid, krb5_mech_oid);
+              empty_oid, krb5_mech_oid.desc);
 
   // `GSS_C_NT_HOSTBASED_SERVICE` (`HTTP@<host>` and `host@<host>`) names.
   test_target("HTTP@canonical.EXAMPLE.COM", "canonical.example.com",
-              hostbased_service_oid);
+              hostbased_service_oid.desc);
   test_target("http@canonical.example.com:8080", "canonical.example.com",
-              hostbased_service_x_oid);
+              hostbased_service_x_oid.desc);
   test_target("host@canonical.EXAMPLE.COM", "canonical.example.com",
-              hostbased_service_oid);
+              hostbased_service_oid.desc);
   test_target("HOST@canonical.example.com.", "canonical.example.com",
-              hostbased_service_x_oid);
+              hostbased_service_x_oid.desc);
   test_target("HTTP@canonical.example.com", "canonical.example.com",
-              hostbased_service_oid, *CHROME_GSS_SPNEGO_MECH_OID_DESC,
+              hostbased_service_oid.desc, *CHROME_GSS_SPNEGO_MECH_OID_DESC,
               /*open=*/1);
   // While SPNEGO hasn't completed (`!open` and `mech_type` is SPNEGO),
   // `gss-ntlmssp` displays `HTTP/<host>` (with a trailing NUL) under
   // `GSS_C_NT_HOSTBASED_SERVICE`, and `HTTP@<host>` under an empty or
   // unrecognized name type is also returned for validation.
   test_target(std::string_view("HTTP/canonical.example.com\0", 27),
-              "canonical.example.com", hostbased_service_oid);
+              "canonical.example.com", hostbased_service_oid.desc);
   test_target("HTTP@canonical.example.com", "canonical.example.com", empty_oid);
   test_target("host@canonical.example.com", "canonical.example.com", empty_oid);
   test_target("HTTP@canonical.example.com", "canonical.example.com",
-              unknown_name_oid);
+              unknown_name_oid.desc);
   test_target("host@canonical.example.com", "canonical.example.com",
-              unknown_name_oid);
+              unknown_name_oid.desc);
   // Once the context is open, or under `GSS_C_NT_USER_NAME` /
   // `GSS_KRB5_NT_PRINCIPAL_NAME` (even on SPNEGO Round 1), or under a
   // non-SPNEGO mechanism without a hostbased OID, `HTTP@REALM` and `host@REALM`
@@ -807,25 +816,25 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   test_target("host@canonical.example.com", kNonHttpServicePrincipal, empty_oid,
               *CHROME_GSS_SPNEGO_MECH_OID_DESC, /*open=*/1);
   test_target("HTTP@canonical.example.com", kNonHttpServicePrincipal,
-              user_name_oid);
+              user_name_oid.desc);
   test_target("host@canonical.example.com", kNonHttpServicePrincipal,
-              user_name_oid);
+              user_name_oid.desc);
   test_target("HTTP@canonical.example.com", kNonHttpServicePrincipal,
-              krb5_principal_oid);
+              krb5_principal_oid.desc);
   test_target("host@canonical.example.com", kNonHttpServicePrincipal,
-              krb5_principal_oid);
+              krb5_principal_oid.desc);
   test_target("HTTP@canonical.example.com", kNonHttpServicePrincipal, empty_oid,
-              krb5_mech_oid);
+              krb5_mech_oid.desc);
   test_target("HTTP@canonical.example.com", kNonHttpServicePrincipal,
-              user_name_oid, krb5_mech_oid);
+              user_name_oid.desc, krb5_mech_oid.desc);
   test_target("HTTP@canonical.example.com", kNonHttpServicePrincipal,
-              krb5_principal_oid, krb5_mech_oid);
+              krb5_principal_oid.desc, krb5_mech_oid.desc);
   test_target("host@canonical.example.com", kNonHttpServicePrincipal, empty_oid,
-              krb5_mech_oid);
+              krb5_mech_oid.desc);
   test_target("host@canonical.example.com", kNonHttpServicePrincipal,
-              user_name_oid, krb5_mech_oid);
+              user_name_oid.desc, krb5_mech_oid.desc);
   test_target("host@canonical.example.com", kNonHttpServicePrincipal,
-              krb5_principal_oid, krb5_mech_oid);
+              krb5_principal_oid.desc, krb5_mech_oid.desc);
 
   // Canonical IPv4, IPv6 (bracketed, bare, or differing only in ASCII case),
   // and punycode hosts.
@@ -833,7 +842,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   test_target("HTTP/[2001:db8::1]:80@REALM", "[2001:db8::1]");
   test_target("HTTP/2001:db8::1@REALM", "[2001:db8::1]");
   test_target("HTTP/2001:DB8::1@REALM", "[2001:db8::1]");
-  test_target("HTTP@2001:db8::1", "[2001:db8::1]", hostbased_service_oid);
+  test_target("HTTP@2001:db8::1", "[2001:db8::1]", hostbased_service_oid.desc);
   test_target("HTTP/xn--bcher-kva.example.com@REALM",
               "xn--bcher-kva.example.com");
 
@@ -849,7 +858,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   test_target("HTTP/2001:0DB8:0:0:0:0:0:1@REALM", kUnparsableHost);
   test_target("HTTP/app%2edev.example.com@REALM", kUnparsableHost);
   test_target("HTTP@app%2edev.example.com", kUnparsableHost,
-              hostbased_service_oid);
+              hostbased_service_oid.desc);
   test_target(
       "HTTP/b\xc3\xbc"
       "cher.example.com@REALM",
@@ -857,7 +866,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   test_target(
       "HTTP@b\xc3\xbc"
       "cher.example.com",
-      kUnparsableHost, hostbased_service_oid);
+      kUnparsableHost, hostbased_service_oid.desc);
   test_target(
       "HTTP/\xef\xbd\x83"
       "anonical.example.com@REALM",
@@ -870,7 +879,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   // Non-HTTP services and UPNs.
   test_target("ldap/canonical.example.com@REALM", kNonHttpServicePrincipal);
   test_target("ldap@canonical.example.com", kNonHttpServicePrincipal,
-              hostbased_service_oid);
+              hostbased_service_oid.desc);
   test_target("user@REALM", kNonHttpServicePrincipal);
   test_target("canonical.example.com", kNonHttpServicePrincipal);
 
@@ -887,7 +896,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GetTargetPrincipalHost) {
   test_target("HTTP/.@REALM", kUnparsableHost);
   test_target("HTTP/canonical.example.com..@REALM", kUnparsableHost);
   test_target("HTTP/@REALM", kUnparsableHost);
-  test_target("HTTP@", kUnparsableHost, hostbased_service_oid);
+  test_target("HTTP@", kUnparsableHost, hostbased_service_oid.desc);
   test_target("HTTP/canonical.example.com:99999@REALM", kUnparsableHost);
   test_target("HTTP/[not-ipv6]@REALM", kUnparsableHost);
   test_target("HTTP/not:an:ipv6@REALM", kUnparsableHost);

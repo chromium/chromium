@@ -5,6 +5,9 @@
 #ifndef NET_HTTP_HTTP_AUTH_GSSAPI_POSIX_H_
 #define NET_HTTP_HTTP_AUTH_GSSAPI_POSIX_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <string>
 #include <string_view>
 
@@ -31,6 +34,21 @@
 namespace net {
 
 class HttpAuthChallengeTokenizer;
+
+// On x86 macOS, Apple's gssapi.h wraps `gss_OID_desc` in `#pragma pack(2)`,
+// which places `elements` at a 4-byte-aligned address. A statically
+// initialized pointer that isn't 8-byte aligned can straddle a page boundary,
+// which Mach-O chained fixups can't represent. Because Clang also lowers
+// non-static local `gss_OID_desc` aggregate initializers into
+// `__DATA,__const`, wrap both static and local literals in `PaddedOidDesc` so
+// `gss_OID_desc::elements` is 8-byte aligned on all platforms.
+struct alignas(8) PaddedOidDesc {
+  uint32_t padding = 0;
+  gss_OID_desc desc;
+};
+static_assert(
+    (offsetof(PaddedOidDesc, desc) + offsetof(gss_OID_desc, elements)) % 8 ==
+    0);
 
 // Mechanism OID for GSSAPI. We always use SPNEGO.
 NET_EXPORT_PRIVATE extern gss_OID CHROME_GSS_SPNEGO_MECH_OID_DESC;
