@@ -15,7 +15,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_groups.TabGroupId;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -95,31 +97,9 @@ public class TabMultiSelectHelper {
      * @param clickedTabId The ID of the tab that was clicked.
      */
     private void handleCtrlClick(int clickedTabId) {
-        TabModel tabModel = mTabModelSupplier.get();
-        if (tabModel == null
-                || clickedTabId == Tab.INVALID_TAB_ID
-                || tabModel.getTabById(clickedTabId) == null) {
-            return;
-        }
-
-        // If the tab is already multi-selected, ctrl click should unselect it.
-        if (tabModel.isTabMultiSelected(clickedTabId)) {
-            if (clickedTabId == TabModelUtils.getCurrentTabId(tabModel)) {
-                handleSelectedTabCtrlClicked(clickedTabId);
-                return;
-            }
-            tabModel.setTabsMultiSelected(Set.of(clickedTabId), /* isSelected= */ false);
-        } else {
-            int oldSelectedTabId = TabModelUtils.getCurrentTabId(tabModel);
+        if (toggleTabMultiSelection(clickedTabId)) {
             // Select clicked tab.
             mSelectTabCallback.onResult(clickedTabId);
-            // When Ctrl clicked, even the previous tab gets selected.
-            if (oldSelectedTabId != Tab.INVALID_TAB_ID && oldSelectedTabId != clickedTabId) {
-                tabModel.setTabsMultiSelected(
-                        Set.of(clickedTabId, oldSelectedTabId), /* isSelected= */ true);
-            } else {
-                tabModel.setTabsMultiSelected(Set.of(clickedTabId), /* isSelected= */ true);
-            }
             // Clear anchor tab.
             mAnchorTabId = Tab.INVALID_TAB_ID;
         }
@@ -145,18 +125,23 @@ public class TabMultiSelectHelper {
         if (isDestructive) {
             clearMultiSelection(/* clearAnchor= */ false, /* notifyObservers= */ false);
         }
-        if (mAnchorTabId == Tab.INVALID_TAB_ID) {
-            // If there's no anchor, treat the previously selected tab as anchor.
+        @Nullable Tab anchorTab =
+                mAnchorTabId == Tab.INVALID_TAB_ID ? null : tabModel.getTabById(mAnchorTabId);
+        if (anchorTab == null) {
+            // If there's no valid anchor, treat the previously selected tab as anchor.
             mAnchorTabId = TabModelUtils.getCurrentTabId(tabModel);
+            anchorTab =
+                    mAnchorTabId == Tab.INVALID_TAB_ID ? null : tabModel.getTabById(mAnchorTabId);
         }
 
-        int anchorIndex = tabModel.indexOf(tabModel.getTabById(mAnchorTabId));
+        int anchorIndex =
+                anchorTab == null ? TabModel.INVALID_TAB_INDEX : tabModel.indexOf(anchorTab);
         int clickedIndex = tabModel.indexOf(tabModel.getTabById(clickedTabId));
 
         int startIndex = Math.min(anchorIndex, clickedIndex);
         int endIndex = Math.max(anchorIndex, clickedIndex);
 
-        Set<Integer> selectedTabIds = new HashSet<>();
+        Set<Integer> selectedTabIds = new LinkedHashSet<>();
         Set<Token> tabGroupIds = new HashSet<>();
         if (startIndex != -1 && endIndex != -1) {
             for (int i = startIndex; i <= endIndex; i++) {
@@ -175,8 +160,25 @@ public class TabMultiSelectHelper {
                 }
             }
         }
-        mSelectTabCallback.onResult(clickedTabId);
-        tabModel.setTabsMultiSelected(/* tabIds= */ selectedTabIds, /* isSelected= */ true);
+        if (isDestructive) {
+            // Destructive ranges clear any previous selection above, so activate clickedTabId
+            // before populating the new range.
+            mSelectTabCallback.onResult(clickedTabId);
+            tabModel.setTabsMultiSelected(/* tabIds= */ selectedTabIds, /* isSelected= */ true);
+        } else {
+            // Include the currently active tab before calling setTabsMultiSelected() so the
+            // active-tab-in-set invariant holds even if an external switch left it outside the
+            // range. Add the range before activating clickedTabId so setIndex() preserves existing
+            // multi-selected tabs.
+            if (!selectedTabIds.isEmpty()) {
+                int oldSelectedTabId = TabModelUtils.getCurrentTabId(tabModel);
+                if (oldSelectedTabId != Tab.INVALID_TAB_ID) {
+                    selectedTabIds.add(oldSelectedTabId);
+                }
+            }
+            tabModel.setTabsMultiSelected(/* tabIds= */ selectedTabIds, /* isSelected= */ true);
+            mSelectTabCallback.onResult(clickedTabId);
+        }
     }
 
     /**
@@ -201,36 +203,54 @@ public class TabMultiSelectHelper {
      * @param tabId The ID of the tab that currently has keyboard focus.
      */
     public void multiselectKeyboardFocusedItem(int tabId) {
+        toggleTabMultiSelection(tabId);
+    }
+
+    /**
+     * Toggles the multi-selection state of a single tab. If the tab is already selected, it is
+     * deselected (handing off active status if it is the current tab). Otherwise, it is added to
+     * the multi-selection alongside the currently active tab.
+     *
+     * @param tabId The ID of the tab to toggle.
+     * @return True if the tab was newly added to the multi-selection, false otherwise.
+     */
+    private boolean toggleTabMultiSelection(int tabId) {
         TabModel tabModel = mTabModelSupplier.get();
         if (tabModel == null || tabId == Tab.INVALID_TAB_ID || tabModel.getTabById(tabId) == null) {
-            return;
+            return false;
         }
 
         // If the tab is already multi-selected, unselect it.
         if (tabModel.isTabMultiSelected(tabId)) {
-            tabModel.setTabsMultiSelected(Set.of(tabId), /* isSelected= */ false);
-        } else {
-            int activeTabId = TabModelUtils.getCurrentTabId(tabModel);
-            // When toggling multiselect, we need to add the active tab to the multi-selection set.
-            // This is an additive operation, and does not reset the selection set.
-            if (activeTabId != Tab.INVALID_TAB_ID && activeTabId != tabId) {
-                tabModel.setTabsMultiSelected(Set.of(tabId, activeTabId), /* isSelected= */ true);
-            } else {
-                tabModel.setTabsMultiSelected(Set.of(tabId), /* isSelected= */ true);
+            if (tabId == TabModelUtils.getCurrentTabId(tabModel)) {
+                deselectActiveTab(tabId);
+                return false;
             }
+            tabModel.setTabsMultiSelected(Set.of(tabId), /* isSelected= */ false);
+            return false;
         }
+
+        int activeTabId = TabModelUtils.getCurrentTabId(tabModel);
+        // Add the active tab alongside tabId before activating or completing the toggle so
+        // setIndex() preserves the multi-selection and maintains the active-tab-in-set invariant.
+        if (activeTabId != Tab.INVALID_TAB_ID && activeTabId != tabId) {
+            tabModel.setTabsMultiSelected(
+                    new LinkedHashSet<>(Arrays.asList(activeTabId, tabId)), /* isSelected= */ true);
+        } else {
+            tabModel.setTabsMultiSelected(Set.of(tabId), /* isSelected= */ true);
+        }
+        return true;
     }
 
     /**
-     * Handles the specific user action of Ctrl+clicking the currently active tab. This action
-     * deselects the active tab and transfers the active status to another tab within the existing
-     * multi-selection. The new active tab will be the earliest index tab in the current selection.
-     * If the clicked tab is the only one selected, this method does nothing to prevent a state with
-     * no active tab.
+     * Deselects the currently active tab (via Ctrl+Click or keyboard toggle) and transfers the
+     * active status to another tab within the existing multi-selection. The new active tab will be
+     * the earliest index tab in the current selection. If the active tab is the only one selected,
+     * this method does nothing to prevent a state with no active tab.
      *
-     * @param tabId The ID of the currently active tab that was clicked.
+     * @param tabId The ID of the currently active tab being deselected.
      */
-    private void handleSelectedTabCtrlClicked(int tabId) {
+    private void deselectActiveTab(int tabId) {
         TabModel tabModel = mTabModelSupplier.get();
         if (tabModel == null
                 || tabModel.getMultiSelectedTabsCount() <= 1
