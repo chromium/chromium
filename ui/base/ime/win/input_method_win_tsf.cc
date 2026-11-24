@@ -150,7 +150,9 @@ void InputMethodWinTSF::DetachTextInputClient(TextInputClient* client) {
   ui::TSFBridge::GetInstance()->RemoveFocusedClient(client);
 }
 
-void InputMethodWinTSF::OnInputLocaleChanged() {}
+void InputMethodWinTSF::OnInputLocaleChanged() {
+  NotifyInputLocaleChanged();
+}
 
 bool InputMethodWinTSF::IsInputLocaleCJK() const {
   if (!ui::TSFBridge::GetInstance()) {

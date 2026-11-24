@@ -500,6 +500,10 @@ export class OmniboxPopupSearchboxElement extends
     this.popupListenerIds_ = [
       this.popupCallbackRouter_.setInputState.addListener(
           this.onSetInputState_.bind(this)),
+      this.popupCallbackRouter_.setPrefersUrlInput.addListener(
+          (prefersUrlInput: boolean) => {
+            this.textInputType_ = prefersUrlInput ? 'url' : 'search';
+          }),
       this.popupCallbackRouter_.setFocus.addListener(
           this.onSetFocus_.bind(this)),
       this.popupCallbackRouter_.focusSearchWithDefaultSearchEngineKeywordMode

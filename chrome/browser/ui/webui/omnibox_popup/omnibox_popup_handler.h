@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/ime/input_method_observer.h"
 #include "ui/gfx/range/range.h"
 
 namespace content {
@@ -31,7 +32,8 @@ std::string GetDefaultSearchProviderIcon(
     bool is_dark_mode);
 
 class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
-                            public TemplateURLServiceObserver {
+                            public TemplateURLServiceObserver,
+                            public ui::InputMethodObserver {
  public:
   OmniboxPopupHandler(
       mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver,
@@ -117,6 +119,14 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
+  // ui::InputMethodObserver:
+  void OnFocus() override {}
+  void OnBlur() override {}
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
+  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
+  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
+  void OnInputLocaleChanged() override;
+
   // Notifies the WebUI of the current DSE icon and placeholder type.
   void NotifyDefaultSearchProviderChanged();
 
@@ -133,6 +143,10 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   raw_ptr<OmniboxController> controller_;
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
+  // Observes the input method of the popup's widget, which Windows tells about
+  // input language changes while the user types in the popup.
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      input_method_observation_{this};
   // Caches the latest selection range reported by the WebUI to allow
   // synchronous access on tab switches.
   gfx::Range latest_selection_;

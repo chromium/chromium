@@ -167,6 +167,10 @@ interface Page {
   // and selection range) of the WebUI Omnibox.
   SetInputState(OmniboxInputState state);
 
+  // Called by the browser when the input language changes, with whether the
+  // input should now expect URLs. See `OmniboxInputState.prefers_url_input`.
+  SetPrefersUrlInput(bool prefers_url_input);
+
   // Called by the browser when focus changes within the active tab. `query_zps`
   // indicates whether to issue a Zero-Suggest autocomplete query upon focus.
   // `select_all` indicates whether to select all input text upon gaining focus.

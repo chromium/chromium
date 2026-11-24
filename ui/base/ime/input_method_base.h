@@ -92,6 +92,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase : public InputMethod {
   // |client| which is the text input client with focus.
   void NotifyTextInputCaretBoundsChanged(const TextInputClient* client);
 
+  // Convenience method to notify all observers of input locale changes.
+  void NotifyInputLocaleChanged();
+
   ImeKeyEventDispatcher* ime_key_event_dispatcher() {
     return ime_key_event_dispatcher_;
   }

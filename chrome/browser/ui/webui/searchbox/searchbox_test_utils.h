@@ -167,6 +167,7 @@ class MockOmniboxPopupPage : public omnibox_popup::mojom::Page {
               SetInputState,
               (omnibox_popup::mojom::OmniboxInputStatePtr state),
               (override));
+  MOCK_METHOD(void, SetPrefersUrlInput, (bool prefers_url_input), (override));
   MOCK_METHOD(
       void,
       SetFocus,
