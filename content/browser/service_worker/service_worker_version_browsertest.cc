@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -27,6 +28,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -55,16 +57,32 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key_collection.h"
+#include "net/cookies/cookie_util.h"
+#include "net/cookies/site_for_cookies.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/storage_access_api/status.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "storage/browser/test/blob_test_utils.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
@@ -1928,6 +1946,558 @@ IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
   SetupServiceWorkerAndDoFetch(kCacheMatchURL, "bytes=0-8", &response);
   EXPECT_TRUE(response);
   ExpectNormalCacheResponse(std::move(response));
+}
+
+namespace {
+
+class TestCookieChangeListener : public network::mojom::CookieChangeListener {
+ public:
+  TestCookieChangeListener() = default;
+  ~TestCookieChangeListener() override = default;
+
+  mojo::PendingRemote<network::mojom::CookieChangeListener>
+  BindNewPipeAndPassRemote() {
+    mojo::PendingRemote<network::mojom::CookieChangeListener> remote =
+        receiver_.BindNewPipeAndPassRemote();
+    // Observe peer disconnection when the RestrictedCookieManager tears down
+    // its registered change listeners.
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &TestCookieChangeListener::OnDisconnect, base::Unretained(this)));
+    return remote;
+  }
+
+  void OnCookieChange(const net::CookieChangeInfo& change) override {
+    changes_.push_back(change);
+    if (change_quit_closure_) {
+      std::move(change_quit_closure_).Run();
+    }
+  }
+
+  void WaitForChange() {
+    if (!changes_.empty()) {
+      return;
+    }
+    base::RunLoop run_loop;
+    change_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void WaitForDisconnect() {
+    if (disconnected_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    disconnect_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  bool disconnected() const { return disconnected_; }
+  const std::vector<net::CookieChangeInfo>& changes() const { return changes_; }
+
+ private:
+  void OnDisconnect() {
+    disconnected_ = true;
+    receiver_.reset();
+    if (disconnect_quit_closure_) {
+      std::move(disconnect_quit_closure_).Run();
+    }
+  }
+
+  std::vector<net::CookieChangeInfo> changes_;
+  bool disconnected_ = false;
+  base::OnceClosure change_quit_closure_;
+  base::OnceClosure disconnect_quit_closure_;
+  mojo::Receiver<network::mojom::CookieChangeListener> receiver_{this};
+};
+
+class HoldingRestrictedCookieManagerContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  ~HoldingRestrictedCookieManagerContentBrowserClient() override = default;
+
+  bool WillCreateRestrictedCookieManager(
+      network::mojom::RestrictedCookieManagerRole role,
+      BrowserContext* browser_context,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info,
+      bool is_service_worker,
+      int process_id,
+      int routing_id,
+      bool prefer_bound_cookie_context,
+      mojo::PendingReceiver<network::mojom::RestrictedCookieManager>* receiver)
+      override {
+    if (!is_service_worker) {
+      return false;
+    }
+    held_receiver_ = std::move(*receiver);
+    if (bind_quit_closure_) {
+      std::move(bind_quit_closure_).Run();
+    }
+    return true;
+  }
+
+  void WaitForBind() {
+    if (held_receiver_.is_valid()) {
+      return;
+    }
+    base::RunLoop run_loop;
+    bind_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void ResetHeldReceiver() { held_receiver_.reset(); }
+
+ private:
+  mojo::PendingReceiver<network::mojom::RestrictedCookieManager> held_receiver_;
+  base::OnceClosure bind_quit_closure_;
+};
+
+net::CookieList GetBrowserCookiesSync(StoragePartition* partition,
+                                      const GURL& url) {
+  net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
+  base::test::TestFuture<const net::CookieAccessResultList&,
+                         const net::CookieAccessResultList&>
+      future;
+  partition->GetCookieManagerForBrowserProcess()->GetCookieList(
+      url, options, net::CookiePartitionKeyCollection(), future.GetCallback());
+  return net::cookie_util::StripAccessResults(std::get<0>(future.Take()));
+}
+
+}  // namespace
+
+// Verifies that RestrictedCookieManager and CookieChangeListener pipes bound
+// through a service worker's BrowserInterfaceBroker work while its
+// ServiceWorkerHost is alive, are closed when the host is destroyed while the
+// renderer process stays alive, and can be bound freshly on restart.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
+                       RestrictedCookieManagerClosedOnHostDestruction) {
+  StartServerAndNavigateToSetup();
+  SetUpRegistration("/service_worker/worker.js");
+
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+  const GURL scope_url = embedded_test_server()->GetURL("/service_worker/");
+  const url::Origin origin = url::Origin::Create(scope_url);
+  const net::SiteForCookies site_for_cookies =
+      net::SiteForCookies::FromOrigin(origin);
+  RenderProcessHost* worker_process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_NE(nullptr, worker_process);
+  const ChildProcessId process_id = worker_process->GetID();
+
+  ASSERT_TRUE(SetCookie(browser_context, scope_url, "initial_cookie=1"));
+
+  auto provider_info =
+      blink::mojom::ServiceWorkerProviderInfoForStartWorker::New();
+  auto host = std::make_unique<ServiceWorkerHost>(
+      provider_info->host_remote.InitWithNewEndpointAndPassReceiver(),
+      *version_, wrapper()->context()->AsWeakPtr());
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_remote;
+  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+      pending_interface_provider;
+  host->CompleteStartWorkerPreparation(
+      process_id, broker_remote.BindNewPipeAndPassReceiver(),
+      pending_interface_provider.InitWithNewPipeAndPassRemote());
+
+  mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager;
+  broker_remote->GetInterface(cookie_manager.BindNewPipeAndPassReceiver());
+
+  // 1. Verify cookie reads, writes, and change notifications succeed while the
+  // ServiceWorkerHost is alive.
+  {
+    auto options = network::mojom::CookieManagerGetOptions::New();
+    options->name = "initial_cookie";
+    options->match_type = network::mojom::CookieMatchType::EQUALS;
+    base::test::TestFuture<const std::vector<net::CookieWithAccessResult>&>
+        get_future;
+    cookie_manager->GetAllForUrl(
+        scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+        std::move(options), /*is_ad_tagged=*/false,
+        /*apply_devtools_overrides=*/false,
+        /*force_disable_third_party_cookies=*/false, get_future.GetCallback());
+    const auto& read_cookies = get_future.Get();
+    ASSERT_EQ(1u, read_cookies.size());
+    EXPECT_EQ("initial_cookie", read_cookies[0].cookie.Name());
+    EXPECT_EQ("1", read_cookies[0].cookie.Value());
+
+    base::test::TestFuture<bool> enabled_future;
+    cookie_manager->CookiesEnabledFor(
+        scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+        /*apply_devtools_overrides=*/false, enabled_future.GetCallback());
+    EXPECT_TRUE(enabled_future.Get());
+
+    base::test::TestFuture<uint64_t, base::ReadOnlySharedMemoryRegion,
+                           const std::string&>
+        cookie_string_future;
+    cookie_manager->GetCookiesString(
+        scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+        /*get_version_shared_memory=*/false, /*is_ad_tagged=*/false,
+        /*apply_devtools_overrides=*/false,
+        /*force_disable_third_party_cookies=*/false,
+        cookie_string_future.GetCallback());
+    EXPECT_EQ("initial_cookie=1", std::get<2>(cookie_string_future.Take()));
+  }
+
+  cookie_manager->SetCookieFromString(
+      scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      "active_worker_cookie=2");
+  // Ensure the forwarded SetCookieFromString IPC reaches the network service
+  // before querying CookieManager on a separate Mojo pipe.
+  base::test::TestFuture<bool> sync_future;
+  cookie_manager->CookiesEnabledFor(
+      scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+      /*apply_devtools_overrides=*/false, sync_future.GetCallback());
+  ASSERT_TRUE(sync_future.Get());
+  EXPECT_NE(
+      std::string::npos,
+      GetCookies(browser_context, scope_url).find("active_worker_cookie=2"));
+
+  TestCookieChangeListener change_listener;
+  {
+    base::test::TestFuture<void> add_listener_future;
+    cookie_manager->AddChangeListener(
+        scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+        change_listener.BindNewPipeAndPassRemote(),
+        add_listener_future.GetCallback());
+    ASSERT_TRUE(add_listener_future.Wait());
+  }
+  ASSERT_TRUE(SetCookie(browser_context, scope_url, "observed_cookie=3"));
+  change_listener.WaitForChange();
+  ASSERT_EQ(1u, change_listener.changes().size());
+  EXPECT_EQ("observed_cookie", change_listener.changes()[0].cookie.Name());
+
+  // 2. Destroying ServiceWorkerHost (as happens on worker stop) while the
+  // renderer process stays alive must close the RestrictedCookieManager pipe
+  // and tear down registered change listeners.
+  host.reset();
+  ASSERT_TRUE(worker_process->IsInitializedAndNotDead());
+  broker_remote.FlushForTesting();
+  EXPECT_FALSE(broker_remote.is_connected());
+
+  cookie_manager.FlushForTesting();
+  EXPECT_FALSE(cookie_manager.is_connected());
+  if (!cookie_manager.is_connected()) {
+    change_listener.WaitForDisconnect();
+  }
+
+  cookie_manager->SetCookieFromString(
+      scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      "after_stop_cookie=4");
+  cookie_manager.FlushForTesting();
+  ASSERT_TRUE(SetCookie(browser_context, scope_url, "final_cookie=5"));
+
+  EXPECT_TRUE(change_listener.disconnected());
+  EXPECT_EQ(1u, change_listener.changes().size());
+  const std::string cookies_after_stop = GetCookies(browser_context, scope_url);
+  EXPECT_EQ(std::string::npos, cookies_after_stop.find("after_stop_cookie=4"));
+  EXPECT_NE(std::string::npos, cookies_after_stop.find("final_cookie=5"));
+
+  // 3. Verify a newly created ServiceWorkerHost (simulating worker restart) can
+  // bind a fresh RestrictedCookieManager and read updated cookies.
+  auto restarted_provider_info =
+      blink::mojom::ServiceWorkerProviderInfoForStartWorker::New();
+  auto restarted_host = std::make_unique<ServiceWorkerHost>(
+      restarted_provider_info->host_remote.InitWithNewEndpointAndPassReceiver(),
+      *version_, wrapper()->context()->AsWeakPtr());
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> restarted_broker;
+  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+      restarted_interface_provider;
+  restarted_host->CompleteStartWorkerPreparation(
+      process_id, restarted_broker.BindNewPipeAndPassReceiver(),
+      restarted_interface_provider.InitWithNewPipeAndPassRemote());
+
+  mojo::Remote<network::mojom::RestrictedCookieManager>
+      restarted_cookie_manager;
+  restarted_broker->GetInterface(
+      restarted_cookie_manager.BindNewPipeAndPassReceiver());
+
+  auto options = network::mojom::CookieManagerGetOptions::New();
+  options->name = "final_cookie";
+  options->match_type = network::mojom::CookieMatchType::EQUALS;
+  base::test::TestFuture<const std::vector<net::CookieWithAccessResult>&>
+      restarted_get_future;
+  restarted_cookie_manager->GetAllForUrl(
+      scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+      std::move(options), /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false,
+      restarted_get_future.GetCallback());
+  const auto& restarted_cookies = restarted_get_future.Get();
+  ASSERT_EQ(1u, restarted_cookies.size());
+  EXPECT_EQ("final_cookie", restarted_cookies[0].cookie.Name());
+  EXPECT_EQ("5", restarted_cookies[0].cookie.Value());
+}
+
+// Verifies clean disconnection without responder assertions when either the
+// backend RestrictedCookieManager disconnects or ServiceWorkerHost is destroyed
+// while a request is in flight.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
+                       RestrictedCookieManagerClosedOnBackendDisconnect) {
+  StartServerAndNavigateToSetup();
+  SetUpRegistration("/service_worker/worker.js");
+
+  const GURL scope_url = embedded_test_server()->GetURL("/service_worker/");
+  const url::Origin origin = url::Origin::Create(scope_url);
+  const net::SiteForCookies site_for_cookies =
+      net::SiteForCookies::FromOrigin(origin);
+  const ChildProcessId process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+
+  HoldingRestrictedCookieManagerContentBrowserClient browser_client;
+
+  auto provider_info =
+      blink::mojom::ServiceWorkerProviderInfoForStartWorker::New();
+  auto host = std::make_unique<ServiceWorkerHost>(
+      provider_info->host_remote.InitWithNewEndpointAndPassReceiver(),
+      *version_, wrapper()->context()->AsWeakPtr());
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_remote;
+  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+      pending_interface_provider;
+  host->CompleteStartWorkerPreparation(
+      process_id, broker_remote.BindNewPipeAndPassReceiver(),
+      pending_interface_provider.InitWithNewPipeAndPassRemote());
+
+  // Case 1: Backend disconnects while a request is in flight.
+  {
+    mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager;
+    broker_remote->GetInterface(cookie_manager.BindNewPipeAndPassReceiver());
+    base::RunLoop disconnect_loop;
+    cookie_manager.set_disconnect_handler(disconnect_loop.QuitClosure());
+    browser_client.WaitForBind();
+
+    auto options = network::mojom::CookieManagerGetOptions::New();
+    options->name = "sample_cookie";
+    options->match_type = network::mojom::CookieMatchType::EQUALS;
+
+    bool callback_invoked = false;
+    cookie_manager->GetAllForUrl(
+        scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+        std::move(options), /*is_ad_tagged=*/false,
+        /*apply_devtools_overrides=*/false,
+        /*force_disable_third_party_cookies=*/false,
+        base::BindLambdaForTesting(
+            [&](const std::vector<net::CookieWithAccessResult>& cookies) {
+              callback_invoked = true;
+            }));
+    base::RunLoop flush_loop;
+    cookie_manager.FlushAsyncForTesting(flush_loop.QuitClosure());
+    flush_loop.Run();
+
+    browser_client.ResetHeldReceiver();
+    disconnect_loop.Run();
+
+    EXPECT_FALSE(callback_invoked);
+    EXPECT_FALSE(cookie_manager.is_connected());
+  }
+
+  // Case 2: ServiceWorkerHost is destroyed while a request is in flight.
+  {
+    mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager;
+    broker_remote->GetInterface(cookie_manager.BindNewPipeAndPassReceiver());
+    base::RunLoop disconnect_loop;
+    cookie_manager.set_disconnect_handler(disconnect_loop.QuitClosure());
+    browser_client.WaitForBind();
+
+    auto options = network::mojom::CookieManagerGetOptions::New();
+    options->name = "sample_cookie";
+    options->match_type = network::mojom::CookieMatchType::EQUALS;
+
+    cookie_manager->GetAllForUrl(
+        scope_url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone,
+        std::move(options), /*is_ad_tagged=*/false,
+        /*apply_devtools_overrides=*/false,
+        /*force_disable_third_party_cookies=*/false, base::DoNothing());
+    base::RunLoop flush_loop;
+    cookie_manager.FlushAsyncForTesting(flush_loop.QuitClosure());
+    flush_loop.Run();
+
+    host.reset();
+    disconnect_loop.Run();
+    EXPECT_FALSE(cookie_manager.is_connected());
+  }
+}
+
+// Verifies that the JavaScript CookieStore API inside a running service worker
+// continues to read and write cookies normally through the worker's broker.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
+                       CookieStoreApiWorksInRunningServiceWorker) {
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/service_worker/cookie_store_sw.js") {
+          return nullptr;
+        }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/javascript");
+        response->set_content(R"(
+          self.addEventListener('install', event => {
+            event.waitUntil((async () => {
+              await cookieStore.set('sw_js_cookie', 'active_value');
+              const item = await cookieStore.get('sw_js_cookie');
+              if (!item || item.value !== 'active_value') {
+                throw new Error('Unexpected cookie value');
+              }
+            })());
+          });
+        )");
+        return response;
+      }));
+
+  StartServerAndNavigateToSetup();
+  EXPECT_EQ(Install("/service_worker/cookie_store_sw.js"),
+            blink::ServiceWorkerStatusCode::kOk);
+
+  StoragePartition* partition = shell()
+                                    ->web_contents()
+                                    ->GetBrowserContext()
+                                    ->GetDefaultStoragePartition();
+  const GURL worker_url = embedded_test_server()->GetURL("/service_worker/");
+  net::CookieList cookies = GetBrowserCookiesSync(partition, worker_url);
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_EQ("sw_js_cookie", cookies[0].Name());
+  EXPECT_EQ("active_value", cookies[0].Value());
+
+  // Start the installed worker, bind RestrictedCookieManager on its live
+  // ServiceWorkerHost, and verify StopWorker() tears down the pipe while the
+  // renderer process stays alive.
+  ASSERT_EQ(StartWorker(), blink::ServiceWorkerStatusCode::kOk);
+  ASSERT_NE(nullptr, version_->worker_host());
+  base::WeakPtr<ServiceWorkerHost> worker_host_weak =
+      version_->worker_host()->GetWeakPtr();
+  RenderProcessHost* worker_process = version_->worker_host()->GetProcessHost();
+  ASSERT_NE(nullptr, worker_process);
+
+  mojo::Remote<network::mojom::RestrictedCookieManager> rcm_remote;
+  version_->worker_host()->BindRestrictedCookieManager(
+      rcm_remote.BindNewPipeAndPassReceiver());
+
+  StopWorker();
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kStopped, version_->running_status());
+  EXPECT_FALSE(worker_host_weak);
+  EXPECT_TRUE(worker_process->IsInitializedAndNotDead());
+
+  rcm_remote.FlushForTesting();
+  EXPECT_FALSE(rcm_remote.is_connected());
+}
+
+class ServiceWorkerRestrictedCookieManagerBrowserTest
+    : public ServiceWorkerVersionBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ServiceWorkerVersionBrowserTest::SetUpOnMainThread();
+  }
+};
+
+// Verifies that ServiceWorkerHost's RestrictedCookieManager allows empty-URL
+// AddChangeListener no-ops, while rejecting cross-origin URLs and mismatched
+// cookie domains with bad Mojo messages on the worker receiver.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRestrictedCookieManagerBrowserTest,
+                       RestrictedCookieManagerRejectsInvalidRequests) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(GetTestDataFilePath());
+  ASSERT_TRUE(https_server.Start());
+
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), https_server.GetURL("a.test", "/service_worker/empty.html"), 1);
+
+  const GURL worker_url = https_server.GetURL("a.test", "/service_worker/");
+  const url::Origin worker_origin = url::Origin::Create(worker_url);
+  const net::SiteForCookies site_for_cookies =
+      net::SiteForCookies::FromUrl(worker_url);
+  const ChildProcessId process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = worker_url;
+  registration_ = CreateNewServiceWorkerRegistration(
+      wrapper()->context()->registry(), options,
+      blink::StorageKey::CreateFirstParty(worker_origin));
+  registration_->set_last_update_check(base::Time::Now());
+  version_ = CreateNewServiceWorkerVersion(
+      wrapper()->context()->registry(), registration_.get(),
+      https_server.GetURL("a.test", "/service_worker/worker.js"),
+      blink::mojom::ScriptType::kClassic);
+  wrapper()->context()->registry().NotifyInstallingRegistration(
+      registration_.get());
+
+  auto provider_info =
+      blink::mojom::ServiceWorkerProviderInfoForStartWorker::New();
+  auto host = std::make_unique<ServiceWorkerHost>(
+      provider_info->host_remote.InitWithNewEndpointAndPassReceiver(),
+      *version_, wrapper()->context()->AsWeakPtr());
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_remote;
+  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+      pending_interface_provider;
+  host->CompleteStartWorkerPreparation(
+      process_id, broker_remote.BindNewPipeAndPassReceiver(),
+      pending_interface_provider.InitWithNewPipeAndPassRemote());
+
+  // 1. Empty URL on AddChangeListener returns cleanly without a bad message.
+  {
+    mojo::Remote<network::mojom::RestrictedCookieManager> rcm_remote;
+    broker_remote->GetInterface(rcm_remote.BindNewPipeAndPassReceiver());
+    TestCookieChangeListener listener;
+    base::test::TestFuture<void> add_future;
+    rcm_remote->AddChangeListener(GURL(), site_for_cookies, worker_origin,
+                                  net::StorageAccessApiStatus::kNone,
+                                  listener.BindNewPipeAndPassRemote(),
+                                  add_future.GetCallback());
+    ASSERT_TRUE(add_future.Wait());
+    EXPECT_TRUE(rcm_remote.is_connected());
+  }
+
+  // 2. Cross-origin URL on GetAllForUrl reports a bad message and disconnects.
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    mojo::Remote<network::mojom::RestrictedCookieManager> rcm_remote;
+    broker_remote->GetInterface(rcm_remote.BindNewPipeAndPassReceiver());
+
+    auto match_options = network::mojom::CookieManagerGetOptions::New();
+    match_options->name = "";
+    match_options->match_type = network::mojom::CookieMatchType::STARTS_WITH;
+    rcm_remote->GetAllForUrl(
+        GURL("https://other.example/service_worker/"), site_for_cookies,
+        worker_origin, net::StorageAccessApiStatus::kNone,
+        std::move(match_options), /*is_ad_tagged=*/false,
+        /*apply_devtools_overrides=*/false,
+        /*force_disable_third_party_cookies=*/false, base::DoNothing());
+    EXPECT_EQ("Incorrect url origin", bad_message_observer.WaitForBadMessage());
+    rcm_remote.FlushForTesting();
+    EXPECT_FALSE(rcm_remote.is_connected());
+  }
+
+  // 3. Mismatched domain on SetCanonicalCookie reports a bad message and
+  // disconnects without forwarding to NetworkService.
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    mojo::Remote<network::mojom::RestrictedCookieManager> rcm_remote;
+    broker_remote->GetInterface(rcm_remote.BindNewPipeAndPassReceiver());
+
+    auto cookie_params = network::mojom::RestrictedCanonicalCookieParams::New();
+    cookie_params->name = "mismatch_cookie";
+    cookie_params->value = "val";
+    cookie_params->domain = "other.example";
+    cookie_params->path = "/";
+    cookie_params->secure = true;
+    cookie_params->same_site = net::CookieSameSite::LAX_MODE;
+    cookie_params->priority = net::COOKIE_PRIORITY_MEDIUM;
+    cookie_params->partitioned =
+        network::mojom::RestrictedCookiePartition::UNPARTITIONED;
+
+    rcm_remote->SetCanonicalCookie(
+        std::move(cookie_params), worker_url, site_for_cookies, worker_origin,
+        net::StorageAccessApiStatus::kNone, /*is_ad_tagged=*/false,
+        /*apply_devtools_overrides=*/false, base::DoNothing());
+    EXPECT_EQ("Setting cookies on other domains is disallowed.",
+              bad_message_observer.WaitForBadMessage());
+    rcm_remote.FlushForTesting();
+    EXPECT_FALSE(rcm_remote.is_connected());
+  }
 }
 
 }  // namespace content

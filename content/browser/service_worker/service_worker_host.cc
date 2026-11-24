@@ -4,10 +4,17 @@
 
 #include "content/browser/service_worker/service_worker_host.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/buckets/bucket_manager.h"
@@ -33,15 +40,258 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/storage_access_api/status.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+BASE_FEATURE(kScopeServiceWorkerRestrictedCookieManager,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsCookieDomainValid(const GURL& url,
+                         const net::CanonicalCookie* cookie,
+                         const net::CookieInclusionStatus& status) {
+  if (cookie && !cookie->IsDomainMatch(url.GetHost())) {
+    return false;
+  }
+  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_DOMAIN_MISMATCH)) {
+    return false;
+  }
+  return true;
+}
+
+// Forwards RestrictedCookieManager requests from a service worker to the
+// underlying cookie manager while scoping the capability lifetime to the owning
+// ServiceWorkerHost.
+class ServiceWorkerRestrictedCookieManager final
+    : public network::mojom::RestrictedCookieManager {
+ public:
+  ServiceWorkerRestrictedCookieManager(
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<network::mojom::RestrictedCookieManager> backend,
+      mojo::UniqueReceiverSet<network::mojom::RestrictedCookieManager>&
+          receiver_set)
+      : origin_(origin),
+        cookie_partition_key_(net::CookiePartitionKey::FromNetworkIsolationKey(
+            isolation_info.network_isolation_key(),
+            isolation_info.site_for_cookies(),
+            net::SchemefulSite(origin),
+            isolation_info.IsMainFrameRequest())),
+        backend_(std::move(backend)),
+        receiver_set_(receiver_set) {}
+
+  ServiceWorkerRestrictedCookieManager(
+      const ServiceWorkerRestrictedCookieManager&) = delete;
+  ServiceWorkerRestrictedCookieManager& operator=(
+      const ServiceWorkerRestrictedCookieManager&) = delete;
+
+  ~ServiceWorkerRestrictedCookieManager() override = default;
+
+  void SetBackendDisconnectHandler(base::OnceClosure handler) {
+    // Propagate upstream disconnection (for example if the network service
+    // restarts or closes the backend receiver) by removing the corresponding
+    // worker-facing receiver from `ServiceWorkerHost`.
+    backend_.set_disconnect_handler(std::move(handler));
+  }
+
+  // network::mojom::RestrictedCookieManager:
+  void GetAllForUrl(const GURL& url,
+                    const net::SiteForCookies& site_for_cookies,
+                    const url::Origin& top_frame_origin,
+                    net::StorageAccessApiStatus storage_access_api_status,
+                    network::mojom::CookieManagerGetOptionsPtr options,
+                    bool is_ad_tagged,
+                    bool apply_devtools_overrides,
+                    bool force_disable_third_party_cookies,
+                    GetAllForUrlCallback callback) override {
+    if (!ValidateAccessToCookiesAt(url)) {
+      std::move(callback).Run({});
+      return;
+    }
+    backend_->GetAllForUrl(
+        url, site_for_cookies, top_frame_origin, storage_access_api_status,
+        std::move(options), is_ad_tagged, apply_devtools_overrides,
+        force_disable_third_party_cookies,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(callback), std::vector<net::CookieWithAccessResult>()));
+  }
+
+  void SetCanonicalCookie(
+      network::mojom::RestrictedCanonicalCookieParamsPtr cookie_params,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      bool is_ad_tagged,
+      bool apply_devtools_overrides,
+      SetCanonicalCookieCallback callback) override {
+    if (!ValidateAccessToCookiesAt(url)) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    std::optional<net::CookiePartitionKey> cookie_partition_key =
+        cookie_params->partitioned ==
+                    network::mojom::RestrictedCookiePartition::PARTITIONED ||
+                net::CookiePartitionKey::HasNonce(cookie_partition_key_)
+            ? cookie_partition_key_
+            : std::nullopt;
+    net::CookieInclusionStatus status;
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateSanitizedCookie(
+            url, cookie_params->name, cookie_params->value,
+            cookie_params->domain, cookie_params->path, cookie_params->creation,
+            cookie_params->expires, cookie_params->last_access,
+            cookie_params->secure, cookie_params->http_only,
+            cookie_params->same_site, cookie_params->priority,
+            cookie_partition_key, &status);
+    if (!IsCookieDomainValid(url, cookie.get(), status)) {
+      ReportBadMessage("Setting cookies on other domains is disallowed.");
+      std::move(callback).Run(false);
+      return;
+    }
+    if (!cookie) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    backend_->SetCanonicalCookie(
+        std::move(cookie_params), url, site_for_cookies, top_frame_origin,
+        storage_access_api_status, is_ad_tagged, apply_devtools_overrides,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                    false));
+  }
+
+  void AddChangeListener(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      mojo::PendingRemote<network::mojom::CookieChangeListener> listener,
+      AddChangeListenerCallback callback) override {
+    if (url.is_empty()) {
+      std::move(callback).Run();
+      return;
+    }
+    if (!ValidateAccessToCookiesAt(url)) {
+      std::move(callback).Run();
+      return;
+    }
+    backend_->AddChangeListener(
+        url, site_for_cookies, top_frame_origin, storage_access_api_status,
+        std::move(listener),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
+  }
+
+  void SetCookieFromString(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      bool is_ad_tagged,
+      bool apply_devtools_overrides,
+      const std::string& cookie) override {
+    if (!ValidateAccessToCookiesAt(url)) {
+      return;
+    }
+    backend_->SetCookieFromString(url, site_for_cookies, top_frame_origin,
+                                  storage_access_api_status, is_ad_tagged,
+                                  apply_devtools_overrides, cookie);
+  }
+
+  void GetCookiesString(const GURL& url,
+                        const net::SiteForCookies& site_for_cookies,
+                        const url::Origin& top_frame_origin,
+                        net::StorageAccessApiStatus storage_access_api_status,
+                        bool get_version_shared_memory,
+                        bool is_ad_tagged,
+                        bool apply_devtools_overrides,
+                        bool force_disable_third_party_cookies,
+                        GetCookiesStringCallback callback) override {
+    if (!ValidateAccessToCookiesAt(url)) {
+      std::move(callback).Run(network::mojom::kInvalidCookieVersion,
+                              base::ReadOnlySharedMemoryRegion(),
+                              std::string());
+      return;
+    }
+    backend_->GetCookiesString(
+        url, site_for_cookies, top_frame_origin, storage_access_api_status,
+        get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
+        force_disable_third_party_cookies,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(callback), network::mojom::kInvalidCookieVersion,
+            base::ReadOnlySharedMemoryRegion(), std::string()));
+  }
+
+  void CookiesEnabledFor(const GURL& url,
+                         const net::SiteForCookies& site_for_cookies,
+                         const url::Origin& top_frame_origin,
+                         net::StorageAccessApiStatus storage_access_api_status,
+                         bool apply_devtools_overrides,
+                         CookiesEnabledForCallback callback) override {
+    if (!ValidateAccessToCookiesAt(url)) {
+      std::move(callback).Run(false);
+      return;
+    }
+    backend_->CookiesEnabledFor(url, site_for_cookies, top_frame_origin,
+                                storage_access_api_status,
+                                apply_devtools_overrides,
+                                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                                    std::move(callback), false));
+  }
+
+ private:
+  bool ValidateAccessToCookiesAt(const GURL& url) {
+    if (origin_.opaque()) {
+      ReportBadMessage("Access is denied in this context");
+      return false;
+    }
+    if (!origin_.IsSameOriginWith(url)) {
+      ReportBadMessage("Incorrect url origin");
+      return false;
+    }
+    return true;
+  }
+
+  void ReportBadMessage(std::string_view error) {
+    mojo::UniqueReceiverSet<network::mojom::RestrictedCookieManager>&
+        receiver_set = *receiver_set_;
+    // `ReportBadMessage()` synchronously removes the active receiver from
+    // `receiver_set` and destroys `this`; do not access `this` afterward.
+    receiver_set.ReportBadMessage(error);
+  }
+
+  const url::Origin origin_;
+  const std::optional<net::CookiePartitionKey> cookie_partition_key_;
+  mojo::Remote<network::mojom::RestrictedCookieManager> backend_;
+  // Safe because `receiver_set_` (owned by `ServiceWorkerHost`) owns `this`.
+  const raw_ref<
+      mojo::UniqueReceiverSet<network::mojom::RestrictedCookieManager>>
+      receiver_set_;
+};
+
+}  // namespace
 
 ServiceWorkerHost::ServiceWorkerHost(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
@@ -167,6 +417,43 @@ void ServiceWorkerHost::BindClipboardHost(
   }
   clipboard_hosts_.Add(std::make_unique<ClipboardHostImpl>(*this),
                        std::move(receiver));
+}
+
+void ServiceWorkerHost::BindRestrictedCookieManager(
+    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  RenderProcessHost* process = RenderProcessHost::FromID(worker_process_id_);
+  if (!process) {
+    return;
+  }
+
+  const blink::StorageKey& storage_key = version_->key();
+  if (!base::FeatureList::IsEnabled(
+          kScopeServiceWorkerRestrictedCookieManager)) {
+    process->BindRestrictedCookieManagerForServiceWorker(storage_key,
+                                                         std::move(receiver));
+    return;
+  }
+
+  mojo::PendingRemote<network::mojom::RestrictedCookieManager> backend_remote;
+  process->BindRestrictedCookieManagerForServiceWorker(
+      storage_key, backend_remote.InitWithNewPipeAndPassReceiver());
+
+  auto proxy = std::make_unique<ServiceWorkerRestrictedCookieManager>(
+      storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
+      std::move(backend_remote), restricted_cookie_managers_);
+  ServiceWorkerRestrictedCookieManager* raw_proxy = proxy.get();
+  mojo::ReceiverId receiver_id =
+      restricted_cookie_managers_.Add(std::move(proxy), std::move(receiver));
+  raw_proxy->SetBackendDisconnectHandler(
+      base::BindOnce(&ServiceWorkerHost::OnRestrictedCookieManagerDisconnected,
+                     weak_factory_.GetWeakPtr(), receiver_id));
+}
+
+void ServiceWorkerHost::OnRestrictedCookieManagerDisconnected(
+    mojo::ReceiverId receiver_id) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  restricted_cookie_managers_.Remove(receiver_id);
 }
 
 void ServiceWorkerHost::BindUsbService(

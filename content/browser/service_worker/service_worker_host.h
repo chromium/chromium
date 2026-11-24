@@ -26,6 +26,7 @@
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
@@ -103,6 +104,12 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
   void BindClipboardHost(
       mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
 
+  // Binds a worker-scoped RestrictedCookieManager whose pipe and any
+  // associated CookieChangeListeners are closed when this ServiceWorkerHost is
+  // destroyed.
+  void BindRestrictedCookieManager(
+      mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
+
   ServiceWorkerContainerHostForServiceWorker* container_host() {
     return container_host_.get();
   }
@@ -148,6 +155,8 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
   RenderProcessHost* GetProcessHost() const;
 
  private:
+  void OnRestrictedCookieManagerDisconnected(mojo::ReceiverId receiver_id);
+
   ChildProcessId worker_process_id_;
 
   // The service worker being hosted. Raw pointer is safe because the version
@@ -186,6 +195,12 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
   // Clipboard hosts bound by this worker. They hold a reference to `this` and
   // go away with it, or earlier when their pipe closes.
   mojo::UniqueReceiverSet<blink::mojom::ClipboardHost> clipboard_hosts_;
+
+  // RestrictedCookieManager instances bound by this worker. Owned here so
+  // cookie access capabilities and change listeners are closed when this
+  // ServiceWorkerHost is destroyed, or earlier if either endpoint disconnects.
+  mojo::UniqueReceiverSet<network::mojom::RestrictedCookieManager>
+      restricted_cookie_managers_;
 
   mojo::AssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
       host_receiver_;

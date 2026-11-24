@@ -2002,6 +2002,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
                           base::Unretained(host)));
   map->Add<blink::mojom::ClipboardHost>(base::BindRepeating(
       &ServiceWorkerHost::BindClipboardHost, base::Unretained(host)));
+  map->Add<network::mojom::RestrictedCookieManager>(base::BindRepeating(
+      &ServiceWorkerHost::BindRestrictedCookieManager, base::Unretained(host)));
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindServiceWorkerReceiver(
@@ -2033,10 +2035,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-  map->Add<network::mojom::RestrictedCookieManager>(
-      BindServiceWorkerReceiverForStorageKey(
-          &RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker,
-          host));
 
   // RenderProcessHost binders taking a storage key
   map->Add<blink::mojom::OneShotBackgroundSyncService>(
