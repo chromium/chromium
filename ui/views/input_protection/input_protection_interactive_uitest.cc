@@ -725,11 +725,11 @@ TEST_F(InputProtectionInteractiveUiTest,
       CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true));
 }
 
-// Verifies that assistive technology (accessibility mode) bypasses input
-// protection restrictions.
+// Verifies that assistive technology (`kExtendedProperties` accessibility mode)
+// bypasses input protection restrictions.
 TEST_F(InputProtectionInteractiveUiTest,
        AccessibilityModeBypassesInputProtection) {
-  ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kExtendedProperties);
   RunTestSequence(
       TriggerAotPopAwayAttack(kPrimaryButtonId),
       ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));

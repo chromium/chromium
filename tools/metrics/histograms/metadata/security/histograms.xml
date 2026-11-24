@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(InputProtectionWidgetIdentifier) -->
+
+<variants name="InputProtectionWidgetIdentifier">
+  <variant name="All" summary="all widgets"/>
+  <variant name="TestWidget" summary="test widgets"/>
+</variants>
+
+<!-- LINT.ThenChange(//ui/views/input_protection/input_protection_event_handler.h:InputProtectionWidgetIdentifier) -->
+
 <variants name="RequestHeaderIntegrityResourceType">
   <variant name="MainResource" summary="top-level frame / window navigation"/>
   <variant name="Prefetch" summary="navigational prefetch"/>
@@ -548,6 +557,21 @@ chromium-metrics-reviews@google.com.
     has Enhanced Safe Browsing enabled and has not manually customized their HFM
     settings.
   </summary>
+</histogram>
+
+<histogram
+    name="Security.InputEvent.InputProtectionBlockReason.{WidgetIdentifier}"
+    enum="InputProtectionBlockReason" expires_after="2027-04-01">
+  <owner>bkeen@google.com</owner>
+  <owner>dfried@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the reason why an input event was blocked in the Views input
+    protection framework for {WidgetIdentifier}. Logged each time an input event
+    is blocked, indicating whether it was blocked by always-on-top window
+    occlusion protection or by an input protection policy on a protected widget.
+  </summary>
+  <token key="WidgetIdentifier" variants="InputProtectionWidgetIdentifier"/>
 </histogram>
 
 <histogram name="Security.iOS.KeychainMigration.Result"

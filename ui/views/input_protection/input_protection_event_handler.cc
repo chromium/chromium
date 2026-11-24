@@ -4,10 +4,14 @@
 
 #include "ui/views/input_protection/input_protection_event_handler.h"
 
-#include <cstdint>
+#include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -17,6 +21,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+
+#if defined(USE_AURA)
+#include "ui/views/accessibility/tree/views_ax_manager.h"
+#endif
 
 namespace views {
 
@@ -78,7 +86,53 @@ bool IsFocusTraversalKeyEvent(const ui::KeyEvent& key_event,
   return true;
 }
 
+// Returns true if an assistive technology is active. Checks
+// `kExtendedProperties` and `kScreenReader` (excluding form fillers and
+// password managers), plus `ViewsAXManager` on Aura for assistive technologies
+// that do not set global `AXMode` flags.
+bool IsAccessibilityEnabled() {
+#if defined(USE_AURA)
+  if (ViewsAXManager::IsEnabled()) {
+    return true;
+  }
+#endif
+  const ui::AXMode mode = ui::AXPlatform::GetInstance().GetMode();
+  return mode.has_mode(ui::AXMode::kExtendedProperties) ||
+         mode.has_mode(ui::AXMode::kScreenReader);
+}
+
+// Records the `reason` why an input event was blocked by the input protection
+// framework across all widgets (`.All`) and for the specific
+// `widget_identifier` if provided.
+void RecordBlockReason(
+    InputProtectionEventHandler::InputProtectionBlockReason reason,
+    std::optional<InputProtectionEventHandler::InputProtectionWidgetIdentifier>
+        widget_identifier) {
+  base::UmaHistogramEnumeration(
+      "Security.InputEvent.InputProtectionBlockReason.All", reason);
+
+  if (widget_identifier.has_value()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Security.InputEvent.InputProtectionBlockReason.",
+                      InputProtectionEventHandler::GetWidgetIdentifierString(
+                          *widget_identifier)}),
+        reason);
+  }
+}
+
 }  // namespace
+
+// static
+// LINT.IfChange(InputProtectionWidgetIdentifier)
+std::string_view InputProtectionEventHandler::GetWidgetIdentifierString(
+    InputProtectionWidgetIdentifier widget_identifier) {
+  switch (widget_identifier) {
+    case InputProtectionWidgetIdentifier::kTestWidget:
+      return "TestWidget";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/security/histograms.xml:InputProtectionWidgetIdentifier)
 
 InputProtectionEventHandler::InputProtectionEventHandler(
     internal::RootView* root_view)
@@ -140,7 +194,7 @@ void InputProtectionEventHandler::MaybeBlockEvent(ui::Event* event) {
   }
 
   // Do not block input events when accessibility is enabled.
-  if (!ui::AXPlatform::GetInstance().GetMode().is_mode_off()) {
+  if (IsAccessibilityEnabled()) {
     return;
   }
 
@@ -168,6 +222,8 @@ void InputProtectionEventHandler::MaybeBlockEvent(ui::Event* event) {
   if (target_view &&
       OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
           *event, *target_view)) {
+    RecordBlockReason(InputProtectionBlockReason::kAlwaysOnTopOcclusion,
+                      widget_identifier_);
     event->StopPropagation();
     root_view_->ResetEventHandlers();
     return;
@@ -186,6 +242,9 @@ void InputProtectionEventHandler::MaybeBlockEvent(ui::Event* event) {
                                              target_view)) {
     return;
   }
+
+  RecordBlockReason(InputProtectionBlockReason::kInputProtectionPolicy,
+                    widget_identifier_);
 
   // Discard the unintended event to prevent it from reaching the target view.
   event->StopPropagation();

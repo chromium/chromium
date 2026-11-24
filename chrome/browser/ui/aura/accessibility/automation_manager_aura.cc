@@ -48,7 +48,7 @@ void AutomationManagerAura::Disable() {
 
 void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type,
                                         bool from_user) {
-  if (!is_enabled() || !GetTreeSource() || !GetTreeSource()->GetRoot()) {
+  if (!IsEnabled() || !GetTreeSource() || !GetTreeSource()->GetRoot()) {
     return;
   }
 
@@ -61,7 +61,7 @@ void AutomationManagerAura::AllAutomationExtensionsGone() {
 }
 
 void AutomationManagerAura::ExtensionListenerAdded() {
-  if (!is_enabled()) {
+  if (!IsEnabled()) {
     return;
   }
   Reset(/*reset_serializer=*/true);
@@ -72,7 +72,7 @@ void AutomationManagerAura::DispatchAccessibilityEvents(
     std::vector<ui::AXTreeUpdate> tree_updates,
     const gfx::Point& mouse_location,
     std::vector<ui::AXEvent> events) {
-  if (!is_enabled() || !automation_event_router_interface_) {
+  if (!IsEnabled() || !automation_event_router_interface_) {
     return;
   }
 

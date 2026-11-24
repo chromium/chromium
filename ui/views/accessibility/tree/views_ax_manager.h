@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_action_handler.h"
@@ -85,7 +86,11 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
   void OnDataChanged(views::View* view) override;
   void OnVirtualViewDataChanged(views::AXVirtualView* virtual_view) override;
 
-  bool is_enabled() const { return is_enabled_; }
+  static bool IsEnabled() { return is_enabled_; }
+
+  static base::AutoReset<bool> SetIsEnabledForTesting(bool is_enabled) {
+    return base::AutoReset<bool>(&is_enabled_, is_enabled);
+  }
 
   void set_ax_aura_obj_cache_for_testing(
       std::unique_ptr<views::AXAuraObjCache> cache) {
@@ -127,7 +132,7 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
                           const ui::AXTreeUpdate& update);
 
   // Whether accessibility tree support for views is enabled.
-  bool is_enabled_ = false;
+  static bool is_enabled_;
 
   std::unique_ptr<views::AXAuraObjCache> cache_;
 

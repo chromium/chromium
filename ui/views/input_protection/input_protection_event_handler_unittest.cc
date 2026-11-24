@@ -6,10 +6,16 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/histogram_variants_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +34,10 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+
+#if defined(USE_AURA)
+#include "ui/views/accessibility/tree/views_ax_manager.h"
+#endif
 
 namespace views::test {
 namespace {
@@ -724,8 +734,9 @@ TEST_F(InputProtectionEventHandlerTest, AccessibilityModeBypassesProtection) {
       .Times(0);
   widget()->EnableInputEventActivationProtection(std::move(mock_protector));
 
-  // When accessibility is enabled, input protection should be bypassed.
-  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  // When extended accessibility properties are enabled (e.g. screen readers),
+  // input protection should be bypassed.
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kExtendedProperties);
 
   ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
                            ui::EF_NONE);
@@ -736,6 +747,257 @@ TEST_F(InputProtectionEventHandlerTest, AccessibilityModeBypassesProtection) {
   widget()->OnKeyEvent(&space_release);
 
   EXPECT_EQ(button_click_count(), 1);
+}
+
+TEST_F(InputProtectionEventHandlerTest, NativeAPIsModeDoesNotBypassProtection) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  EnableInputProtection(/*should_block=*/true);
+
+  // `kNativeAPIs` alone (which can be set by tools like form fillers or
+  // password managers) should not bypass input protection.
+  ui::ScopedAXModeSetter enable_native_apis(ui::AXMode::kNativeAPIs);
+
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&space_press);
+  EXPECT_TRUE(space_press.stopped_propagation());
+  EXPECT_EQ(button_click_count(), 0);
+}
+
+TEST_F(InputProtectionEventHandlerTest, ScreenReaderModeBypassesProtection) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // When `kScreenReader` mode is enabled (e.g. ChromeVox on ChromeOS), the
+  // protector should not be queried.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  ui::ScopedAXModeSetter enable_screen_reader(ui::AXMode::kScreenReader);
+
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&space_press);
+
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
+  widget()->OnKeyEvent(&space_release);
+
+  EXPECT_EQ(button_click_count(), 1);
+}
+
+#if defined(USE_AURA)
+TEST_F(InputProtectionEventHandlerTest, ViewsAXManagerBypassesProtection) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // When `ViewsAXManager` is enabled (e.g. Switch Access or FaceGaze on
+  // ChromeOS), the protector should not be queried.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  base::AutoReset<bool> enable_views_ax_manager =
+      ViewsAXManager::SetIsEnabledForTesting(true);
+
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&space_press);
+
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
+  widget()->OnKeyEvent(&space_release);
+
+  EXPECT_EQ(button_click_count(), 1);
+}
+#endif  // defined(USE_AURA)
+
+TEST_F(InputProtectionEventHandlerTest,
+       RecordsMetricsWhenBlockedByInputProtectionPolicy) {
+  base::HistogramTester histogram_tester;
+  EnableInputProtection(/*should_block=*/true);
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.InputEvent.InputProtectionBlockReason.All",
+      InputProtectionEventHandler::InputProtectionBlockReason::
+          kInputProtectionPolicy,
+      1);
+}
+
+TEST_F(InputProtectionEventHandlerTest, CheckWidgetIdentifierVariants) {
+  std::optional<base::HistogramVariantsEntryMap> variants =
+      base::ReadVariantsFromHistogramsXml("InputProtectionWidgetIdentifier",
+                                          "security");
+  ASSERT_TRUE(variants.has_value());
+  EXPECT_TRUE(variants->contains("All"));
+
+  std::vector<std::string> missing_variants;
+  for (int i = 0;
+       i <= static_cast<int>(InputProtectionEventHandler::
+                                 InputProtectionWidgetIdentifier::kMaxValue);
+       ++i) {
+    const auto widget_identifier = static_cast<
+        InputProtectionEventHandler::InputProtectionWidgetIdentifier>(i);
+    const std::string expected_variant(
+        InputProtectionEventHandler::GetWidgetIdentifierString(
+            widget_identifier));
+    if (!variants->contains(expected_variant)) {
+      missing_variants.push_back(expected_variant);
+    }
+  }
+
+  ASSERT_TRUE(missing_variants.empty())
+      << "InputProtectionWidgetIdentifier variants:\n"
+      << base::JoinString(missing_variants, ", ")
+      << "\nconfigured in input_protection_event_handler.cc but no "
+         "corresponding variants were added to "
+         "InputProtectionWidgetIdentifier in "
+         "//tools/metrics/histograms/metadata/security/histograms.xml";
+
+  // Verify total count to ensure no extra stale variants exist in the XML.
+  EXPECT_EQ(
+      static_cast<size_t>(InputProtectionEventHandler::
+                              InputProtectionWidgetIdentifier::kMaxValue) +
+          2,
+      variants->size())
+      << "The number of variants in histograms.xml does not match the enum.";
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       RecordsWidgetIdentifierMetricsWhenBlockedOnIdentifiedWidget) {
+  base::HistogramTester histogram_tester;
+
+  auto mock_protector = std::make_unique<MockInputEventActivationProtector>();
+  EXPECT_CALL(*mock_protector, IsPossiblyUnintendedInteraction(_, _, _))
+      .WillOnce(Return(true));
+  widget()->EnableInputEventActivationProtection(
+      std::move(mock_protector),
+      InputProtectionEventHandler::InputProtectionWidgetIdentifier::
+          kTestWidget);
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  ui::MouseEvent press =
+      CreateMouseEvent(ui::EventType::kMousePressed, button_center);
+  widget()->OnMouseEvent(&press);
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.InputEvent.InputProtectionBlockReason.All",
+      InputProtectionEventHandler::InputProtectionBlockReason::
+          kInputProtectionPolicy,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Security.InputEvent.InputProtectionBlockReason.TestWidget",
+      InputProtectionEventHandler::InputProtectionBlockReason::
+          kInputProtectionPolicy,
+      1);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       DoesNotRecordWidgetIdentifierMetricsWhenNotSpecified) {
+  base::HistogramTester histogram_tester;
+  EnableInputProtection(/*should_block=*/true);
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  ui::MouseEvent press =
+      CreateMouseEvent(ui::EventType::kMousePressed, button_center);
+  widget()->OnMouseEvent(&press);
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.InputEvent.InputProtectionBlockReason.All",
+      InputProtectionEventHandler::InputProtectionBlockReason::
+          kInputProtectionPolicy,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Security.InputEvent.InputProtectionBlockReason.TestWidget", 0);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       DoesNotRecordMetricsWhenAllowedOnProtectedWidget) {
+  base::HistogramTester histogram_tester;
+  EnableInputProtection(/*should_block=*/false);
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+
+  histogram_tester.ExpectTotalCount(
+      "Security.InputEvent.InputProtectionBlockReason.All", 0);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       DoesNotRecordMetricsWhenAllowedOnUnprotectedWidget) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(widget()->IsInputEventActivationProtectionEnabled());
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+
+  histogram_tester.ExpectTotalCount(
+      "Security.InputEvent.InputProtectionBlockReason.All", 0);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       RecordsMetricsWhenBlockedByAlwaysOnTopOcclusion) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(widget()->IsInputEventActivationProtectionEnabled());
+
+  gfx::Rect aot_bounds = button()->GetBoundsInScreen();
+  aot_bounds.Outset(20);
+
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  params.remove_standard_frame = true;
+  params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
+  params.bounds = aot_bounds;
+  auto aot_widget = std::make_unique<Widget>();
+  aot_widget->Init(std::move(params));
+  aot_widget->Show();
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  ui::MouseEvent press =
+      CreateMouseEvent(ui::EventType::kMousePressed, button_center);
+  widget()->OnMouseEvent(&press);
+  EXPECT_NE(button()->GetState(), Button::ButtonState::STATE_PRESSED);
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.InputEvent.InputProtectionBlockReason.All",
+      InputProtectionEventHandler::InputProtectionBlockReason::
+          kAlwaysOnTopOcclusion,
+      1);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       DoesNotRecordMetricsWhenBypassedForAccessibility) {
+  base::HistogramTester histogram_tester;
+  widget()->EnableInputEventActivationProtection();
+  button()->RequestFocus();
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kExtendedProperties);
+
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&space_press);
+
+  histogram_tester.ExpectTotalCount(
+      "Security.InputEvent.InputProtectionBlockReason.All", 0);
 }
 
 }  // namespace views::test

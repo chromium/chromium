@@ -36,6 +36,9 @@
 
 namespace views {
 
+// static
+bool ViewsAXManager::is_enabled_ = false;
+
 void ViewsAXManager::Enable() {
   is_enabled_ = true;
   Reset(/*reset_serializer=*/false);

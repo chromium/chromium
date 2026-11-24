@@ -40,6 +40,7 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/input_protection/input_protection_event_handler.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/window/client_view.h"
@@ -80,7 +81,6 @@ class BubbleLocking;
 namespace views {
 
 class DesktopWindowTreeHost;
-class InputProtectionEventHandler;
 class NativeWidget;
 class SublevelManager;
 class TooltipManager;
@@ -1394,6 +1394,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // caller must configure the provided protector with the desired policies. A
   // `custom_protector` may only be provided when first enabling protection.
   //
+  // `widget_identifier` optionally identifies this widget for metrics.
+  //
   // Enabling this also activates occlusion protection for non-located events
   // (e.g. keyboard action keys like Space or Return) in
   // `OccludedWidgetInputProtector` (whereas unprotected widgets only check
@@ -1401,8 +1403,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   //
   // See ui/views/input_protection/README.md for details on how this works.
   void EnableInputEventActivationProtection(
-      std::unique_ptr<InputEventActivationProtector> custom_protector =
-          nullptr);
+      std::unique_ptr<InputEventActivationProtector> custom_protector = nullptr,
+      std::optional<
+          InputProtectionEventHandler::InputProtectionWidgetIdentifier>
+          widget_identifier = std::nullopt);
 
   // Returns true if input event activation protection is enabled.
   bool IsInputEventActivationProtectionEnabled() const;

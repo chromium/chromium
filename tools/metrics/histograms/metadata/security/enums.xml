@@ -221,6 +221,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Enabled (Balanced) - Auto-enable feature"/>
 </enum>
 
+<!-- LINT.IfChange(InputProtectionBlockReason) -->
+
+<enum name="InputProtectionBlockReason">
+  <int value="0" label="kAlwaysOnTopOcclusion">
+    Event was blocked by always-on-top window occlusion protection.
+  </int>
+  <int value="1" label="kInputProtectionPolicy">
+    Event was blocked by an input protection policy on the target widget.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//ui/views/input_protection/input_protection_event_handler.h:InputProtectionBlockReason) -->
+
 <enum name="IOSKeychainMigrationResult">
   <int value="0" label="Not needed"/>
   <int value="1" label="Success"/>

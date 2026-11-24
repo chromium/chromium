@@ -500,10 +500,14 @@ policies.
 
 ###### Accessibility Mode Bypass
 
-When any accessibility mode is active
-(`!ui::AXPlatform::GetInstance().GetMode().is_mode_off()`), input protection is
-completely bypassed without querying active policies to avoid interfering with
-assistive technologies.
+When assistive technology is active, input protection is completely bypassed
+without querying active policies to avoid interfering with assistive
+technologies. Assistive technology is considered active when any of the
+following conditions hold:
+
+- `ui::AXPlatform::GetInstance().GetMode().has_mode(ui::AXMode::kExtendedProperties)`
+- `ui::AXPlatform::GetInstance().GetMode().has_mode(ui::AXMode::kScreenReader)`
+- `ViewsAXManager::IsEnabled()` (on Aura platforms such as ChromeOS)
 
 ##### Evaluation Order
 

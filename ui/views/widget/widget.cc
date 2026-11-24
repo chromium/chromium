@@ -54,7 +54,6 @@
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/input_protection/default_input_protection_policy.h"
-#include "ui/views/input_protection/input_protection_event_handler.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
 #include "ui/views/input_protection/window_activation_input_protection_policy.h"
 #include "ui/views/views_delegate.h"
@@ -1386,7 +1385,9 @@ bool Widget::IsVisibleOnScreen() const {
 }
 
 void Widget::EnableInputEventActivationProtection(
-    std::unique_ptr<InputEventActivationProtector> custom_protector) {
+    std::unique_ptr<InputEventActivationProtector> custom_protector,
+    std::optional<InputProtectionEventHandler::InputProtectionWidgetIdentifier>
+        widget_identifier) {
   if (!base::FeatureList::IsEnabled(features::kEnableInputProtection)) {
     return;
   }
@@ -1399,6 +1400,11 @@ void Widget::EnableInputEventActivationProtection(
   }
 
   input_event_activation_protection_enabled_ = true;
+
+  if (input_protection_event_handler_) {
+    input_protection_event_handler_->set_widget_identifier(widget_identifier);
+  }
+
   if (custom_protector) {
     input_protector_ = std::move(custom_protector);
     return;

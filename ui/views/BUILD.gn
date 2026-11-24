@@ -1475,6 +1475,8 @@ test("views_unittests") {
     "//url",
   ]
 
+  data = [ "//tools/metrics/histograms/metadata/security/histograms.xml" ]
+
   data_deps = [
     "//testing/buildbot/filters:views_unittests_filters",
     "//ui/resources:ui_test_pak_data",
