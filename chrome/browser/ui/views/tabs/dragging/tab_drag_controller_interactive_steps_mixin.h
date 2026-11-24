@@ -86,6 +86,7 @@ class TabDragControllerInteractiveStepsMixin : public T {
   using T::WaitForState;
   using typename T::MultiStep;
   using typename T::RelativePositionSpecifier;
+  using typename T::StepBuilder;
 
   // Starts the state pollers that the steps below wait on. If `attach_target`
   // is set, also tracks whether the drag has attached to `attach_target`.
@@ -418,6 +419,37 @@ class TabDragControllerInteractiveStepsMixin : public T {
             return true;
           });
     });
+  }
+
+  // Runs `check` on the browser that isn't in `existing`.
+  static StepBuilder CheckNewBrowser(
+      std::set<BrowserWindowInterface*> existing,
+      base::OnceCallback<void(BrowserWindowInterface*)> check) {
+    return Do(base::BindOnce(
+        [](const std::set<BrowserWindowInterface*>& existing,
+           base::OnceCallback<void(BrowserWindowInterface*)> check) {
+          BrowserWindowInterface* const new_browser =
+              ui_test_utils::GetBrowserNotInSet(existing);
+          ASSERT_TRUE(new_browser);
+          std::move(check).Run(new_browser);
+        },
+        std::move(existing), std::move(check)));
+  }
+
+  // Runs `check` on the browser that isn't `browser()`.
+  StepBuilder CheckNewBrowser(
+      base::OnceCallback<void(BrowserWindowInterface*)> check) {
+    return CheckNewBrowser({T::browser()}, std::move(check));
+  }
+
+  // Drags `source`'s tab at `index` out into a new window and releases it.
+  // Also checks that the tab kept its width.
+  MultiStep DragTabOutAndRelease(BrowserWindowInterface* source, int index) {
+    TabStrip* const tab_strip = test::GetTabStripForBrowser(source);
+    return Steps(
+        PressTab(tab_strip, index), MoveTabOutUntilDetached(tab_strip, index),
+        CheckDetachedTabWidth(source, tab_strip->tab_at(index)->width()),
+        ReleaseDrag());
   }
 
  private:
