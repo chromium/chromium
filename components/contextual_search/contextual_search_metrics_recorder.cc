@@ -4,11 +4,16 @@
 
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/common/input_state.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace contextual_search {
 
@@ -43,6 +48,8 @@ const char kContextualSearchFileSizePerType[] =
     "ContextualSearch.File.Size.V2.";
 constexpr int kMaxFileSizeBytes = 100 * 1024 * 1024;
 constexpr int kFileSizeBucketCount = 50;
+constexpr int kToolModeExclusiveMax = omnibox::ToolMode_MAX + 1;
+constexpr int kModelModeExclusiveMax = omnibox::ModelMode_MAX + 1;
 
 std::string UploadStatusToString(ContextUploadStatus status) {
   switch (status) {
@@ -87,6 +94,27 @@ std::string AttachmentButtonTypeToString(
     case ContextualSearchAttachmentButtonType::kDrive:
       return "Drive";
   }
+}
+
+// TODO(crbug.com/584321720): Remove the legacy histograms once the server
+// stops sending ToolMode and ModelMode.
+void RecordToolKey(std::string_view keyed_name,
+                   std::string_view legacy_name,
+                   omnibox::ToolKey key) {
+  base::UmaHistogramSparse(keyed_name, key);
+  base::UmaHistogramExactLinear(
+      legacy_name, omnibox::ToolMode_IsValid(key) ? key : kToolModeExclusiveMax,
+      kToolModeExclusiveMax);
+}
+
+void RecordModelKey(std::string_view keyed_name,
+                    std::string_view legacy_name,
+                    omnibox::ModelKey key) {
+  base::UmaHistogramSparse(keyed_name, key);
+  base::UmaHistogramExactLinear(
+      legacy_name,
+      omnibox::ModelMode_IsValid(key) ? key : kModelModeExclusiveMax,
+      kModelModeExclusiveMax);
 }
 }  // namespace
 
@@ -649,45 +677,51 @@ void ContextualSearchMetricsRecorder::RecordConfigParseSuccess(
 }
 
 void ContextualSearchMetricsRecorder::RecordToolMode(
-    omnibox::ToolMode tool_mode) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.Tools", ".", metrics_suffix_}), tool_mode,
-      static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+    omnibox::ToolKey tool_mode) {
+  RecordToolKey(base::StrCat({"ContextualSearch.KeyedTool.", metrics_suffix_}),
+                base::StrCat({"ContextualSearch.Tools.", metrics_suffix_}),
+                tool_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordModelMode(
-    omnibox::ModelMode model_mode) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.Models", ".", metrics_suffix_}),
-      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+    omnibox::ModelKey model_mode) {
+  RecordModelKey(
+      base::StrCat({"ContextualSearch.KeyedModel.", metrics_suffix_}),
+      base::StrCat({"ContextualSearch.Models.", metrics_suffix_}), model_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordToolChangedByAIM(
-    omnibox::ToolMode tool_mode) {
-  base::UmaHistogramEnumeration(
+    omnibox::ToolKey tool_mode) {
+  RecordToolKey(
+      base::StrCat(
+          {"ContextualSearch.KeyedTool.ChangedByAIM.", metrics_suffix_}),
       base::StrCat({"ContextualSearch.Tools.ChangedByAIM.", metrics_suffix_}),
-      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+      tool_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordModelChangedByAIM(
-    omnibox::ModelMode model_mode) {
-  base::UmaHistogramEnumeration(
+    omnibox::ModelKey model_mode) {
+  RecordModelKey(
+      base::StrCat(
+          {"ContextualSearch.KeyedModel.ChangedByAIM.", metrics_suffix_}),
       base::StrCat({"ContextualSearch.Models.ChangedByAIM.", metrics_suffix_}),
-      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+      model_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordToolModeShown(
-    omnibox::ToolMode tool_mode) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.Tools.Shown", ".", metrics_suffix_}),
-      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+    omnibox::ToolKey tool_mode) {
+  RecordToolKey(
+      base::StrCat({"ContextualSearch.KeyedTool.Shown.", metrics_suffix_}),
+      base::StrCat({"ContextualSearch.Tools.Shown.", metrics_suffix_}),
+      tool_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordModelModeShown(
-    omnibox::ModelMode model_mode) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.Models.Shown", ".", metrics_suffix_}),
-      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+    omnibox::ModelKey model_mode) {
+  RecordModelKey(
+      base::StrCat({"ContextualSearch.KeyedModel.Shown.", metrics_suffix_}),
+      base::StrCat({"ContextualSearch.Models.Shown.", metrics_suffix_}),
+      model_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordFilePickedCount(
@@ -710,17 +744,19 @@ void ContextualSearchMetricsRecorder::RecordAttachmentCountAtSubmission(
 }
 
 void ContextualSearchMetricsRecorder::RecordToolSelected(
-    omnibox::ToolMode tool_mode) {
-  base::UmaHistogramEnumeration(
+    omnibox::ToolKey tool_mode) {
+  RecordToolKey(
+      base::StrCat({"ContextualSearch.KeyedTool.Selected.", metrics_suffix_}),
       base::StrCat({"ContextualSearch.Tools.Selected.", metrics_suffix_}),
-      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+      tool_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordModelSelected(
-    omnibox::ModelMode model_mode) {
-  base::UmaHistogramEnumeration(
+    omnibox::ModelKey model_mode) {
+  RecordModelKey(
+      base::StrCat({"ContextualSearch.KeyedModel.Selected.", metrics_suffix_}),
       base::StrCat({"ContextualSearch.Models.Selected.", metrics_suffix_}),
-      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+      model_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordAttachmentButtonShown(
@@ -757,20 +793,22 @@ void ContextualSearchMetricsRecorder::RecordFileTypesOnSessionEnd(
 }
 
 void ContextualSearchMetricsRecorder::RecordActiveModesOnSessionEnd(
-    omnibox::ToolMode tool_mode,
-    omnibox::ModelMode model_mode,
+    omnibox::ToolKey tool_mode,
+    omnibox::ModelKey model_mode,
     bool navigated) {
   std::string result_str = navigated ? "Navigated" : "Abandoned";
 
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.SessionEnd.", result_str, ".ToolMode",
-                    ".", metrics_suffix_}),
-      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+  RecordToolKey(base::StrCat({"ContextualSearch.SessionEnd.", result_str,
+                              ".KeyedTool.", metrics_suffix_}),
+                base::StrCat({"ContextualSearch.SessionEnd.", result_str,
+                              ".ToolMode.", metrics_suffix_}),
+                tool_mode);
 
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.SessionEnd.", result_str, ".ModelMode",
-                    ".", metrics_suffix_}),
-      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+  RecordModelKey(base::StrCat({"ContextualSearch.SessionEnd.", result_str,
+                               ".KeyedModel.", metrics_suffix_}),
+                 base::StrCat({"ContextualSearch.SessionEnd.", result_str,
+                               ".ModelMode.", metrics_suffix_}),
+                 model_mode);
 }
 
 void ContextualSearchMetricsRecorder::RecordNavigationResult(bool navigated) {
@@ -780,17 +818,19 @@ void ContextualSearchMetricsRecorder::RecordNavigationResult(bool navigated) {
 }
 
 void ContextualSearchMetricsRecorder::RecordModesOnSubmission(
-    omnibox::ToolMode tool_mode,
-    omnibox::ModelMode model_mode,
+    omnibox::ToolKey tool_mode,
+    omnibox::ModelKey model_mode,
     const std::vector<omnibox::InputType>& input_types) {
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"ContextualSearch.Tools.ModeOnSubmission", ".", metrics_suffix_}),
-      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"ContextualSearch.Models.ModeOnSubmission", ".", metrics_suffix_}),
-      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+  RecordToolKey(base::StrCat({"ContextualSearch.KeyedTool.ModeOnSubmission.",
+                              metrics_suffix_}),
+                base::StrCat({"ContextualSearch.Tools.ModeOnSubmission.",
+                              metrics_suffix_}),
+                tool_mode);
+  RecordModelKey(base::StrCat({"ContextualSearch.KeyedModel.ModeOnSubmission.",
+                               metrics_suffix_}),
+                 base::StrCat({"ContextualSearch.Models.ModeOnSubmission.",
+                               metrics_suffix_}),
+                 model_mode);
 
   std::set<omnibox::InputType> unique_input_types(input_types.begin(),
                                                   input_types.end());

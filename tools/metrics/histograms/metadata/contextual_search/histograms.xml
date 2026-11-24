@@ -436,12 +436,157 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram
+    name="ContextualSearch.KeyedModel.ChangedByAIM.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>jamesleung@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks model changes triggered by the AIM web page via SILK. The sample is
+    the model's numeric key, so models that this Chrome version doesn't know get
+    their own bucket. Replaces
+    ContextualSearch.Models.ChangedByAIM.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.KeyedModel.ModeOnSubmission.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the active model when the user submits a query. The sample is the
+    model's numeric key, so models that this Chrome version doesn't know get
+    their own bucket. Replaces
+    ContextualSearch.Models.ModeOnSubmission.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.KeyedModel.Selected.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records when a model is explicitly selected by the user in the menu. The
+    sample is the model's numeric key, so models that this Chrome version
+    doesn't know get their own bucket. Replaces
+    ContextualSearch.Models.Selected.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.KeyedModel.Shown.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Recorded when an AIM model is shown in the composebox menu. The sample is
+    the model's numeric key, so models that this Chrome version doesn't know get
+    their own bucket. Replaces
+    ContextualSearch.Models.Shown.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.KeyedModel.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the active model selected in the composebox. Recorded when the user
+    switches to a model. The sample is the model's numeric key, so models that
+    this Chrome version doesn't know get their own bucket. Replaces
+    ContextualSearch.Models.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.KeyedTool.ChangedByAIM.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>jamesleung@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks tool changes triggered by the AIM web page via SILK, such as when the
+    user sends a message to AIM that triggers Canvas mode automatically. The
+    sample is the tool's numeric key, so tools that this Chrome version doesn't
+    know get their own bucket. Replaces
+    ContextualSearch.Tools.ChangedByAIM.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.KeyedTool.ModeOnSubmission.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the active tool when the user submits a query. The sample is the
+    tool's numeric key, so tools that this Chrome version doesn't know get their
+    own bucket. Replaces
+    ContextualSearch.Tools.ModeOnSubmission.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.KeyedTool.Selected.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records when a tool is explicitly selected by the user in the menu. The
+    sample is the tool's numeric key, so tools that this Chrome version doesn't
+    know get their own bucket. Replaces
+    ContextualSearch.Tools.Selected.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.KeyedTool.Shown.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Recorded when an AIM tool is shown in the composebox menu. The sample is the
+    tool's numeric key, so tools that this Chrome version doesn't know get their
+    own bucket. Replaces ContextualSearch.Tools.Shown.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.KeyedTool.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the active tool selected in the composebox. Recorded when the user
+    switches to a tool. The sample is the tool's numeric key, so tools that this
+    Chrome version doesn't know get their own bucket. Replaces
+    ContextualSearch.Tools.{ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram name="ContextualSearch.Models.ChangedByAIM.{ContextualSearchSource}"
     enum="OmniboxModelMode" expires_after="2027-08-11">
   <owner>jamesleung@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Tracks model mode changes triggered by AIM webpage via SILK.
+    Tracks model mode changes triggered by AIM webpage via SILK. Models that
+    this Chrome version doesn't know go to the overflow bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -454,7 +599,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks what model the user was using when they submitted the query. This
     metric is recorded only once the user has submitted the query and navigated
-    to AIM.
+    to AIM. Models that this Chrome version doesn't know go to the overflow
+    bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -464,7 +610,8 @@ chromium-metrics-reviews@google.com.
   <owner>ameurhosni@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
-    Records when a model is explicitly selected by the user in the menu.
+    Records when a model is explicitly selected by the user in the menu. Models
+    that this Chrome version doesn't know go to the overflow bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -473,7 +620,10 @@ chromium-metrics-reviews@google.com.
     enum="ContextualSearchAimModel" expires_after="2027-04-01">
   <owner>christianxu@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
-  <summary>Recorded when an AIM model is shown in the composebox menu.</summary>
+  <summary>
+    Recorded when an AIM model is shown in the composebox menu. Models that this
+    Chrome version doesn't know go to the overflow bucket.
+  </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
@@ -483,7 +633,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Tracks the active model selected in the composebox. Recorded when the user
-    switches to a model.
+    switches to a model. Models that this Chrome version doesn't know go to the
+    overflow bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -1049,13 +1200,52 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.SessionEnd.{Result}.KeyedModel.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the active model when a composebox session ends in {Result}. The
+    sample is the model's numeric key, so models that this Chrome version
+    doesn't know get their own bucket. Replaces
+    ContextualSearch.SessionEnd.{Result}.ModelMode.{ContextualSearchSource}.
+  </summary>
+  <token key="Result">
+    <variant name="Abandoned"/>
+    <variant name="Navigated"/>
+  </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.SessionEnd.{Result}.KeyedTool.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-11-20">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>christianxu@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the active tool when a composebox session ends in {Result}. The
+    sample is the tool's numeric key, so tools that this Chrome version doesn't
+    know get their own bucket. Replaces
+    ContextualSearch.SessionEnd.{Result}.ToolMode.{ContextualSearchSource}.
+  </summary>
+  <token key="Result">
+    <variant name="Abandoned"/>
+    <variant name="Navigated"/>
+  </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.SessionEnd.{Result}.ModelMode.{ContextualSearchSource}"
     enum="ContextualSearchAimModel" expires_after="2027-04-01">
   <owner>christianxu@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the active model mode used when a composebox session ended in
-    {Result}. Recorded at the end of the session.
+    {Result}. Recorded at the end of the session. Models that this Chrome
+    version doesn't know go to the overflow bucket.
   </summary>
   <token key="Result">
     <variant name="Abandoned"/>
@@ -1071,7 +1261,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the active tool mode used when a composebox session ended in
-    {Result}. Recorded at the end of the session.
+    {Result}. Recorded at the end of the session. Tools that this Chrome version
+    doesn't know go to the overflow bucket.
   </summary>
   <token key="Result">
     <variant name="Abandoned"/>
@@ -1272,7 +1463,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Tracks tool mode changes triggered by AIM webpage via SILK, such as when the
-    user sends a message to AIM that triggers Canvas mode automatically.
+    user sends a message to AIM that triggers Canvas mode automatically. Tools
+    that this Chrome version doesn't know go to the overflow bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -1285,7 +1477,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks what tool mode the user was in when they submitted the query. This
     metric is recorded only once the user has submitted the query and navigated
-    to AIM.
+    to AIM. Tools that this Chrome version doesn't know go to the overflow
+    bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -1295,7 +1488,8 @@ chromium-metrics-reviews@google.com.
   <owner>ameurhosni@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
-    Records when a tool is explicitly selected by the user in the menu.
+    Records when a tool is explicitly selected by the user in the menu. Tools
+    that this Chrome version doesn't know go to the overflow bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -1304,7 +1498,10 @@ chromium-metrics-reviews@google.com.
     enum="OmniboxToolMode" expires_after="2027-04-01">
   <owner>christianxu@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
-  <summary>Recorded when an AIM tool is shown in the composebox menu.</summary>
+  <summary>
+    Recorded when an AIM tool is shown in the composebox menu. Tools that this
+    Chrome version doesn't know go to the overflow bucket.
+  </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
@@ -1314,7 +1511,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Tracks the active tool selected in the composebox. Recorded when the user
-    switches to a tool.
+    switches to a tool. Tools that this Chrome version doesn't know go to the
+    overflow bucket.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>

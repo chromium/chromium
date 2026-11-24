@@ -19,6 +19,7 @@
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -200,15 +201,15 @@ class MockContextualSearchMetricsRecorder
                bool has_drive_context),
               (override));
   MOCK_METHOD(void, ActivateMetricsFunnel, (const std::string&), (override));
-  MOCK_METHOD(void, RecordToolMode, (omnibox::ToolMode tool_mode), (override));
+  MOCK_METHOD(void, RecordToolMode, (omnibox::ToolKey tool_mode), (override));
   MOCK_METHOD(void,
               RecordModelMode,
-              (omnibox::ModelMode model_mode),
+              (omnibox::ModelKey model_mode),
               (override));
   MOCK_METHOD(void,
               RecordModesOnSubmission,
-              (omnibox::ToolMode tool_mode,
-               omnibox::ModelMode model_mode,
+              (omnibox::ToolKey tool_mode,
+               omnibox::ModelKey model_mode,
                const std::vector<omnibox::InputType>& input_types),
               (override));
   MOCK_METHOD(void, RecordZeroSuggestClick, (bool is_contextual), (override));
@@ -232,17 +233,17 @@ class MockContextualSearchMetricsRecorder
         has_drive_context);
   }
 
-  void RecordToolModeBase(omnibox::ToolMode tool_mode) {
+  void RecordToolModeBase(omnibox::ToolKey tool_mode) {
     ContextualSearchMetricsRecorder::RecordToolMode(tool_mode);
   }
 
-  void RecordModelModeBase(omnibox::ModelMode model_mode) {
+  void RecordModelModeBase(omnibox::ModelKey model_mode) {
     ContextualSearchMetricsRecorder::RecordModelMode(model_mode);
   }
 
   void RecordModesOnSubmissionBase(
-      omnibox::ToolMode tool_mode,
-      omnibox::ModelMode model_mode,
+      omnibox::ToolKey tool_mode,
+      omnibox::ModelKey model_mode,
       const std::vector<omnibox::InputType>& input_types) {
     ContextualSearchMetricsRecorder::RecordModesOnSubmission(
         tool_mode, model_mode, input_types);

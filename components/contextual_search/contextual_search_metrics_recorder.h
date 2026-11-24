@@ -14,10 +14,9 @@
 
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
-#include "third_party/omnibox_proto/model_mode.pb.h"
-#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace base {
 class ElapsedTimer;
@@ -200,14 +199,14 @@ class ContextualSearchMetricsRecorder {
                                        bool success);
 
   // Records the tool mode (i.e. Deep Search, Create Images, etc.).
-  virtual void RecordToolMode(omnibox::ToolMode tool_mode);
+  virtual void RecordToolMode(omnibox::ToolKey tool_mode);
 
   // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
-  virtual void RecordModelMode(omnibox::ModelMode model_mode);
+  virtual void RecordModelMode(omnibox::ModelKey model_mode);
 
-  void RecordToolChangedByAIM(omnibox::ToolMode tool_mode);
+  void RecordToolChangedByAIM(omnibox::ToolKey tool_mode);
 
-  void RecordModelChangedByAIM(omnibox::ModelMode model_mode);
+  void RecordModelChangedByAIM(omnibox::ModelKey model_mode);
 
   // Records the count of attachments of a specific button type when picked.
   virtual void RecordFilePickedCount(
@@ -219,10 +218,10 @@ class ContextualSearchMetricsRecorder {
                                                  int count);
 
   // Records when a tool is explicitly selected by the user in the menu.
-  virtual void RecordToolSelected(omnibox::ToolMode tool_mode);
+  virtual void RecordToolSelected(omnibox::ToolKey tool_mode);
 
   // Records when a model is explicitly selected by the user in the menu.
-  virtual void RecordModelSelected(omnibox::ModelMode model_mode);
+  virtual void RecordModelSelected(omnibox::ModelKey model_mode);
 
   // Records when an attachment button is shown.
   virtual void RecordAttachmentButtonShown(
@@ -237,10 +236,10 @@ class ContextualSearchMetricsRecorder {
   virtual void RecordAttachmentsMenuToggled(bool open);
 
   // Records that a specific tool mode is available for use.
-  virtual void RecordToolModeShown(omnibox::ToolMode tool_mode);
+  virtual void RecordToolModeShown(omnibox::ToolKey tool_mode);
 
   // Records that a specific model mode is available for use.
-  virtual void RecordModelModeShown(omnibox::ModelMode model_mode);
+  virtual void RecordModelModeShown(omnibox::ModelKey model_mode);
 
   // Recorded when the user ends the contextual search session, sliced by
   // whether they navigated to the AI response or abandoned it. Records
@@ -252,8 +251,8 @@ class ContextualSearchMetricsRecorder {
   // Recorded when the user ends the contextual search session, sliced by
   // whether they navigated to the AI response or abandoned it. Records
   // the active tool and model mode at session end.
-  virtual void RecordActiveModesOnSessionEnd(omnibox::ToolMode tool_mode,
-                                             omnibox::ModelMode model_mode,
+  virtual void RecordActiveModesOnSessionEnd(omnibox::ToolKey tool_mode,
+                                             omnibox::ModelKey model_mode,
                                              bool navigated);
 
   // Records whether a contextual search session initiated eventually
@@ -267,8 +266,8 @@ class ContextualSearchMetricsRecorder {
 
   // Records tool mode, model mode, and input types on query submission.
   virtual void RecordModesOnSubmission(
-      omnibox::ToolMode tool_mode,
-      omnibox::ModelMode model_mode,
+      omnibox::ToolKey tool_mode,
+      omnibox::ModelKey model_mode,
       const std::vector<omnibox::InputType>& input_types);
 
   // Records when a zero-suggest suggestion is clicked.

@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/common/input_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace contextual_search {
@@ -71,10 +72,18 @@ const char kContextualSearchFileSizeTabPageContents[] =
     "ContextualSearch.File.Size.V2.Tab.PageContents.Unknown";
 const char kContextualSearchToolMode[] = "ContextualSearch.Tools.Unknown";
 const char kContextualSearchModelMode[] = "ContextualSearch.Models.Unknown";
+constexpr char kContextualSearchKeyedTool[] =
+    "ContextualSearch.KeyedTool.Unknown";
+constexpr char kContextualSearchKeyedModel[] =
+    "ContextualSearch.KeyedModel.Unknown";
 const char kContextualSearchToolModeOnSubmission[] =
     "ContextualSearch.Tools.ModeOnSubmission.Unknown";
 const char kContextualSearchModelModeOnSubmission[] =
     "ContextualSearch.Models.ModeOnSubmission.Unknown";
+constexpr char kContextualSearchKeyedToolModeOnSubmission[] =
+    "ContextualSearch.KeyedTool.ModeOnSubmission.Unknown";
+constexpr char kContextualSearchKeyedModelModeOnSubmission[] =
+    "ContextualSearch.KeyedModel.ModeOnSubmission.Unknown";
 const char kContextualSearchInputsTypeOnSubmission[] =
     "ContextualSearch.Inputs.TypeOnSubmission.Unknown";
 const char kContextualSearchTabContextAdded[] =
@@ -94,6 +103,18 @@ const char kContextualSearchToolsSelected[] =
     "ContextualSearch.Tools.Selected.Unknown";
 const char kContextualSearchModelsSelected[] =
     "ContextualSearch.Models.Selected.Unknown";
+constexpr char kContextualSearchKeyedToolSelected[] =
+    "ContextualSearch.KeyedTool.Selected.Unknown";
+constexpr char kContextualSearchKeyedModelSelected[] =
+    "ContextualSearch.KeyedModel.Selected.Unknown";
+constexpr char kContextualSearchToolChangedByAIM[] =
+    "ContextualSearch.Tools.ChangedByAIM.Unknown";
+constexpr char kContextualSearchModelChangedByAIM[] =
+    "ContextualSearch.Models.ChangedByAIM.Unknown";
+constexpr char kContextualSearchKeyedToolChangedByAIM[] =
+    "ContextualSearch.KeyedTool.ChangedByAIM.Unknown";
+constexpr char kContextualSearchKeyedModelChangedByAIM[] =
+    "ContextualSearch.KeyedModel.ChangedByAIM.Unknown";
 const char kContextualSearchAttachmentButtonShown[] =
     "ContextualSearch.AttachmentButtonShown.Unknown";
 const char kContextualSearchAttachmentButtonUsed[] =
@@ -105,6 +126,10 @@ const char kContextualSearchToolModeShown[] =
     "ContextualSearch.Tools.Shown.Unknown";
 const char kContextualSearchModelModeShown[] =
     "ContextualSearch.Models.Shown.Unknown";
+constexpr char kContextualSearchKeyedToolShown[] =
+    "ContextualSearch.KeyedTool.Shown.Unknown";
+constexpr char kContextualSearchKeyedModelShown[] =
+    "ContextualSearch.KeyedModel.Shown.Unknown";
 const char kContextualSearchSessionEndNavigationResultPdf[] =
     "ContextualSearch.SessionEnd.NavigationResult.Pdf.Unknown";
 const char kContextualSearchSessionEndNavigatedToolMode[] =
@@ -115,6 +140,14 @@ const char kContextualSearchSessionEndNavigatedModelMode[] =
     "ContextualSearch.SessionEnd.Navigated.ModelMode.Unknown";
 const char kContextualSearchSessionEndAbandonedModelMode[] =
     "ContextualSearch.SessionEnd.Abandoned.ModelMode.Unknown";
+constexpr char kContextualSearchSessionEndNavigatedKeyedTool[] =
+    "ContextualSearch.SessionEnd.Navigated.KeyedTool.Unknown";
+constexpr char kContextualSearchSessionEndAbandonedKeyedTool[] =
+    "ContextualSearch.SessionEnd.Abandoned.KeyedTool.Unknown";
+constexpr char kContextualSearchSessionEndNavigatedKeyedModel[] =
+    "ContextualSearch.SessionEnd.Navigated.KeyedModel.Unknown";
+constexpr char kContextualSearchSessionEndAbandonedKeyedModel[] =
+    "ContextualSearch.SessionEnd.Abandoned.KeyedModel.Unknown";
 const char kContextualSearchEntrypointNavigated[] =
     "ContextualSearch.Entrypoint.Navigated";
 const char kContextualSearchEntrypointAbandoned[] =
@@ -426,6 +459,8 @@ TEST_F(ContextualSearchMetricsRecorderTest, ToolMode) {
   DestructMetricsRecorder();
   histogram_tester().ExpectUniqueSample(
       kContextualSearchToolMode, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchKeyedTool, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, ModelMode) {
@@ -434,6 +469,25 @@ TEST_F(ContextualSearchMetricsRecorderTest, ModelMode) {
   DestructMetricsRecorder();
   histogram_tester().ExpectUniqueSample(
       kContextualSearchModelMode, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchKeyedModel, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+      1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, RecordsKeysOutsideTheEnums) {
+  metrics().RecordToolMode(static_cast<omnibox::ToolKey>(1000));
+  metrics().RecordToolMode(static_cast<omnibox::ToolKey>(-1));
+  metrics().RecordModelMode(static_cast<omnibox::ModelKey>(1000));
+  metrics().RecordModelMode(static_cast<omnibox::ModelKey>(-1));
+
+  histogram_tester().ExpectBucketCount(kContextualSearchKeyedTool, 1000, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchKeyedTool, -1, 1);
+  histogram_tester().ExpectUniqueSample(kContextualSearchToolMode,
+                                        omnibox::ToolMode_MAX + 1, 2);
+  histogram_tester().ExpectBucketCount(kContextualSearchKeyedModel, 1000, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchKeyedModel, -1, 1);
+  histogram_tester().ExpectUniqueSample(kContextualSearchModelMode,
+                                        omnibox::ModelMode_MAX + 1, 2);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FilePickedCount) {
@@ -454,12 +508,36 @@ TEST_F(ContextualSearchMetricsRecorderTest, ToolSelected) {
   histogram_tester().ExpectUniqueSample(kContextualSearchToolsSelected,
                                         omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
                                         1);
+  histogram_tester().ExpectUniqueSample(kContextualSearchKeyedToolSelected,
+                                        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+                                        1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, ModelSelected) {
   metrics().RecordModelSelected(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   histogram_tester().ExpectUniqueSample(
       kContextualSearchModelsSelected,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchKeyedModelSelected,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, ToolChangedByAIM) {
+  metrics().RecordToolChangedByAIM(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  histogram_tester().ExpectUniqueSample(kContextualSearchToolChangedByAIM,
+                                        omnibox::ToolMode::TOOL_MODE_CANVAS, 1);
+  histogram_tester().ExpectUniqueSample(kContextualSearchKeyedToolChangedByAIM,
+                                        omnibox::ToolMode::TOOL_MODE_CANVAS, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, ModelChangedByAIM) {
+  metrics().RecordModelChangedByAIM(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchModelChangedByAIM,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchKeyedModelChangedByAIM,
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
 }
 
@@ -498,6 +576,12 @@ TEST_F(ContextualSearchMetricsRecorderTest, ModesOnSubmission) {
                                         1);
   histogram_tester().ExpectUniqueSample(
       kContextualSearchModelModeOnSubmission,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchKeyedToolModeOnSubmission,
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchKeyedModelModeOnSubmission,
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
   histogram_tester().ExpectBucketCount(
       kContextualSearchInputsTypeOnSubmission,
@@ -902,6 +986,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, ToolModeShown) {
   histogram_tester().ExpectUniqueSample(kContextualSearchToolModeShown,
                                         omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
                                         1);
+  histogram_tester().ExpectUniqueSample(kContextualSearchKeyedToolShown,
+                                        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+                                        1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, ModelModeShown) {
@@ -910,6 +997,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, ModelModeShown) {
   DestructMetricsRecorder();
   histogram_tester().ExpectUniqueSample(
       kContextualSearchModelModeShown,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchKeyedModelShown,
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
 }
 
@@ -944,6 +1034,18 @@ TEST_F(ContextualSearchMetricsRecorderTest, ActiveModesOnSessionEnd) {
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
   histogram_tester().ExpectUniqueSample(
       kContextualSearchSessionEndAbandonedModelMode,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndNavigatedKeyedTool,
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndAbandonedKeyedTool,
+      omnibox::ToolMode::TOOL_MODE_CANVAS, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndNavigatedKeyedModel,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndAbandonedKeyedModel,
       omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, 1);
 }
 
