@@ -2053,6 +2053,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Signin is not allowed"/>
   <int value="8" label="The account mismatch type is not the right one"/>
   <int value="9" label="The notification is not suppressed"/>
+  <int value="10"
+      label="The requested account is signed in to another profile"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/MismatchNotificationController.java:SuppressedReason) -->

@@ -67,6 +67,7 @@ public class MismatchNotificationController implements SigninManager.SignInState
         SuppressedReason.SIGNIN_NOT_ALLOWED,
         SuppressedReason.WRONG_MISMATCH_TYPE,
         SuppressedReason.NOT_SUPPRESSED,
+        SuppressedReason.APP_ACCOUNT_SIGNED_IN_TO_OTHER_PROFILE,
         SuppressedReason.MAX
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -81,7 +82,8 @@ public class MismatchNotificationController implements SigninManager.SignInState
         int SIGNIN_NOT_ALLOWED = 7;
         int WRONG_MISMATCH_TYPE = 8;
         int NOT_SUPPRESSED = 9;
-        int MAX = 10;
+        int APP_ACCOUNT_SIGNED_IN_TO_OTHER_PROFILE = 10;
+        int MAX = 11;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SuppressedReason)
