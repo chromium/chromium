@@ -552,24 +552,27 @@ class AppMenuEditCommandInteractiveTest
                  }));
   }
 
-  // Opens the app menu and chooses `command` from "Find and edit".
+  // Opens the app menu and chooses `command` from "Find and edit" (or from
+  // "Find, edit, and more tools" when kChroMenuSearch is enabled).
   auto ChooseEditCommand(actions::ActionId command) {
-    static constexpr char kFindAndEditItem[] = "find_and_edit_item";
+    static constexpr char kSubmenuItem[] = "edit_submenu_item";
     static constexpr char kCommandItem[] = "edit_command_item";
     return Steps(
         PressButton(kToolbarAppMenuButtonElementId),
         WaitForShow(AppMenuModel::kMoreToolsMenuItem),
-        NameViewRelative(AppMenuModel::kMoreToolsMenuItem, kFindAndEditItem,
-                         [](views::MenuItemView* item) {
-                           return item->GetRootMenuItem()->GetMenuItemByID(
-                               kActionFindAndEditSubmenu);
-                         }),
+        NameViewRelative(
+            AppMenuModel::kMoreToolsMenuItem, kSubmenuItem,
+            [](views::MenuItemView* item) {
+              return GetParam() ? item
+                                : item->GetRootMenuItem()->GetMenuItemByID(
+                                      kActionFindAndEditSubmenu);
+            }),
         // Small displays scroll the menu when the search header is present; on
         // Mac, SelectMenuItem clicks with the mouse without scrolling first.
-        ScrollIntoView(kFindAndEditItem), SelectMenuItem(kFindAndEditItem),
+        ScrollIntoView(kSubmenuItem), SelectMenuItem(kSubmenuItem),
         // Searches the submenu only: rows without an action in the top-level
         // menu have command id 0, the same as kActionCut.
-        NameViewRelative(kFindAndEditItem, kCommandItem,
+        NameViewRelative(kSubmenuItem, kCommandItem,
                          [command](views::MenuItemView* item) {
                            return item->GetMenuItemByID(command);
                          }),

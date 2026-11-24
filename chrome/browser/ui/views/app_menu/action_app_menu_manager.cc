@@ -1021,13 +1021,18 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
 
         section.AddAction(kActionShowTranslate);
 
-        section.AddSubmenu(kActionFindAndEditSubmenu, [](AppMenuBuilder& sub) {
-          sub.AddAction(kActionFind)
-              .AddDivider()
-              .AddAction(actions::kActionCut)
-              .AddAction(actions::kActionCopy)
-              .AddAction(actions::kActionPaste);
-        });
+        const bool chro_menu_search_enabled =
+            base::FeatureList::IsEnabled(features::kChroMenuSearch);
+        if (!chro_menu_search_enabled) {
+          section.AddSubmenu(kActionFindAndEditSubmenu,
+                             [](AppMenuBuilder& sub) {
+                               sub.AddAction(kActionFind)
+                                   .AddDivider()
+                                   .AddAction(actions::kActionCut)
+                                   .AddAction(actions::kActionCopy)
+                                   .AddAction(actions::kActionPaste);
+                             });
+        }
 
         const int save_and_share_string_id =
             media_router::MediaRouterEnabled(profile)
@@ -1126,7 +1131,16 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
 
         section.AddSubmenu(
             kActionDeveloperSubmenu,
-            [this](AppMenuBuilder& sub) {
+            [this, chro_menu_search_enabled](AppMenuBuilder& sub) {
+              if (chro_menu_search_enabled) {
+                sub.AddAction(kActionFind)
+                    .AddDivider()
+                    .AddAction(actions::kActionCut)
+                    .AddAction(actions::kActionCopy)
+                    .AddAction(actions::kActionPaste)
+                    .AddDivider()
+                    .AddHeader(IDS_APP_MENU_MORE_TOOLS_HEADER);
+              }
 #if BUILDFLAG(IS_CHROMEOS)
               const bool is_tablet_mode =
                   display::Screen::Get()->InTabletMode();
@@ -1215,7 +1229,12 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                 }
               }
             },
-            {.element_id = AppMenuModel::kMoreToolsMenuItem});
+            {.text_override =
+                 chro_menu_search_enabled
+                     ? std::make_optional(l10n_util::GetStringUTF16(
+                           IDS_FIND_EDIT_AND_MORE_TOOLS_MENU))
+                     : std::nullopt,
+             .element_id = AppMenuModel::kMoreToolsMenuItem});
       });
 }
 

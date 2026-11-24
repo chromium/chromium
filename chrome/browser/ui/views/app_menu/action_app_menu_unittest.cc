@@ -2496,6 +2496,31 @@ TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, FindAndEditSubmenuAtTopLevelWithoutSearch) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(root->HasSubmenu());
+
+  views::MenuItemView* find_and_edit =
+      root->GetMenuItemByID(kActionFindAndEditSubmenu);
+  ASSERT_NE(find_and_edit, nullptr);
+  EXPECT_EQ(find_and_edit->GetParentMenuItem(), root);
+
+  views::MenuItemView* more_tools =
+      root->GetMenuItemByID(kActionDeveloperSubmenu);
+  ASSERT_NE(more_tools, nullptr);
+  EXPECT_EQ(more_tools->GetMenuItemByID(kActionFindAndEditSubmenu), nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
  public:
   ActionAppMenuWithSearchTest() {
@@ -2566,6 +2591,72 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(ActionAppMenuWithSearchTest, FindAndEditItemsInMoreToolsWithSearch) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(root->HasSubmenu());
+
+  // "Find and edit" is no longer a submenu when kChroMenuSearch is enabled.
+  EXPECT_EQ(root->GetMenuItemByID(kActionFindAndEditSubmenu), nullptr);
+
+  views::MenuItemView* more_tools =
+      root->GetMenuItemByID(kActionDeveloperSubmenu);
+  ASSERT_NE(more_tools, nullptr);
+  ASSERT_TRUE(more_tools->HasSubmenu());
+  EXPECT_EQ(more_tools->title(),
+            l10n_util::GetStringUTF16(IDS_FIND_EDIT_AND_MORE_TOOLS_MENU));
+
+  // Verify order at the top of the submenu:
+  // Find, divider, Cut, Copy, Paste, divider, "More tools" header, then
+  // existing items.
+  views::SubmenuView* submenu = more_tools->GetSubmenu();
+  ASSERT_GE(submenu->children().size(), 8u);
+
+  auto* find_item =
+      views::AsViewClass<views::MenuItemView>(submenu->children()[0]);
+  ASSERT_NE(find_item, nullptr);
+  EXPECT_EQ(find_item->GetCommand(), kActionFind);
+
+  EXPECT_NE(views::AsViewClass<views::MenuSeparator>(submenu->children()[1]),
+            nullptr);
+
+  auto* cut_item =
+      views::AsViewClass<views::MenuItemView>(submenu->children()[2]);
+  ASSERT_NE(cut_item, nullptr);
+  EXPECT_EQ(cut_item->GetCommand(), actions::kActionCut);
+
+  auto* copy_item =
+      views::AsViewClass<views::MenuItemView>(submenu->children()[3]);
+  ASSERT_NE(copy_item, nullptr);
+  EXPECT_EQ(copy_item->GetCommand(), actions::kActionCopy);
+
+  auto* paste_item =
+      views::AsViewClass<views::MenuItemView>(submenu->children()[4]);
+  ASSERT_NE(paste_item, nullptr);
+  EXPECT_EQ(paste_item->GetCommand(), actions::kActionPaste);
+
+  EXPECT_NE(views::AsViewClass<views::MenuSeparator>(submenu->children()[5]),
+            nullptr);
+
+  auto* more_tools_header =
+      views::AsViewClass<views::MenuItemView>(submenu->children()[6]);
+  ASSERT_NE(more_tools_header, nullptr);
+  EXPECT_EQ(more_tools_header->title(),
+            l10n_util::GetStringUTF16(IDS_APP_MENU_MORE_TOOLS_HEADER));
+
+  // Existing items follow the "More tools" header.
+  EXPECT_NE(more_tools->GetMenuItemByID(kActionDevTools), nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
 
 TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;

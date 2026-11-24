@@ -1420,6 +1420,12 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and actions section in the main App Menu">
           Tools and actions
         </message>
+        <message name="IDS_FIND_EDIT_AND_MORE_TOOLS_MENU" desc="The text label of the Find, edit, and more tools submenu item in the main App Menu">
+          &amp;Find, edit, and more tools
+        </message>
+        <message name="IDS_APP_MENU_MORE_TOOLS_HEADER" desc="Header title for the More tools section inside the Find, edit, and more tools submenu">
+          More tools
+        </message>
         <message name="IDS_APP_MENU_BLOCK_INCOGNITO" desc="Label with a keyboard mnemonic for the Incognito block button in the main App Menu">
           &amp;Incognito
         </message>
