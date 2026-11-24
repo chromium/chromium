@@ -1,0 +1,21 @@
+Tests that debugger StepInto will stop inside next timeout handler.
+
+Set timer for test function.
+Call stack:
+    0) callback1 (debugger-step-into-across-timeouts.js:10)
+    [setTimeout]
+    0) testFunction (debugger-step-into-across-timeouts.js:4)
+    [setTimeout]
+    0)  (:1)
+
+Executing StepInto...
+Executing StepInto...
+Call stack:
+    0) callback2 (debugger-step-into-across-timeouts.js:15)
+    [setTimeout]
+    0) callback1 (debugger-step-into-across-timeouts.js:9)
+    [setTimeout]
+    0) testFunction (debugger-step-into-across-timeouts.js:4)
+    [setTimeout]
+    0)  (:1)
+
