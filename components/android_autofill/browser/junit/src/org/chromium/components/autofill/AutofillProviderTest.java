@@ -1789,6 +1789,67 @@ public class AutofillProviderTest {
                 .notifyViewEntered(eq(mContainerView), eq(field0VirtualId), any());
     }
 
+    @Test
+    public void testTransformToWindowBounds_nullWindowAndroid() {
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
+        float density = mContainerView.getResources().getDisplayMetrics().density;
+        RectF source = new RectF(10, 20, 300, 400);
+        final int offsetY = 10;
+        when(mRenderCoordinates.getContentOffsetTopPixInt()).thenReturn(offsetY);
+
+        Rect result = mAutofillProvider.transformToWindowBounds(source);
+        assertEquals(10 * density + LOCATION_X, result.left, 0);
+        assertEquals(20 * density + LOCATION_Y + offsetY, result.top, 0);
+        assertEquals(300 * density + LOCATION_X, result.right, 0);
+        assertEquals(400 * density + LOCATION_Y + offsetY, result.bottom, 0);
+    }
+
+    @Test
+    public void testTransformFormFieldToContainViewCoordinates_nullWindowAndroid() {
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
+        float density = mContainerView.getResources().getDisplayMetrics().density;
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mBounds =
+                new RectF(/* left= */ 10, /* top= */ 20, /* right= */ 300, /* bottom= */ 60);
+        FormData formData =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.transformFormFieldToContainViewCoordinates(formData);
+        RectF result = formData.mFields.get(0).getBoundsInContainerViewCoordinates();
+        assertEquals(10 * density + SCROLL_X, result.left, 0);
+        assertEquals(20 * density + SCROLL_Y, result.top, 0);
+        assertEquals(300 * density + SCROLL_X, result.right, 0);
+        assertEquals(60 * density + SCROLL_Y, result.bottom, 0);
+    }
+
+    @Test
+    public void testStartAutofillSession_nullWindowAndroid() {
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mBounds = new RectF(0, 0, 50, 20);
+        FormData formData =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(FormData.toFieldVirtualId(123, (short) 0), mFocusVirtualId);
+    }
+
     FormData setupPrefillRequest(int sessionId) {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mBounds =

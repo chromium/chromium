@@ -42,7 +42,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.display.DisplayAndroid;
 
 import java.lang.ref.WeakReference;
 
@@ -944,6 +943,15 @@ public class AutofillProvider {
         return clampedBounds.intersect(visibleBounds) ? clampedBounds : null;
     }
 
+    private float getDipScale() {
+        WindowAndroid windowAndroid =
+                mWebContents != null ? mWebContents.getTopLevelNativeWindow() : null;
+        if (windowAndroid != null) {
+            return windowAndroid.getDisplay().getDipScale();
+        }
+        return mContainerView.getResources().getDisplayMetrics().density;
+    }
+
     /**
      * Transforms the given bounds from web viewport coordinates (in DP) to absolute screen
      * coordinates (in physical pixels).
@@ -958,9 +966,7 @@ public class AutofillProvider {
     Rect transformToWindowBounds(RectF rect) {
         // Convert bounds to device pixel.
         // Refer to crbug.com/1085294 for the reason for the Y offset.
-        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        DisplayAndroid displayAndroid = windowAndroid.getDisplay();
-        float dipScale = displayAndroid.getDipScale();
+        float dipScale = getDipScale();
         RectF bounds = new RectF(rect);
         Matrix matrix = new Matrix();
         matrix.setScale(dipScale, dipScale);
@@ -979,9 +985,7 @@ public class AutofillProvider {
      */
     @VisibleForTesting
     public void transformFormFieldToContainViewCoordinates(FormData formData) {
-        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        DisplayAndroid displayAndroid = windowAndroid.getDisplay();
-        float dipScale = displayAndroid.getDipScale();
+        float dipScale = getDipScale();
         Matrix matrix = new Matrix();
         matrix.setScale(dipScale, dipScale);
         matrix.postTranslate(mContainerView.getScrollX(), mContainerView.getScrollY());
