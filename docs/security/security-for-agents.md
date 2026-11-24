@@ -177,9 +177,12 @@ To simulate a compromised renderer process, use the MojoJS feature by passing
 from JavaScript. If that does not work for some reason, the proof of concept
 **may** be in the form of a patch intended to apply to the Chromium source tree.
 If so, this patch must modify code that is only executed in the renderer, to
-simulate a compromised renderer process. Never patch browser process code, add
+simulate a compromised renderer process. Do not patch browser process code, add
 test-only observers or delegates, or simulate native OS nested loops with
-`base::RunLoop`.
+`base::RunLoop`—**except** when a browser-process patch only adds a sleep or
+timing delay (e.g., `Sleep()`, `PostDelayedTask`) to widen a race window and
+reliably trigger an existing race condition on an otherwise unmodified
+production code path.
 
 Anything that does not lead to one of these consequences is almost certainly not
 a valid proof of concept for an escalated code execution bug.
@@ -275,9 +278,18 @@ Chromium:
 * Any attack assuming a remote debug protocol connection to Chromium
 * Bugs in other apps reachable via Intents or external URL handlers from
   Chromium
-* Bugs in dependencies of Chromium which are not reachable in Chromium itself
-* Bugs in tests, or PoCs that patch browser code, use hypothetical observers,
-  or call internal C++ methods directly
+* Bugs in third-party dependencies that Chromium does not own which are not
+  reachable in Chromium itself. Bugs in dependencies that Chromium owns—ANGLE
+  (`//third_party/angle/`), BoringSSL (`//third_party/boringssl/`), Dawn
+  (`//third_party/dawn/`), V8 (`//v8/`), and WebRTC
+  (`//third_party/webrtc/`)—are valid reports (assessed as
+  `Security_Impact-None` for Chromium without clear evidence of reachability in
+  Chromium); consult each project's `SECURITY.md` (such as
+  `//third_party/boringssl/src/SECURITY.md` and `//v8/SECURITY.md`) or project
+  security documentation for guidance.
+* Bugs in tests, or PoCs that patch browser code (other than adding a sleep or
+  timing delay to enable a race condition), use hypothetical observers, or call
+  internal C++ methods directly
 * Causing AI features in Chromium to emit misleading or harmful output by
   entering a crafted prompt
 * Bugs that use an unsupported, developer-only, or experimental flag or feature,
@@ -328,7 +340,8 @@ Chromium:
   specifically to move CoreML model compilation into a minimal attack surface
   and remove this broad temporary directory access from the GPU process.
 
-These are not security bugs, regardless of how easy they are to trigger. Under
+These are not security bugs in Chromium, regardless of how easy they are to
+trigger. Unless a component or subproject `SECURITY.md` states otherwise, under
 no circumstances is something matching an entry in this list a security bug. A
 report matches an entry only when the entry describes the bug itself, not just
 the suggested fix or one detail of the report.
