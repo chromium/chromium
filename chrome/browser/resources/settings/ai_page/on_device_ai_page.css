@@ -22,7 +22,8 @@
   margin-top: 8px;
 }
 
-#noModels {
+#noModels,
+#noSearchResults {
   padding: 24px 0;
   text-align: center;
 }

@@ -3681,6 +3681,9 @@
     <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_METADATA" desc="Metadata line under an on-device AI capability row showing the name of the AI model and the approximate storage space it uses on the device, separated by a middle dot (·). 'about' means 'approximately'.">
       <ph name="MODEL_NAME">$1<ex>Gemini Nano</ex></ph> · about <ph name="SIZE">$2<ex>2.0 GB</ex></ph>
     </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_SEARCH" desc="Placeholder text and accessible label for the search box in the header of the On-device AI settings subpage. Users type here to filter the list of AI models downloaded to the device.">
+      Search on-device AI
+    </message>
     <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_REMOVED_TOAST_LABEL" desc="Label of the toast shown in the On-device AI settings subpage after the user deletes a downloaded on-device AI model.">
       '<ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>' removed
     </message>

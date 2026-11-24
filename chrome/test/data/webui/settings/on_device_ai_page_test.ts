@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsOnDeviceAiPageElement, SettingsOnDeviceAiPageEntryElement} from 'chrome://settings/lazy_load.js';
-import {OnDeviceAiBrowserProxyImpl, OnDeviceModelStatus} from 'chrome://settings/lazy_load.js';
+import {OnDeviceAiBrowserProxyImpl, OnDeviceModelCategory, OnDeviceModelStatus} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -45,6 +45,15 @@ suite('OnDeviceAiPage', function() {
             '#delete');
     assertTrue(!!deleteButton);
     deleteButton.click();
+  }
+
+  async function search(searchTerm: string) {
+    const subpage = page.shadowRoot.querySelector('settings-subpage');
+    assertTrue(!!subpage);
+    const searchField = subpage.shadowRoot.querySelector('cr-search-field');
+    assertTrue(!!searchField);
+    searchField.setValue(searchTerm);
+    await microtasksFinished();
   }
 
   setup(async function() {
@@ -309,5 +318,133 @@ suite('OnDeviceAiPage', function() {
             'onDeviceAiModelRemovedToastLabel',
             createAsrCapability().categoryTitle),
         page.$.toast.textContent.trim());
+  });
+
+  test('search filters models by category title', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+
+    await search('general-purpose');
+
+    const entries = getModelEntries();
+    assertEquals(1, entries.length);
+    assertDeepEquals(createGemmaCapability(), entries[0]!.capability);
+  });
+
+  test('search filters models by description', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+
+    await search('AUDIO');
+
+    const entries = getModelEntries();
+    assertEquals(1, entries.length);
+    assertDeepEquals(createAsrCapability(), entries[0]!.capability);
+  });
+
+  test('search filters models by model name', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+
+    await search('gemma');
+
+    const entries = getModelEntries();
+    assertEquals(1, entries.length);
+    assertDeepEquals(createGemmaCapability(), entries[0]!.capability);
+  });
+
+  test('search without matches shows no results message', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+    assertFalse(!!page.shadowRoot.querySelector('#noSearchResults'));
+
+    await search('does not exist');
+
+    assertEquals(0, getModelEntries().length);
+    assertTrue(isVisible(page.shadowRoot.querySelector('#noSearchResults')));
+    assertFalse(!!page.shadowRoot.querySelector('#noModels'));
+  });
+
+  test('search with no models keeps empty state', async function() {
+    await search('gemma');
+
+    assertTrue(isVisible(page.shadowRoot.querySelector('#noModels')));
+    assertFalse(!!page.shadowRoot.querySelector('#noSearchResults'));
+  });
+
+  test('clearing search shows all models', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+    await search('gemma');
+    assertEquals(1, getModelEntries().length);
+
+    await search('');
+
+    assertEquals(2, getModelEntries().length);
+  });
+
+  test(
+      'deleting one of multiple matching models keeps search filter',
+      async function() {
+        const createSecondMatch = () => createGemmaCapability({
+          id: 3,
+          category: OnDeviceModelCategory.PROOFREADING,
+          categoryTitle: 'Proofreading',
+        });
+        testBrowserProxy.reset();
+        testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse([
+          createGemmaCapability({id: 1}),
+          createAsrCapability({id: 2}),
+          createSecondMatch(),
+        ]);
+        await createPage();
+        await search('gemma');
+        assertEquals(2, getModelEntries().length);
+
+        testBrowserProxy.setDeleteOnDeviceAiCapabilityResponse([
+          createGemmaCapability(
+              {id: 1, status: OnDeviceModelStatus.DOWNLOADABLE}),
+          createAsrCapability({id: 2}),
+          createSecondMatch(),
+        ]);
+        clickDeleteButton(0);
+        await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability');
+        await microtasksFinished();
+
+        const entries = getModelEntries();
+        assertEquals(1, entries.length);
+        assertDeepEquals(createSecondMatch(), entries[0]!.capability);
+        assertFalse(!!page.shadowRoot.querySelector('#noSearchResults'));
+      });
+
+  test('deleting only matching model keeps search filter', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+    await search('gemma');
+    assertEquals(1, getModelEntries().length);
+
+    testBrowserProxy.setDeleteOnDeviceAiCapabilityResponse([
+      createGemmaCapability({status: OnDeviceModelStatus.DOWNLOADABLE}),
+      createAsrCapability(),
+    ]);
+    clickDeleteButton(0);
+    await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability');
+    await microtasksFinished();
+
+    // The remaining model does not match the search term.
+    assertEquals(0, getModelEntries().length);
+    assertTrue(isVisible(page.shadowRoot.querySelector('#noSearchResults')));
   });
 });

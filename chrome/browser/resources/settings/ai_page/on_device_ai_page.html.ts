@@ -9,7 +9,8 @@ import type {SettingsOnDeviceAiPageElement} from './on_device_ai_page.js';
 export function getHtml(this: SettingsOnDeviceAiPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{onDeviceAiEnabledLabel}"
-    route-path="${this.routePath}">
+    route-path="${this.routePath}" search-label="$i18n{onDeviceAiSearch}"
+    search-icon="cr:search" @search-term-changed="${this.onSearchTermChanged_}">
   <settings-toggle-button id="onDeviceAiToggle"
       pref-key="synthetic.settings.on_device_ai_enabled"
       label="$i18n{onDeviceAiCapabilitiesLabel}"
@@ -63,19 +64,25 @@ export function getHtml(this: SettingsOnDeviceAiPageElement) {
     <div class="models-description secondary">
       $i18n{onDeviceAiModelsDescription}
     </div>
-    ${this.capabilities_.length > 0 ? html`
+    ${this.matchingCapabilities_.length > 0 ? html`
       <settings-focus-list-container id="modelsList" role="list"
           aria-labelledby="modelsHeader">
-        ${repeat(this.capabilities_, item => item.id, item => html`
+        ${repeat(this.matchingCapabilities_, item => item.id, item => html`
           <settings-on-device-ai-page-entry role="listitem"
               .capability="${item}" @delete-click="${this.onEntryDeleteClick_}">
           </settings-on-device-ai-page-entry>
         `)}
       </settings-focus-list-container>
     ` : html`
-      <div id="noModels" class="secondary">
-        $i18n{onDeviceAiNoModels}
-      </div>
+      ${this.capabilities_.length > 0 ? html`
+        <div id="noSearchResults" class="secondary">
+          $i18n{searchNoResults}
+        </div>
+      ` : html`
+        <div id="noModels" class="secondary">
+          $i18n{onDeviceAiNoModels}
+        </div>
+      `}
     `}
   </div>
 </settings-subpage>

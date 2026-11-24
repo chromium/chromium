@@ -551,6 +551,7 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"onDeviceAiModelDownloading",
        IDS_SETTINGS_ON_DEVICE_AI_MODEL_DOWNLOADING},
       {"onDeviceAiModelUpdating", IDS_SETTINGS_ON_DEVICE_AI_MODEL_UPDATING},
+      {"onDeviceAiSearch", IDS_SETTINGS_ON_DEVICE_AI_SEARCH},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

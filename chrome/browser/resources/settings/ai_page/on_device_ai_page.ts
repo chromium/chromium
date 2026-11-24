@@ -19,6 +19,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -58,12 +59,17 @@ export class SettingsOnDeviceAiPageElement extends
   static override get properties() {
     return {
       capabilities_: {type: Array},
+      matchingCapabilities_: {type: Array},
+      searchTerm_: {type: String},
       showTurnOffDialog_: {type: Boolean},
       toastLabel_: {type: String},
     };
   }
 
   protected accessor capabilities_: OnDeviceAiCapability[] = [];
+  // The models in `capabilities_` that match `searchTerm_`.
+  protected accessor matchingCapabilities_: OnDeviceAiCapability[] = [];
+  private accessor searchTerm_: string = '';
   protected accessor showTurnOffDialog_: boolean = false;
   protected accessor toastLabel_: string = '';
 
@@ -87,9 +93,25 @@ export class SettingsOnDeviceAiPageElement extends
         capabilities => this.updateCapabilities_(capabilities));
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('capabilities_') ||
+        changedPrivateProperties.has('searchTerm_')) {
+      this.matchingCapabilities_ = this.computeMatchingCapabilities_();
+    }
+  }
+
   // SettingsViewMixinLit implementation.
   override focusBackButton() {
     this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
+    this.searchTerm_ = e.detail.value;
   }
 
   protected onOnDeviceAiSubLabelLinkClicked_() {
@@ -151,6 +173,13 @@ export class SettingsOnDeviceAiPageElement extends
         item => item.status === OnDeviceModelStatus.READY ||
             item.status === OnDeviceModelStatus.DOWNLOADING ||
             item.status === OnDeviceModelStatus.UPDATING);
+  }
+
+  private computeMatchingCapabilities_(): OnDeviceAiCapability[] {
+    const searchTerm = this.searchTerm_.trim().toLowerCase();
+    return this.capabilities_.filter(
+        item => [item.categoryTitle, item.description, item.modelName].some(
+            text => text.toLowerCase().includes(searchTerm)));
   }
 
   private setOnDeviceAiPref_(onDeviceAiEnabled: OnDeviceAiEnabled) {
