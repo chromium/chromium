@@ -66,37 +66,10 @@ CanvasResource::CanvasResource(
     scoped_refptr<gpu::ClientSharedImage> shared_image)
     : gpu::ClientImage(std::move(shared_image)) {
   subclass_manages_destruction_sync_token_ = true;
-}
-
-void CanvasResource::InitializeSoftware(
-    base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-        shared_image_interface_provider) {
-  DCHECK(GetSharedImage());
-  DCHECK(!is_initialized_);
-  DCHECK(shared_image_interface_provider);
-
-  // This class doesn't currently have a way of verifying the sync token for
-  // software SharedImages at the time of vending it in VerifySyncToken(),
-  // so we instead ensure that it is verified now.
-  auto* shared_image_interface =
-      shared_image_interface_provider->SharedImageInterface();
-  DCHECK(shared_image_interface);
-  gpu::SyncToken sync_token = GetSharedImage()->creation_sync_token();
-  shared_image_interface->VerifySyncToken(sync_token);
-  SetReleaseSyncToken(sync_token);
-  GetSharedImage()->UpdateDestructionSyncToken(sync_token);
-
-  is_initialized_ = true;
-}
-
-void CanvasResource::Initialize() {
-  DCHECK(GetSharedImage());
-  DCHECK(!is_initialized_);
-
-  // Wait for the mailbox to be ready to be used.
-  WaitSyncToken(GetSharedImage()->creation_sync_token());
-
-  is_initialized_ = true;
+  if (!GetSharedImage()->is_software()) {
+    // Wait for the mailbox to be ready to be used.
+    WaitSyncToken(GetSharedImage()->creation_sync_token());
+  }
 }
 
 CanvasResource::~CanvasResource() = default;

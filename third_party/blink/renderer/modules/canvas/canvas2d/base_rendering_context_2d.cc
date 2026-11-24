@@ -321,14 +321,19 @@ scoped_refptr<CanvasResource> BaseRenderingContext2D::NewOrRecycledResource() {
     return nullptr;
   }
 
-  CHECK(!IsSingleBuffered() || !resource->IsInitialized());
-
-  if (!resource->IsInitialized()) {
-    if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(shared_image_interface_provider_);
-    } else {
-      resource->Initialize();
-    }
+  if (image_pool_->GetImageInfo().is_software &&
+      !resource->GetSyncToken().verified_flush()) {
+    // Ensure the creation sync token for software SharedImages is verified
+    // before the resource is exported.
+    DCHECK(shared_image_interface_provider_);
+    auto* shared_image_interface =
+        shared_image_interface_provider_->SharedImageInterface();
+    DCHECK(shared_image_interface);
+    gpu::SyncToken sync_token =
+        resource->GetSharedImage()->creation_sync_token();
+    shared_image_interface->VerifySyncToken(sync_token);
+    resource->SetReleaseSyncToken(sync_token);
+    resource->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
   }
   DCHECK(resource->HasOneRef());
   return resource;

@@ -22,7 +22,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/buildflags.h"
-#include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -67,11 +66,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
  public:
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
 
-  void InitializeSoftware(base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-                              shared_image_interface_provider);
-  void Initialize();
-  bool IsInitialized() const { return is_initialized_; }
-
   // Save (and wait on) this sync token on the context used by this resource for
   // rendering.
   // TODO(crbug.com/40286368): completely defer the waiting to the
@@ -102,9 +96,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
   // before a resource is used on a different thread.
   bool resource_is_lost_ = false;
   gpu::SyncToken acquire_sync_token_;
-
-  // Accessed on any thread.
-  bool is_initialized_ = false;
 };
 
 }  // namespace blink
