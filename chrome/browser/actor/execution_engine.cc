@@ -1814,8 +1814,19 @@ void ExecutionEngine::FinishToolInvokeWithDialogs(
   // interruption was involved. Will file bug.
   CHECK(result->execution_end_time);
   base::TimeTicks end_time = base::TimeTicks::Now();
-  RecordToolTimings(GetInProgressAction().Name(), end_time - action_start_time_,
-                    end_time - *result->execution_end_time);
+  // Page actions that defer their stabilization wait to a later action in a
+  // coalesced bundle don't run their own wait, so don't record per-action
+  // PageStabilization for them. A pending observation at this point means the
+  // action that just finished deferred its wait.
+  const bool deferred_page_stabilization =
+      base::FeatureList::IsEnabled(kActorStabilizeOncePerBundle) &&
+      current_action.AsPageToolRequest() &&
+      tool_controller_->HasPendingObservation();
+  RecordToolTimings(
+      current_action.Name(), end_time - action_start_time_,
+      deferred_page_stabilization
+          ? std::nullopt
+          : std::make_optional(end_time - *result->execution_end_time));
 
   if (ActorSurfaceHandle actor_surface_handle =
           GetInProgressAction().GetActorSurfaceForValidation();

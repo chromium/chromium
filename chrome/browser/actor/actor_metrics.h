@@ -46,10 +46,13 @@ void RecordActorTaskStateTransitionActionCount(size_t action_count,
 void RecordActorTaskStateTransitionDuration(base::TimeDelta duration,
                                             ActorTask::State state);
 
-// Records tool timings.
-void RecordToolTimings(std::string_view tool_name,
-                       base::TimeDelta execution_duration,
-                       base::TimeDelta page_stabilization_duration);
+// Records tool timings. `page_stabilization_duration` is recorded only when
+// set. It is unset for page actions that defer their stabilization wait to a
+// later action in a coalesced bundle (`kActorStabilizeOncePerBundle`).
+void RecordToolTimings(
+    std::string_view tool_name,
+    base::TimeDelta execution_duration,
+    std::optional<base::TimeDelta> page_stabilization_duration);
 
 // Records histograms tracking the total visible and non-visible durations of an
 // ActorTask while in an actor-controlled state upon completion or cancellation.

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
@@ -25,6 +26,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -2142,6 +2144,7 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
     EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 2);
     EXPECT_THAT(observation_delays(),
                 testing::ElementsAre(base::Seconds(1), base::Seconds(2)));
+    histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 2);
   }
 
   ActResultFuture result;
@@ -2156,6 +2159,9 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
   EXPECT_THAT(observation_delays(),
               testing::ElementsAre(base::Seconds(1), base::Seconds(2),
                                    base::Seconds(3)));
+  // Click1 and Click2 defer and aren't recorded; Click3 runs the shared wait
+  // and is recorded (on top of the 2 samples from the disabled run).
+  histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 3);
 }
 
 TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
@@ -2199,6 +2205,10 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
   EXPECT_THAT(delays_at_non_page, testing::ElementsAre(base::Seconds(2)));
   EXPECT_THAT(observation_delays(),
               testing::ElementsAre(base::Seconds(2), base::Seconds(4)));
+  // Click1 and Click3 defer and aren't recorded; Click2 and Click4 run the
+  // shared waits and are recorded.
+  histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.FakeTool", 1);
+  histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 2);
 
   fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
     task_->GetExecutionEngine().EnqueueFollowupAction(
@@ -2213,6 +2223,9 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
       observation_delays(),
       testing::ElementsAre(base::Seconds(2), base::Seconds(4), base::Seconds(1),
                            base::Seconds(5), base::Seconds(2)));
+  // Click1 defers then settles before the follow-up, so it isn't recorded; the
+  // follow-up and Click2 run standalone and are recorded.
+  histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 4);
 
   // Switching tabs mid-sequence settles the first tab's bundle before acting on
   // the second tab.
@@ -2247,6 +2260,9 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
       testing::ElementsAre(base::Seconds(2), base::Seconds(4), base::Seconds(1),
                            base::Seconds(5), base::Seconds(2), base::Seconds(2),
                            base::Seconds(6)));
+  // In res3, Click1 defers and isn't recorded; Click2 runs the shared wait and
+  // second_tab_click runs standalone on the other tab, so both are recorded.
+  histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 6);
   task_->Stop(kTaskComplete);
 }
 
@@ -2346,6 +2362,50 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
   EXPECT_FALSE(task_->GetExecutionEngine().TabsCanOpenNewWebContents());
   task_->Pause(/*from_actor=*/false);
   ExpectErrorResult(pause_res, mojom::ActionResultCode::kTaskPaused);
+}
+
+TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
+       StandaloneSkipDelayAndEarlySettlePageStabilizationMetrics) {
+  // A standalone page action records PageStabilization.
+  {
+    ActResultFuture res;
+    task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1))),
+               res.GetCallback());
+    ExpectOkResult(res);
+    histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 1);
+  }
+
+  // Page actions with skip-observation-delay do not form a coalesced run and
+  // record PageStabilization.
+  {
+    auto skip1 = MakeBundleClickRequest(base::Seconds(1));
+    skip1->SetSkipObservationDelay(true);
+    auto skip2 = MakeBundleClickRequest(base::Seconds(2));
+    skip2->SetSkipObservationDelay(true);
+    ActResultFuture res;
+    task_->Act(ToRequestList(std::move(skip1), std::move(skip2)),
+               res.GetCallback());
+    ExpectOkResult(res);
+    histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 3);
+  }
+
+  // Navigation after Click1 triggers an early settle of its deferred wait, and
+  // Click2 starts a new coalesced run with Click3. Click1 and Click2 defer and
+  // aren't recorded; Click3 runs the shared wait and is recorded.
+  {
+    fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("http://localhost/#section"), main_rfh())
+          ->CommitSameDocument();
+    }));
+    ActResultFuture res;
+    task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                             MakeBundleClickRequest(base::Seconds(2)),
+                             MakeBundleClickRequest(base::Seconds(3))),
+               res.GetCallback());
+    ExpectOkResult(res);
+    histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 4);
+  }
 }
 
 class ExecutionEngineNavigationGatingTest : public ExecutionEngineTest {

@@ -1345,7 +1345,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-synapse-team@google.com</owner>
   <summary>
     The duration of how long a given tool took to stabilize after execution when
-    it was successful.
+    it was successful. When ActorStabilizeOncePerBundle is enabled, page actions
+    that defer their stabilization wait to a later action in the same bundle are
+    not recorded here. The action that runs the bundle's shared wait records it.
   </summary>
   <token key="ToolRequest" variants="ToolRequest"/>
 </histogram>
