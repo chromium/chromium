@@ -129,8 +129,8 @@ TransportSessionImpl::SendUpstreamMessage(
   return base::unexpected(SendUpstreamMessageError::kChannelDisconnected);
 }
 
-void TransportSessionImpl::OnWakeMessage(PayloadType payload_type,
-                                         std::string_view serialized_payload) {
+void TransportSessionImpl::OnMessage(PayloadType payload_type,
+                                     std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This entry point exists for the out-of-band FCM wake-up path, which
   // carries `sequence_number = 0`. Ignore late or duplicate wake payloads once
@@ -155,8 +155,8 @@ void TransportSessionImpl::OnWakeMessage(PayloadType payload_type,
   base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();
   if (on_downstream_message_) {
     // `BrowserActuatorMessageHandler` unpacks bundled FCM messages and calls
-    // `OnWakeMessage()` one payload at a time, so report each call to observers
-    // as a single-payload envelope.
+    // `OnMessage()` one payload at a time, so report each call to observers as
+    // a single-payload envelope.
     browser_actuator::ActuatorDownstreamMessage envelope;
     envelope.set_session_id(session_id_);
     envelope.set_sequence_number(0);

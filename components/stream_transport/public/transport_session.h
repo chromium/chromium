@@ -36,8 +36,8 @@ class TransportSession {
   // empty wake-up pings separately from non-empty payloads). Repeated calls or
   // calls arriving after the downstream stream has accepted a message are
   // ignored.
-  virtual void OnWakeMessage(PayloadType payload_type,
-                             std::string_view serialized_payload) = 0;
+  virtual void OnMessage(PayloadType payload_type,
+                         std::string_view serialized_payload) = 0;
 
   // Closes and destroys this session locally.
   // WARNING: May destroy `this` and all `TransportHandler`s owned by this

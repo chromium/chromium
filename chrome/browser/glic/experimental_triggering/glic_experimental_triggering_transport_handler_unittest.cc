@@ -77,7 +77,7 @@ class MockTransportSession : public TransportSession {
                const google::protobuf::MessageLite& message),
               (override));
   MOCK_METHOD(void,
-              OnWakeMessage,
+              OnMessage,
               (PayloadType payload_type, std::string_view serialized_payload),
               (override));
   MOCK_METHOD(void, Close, (), (override));

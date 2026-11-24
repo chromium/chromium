@@ -92,8 +92,8 @@ class BrowserActuatorInternalsUIMojoImplTest : public testing::Test {
 
     ControlCommand command;
     command.mutable_start_session();
-    session->OnWakeMessage(stream_transport::PayloadType::kControl,
-                           command.SerializeAsString());
+    session->OnMessage(stream_transport::PayloadType::kControl,
+                       command.SerializeAsString());
   }
 
  protected:

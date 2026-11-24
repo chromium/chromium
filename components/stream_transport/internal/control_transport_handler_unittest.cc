@@ -35,8 +35,8 @@ class TestTransportSession : public TransportSession {
       const google::protobuf::MessageLite& message) override {
     return {};
   }
-  void OnWakeMessage(PayloadType payload_type,
-                     std::string_view serialized_payload) override {}
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override {}
   void Close() override {}
 
  private:
@@ -56,7 +56,7 @@ class MockTransportSession : public TransportSession {
                const google::protobuf::MessageLite& message),
               (override));
   MOCK_METHOD(void,
-              OnWakeMessage,
+              OnMessage,
               (PayloadType payload_type, std::string_view serialized_payload),
               (override));
   MOCK_METHOD(void, Close, (), (override));

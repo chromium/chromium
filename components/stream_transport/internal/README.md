@@ -100,8 +100,8 @@ binary payloads.
   sequence number cannot stall teardown.
 - **Reply Correlation (`dispatching_sequence_number_`)**:
   While `TransportSessionImpl` is dispatching a downstream message with sequence
-  number $N$ (`0` on the out-of-band `OnWakeMessage()` path, or
-  `sequence_number` in `ProcessDownstreamMessage()`), `dispatching_sequence_number_` is set to $N$ so
+  number $N$ (`0` on the out-of-band `OnMessage()` path, or `sequence_number` in
+  `ProcessDownstreamMessage()`), `dispatching_sequence_number_` is set to $N$ so
   control and probe replies (`PayloadType::kControl`, `PayloadType::kProbe`)
   populate `responding_to_sequence_number = N` on the outgoing
   `ActuatorUpstreamMessage`.

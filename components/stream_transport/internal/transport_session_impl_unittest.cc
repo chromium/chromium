@@ -754,7 +754,7 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageReportsDispatchFailure) {
       DownstreamPayloadDropReason::kDispatchFailed, 1);
 }
 
-TEST(TransportSessionImplTest, OnWakeMessage) {
+TEST(TransportSessionImplTest, OnMessage) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
 
@@ -779,10 +779,10 @@ TEST(TransportSessionImplTest, OnWakeMessage) {
   EXPECT_CALL(*handler_ptr,
               OnMessage(PayloadType::kControl, serialized_command));
 
-  session.OnWakeMessage(PayloadType::kControl, serialized_command);
+  session.OnMessage(PayloadType::kControl, serialized_command);
 }
 
-TEST(TransportSessionImplTest, OnWakeMessageSetsZeroSequenceForControlReplies) {
+TEST(TransportSessionImplTest, OnMessageSetsZeroSequenceForControlReplies) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -823,7 +823,7 @@ TEST(TransportSessionImplTest, OnWakeMessageSetsZeroSequenceForControlReplies) {
               SendUpstreamMessage("test_session", PayloadType::kControl,
                                   testing::_, std::optional<int64_t>(0)));
 
-  session.OnWakeMessage(PayloadType::kControl, serialized_start);
+  session.OnMessage(PayloadType::kControl, serialized_start);
 
   // Subsequent non-control payload in the same wake bundle does not populate
   // `responding_to_sequence_number`.
@@ -840,10 +840,9 @@ TEST(TransportSessionImplTest, OnWakeMessageSetsZeroSequenceForControlReplies) {
                            "test_session", PayloadType::kExperimentalTriggering,
                            testing::_, std::optional<int64_t>(std::nullopt)));
 
-  session.OnWakeMessage(PayloadType::kExperimentalTriggering, "trigger-bytes");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "trigger-bytes");
 
-  // Unsolicited control message sent outside `OnWakeMessage()` has
-  // `std::nullopt`.
+  // Unsolicited control message sent outside `OnMessage()` has `std::nullopt`.
   browser_actuator::ControlCommand unsolicited;
   EXPECT_CALL(channel, SendUpstreamMessage(
                            "test_session", PayloadType::kControl, testing::_,
@@ -852,7 +851,7 @@ TEST(TransportSessionImplTest, OnWakeMessageSetsZeroSequenceForControlReplies) {
                   .has_value());
 }
 
-TEST(TransportSessionImplTest, OnWakeMessageHandlesSessionDestructionSafely) {
+TEST(TransportSessionImplTest, OnMessageHandlesSessionDestructionSafely) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -870,12 +869,12 @@ TEST(TransportSessionImplTest, OnWakeMessageHandlesSessionDestructionSafely) {
   EXPECT_CALL(factory, OnNewSession(session_ptr))
       .WillOnce(testing::Return(std::move(handler)));
 
-  session_ptr->OnWakeMessage(PayloadType::kControl, "close-bytes");
+  session_ptr->OnMessage(PayloadType::kControl, "close-bytes");
   EXPECT_EQ(session, nullptr);
 }
 
 TEST(TransportSessionImplTest,
-     OnWakeMessageDeduplicatesWakeAndIgnoresWakeAfterStreamAdvances) {
+     OnMessageDeduplicatesWakeAndIgnoresWakeAfterStreamAdvances) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -906,16 +905,16 @@ TEST(TransportSessionImplTest,
       .WillOnce(testing::Return(std::move(triggering_handler)));
   EXPECT_CALL(actuation_factory, OnNewSession).Times(0);
 
-  // First sequence-0 wake via `OnWakeMessage()` is dispatched and advances
+  // First sequence-0 wake via `OnMessage()` is dispatched and advances
   // `last_seen_sequence_number()` to 0.
   EXPECT_CALL(*control_handler_ptr, OnMessage(PayloadType::kControl, "wake-1"))
       .Times(1);
-  session.OnWakeMessage(PayloadType::kControl, "wake-1");
+  session.OnMessage(PayloadType::kControl, "wake-1");
   EXPECT_EQ(session.last_seen_sequence_number(), 0);
 
   // Duplicate sequence-0 wake for the same payload type is ignored.
   EXPECT_CALL(*control_handler_ptr, OnMessage).Times(0);
-  session.OnWakeMessage(PayloadType::kControl, "wake-duplicate");
+  session.OnMessage(PayloadType::kControl, "wake-duplicate");
 
   // Empty wake-up ping and non-empty wake payload of the same payload type are
   // each allowed once before the stream starts, and duplicates of either are
@@ -926,22 +925,21 @@ TEST(TransportSessionImplTest,
   EXPECT_CALL(*triggering_handler_ptr,
               OnMessage(PayloadType::kExperimentalTriggering, "opt-in-wake"))
       .Times(1);
-  session.OnWakeMessage(PayloadType::kExperimentalTriggering, "");
-  session.OnWakeMessage(PayloadType::kExperimentalTriggering, "");
-  session.OnWakeMessage(PayloadType::kExperimentalTriggering, "opt-in-wake");
-  session.OnWakeMessage(PayloadType::kExperimentalTriggering,
-                        "opt-in-wake-dup");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "opt-in-wake");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "opt-in-wake-dup");
 
-  // A sequence-0 message arriving on the stream after `OnWakeMessage()`
-  // already advanced the sequencer to 0 is dropped as a duplicate.
+  // A sequence-0 message arriving on the stream after `OnMessage()` already
+  // advanced the sequencer to 0 is dropped as a duplicate.
   EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
       browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
       ExpectedTypeUrl(PayloadType::kControl), "stream-seq-0",
       /*sequence_number=*/0)));
 
   // Once the stream advances to sequence 1, late sequence-0 wake payloads via
-  // `OnWakeMessage()` (even for a payload type not yet seen on
-  // `OnWakeMessage()`) are ignored.
+  // `OnMessage()` (even for a payload type not yet seen on `OnMessage()`) are
+  // ignored.
   EXPECT_CALL(*triggering_handler_ptr,
               OnMessage(PayloadType::kExperimentalTriggering, "stream-seq-1"))
       .Times(1);
@@ -952,11 +950,11 @@ TEST(TransportSessionImplTest,
       /*sequence_number=*/1)));
   EXPECT_EQ(session.last_seen_sequence_number(), 1);
 
-  session.OnWakeMessage(PayloadType::kActuation, "late-wake");
+  session.OnMessage(PayloadType::kActuation, "late-wake");
 }
 
 TEST(TransportSessionImplTest,
-     OnWakeMessageIgnoredAfterOutOfOrderStreamMessageIsBuffered) {
+     OnMessageIgnoredAfterOutOfOrderStreamMessageIsBuffered) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -982,7 +980,7 @@ TEST(TransportSessionImplTest,
   // Initial sequence-0 control wake succeeds.
   EXPECT_CALL(*control_handler_ptr, OnMessage(PayloadType::kControl, "wake-1"))
       .Times(1);
-  session.OnWakeMessage(PayloadType::kControl, "wake-1");
+  session.OnMessage(PayloadType::kControl, "wake-1");
   EXPECT_EQ(session.last_seen_sequence_number(), 0);
 
   // Out-of-order sequence 2 arrives on the stream before sequence 1 and is
@@ -993,12 +991,12 @@ TEST(TransportSessionImplTest,
       /*sequence_number=*/2)));
   EXPECT_EQ(session.last_seen_sequence_number(), 0);
 
-  // A subsequent late `OnWakeMessage()` wake for an unseen payload type must be
+  // A subsequent late `OnMessage()` wake for an unseen payload type must be
   // ignored without hitting `AdvanceLastSeenTo(0)` or dispatching.
-  session.OnWakeMessage(PayloadType::kExperimentalTriggering, "late-wake");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "late-wake");
 }
 
-TEST(TransportSessionImplTest, OnWakeMessageReportsWakeEnvelopeBeforeDispatch) {
+TEST(TransportSessionImplTest, OnMessageReportsWakeEnvelopeBeforeDispatch) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -1032,7 +1030,7 @@ TEST(TransportSessionImplTest, OnWakeMessageReportsWakeEnvelopeBeforeDispatch) {
         EXPECT_EQ(reported.size(), 1u);
       });
 
-  session.OnWakeMessage(PayloadType::kControl, serialized_start);
+  session.OnMessage(PayloadType::kControl, serialized_start);
 
   ASSERT_EQ(reported.size(), 1u);
   const browser_actuator::ActuatorDownstreamMessage& envelope = reported[0];
@@ -1047,7 +1045,7 @@ TEST(TransportSessionImplTest, OnWakeMessageReportsWakeEnvelopeBeforeDispatch) {
             serialized_start);
 }
 
-TEST(TransportSessionImplTest, OnWakeMessageReportsEnvelopeWithoutHandlers) {
+TEST(TransportSessionImplTest, OnMessageReportsEnvelopeWithoutHandlers) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -1064,11 +1062,11 @@ TEST(TransportSessionImplTest, OnWakeMessageReportsEnvelopeWithoutHandlers) {
 
   // No handler is registered for the payload, but the wake-up is still
   // reported.
-  session.OnWakeMessage(PayloadType::kActuation, kTestPayload);
+  session.OnMessage(PayloadType::kActuation, kTestPayload);
   EXPECT_EQ(report_count, 1u);
 }
 
-TEST(TransportSessionImplTest, OnWakeMessageStopsIfObserverDestroysSession) {
+TEST(TransportSessionImplTest, OnMessageStopsIfObserverDestroysSession) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -1087,11 +1085,11 @@ TEST(TransportSessionImplTest, OnWakeMessageStopsIfObserverDestroysSession) {
   registry.RegisterFactory(&factory);
   EXPECT_CALL(factory, OnNewSession).Times(0);
 
-  session->OnWakeMessage(PayloadType::kControl, kTestPayload);
+  session->OnMessage(PayloadType::kControl, kTestPayload);
   EXPECT_EQ(session, nullptr);
 }
 
-TEST(TransportSessionImplTest, OnWakeMessageReportsUnspecifiedPayloadType) {
+TEST(TransportSessionImplTest, OnMessageReportsUnspecifiedPayloadType) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
@@ -1106,7 +1104,7 @@ TEST(TransportSessionImplTest, OnWakeMessageReportsUnspecifiedPayloadType) {
             reported.push_back(message);
           }));
 
-  session.OnWakeMessage(PayloadType::kUnspecified, kTestPayload);
+  session.OnMessage(PayloadType::kUnspecified, kTestPayload);
 
   ASSERT_EQ(reported.size(), 1u);
   ASSERT_EQ(reported[0].typed_payloads_size(), 1);
