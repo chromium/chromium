@@ -1,0 +1,12 @@
+Tests that pause on exception works inside setTimeout callbacks.
+Script execution paused.
+Reason: exception
+Uncaught: true
+Exception: ReferenceError: unknown_var is not defined
+Call stack:
+    0) throwAnException (pause-on-exception-set-timeout.js:4)
+    1) handleClick (pause-on-exception-set-timeout.js:9)
+    [setTimeout]
+    0) (anonymous) (schedule-set-timeout.js:1)
+Script execution resumed.
+
