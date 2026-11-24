@@ -100,12 +100,12 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
 
   // We need to substract the default pre-populated engines that the profile is
   // set up with.
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulate_urls =
+  TemplateURLPrepopulateData::PrepopulatedEngineVector prepopulate_engines =
       prepopulate_data_resolver->GetPrepopulatedEngines();
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
       template_url_starter_pack_data::GetStarterPackEngines();
 
-  EXPECT_EQ(prepopulate_urls.size() + starter_pack_urls.size(),
+  EXPECT_EQ(prepopulate_engines.size() + starter_pack_urls.size(),
             all_urls.size());
 
   std::string port(base::NumberToString(embedded_test_server()->port()));
@@ -123,6 +123,6 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   observer.Wait();
 
   all_urls = template_urls->GetTemplateURLs();
-  EXPECT_EQ(prepopulate_urls.size() + starter_pack_urls.size() + 1,
+  EXPECT_EQ(prepopulate_engines.size() + starter_pack_urls.size() + 1,
             all_urls.size());
 }

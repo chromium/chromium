@@ -49,6 +49,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/switches.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -73,8 +74,9 @@ std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(Profile* profile) {
 
   // Enforcing that `kTestExtensionPrepopulatedId` is not part of the
   // prepopulated set for the current profile's country.
-  for (auto& data : prepopulate_data_resolver->GetPrepopulatedEngines()) {
-    EXPECT_NE(data->prepopulate_id, kTestExtensionPrepopulatedId);
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
+       prepopulate_data_resolver->GetPrepopulatedEngines()) {
+    EXPECT_NE(engine->id, kTestExtensionPrepopulatedId);
   }
 
   auto result = std::make_unique<TemplateURLData>();

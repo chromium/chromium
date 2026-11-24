@@ -13,6 +13,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace internal {
 
@@ -142,16 +143,17 @@ OrderTemplateUrlsByManagedAndAlphabetically::GetShortNameSortKeyForTesting(
 // --- OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically ---
 OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically::
     OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
-        std::vector<std::unique_ptr<TemplateURLData>> prepopulated_engines)
+        TemplateURLPrepopulateData::PrepopulatedEngineSpan prepopulated_engines)
     : collator_(CreateCollator()) {
   prepopulated_ranks_.reserve(prepopulated_engines.size());
 
   // Build the `base::flat_map` mapping each `prepopulate_id` to its index.
   for (size_t i = 0; i < prepopulated_engines.size(); ++i) {
-    const TemplateURLData* url = prepopulated_engines[i].get();
-    CHECK(url);
-    if (url->prepopulate_id > 0) {
-      prepopulated_ranks_[url->prepopulate_id] = i;
+    const TemplateURLPrepopulateData::PrepopulatedEngine* engine =
+        prepopulated_engines[i];
+    CHECK(engine);
+    if (engine->id > 0) {
+      prepopulated_ranks_[engine->id] = i;
     }
   }
 }

@@ -30,7 +30,7 @@ struct PrepopulatedEngine;
 extern const int kMaxPrepopulatedEngineID;
 
 // The maximum number of prepopulated search engines that can be returned in
-// any of the EEA countries by `GetPrepopulatedEngines()`.
+// any of the EEA countries by `Resolver::GetPrepopulatedEngines()`.
 //
 // Note: If this is increased, please also increase the declared variant count
 // for the `Search.ChoiceScreenShowedEngineAt.Index{Index}` histogram.
@@ -39,7 +39,7 @@ extern const int kMaxPrepopulatedEngineID;
 inline constexpr size_t kMaxEeaPrepopulatedEngines = 8;
 
 // The maximum number of prepopulated search engines that can be returned in
-// in the rest of the world by `GetPrepopulatedEngines()`.
+// the rest of the world by `Resolver::GetPrepopulatedEngines()`.
 // TODO(crbug.com/408932087): Investigate deduping it with the constant
 // `kTopSearchEnginesThreshold` in `//c/regional_capabilities/r*c*_util.cc`.
 inline constexpr size_t kMaxRowPrepopulatedEngines = 5;
@@ -54,17 +54,8 @@ void RecordSearchProviderOverrideStatus(const PrefService& prefs);
 // they need to re-merge.
 int GetDataVersion(PrefService* prefs);
 
-// Resolves the prepopulated Template URLs to use, resolving priority between
-// regional data and profile-specific data.
-std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
-    PrefService& prefs,
-    const std::vector<raw_ptr<const PrepopulatedEngine>>&
-        regional_prepopulated_engines);
-
 // Returns the prepopulated search engine with the given `prepopulated_id`
-// or `nullptr` if it's not known there.
-// See `GetPrepopulatedEngines()` for more about how we get prepopulated
-// template URLs.
+// from `regional_prepopulated_engines`, or `nullptr` if it's not known there.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&

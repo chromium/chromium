@@ -169,14 +169,6 @@ int GetDataVersion(PrefService* prefs) {
   return kCurrentDataVersion;
 }
 
-std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
-    PrefService& prefs,
-    const std::vector<raw_ptr<const PrepopulatedEngine>>&
-        regional_prepopulated_engines) {
-  return base::ToVector(regional_prepopulated_engines,
-                        &PrepopulatedEngineToTemplateURLData);
-}
-
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&

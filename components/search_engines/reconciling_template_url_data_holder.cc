@@ -136,14 +136,14 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
     return {std::move(engine), ReconciliationType::kByMigrateToId};
   }
 
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
+  TemplateURLPrepopulateData::PrepopulatedEngineVector prepopulated_engines =
       prepopulate_data_resolver_->GetPrepopulatedEngines();
 
-  if (auto engine_iter =
-          std::ranges::find(prepopulated_urls, data_to_match.prepopulate_id,
-                            &TemplateURLData::prepopulate_id);
-      engine_iter != prepopulated_urls.end()) {
-    return {std::move(*engine_iter),
+  if (auto engine_iter = std::ranges::find(
+          prepopulated_engines, data_to_match.prepopulate_id,
+          &TemplateURLPrepopulateData::PrepopulatedEngine::id);
+      engine_iter != prepopulated_engines.end()) {
+    return {TemplateURLDataFromPrepopulatedEngine(**engine_iter),
             ReconciliationType::kByIdFromRegionalEngines};
   }
 

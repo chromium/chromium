@@ -17,6 +17,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -60,6 +61,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -1537,7 +1539,11 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
   }
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      prepopulate_data_resolver_->GetPrepopulatedEngines();
+      base::ToVector(
+          prepopulate_data_resolver_->GetPrepopulatedEngines(),
+          [](const TemplateURLPrepopulateData::PrepopulatedEngine* engine) {
+            return TemplateURLDataFromPrepopulatedEngine(*engine);
+          });
   DCHECK(!prepopulated_urls.empty());
   ActionsFromCurrentData actions(CreateActionsFromCurrentPrepopulateData(
       &prepopulated_urls, template_urls_, default_search_provider_,

@@ -30,11 +30,8 @@ Resolver::Resolver(
     regional_capabilities::RegionalCapabilitiesService& regional_capabilities)
     : profile_prefs_(prefs), regional_capabilities_(regional_capabilities) {}
 
-std::vector<std::unique_ptr<TemplateURLData>> Resolver::GetPrepopulatedEngines()
-    const {
-  return TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      profile_prefs_.get(),
-      regional_capabilities_->GetRegionalPrepopulatedEngines());
+PrepopulatedEngineVector Resolver::GetPrepopulatedEngines() const {
+  return regional_capabilities_->GetRegionalPrepopulatedEngines();
 }
 
 std::unique_ptr<TemplateURLData> Resolver::GetPrepopulatedEngine(
@@ -68,8 +65,7 @@ const PrepopulatedEngine* Resolver::GetEngineFromFullList(
       regional_capabilities_->GetRegionalVariants());
 }
 
-std::vector<raw_ptr<const PrepopulatedEngine>>
-Resolver::GetAllPrepopulatedEngines() const {
+PrepopulatedEngineVector Resolver::GetAllPrepopulatedEngines() const {
   return TemplateURLPrepopulateData::GetAllPrepopulatedEngines(
       regional_capabilities_->GetRegionalPrepopulatedEngines());
 }

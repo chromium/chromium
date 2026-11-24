@@ -42,6 +42,8 @@ namespace search_engines {
 
 namespace {
 
+using TemplateURLPrepopulateData::PrepopulatedEngine;
+
 constexpr char kCountOnSettingsPageLoadHistogram[] =
     "Search.OseSplitYahooJapan.CountOnSettingsPageLoad";
 constexpr char kDseTypeOnSettingsPageLoadHistogram[] =
@@ -365,23 +367,20 @@ TEST_F(SearchEngineSettingsDataProviderTest,
   ASSERT_EQ(3u, prepop_engines.size());
 
   for (int i = static_cast<int>(prepop_engines.size()) - 1; i >= 0; --i) {
-    AddTemplateURL(prepop_engines.at(i)->short_name(),
-                   prepop_engines.at(i)->keyword(),
-                   prepop_engines.at(i)->prepopulate_id);
+    AddTemplateURL(prepop_engines.at(i)->name, prepop_engines.at(i)->keyword,
+                   prepop_engines.at(i)->id);
   }
 
   auto provider = CreateProvider();
   auto data = provider->GetCategorizedTemplateURLs();
 
-  EXPECT_THAT(data.active_site_shortcuts,
-              testing::ElementsAre(
-                  HasShortName(
-                      base::UTF16ToASCII((prepop_engines.at(0)->short_name()))),
-                  HasShortName(
-                      base::UTF16ToASCII((prepop_engines.at(1)->short_name()))),
-                  HasShortName(
-                      base::UTF16ToASCII((prepop_engines.at(2)->short_name()))),
-                  HasShortName("Custom Beta"), HasShortName("Custom Search")));
+  EXPECT_THAT(
+      data.active_site_shortcuts,
+      testing::ElementsAre(
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(0)->name))),
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(1)->name))),
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(2)->name))),
+          HasShortName("Custom Beta"), HasShortName("Custom Search")));
 }
 
 TEST_F(SearchEngineSettingsDataProviderTest,
@@ -549,7 +548,7 @@ TEST_F(SearchEngineSettingsDataProviderTest,
   // Fetch a valid prepopulated engine ID from the test's resolver environment.
   auto prepop_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
   ASSERT_FALSE(prepop_engines.empty());
-  int valid_prepopulate_id = prepop_engines.at(0)->prepopulate_id;
+  int valid_prepopulate_id = prepop_engines.at(0)->id;
 
   // Add a user-defined engine and the real prepopulated engine with matching
   // keywords.
@@ -631,9 +630,8 @@ TEST_F(SearchEngineSettingsDataProviderTest,
   ASSERT_EQ(3u, prepop_engines.size());
 
   for (int i = static_cast<int>(prepop_engines.size()) - 1; i >= 0; --i) {
-    AddTemplateURL(prepop_engines.at(i)->short_name(),
-                   prepop_engines.at(i)->keyword(),
-                   prepop_engines.at(i)->prepopulate_id);
+    AddTemplateURL(prepop_engines.at(i)->name, prepop_engines.at(i)->keyword,
+                   prepop_engines.at(i)->id);
   }
 
   auto provider = CreateProvider();
@@ -641,13 +639,12 @@ TEST_F(SearchEngineSettingsDataProviderTest,
 
   // Prepopulated engine list matches
   // `internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically`.
-  EXPECT_THAT(data.prepopulated_urls,
-              testing::ElementsAre(HasShortName(base::UTF16ToASCII(
-                                       (prepop_engines.at(0)->short_name()))),
-                                   HasShortName(base::UTF16ToASCII(
-                                       (prepop_engines.at(1)->short_name()))),
-                                   HasShortName(base::UTF16ToASCII(
-                                       (prepop_engines.at(2)->short_name())))));
+  EXPECT_THAT(
+      data.prepopulated_urls,
+      testing::ElementsAre(
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(0)->name))),
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(1)->name))),
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(2)->name)))));
 }
 
 TEST_F(
@@ -683,7 +680,7 @@ TEST_F(SearchEngineSettingsDataProviderTest,
        GetDefaultSearchEnginePickerData_Filtering) {
   auto prepop_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
   ASSERT_FALSE(prepop_engines.empty());
-  int valid_prepopulate_id = prepop_engines.at(0)->prepopulate_id;
+  int valid_prepopulate_id = prepop_engines.at(0)->id;
 
   // Prepopulated engines (both active and inactive) are included.
   AddTemplateURL(u"Active Prepop Engine", u"ape", /*prepopulate_id=*/1);
@@ -774,12 +771,14 @@ TEST_F(SearchEngineSettingsDataProviderTest,
   ASSERT_TRUE(prepop_dse->safe_for_autoreplace());
 
   auto prepop_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
-  auto other_it = std::ranges::find_if(prepop_engines, [&](const auto& data) {
-    return data->prepopulate_id != prepop_dse->prepopulate_id();
-  });
+  auto other_it = std::ranges::find_if(
+      prepop_engines, [&](const PrepopulatedEngine* engine) {
+        return engine->id != prepop_dse->prepopulate_id();
+      });
   ASSERT_NE(other_it, prepop_engines.end());
   TemplateURL* prepop_other =
-      template_url_service().Add(std::make_unique<TemplateURL>(**other_it));
+      template_url_service().Add(std::make_unique<TemplateURL>(
+          *TemplateURLDataFromPrepopulatedEngine(**other_it)));
   ASSERT_TRUE(prepop_other);
 
   TemplateURL* custom = AddTemplateURL(u"Custom Engine", prepop_dse->keyword());
@@ -809,8 +808,9 @@ TEST_F(SearchEngineSettingsDataProviderTest,
   auto prepop_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
   ASSERT_FALSE(prepop_engines.empty());
 
-  TemplateURL* prepop = template_url_service().Add(
-      std::make_unique<TemplateURL>(*prepop_engines.at(0)));
+  TemplateURL* prepop =
+      template_url_service().Add(std::make_unique<TemplateURL>(
+          *TemplateURLDataFromPrepopulatedEngine(*prepop_engines.at(0))));
   ASSERT_TRUE(prepop);
 
   TemplateURLData policy_data;
@@ -842,21 +842,19 @@ TEST_F(SearchEngineSettingsDataProviderTest,
   ASSERT_EQ(3u, prepop_engines.size());
 
   for (int i = static_cast<int>(prepop_engines.size()) - 1; i >= 0; --i) {
-    AddTemplateURL(prepop_engines.at(i)->short_name(),
-                   prepop_engines.at(i)->keyword(),
-                   prepop_engines.at(i)->prepopulate_id);
+    AddTemplateURL(prepop_engines.at(i)->name, prepop_engines.at(i)->keyword,
+                   prepop_engines.at(i)->id);
   }
 
   auto provider = CreateProvider();
   auto data = provider->GetDefaultSearchEnginePickerData();
 
-  EXPECT_THAT(data.primary,
-              testing::ElementsAre(HasShortName(base::UTF16ToASCII(
-                                       (prepop_engines.at(0)->short_name()))),
-                                   HasShortName(base::UTF16ToASCII(
-                                       (prepop_engines.at(1)->short_name()))),
-                                   HasShortName(base::UTF16ToASCII(
-                                       (prepop_engines.at(2)->short_name())))));
+  EXPECT_THAT(
+      data.primary,
+      testing::ElementsAre(
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(0)->name))),
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(1)->name))),
+          HasShortName(base::UTF16ToASCII((prepop_engines.at(2)->name)))));
 }
 
 TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
@@ -1005,9 +1003,8 @@ TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
   const auto engines_in_regional_lists =
       regional_capabilities::GetPrepopulatedEnginesInRegionalLists();
   const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
-  auto unreferenced_it = std::ranges::find_if(
-      all_engines,
-      [&](const TemplateURLPrepopulateData::PrepopulatedEngine* engine) {
+  auto unreferenced_it =
+      std::ranges::find_if(all_engines, [&](const PrepopulatedEngine* engine) {
         return !std::ranges::contains(
             engines_in_regional_lists, engine->id,
             &TemplateURLPrepopulateData::PrepopulatedEngine::id);

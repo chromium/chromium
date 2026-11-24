@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -26,6 +27,10 @@ class RegionalCapabilitiesService;
 namespace TemplateURLPrepopulateData {
 
 struct PrepopulatedEngine;
+
+using PrepopulatedEngineVector = std::vector<raw_ptr<const PrepopulatedEngine>>;
+using PrepopulatedEngineSpan =
+    base::span<const raw_ptr<const PrepopulatedEngine>>;
 
 // Provides context on TemplateURLPrepopulateData's data set.
 struct BuiltinKeywordsMetadata {
@@ -51,8 +56,8 @@ class Resolver : public KeyedService {
            regional_capabilities::RegionalCapabilitiesService&
                regional_capabilities);
 
-  // Returns the prepopulated URLs for the profile country.
-  std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines() const;
+  // Returns the prepopulated engines for the profile country.
+  PrepopulatedEngineVector GetPrepopulatedEngines() const;
 
   // Returns the prepopulated search engine with the given `prepopulated_id`
   // from the profile country's known prepopulated search engines, or `nullptr`
@@ -84,8 +89,7 @@ class Resolver : public KeyedService {
   // all the other regional lists, deduplicated by ID. When several definitions
   // share an ID, the profile country's one is used, matching
   // `GetEngineFromFullList(id)`.
-  std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines()
-      const;
+  PrepopulatedEngineVector GetAllPrepopulatedEngines() const;
 
   // Returns the fallback default search provider, currently hardcoded to be
   // Google, or whichever one is the first of the list if Google is not in the

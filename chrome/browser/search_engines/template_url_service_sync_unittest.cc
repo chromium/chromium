@@ -2582,7 +2582,7 @@ TEST_F(TemplateURLServiceSyncTest, PreSyncDeletes) {
 TEST_F(TemplateURLServiceSyncTest, PreSyncUpdates) {
   const char16_t kNewKeyword16[] = u"somethingnew";
   // Fetch the prepopulate search engines so we know what they are.
-  std::vector<std::unique_ptr<TemplateURLData>> prepop_turls =
+  TemplateURLPrepopulateData::PrepopulatedEngineVector prepop_engines =
       TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_a())
           ->GetPrepopulatedEngines();
 
@@ -2591,11 +2591,12 @@ TEST_F(TemplateURLServiceSyncTest, PreSyncUpdates) {
 
   // We have to prematurely exit this test if for some reason this machine does
   // not have any prepopulate TemplateURLs.
-  ASSERT_FALSE(prepop_turls.empty());
+  ASSERT_FALSE(prepop_engines.empty());
 
   // Create a copy of the first TemplateURL with a really old timestamp and a
   // new keyword. Add it to the model.
-  TemplateURLData data_copy(*prepop_turls[0]);
+  TemplateURLData data_copy(
+      *TemplateURLDataFromPrepopulatedEngine(*prepop_engines[0]));
   data_copy.last_modified = Time::FromTimeT(10);
   std::u16string original_keyword = data_copy.keyword();
   data_copy.SetKeyword(kNewKeyword16);

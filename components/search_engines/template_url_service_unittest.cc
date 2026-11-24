@@ -1223,9 +1223,10 @@ class TemplateURLServiceSetDseByPrepopulateIdTest : public testing::Test {
   // Returns the ID of a regional engine that is not the current DSE.
   int GetNonDefaultRegionalEngineId() {
     const TemplateURL* dse = service().GetDefaultSearchProvider();
-    for (const auto& data : resolver().GetPrepopulatedEngines()) {
-      if (!dse || data->prepopulate_id != dse->prepopulate_id()) {
-        return data->prepopulate_id;
+    for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
+         resolver().GetPrepopulatedEngines()) {
+      if (!dse || engine->id != dse->prepopulate_id()) {
+        return engine->id;
       }
     }
     NOTREACHED();

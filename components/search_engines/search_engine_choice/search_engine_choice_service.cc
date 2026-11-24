@@ -52,12 +52,15 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/version_info.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/variations_service.h"  // nogncheck
@@ -401,7 +404,7 @@ bool AccountCanMakeChoiceScreenChoice(
 std::optional<int> MaybeGetCurrentDefaultToHighlight(
     const std::optional<regional_capabilities::ChoiceScreenEligibilityConfig>&
         eligibility_config,
-    const std::vector<std::unique_ptr<TemplateURLData>>& presented_engines,
+    TemplateURLPrepopulateData::PrepopulatedEngineSpan presented_engines,
     const TemplateURL* default_search_provider) {
   if (!base::FeatureList::IsEnabled(
           switches::kCurrentDseHighlightOnChoiceScreenSupport)) {
@@ -418,8 +421,7 @@ std::optional<int> MaybeGetCurrentDefaultToHighlight(
   }
 
   for (size_t i = 0; i < presented_engines.size(); ++i) {
-    if (presented_engines[i]->prepopulate_id ==
-        default_search_provider->prepopulate_id()) {
+    if (presented_engines[i]->id == default_search_provider->prepopulate_id()) {
       return i;
     }
   }
@@ -795,7 +797,7 @@ SearchEngineChoiceService::GetChoiceScreenData(
   // changing the engine's keyword in settings for example).
   // Changing this will cause issues in the icon generation behavior that's
   // handled by `generate_search_engine_icons.py`.
-  std::vector<std::unique_ptr<TemplateURLData>> engines =
+  TemplateURLPrepopulateData::PrepopulatedEngineVector engines =
       prepopulate_data_resolver_->GetPrepopulatedEngines();
 
   std::optional<int> engine_index_to_highlight =
@@ -807,8 +809,9 @@ SearchEngineChoiceService::GetChoiceScreenData(
       engine_index_to_highlight.has_value());
 
   TemplateURLService::OwnedTemplateURLVector owned_template_urls;
-  for (const auto& engine : engines) {
-    owned_template_urls.push_back(std::make_unique<TemplateURL>(*engine));
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine : engines) {
+    owned_template_urls.push_back(std::make_unique<TemplateURL>(
+        *TemplateURLDataFromPrepopulatedEngine(*engine)));
   }
   TemplateURL* current_default_to_highlight =
       engine_index_to_highlight.has_value()

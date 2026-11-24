@@ -60,6 +60,7 @@ using ::TemplateURLPrepopulateData::bing;
 using ::TemplateURLPrepopulateData::duckduckgo;
 using ::TemplateURLPrepopulateData::ecosia;
 using ::TemplateURLPrepopulateData::PrepopulatedEngine;
+using ::TemplateURLPrepopulateData::PrepopulatedEngineVector;
 using ::TemplateURLPrepopulateData::yahoo;
 
 namespace TemplateURLPrepopulateData {
@@ -235,12 +236,12 @@ TEST_F(TemplateURLPrepopulateDataTest, ValidSearchURLs) {
 TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
   for (CountryId country_id : kAllCountryIds) {
     OverrideCountryId(country_id);
-    std::vector<std::unique_ptr<TemplateURLData>> urls =
+    PrepopulatedEngineVector engines =
         prepopulate_data_resolver().GetPrepopulatedEngines();
     std::set<int> unique_ids;
-    for (const std::unique_ptr<TemplateURLData>& url : urls) {
-      ASSERT_TRUE(unique_ids.find(url->prepopulate_id) == unique_ids.end());
-      unique_ids.insert(url->prepopulate_id);
+    for (const PrepopulatedEngine* engine : engines) {
+      ASSERT_TRUE(unique_ids.find(engine->id) == unique_ids.end());
+      unique_ids.insert(engine->id);
     }
   }
 }
@@ -294,7 +295,9 @@ TEST_F(TemplateURLPrepopulateDataTest, EntriesPerCountryConsistency) {
     // country.
     std::vector<std::string> actual_urls =
         base::ToVector(prepopulate_data_resolver().GetPrepopulatedEngines(),
-                       [](const auto& t_url) { return t_url->url(); });
+                       [](const PrepopulatedEngine* engine) {
+                         return std::string(engine->search_url);
+                       });
 
     // Pulled straight from the country -> engine mapping.
     auto expected_urls = base::ToVector(
@@ -314,16 +317,15 @@ TEST_F(TemplateURLPrepopulateDataTest,
 
   // Fetch the list of search engines twice and make sure the order stays the
   // same.
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls_1 =
+  PrepopulatedEngineVector engines_1 =
       prepopulate_data_resolver().GetPrepopulatedEngines();
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls_2 =
+  PrepopulatedEngineVector engines_2 =
       prepopulate_data_resolver().GetPrepopulatedEngines();
 
-  ASSERT_EQ(t_urls_1.size(), t_urls_2.size());
-  for (size_t i = 0; i < t_urls_1.size(); i++) {
-    // Each prepopulated engine has a unique prepopulate_id, so we simply
-    // compare those.
-    ASSERT_EQ(t_urls_1[i]->prepopulate_id, t_urls_2[i]->prepopulate_id);
+  ASSERT_EQ(engines_1.size(), engines_2.size());
+  for (size_t i = 0; i < engines_1.size(); i++) {
+    // Each prepopulated engine has a unique id, so we simply compare those.
+    ASSERT_EQ(engines_1[i]->id, engines_2[i]->id);
   }
 }
 
@@ -331,21 +333,23 @@ TEST_F(TemplateURLPrepopulateDataTest,
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrepopulated) {
   // Use United States.
   OverrideCountryId(CountryId("US"));
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
+  PrepopulatedEngineVector engines =
       prepopulate_data_resolver().GetPrepopulatedEngines();
 
   // Ensure all the URLs have the required fields populated.
-  ASSERT_FALSE(t_urls.empty());
-  for (size_t i = 0; i < t_urls.size(); ++i) {
-    ASSERT_FALSE(t_urls[i]->short_name().empty());
-    ASSERT_FALSE(t_urls[i]->keyword().empty());
-    ASSERT_FALSE(t_urls[i]->favicon_url.GetHost().empty());
-    ASSERT_FALSE(GetHostFromTemplateURLData(*t_urls[i]).empty());
-    ASSERT_FALSE(t_urls[i]->input_encodings.empty());
-    EXPECT_GT(t_urls[i]->prepopulate_id, 0);
-    EXPECT_TRUE(t_urls[0]->safe_for_autoreplace);
-    EXPECT_TRUE(t_urls[0]->date_created.is_null());
-    EXPECT_TRUE(t_urls[0]->last_modified.is_null());
+  ASSERT_FALSE(engines.empty());
+  for (const PrepopulatedEngine* engine : engines) {
+    std::unique_ptr<TemplateURLData> t_url =
+        TemplateURLDataFromPrepopulatedEngine(*engine);
+    ASSERT_FALSE(t_url->short_name().empty());
+    ASSERT_FALSE(t_url->keyword().empty());
+    ASSERT_FALSE(t_url->favicon_url.GetHost().empty());
+    ASSERT_FALSE(GetHostFromTemplateURLData(*t_url).empty());
+    ASSERT_FALSE(t_url->input_encodings.empty());
+    EXPECT_GT(t_url->prepopulate_id, 0);
+    EXPECT_TRUE(t_url->safe_for_autoreplace);
+    EXPECT_TRUE(t_url->date_created.is_null());
+    EXPECT_TRUE(t_url->last_modified.is_null());
   }
 
   // Ensures the fallback URL is Google and has the optional fields filled.
@@ -373,11 +377,13 @@ TEST_F(TemplateURLPrepopulateDataTest, PrepopulatedAreHttps) {
   for (CountryId country_id : kAllCountryIds) {
     OverrideCountryId(country_id);
 
-    std::vector<std::unique_ptr<TemplateURLData>> t_urls =
+    PrepopulatedEngineVector engines =
         prepopulate_data_resolver().GetPrepopulatedEngines();
 
-    ASSERT_FALSE(t_urls.empty());
-    for (const auto& t_url : t_urls) {
+    ASSERT_FALSE(engines.empty());
+    for (const PrepopulatedEngine* engine : engines) {
+      std::unique_ptr<TemplateURLData> t_url =
+          TemplateURLDataFromPrepopulatedEngine(*engine);
       CheckUrlIsEmptyOrSecure(t_url->url());
       CheckUrlIsEmptyOrSecure(t_url->image_url);
       CheckUrlIsEmptyOrSecure(t_url->image_translate_url);
@@ -927,16 +933,17 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
   OverrideCountryId(CountryId(sample_country));
 
   // For a given country, the output from `GetLocalPrepopulatedEngines`
-  // should match the template URLs obtained from `GetPrepopulatedEngines`.
-  auto expected_urls = prepopulate_data_resolver().GetPrepopulatedEngines();
+  // should match the prepopulated engines obtained from
+  // `GetPrepopulatedEngines`.
+  auto expected_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
   auto actual_urls = TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(
       sample_country, *pref_service());
 
-  ASSERT_EQ(actual_urls.size(), expected_urls.size());
+  ASSERT_EQ(actual_urls.size(), expected_engines.size());
   for (unsigned int i = 0; i < actual_urls.size(); ++i) {
-    EXPECT_EQ(actual_urls[i]->prepopulate_id, expected_urls[i]->prepopulate_id);
-    EXPECT_EQ(actual_urls[i]->keyword(), expected_urls[i]->keyword());
-    EXPECT_EQ(actual_urls[i]->url(), expected_urls[i]->url());
+    EXPECT_EQ(actual_urls[i]->prepopulate_id, expected_engines[i]->id);
+    EXPECT_EQ(actual_urls[i]->keyword(), expected_engines[i]->keyword);
+    EXPECT_EQ(actual_urls[i]->url(), expected_engines[i]->search_url);
   }
 
   EXPECT_THAT(TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(
@@ -1548,13 +1555,12 @@ class TemplateURLPrepopulateDataListTest
       pref_service()->ClearPref(
           prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed);
 
-      std::vector<std::unique_ptr<TemplateURLData>> actual_list =
+      PrepopulatedEngineVector actual_list =
           prepopulate_data_resolver().GetPrepopulatedEngines();
 
       ASSERT_EQ(actual_list.size(), kEeaChoiceScreenItemCount);
       for (size_t index = 0; index < kEeaChoiceScreenItemCount; ++index) {
-        per_engine_and_index_observations[actual_list[index]->prepopulate_id]
-                                         [index]++;
+        per_engine_and_index_observations[actual_list[index]->id][index]++;
       }
     }
 

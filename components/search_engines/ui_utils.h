@@ -7,10 +7,9 @@
 
 #include "base/containers/flat_map.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
-
-struct TemplateURLData;
 
 namespace internal {
 
@@ -61,7 +60,7 @@ class OrderTemplateUrlsByManagedAndAlphabetically {
 class OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically {
  public:
   explicit OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
-      std::vector<std::unique_ptr<TemplateURLData>> prepopulated_engines);
+      TemplateURLPrepopulateData::PrepopulatedEngineSpan prepopulated_engines);
 
   OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
       const OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically& other);

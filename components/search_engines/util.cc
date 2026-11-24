@@ -18,6 +18,7 @@
 #include "base/base64url.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/case_conversion.h"
@@ -1117,7 +1118,10 @@ void GetSearchProvidersUsingLoadedEngines(
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      template_url_data_resolver.GetPrepopulatedEngines();
+      base::ToVector(template_url_data_resolver.GetPrepopulatedEngines(),
+                     [](const PrepopulatedEngine* engine) {
+                       return TemplateURLDataFromPrepopulatedEngine(*engine);
+                     });
   RemoveDuplicatePrepopulateIDs(service, prepopulated_urls,
                                 default_search_provider, template_urls,
                                 search_terms_data, removed_keyword_guids);

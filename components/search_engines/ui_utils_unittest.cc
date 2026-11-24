@@ -14,12 +14,12 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
-#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 
@@ -353,26 +353,23 @@ class OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically
 // ones, then custom ones.
 TEST_F(OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically,
        PrepopulatedEnginesFirst) {
-  std::unique_ptr<TemplateURLData> bing_data =
-      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::bing);
-
   auto bing_engine = CreateTemplateURL(
       u"Bing", u"bing.com", "https://bing.com/search?q={searchTerms}",
-      /*created_by_policy=*/false, bing_data->prepopulate_id);
+      /*created_by_policy=*/false, TemplateURLPrepopulateData::bing.id);
   auto prepopulated_engine = CreateTemplateURL(
       u"CustomPrepop", u"customprepop.com",
       "https://customprepop.com/search?q={searchTerms}",
-      /*created_by_policy=*/false, bing_data->prepopulate_id + 1);
+      /*created_by_policy=*/false, TemplateURLPrepopulateData::bing.id + 1);
   auto custom_engine =
       CreateTemplateURL(u"A-Engine", u"aengine.com",
                         "https://aengine.com/search?q={searchTerms}");
 
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls;
-  prepopulated_urls.push_back(std::move(bing_data));
+  TemplateURLPrepopulateData::PrepopulatedEngineVector prepopulated_engines = {
+      &TemplateURLPrepopulateData::bing};
 
   auto comparator = std::make_unique<
       internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically>(
-      std::move(prepopulated_urls));
+      prepopulated_engines);
 
   // Even though the alphabetical order is different, the prepopulated engines
   // are added first.
@@ -390,34 +387,26 @@ TEST_F(OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically,
 // `prepopulated_engines`.
 TEST_F(OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically,
        PrepopulatedEnginesSorted) {
-  std::unique_ptr<TemplateURLData> yahoo_data =
-      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::yahoo);
-  std::unique_ptr<TemplateURLData> bing_data =
-      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::bing);
-  std::unique_ptr<TemplateURLData> google_data =
-      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::google);
-
   auto yahoo_engine = CreateTemplateURL(
       u"Yahoo", u"yahoo.com", "https://yahoo.com/search?q={searchTerms}",
-      /*created_by_policy=*/false, yahoo_data->prepopulate_id);
+      /*created_by_policy=*/false, TemplateURLPrepopulateData::yahoo.id);
   auto bing_engine = CreateTemplateURL(
       u"Bing", u"bing.com", "https://bing.com/search?q={searchTerms}",
-      /*created_by_policy=*/false, bing_data->prepopulate_id);
+      /*created_by_policy=*/false, TemplateURLPrepopulateData::bing.id);
   auto google_engine = CreateTemplateURL(
       u"Google", u"google.com", "https://google.com/search?q={searchTerms}",
-      /*created_by_policy=*/false, google_data->prepopulate_id);
+      /*created_by_policy=*/false, TemplateURLPrepopulateData::google.id);
 
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls;
-  prepopulated_urls.push_back(std::move(yahoo_data));
-  prepopulated_urls.push_back(std::move(bing_data));
-  prepopulated_urls.push_back(std::move(google_data));
+  TemplateURLPrepopulateData::PrepopulatedEngineVector prepopulated_engines = {
+      &TemplateURLPrepopulateData::yahoo, &TemplateURLPrepopulateData::bing,
+      &TemplateURLPrepopulateData::google};
 
   auto comparator = std::make_unique<
       internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically>(
-      std::move(prepopulated_urls));
+      prepopulated_engines);
 
   // Even though the alphabetical order is different, the engines are added in
-  // the order of `prepopulated_urls`.
+  // the order of `prepopulated_engines`.
   EXPECT_TRUE((*comparator)(yahoo_engine.get(), bing_engine.get()));
   EXPECT_FALSE((*comparator)(bing_engine.get(), yahoo_engine.get()));
 
