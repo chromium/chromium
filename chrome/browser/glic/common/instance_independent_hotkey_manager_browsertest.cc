@@ -125,6 +125,40 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_OK(WaitForGlicOpen());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerBrowserTest,
+    AcceleratorPressedDoesNotLaunchGlicWhenLauncherHotkeyCleared) {
+  g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey, "");
+
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+
+  WaitForDuration(base::Milliseconds(300));
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+
+  // Clearing the pref restores the default shortcut.
+  g_browser_process->local_state()->ClearPref(prefs::kGlicLauncherHotkey);
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+  ASSERT_OK(WaitForGlicOpen());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
+                       MigratesLegacyDisabledLauncherPrefToEmptyHotkey) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kGlicLauncherEnabled, false);
+
+  InstanceIndependentHotkeyManager migrated_manager(
+      &coordinator(), GetProfile(), /*enabling=*/nullptr);
+
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kGlicLauncherEnabled));
+  EXPECT_EQ(local_state->GetString(prefs::kGlicLauncherHotkey), "");
+
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+  WaitForDuration(base::Milliseconds(300));
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+}
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
                        AcceleratorPressedReturnsFalseWhenGlobalScopeEnabled) {

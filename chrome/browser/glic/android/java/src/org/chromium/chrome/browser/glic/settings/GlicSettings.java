@@ -272,13 +272,27 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
 
         if (KeyboardUtils.isHardKeyboardConnected(context)) {
             PrefService localPrefs = LocalStatePrefs.get();
-            boolean enabled = localPrefs.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED);
+            // TODO(b/531824318): Remove after 2027-11 once users have migrated from
+            // GLIC_LAUNCHER_ENABLED.
+            if (localPrefs.hasPrefPath(GlicPrefNames.GLIC_LAUNCHER_ENABLED)) {
+                if (!localPrefs.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED)) {
+                    localPrefs.setString(GlicPrefNames.GLIC_LAUNCHER_HOTKEY, "");
+                }
+                localPrefs.clearPref(GlicPrefNames.GLIC_LAUNCHER_ENABLED);
+            }
+            boolean enabled =
+                    !localPrefs.hasPrefPath(GlicPrefNames.GLIC_LAUNCHER_HOTKEY)
+                            || !localPrefs.getString(GlicPrefNames.GLIC_LAUNCHER_HOTKEY).isEmpty();
             if (mLauncherEnabledPref != null) {
                 mLauncherEnabledPref.setChecked(enabled);
                 mLauncherEnabledPref.setOnPreferenceChangeListener(
                         (preference, newValue) -> {
                             boolean boolValue = (boolean) newValue;
-                            localPrefs.setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, boolValue);
+                            if (boolValue) {
+                                localPrefs.clearPref(GlicPrefNames.GLIC_LAUNCHER_HOTKEY);
+                            } else {
+                                localPrefs.setString(GlicPrefNames.GLIC_LAUNCHER_HOTKEY, "");
+                            }
                             updateHotkeyVisibility(boolValue);
                             return true;
                         });

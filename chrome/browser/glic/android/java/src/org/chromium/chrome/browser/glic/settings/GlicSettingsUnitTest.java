@@ -901,10 +901,9 @@ public class GlicSettingsUnitTest {
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_InitialState_Enabled() {
         DeviceInfo.setIsDesktopForTesting(true);
-        LocalStatePrefs.get().setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, true);
         GlicSettings fragment = launchFragment();
         ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
-        assertTrue("Launcher toggle should be checked", togglePref.isChecked());
+        assertTrue("Launcher toggle should be checked by default", togglePref.isChecked());
 
         Preference hotkeyPref = fragment.findPreference("glic_launcher_hotkey");
         assertTrue(
@@ -919,7 +918,7 @@ public class GlicSettingsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_InitialState_Disabled() {
-        LocalStatePrefs.get().setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, false);
+        LocalStatePrefs.get().setString(GlicPrefNames.GLIC_LAUNCHER_HOTKEY, "");
         GlicSettings fragment = launchFragment();
         ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
         assertFalse("Launcher toggle should not be checked", togglePref.isChecked());
@@ -936,9 +935,20 @@ public class GlicSettingsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testLauncherToggle_MigratesLegacyDisabledPref() {
+        LocalStatePrefs.get().setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
+        assertFalse("Launcher toggle should migrate disabled state", togglePref.isChecked());
+        assertFalse(LocalStatePrefs.get().hasPrefPath(GlicPrefNames.GLIC_LAUNCHER_ENABLED));
+        assertEquals("", LocalStatePrefs.get().getString(GlicPrefNames.GLIC_LAUNCHER_HOTKEY));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_Click() {
         DeviceInfo.setIsDesktopForTesting(true);
-        LocalStatePrefs.get().setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, false);
+        LocalStatePrefs.get().setString(GlicPrefNames.GLIC_LAUNCHER_HOTKEY, "");
         GlicSettings fragment = launchFragment();
         ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
         Preference hotkeyPref = fragment.findPreference("glic_launcher_hotkey");
@@ -950,13 +960,14 @@ public class GlicSettingsUnitTest {
 
         // Simulate toggling On
         togglePref.getOnPreferenceChangeListener().onPreferenceChange(togglePref, true);
-        assertTrue(LocalStatePrefs.get().getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED));
+        assertFalse(LocalStatePrefs.get().hasPrefPath(GlicPrefNames.GLIC_LAUNCHER_HOTKEY));
         assertTrue("Hotkey preference should become visible", hotkeyPref.isVisible());
         assertTrue("Navigation shortcut should become visible", navShortcutPref.isVisible());
 
         // Simulate toggling Off
         togglePref.getOnPreferenceChangeListener().onPreferenceChange(togglePref, false);
-        assertFalse(LocalStatePrefs.get().getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED));
+        assertTrue(LocalStatePrefs.get().hasPrefPath(GlicPrefNames.GLIC_LAUNCHER_HOTKEY));
+        assertEquals("", LocalStatePrefs.get().getString(GlicPrefNames.GLIC_LAUNCHER_HOTKEY));
         assertFalse("Hotkey preference should become invisible", hotkeyPref.isVisible());
         assertFalse("Navigation shortcut should become invisible", navShortcutPref.isVisible());
     }
@@ -967,7 +978,6 @@ public class GlicSettingsUnitTest {
         // Even if launcher is enabled, the navigation shortcut should be invisible if the form
         // factor does not support the side panel. A phone never does.
         DeviceInfo.setIsDesktopForTesting(false);
-        LocalStatePrefs.get().setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, true);
         GlicSettings fragment = launchFragment();
         Preference navShortcutPreference =
                 fragment.findPreference(GlicSettings.PREF_NAVIGATION_SHORTCUT);
@@ -982,7 +992,6 @@ public class GlicSettingsUnitTest {
     public void testLauncherPreferences_HardKeyboardDisconnected() {
         setHardKeyboardConnected(false);
         DeviceInfo.setIsDesktopForTesting(true);
-        LocalStatePrefs.get().setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, true);
         GlicSettings fragment = launchFragment();
 
         Preference togglePref = fragment.findPreference(GlicSettings.PREF_LAUNCHER_ENABLED);
@@ -1000,7 +1009,6 @@ public class GlicSettingsUnitTest {
     @Test
     public void testLauncherPreferences_PhoneWithHardKeyboardConnected() {
         GlicUtils.setIsSidePanelFormFactorForTesting(false);
-        LocalStatePrefs.get().setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, true);
         GlicSettings fragment = launchFragment();
 
         Preference togglePref = fragment.findPreference(GlicSettings.PREF_LAUNCHER_ENABLED);

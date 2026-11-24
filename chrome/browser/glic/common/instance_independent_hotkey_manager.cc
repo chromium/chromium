@@ -84,6 +84,21 @@ BrowserWindowInterface* GetLastActiveBrowser(Profile* profile) {
   return collection ? collection->GetLastActiveBrowser() : nullptr;
 }
 #endif
+
+void MaybeMigrateLegacyLauncherPref([[maybe_unused]] PrefService& local_state) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/531824318): Remove after 2027-11 once Android users have migrated
+  // from `kGlicLauncherEnabled` to `kGlicLauncherHotkey`. Note `HasPrefPath`
+  // checks whether a non-default store (e.g. `USER_STORE`) holds a value,
+  // regardless of whether that value matches the `false` default.
+  if (local_state.HasPrefPath(prefs::kGlicLauncherEnabled)) {
+    if (!local_state.GetBoolean(prefs::kGlicLauncherEnabled)) {
+      local_state.SetString(prefs::kGlicLauncherHotkey, "");
+    }
+    local_state.ClearPref(prefs::kGlicLauncherEnabled);
+  }
+#endif
+}
 }  // namespace
 
 InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
@@ -93,6 +108,7 @@ InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
     : coordinator_(coordinator), profile_(profile) {
   // g_browser_process->local_state() can be null in some test environments.
   if (PrefService* local_state = g_browser_process->local_state()) {
+    MaybeMigrateLegacyLauncherPref(*local_state);
     pref_registrar_.Init(local_state);
     pref_registrar_.Add(
         prefs::kGlicLauncherEnabled,
