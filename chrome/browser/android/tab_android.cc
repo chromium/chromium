@@ -954,6 +954,13 @@ base::CallbackListSubscription TabAndroid::RegisterGroupChanged(
   return group_changed_callback_list_.Add(std::move(callback));
 }
 
+// Split tabs is currently desktop only.
+base::CallbackListSubscription TabAndroid::RegisterSplitChanged(
+    SplitChangedCallback callback) {
+  NOTIMPLEMENTED();
+  return base::CallbackListSubscription();
+}
+
 base::CallbackListSubscription TabAndroid::RegisterBlockedStateChanged(
     BlockedStateChangedCallback callback) {
   NOTIMPLEMENTED();

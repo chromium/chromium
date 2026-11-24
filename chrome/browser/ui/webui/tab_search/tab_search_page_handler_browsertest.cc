@@ -251,27 +251,21 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
     BrowserUiController::From(browser1())
         ->set_update_ui_immediately_for_testing();
 
-    web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile1()));
-    web_ui_.set_web_contents(web_contents_.get());
-    webui::SetBrowserWindowInterface(web_contents_.get(), browser1());
-
-    webui_controller_ = std::make_unique<TabSearchUI>(web_ui());
-
-    handler_ = std::make_unique<TestTabSearchPageHandler>(
-        page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
-    EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
-    EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
-    EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
-    EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
-    EXPECT_CALL(page_, TabUnsplit()).Times(testing::AnyNumber());
+    if (ShouldCreateDefaultHandler()) {
+      web_contents_ = content::WebContents::Create(
+          content::WebContents::CreateParams(profile1()));
+      webui::SetBrowserWindowInterface(web_contents_.get(), browser1());
+      CreateHandlerForWebContents(web_contents_.get());
+    }
 
     WaitForTabGroupSyncServiceInitialized();
 
     content::WaitForLoadStop(
         browser1()->tab_strip_model()->GetActiveWebContents());
     BrowserUiController::From(browser1())->ProcessPendingUIUpdates();
-    page_.receiver_.FlushForTesting();
+    if (page_.receiver_.is_bound()) {
+      page_.receiver_.FlushForTesting();
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -377,6 +371,20 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
   void HideWebContents() {
     web_contents_->WasHidden();
     ASSERT_FALSE(handler_->IsWebContentsVisible());
+  }
+
+  virtual bool ShouldCreateDefaultHandler() const { return true; }
+
+  void CreateHandlerForWebContents(content::WebContents* contents) {
+    web_ui_.set_web_contents(contents);
+    webui_controller_ = std::make_unique<TabSearchUI>(web_ui());
+    handler_ = std::make_unique<TestTabSearchPageHandler>(
+        page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
+    EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
+    EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
+    EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
+    EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
+    EXPECT_CALL(page_, TabUnsplit()).Times(testing::AnyNumber());
   }
 
  protected:
@@ -1495,89 +1503,86 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
             tabs_in_split_after_replacement[1]->GetContents()->GetURL().spec());
 }
 
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, RemoveSplit_NTP) {
-  EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
+class TabSearchPageHandlerSplitTest : public TabSearchPageHandlerTest {
+ protected:
+  bool ShouldCreateDefaultHandler() const override { return false; }
 
-  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  split_tabs::SplitTabId CreateSplitTabWithHandler(const GURL& navigate_url) {
+    // Add two tabs while leaving the initial tab at index 0 unsplit in the
+    // background so split_view/app.ts has an eligible tab and does not
+    // auto-redirect to the regular NTP.
+    TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+    chrome::AddTabAt(browser1(), tab_url1_, -1, true);
+    content::WaitForLoadStop(tab_strip_model->GetActiveWebContents());
+    chrome::AddTabAt(browser1(), tab_url1_, -1, true);
+    content::WaitForLoadStop(tab_strip_model->GetActiveWebContents());
 
-  webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
-  browser1()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
-                                                   true);
+    const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
+        {1}, split_tabs::SplitTabVisualData(),
+        split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
-      {0}, split_tabs::SplitTabVisualData(),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser1(), navigate_url));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser1(), GURL(chrome::kChromeUISplitViewNewTabPageURL)));
+    CreateHandlerForWebContents(tab_strip_model->GetActiveWebContents());
+    BrowserUiController::From(browser1())->ProcessPendingUIUpdates();
+    page_.receiver_.FlushForTesting();
+    return split_id;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, TabSearchPageHandlerSplitTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerSplitTest, RemoveSplit_NTP) {
+  const split_tabs::SplitTabId split_id =
+      CreateSplitTabWithHandler(GURL(chrome::kChromeUISplitViewNewTabPageURL));
 
   base::RunLoop run_loop;
   EXPECT_CALL(page_, TabUnsplit()).WillOnce([&]() { run_loop.Quit(); });
-  tab_strip_model->RemoveSplit(split_id);
+  browser1()->tab_strip_model()->RemoveSplit(split_id);
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, RemoveSplit_NTPWhileHidden) {
-  EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
-
-  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
-
-  webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
-  browser1()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
-                                                   true);
-
-  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
-      {0}, split_tabs::SplitTabVisualData(),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser1(), GURL(chrome::kChromeUISplitViewNewTabPageURL)));
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerSplitTest,
+                       RemoveSplit_NTPWhileHidden) {
+  const split_tabs::SplitTabId split_id =
+      CreateSplitTabWithHandler(GURL(chrome::kChromeUISplitViewNewTabPageURL));
 
   web_ui()->GetWebContents()->WasHidden();
-  EXPECT_EQ(content::Visibility::HIDDEN,
+  ASSERT_EQ(content::Visibility::HIDDEN,
             web_ui()->GetWebContents()->GetVisibility());
 
   base::RunLoop run_loop;
   EXPECT_CALL(page_, TabUnsplit()).WillOnce([&]() { run_loop.Quit(); });
-  tab_strip_model->RemoveSplit(split_id);
+  browser1()->tab_strip_model()->RemoveSplit(split_id);
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, RemoveSplit_OtherPage) {
-  EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
-
-  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
-  webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
-  browser1()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
-                                                   true);
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerSplitTest,
+                       ClosePartnerTabInSplit_NTP) {
+  const split_tabs::SplitTabId split_id =
+      CreateSplitTabWithHandler(GURL(chrome::kChromeUISplitViewNewTabPageURL));
 
   TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
-      {0}, split_tabs::SplitTabVisualData(),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser1(), GURL(chrome::kChromeUITabSearchURL)));
-
-  EXPECT_CALL(page_, TabUnsplit()).Times(0);
-  tab_strip_model->RemoveSplit(split_id);
+  const std::vector<tabs::TabInterface*> split_tabs =
+      tab_strip_model->GetSplitData(split_id)->ListTabs();
+  ASSERT_EQ(2u, split_tabs.size());
+  const int partner_index = tab_strip_model->GetIndexOfTab(
+      split_tabs[0]->GetContents() == web_ui()->GetWebContents()
+          ? split_tabs[1]
+          : split_tabs[0]);
 
   base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
+  EXPECT_CALL(page_, TabUnsplit()).WillOnce([&]() { run_loop.Quit(); });
+  tab_strip_model->CloseWebContentsAt(partner_index, TabCloseTypes::CLOSE_NONE);
   run_loop.Run();
+}
 
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerSplitTest, RemoveSplit_OtherPage) {
+  const split_tabs::SplitTabId split_id =
+      CreateSplitTabWithHandler(GURL(chrome::kChromeUITabSearchURL));
+
+  EXPECT_CALL(page_, TabUnsplit()).Times(0);
+  browser1()->tab_strip_model()->RemoveSplit(split_id);
   page_.receiver_.FlushForTesting();
 }
 

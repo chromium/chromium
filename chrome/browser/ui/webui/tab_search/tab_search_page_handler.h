@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 
 #include "base/callback_list.h"
@@ -24,6 +25,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -189,9 +191,6 @@ class TabSearchPageHandler
   // Called by OnNodesRemoved to notify tab closures to the WebUI page.
   void OnTabsRemoved(std::vector<int> tab_ids,
                      std::set<SessionID> tab_restore_ids);
-  // Called by OnNodesRemoved to notify the WebUI page that split tab is
-  // removed from split view.
-  void OnSplitTabRemoved();
 
   // Schedule a timer to call TabsChanged() when it times out
   // in order to reduce numbers of RPC.
@@ -202,6 +201,10 @@ class TabSearchPageHandler
 
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();
+
+  // Called when the host tab's split state changes.
+  void OnSplitChanged(tabs::TabInterface* tab,
+                      std::optional<split_tabs::SplitTabId> new_split);
 
   OrganizerPanelController* GetOrganizerPanelController() const;
 
@@ -250,6 +253,9 @@ class TabSearchPageHandler
       tab_restore_service_observation_{this};
 
   std::unique_ptr<tabs_api::TabStripServiceAggregator> aggregator_;
+
+  // Notifies this when the embedding tab's split state changes.
+  base::CallbackListSubscription split_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_

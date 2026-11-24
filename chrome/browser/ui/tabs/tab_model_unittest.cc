@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,7 +27,9 @@
 namespace {
 using RepeatingTabCallback =
     base::MockCallback<base::RepeatingCallback<void(tabs::TabInterface*)>>;
-}
+using SplitChangedCallbackMock = testing::StrictMock<
+    base::MockCallback<tabs::TabInterface::SplitChangedCallback>>;
+}  // namespace
 
 namespace tabs {
 
@@ -352,6 +355,194 @@ TEST_F(TabModelTest, Getters) {
   EXPECT_EQ(u"Test Title", tab_model->GetTitle());
   EXPECT_EQ(GURL("https://example.com"), tab_model->GetURL());
   EXPECT_EQ(active_time, tab_model->GetLastActiveTime());
+}
+
+TEST_F(TabModelTest, SplitChangedCallback) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  AppendTab(tab_strip);
+  AppendTab(tab_strip);
+  tabs::TabModel* const tab_model0 =
+      static_cast<tabs::TabModel*>(tab_strip.GetTabAtIndex(0));
+  tabs::TabModel* const tab_model1 =
+      static_cast<tabs::TabModel*>(tab_strip.GetTabAtIndex(1));
+
+  // Activate tab 1 so AddToNewSplit({0, 1}) must propagate selection to tab 0.
+  tab_strip.ActivateTabAt(1);
+
+  SplitChangedCallbackMock split_changed_callback;
+  base::CallbackListSubscription subscription0 =
+      tab_model0->RegisterSplitChanged(split_changed_callback.Get());
+  base::CallbackListSubscription subscription1 =
+      tab_model1->RegisterSplitChanged(split_changed_callback.Get());
+
+  // Unrelated group changes must not fire the split changed callback.
+  tab_strip.AddToNewGroup({2});
+  tab_strip.RemoveFromGroup({2});
+
+  // Adding tabs to a split notifies only once the full split and selection
+  // state are updated.
+  std::optional<split_tabs::SplitTabId> notified_split0;
+  std::optional<split_tabs::SplitTabId> notified_split1;
+  auto verify_full_split = [&](std::optional<split_tabs::SplitTabId> split) {
+    ASSERT_TRUE(split.has_value());
+    EXPECT_TRUE(tab_strip.ContainsSplit(*split));
+    EXPECT_EQ(2u, tab_strip.GetSplitData(*split)->ListTabs().size());
+    EXPECT_TRUE(tab_model0->IsSplit());
+    EXPECT_TRUE(tab_model1->IsSplit());
+    EXPECT_TRUE(tab_model0->IsSelected());
+    EXPECT_TRUE(tab_model1->IsSelected());
+  };
+  EXPECT_CALL(split_changed_callback, Run(tab_model0, testing::_))
+      .WillOnce([&](tabs::TabInterface*,
+                    std::optional<split_tabs::SplitTabId> split) {
+        verify_full_split(split);
+        notified_split0 = split;
+      });
+  EXPECT_CALL(split_changed_callback, Run(tab_model1, testing::_))
+      .WillOnce([&](tabs::TabInterface*,
+                    std::optional<split_tabs::SplitTabId> split) {
+        verify_full_split(split);
+        notified_split1 = split;
+      });
+  const split_tabs::SplitTabId split_id = tab_strip.AddToNewSplit(
+      {0, 1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  testing::Mock::VerifyAndClearExpectations(&split_changed_callback);
+  EXPECT_EQ(split_id, notified_split0);
+  EXPECT_EQ(split_id, notified_split1);
+
+  // Grouping or ungrouping the split tabs must not fire the split callback.
+  tab_strip.AddToNewGroup({0, 1});
+  tab_strip.RemoveFromGroup({0, 1});
+
+  // Removing the split notifies only after the collection is removed and
+  // inactive tab selection is cleared.
+  auto verify_split_removed = [&](tabs::TabInterface*,
+                                  std::optional<split_tabs::SplitTabId> split) {
+    EXPECT_FALSE(split.has_value());
+    EXPECT_FALSE(tab_strip.ContainsSplit(split_id));
+    EXPECT_FALSE(tab_model0->IsSplit());
+    EXPECT_FALSE(tab_model1->IsSplit());
+    EXPECT_FALSE(tab_model0->IsSelected());
+    EXPECT_TRUE(tab_model1->IsSelected());
+  };
+  EXPECT_CALL(split_changed_callback,
+              Run(tab_model0, std::optional<split_tabs::SplitTabId>()))
+      .WillOnce(verify_split_removed);
+  EXPECT_CALL(split_changed_callback,
+              Run(tab_model1, std::optional<split_tabs::SplitTabId>()))
+      .WillOnce(verify_split_removed);
+  tab_strip.RemoveSplit(split_id);
+  testing::Mock::VerifyAndClearExpectations(&split_changed_callback);
+}
+
+TEST_F(TabModelTest, SplitChangedCallbackUpdateTabInSplit) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  for (int i = 0; i < 4; ++i) {
+    AppendTab(tab_strip);
+  }
+
+  TabInterface* const surviving_tab = tab_strip.GetTabAtIndex(0);
+  TabInterface* const first_partner = tab_strip.GetTabAtIndex(1);
+  TabInterface* const swap_tab = tab_strip.GetTabAtIndex(2);
+  TabInterface* const replace_tab = tab_strip.GetTabAtIndex(3);
+
+  const split_tabs::SplitTabId split_id = tab_strip.AddToNewSplit(
+      {0, 1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  SplitChangedCallbackMock callback;
+  std::vector<base::CallbackListSubscription> subscriptions;
+  for (TabInterface* tab :
+       {surviving_tab, first_partner, swap_tab, replace_tab}) {
+    subscriptions.push_back(tab->RegisterSplitChanged(callback.Get()));
+  }
+
+  auto verify_split_tabs = [&](TabInterface* first, TabInterface* second,
+                               TabInterface* removed) {
+    EXPECT_EQ(2u, tab_strip.GetSplitData(split_id)->ListTabs().size());
+    EXPECT_EQ(split_id, first->GetSplit());
+    EXPECT_EQ(split_id, second->GetSplit());
+    EXPECT_EQ(std::nullopt, removed->GetSplit());
+    EXPECT_TRUE(first->IsSelected());
+    EXPECT_TRUE(second->IsSelected());
+    EXPECT_FALSE(removed->IsSelected());
+  };
+
+  // Swapping a partner tab must not transiently fire unsplit on the surviving
+  // tab, and callbacks must see the complete 2-tab split and selection state.
+  tab_strip.ActivateTabAt(tab_strip.GetIndexOfTab(first_partner));
+  EXPECT_CALL(callback,
+              Run(first_partner, std::optional<split_tabs::SplitTabId>()))
+      .WillOnce([&](TabInterface*, std::optional<split_tabs::SplitTabId>) {
+        verify_split_tabs(surviving_tab, swap_tab, first_partner);
+      });
+  EXPECT_CALL(callback, Run(swap_tab, std::make_optional(split_id)))
+      .WillOnce([&](TabInterface*, std::optional<split_tabs::SplitTabId>) {
+        verify_split_tabs(surviving_tab, swap_tab, first_partner);
+      });
+  tab_strip.UpdateTabInSplit(first_partner->GetHandle(), swap_tab->GetHandle(),
+                             TabStripModel::SplitUpdateType::kSwap);
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Swapping the tab at index 0 of the split puts the incoming tab at index 0
+  // during CreateSplit(); it must still wait until the full split is built.
+  tab_strip.ActivateTabAt(tab_strip.GetIndexOfTab(surviving_tab));
+  EXPECT_CALL(callback,
+              Run(surviving_tab, std::optional<split_tabs::SplitTabId>()))
+      .WillOnce([&](TabInterface*, std::optional<split_tabs::SplitTabId>) {
+        verify_split_tabs(first_partner, swap_tab, surviving_tab);
+      });
+  EXPECT_CALL(callback, Run(first_partner, std::make_optional(split_id)))
+      .WillOnce([&](TabInterface*, std::optional<split_tabs::SplitTabId>) {
+        verify_split_tabs(first_partner, swap_tab, surviving_tab);
+      });
+  tab_strip.UpdateTabInSplit(surviving_tab->GetHandle(),
+                             first_partner->GetHandle(),
+                             TabStripModel::SplitUpdateType::kSwap);
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Replacing a partner tab must not notify the surviving tab either.
+  EXPECT_CALL(callback, Run(replace_tab, std::make_optional(split_id)))
+      .WillOnce([&](TabInterface*, std::optional<split_tabs::SplitTabId>) {
+        EXPECT_EQ(2u, tab_strip.GetSplitData(split_id)->ListTabs().size());
+        EXPECT_EQ(split_id, first_partner->GetSplit());
+        EXPECT_EQ(split_id, replace_tab->GetSplit());
+        EXPECT_TRUE(first_partner->IsSelected());
+        EXPECT_TRUE(replace_tab->IsSelected());
+      });
+  tab_strip.UpdateTabInSplit(swap_tab->GetHandle(), replace_tab->GetHandle(),
+                             TabStripModel::SplitUpdateType::kReplace);
+  testing::Mock::VerifyAndClearExpectations(&callback);
+}
+
+TEST_F(TabModelTest, SplitChangedCallbackCrossWindowDetach) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_src(&delegate, profile());
+  TabStripModel tab_strip_dst(&delegate, profile());
+  AppendTab(tab_strip_src);
+  AppendTab(tab_strip_src);
+
+  TabInterface* const tab0 = tab_strip_src.GetTabAtIndex(0);
+  TabInterface* const tab1 = tab_strip_src.GetTabAtIndex(1);
+
+  const split_tabs::SplitTabId split_id = tab_strip_src.AddToNewSplit(
+      {0, 1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  SplitChangedCallbackMock callback;
+  std::vector<base::CallbackListSubscription> subscriptions;
+  subscriptions.push_back(tab0->RegisterSplitChanged(callback.Get()));
+  subscriptions.push_back(tab1->RegisterSplitChanged(callback.Get()));
+
+  auto detached_split = tab_strip_src.DetachSplitTabForInsertion(split_id);
+  tab_strip_dst.InsertDetachedSplitTabAt(std::move(detached_split), 0, false);
+
+  EXPECT_EQ(split_id, tab0->GetSplit());
+  EXPECT_EQ(split_id, tab1->GetSplit());
 }
 
 }  // namespace tabs

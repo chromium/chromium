@@ -153,6 +153,36 @@ class ReentrancyCheck {
   const raw_ptr<bool> guard_flag_;
 };
 
+// Defers `TabInterface::RegisterSplitChanged()` notifications for the given
+// tabs until this scope exits so listeners never observe partial split state.
+class ScopedSplitUpdate {
+ public:
+  ScopedSplitUpdate(base::PassKey<TabStripModel> passkey,
+                    base::span<tabs::TabInterface* const> tabs)
+      : passkey_(passkey) {
+    handles_.reserve(tabs.size());
+    for (tabs::TabInterface* tab : tabs) {
+      handles_.push_back(tab->GetHandle());
+      static_cast<tabs::TabModel*>(tab)->BeginSplitUpdate(passkey_);
+    }
+  }
+
+  ScopedSplitUpdate(const ScopedSplitUpdate&) = delete;
+  ScopedSplitUpdate& operator=(const ScopedSplitUpdate&) = delete;
+
+  ~ScopedSplitUpdate() {
+    for (tabs::TabHandle handle : handles_) {
+      if (tabs::TabInterface* tab = handle.Get()) {
+        static_cast<tabs::TabModel*>(tab)->EndSplitUpdate(passkey_);
+      }
+    }
+  }
+
+ private:
+  base::PassKey<TabStripModel> passkey_;
+  std::vector<tabs::TabHandle> handles_;
+};
+
 // Returns true if the specified transition is one of the types that cause the
 // opener relationships for the tab in which the transition occurred to be
 // forgotten. This is generally any navigation that isn't a link click (i.e.
@@ -5128,6 +5158,7 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
                                GetTabGroupForTab(pivot_index),
                                IsTabPinned(pivot_index));
 
+  ScopedSplitUpdate split_update(base::PassKey<TabStripModel>(), tabs);
   contents_data_->CreateSplit(split_id, tabs, visual_data);
   selection_model_.InvalidateListSelectionModel(base::PassKey<TabStripModel>());
 
@@ -5172,6 +5203,12 @@ void TabStripModel::RemoveSplitImpl(
     SplitTabChange::SplitTabRemoveReason reason) {
   std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices =
       GetTabsAndIndicesInSplit(split_id);
+  std::vector<tabs::TabInterface*> split_tabs;
+  split_tabs.reserve(tabs_with_indices.size());
+  for (const auto& [tab, index] : tabs_with_indices) {
+    split_tabs.push_back(tab);
+  }
+  ScopedSplitUpdate split_update(base::PassKey<TabStripModel>(), split_tabs);
 
   contents_data_->Unsplit(split_id);
   selection_model_.InvalidateListSelectionModel(base::PassKey<TabStripModel>());
@@ -5214,6 +5251,10 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabHandle split_tab,
 
   std::vector<tabs::TabInterface*> tabs_to_split =
       GetSplitData(split_id)->ListTabs();
+  std::vector<tabs::TabInterface*> split_update_tabs = tabs_to_split;
+  split_update_tabs.push_back(update_tab_ptr);
+  ScopedSplitUpdate split_update(base::PassKey<TabStripModel>(),
+                                 split_update_tabs);
   split_tabs::SplitTabVisualData split_visual_data =
       *GetSplitData(split_id)->visual_data();
   const bool initial_split_active = split_tab_ptr->IsActivated();

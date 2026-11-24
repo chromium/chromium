@@ -80,6 +80,10 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (GroupChangedCallback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
+              RegisterSplitChanged,
+              (SplitChangedCallback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
               RegisterBlockedStateChanged,
               (BlockedStateChangedCallback),
               (override));

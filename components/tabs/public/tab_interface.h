@@ -6,12 +6,14 @@
 #define COMPONENTS_TABS_PUBLIC_TAB_INTERFACE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -31,10 +33,6 @@ class WebContents;
 
 class BrowserWindowInterface;
 class Profile;
-
-namespace split_tabs {
-class SplitTabId;
-}  // namespace split_tabs
 
 namespace tabs {
 
@@ -255,6 +253,12 @@ class TabInterface : public SupportsTabHandles {
       void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
   virtual base::CallbackListSubscription RegisterGroupChanged(
       GroupChangedCallback callback) = 0;
+
+  // Register for this callback to detect when the split changes.
+  using SplitChangedCallback = base::RepeatingCallback<
+      void(TabInterface*, std::optional<split_tabs::SplitTabId> new_split)>;
+  virtual base::CallbackListSubscription RegisterSplitChanged(
+      SplitChangedCallback callback) = 0;
 
   // Register for this callback to detect when the blocked state changes.
   using BlockedStateChangedCallback =

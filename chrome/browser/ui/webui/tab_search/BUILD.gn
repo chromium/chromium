@@ -34,7 +34,10 @@ source_set("tab_search") {
     "tab_search_sync_handler.h",
     "tab_search_ui.h",
   ]
-  public_deps = [ "//chrome/browser/ui:browser_live_tab_context" ]
+  public_deps = [
+    "//chrome/browser/ui:browser_live_tab_context",
+    "//components/split_tabs",
+  ]
   deps = [
     ":mojo_bindings",
     "//base",
@@ -125,6 +128,7 @@ source_set("browser_tests") {
     "//components/metrics/mapping",
     "//components/metrics/mapping:metrics_name_mapping_proto",
     "//components/os_crypt/browser:test_support",
+    "//components/split_tabs",
     "//components/variations:test_support",
     "//content/test:test_support",
     "//testing/gmock",

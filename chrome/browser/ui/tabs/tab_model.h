@@ -65,11 +65,8 @@ class TabModel final : public TabInterface,
 
   void SetPinned(bool pinned);
   void SetGroup(std::optional<tab_groups::TabGroupId> group);
-
   void SetBlocked(bool blocked);
-  void set_split(std::optional<split_tabs::SplitTabId> split) {
-    split_ = split;
-  }
+  void SetSplit(std::optional<split_tabs::SplitTabId> split);
 
   void set_will_be_detaching_for_testing(bool will_be_detaching) {
     will_be_detaching_ = will_be_detaching;
@@ -119,6 +116,12 @@ class TabModel final : public TabInterface,
   // (i.e. entered the foreground).
   void DidEnterForeground(base::PassKey<TabStripModel>);
 
+  // Defers `split_changed_callback_list_` notifications across multi-step split
+  // updates in `TabStripModel` so listeners do not observe transient split or
+  // selection state. Nested calls compose via a depth counter.
+  void BeginSplitUpdate(base::PassKey<TabStripModel>);
+  void EndSplitUpdate(base::PassKey<TabStripModel>);
+
   // TabInterface overrides:
   base::WeakPtr<TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
@@ -149,6 +152,8 @@ class TabModel final : public TabInterface,
       TabInterface::PinnedStateChangedCallback callback) override;
   base::CallbackListSubscription RegisterGroupChanged(
       TabInterface::GroupChangedCallback callback) override;
+  base::CallbackListSubscription RegisterSplitChanged(
+      TabInterface::SplitChangedCallback callback) override;
   base::CallbackListSubscription RegisterBlockedStateChanged(
       TabInterface::BlockedStateChangedCallback callback) override;
 
@@ -238,6 +243,10 @@ class TabModel final : public TabInterface,
   // determine a tab's split status based on whether it is part of a split tab
   // collection.
   std::optional<split_tabs::SplitTabId> split_;
+  // Nesting depth for deferred `split_changed_callback_list_` notifications
+  // between `BeginSplitUpdate()` and `EndSplitUpdate()`.
+  int split_update_depth_ = 0;
+  std::optional<split_tabs::SplitTabId> pre_update_split_;
   std::optional<tab_groups::TabGroupId> group_;
   raw_ptr<TabCollection> parent_collection_ = nullptr;
 
@@ -277,6 +286,10 @@ class TabModel final : public TabInterface,
   using GroupChangedCallbackList = base::RepeatingCallbackList<
       void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
   GroupChangedCallbackList group_changed_callback_list_;
+
+  using SplitChangedCallbackList = base::RepeatingCallbackList<
+      void(TabInterface*, std::optional<split_tabs::SplitTabId> new_split)>;
+  SplitChangedCallbackList split_changed_callback_list_;
 
   using BlockedStateChangedCallbackList =
       base::RepeatingCallbackList<void(TabInterface*, bool new_blocked_state)>;

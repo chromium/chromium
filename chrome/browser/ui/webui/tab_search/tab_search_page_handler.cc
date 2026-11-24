@@ -215,6 +215,11 @@ TabSearchPageHandler::TabSearchPageHandler(
     bubble_showing_ = true;
   }
   BrowserWindowInterfaceChanged();
+  if (tabs::TabInterface* tab =
+          webui::GetTabInterface(web_ui_->GetWebContents())) {
+    split_changed_subscription_ = tab->RegisterSplitChanged(base::BindRepeating(
+        &TabSearchPageHandler::OnSplitChanged, base::Unretained(this)));
+  }
 }
 
 TabSearchPageHandler::~TabSearchPageHandler() {
@@ -375,10 +380,10 @@ tabs::TabInterface* TabSearchPageHandler::GetTabInterface(int32_t tab_id) {
 
 void TabSearchPageHandler::GetIsSplit(GetIsSplitCallback callback) {
   bool is_split = false;
-  GURL url = web_ui_->GetWebContents()->GetURL();
+  const GURL& url = web_ui_->GetWebContents()->GetLastCommittedURL();
   if (search::IsSplitViewNewTabPage(url)) {
-    is_split = tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
-                   ->IsSplit();
+    tabs::TabInterface* tab = webui::GetTabInterface(web_ui_->GetWebContents());
+    is_split = tab && tab->IsSplit();
   }
   std::move(callback).Run(is_split);
 }
@@ -931,24 +936,8 @@ void TabSearchPageHandler::OnTabEvents(
     const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
   const auto* preload_state =
       WebUIContentsPreloadState::FromWebContents(web_ui_->GetWebContents());
-  if (preload_state && preload_state->pending_request) {
-    return;
-  }
-  if (!IsWebContentsVisible()) {
-    // TODO(crbug.com/587492900): Remove this workaround once
-    // TabSearchPageHandler listens directly to split events.
-    if (search::IsSplitViewNewTabPage(web_ui_->GetWebContents()->GetURL())) {
-      for (const auto& event : events) {
-        if (!event->is_nodes_closed_event()) {
-          continue;
-        }
-        for (const auto& node_id : event->get_nodes_closed_event()->node_ids) {
-          if (node_id.Type() == tabs_api::NodeId::Type::kCollection) {
-            OnSplitTabRemoved();
-          }
-        }
-      }
-    }
+  if (!IsWebContentsVisible() ||
+      (preload_state && preload_state->pending_request)) {
     return;
   }
 
@@ -1000,8 +989,6 @@ void TabSearchPageHandler::OnNodesRemoved(
       if (base::StringToInt(node_id.Id(), &tab_id)) {
         tab_ids.push_back(tab_id);
       }
-    } else if (node_id.Type() == tabs_api::NodeId::Type::kCollection) {
-      OnSplitTabRemoved();
     }
   }
 
@@ -1068,13 +1055,14 @@ void TabSearchPageHandler::OnTabDataChanged(
   page_->TabUpdated(std::move(tab_update_info));
 }
 
-void TabSearchPageHandler::OnSplitTabRemoved() {
-  GURL url = web_ui_->GetWebContents()->GetURL();
-  if (!search::IsSplitViewNewTabPage(url)) {
+void TabSearchPageHandler::OnSplitChanged(
+    tabs::TabInterface* /*tab*/,
+    std::optional<split_tabs::SplitTabId> new_split) {
+  if (new_split.has_value()) {
     return;
   }
-  if (!tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
-           ->IsSplit()) {
+  const GURL& url = web_ui_->GetWebContents()->GetLastCommittedURL();
+  if (search::IsSplitViewNewTabPage(url)) {
     page_->TabUnsplit();
   }
 }

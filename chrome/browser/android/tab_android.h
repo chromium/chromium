@@ -290,6 +290,8 @@ class TabAndroid : public tabs::TabInterface,
       PinnedStateChangedCallback callback) override;
   base::CallbackListSubscription RegisterGroupChanged(
       GroupChangedCallback callback) override;
+  base::CallbackListSubscription RegisterSplitChanged(
+      SplitChangedCallback callback) override;
   base::CallbackListSubscription RegisterBlockedStateChanged(
       BlockedStateChangedCallback callback) override;
   bool CanShowModalUI() const override;

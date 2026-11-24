@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -174,6 +176,34 @@ void TabModel::SetBlocked(bool blocked) {
   blocked_state_changed_callback_list_.Notify(this, blocked_);
 }
 
+void TabModel::BeginSplitUpdate(base::PassKey<TabStripModel>) {
+  if (split_update_depth_++ == 0) {
+    pre_update_split_ = split_;
+  }
+}
+
+void TabModel::EndSplitUpdate(base::PassKey<TabStripModel>) {
+  CHECK_GT(split_update_depth_, 0);
+  if (--split_update_depth_ == 0) {
+    const std::optional<split_tabs::SplitTabId> previous_split =
+        std::exchange(pre_update_split_, std::nullopt);
+    if (split_ != previous_split) {
+      split_changed_callback_list_.Notify(this, split_);
+    }
+  }
+}
+
+void TabModel::SetSplit(std::optional<split_tabs::SplitTabId> split) {
+  if (split_ == split) {
+    return;
+  }
+
+  split_ = split;
+  if (split_update_depth_ == 0) {
+    split_changed_callback_list_.Notify(this, split_);
+  }
+}
+
 void TabModel::WillBecomeHidden(base::PassKey<TabStripModel>) {
   will_become_hidden_callback_list_.Notify(this);
 }
@@ -281,6 +311,11 @@ base::CallbackListSubscription TabModel::RegisterPinnedStateChanged(
 base::CallbackListSubscription TabModel::RegisterGroupChanged(
     TabInterface::GroupChangedCallback callback) {
   return group_changed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterSplitChanged(
+    TabInterface::SplitChangedCallback callback) {
+  return split_changed_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabModel::RegisterBlockedStateChanged(
@@ -408,7 +443,7 @@ void TabModel::UpdateProperties() {
   }
   SetPinned(pinned);
   SetGroup(group);
-  set_split(split);
+  SetSplit(split);
 }
 
 TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)
