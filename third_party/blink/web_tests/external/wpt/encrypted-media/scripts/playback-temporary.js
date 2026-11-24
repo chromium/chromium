@@ -10,6 +10,13 @@ function runTest(config,qualifier) {
                             videoCapabilities: [ { contentType: config.videoType } ],
                             sessionTypes: [ 'temporary' ] };
 
+    if (typeof MediaSource === 'undefined' ||
+        (config.audioType && !MediaSource.isTypeSupported(config.audioType)) ||
+        (config.videoType && !MediaSource.isTypeSupported(config.videoType))) {
+      test(function() {}, testname);
+      return;
+    }
+
     async_test(function(test) {
 
         var _video = config.video,

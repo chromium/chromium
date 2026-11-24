@@ -322,7 +322,7 @@ RuleSet* CSSDefaultStyleSheets::DefaultJSONDocumentStyle() {
 static void AddTextTrackCSSProperties(StringBuilder* builder,
                                       CSSPropertyID propertyId,
                                       String value) {
-  builder->Append(CSSProperty::Get(propertyId).GetPropertyNameString());
+  builder->Append(CSSProperty::Get(propertyId).GetPropertyName());
   builder->Append(": ");
   builder->Append(value);
   builder->Append("; ");
