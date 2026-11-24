@@ -9,6 +9,7 @@
 #include <shobjidl.h>
 #include <windows.h>
 
+#include <shlguid.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <wrl/client.h>
@@ -39,6 +40,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/com_init_util.h"
@@ -864,6 +866,54 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kMigrateTaskbarShortcutLocation,
                    "migration_interval",
                    base::Days(30));
+
+LocalOnlyAppProtocolState ClassifyLocalOnlyAppProtocolQueryResult(
+    HRESULT result) {
+  if (result == S_OK) {
+    return LocalOnlyAppProtocolState::kLocalOnly;
+  }
+  // Windows returns S_OK when the marker exists and ERROR_NO_ASSOCIATION when
+  // the registration or marker is absent.
+  if (result == HRESULT_FROM_WIN32(ERROR_NO_ASSOCIATION)) {
+    return LocalOnlyAppProtocolState::kNotLocalOnly;
+  }
+  return LocalOnlyAppProtocolState::kUnknown;
+}
+
+// Fails open so that a transient shell problem cannot break legitimate
+// protocol launches.
+LocalOnlyAppProtocolState GetLocalOnlyAppProtocolState(
+    std::string_view scheme) {
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  if (scheme.empty() || !base::IsStringASCII(scheme) || scheme.ends_with(':')) {
+    return LocalOnlyAppProtocolState::kUnknown;
+  }
+
+  Microsoft::WRL::ComPtr<IQueryAssociations> query_associations;
+  if (FAILED(::AssocCreate(CLSID_QueryAssociations,
+                           IID_PPV_ARGS(&query_associations)))) {
+    return LocalOnlyAppProtocolState::kUnknown;
+  }
+
+  const std::wstring wide_scheme = base::ASCIIToWide(scheme);
+  if (FAILED(query_associations->Init(ASSOCF_IS_PROTOCOL, wide_scheme.c_str(),
+                                      /*hkProgid=*/nullptr,
+                                      /*hwnd=*/nullptr))) {
+    return LocalOnlyAppProtocolState::kUnknown;
+  }
+
+  // Only the presence of the value matters, so no output buffer is requested:
+  // an empty string and any DWORD both mean the scheme is local-only.
+  // S_FALSE is also considered successful by SUCCEEDED(), but means the value
+  // is absent on some implementations. Only S_OK proves the marker exists.
+  const HRESULT result = query_associations->GetData(
+      ASSOCF_NONE, ASSOCDATA_VALUE, L"LocalOnly", /*pvOut=*/nullptr,
+      /*pcbOut=*/nullptr);
+  return ClassifyLocalOnlyAppProtocolQueryResult(result);
+}
 
 void SetAsDefaultBrowserUsingSystemSettings(
     base::OnceClosure on_finished_callback) {

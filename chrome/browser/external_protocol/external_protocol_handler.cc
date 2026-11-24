@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/external_protocol/features.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -298,6 +300,37 @@ void OnDefaultSchemeClientWorkerFinished(
   LaunchUrlWithoutSecurityCheckWithDelegate(
       escaped_url, web_contents, std::move(initiator_document), delegate);
 }
+
+#if BUILDFLAG(IS_WIN)
+void OnDefaultSchemeClientWorkerFinishedWithLocalOnly(
+    const GURL& escaped_url,
+    content::WeakDocumentPtr initiator_document,
+    ExternalProtocolHandler::Delegate* delegate,
+    shell_integration::DefaultSchemeHandlerWorkerCallback completion_callback,
+    shell_integration::DefaultSchemeHandlerInfo info) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // TODO(crbug.com/539667060): Record Windows local-only enforcement
+  // telemetry, including lookup failures.
+  if (info.local_only_state ==
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly) {
+    if (delegate) {
+      delegate->FinishedProcessingCheck();
+    }
+    AddMessageToConsole(
+        initiator_document, blink::mojom::ConsoleMessageLevel::kError,
+        base::StrCat(
+            {"Not allowed to launch '", ElideUrlForConsole(escaped_url),
+             "' because the scheme is registered for local use only."}));
+    if (delegate) {
+      delegate->BlockRequest();
+    }
+    return;
+  }
+
+  std::move(completion_callback).Run(info.state, info.client_name);
+}
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
@@ -598,21 +631,39 @@ void ExternalProtocolHandler::LaunchUrl(
     }
   }
 
-  // The worker creates tasks with references to itself and puts them into
-  // message loops.
-  shell_integration::DefaultSchemeHandlerWorkerCallback callback =
-      base::BindOnce(&OnDefaultSchemeClientWorkerFinished, escaped_url,
-                     std::move(web_contents_getter), block_state == UNKNOWN,
-                     page_transition, has_user_gesture, is_in_fenced_frame_tree,
-                     initiating_origin_or_precursor,
-                     std::move(initiator_document),
-                     g_external_protocol_handler_delegate);
-
   // Start the check process running. This will send tasks to a worker task
   // runner and when the answer is known will send the result back to
   // OnDefaultSchemeClientWorkerFinished().
-  CreateShellWorker(escaped_url, g_external_protocol_handler_delegate)
-      ->StartCheckIsDefaultAndGetDefaultClientName(std::move(callback));
+  auto worker =
+      CreateShellWorker(escaped_url, g_external_protocol_handler_delegate);
+  auto completion_callback = base::BindOnce(
+      &OnDefaultSchemeClientWorkerFinished, escaped_url,
+      std::move(web_contents_getter), block_state == UNKNOWN, page_transition,
+      has_user_gesture, is_in_fenced_frame_tree, initiating_origin_or_precursor,
+      initiator_document, g_external_protocol_handler_delegate);
+#if BUILDFLAG(IS_WIN)
+  const bool should_check_windows_local_only =
+      base::FeatureList::IsEnabled(features::kLocalOnlyAppProtocolWindows) &&
+      initiating_origin;
+  PrefService* profile_prefs = profile ? profile->GetPrefs() : nullptr;
+  const bool is_allowed_by_auto_launch_policy =
+      should_check_windows_local_only && profile_prefs &&
+      IsSchemeOriginPairAllowedByPolicy(escaped_url.GetScheme(),
+                                        base::OptionalToPtr(initiating_origin),
+                                        profile_prefs);
+  // Administrator policy overrides local-only registration. URLAllowlist is
+  // handled by the caller; remembered user allowances do not skip this check.
+  if (should_check_windows_local_only && !is_allowed_by_auto_launch_policy) {
+    worker->StartCheckDefaultSchemeHandlerInfo(base::BindOnce(
+        &OnDefaultSchemeClientWorkerFinishedWithLocalOnly, escaped_url,
+        std::move(initiator_document), g_external_protocol_handler_delegate,
+        std::move(completion_callback)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  worker->StartCheckIsDefaultAndGetDefaultClientName(
+      std::move(completion_callback));
 #endif
 }
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -14,11 +15,16 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "base/win/windows_types.h"
 
 namespace base::win {
 struct ShortcutProperties;
 enum class ShortcutOperation;
 }  // namespace base::win
+
+namespace shell_integration {
+enum class LocalOnlyAppProtocolState;
+}  // namespace shell_integration
 
 namespace shell_integration::win {
 
@@ -30,6 +36,17 @@ BASE_DECLARE_FEATURE(kMigrateTaskbarShortcutLocation);
 // negative to disable periodic re-checks.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kTaskbarShortcutMigrationInterval);
+
+// Returns whether the effective Windows registration for `scheme` contains a
+// LocalOnly value. `scheme` must be non-empty ASCII without a trailing colon.
+// Missing registrations and markers return kNotLocalOnly; invalid schemes and
+// lookup failures return kUnknown. Must be called on a blocking COM STA
+// sequence.
+LocalOnlyAppProtocolState GetLocalOnlyAppProtocolState(std::string_view scheme);
+
+// Maps an IQueryAssociations::GetData result to the LocalOnly state.
+LocalOnlyAppProtocolState ClassifyLocalOnlyAppProtocolQueryResult(
+    HRESULT result);
 
 // Initiates the interaction with the system settings for the default browser.
 // The function takes care of making sure |on_finished_callback| will get called

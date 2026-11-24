@@ -208,6 +208,31 @@ using DefaultWebClientWorkerCallback =
 using DefaultSchemeHandlerWorkerCallback =
     base::OnceCallback<void(DefaultWebClientState, const std::u16string&)>;
 
+#if BUILDFLAG(IS_WIN)
+// Outcome of asking the Windows shell whether the effective registration for a
+// scheme is marked local-only.
+enum class LocalOnlyAppProtocolState {
+  kNotLocalOnly = 0,  // The registration or marker is absent.
+  kLocalOnly = 1,     // The effective registration contains the marker.
+  kUnknown = 2,       // The lookup failed.
+};
+
+// Carries the results of a single default-handler check on Windows.
+// `local_only_state` reports whether the effective registration for the scheme
+// is marked local-only, and backs the external protocol launch decision.
+// `state` and `client_name` retain their normal meanings when that lookup
+// fails.
+struct DefaultSchemeHandlerInfo {
+  DefaultWebClientState state = UNKNOWN_DEFAULT;
+  std::u16string client_name;
+  LocalOnlyAppProtocolState local_only_state =
+      LocalOnlyAppProtocolState::kUnknown;
+};
+
+using DefaultSchemeHandlerInfoCallback =
+    base::OnceCallback<void(DefaultSchemeHandlerInfo)>;
+#endif  // BUILDFLAG(IS_WIN)
+
 //  Helper objects that handle checking if Chrome is the default browser
 //  or application for a url scheme on Windows and Linux, and also setting
 //  it as the default. These operations are performed asynchronously on a
@@ -329,12 +354,19 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
       DefaultSchemeHandlerWorkerCallback callback);
 
 #if BUILDFLAG(IS_WIN)
+  // Checks to see if Chrome is the default application for the URL and returns
+  // the default client name and whether the effective protocol registration is
+  // local-only. The callback runs on the UI thread. A local_only_state of
+  // kUnknown indicates that the registration lookup failed.
+  void StartCheckDefaultSchemeHandlerInfo(
+      DefaultSchemeHandlerInfoCallback callback);
+
   // Checks to see if Chrome is the default application for the |url_|.
   // The provided callback will be run to communicate the default state to the
   // caller, and also return the program ID of the default client if available.
   void StartCheckIsDefaultAndGetDefaultClientProgId(
       DefaultSchemeHandlerWorkerCallback callback);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   const std::string& scheme() const { return scheme_; }
   const GURL& url() const { return url_; }
@@ -355,11 +387,17 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
       DefaultSchemeHandlerWorkerCallback callback);
 
 #if BUILDFLAG(IS_WIN)
+  void OnCheckDefaultSchemeHandlerInfoComplete(
+      DefaultSchemeHandlerInfo info,
+      DefaultSchemeHandlerInfoCallback callback);
+
+  void CheckDefaultSchemeHandlerInfo(DefaultSchemeHandlerInfoCallback callback);
+
   // Checks whether Chrome is the default client for |url_|. This also returns
   // the default client's program ID if available.
   void CheckIsDefaultAndGetDefaultClientProgId(
       DefaultSchemeHandlerWorkerCallback callback);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   // Check if Chrome is the default handler for this scheme.
   DefaultWebClientState CheckIsDefaultImpl() override;
@@ -369,6 +407,10 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   virtual std::u16string GetDefaultClientNameImpl();
 
 #if BUILDFLAG(IS_WIN)
+  // Gets whether the effective registration for `scheme_` is local-only.
+  // Always called on a blocking COM STA sequence.
+  virtual LocalOnlyAppProtocolState GetLocalOnlyAppProtocolStateImpl();
+
   // Gets the default client program ID for |scheme_|. Always called on a
   // blocking sequence.
   std::u16string GetDefaultClientProgIdImpl();

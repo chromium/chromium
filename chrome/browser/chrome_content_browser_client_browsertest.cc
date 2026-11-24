@@ -44,6 +44,7 @@
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -914,6 +915,9 @@ class ProtocolHandlerLocalOnlyBaseTest : public ProtocolHandlerTest {
   ProtocolHandlerLocalOnlyBaseTest() {
     feature_list_.InitWithFeatures(
         {features::kLocalOnlyAppProtocolPrefix,
+#if BUILDFLAG(IS_WIN)
+         features::kLocalOnlyAppProtocolWindows,
+#endif  // BUILDFLAG(IS_WIN)
          policy::features::kUseManagementServiceForSensitivePolicies},
         {});
   }
@@ -927,7 +931,7 @@ class ProtocolHandlerLocalOnlyBaseTest : public ProtocolHandlerTest {
  protected:
   void SetURLAllowlistAndWait(const GURL& url) {
     base::ListValue allowlist;
-    allowlist.Append("local+custom:*");
+    allowlist.Append(base::StrCat({url.GetScheme(), ":*"}));
     browser()->GetProfile()->GetPrefs()->SetList(
         policy::policy_prefs::kUrlAllowlist, std::move(allowlist));
     PolicyBlocklistService* policy_service =
@@ -1036,6 +1040,13 @@ class FakeExternalProtocolHandlerWorker
 
   std::u16string GetDefaultClientNameImpl() override { return program_name_; }
 
+#if BUILDFLAG(IS_WIN)
+  shell_integration::LocalOnlyAppProtocolState
+  GetLocalOnlyAppProtocolStateImpl() override {
+    return shell_integration::LocalOnlyAppProtocolState::kLocalOnly;
+  }
+#endif
+
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
     std::move(on_finished_callback).Run();
   }
@@ -1066,7 +1077,8 @@ class ScopedFakeExternalProtocolHandlerDelegate
   }
 
   void BlockRequest() override {
-    FAIL() << "Unexpected BlockRequest call received";
+    blocked_ = true;
+    launch_url_run_loop_.Quit();
   }
 
   void RunExternalProtocolDialog(
@@ -1096,6 +1108,7 @@ class ScopedFakeExternalProtocolHandlerDelegate
   bool external_protocol_dialog_called() const {
     return external_protocol_dialog_called_;
   }
+  bool blocked() const { return blocked_; }
   std::string_view launched_url_without_security_check() const {
     return launched_url_without_security_check_;
   }
@@ -1110,6 +1123,7 @@ class ScopedFakeExternalProtocolHandlerDelegate
   base::RunLoop launch_url_run_loop_;
   const std::u16string program_name_ = u"custom";
   bool external_protocol_dialog_called_ = false;
+  bool blocked_ = false;
   std::string launched_url_without_security_check_;
   std::string launched_url_with_security_check_;
   std::optional<url::Origin> initiating_origin_;
@@ -1143,6 +1157,38 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyTest,
             delegate.launched_url_without_security_check());
   EXPECT_EQ("", delegate.launched_url_with_security_check());
 }
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyTest,
+                       URLAllowlistOverridesWindowsLocalOnlyBlock) {
+  const GURL local_only_url("custom:test");
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  {
+    ScopedFakeExternalProtocolHandlerDelegate delegate;
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, "location.href = 'custom:test';"));
+    delegate.WaitExternalUrlLaunchCompleted();
+
+    EXPECT_TRUE(delegate.blocked());
+    EXPECT_FALSE(delegate.external_protocol_dialog_called());
+    EXPECT_EQ("", delegate.launched_url_without_security_check());
+    EXPECT_EQ("", delegate.launched_url_with_security_check());
+  }
+
+  SetURLAllowlistAndWait(local_only_url);
+
+  ScopedFakeExternalProtocolHandlerDelegate delegate;
+  ASSERT_TRUE(content::ExecJs(web_contents, "location.href = 'custom:test';"));
+  delegate.WaitExternalUrlLaunchCompleted();
+
+  EXPECT_FALSE(delegate.blocked());
+  EXPECT_FALSE(delegate.external_protocol_dialog_called());
+  EXPECT_EQ(local_only_url.spec(),
+            delegate.launched_url_without_security_check());
+  EXPECT_EQ("", delegate.launched_url_with_security_check());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyTest,
                        AllowsBrowserInitiatedNavigation) {
@@ -1178,6 +1224,25 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyUnmanagedTest,
   ASSERT_EQ(1u, observer.messages().size());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyUnmanagedTest,
+                       URLAllowlistDoesNotOverrideWindowsLocalOnlyBlock) {
+  const GURL local_only_url("custom:test");
+  SetURLAllowlistAndWait(local_only_url);
+
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ScopedFakeExternalProtocolHandlerDelegate delegate;
+  ASSERT_TRUE(content::ExecJs(web_contents, "location.href = 'custom:test';"));
+  delegate.WaitExternalUrlLaunchCompleted();
+
+  EXPECT_TRUE(delegate.blocked());
+  EXPECT_FALSE(delegate.external_protocol_dialog_called());
+  EXPECT_EQ("", delegate.launched_url_without_security_check());
+  EXPECT_EQ("", delegate.launched_url_with_security_check());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // URLs which are explicitly allowlisted by policy can bypass security checks.

@@ -21,7 +21,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_reg_util_win.h"
 #include "base/test/test_shortcut_win.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/shell_integration.h"
@@ -43,6 +45,133 @@ namespace shell_integration {
 namespace win {
 
 namespace {
+
+constexpr wchar_t kLocalOnlyValueName[] = L"LocalOnly";
+
+TEST(LocalOnlyAppProtocolQueryResultTest, ClassifiesResults) {
+  EXPECT_EQ(LocalOnlyAppProtocolState::kLocalOnly,
+            ClassifyLocalOnlyAppProtocolQueryResult(S_OK));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kNotLocalOnly,
+            ClassifyLocalOnlyAppProtocolQueryResult(
+                HRESULT_FROM_WIN32(ERROR_NO_ASSOCIATION)));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            ClassifyLocalOnlyAppProtocolQueryResult(S_FALSE));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            ClassifyLocalOnlyAppProtocolQueryResult(
+                HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            ClassifyLocalOnlyAppProtocolQueryResult(
+                HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            ClassifyLocalOnlyAppProtocolQueryResult(E_ACCESSDENIED));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            ClassifyLocalOnlyAppProtocolQueryResult(E_FAIL));
+}
+
+class LocalOnlyAppProtocolTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_manager_.OverrideRegistry(HKEY_CLASSES_ROOT));
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+  }
+
+  void RegisterProtocol(const wchar_t* scheme) {
+    base::win::RegKey key(HKEY_CLASSES_ROOT, scheme, KEY_WRITE);
+    ASSERT_TRUE(key.Valid());
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(nullptr, L"Test protocol"));
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(ShellUtil::kRegUrlProtocol, L""));
+  }
+
+  base::win::ScopedCOMInitializer com_initializer_;
+  registry_util::RegistryOverrideManager registry_override_manager_;
+};
+
+TEST_F(LocalOnlyAppProtocolTest, MissingRegistration) {
+  EXPECT_EQ(LocalOnlyAppProtocolState::kNotLocalOnly,
+            GetLocalOnlyAppProtocolState("missing-test-protocol"));
+}
+
+TEST_F(LocalOnlyAppProtocolTest, RegistrationWithoutLocalOnly) {
+  RegisterProtocol(L"test-protocol");
+  EXPECT_EQ(LocalOnlyAppProtocolState::kNotLocalOnly,
+            GetLocalOnlyAppProtocolState("test-protocol"));
+}
+
+TEST_F(LocalOnlyAppProtocolTest, InvalidScheme) {
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            GetLocalOnlyAppProtocolState(""));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            GetLocalOnlyAppProtocolState(std::string(1, '\x80')));
+  EXPECT_EQ(LocalOnlyAppProtocolState::kUnknown,
+            GetLocalOnlyAppProtocolState("test-protocol:"));
+}
+
+TEST_F(LocalOnlyAppProtocolTest, LocalOnlyStringValue) {
+  RegisterProtocol(L"local-only-string-test-protocol");
+  base::win::RegKey key(HKEY_CLASSES_ROOT, L"local-only-string-test-protocol",
+                        KEY_WRITE);
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kLocalOnlyValueName, L"ignored"));
+
+  EXPECT_EQ(LocalOnlyAppProtocolState::kLocalOnly,
+            GetLocalOnlyAppProtocolState("local-only-string-test-protocol"));
+}
+
+TEST_F(LocalOnlyAppProtocolTest, LocalOnlyEmptyStringValue) {
+  RegisterProtocol(L"local-only-empty-string-test-protocol");
+  base::win::RegKey key(HKEY_CLASSES_ROOT,
+                        L"local-only-empty-string-test-protocol", KEY_WRITE);
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kLocalOnlyValueName, L""));
+
+  EXPECT_EQ(
+      LocalOnlyAppProtocolState::kLocalOnly,
+      GetLocalOnlyAppProtocolState("local-only-empty-string-test-protocol"));
+}
+
+TEST_F(LocalOnlyAppProtocolTest, LocalOnlyValueOnNonProtocolRegistration) {
+  base::win::RegKey key(HKEY_CLASSES_ROOT, L"non-protocol-registration",
+                        KEY_WRITE);
+  ASSERT_TRUE(key.Valid());
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(nullptr, L"Not a protocol"));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kLocalOnlyValueName, L"ignored"));
+
+  EXPECT_EQ(LocalOnlyAppProtocolState::kNotLocalOnly,
+            GetLocalOnlyAppProtocolState("non-protocol-registration"));
+}
+
+TEST_F(LocalOnlyAppProtocolTest, LocalOnlyNoDataValue) {
+  RegisterProtocol(L"local-only-no-data-test-protocol");
+  base::win::RegKey key(HKEY_CLASSES_ROOT, L"local-only-no-data-test-protocol",
+                        KEY_WRITE);
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.WriteValue(kLocalOnlyValueName, nullptr, 0, REG_NONE));
+
+  EXPECT_EQ(LocalOnlyAppProtocolState::kLocalOnly,
+            GetLocalOnlyAppProtocolState("local-only-no-data-test-protocol"));
+}
+
+TEST_F(LocalOnlyAppProtocolTest, LocalOnlyDwordValue) {
+  RegisterProtocol(L"local-only-dword-test-protocol");
+  base::win::RegKey key(HKEY_CLASSES_ROOT, L"local-only-dword-test-protocol",
+                        KEY_WRITE);
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kLocalOnlyValueName, DWORD{1}));
+
+  EXPECT_EQ(LocalOnlyAppProtocolState::kLocalOnly,
+            GetLocalOnlyAppProtocolState("local-only-dword-test-protocol"));
+}
+
+// The marker is a presence flag, so a zero DWORD still means local-only. This
+// pins that contract down so it is not "fixed" into a value check later.
+TEST_F(LocalOnlyAppProtocolTest, LocalOnlyZeroDwordValue) {
+  RegisterProtocol(L"local-only-zero-test-protocol");
+  base::win::RegKey key(HKEY_CLASSES_ROOT, L"local-only-zero-test-protocol",
+                        KEY_WRITE);
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kLocalOnlyValueName, DWORD{0}));
+
+  EXPECT_EQ(LocalOnlyAppProtocolState::kLocalOnly,
+            GetLocalOnlyAppProtocolState("local-only-zero-test-protocol"));
+}
 
 struct ShortcutTestObject {
   base::FilePath path;

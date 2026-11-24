@@ -5,9 +5,15 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,10 +22,12 @@
 #include "chrome/browser/external_protocol/constants.h"
 #include "chrome/browser/external_protocol/features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -47,6 +55,17 @@ constexpr char kLocalOnlyScheme[] = "local+custom";
 class FakeExternalProtocolHandlerWorker
     : public shell_integration::DefaultSchemeClientWorker {
  public:
+#if BUILDFLAG(IS_WIN)
+  FakeExternalProtocolHandlerWorker(
+      const GURL& url,
+      shell_integration::DefaultWebClientState os_state,
+      const std::u16string& program_name,
+      shell_integration::LocalOnlyAppProtocolState local_only_state)
+      : shell_integration::DefaultSchemeClientWorker(url),
+        os_state_(os_state),
+        program_name_(program_name),
+        local_only_state_(local_only_state) {}
+#else
   FakeExternalProtocolHandlerWorker(
       const GURL& url,
       shell_integration::DefaultWebClientState os_state,
@@ -54,6 +73,13 @@ class FakeExternalProtocolHandlerWorker
       : shell_integration::DefaultSchemeClientWorker(url),
         os_state_(os_state),
         program_name_(program_name) {}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  bool has_checked_local_only_state() const {
+    return has_checked_local_only_state_;
+  }
+#endif
 
  private:
   ~FakeExternalProtocolHandlerWorker() override = default;
@@ -64,12 +90,24 @@ class FakeExternalProtocolHandlerWorker
 
   std::u16string GetDefaultClientNameImpl() override { return program_name_; }
 
+#if BUILDFLAG(IS_WIN)
+  shell_integration::LocalOnlyAppProtocolState
+  GetLocalOnlyAppProtocolStateImpl() override {
+    has_checked_local_only_state_ = true;
+    return local_only_state_;
+  }
+#endif
+
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
     std::move(on_finished_callback).Run();
   }
 
   shell_integration::DefaultWebClientState os_state_;
   std::u16string program_name_;
+#if BUILDFLAG(IS_WIN)
+  shell_integration::LocalOnlyAppProtocolState local_only_state_;
+  bool has_checked_local_only_state_ = false;
+#endif
 };
 
 class FakeExternalProtocolHandlerDelegate
@@ -86,7 +124,14 @@ class FakeExternalProtocolHandlerDelegate
 
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override {
-    return new FakeExternalProtocolHandlerWorker(url, os_state_, program_name_);
+#if BUILDFLAG(IS_WIN)
+    worker_ = base::MakeRefCounted<FakeExternalProtocolHandlerWorker>(
+        url, os_state_, program_name_, local_only_state_);
+#else
+    worker_ = base::MakeRefCounted<FakeExternalProtocolHandlerWorker>(
+        url, os_state_, program_name_);
+#endif
+    return worker_;
   }
 
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
@@ -95,8 +140,6 @@ class FakeExternalProtocolHandlerDelegate
   }
 
   void BlockRequest() override {
-    EXPECT_TRUE(block_state_ == ExternalProtocolHandler::BLOCK ||
-                os_state_ == shell_integration::IS_DEFAULT);
     has_blocked_ = true;
     if (on_complete_)
       std::move(on_complete_).Run();
@@ -129,6 +172,7 @@ class FakeExternalProtocolHandlerDelegate
   }
 
   void FinishedProcessingCheck() override {
+    has_finished_processing_check_ = true;
     if (on_complete_)
       std::move(on_complete_).Run();
   }
@@ -143,6 +187,13 @@ class FakeExternalProtocolHandlerDelegate
     block_state_ = value;
   }
 
+#if BUILDFLAG(IS_WIN)
+  void set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState value) {
+    local_only_state_ = value;
+  }
+#endif
+
   // Set this to true if you need the test to be completed upon calling into
   // LaunchUrlWithoutSecurityCheck which is the case when testing
   // ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck.
@@ -151,6 +202,14 @@ class FakeExternalProtocolHandlerDelegate
   bool has_launched() { return has_launched_; }
   bool has_prompted() { return has_prompted_; }
   bool has_blocked() { return has_blocked_; }
+  bool has_finished_processing_check() {
+    return has_finished_processing_check_;
+  }
+#if BUILDFLAG(IS_WIN)
+  bool has_checked_local_only_state() const {
+    return worker_ && worker_->has_checked_local_only_state();
+  }
+#endif
 
   const std::optional<url::Origin>& initiating_origin() {
     return initiating_origin_;
@@ -164,13 +223,19 @@ class FakeExternalProtocolHandlerDelegate
   ExternalProtocolHandler::BlockState block_state_;
   shell_integration::DefaultWebClientState os_state_;
   bool complete_on_launch_ = false;
+#if BUILDFLAG(IS_WIN)
+  shell_integration::LocalOnlyAppProtocolState local_only_state_ =
+      shell_integration::LocalOnlyAppProtocolState::kNotLocalOnly;
+#endif
   bool has_launched_ = false;
   bool has_prompted_ = false;
   bool has_blocked_ = false;
+  bool has_finished_processing_check_ = false;
   GURL launch_or_prompt_url_;
   std::optional<url::Origin> initiating_origin_;
   base::OnceClosure on_complete_;
   std::u16string program_name_;
+  scoped_refptr<FakeExternalProtocolHandlerWorker> worker_;
 };
 
 class ExternalProtocolHandlerTest : public testing::Test {
@@ -219,7 +284,7 @@ class ExternalProtocolHandlerTest : public testing::Test {
               shell_integration::DefaultWebClientState os_state,
               Action expected_action,
               const GURL& url,
-              const url::Origin& initiating_origin,
+              const std::optional<url::Origin>& initiating_origin,
               const url::Origin& expected_initiating_precursor_origin,
               const std::u16string& program_name) {
     EXPECT_FALSE(delegate_.has_prompted());
@@ -248,16 +313,31 @@ class ExternalProtocolHandlerTest : public testing::Test {
     EXPECT_EQ(expected_action == Action::LAUNCH, delegate_.has_launched());
     EXPECT_EQ(expected_action == Action::BLOCK, delegate_.has_blocked());
     if (expected_action == Action::PROMPT) {
-      ASSERT_TRUE(delegate_.initiating_origin().has_value());
-      if (initiating_origin.opaque()) {
+      ASSERT_TRUE(initiating_origin);
+      ASSERT_TRUE(delegate_.initiating_origin());
+      if (initiating_origin->opaque()) {
         EXPECT_EQ(expected_initiating_precursor_origin,
-                  delegate_.initiating_origin().value());
+                  *delegate_.initiating_origin());
       } else {
-        EXPECT_EQ(initiating_origin, delegate_.initiating_origin().value());
+        EXPECT_EQ(*initiating_origin, *delegate_.initiating_origin());
       }
     } else {
       EXPECT_FALSE(delegate_.initiating_origin().has_value());
     }
+  }
+
+  void SetAutoLaunchPolicy(std::string_view scheme, std::string_view origin) {
+    base::DictValue protocol_origins_map;
+    protocol_origins_map.Set(policy::external_protocol::kProtocolNameKey,
+                             scheme);
+    base::ListValue origins;
+    origins.Append(origin);
+    protocol_origins_map.Set(policy::external_protocol::kOriginListKey,
+                             std::move(origins));
+    base::ListValue protocol_origins_map_list;
+    protocol_origins_map_list.Append(std::move(protocol_origins_map));
+    profile_->GetPrefs()->SetList(prefs::kAutoLaunchProtocolsFromOrigins,
+                                  std::move(protocol_origins_map_list));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -269,6 +349,19 @@ class ExternalProtocolHandlerTest : public testing::Test {
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
+
+#if BUILDFLAG(IS_WIN)
+class WindowsLocalOnlyExternalProtocolHandlerTest
+    : public ExternalProtocolHandlerTest {
+ public:
+  WindowsLocalOnlyExternalProtocolHandlerTest() {
+    feature_list_.InitAndEnableFeature(features::kLocalOnlyAppProtocolWindows);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(ExternalProtocolHandlerTest, TestLaunchSchemeBlockedChromeDefault) {
   DoTest(ExternalProtocolHandler::BLOCK, shell_integration::IS_DEFAULT,
@@ -570,22 +663,182 @@ TEST_F(ExternalProtocolHandlerTest,
             ExternalProtocolHandler::GetBlockState(
                 kLocalOnlyScheme, &test_origin, profile_.get()));
 
-  base::DictValue protocol_origins_map;
-  protocol_origins_map.Set(policy::external_protocol::kProtocolNameKey,
-                           kLocalOnlyScheme);
-  base::ListValue origins;
-  origins.Append("*");
-  protocol_origins_map.Set(policy::external_protocol::kOriginListKey,
-                           std::move(origins));
-  base::ListValue protocol_origins_map_list;
-  protocol_origins_map_list.Append(std::move(protocol_origins_map));
-  profile_->GetPrefs()->SetList(prefs::kAutoLaunchProtocolsFromOrigins,
-                                std::move(protocol_origins_map_list));
+  SetAutoLaunchPolicy(kLocalOnlyScheme, "*");
 
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK,
             ExternalProtocolHandler::GetBlockState(
                 kLocalOnlyScheme, &test_origin, profile_.get()));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ExternalProtocolHandlerTest, TestWindowsLocalOnlyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLocalOnlyAppProtocolWindows);
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::NOT_DEFAULT,
+         Action::LAUNCH);
+  EXPECT_FALSE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyBlocksWebLaunch) {
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  DoTest(ExternalProtocolHandler::UNKNOWN, shell_integration::NOT_DEFAULT,
+         Action::BLOCK);
+  EXPECT_TRUE(delegate_.has_finished_processing_check());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyBlocksWhenChromeIsDefault) {
+  delegate_.set_block_state(ExternalProtocolHandler::UNKNOWN);
+  delegate_.set_os_state(shell_integration::IS_DEFAULT);
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  GURL url("custom://server/path?code=SECRET_CODE&state=123");
+  url::Origin initiating_origin =
+      url::Origin::Create(GURL("https://example.test"));
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHostTester::For(rfh)->ClearConsoleMessages();
+
+  ExternalProtocolHandler::SetDelegateForTesting(&delegate_);
+  ExternalProtocolHandler::LaunchUrl(
+      url,
+      base::BindRepeating(&ExternalProtocolHandlerTest::GetWebContents,
+                          base::Unretained(this)),
+      ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/true,
+      /*is_in_fenced_frame_tree=*/false, initiating_origin,
+      rfh->GetWeakDocumentPtr());
+  run_loop_.Run();
+  ExternalProtocolHandler::SetDelegateForTesting(nullptr);
+
+  const std::vector<std::string>& messages =
+      content::RenderFrameHostTester::For(rfh)->GetConsoleMessages();
+  ASSERT_EQ(1u, messages.size());
+  EXPECT_EQ(
+      "Not allowed to launch 'custom:' because the scheme is registered for "
+      "local use only.",
+      messages[0]);
+  EXPECT_EQ(std::string::npos, messages[0].find("SECRET_CODE"));
+  EXPECT_TRUE(delegate_.has_blocked());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyOverridesRememberedAllowance) {
+  url::Origin initiating_origin =
+      url::Origin::Create(GURL("https://example.test"));
+  ExternalProtocolHandler::SetBlockState("custom", initiating_origin,
+                                         ExternalProtocolHandler::DONT_BLOCK,
+                                         profile_.get());
+  const ExternalProtocolHandler::BlockState remembered_state =
+      ExternalProtocolHandler::GetBlockState("custom", &initiating_origin,
+                                             profile_.get());
+  ASSERT_EQ(ExternalProtocolHandler::DONT_BLOCK, remembered_state);
+
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  DoTest(remembered_state, shell_integration::NOT_DEFAULT, Action::BLOCK,
+         GURL("custom:test"), initiating_origin,
+         url::Origin::Create(GURL("https://precursor.test")), u"TestApp");
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlySkipsLookupForBlockedScheme) {
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  DoTest(ExternalProtocolHandler::BLOCK, shell_integration::NOT_DEFAULT,
+         Action::BLOCK, GURL("custom:test"),
+         url::Origin::Create(GURL("https://example.test")),
+         url::Origin::Create(GURL("https://precursor.test")), u"TestApp");
+  EXPECT_FALSE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyAllowsLocalLaunch) {
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::NOT_DEFAULT,
+         Action::LAUNCH, GURL("custom:test"), std::nullopt,
+         url::Origin::Create(GURL("https://precursor.test")), u"TestApp");
+  EXPECT_FALSE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestPolicyOverridesWindowsLocalOnly) {
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  SetAutoLaunchPolicy("custom", "*");
+
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::NOT_DEFAULT,
+         Action::LAUNCH, GURL("custom:test"),
+         url::Origin::Create(GURL("https://example.test")),
+         url::Origin::Create(GURL("https://precursor.test")), u"TestApp");
+  EXPECT_FALSE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestPolicyDoesNotOverrideWindowsLocalOnlyForOtherOrigins) {
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kLocalOnly);
+
+  SetAutoLaunchPolicy("custom", "https://allowed.test");
+
+  DoTest(ExternalProtocolHandler::UNKNOWN, shell_integration::NOT_DEFAULT,
+         Action::BLOCK, GURL("custom:test"),
+         url::Origin::Create(GURL("https://other.test")),
+         url::Origin::Create(GURL("https://precursor.test")), u"TestApp");
+  EXPECT_TRUE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyNotMarked) {
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::NOT_DEFAULT,
+         Action::LAUNCH);
+  EXPECT_TRUE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyNotMarkedPrompts) {
+  DoTest(ExternalProtocolHandler::UNKNOWN, shell_integration::NOT_DEFAULT,
+         Action::PROMPT);
+  EXPECT_TRUE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyNotMarkedPreservesChromeDefault) {
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::IS_DEFAULT,
+         Action::BLOCK);
+  EXPECT_TRUE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyLookupFailureFailsOpen) {
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kUnknown);
+
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::NOT_DEFAULT,
+         Action::LAUNCH);
+  EXPECT_TRUE(delegate_.has_checked_local_only_state());
+}
+
+TEST_F(WindowsLocalOnlyExternalProtocolHandlerTest,
+       TestWindowsLocalOnlyLookupFailurePreservesChromeDefault) {
+  delegate_.set_local_only_state(
+      shell_integration::LocalOnlyAppProtocolState::kUnknown);
+
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::IS_DEFAULT,
+         Action::BLOCK);
+  EXPECT_TRUE(delegate_.has_checked_local_only_state());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
   base::HistogramTester histogram_tester;

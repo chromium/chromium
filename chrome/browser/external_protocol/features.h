@@ -20,6 +20,12 @@ BASE_DECLARE_FEATURE(kLocalOnlyAppProtocolPrefix);
 BASE_DECLARE_FEATURE(kXdgSchemeHandlerDetection);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Blocks web-initiated external protocols marked LocalOnly on Windows.
+// See crbug.com/539654408.
+BASE_DECLARE_FEATURE(kLocalOnlyAppProtocolWindows);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_EXTERNAL_PROTOCOL_FEATURES_H_

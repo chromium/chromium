@@ -349,6 +349,15 @@ void DefaultSchemeClientWorker::StartCheckIsDefaultAndGetDefaultClientName(
 }
 
 #if BUILDFLAG(IS_WIN)
+void DefaultSchemeClientWorker::StartCheckDefaultSchemeHandlerInfo(
+    DefaultSchemeHandlerInfoCallback callback) {
+  CHECK(callback);
+  g_sequenced_task_runner.Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DefaultSchemeClientWorker::CheckDefaultSchemeHandlerInfo,
+                     this, std::move(callback)));
+}
+
 void DefaultSchemeClientWorker::StartCheckIsDefaultAndGetDefaultClientProgId(
     DefaultSchemeHandlerWorkerCallback callback) {
   g_sequenced_task_runner.Get()->PostTask(
@@ -357,7 +366,7 @@ void DefaultSchemeClientWorker::StartCheckIsDefaultAndGetDefaultClientProgId(
           &DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientProgId,
           this, std::move(callback)));
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 ///////////////////////////////////////////////////////////////////////////////
 // DefaultSchemeClientWorker, protected:
@@ -395,6 +404,33 @@ void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientName(
 }
 
 #if BUILDFLAG(IS_WIN)
+void DefaultSchemeClientWorker::OnCheckDefaultSchemeHandlerInfoComplete(
+    DefaultSchemeHandlerInfo info,
+    DefaultSchemeHandlerInfoCallback callback) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  std::move(callback).Run(std::move(info));
+}
+
+void DefaultSchemeClientWorker::CheckDefaultSchemeHandlerInfo(
+    DefaultSchemeHandlerInfoCallback callback) {
+  CHECK(!url_.is_empty());
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DefaultSchemeClientWorker::OnCheckDefaultSchemeHandlerInfoComplete,
+          this,
+          DefaultSchemeHandlerInfo{
+              .state = CheckIsDefaultImpl(),
+              .client_name = GetDefaultClientNameImpl(),
+              .local_only_state = GetLocalOnlyAppProtocolStateImpl(),
+          },
+          std::move(callback)));
+}
+
 void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientProgId(
     DefaultSchemeHandlerWorkerCallback callback) {
   CHECK(!url_.is_empty(), base::NotFatalUntil::M162);
@@ -409,7 +445,7 @@ void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientProgId(
                          OnCheckIsDefaultAndGetDefaultClientValueComplete,
                      this, state, program_id, std::move(callback)));
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 DefaultWebClientState DefaultSchemeClientWorker::CheckIsDefaultImpl() {
   return IsDefaultClientForScheme(scheme_);
@@ -420,10 +456,15 @@ std::u16string DefaultSchemeClientWorker::GetDefaultClientNameImpl() {
 }
 
 #if BUILDFLAG(IS_WIN)
+LocalOnlyAppProtocolState
+DefaultSchemeClientWorker::GetLocalOnlyAppProtocolStateImpl() {
+  return win::GetLocalOnlyAppProtocolState(scheme_);
+}
+
 std::u16string DefaultSchemeClientWorker::GetDefaultClientProgIdImpl() {
   return GetProgIdForScheme(url_);
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 void DefaultSchemeClientWorker::SetAsDefaultImpl(
     base::OnceClosure on_finished_callback) {
