@@ -893,7 +893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.{AnimationType}.NewTabAnimationProgress"
-    enum="AnimationFreezeCheckerState" expires_after="2027-01-03">
+    enum="AnimationFreezeCheckerState" expires_after="2027-07-03">
   <owner>ckitagawa@chromium.org</owner>
   <owner>polardz@google.com</owner>
   <summary>
