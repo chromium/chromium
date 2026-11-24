@@ -1,0 +1,11 @@
+Tests XHR network resource type and size for asynchronous requests when "blob" is specified as the response type.
+
+http://127.0.0.1:8000/inspector-protocol/network/resources/get-response-body-valid-text.php
+xhr.responseType: blob
+xhr.response instanceof Blob: true
+xhr.response.size: 13
+resource.type: xhr
+resource.size: 13
+base64Encoded: false
+resource.content after requesting content: Hello, World!
+

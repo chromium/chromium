@@ -1,7 +1,0 @@
-Tests XHR network resource type and size for asynchronous requests when "blob" is specified as the response type.
-
-http://127.0.0.1:8000/devtools/network/resources/resource.php
-resource.type: xhr
-resource.size: 11
-resource.content after requesting content: Hello world
-
