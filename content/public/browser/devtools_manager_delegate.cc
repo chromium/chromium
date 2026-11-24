@@ -105,6 +105,9 @@ void DevToolsManagerDelegate::ClientAttached(
     DevToolsAgentHostClientChannel* channel) {}
 void DevToolsManagerDelegate::ClientDetached(
     DevToolsAgentHostClientChannel* channel) {}
+void DevToolsManagerDelegate::TargetCreatedFromHttpRequest(
+    DevToolsAgentHost* agent_host,
+    const net::IPEndPoint& remote_endpoint) {}
 
 bool DevToolsManagerDelegate::AllowInspectingTarget(
     DevToolsAgentHost* agent_host) {

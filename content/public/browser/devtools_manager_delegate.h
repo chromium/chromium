@@ -23,6 +23,10 @@ namespace base {
 class DictValue;
 }  // namespace base
 
+namespace net {
+class IPEndPoint;
+}  // namespace net
+
 namespace content {
 
 class DevToolsAgentHostClientChannel;
@@ -155,6 +159,12 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   // Called when a new client is attached/detached.
   virtual void ClientAttached(DevToolsAgentHostClientChannel* channel);
   virtual void ClientDetached(DevToolsAgentHostClientChannel* channel);
+
+  // Called when a new target is created via the DevTools HTTP `/json/new`
+  // endpoint by a remote client at `remote_endpoint`.
+  virtual void TargetCreatedFromHttpRequest(
+      DevToolsAgentHost* agent_host,
+      const net::IPEndPoint& remote_endpoint);
 
   // Returns whether embedder allows to inspect given |agent_host|.
   virtual bool AllowInspectingTarget(DevToolsAgentHost* agent_host);

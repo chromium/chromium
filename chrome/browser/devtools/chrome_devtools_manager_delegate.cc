@@ -91,6 +91,7 @@
 
 #if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 #include "chrome/browser/enterprise/connectors/reporting/cdp_actor_session_tracker.h"
+#include "net/base/ip_endpoint.h"
 #endif
 
 static_assert(!BUILDFLAG(IS_ANDROID),
@@ -483,6 +484,17 @@ void ChromeDevToolsManagerDelegate::ClientDetached(
   }
 #endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
   sessions_.erase(channel);
+}
+
+void ChromeDevToolsManagerDelegate::TargetCreatedFromHttpRequest(
+    content::DevToolsAgentHost* agent_host,
+    const net::IPEndPoint& remote_endpoint) {
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  if (cdp_actor_session_tracker_ && agent_host) {
+    cdp_actor_session_tracker_->OnHttpTargetCreated(
+        remote_endpoint, agent_host->GetWebContents());
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 }
 
 scoped_refptr<DevToolsAgentHost> ChromeDevToolsManagerDelegate::CreateNewTarget(

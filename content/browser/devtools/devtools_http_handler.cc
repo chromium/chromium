@@ -706,6 +706,7 @@ void DevToolsHttpHandler::OnJsonRequest(
                "Could not create new page");
       return;
     }
+    delegate_->TargetCreatedFromHttpRequest(agent_host.get(), info.peer);
     std::string host = info.GetHeaderValue("host");
     base::DictValue descriptor = SerializeDescriptor(agent_host, host);
     SendJson(connection_id, net::HTTP_OK, descriptor, "");

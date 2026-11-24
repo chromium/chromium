@@ -165,6 +165,10 @@ class MockDevToolsManagerDelegate : public DevToolsManagerDelegate {
               CreateNewTarget,
               (const GURL& url, TargetType target_type, bool new_window),
               (override));
+  MOCK_METHOD(void,
+              TargetCreatedFromHttpRequest,
+              (DevToolsAgentHost*, const net::IPEndPoint&),
+              (override));
   MOCK_METHOD(DevToolsAgentHost::List,
               RemoteDebuggingTargets,
               (TargetType target_type),
@@ -332,11 +336,22 @@ TEST_F(DevToolsHttpHandlerTest, MutatingActionsiRequireSafeVerb) {
   EXPECT_GE(delegate.request_status(), 0);
   EXPECT_EQ(405, request->response_info().headers->response_code());
 
+  scoped_refptr<DevToolsAgentHost> created_host =
+      base::MakeRefCounted<MockDevToolsAgentHost>();
   EXPECT_CALL(
       *MockDevToolsManagerDelegate::last_instance,
       CreateNewTarget(GURL("about:blank"), DevToolsManagerDelegate::kFrame,
                       /*new_window=*/false))
-      .WillOnce(Return(base::MakeRefCounted<MockDevToolsAgentHost>()));
+      .WillOnce(Return(created_host));
+  EXPECT_CALL(
+      *MockDevToolsManagerDelegate::last_instance,
+      TargetCreatedFromHttpRequest(
+          created_host.get(),
+          testing::AllOf(
+              testing::Property(
+                  &net::IPEndPoint::address,
+                  testing::Property(&net::IPAddress::IsLoopback, true)),
+              testing::Property(&net::IPEndPoint::port, testing::Ne(0)))));
 
   request = request_context->CreateRequest(
       url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -368,6 +383,9 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
       *MockDevToolsManagerDelegate::last_instance,
       CreateNewTarget(GURL("about:blank"), DevToolsManagerDelegate::kFrame,
                       /*new_window=*/false));
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance,
+              TargetCreatedFromHttpRequest(testing::_, testing::_))
+      .Times(0);
   GURL url(base::StringPrintf("http://127.0.0.1:%d/json/new", port));
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   auto request = request_context->CreateRequest(
@@ -393,10 +411,22 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
   delegate.RunUntilComplete();
   EXPECT_GE(delegate.request_status(), 0);
 
+  scoped_refptr<DevToolsAgentHost> tab_host =
+      base::MakeRefCounted<MockDevToolsAgentHost>();
   EXPECT_CALL(
       *MockDevToolsManagerDelegate::last_instance,
       CreateNewTarget(GURL("http://example.com"), DevToolsManagerDelegate::kTab,
-                      /*new_window=*/false));
+                      /*new_window=*/false))
+      .WillOnce(Return(tab_host));
+  EXPECT_CALL(
+      *MockDevToolsManagerDelegate::last_instance,
+      TargetCreatedFromHttpRequest(
+          tab_host.get(),
+          testing::AllOf(
+              testing::Property(
+                  &net::IPEndPoint::address,
+                  testing::Property(&net::IPAddress::IsLoopback, true)),
+              testing::Property(&net::IPEndPoint::port, testing::Ne(0)))));
   url = GURL(base::StringPrintf(
       "http://127.0.0.1:%d/json/new?%s&for_tab", port,
       base::EscapeQueryParamValue("http://example.com", true).c_str()));

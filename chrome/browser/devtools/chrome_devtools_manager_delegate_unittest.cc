@@ -46,6 +46,8 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 #include "third_party/inspector_protocol/crdtp/span.h"
 #endif
@@ -272,6 +274,33 @@ TEST_F(ChromeDevToolsManagerDelegateTest,
       enterprise_connectors::CdpActorSessionTracker::GetEventInitiatorInfo(
           created_web_contents)
           .has_value());
+
+  AddTab();
+  content::WebContents* http_created_web_contents =
+      tab_strip()->GetWebContentsAt(2);
+  ASSERT_NE(http_created_web_contents, created_web_contents);
+  scoped_refptr<content::DevToolsAgentHost> http_agent_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(http_created_web_contents);
+  EXPECT_FALSE(
+      enterprise_connectors::CdpActorSessionTracker::GetEventInitiatorInfo(
+          http_created_web_contents)
+          .has_value());
+  manager_delegate->TargetCreatedFromHttpRequest(
+      http_agent_host.get(),
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 54321));
+  std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
+      http_initiator =
+          enterprise_connectors::CdpActorSessionTracker::GetEventInitiatorInfo(
+              http_created_web_contents);
+  ASSERT_TRUE(http_initiator.has_value());
+  ASSERT_TRUE(http_initiator->has_external_process_info());
+  ASSERT_EQ(http_initiator->external_process_info().external_processes_size(),
+            1);
+  EXPECT_EQ(http_initiator->external_process_info()
+                .external_processes(0)
+                .transport_type(),
+            chrome::cros::reporting::proto::ExternalProcessInfo::
+                TRANSPORT_TYPE_WEBSOCKET);
 
   manager_delegate->ClientDetached(&channel);
 }

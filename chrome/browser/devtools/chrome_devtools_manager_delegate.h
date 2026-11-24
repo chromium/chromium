@@ -104,6 +104,9 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
       content::DevToolsAgentHostClientChannel* channel) override;
   void ClientDetached(
       content::DevToolsAgentHostClientChannel* channel) override;
+  void TargetCreatedFromHttpRequest(
+      content::DevToolsAgentHost* agent_host,
+      const net::IPEndPoint& remote_endpoint) override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url,
       TargetType target_type,
