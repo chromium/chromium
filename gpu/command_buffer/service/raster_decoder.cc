@@ -2058,34 +2058,27 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   DCHECK(surface);
 
   if (!begin_semaphores.empty()) {
-    bool result =
-        surface->wait(begin_semaphores.size(), begin_semaphores.data(),
-                      /*deleteSemaphoresAfterWait=*/false);
-    if (!result) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
-                         "Unable to obtain write access to dest shared image.");
-      dest_scoped_access->ApplyBackendSurfaceEndState();
-      return;
-    }
+    // Wait will only fail if the context is abandoned, in which case it
+    // doesn't matter that it failed.
+    surface->wait(begin_semaphores.size(), begin_semaphores.data(),
+                  /*deleteSemaphoresAfterWait=*/false);
   }
 
   auto* canvas = surface->getCanvas();
-  bool written =
-      canvas->writePixels(src_info, pixel_data, row_bytes, x_offset, y_offset);
-  if (!written) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
-                       "Failed to write pixels to SkCanvas");
-    dest_scoped_access->ApplyBackendSurfaceEndState();
-    return;
-  }
-
   bool success =
-      shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+      canvas->writePixels(src_info, pixel_data, row_bytes, x_offset, y_offset);
+
+  // Always flush and submit, even on write failure, to avoid leaving open work
+  // on the SkSurface.
+  success &= shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   success &= shared_context_state_->SubmitIfNecessary(
       std::move(end_semaphores),
       dest_scoped_access->NeedGraphiteContextSubmit());
-
-  if (success && !dest_shared_image->IsCleared()) {
+  if (!success) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
+                       "Failed to write pixels to SkCanvas");
+    return;
+  } else if (!dest_shared_image->IsCleared()) {
     if (gl_api) {
       GLenum error = DrainGLErrors(gl_api);
       if (error != GL_NO_ERROR) {

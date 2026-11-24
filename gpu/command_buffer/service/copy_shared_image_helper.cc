@@ -193,20 +193,26 @@ bool CopyPixelsToTexture(
   }
 
   if (!begin_semaphores.empty()) {
-    bool result = dest_scoped_access->surface()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
-    DCHECK(result);
+    // Wait will only fail if the context is abandoned, in which case it
+    // doesn't matter that it failed.
+    dest_scoped_access->surface()->wait(begin_semaphores.size(),
+                                        begin_semaphores.data(),
+                                        /*deleteSemaphoresAfterWait=*/false);
   }
 
-  dest_scoped_access->surface()->writePixels(subset, xoffset, yoffset);
+  bool success = dest_scoped_access->surface()->getCanvas()->writePixels(
+      subset.info(), subset.addr(), subset.rowBytes(), xoffset, yoffset);
 
-  bool success = shared_context_state->FlushWriteAccess(dest_scoped_access);
+  // Always flush and submit, even on write failure, to avoid leaving open work
+  // on the SkSurface.
+  success &= shared_context_state->FlushWriteAccess(dest_scoped_access);
   success &= shared_context_state->SubmitIfNecessary(
       std::move(end_semaphores),
       dest_scoped_access->NeedGraphiteContextSubmit());
 
-  if (success && !dest_shared_image->IsCleared()) {
+  if (!success) {
+    upload_error = GL_INVALID_OPERATION;
+  } else if (!dest_shared_image->IsCleared()) {
     upload_error = DrainGLErrors(gl_api);
     if (upload_error == GL_NO_ERROR) {
       dest_shared_image->SetClearedRect(dest_cleared_rect);
@@ -763,10 +769,9 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   } else {
     auto* graphite_shared_context =
         shared_context_state_->graphite_shared_context();
-    success =
-        GraphiteImageReadPixels(graphite_shared_context, std::move(sk_image),
-                                src_x, src_y, dst_info, pixel_address,
-                                row_bytes);
+    success = GraphiteImageReadPixels(graphite_shared_context,
+                                      std::move(sk_image), src_x, src_y,
+                                      dst_info, pixel_address, row_bytes);
   }
   if (!success) {
     return base::unexpected(GLError(GL_INVALID_OPERATION, "ReadPixels",
