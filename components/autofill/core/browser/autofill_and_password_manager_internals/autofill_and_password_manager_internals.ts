@@ -701,6 +701,7 @@ function setUpScopeCheckboxes() {
     {id: 'OneTimeTokens'},
     {id: 'AtMemory'},
     {id: 'EmailVerification'},
+    {id: 'CustomFormControls'},
   ];
   // LINT.ThenChange(
   //     //components/autofill/core/common/autofill_internals/logging_scope.h:LoggingScope,

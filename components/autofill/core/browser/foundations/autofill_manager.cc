@@ -82,6 +82,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -1206,8 +1207,11 @@ void AutofillManager::MaybeLoadCustomFormControlScript() {
   // Thus, `attempted_loading_custom_form_control_script_` is already set to
   // true at this point to avoid needless retries during future calls.
   attempted_loading_custom_form_control_script_ = true;
-  if (std::optional<std::string> script =
-          index->FindScript(client().GetLastCommittedPrimaryMainFrameURL())) {
+  const GURL& url = client().GetLastCommittedPrimaryMainFrameURL();
+  if (std::optional<std::string> script = index->FindScript(url)) {
+    LOG_AF(log_manager()) << LoggingScope::kCustomFormControls
+                          << LogMessage::kCustomFormControlScriptAvailable
+                          << url.host();
     driver().LoadCustomFormControlScript(*script);
   }
 }

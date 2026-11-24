@@ -66,7 +66,10 @@ class LogBuffer;
   T(PersonalContextPrefetch, "Personal Context Prefetch: ")                    \
   T(AtMemory, "AtMemory: ")                                                    \
   T(TriggeringClientsideModelFor,                                              \
-    "Triggered clientside classification model for : ")
+    "Triggered clientside classification model for : ")                        \
+  T(CustomFormControlScriptAvailable,                                          \
+    "A custom form control script is available for this site. Loading it "     \
+    "for: ")
 
 // Log messages for chrome://autofill-internals.
 

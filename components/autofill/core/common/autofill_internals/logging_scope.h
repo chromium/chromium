@@ -51,7 +51,9 @@ class LogBuffer;
   /* AtMemory. */                                                      \
   T(AtMemory)                                                          \
   /* Email Verification Protocol (EVP). */                             \
-  T(EmailVerification)
+  T(EmailVerification)                                                 \
+  /* Custom form controls, e.g. custom selects. */                     \
+  T(CustomFormControls)
 // LINT.ThenChange(
 //     //components/autofill/core/browser/autofill_and_password_manager_internals/autofill_and_password_manager_internals.html:LoggingScope,
 //     //components/autofill/core/browser/autofill_and_password_manager_internals/autofill_and_password_manager_internals.ts:LoggingScope
