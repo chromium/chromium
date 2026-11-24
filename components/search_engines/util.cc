@@ -18,7 +18,6 @@
 #include "base/base64url.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/case_conversion.h"
@@ -58,6 +57,8 @@
 namespace {
 
 using ::TemplateURLPrepopulateData::PrepopulatedEngine;
+using ::TemplateURLPrepopulateData::PrepopulatedEngineSpan;
+using ::TemplateURLPrepopulateData::PrepopulatedEngineVector;
 
 constexpr char kContextualInputsParameterKey[] = "cinpts";
 constexpr char kSearchSessionIdParameterKey[] = "gsessionid";
@@ -416,7 +417,7 @@ GURL GetDefaultSearchURLForSearchTerms(TemplateURLService* service,
 
 void RemoveDuplicatePrepopulateIDs(
     KeywordWebDataService* service,
-    const std::vector<std::unique_ptr<TemplateURLData>>& prepopulated_urls,
+    PrepopulatedEngineSpan prepopulated_engines,
     TemplateURL* default_search_provider,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     const SearchTermsData& search_terms_data,
@@ -424,10 +425,11 @@ void RemoveDuplicatePrepopulateIDs(
   DCHECK(template_urls);
   TemplateURLService::OwnedTemplateURLVector checked_urls;
 
-  // For convenience construct an ID->TemplateURL* map from |prepopulated_urls|.
-  std::map<int, TemplateURLData*> prepopulated_url_map;
-  for (const auto& url : prepopulated_urls) {
-    prepopulated_url_map[url->prepopulate_id] = url.get();
+  // For convenience construct an ID->PrepopulatedEngine* map from
+  // `prepopulated_engines`.
+  std::map<int, const PrepopulatedEngine*> prepopulated_engine_map;
+  for (const PrepopulatedEngine* engine : prepopulated_engines) {
+    prepopulated_engine_map[engine->id] = engine;
   }
 
   constexpr size_t invalid_index = std::numeric_limits<size_t>::max();
@@ -476,11 +478,16 @@ void RemoveDuplicatePrepopulateIDs(
   // vector contains only the best representative for each prepopulate_id.
   // Then delete the remaining duplicates.
   for (auto& id_data : duplication_map) {
-    const auto prepopulated_url = prepopulated_url_map.find(id_data.first);
+    const auto prepopulated_engine =
+        prepopulated_engine_map.find(id_data.first);
+    std::unique_ptr<TemplateURLData> prepopulated_data =
+        (prepopulated_engine != prepopulated_engine_map.end())
+            ? TemplateURLDataFromPrepopulatedEngine(
+                  *prepopulated_engine->second)
+            : nullptr;
     const auto has_prepopulated_keyword = [&](const auto& turl) {
-      return (prepopulated_url != prepopulated_url_map.end()) &&
-             turl->HasSameKeywordAs(*prepopulated_url->second,
-                                    search_terms_data);
+      return prepopulated_data &&
+             turl->HasSameKeywordAs(*prepopulated_data, search_terms_data);
     };
 
     // If the user-selected DSE is a prepopulated engine its properties will
@@ -641,16 +648,15 @@ ActionsFromCurrentData::~ActionsFromCurrentData() = default;
 
 void MergeEnginesFromPrepopulateData(
     KeywordWebDataService* service,
-    std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
+    PrepopulatedEngineSpan prepopulated_engines,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
     std::set<std::string>* removed_keyword_guids) {
-  DCHECK(prepopulated_urls);
   DCHECK(template_urls);
 
   ActionsFromCurrentData actions(CreateActionsFromCurrentPrepopulateData(
-      prepopulated_urls, *template_urls, default_search_provider,
+      prepopulated_engines, *template_urls, default_search_provider,
       template_url_data_resolver));
 
   ApplyActionsFromCurrentData(actions, service, template_urls,
@@ -660,15 +666,15 @@ void MergeEnginesFromPrepopulateData(
 // Returns 2 values:
 // - an iterator to `id_to_existing_turl`, indicating which entry was matched,
 // or `id_to_existing_turl.end()` if none was matched.
-// - The type of merging to be applied between `prepopulated_url` and the match
-// entry.
+// - The type of merging to be applied between `prepopulated_engine` and the
+// matched entry.
 std::pair<std::map<int, TemplateURL*>::iterator, TemplateURLMergeOption>
 MatchIncomingPrepopulatedEntry(
     const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
-    const TemplateURLData& prepopulated_url,
+    const PrepopulatedEngine& prepopulated_engine,
     std::map<int, TemplateURL*>& id_to_existing_turl,
     const TemplateURL* existing_turl_matching_default_search_provider) {
-  const int prepopulated_id = prepopulated_url.prepopulate_id;
+  const int prepopulated_id = prepopulated_engine.id;
   DCHECK_NE(0, prepopulated_id);
 
   if (const PrepopulatedEngine* pre_migration_engine =
@@ -708,7 +714,7 @@ MatchIncomingPrepopulatedEntry(
 }
 
 ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
-    std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
+    PrepopulatedEngineSpan prepopulated_engines,
     const TemplateURLService::OwnedTemplateURLVector& existing_urls,
     const TemplateURL* default_search_provider,
     const TemplateURLPrepopulateData::Resolver& template_url_data_resolver) {
@@ -844,26 +850,27 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     }
   }
 
-  // For each current prepopulated URL, check whether |template_urls| contained
-  // a matching prepopulated URL.  If so, update the passed-in URL to match the
-  // current data.  (If the passed-in URL was user-edited, we persist the user's
-  // name and keyword.)  If not, add the prepopulated URL.
+  // For each current prepopulated engine, check whether `existing_urls`
+  // contained a matching prepopulated URL.  If so, update the passed-in URL to
+  // match the current data.  (If the passed-in URL was user-edited, we persist
+  // the user's name and keyword.)  If not, add the prepopulated URL.
   ActionsFromCurrentData actions;
-  for (auto& prepopulated_url : *prepopulated_urls) {
-    const int prepopulated_id = prepopulated_url->prepopulate_id;
+  for (const PrepopulatedEngine* prepopulated_engine : prepopulated_engines) {
+    const int prepopulated_id = prepopulated_engine->id;
     DCHECK_NE(0, prepopulated_id);
 
     TemplateURL* existing_url = nullptr;
     TemplateURLMergeOption merge_option;
     if (auto [existing_url_it, computed_merge_option] =
             MatchIncomingPrepopulatedEntry(template_url_data_resolver,
-                                           *prepopulated_url.get(), id_to_turl,
+                                           *prepopulated_engine, id_to_turl,
                                            dsp_match);
         existing_url_it != id_to_turl.end()) {
       existing_url = existing_url_it->second;
       merge_option = computed_merge_option;
       id_to_turl.erase(existing_url_it);
-    } else if (auto iter = regulatory_entries.find(prepopulated_url->keyword());
+    } else if (auto iter =
+                   regulatory_entries.find(prepopulated_engine->keyword);
                iter != regulatory_entries.end()) {
       // TODO(crbug.com/490069353): Investigate whether we should remove the
       // entry from the maps.
@@ -871,6 +878,8 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
       merge_option = TemplateURLMergeOption::kDefault;
     }
 
+    std::unique_ptr<TemplateURLData> prepopulated_url =
+        TemplateURLDataFromPrepopulatedEngine(*prepopulated_engine);
     if (existing_url != nullptr) {
       if (existing_url == dsp_match) {
         // DSP matched and processed. This tracking variable is not needed
@@ -881,7 +890,7 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
 
       // Update the data store with the new prepopulated data. Preserve user
       // edits to the name and keyword.
-      MergeIntoEngineData(existing_url->data(), *prepopulated_url.get(),
+      MergeIntoEngineData(existing_url->data(), *prepopulated_url,
                           merge_option);
       // Update last_modified to ensure that if this entry is later merged with
       // entries from Sync, the conflict resolution logic knows that this was
@@ -1117,12 +1126,9 @@ void GetSearchProvidersUsingLoadedEngines(
     bool had_starter_pack_decryption_failure,
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      base::ToVector(template_url_data_resolver.GetPrepopulatedEngines(),
-                     [](const PrepopulatedEngine* engine) {
-                       return TemplateURLDataFromPrepopulatedEngine(*engine);
-                     });
-  RemoveDuplicatePrepopulateIDs(service, prepopulated_urls,
+  PrepopulatedEngineVector prepopulated_engines =
+      template_url_data_resolver.GetPrepopulatedEngines();
+  RemoveDuplicatePrepopulateIDs(service, prepopulated_engines,
                                 default_search_provider, template_urls,
                                 search_terms_data, removed_keyword_guids);
 
@@ -1135,7 +1141,7 @@ void GetSearchProvidersUsingLoadedEngines(
   if (required_metadata.HasBuiltinKeywordData() ||
       had_prepopulated_decryption_failure) {
     MergeEnginesFromPrepopulateData(
-        service, &prepopulated_urls, template_urls, default_search_provider,
+        service, prepopulated_engines, template_urls, default_search_provider,
         template_url_data_resolver, removed_keyword_guids);
   }
 

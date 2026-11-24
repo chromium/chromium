@@ -66,8 +66,23 @@ namespace {
 
 using regional_capabilities::CountryIdHolder;
 using TemplateURLPrepopulateData::PrepopulatedEngine;
+using TemplateURLPrepopulateData::PrepopulatedEngineVector;
 
-constexpr std::u16string_view sample_engine_name = u"Search engine name";
+constexpr char16_t kSampleEngineName[] = u"Search engine name";
+constexpr std::u16string_view sample_engine_name = kSampleEngineName;
+
+PrepopulatedEngine CreatePrepopulatedEngine(
+    int prepopulate_id,
+    const char16_t* keyword,
+    const char* search_url = "https://search.url") {
+  return {
+      .name = kSampleEngineName,
+      .keyword = keyword,
+      .search_url = search_url,
+      .encoding = "UTF-8",
+      .id = prepopulate_id,
+  };
+}
 
 std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
     int prepopulate_id,
@@ -106,12 +121,12 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
 }
 
 TEST(TemplateURLServiceUtilTest, RemoveDuplicatePrepopulateIDs) {
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_turls;
+  const auto engine_1 = CreatePrepopulatedEngine(1, u"winner4");
+  const auto engine_2 = CreatePrepopulatedEngine(2, u"xxx");
+  const auto engine_3 = CreatePrepopulatedEngine(3, u"yyy");
+  PrepopulatedEngineVector prepopulated_engines = {&engine_1, &engine_2,
+                                                   &engine_3};
   TemplateURLService::OwnedTemplateURLVector local_turls;
-
-  prepopulated_turls.push_back(CreatePrepopulateTemplateURLData(1, "winner4"));
-  prepopulated_turls.push_back(CreatePrepopulateTemplateURLData(2, "xxx"));
-  prepopulated_turls.push_back(CreatePrepopulateTemplateURLData(3, "yyy"));
 
   // Create a sets of different TURLs grouped by prepopulate ID. Each group
   // will test a different heuristic of RemoveDuplicatePrepopulateIDs.
@@ -154,12 +169,12 @@ TEST(TemplateURLServiceUtilTest, RemoveDuplicatePrepopulateIDs) {
   local_turls.push_back(
       CreatePrepopulateTemplateURL(3, "loser6", TemplateURLID(15)));
 
-  RemoveDuplicatePrepopulateIDs(nullptr, prepopulated_turls, default_turl,
+  RemoveDuplicatePrepopulateIDs(nullptr, prepopulated_engines, default_turl,
                                 &local_turls, SearchTermsData(), nullptr);
 
   // Verify that the expected local TURLs survived the process.
   EXPECT_EQ(local_turls.size(),
-            prepopulated_turls.size() + num_non_prepopulated_urls);
+            prepopulated_engines.size() + num_non_prepopulated_urls);
   for (const auto& turl : local_turls) {
     EXPECT_TRUE(base::StartsWith(turl->keyword(), u"winner",
                                  base::CompareCase::SENSITIVE));
@@ -177,7 +192,6 @@ class TemplateURLServiceUtilWithEnvTest : public testing::Test {
 // update.
 TEST_F(TemplateURLServiceUtilWithEnvTest,
        MergeEnginesFromPrepopulateData_PlayAPI) {
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_turls;
   TemplateURLService::OwnedTemplateURLVector local_turls;
 
   // Start with single search engine created from Play API data.
@@ -186,11 +200,12 @@ TEST_F(TemplateURLServiceUtilWithEnvTest,
 
   // Test that prepopulated search engine with matching keyword is merged with
   // Play API search engine. Search URL should come from Play API search engine.
-  const std::string prepopulated_search_url = "http://prepopulated.url";
-  prepopulated_turls.push_back(CreatePrepopulateTemplateURLData(1, "play"));
-  prepopulated_turls.back()->SetURL(prepopulated_search_url);
+  constexpr char kPrepopulatedSearchUrl[] = "http://prepopulated.url";
+  const auto play_engine =
+      CreatePrepopulatedEngine(1, u"play", kPrepopulatedSearchUrl);
+  PrepopulatedEngineVector prepopulated_engines = {&play_engine};
   MergeEnginesFromPrepopulateData(
-      nullptr, &prepopulated_turls, &local_turls, nullptr,
+      nullptr, prepopulated_engines, &local_turls, nullptr,
       search_engines_test_environment_.prepopulate_data_resolver(), nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
   // Merged search engine should have both Play API flag and valid
@@ -198,14 +213,14 @@ TEST_F(TemplateURLServiceUtilWithEnvTest,
   ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
             RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(1, local_turls[0]->prepopulate_id());
-  EXPECT_NE(prepopulated_search_url, local_turls[0]->url());
+  EXPECT_NE(kPrepopulatedSearchUrl, local_turls[0]->url());
 
   // Test that merging prepopulated search engine with matching prepopulate_id
   // preserves keyword of Play API search engine.
-  prepopulated_turls.clear();
-  prepopulated_turls.push_back(CreatePrepopulateTemplateURLData(1, "play2"));
+  const auto play2_engine = CreatePrepopulatedEngine(1, u"play2");
+  prepopulated_engines = {&play2_engine};
   MergeEnginesFromPrepopulateData(
-      nullptr, &prepopulated_turls, &local_turls, nullptr,
+      nullptr, prepopulated_engines, &local_turls, nullptr,
       search_engines_test_environment_.prepopulate_data_resolver(), nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
   ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
@@ -214,9 +229,9 @@ TEST_F(TemplateURLServiceUtilWithEnvTest,
 
   // Test that removing search engine from prepopulated list doesn't delete Play
   // API search engine record.
-  prepopulated_turls.clear();
+  prepopulated_engines.clear();
   MergeEnginesFromPrepopulateData(
-      nullptr, &prepopulated_turls, &local_turls, nullptr,
+      nullptr, prepopulated_engines, &local_turls, nullptr,
       search_engines_test_environment_.prepopulate_data_resolver(), nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
   ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
@@ -249,11 +264,9 @@ TEST_F(
   existing_urls.push_back(std::make_unique<TemplateURL>(reg_data1));
   existing_urls.push_back(std::make_unique<TemplateURL>(reg_data2));
 
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls;
-
   base::HistogramTester histogram_tester;
   CreateActionsFromCurrentPrepopulateData(
-      &prepopulated_urls, existing_urls,
+      /*prepopulated_engines=*/{}, existing_urls,
       /*default_search_provider=*/nullptr,
       search_engines_test_environment_.prepopulate_data_resolver());
 
@@ -288,11 +301,9 @@ TEST_F(
   existing_urls.push_back(std::make_unique<TemplateURL>(reg_data1));
   existing_urls.push_back(std::make_unique<TemplateURL>(reg_data2));
 
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls;
-
   base::HistogramTester histogram_tester;
   CreateActionsFromCurrentPrepopulateData(
-      &prepopulated_urls, existing_urls,
+      /*prepopulated_engines=*/{}, existing_urls,
       /*default_search_provider=*/nullptr,
       search_engines_test_environment_.prepopulate_data_resolver());
 

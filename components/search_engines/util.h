@@ -109,30 +109,26 @@ struct ActionsFromCurrentData {
 };
 
 // MergeEnginesFromPrepopulateData merges search engines from
-// |prepopulated_urls| into |template_urls|. Calls
+// `prepopulated_engines` into `template_urls`. Calls
 // CreateActionsFromCurrentPrepopulateData() to collect actions and then applies
-// them on |template_urls|. MergeEnginesFromPrepopulateData is invoked when the
-// version of the prepopulate data changes. If |removed_keyword_guids| is not
+// them on `template_urls`. MergeEnginesFromPrepopulateData is invoked when the
+// version of the prepopulate data changes. If `removed_keyword_guids` is not
 // nullptr, the Sync GUID of each item removed from the DB will be added to it.
-// Note that this function will take ownership of |prepopulated_urls| and will
-// clear the vector.
 // The function is exposed in header file to provide access from unittests.
 void MergeEnginesFromPrepopulateData(
     KeywordWebDataService* service,
-    std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
+    TemplateURLPrepopulateData::PrepopulatedEngineSpan prepopulated_engines,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
     std::set<std::string>* removed_keyword_guids);
 
-// Given the user's current URLs and the current set of prepopulated URLs,
+// Given the user's current URLs and the current set of prepopulated engines,
 // produces the set of actions (see above) required to make the user's URLs
-// reflect the prepopulate data.  |default_search_provider| is used to avoid
+// reflect the prepopulate data. `default_search_provider` is used to avoid
 // placing the current default provider on the "to be removed" list.
-//
-// NOTE: Takes ownership of, and clears, |prepopulated_urls|.
 ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
-    std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
+    TemplateURLPrepopulateData::PrepopulatedEngineSpan prepopulated_engines,
     const TemplateURLService::OwnedTemplateURLVector& existing_urls,
     const TemplateURL* default_search_provider,
     const TemplateURLPrepopulateData::Resolver& template_url_data_resolver);
@@ -240,7 +236,7 @@ bool DeDupeEncodings(std::vector<std::string>* encodings);
 // See https://crbug.com/924268 for details.
 void RemoveDuplicatePrepopulateIDs(
     KeywordWebDataService* service,
-    const std::vector<std::unique_ptr<TemplateURLData>>& prepopulated_urls,
+    TemplateURLPrepopulateData::PrepopulatedEngineSpan prepopulated_engines,
     TemplateURL* default_search_provider,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     const SearchTermsData& search_terms_data,
