@@ -1261,6 +1261,9 @@ void X11Window::SetOpaqueRegion(
 
 void X11Window::SetInputRegion(
     std::optional<std::vector<gfx::Rect>> region_px) {
+  if (!accept_events_) {
+    return;
+  }
   if (!region_px.has_value() || region_px->empty()) {
     connection_->shape().Mask({
         .operation = x11::Shape::So::Set,
@@ -2089,6 +2092,7 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
   x11_extension_delegate_ = properties.x11_extension_delegate;
 
   activatable_ = properties.activatable;
+  accept_events_ = properties.accept_events;
 
   x11::CreateWindowRequest req;
   req.bit_gravity = x11::Gravity::NorthWest;
@@ -2177,6 +2181,15 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
   xwindow_ = connection_->GenerateId<x11::Window>();
   req.wid = xwindow_;
   connection_->CreateWindow(req);
+  if (!accept_events_) {
+    // An empty input shape makes the window transparent to pointer input.
+    connection_->shape().Rectangles(x11::Shape::RectanglesRequest{
+        .operation = x11::Shape::So::Set,
+        .destination_kind = x11::Shape::Sk::Input,
+        .ordering = x11::ClipOrdering::YXBanded,
+        .destination_window = xwindow_,
+    });
+  }
   // Unretained is safe since we own `geometry_cache_`.
   geometry_cache_ = std::make_unique<x11::GeometryCache>(
       &*connection_, xwindow_,

@@ -81,6 +81,10 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/aura/window.h"
+#endif
+
 namespace {
 constexpr char16_t kTabTitle[] = u"Test Tab 2";
 constexpr char16_t kTabDomain[] = u"example.com";
@@ -241,6 +245,27 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   RunTestSequence(InstrumentTab(kFirstTabContents, 0), FocusTabAt(0),
                   CheckHovercardIsOpen());
 }
+
+#if BUILDFLAG(IS_LINUX)
+// The hover card is a top-level window so that it is not clipped to the
+// browser window when it extends past the browser window's bounds.
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       HoverCardNotClippedToBrowserWindow) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0), FocusTabAt(0),
+      CheckHovercardIsOpen(),
+      CheckView(
+          TabHoverCardBubbleView::kHoverCardBubbleElementId,
+          [this](TabHoverCardBubbleView* bubble) {
+            aura::Window* const browser_window =
+                BrowserView::GetBrowserViewForBrowser(browser())
+                    ->GetWidget()
+                    ->GetNativeWindow();
+            return bubble->GetWidget()->GetNativeWindow()->GetRootWindow() !=
+                   browser_window->GetRootWindow();
+          }));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus) {

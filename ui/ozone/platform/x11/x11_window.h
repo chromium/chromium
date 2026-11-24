@@ -439,6 +439,10 @@ class X11Window : public PlatformWindow,
   // Is this window able to receive focus?
   bool activatable_ = true;
 
+  // Does this window receive pointer input? If not, its input shape is empty
+  // so that events go to the window underneath it.
+  bool accept_events_ = true;
+
   // Was this window initialized with the override_redirect window attribute?
   bool override_redirect_ = false;
 

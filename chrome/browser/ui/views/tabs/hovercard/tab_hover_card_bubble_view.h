@@ -122,6 +122,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
   // BubbleDialogDelegate:
   void OnAnchorBoundsChanged() override;
+  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                views::Widget* widget) const override;
 
   bool sliding_ = false;
   raw_ptr<TabCardView> tab_card_view_ = nullptr;

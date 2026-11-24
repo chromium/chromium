@@ -678,6 +678,35 @@ TEST_F(X11WindowTest, SetInputRegionDegenerateRects) {
   delegate.set_window(nullptr);
 }
 
+// A window that doesn't accept events has an empty input region, which
+// SetInputRegion() doesn't reset.
+TEST_F(X11WindowTest, NoInputRegionWhenNotAcceptingEvents) {
+  if (!IsShapeExtensionAvailable()) {
+    return;
+  }
+
+  TestPlatformWindowDelegate delegate;
+  PlatformWindowInitProperties init_params(gfx::Rect(30, 80, 800, 600));
+  init_params.accept_events = false;
+  auto window = std::make_unique<X11Window>(&delegate);
+  window->Initialize(std::move(init_params));
+  delegate.set_window(window.get());
+  window->Show(false);
+
+  const auto x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_NE(x11_window, x11::Window::None);
+
+  auto* connection = x11::Connection::Get();
+  connection->DispatchAll();
+  EXPECT_TRUE(GetInputShapeRects(x11_window).empty());
+
+  window->SetInputRegion(std::nullopt);
+  connection->DispatchAll();
+  EXPECT_TRUE(GetInputShapeRects(x11_window).empty());
+
+  delegate.set_window(nullptr);
+}
+
 // Flaky on Linux ASAN and ChromeOS. https://crbug.com/1291868
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WindowManagerTogglesFullscreen \

@@ -833,5 +833,17 @@ void TabHoverCardBubbleView::OnAnchorBoundsChanged() {
   }
 }
 
+void TabHoverCardBubbleView::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  BubbleDialogDelegateView::OnBeforeBubbleWidgetInit(params, widget);
+#if BUILDFLAG(IS_LINUX)
+  // Use a top-level window so that the card is not clipped to the bounds of
+  // the browser window, e.g. when the window is near the bottom of the screen
+  // and the card is placed above the tab strip.
+  params->use_accelerated_widget_override = true;
+#endif
+}
+
 BEGIN_METADATA(TabHoverCardBubbleView)
 END_METADATA
