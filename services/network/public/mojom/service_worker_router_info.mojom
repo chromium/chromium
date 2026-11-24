@@ -9,6 +9,8 @@ import "mojo/public/mojom/base/time.mojom";
 // Type of sources.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ServiceWorkerRouterSourceType)
 enum ServiceWorkerRouterSourceType {
   // Network is used as a source.
   kNetwork = 0,
@@ -21,6 +23,7 @@ enum ServiceWorkerRouterSourceType {
   // Race network and cache.
   kRaceNetworkAndCache = 4,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ServiceWorkerRouterSourceType)
 
 // The initial status of service worker on navigation request.
 // These values are persisted to logs. Entries should not be renumbered and

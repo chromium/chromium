@@ -4546,14 +4546,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.SyntheticResponse"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-11-18">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
-    The {Timing} time of pages with the Service Worker fetch handlers. Metrics
-    won't be recorded if pages are not controlled by service workers. This is
-    recorded only when the response is created with the synthetic response.
+    The {Timing} time of foreground page loads whose main resource response is
+    created with the Service Worker synthetic response.
   </summary>
   <token key="Timing">
     <variant name="NavigationToFirstContentfulPaint"/>
@@ -4969,7 +4968,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.TimeToAbandonFromNavigationStart.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{ResponseFromCache}"
-    units="ms" expires_after="2026-11-29">
+    units="ms" expires_after="2027-11-18">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -4979,7 +4978,7 @@ chromium-metrics-reviews@google.com.
     abandonments due to backgrounding and hiding are non-terminal, and other
     abandonments are terminal. This means this metric might be recorded multiple
     times if the navigation is only abandoned non-terminally before, but only
-    once for each abandonment reason. &quot;This is logged after non-terminal
+    once for each abandonment reason. This is logged after non-terminal
     abandonment of pages which were {BackgroundSuffix}, {HiddenSuffix} and
     {IncognitoSuffix}. The milestone recorded will be the latest milestone (if
     there are multiple milestones reached before the abandonment). The metric is

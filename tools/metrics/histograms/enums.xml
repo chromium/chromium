@@ -26700,12 +26700,17 @@ Called by update_net_error_codes.py.-->
              loaded."/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerRouterSourceType) -->
+
 <enum name="ServiceWorkerRouterSourceType">
   <int value="0" label="kNetwork"/>
   <int value="1" label="kRace"/>
   <int value="2" label="kFetchEvent"/>
   <int value="3" label="kCache"/>
+  <int value="4" label="kRaceNetworkAndCache"/>
 </enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/service_worker_router_info.mojom:ServiceWorkerRouterSourceType) -->
 
 <!-- LINT.IfChange(ServiceWorkerStaticRouterCORPCheckResult) -->
 

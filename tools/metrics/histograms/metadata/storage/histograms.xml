@@ -1273,7 +1273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.DeclarativePerformanceObserver.EvictionCount"
-    units="reports" expires_after="2026-12-19">
+    units="reports" expires_after="2027-11-18">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
