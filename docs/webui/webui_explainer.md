@@ -1038,14 +1038,22 @@ void OvenHandler::HandleBakeDonuts(const base::ListValue& args) {
 
 #### chrome.send()
 
-When the JavaScript `window` object is created, a renderer is checked for [WebUI
-bindings](#webui-bindings).
+When a frame is granted [WebUI bindings](#webui-bindings), a `WebUIExtension`
+observer is created for the frame and installs bindings when the JavaScript
+`window` object is cleared:
 
 ```c++
-// RenderFrameImpl::DidClearWindowObject():
+// RenderFrameImpl::AllowBindings():
 if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
     enabled_bindings_.Has(BindingsPolicyValue::kWebUiHistograms)) {
-  WebUIExtension::Install(frame_, enabled_bindings_);
+  WebUIExtension::CreateIfNeeded(this);
+}
+
+// WebUIExtension::DidClearWindowObject():
+v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
+BindingsPolicySet bindings = render_frame()->GetEnabledBindings();
+if (bindings.Has(BindingsPolicyValue::kWebUi)) {
+  InstallDefaultWebUIExtension(isolate, context, chrome);
 }
 ```
 
@@ -1053,12 +1061,15 @@ If the bindings exist, a global `chrome.send()` function is exposed to the
 renderer:
 
 ```c++
-// WebUIExtension::Install():
-v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
-chrome->Set(gin::StringToSymbol(isolate, "send"),
-            gin::CreateFunctionTemplate(
-                isolate,
-                base::BindRepeating(&WebUIExtension::Send))->GetFunction());
+// WebUIExtension::InstallDefaultWebUIExtension():
+chrome
+    ->Set(context, gin::StringToSymbol(isolate, "send"),
+          gin::CreateFunctionTemplate(
+              isolate, base::BindRepeating(&WebUIExtension::Send,
+                                           weak_ptr_factory_.GetWeakPtr()))
+              ->GetFunction(context)
+              .ToLocalChecked())
+    .Check();
 ```
 
 The `chrome.send()` method takes a message name and argument list.
@@ -1071,7 +1082,7 @@ The message name and argument list are sent via the
 `content.mojom.WebUIHost.Send` Mojo method from the renderer to the browser.
 
 ```c++
-// In the renderer (WebUIExtensionData::SendMessage()):
+// In the renderer (WebUIExtension::Send()):
 remote_->Send(message, std::move(args));
 ```
 ```c++

@@ -111,7 +111,6 @@
 #include "content/renderer/stats_collection_controller.h"
 #include "content/renderer/v8_value_converter_impl.h"
 #include "content/renderer/web_ui_extension.h"
-#include "content/renderer/web_ui_extension_data.h"
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 #include "crypto/sha2.h"
 #include "ipc/constants.mojom.h"
@@ -2500,6 +2499,11 @@ void RenderFrameImpl::AllowBindings(int64_t enabled_bindings_flags) {
   if (new_bindings.Has(BindingsPolicyValue::kMojoWebUi)) {
     blink::WebV8Features::AllowMojoJSPerContextForProcess();
   }
+
+  if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
+      enabled_bindings_.Has(BindingsPolicyValue::kWebUiHistograms)) {
+    WebUIExtension::CreateIfNeeded(this);
+  }
 }
 
 void RenderFrameImpl::EnableMojoJsBindings(
@@ -2520,8 +2524,8 @@ void RenderFrameImpl::EnableMojoJsBindingsWithBroker(
 void RenderFrameImpl::BindWebUI(
     mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
-  DCHECK(enabled_bindings_.Has(BindingsPolicyValue::kWebUi));
-  WebUIExtensionData::Create(this, std::move(receiver), std::move(remote));
+  CHECK(enabled_bindings_.Has(BindingsPolicyValue::kWebUi));
+  WebUIExtension::Get(this)->BindWebUI(std::move(receiver), std::move(remote));
 }
 
 void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
@@ -4112,10 +4116,6 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
 void RenderFrameImpl::DidClearWindowObject() {
   TRACE_EVENT("navigation", "RenderFrameImpl::DidClearWindowObject",
               perfetto::Flow::FromPointer(this));
-  if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
-      enabled_bindings_.Has(BindingsPolicyValue::kWebUiHistograms)) {
-    WebUIExtension::Install(frame_, enabled_bindings_);
-  }
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

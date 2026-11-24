@@ -150,8 +150,6 @@ target(link_target_type, "renderer") {
     "variations_render_thread_observer.h",
     "web_ui_extension.cc",
     "web_ui_extension.h",
-    "web_ui_extension_data.cc",
-    "web_ui_extension_data.h",
     "web_ui_histograms_extension.cc",
     "web_ui_histograms_extension.h",
     "webgraphicscontext3d_provider_impl.cc",

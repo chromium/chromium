@@ -744,13 +744,12 @@ class CONTENT_EXPORT RenderFrameImpl
     navigation_client_impl_ = std::move(client);
   }
 
-  base::WeakPtr<RenderFrameImpl> GetWeakPtr();
-
  protected:
   explicit RenderFrameImpl(CreateParams params);
 
   bool IsLocalRoot() const;
   const RenderFrameImpl* GetLocalRoot() const;
+  base::WeakPtr<RenderFrameImpl> GetWeakPtr();
 
  private:
   friend class RenderFrameImplTest;
@@ -971,8 +970,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Send |callback| our AndroidOverlay routing token.
   void RequestOverlayRoutingToken(media::RoutingTokenCallback callback);
-
-  void BindWebUIReceiver(mojo::PendingReceiver<mojom::WebUI> receiver);
 
   // Build DidCommitProvisionalLoadParams based on the frame internal state.
   mojom::DidCommitProvisionalLoadParamsPtr MakeDidCommitProvisionalLoadParams(

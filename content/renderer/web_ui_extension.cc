@@ -7,21 +7,24 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
-#include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "content/renderer/render_frame_impl.h"
-#include "content/renderer/web_ui_extension_data.h"
 #include "content/renderer/web_ui_histograms_extension.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -36,135 +39,6 @@
 #include "v8/include/v8-promise.h"
 
 namespace content {
-
-namespace {
-
-// Returns the RenderFrameImpl for the current V8 context if it has WebUI
-// bindings, or null otherwise.
-RenderFrameImpl* GetWebUIFrameForCurrentContext() {
-  blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForCurrentContext();
-  if (!frame) {
-    return nullptr;
-  }
-
-  RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(frame);
-  if (!render_frame->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi)) {
-    return nullptr;
-  }
-
-  return render_frame;
-}
-
-// Get or create a `child_name` object in the `parent` object.
-v8::Local<v8::Object> GetOrCreateChildObject(v8::Local<v8::Object> parent,
-                                             const std::string& child_name,
-                                             v8::Isolate* isolate,
-                                             v8::Local<v8::Context> context) {
-  v8::Local<v8::Object> child;
-  v8::Local<v8::Value> child_value;
-  if (!parent->Get(context, gin::StringToV8(isolate, child_name))
-           .ToLocal(&child_value) ||
-      !child_value->IsObject()) {
-    child = v8::Object::New(isolate);
-    parent->Set(context, gin::StringToSymbol(isolate, child_name), child)
-        .Check();
-  } else {
-    child = v8::Local<v8::Object>::Cast(child_value);
-  }
-  return child;
-}
-
-}  // namespace
-
-void WebUIExtension::Install(blink::WebLocalFrame* frame,
-                             BindingsPolicySet bindings) {
-  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
-  if (context.IsEmpty()) {
-    return;
-  }
-
-  v8::Context::Scope context_scope(context);
-  v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
-
-  if (bindings.Has(BindingsPolicyValue::kWebUi)) {
-    InstallDefaultWebUIExtension(isolate, context, chrome);
-  }
-
-  if (bindings.Has(BindingsPolicyValue::kWebUiHistograms)) {
-    InstallWebUIHistogramsExtension(isolate, context, chrome);
-  }
-}
-
-// static
-//
-// Exposes the following methods:
-//  - chrome.send: Used to send messages to the browser. Requires the message
-//      name as the first argument and can have an optional second argument that
-//      should be an array.
-//  - chrome.getVariableValue: Returns value for the input variable name if such
-//      a value was set by the browser. Else will return an empty string.
-//  - chrome.timeTicks.nowInMicroseconds: Returns base::TimeTicks::Now() in
-//      microseconds. Used for performance measuring.
-//  - chrome.requestPresentationTime: Returns a Promise that resolves with the
-//      base::TimeTicks (in microseconds, same clock as
-//      chrome.timeTicks.nowInMicroseconds) at which the next frame produced by
-//      this widget was presented to the user, or null if no such frame will be
-//      presented. Call it from a regular task, after mutating the DOM and in
-//      the same task, to learn when that mutation reached the screen. It does
-//      not itself schedule a frame. Resolves null when the page is hidden
-//      (document.visibilityState !== 'visible'), when no frame is pending (the
-//      call came before the mutation, in a later task, or the mutation had no
-//      visual effect), or when the compositor reports the frame as not
-//      presented. Calling it from a visibilitychange handler as the page
-//      becomes visible works, and reports the first frame of the show if the
-//      browser has already requested one. Not for use inside
-//      requestAnimationFrame or ResizeObserver callbacks: a frame update is
-//      already in progress there, so no frame reads as pending.
-//
-//      For measurement only. Do not gate UI or other functionality on the
-//      promise settling: it resolves only after the compositor's presentation
-//      bookkeeping, which can lag the frame by one or more animation frames,
-//      and in rare situations (e.g. a GPU process restart) it may stay pending
-//      for an extended time.
-void WebUIExtension::InstallDefaultWebUIExtension(
-    v8::Isolate* isolate,
-    v8::Local<v8::Context> context,
-    v8::Local<v8::Object> chrome) {
-  chrome
-      ->Set(context, gin::StringToSymbol(isolate, "send"),
-            gin::CreateFunctionTemplate(
-                isolate, base::BindRepeating(&WebUIExtension::Send))
-                ->GetFunction(context)
-                .ToLocalChecked())
-      .Check();
-  chrome
-      ->Set(context, gin::StringToSymbol(isolate, "getVariableValue"),
-            gin::CreateFunctionTemplate(
-                isolate, base::BindRepeating(&WebUIExtension::GetVariableValue))
-                ->GetFunction(context)
-                .ToLocalChecked())
-      .Check();
-  chrome
-      ->Set(context, gin::StringToSymbol(isolate, "requestPresentationTime"),
-            gin::CreateFunctionTemplate(
-                isolate,
-                base::BindRepeating(&WebUIExtension::RequestPresentationTime))
-                ->GetFunction(context)
-                .ToLocalChecked())
-      .Check();
-
-  v8::Local<v8::Object> timeTicks =
-      GetOrCreateChildObject(chrome, "timeTicks", isolate, context);
-  timeTicks
-      ->Set(context, gin::StringToSymbol(isolate, "nowInMicroseconds"),
-            gin::CreateFunctionTemplate(
-                isolate, base::BindRepeating(&base::TimeTicks::Now))
-                ->GetFunction(context)
-                .ToLocalChecked())
-      .Check();
-}
 
 namespace {
 
@@ -207,19 +81,211 @@ void ResolvePresentationTime(v8::Isolate* isolate,
 }  // namespace
 
 // static
-v8::Local<v8::Value> WebUIExtension::RequestPresentationTime(
-    gin::Arguments* args) {
-  v8::Isolate* isolate = args->isolate();
-  RenderFrameImpl* render_frame = GetWebUIFrameForCurrentContext();
-  if (!render_frame) {
-    return v8::Undefined(isolate);
+void WebUIExtension::CreateIfNeeded(RenderFrame* render_frame) {
+  if (!Get(render_frame)) {
+    new WebUIExtension(render_frame);
   }
-  blink::WebLocalFrame* frame = render_frame->GetWebFrame();
+}
+
+WebUIExtension::WebUIExtension(RenderFrame* render_frame)
+    : RenderFrameObserver(render_frame),
+      RenderFrameObserverTracker<WebUIExtension>(render_frame) {}
+
+WebUIExtension::~WebUIExtension() = default;
+
+void WebUIExtension::BindWebUI(
+    mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
+    mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
+  scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr;
+  // Binding to `kInternalNavigationAssociated` aligns the `mojom::WebUI`
+  // receiver with `FrameBindingsControl` and navigation commit tasks, ensuring
+  // properties set via `RenderFrameHost::SetWebUIProperty()` populate
+  // `variable_map_` before document parsing and JS custom element constructors
+  // evaluate. The default `nullptr` task runner uses
+  // `kMainThreadTaskQueueDefault`, causing Mojo task-hopping delays and
+  // startup timing races.
+  //
+  // `BindWebUI()` executes before navigation commit when frame URL state is
+  // unknown. Because `SetProperty()` is a passive map insertion without JS or
+  // DOM side effects, using this task runner for all WebUIs is safe and
+  // eliminates timing races for property consumers without affecting
+  // non-consumers.
+  if (base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync)) {
+    task_runner = render_frame()->GetTaskRunner(
+        blink::TaskType::kInternalNavigationAssociated);
+  }
+  receiver_.Bind(std::move(receiver), std::move(task_runner));
+  remote_.Bind(std::move(remote));
+}
+
+void WebUIExtension::DidClearWindowObject() {
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
+  if (context.IsEmpty()) {
+    return;
+  }
+
+  v8::Context::Scope context_scope(context);
+  v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
+
+  BindingsPolicySet bindings = render_frame()->GetEnabledBindings();
+  if (bindings.Has(BindingsPolicyValue::kWebUi)) {
+    InstallDefaultWebUIExtension(isolate, context, chrome);
+  }
+
+  if (bindings.Has(BindingsPolicyValue::kWebUiHistograms)) {
+    InstallWebUIHistogramsExtension(isolate, context, chrome);
+  }
+}
+
+void WebUIExtension::WillReleaseScriptContext(v8::Local<v8::Context> context,
+                                              int32_t world_id) {
+  if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+}
+
+void WebUIExtension::OnDestruct() {
+  delete this;
+}
+
+void WebUIExtension::SetProperty(const std::string& name,
+                                 const std::string& value) {
+  variable_map_[name] = value;
+}
+
+// Exposes the following methods:
+//  - chrome.send: Used to send messages to the browser. Requires the message
+//      name as the first argument and can have an optional second argument that
+//      should be an array.
+//  - chrome.getVariableValue: Returns value for the input variable name if such
+//      a value was set by the browser. Else will return an empty string.
+//  - chrome.timeTicks.nowInMicroseconds: Returns base::TimeTicks::Now() in
+//      microseconds. Used for performance measuring.
+//  - chrome.requestPresentationTime: Returns a Promise that resolves with the
+//      base::TimeTicks (in microseconds, same clock as
+//      chrome.timeTicks.nowInMicroseconds) at which the next frame produced by
+//      this widget was presented to the user, or null if no such frame will be
+//      presented. Call it from a regular task, after mutating the DOM and in
+//      the same task, to learn when that mutation reached the screen. It does
+//      not itself schedule a frame. Resolves null when the page is hidden
+//      (document.visibilityState !== 'visible'), when no frame is pending (the
+//      call came before the mutation, in a later task, or the mutation had no
+//      visual effect), or when the compositor reports the frame as not
+//      presented. Calling it from a visibilitychange handler as the page
+//      becomes visible works, and reports the first frame of the show if the
+//      browser has already requested one. Not for use inside
+//      requestAnimationFrame or ResizeObserver callbacks: a frame update is
+//      already in progress there, so no frame reads as pending.
+//
+//      For measurement only. Do not gate UI or other functionality on the
+//      promise settling: it resolves only after the compositor's presentation
+//      bookkeeping, which can lag the frame by one or more animation frames,
+//      and in rare situations (e.g. a GPU process restart) it may stay pending
+//      for an extended time.
+void WebUIExtension::InstallDefaultWebUIExtension(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Object> chrome) {
+  chrome
+      ->Set(context, gin::StringToSymbol(isolate, "send"),
+            gin::CreateFunctionTemplate(
+                isolate, base::BindRepeating(&WebUIExtension::Send,
+                                             weak_ptr_factory_.GetWeakPtr()))
+                ->GetFunction(context)
+                .ToLocalChecked())
+      .Check();
+  // Use a trampoline so calls after context release or frame destruction still
+  // return an empty string (matching
+  // tools/typescript/definitions/chrome_send.d.ts) rather than undefined.
+  chrome
+      ->Set(context, gin::StringToSymbol(isolate, "getVariableValue"),
+            gin::CreateFunctionTemplate(
+                isolate, base::BindRepeating(
+                             [](base::WeakPtr<WebUIExtension> self,
+                                const std::string& name) {
+                               return self ? self->GetVariableValue(name)
+                                           : std::string();
+                             },
+                             weak_ptr_factory_.GetWeakPtr()))
+                ->GetFunction(context)
+                .ToLocalChecked())
+      .Check();
+  chrome
+      ->Set(context, gin::StringToSymbol(isolate, "requestPresentationTime"),
+            gin::CreateFunctionTemplate(
+                isolate,
+                base::BindRepeating(&WebUIExtension::RequestPresentationTime,
+                                    weak_ptr_factory_.GetWeakPtr()))
+                ->GetFunction(context)
+                .ToLocalChecked())
+      .Check();
+
+  v8::Local<v8::Object> time_ticks =
+      GetOrCreateObject(isolate, context, chrome, "timeTicks");
+  time_ticks
+      ->Set(context, gin::StringToSymbol(isolate, "nowInMicroseconds"),
+            gin::CreateFunctionTemplate<&base::TimeTicks::Now>(isolate)
+                ->GetFunction(context)
+                .ToLocalChecked())
+      .Check();
+}
+
+void WebUIExtension::Send(gin::Arguments* args) {
+  std::string message;
+  if (!args->GetNext(&message)) {
+    args->ThrowError();
+    return;
+  }
+
+  // If they've provided an optional message parameter, convert that into a
+  // Value to send to the browser process.
+  base::ListValue content;
+  if (!args->PeekNext().IsEmpty() && !args->PeekNext()->IsUndefined()) {
+    v8::Local<v8::Object> obj;
+    if (!args->GetNext(&obj) || !obj->IsArray()) {
+      args->ThrowError();
+      return;
+    }
+
+    base::WeakPtr<WebUIExtension> weak_this = weak_ptr_factory_.GetWeakPtr();
+    std::unique_ptr<base::Value> value =
+        V8ValueConverter::Create()->FromV8Value(
+            obj, args->isolate()->GetCurrentContext());
+    // The conversion of `obj` can run arbitrary script (getters, toJSON), which
+    // may detach the frame or navigate it. Drop the message in that case rather
+    // than touching a destroyed WebUIExtension or sending from a stale context.
+    if (!weak_this) {
+      return;
+    }
+    DCHECK(value->is_list());
+    content = std::move(*value).TakeList();
+  }
+
+  if (!remote_.is_bound()) {
+    return;
+  }
+  remote_->Send(message, std::move(content));
+}
+
+std::string WebUIExtension::GetVariableValue(const std::string& name) const {
+  auto it = variable_map_.find(name);
+  if (it == variable_map_.end()) {
+    return std::string();
+  }
+  return it->second;
+}
+
+void WebUIExtension::RequestPresentationTime(gin::Arguments* args) {
+  v8::Isolate* isolate = args->isolate();
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Promise::Resolver> resolver;
   if (!v8::Promise::Resolver::New(context).ToLocal(&resolver)) {
-    return v8::Undefined(isolate);
+    return;
   }
 
   // NotifyPresentationTime() does not schedule a frame, so only queue the
@@ -241,7 +307,8 @@ v8::Local<v8::Value> WebUIExtension::RequestPresentationTime(
                             blink::mojom::PageVisibilityState::kVisible;
   if (!page_visible || !widget->RequestedMainFramePending()) {
     resolver->Resolve(context, v8::Null(isolate)).Check();
-    return resolver->GetPromise();
+    args->Return(resolver->GetPromise());
+    return;
   }
 
   // The callback runs when the next frame is presented, or when the compositor
@@ -252,67 +319,7 @@ v8::Local<v8::Value> WebUIExtension::RequestPresentationTime(
                      v8::Global<v8::Context>(isolate, context),
                      v8::Global<v8::Promise::Resolver>(isolate, resolver)));
 
-  return resolver->GetPromise();
-}
-
-// static
-void WebUIExtension::Send(gin::Arguments* args) {
-  RenderFrameImpl* frame = GetWebUIFrameForCurrentContext();
-  if (!frame) {
-    return;
-  }
-  base::WeakPtr<RenderFrameImpl> render_frame = frame->GetWeakPtr();
-
-  std::string message;
-  if (!args->GetNext(&message)) {
-    args->ThrowError();
-    return;
-  }
-
-  // If they've provided an optional message parameter, convert that into a
-  // Value to send to the browser process.
-  base::ListValue content;
-  if (!args->PeekNext().IsEmpty() && !args->PeekNext()->IsUndefined()) {
-    v8::Local<v8::Object> obj;
-    if (!args->GetNext(&obj)) {
-      args->ThrowError();
-      return;
-    }
-
-    std::unique_ptr<base::Value> value =
-        V8ValueConverter::Create()->FromV8Value(
-            obj, frame->GetWebFrame()->MainWorldScriptContext());
-    DCHECK(value->is_list());
-    content = std::move(*value).TakeList();
-
-    // The conversion of `obj` can run arbitrary script (getters, toJSON), which
-    // may detach the frame. Drop the message in that case rather than touching
-    // a destroyed RenderFrame.
-    if (!render_frame) {
-      return;
-    }
-  }
-
-  auto* webui = WebUIExtensionData::Get(render_frame.get());
-  if (!webui)
-    return;
-
-  // Send the message up to the browser.
-  webui->SendMessage(message, std::move(content));
-}
-
-// static
-std::string WebUIExtension::GetVariableValue(const std::string& name) {
-  RenderFrameImpl* render_frame = GetWebUIFrameForCurrentContext();
-  if (!render_frame) {
-    return std::string();
-  }
-
-  auto* webui = WebUIExtensionData::Get(render_frame);
-  if (!webui)
-    return std::string();
-
-  return webui->GetValue(name);
+  args->Return(resolver->GetPromise());
 }
 
 }  // namespace content
