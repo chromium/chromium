@@ -455,7 +455,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/430594808")
     public void testFirstRunPages_NoCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo());
     }
@@ -1829,9 +1828,9 @@ public class FirstRunIntegrationTest {
                     DeviceInfo.isAutomotive()
                             ? R.id.signin_fre_continue_button
                             : R.id.signin_fre_dismiss_button;
+            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
             clickButton(mFirstRunActivity, dismissButtonId, "Failed to skip signing-in");
 
-            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
             mScopedObserverData.jumpToPageCallback.waitForCallback(
                     "Failed trying to move past the sign in fragment", jumpCallCount);
 
