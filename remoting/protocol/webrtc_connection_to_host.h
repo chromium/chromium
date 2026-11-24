@@ -17,6 +17,7 @@
 #include "remoting/protocol/input_filter.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_transport.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 
 namespace remoting::protocol {
 
@@ -53,6 +54,14 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   HostStub* host_stub() override;
   InputStub* input_stub() override;
   State state() const override;
+
+  // Overrides the default `BuiltinVideoDecoderFactory` when `Connect()` creates
+  // the underlying `WebrtcTransport`. Must be called before `Connect()`.
+  // Ownership transfers to `WebrtcTransport` (destroyed when the transport is
+  // torn down), and factory methods are invoked on WebRTC's internal threads
+  // rather than the caller sequence.
+  void SetVideoDecoderFactoryForTesting(
+      std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory);
 
  private:
   // Session::EventHandler interface.
@@ -99,6 +108,9 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   raw_ptr<VideoRenderer> video_renderer_ = nullptr;
   base::WeakPtr<AudioStub> audio_consumer_;
   raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
+
+  std::unique_ptr<webrtc::VideoDecoderFactory>
+      video_decoder_factory_for_testing_;
 
   // `session_` holds a raw ptr to `transport_` so it should come after it to be
   // destroyed first.

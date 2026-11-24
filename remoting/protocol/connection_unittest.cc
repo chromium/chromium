@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
 #include <numbers>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -43,6 +47,11 @@
 #include "remoting/protocol/webrtc_connection_to_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/api/environment/environment.h"
+#include "third_party/webrtc/api/video_codecs/builtin_video_decoder_factory.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -311,6 +320,37 @@ class FakeAudioPlayer : public AudioStub {
   size_t samples_expected_ = 0;
 
   base::WeakPtrFactory<FakeAudioPlayer> weak_factory_{this};
+};
+
+class CountingVideoDecoderFactory : public webrtc::VideoDecoderFactory {
+ public:
+  struct SharedCount : public base::RefCountedThreadSafe<SharedCount> {
+    std::atomic<int> count{0};
+
+   private:
+    friend class base::RefCountedThreadSafe<SharedCount>;
+    ~SharedCount() = default;
+  };
+
+  explicit CountingVideoDecoderFactory(scoped_refptr<SharedCount> create_count)
+      : create_count_(std::move(create_count)),
+        inner_(webrtc::CreateBuiltinVideoDecoderFactory()) {}
+  ~CountingVideoDecoderFactory() override = default;
+
+  std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override {
+    return inner_->GetSupportedFormats();
+  }
+
+  std::unique_ptr<webrtc::VideoDecoder> Create(
+      const webrtc::Environment& env,
+      const webrtc::SdpVideoFormat& format) override {
+    create_count_->count.fetch_add(1, std::memory_order_relaxed);
+    return inner_->Create(env, format);
+  }
+
+ private:
+  scoped_refptr<SharedCount> create_count_;
+  std::unique_ptr<webrtc::VideoDecoderFactory> inner_;
 };
 
 }  // namespace
@@ -585,6 +625,23 @@ TEST_F(ConnectionTest, Video) {
   for (int i = 0; i < 5; ++i) {
     WaitNextVideoFrame();
   }
+}
+
+TEST_F(ConnectionTest, CustomVideoDecoderFactory) {
+  auto decoder_create_count =
+      base::MakeRefCounted<CountingVideoDecoderFactory::SharedCount>();
+  static_cast<WebrtcConnectionToHost*>(client_connection_.get())
+      ->SetVideoDecoderFactoryForTesting(
+          std::make_unique<CountingVideoDecoderFactory>(decoder_create_count));
+
+  Connect();
+
+  std::unique_ptr<VideoStream> video_stream =
+      host_connection_->StartVideoStream(webrtc::kFullDesktopScreenId,
+                                         CreateTestCapturer());
+
+  WaitNextVideoFrame();
+  EXPECT_GT(decoder_create_count->count.load(std::memory_order_relaxed), 0);
 }
 
 // Verifies that the VideoStream doesn't lose any video frames while the

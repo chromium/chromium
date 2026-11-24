@@ -269,6 +269,7 @@ class WebrtcTransport::PeerConnectionWrapper
   PeerConnectionWrapper(
       webrtc::Thread* network_thread,
       std::unique_ptr<webrtc::VideoEncoderFactory> encoder_factory,
+      std::unique_ptr<webrtc::VideoDecoderFactory> decoder_factory,
       std::unique_ptr<webrtc::PortAllocator> port_allocator,
       base::WeakPtr<WebrtcTransport> transport)
       : transport_(transport) {
@@ -285,7 +286,9 @@ class WebrtcTransport::PeerConnectionWrapper
     pcf_deps.audio_decoder_factory =
         webrtc::CreateAudioDecoderFactory<webrtc::AudioDecoderOpus>();
     pcf_deps.video_encoder_factory = std::move(encoder_factory);
-    pcf_deps.video_decoder_factory = webrtc::CreateBuiltinVideoDecoderFactory();
+    pcf_deps.video_decoder_factory =
+        decoder_factory ? std::move(decoder_factory)
+                        : webrtc::CreateBuiltinVideoDecoderFactory();
     pcf_deps.audio_processing_builder =
         std::make_unique<webrtc::BuiltinAudioProcessingBuilder>();
     webrtc::EnableMedia(pcf_deps);
@@ -410,7 +413,8 @@ WebrtcTransport::WebrtcTransport(
     webrtc::Thread* network_thread,
     scoped_refptr<TransportContext> transport_context,
     std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
-    EventHandler* event_handler)
+    EventHandler* event_handler,
+    std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory)
     : transport_context_(transport_context), event_handler_(event_handler) {
   auto create_port_allocator_result =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
@@ -420,6 +424,7 @@ WebrtcTransport::WebrtcTransport(
       std::move(create_port_allocator_result.apply_network_settings);
   peer_connection_wrapper_ = std::make_unique<PeerConnectionWrapper>(
       network_thread, std::move(video_encoder_factory),
+      std::move(video_decoder_factory),
       std::move(create_port_allocator_result.allocator),
       weak_factory_.GetWeakPtr());
 

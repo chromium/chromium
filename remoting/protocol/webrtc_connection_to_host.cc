@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
@@ -22,6 +23,7 @@
 #include "remoting/protocol/webrtc_audio_sink_adapter.h"
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_renderer_adapter.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 
 namespace remoting::protocol {
 
@@ -36,7 +38,8 @@ void WebrtcConnectionToHost::Connect(
   DCHECK(clipboard_stub_);
 
   transport_ = std::make_unique<WebrtcTransport>(
-      webrtc::ThreadWrapper::current(), transport_context, nullptr, this);
+      webrtc::ThreadWrapper::current(), transport_context, nullptr, this,
+      std::move(video_decoder_factory_for_testing_));
 
   if (audio_decode_task_runner_) {
     transport_->audio_module()->SetAudioTaskRunner(audio_decode_task_runner_);
@@ -196,6 +199,12 @@ void WebrtcConnectionToHost::OnChannelClosed(
 
 ConnectionToHost::State WebrtcConnectionToHost::state() const {
   return state_;
+}
+
+void WebrtcConnectionToHost::SetVideoDecoderFactoryForTesting(
+    std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory) {
+  CHECK(!transport_);
+  video_decoder_factory_for_testing_ = std::move(video_decoder_factory);
 }
 
 void WebrtcConnectionToHost::NotifyIfChannelsReady() {

@@ -34,6 +34,7 @@
 #include "remoting/signaling/signal_strategy.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace base {
@@ -92,12 +93,15 @@ class WebrtcTransport : public Transport,
   };
 
   // |video_encoder_factory| can be nullptr if the connection is not used for
-  // sending video.
+  // sending video. |video_decoder_factory| defaults to
+  // `webrtc::CreateBuiltinVideoDecoderFactory()` when null.
   WebrtcTransport(
       webrtc::Thread* network_thread,
       scoped_refptr<TransportContext> transport_context,
       std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
-      EventHandler* event_handler);
+      EventHandler* event_handler,
+      std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory =
+          nullptr);
 
   WebrtcTransport(const WebrtcTransport&) = delete;
   WebrtcTransport& operator=(const WebrtcTransport&) = delete;
