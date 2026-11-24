@@ -1202,7 +1202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Snackbar.QueueDepthAtInsertion" units="Snackbars"
-    expires_after="2026-12-31">
+    expires_after="2027-11-23">
   <owner>vpasupathy@google.com</owner>
   <owner>chrome-ui-security-bugs@google.com</owner>
   <summary>
@@ -1223,7 +1223,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Snackbar.TimerDrift" units="ms" expires_after="2026-12-31">
+<histogram name="Snackbar.TimerDrift" units="ms" expires_after="2027-11-23">
   <owner>vpasupathy@google.com</owner>
   <owner>chrome-ui-security-bugs@google.com</owner>
   <summary>
