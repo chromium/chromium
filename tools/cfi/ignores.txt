@@ -91,12 +91,6 @@ src:*third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
 
 fun:*DoublyLinkedListNode*
 
-# RenderFrameObserverTracker<T>::RenderFrameObserverTracker()
-fun:*content*RenderFrameObserverTracker*RenderFrame*
-
-# RenderViewObserverTracker<T>::RenderViewObserverTracker()
-fun:*content*RenderViewObserverTracker*RenderView*
-
 fun:*RefCountedGarbageCollected*makeKeepAlive*
 fun:*ThreadSafeRefCountedGarbageCollected*makeKeepAlive*
 

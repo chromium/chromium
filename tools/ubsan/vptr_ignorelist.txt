@@ -37,12 +37,6 @@ type:*JSONArray*
 
 fun:*DoublyLinkedListNode*
 
-# RenderFrameObserverTracker<T>::RenderFrameObserverTracker()
-fun:*content*RenderFrameObserverTracker*RenderFrame*
-
-# RenderViewObserverTracker<T>::RenderViewObserverTracker()
-fun:*content*RenderViewObserverTracker*RenderView*
-
 #############################################################################
 # Base class's destructor accesses a derived class.
 
