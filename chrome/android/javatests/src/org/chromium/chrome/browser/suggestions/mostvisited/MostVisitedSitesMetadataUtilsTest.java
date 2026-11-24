@@ -132,16 +132,18 @@ public class MostVisitedSitesMetadataUtilsTest {
     public void testTasksContinuity() {
         AtomicBoolean isPendingRun = new AtomicBoolean(false);
 
-        // Set and run current task.
-        assertNull(mMostVisitedSitesMetadataUtils.getCurrentTaskForTesting());
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mMostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
-                                createFakeSiteSuggestionTiles1()));
+                () -> {
+                    // Set and run current task.
+                    assertNull(mMostVisitedSitesMetadataUtils.getCurrentTaskForTesting());
+                    mMostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
+                            createFakeSiteSuggestionTiles1());
 
-        // When current task is not finished, set pending task.
-        assertNotNull(mMostVisitedSitesMetadataUtils.getCurrentTaskForTesting());
-        mMostVisitedSitesMetadataUtils.setPendingTaskForTesting(() -> isPendingRun.set(true));
+                    // When current task is not finished, set pending task.
+                    assertNotNull(mMostVisitedSitesMetadataUtils.getCurrentTaskForTesting());
+                    mMostVisitedSitesMetadataUtils.setPendingTaskForTesting(
+                            () -> isPendingRun.set(true));
+                });
 
         // isPendingRun should eventually become true.
         CriteriaHelper.pollInstrumentationThread(isPendingRun::get);
