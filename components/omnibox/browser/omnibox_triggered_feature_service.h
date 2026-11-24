@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_TRIGGERED_FEATURE_SERVICE_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_TRIGGERED_FEATURE_SERVICE_H_
 
-#include <set>
-
+#include "base/containers/enum_set.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // Tracks the features that trigger during an omnibox session and records them
@@ -14,7 +13,9 @@
 class OmniboxTriggeredFeatureService {
  public:
   using Feature = metrics::OmniboxEventProto_Feature;
-  using Features = std::set<Feature>;
+  using Features = base::EnumSet<Feature,
+                                 metrics::OmniboxEventProto::Feature_MIN,
+                                 metrics::OmniboxEventProto::Feature_MAX>;
 
   OmniboxTriggeredFeatureService();
   ~OmniboxTriggeredFeatureService();
@@ -40,8 +41,8 @@ class OmniboxTriggeredFeatureService {
  private:
   // The set of features triggered in the current omnibox session via
   // `FeatureTriggered()`.
-  std::set<Feature> features_triggered_;
-  std::set<Feature> features_triggered_in_session_;
+  Features features_triggered_;
+  Features features_triggered_in_session_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_TRIGGERED_FEATURE_SERVICE_H_

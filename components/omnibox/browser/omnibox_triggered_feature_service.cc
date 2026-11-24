@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "omnibox_triggered_feature_service.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 
 OmniboxTriggeredFeatureService::OmniboxTriggeredFeatureService() = default;
 OmniboxTriggeredFeatureService::~OmniboxTriggeredFeatureService() = default;
@@ -15,20 +15,20 @@ void OmniboxTriggeredFeatureService::RecordToLogs(
 }
 
 void OmniboxTriggeredFeatureService::FeatureTriggered(Feature feature) {
-  features_triggered_.insert(feature);
-  features_triggered_in_session_.insert(feature);
+  features_triggered_.Put(feature);
+  features_triggered_in_session_.Put(feature);
 }
 
 bool OmniboxTriggeredFeatureService::GetFeatureTriggeredInSession(
     Feature feature) const {
-  return features_triggered_in_session_.count(feature);
+  return features_triggered_in_session_.Has(feature);
 }
 
 void OmniboxTriggeredFeatureService::ResetInput() {
-  features_triggered_.clear();
+  features_triggered_.Clear();
 }
 
 void OmniboxTriggeredFeatureService::ResetSession() {
-  features_triggered_.clear();
-  features_triggered_in_session_.clear();
+  features_triggered_.Clear();
+  features_triggered_in_session_.Clear();
 }

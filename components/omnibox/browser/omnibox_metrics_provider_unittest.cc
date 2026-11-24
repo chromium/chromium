@@ -1318,3 +1318,44 @@ TEST_F(OmniboxMetricsProviderTest, GetClientSummarizedResultType_MapsAllTypes) {
             OmniboxMetricsProvider::GetClientSummarizedResultType(
                 Suggestion::NULL_RESULT_MESSAGE));
 }
+
+TEST_F(OmniboxMetricsProviderTest, RecordOmniboxEvent_FeaturesTriggered) {
+  metrics_provider_->OnRecordingEnabled();
+
+  AutocompleteResult result;
+  result.AppendMatches(
+      {BuildMatch(omnibox::AutocompleteMatchType::kSearchSuggest)});
+  OmniboxLog log =
+      BuildOmniboxLog(result, /*selected_index=*/0, /*session_data=*/{});
+  log.ukm_source_id = ukm::NoURLSourceId();
+  log.features_triggered = {
+      metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION,
+      metrics::OmniboxEventProto_Feature_AIM_PAGE_ACTION_OMNIBOX_ENTRYPOINT};
+  log.features_triggered_in_session = {
+      metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION,
+      metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE,
+      metrics::OmniboxEventProto_Feature_AIM_PAGE_ACTION_OMNIBOX_ENTRYPOINT};
+
+  OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
+
+  metrics::ChromeUserMetricsExtension uma_proto;
+  metrics_provider_->ProvideCurrentSessionData(&uma_proto);
+  ASSERT_EQ(uma_proto.omnibox_event_size(), 1);
+  const metrics::OmniboxEventProto& omnibox_event = uma_proto.omnibox_event(0);
+
+  ASSERT_EQ(omnibox_event.feature_triggered_size(), 2);
+  EXPECT_EQ(omnibox_event.feature_triggered(0),
+            metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
+  EXPECT_EQ(
+      omnibox_event.feature_triggered(1),
+      metrics::OmniboxEventProto_Feature_AIM_PAGE_ACTION_OMNIBOX_ENTRYPOINT);
+
+  ASSERT_EQ(omnibox_event.feature_triggered_in_session_size(), 3);
+  EXPECT_EQ(omnibox_event.feature_triggered_in_session(0),
+            metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
+  EXPECT_EQ(omnibox_event.feature_triggered_in_session(1),
+            metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE);
+  EXPECT_EQ(
+      omnibox_event.feature_triggered_in_session(2),
+      metrics::OmniboxEventProto_Feature_AIM_PAGE_ACTION_OMNIBOX_ENTRYPOINT);
+}

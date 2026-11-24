@@ -359,9 +359,10 @@ void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
     omnibox_event->set_keyword_mode_entry_method(log.keyword_mode_entry_method);
   if (log.is_query_started_from_tile)
     omnibox_event->set_is_query_started_from_tile(true);
-  for (auto feature : log.features_triggered)
+  for (OmniboxEventProto::Feature feature : log.features_triggered) {
     omnibox_event->add_feature_triggered(feature);
-  for (auto feature : log.features_triggered_in_session) {
+  }
+  for (OmniboxEventProto::Feature feature : log.features_triggered_in_session) {
     omnibox_event->add_feature_triggered_in_session(feature);
   }
 }

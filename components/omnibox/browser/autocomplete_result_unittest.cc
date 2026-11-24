@@ -3024,17 +3024,14 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
 
 void VerifyTriggeredFeatures(
     OmniboxTriggeredFeatureService* triggered_feature_service,
-    std::vector<OmniboxTriggeredFeatureService::Feature>
-        expected_triggered_features) {
+    OmniboxTriggeredFeatureService::Features expected_triggered_features) {
   OmniboxTriggeredFeatureService::Features features_triggered;
   OmniboxTriggeredFeatureService::Features features_triggered_in_session;
   triggered_feature_service->RecordToLogs(&features_triggered,
                                           &features_triggered_in_session);
   triggered_feature_service->ResetSession();
-  EXPECT_THAT(features_triggered,
-              testing::UnorderedElementsAreArray(expected_triggered_features));
-  EXPECT_THAT(features_triggered_in_session,
-              testing::UnorderedElementsAreArray(expected_triggered_features));
+  EXPECT_EQ(features_triggered, expected_triggered_features);
+  EXPECT_EQ(features_triggered_in_session, expected_triggered_features);
 }
 
 // NOTE: The tests below verify the behavior with the Grouping Framework for ZPS
