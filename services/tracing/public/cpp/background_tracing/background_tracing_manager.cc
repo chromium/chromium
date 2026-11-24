@@ -943,7 +943,7 @@ void BackgroundTracingManager::DeleteTracesInDateRange(base::Time start,
   std::optional<base::FilePath> database_dir;
   if (!trace_database_) {
     database_dir = GetLocalTracesDirectory();
-    if (database_dir.has_value()) {
+    if (!database_dir.has_value()) {
       return;
     }
     trace_database_ = {new TraceReportDatabase,

@@ -403,5 +403,53 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
   }
 }
 
+// Verifies that DeleteTracesInDateRange() deletes traces from an existing
+// on-disk database without InitializeTraceReportDatabase() being called.
+TEST(BackgroundTracingManagerPersistentTest,
+     DeleteTracesInDateRangeBeforeInitialize) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::ScopedTempDir traces_dir;
+  ASSERT_TRUE(traces_dir.CreateUniqueTempDir());
+
+  {
+    TestBackgroundTracingManager manager(traces_dir.GetPath());
+    manager.InitializeTraceReportDatabase();
+
+    TestBackgroundTracingHelper background_tracing_helper;
+    manager.SaveTraceForTesting(kDummyTrace, "test_scenario", "test_rule",
+                                base::Token::CreateRandom());
+    background_tracing_helper.WaitForTraceSaved();
+    EXPECT_EQ(1U, manager.GetScenarioSavedCount("test_scenario"));
+  }
+  // Ensure the database tear down completed.
+  task_environment.RunUntilIdle();
+
+  {
+    TestBackgroundTracingManager manager(traces_dir.GetPath());
+    auto now = base::Time::Now();
+    manager.DeleteTracesInDateRange(now - base::Days(1), now);
+    task_environment.RunUntilIdle();
+  }
+  // Ensure the database tear down completed.
+  task_environment.RunUntilIdle();
+
+  {
+    TestBackgroundTracingManager manager(traces_dir.GetPath());
+    manager.InitializeTraceReportDatabase();
+    task_environment.RunUntilIdle();
+    EXPECT_EQ(0U, manager.GetScenarioSavedCount("test_scenario"));
+
+    base::RunLoop run_loop;
+    manager.GetAllTraceReports(
+        base::BindLambdaForTesting([&](std::vector<ClientTraceReport> reports) {
+          EXPECT_TRUE(reports.empty());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+}
+
 }  // namespace
 }  // namespace tracing
