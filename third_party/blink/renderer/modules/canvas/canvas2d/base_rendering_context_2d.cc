@@ -1067,7 +1067,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
 
       cached_snapshot_ =
           AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-              client_shared_image, resource_->sync_token(),
+              client_shared_image, resource_->GetSyncToken(),
               client_shared_image->alpha_type(),
               color_params_.GetGfxHdrMetadata(), context_provider_wrapper_,
               base::PlatformThread::CurrentRef(),
@@ -1202,7 +1202,7 @@ BaseRenderingContext2D::CreateExportedResource(
       image_pool_->GetWeakPtr(), resource_recycling_enabled_, resource);
 
   auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
-      resource->GetSharedImage(), resource->sync_token(),
+      resource->GetSharedImage(), resource->GetSyncToken(),
       viz::TransferableResource::ResourceSource::kCanvas,
       color_params_.GetGfxHdrMetadata(), context_provider_wrapper_,
       is_accelerated_, std::move(wait_sync_token), std::move(release_callback),

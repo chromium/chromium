@@ -93,8 +93,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
 
   bool IsLost() const { return resource_is_lost_; }
 
-  const gpu::SyncToken& sync_token() const { return GetSyncToken(); }
-
   ~CanvasResource() override;
 
  private:

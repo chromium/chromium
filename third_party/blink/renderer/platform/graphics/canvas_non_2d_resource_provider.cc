@@ -521,7 +521,7 @@ CanvasNon2DResourceProvider::CreateExportedResource(
       image_pool_->GetWeakPtr(), resource);
 
   return base::MakeRefCounted<ExportedCanvasResource>(
-      resource->GetSharedImage(), resource->sync_token(),
+      resource->GetSharedImage(), resource->GetSyncToken(),
       viz::TransferableResource::ResourceSource::kCanvas, hdr_metadata_,
       context_provider_wrapper_, !IsSoftware(), std::move(wait_sync_token),
       std::move(release_callback),
@@ -627,7 +627,7 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
 
     cached_snapshot_ =
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-            resource_->GetSharedImage(), resource_->sync_token(), alpha_type_,
+            resource_->GetSharedImage(), resource_->GetSyncToken(), alpha_type_,
             hdr_metadata_, context_provider_wrapper_,
             base::PlatformThread::CurrentRef(),
             ThreadScheduler::Current()->CleanupTaskRunner(),
