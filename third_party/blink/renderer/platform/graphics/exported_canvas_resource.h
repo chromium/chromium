@@ -5,11 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_EXPORTED_CANVAS_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_EXPORTED_CANVAS_RESOURCE_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
+#include "components/viz/common/resources/release_callback.h"
+#include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 

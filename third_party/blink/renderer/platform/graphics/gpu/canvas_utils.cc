@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -18,6 +19,18 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+// Controls whether we add SHARED_IMAGE_USAGE_WEBGPU_READ by default to shared
+// image backed CanvasResources so that they can be imported into WebGPU without
+// an intermediate copy. This could cause a different shared image backing type
+// to be used in the GPU process based on the OS platform.
+BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
+#if BUILDFLAG(IS_APPLE)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 namespace {
 

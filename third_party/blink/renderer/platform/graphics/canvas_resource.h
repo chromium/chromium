@@ -2,39 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/byte_size.h"
-#include "base/check_op.h"
-#include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
-#include "base/memory/shared_memory_mapping.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
-#include "components/viz/common/resources/release_callback.h"
-#include "components/viz/common/resources/shared_image_format.h"
-#include "components/viz/common/resources/transferable_resource.h"
-#include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/client/shared_image_pool.h"
-#include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/common/sync_token.h"
-#include "skia/buildflags.h"
-#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/buffer_types.h"
-#include "ui/gfx/geometry/size.h"
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 
-namespace blink {
+#include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_pool.h"
+#include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
+namespace blink {
 
 // Resource type for SharedImage
 class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {

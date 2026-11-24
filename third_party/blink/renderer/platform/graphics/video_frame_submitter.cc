@@ -36,7 +36,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/presentation_feedback.h"

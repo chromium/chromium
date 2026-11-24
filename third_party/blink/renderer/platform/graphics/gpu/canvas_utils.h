@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_CANVAS_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_CANVAS_UTILS_H_
 
+#include "base/feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -17,6 +18,8 @@ class SharedImageInterface;
 namespace blink {
 
 class WebGraphicsContext3DProviderWrapper;
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
 
 PLATFORM_EXPORT bool Accelerated2DCanvasFeatureEnabled(
     WebGraphicsContext3DProviderWrapper*);

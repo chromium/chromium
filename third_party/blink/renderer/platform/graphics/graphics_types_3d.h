@@ -27,8 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_3D_H_
 
 #ifndef __glext_h_
-#include "third_party/angle/include/GLES2/gl2ext.h"
+// gl3.h must be included before gl2ext.h to define GL_APIENTRY.
+// clang-format off
 #include "third_party/angle/include/GLES3/gl3.h"
+#include "third_party/angle/include/GLES2/gl2ext.h"
+// clang-format on
 #endif
 
 #include <stdint.h>
