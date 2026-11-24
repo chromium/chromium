@@ -8,6 +8,7 @@ import "media/mojo/mojom/audio_data_pipe.mojom";
 import "media/mojo/mojom/audio_output_stream.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -101,6 +102,11 @@ interface ReadAloudPlaybackController {
   // Discards all queued audio in both the `ReadWriteAudioDataPipe` (PCM frames)
   // and the utility process's internal `PrefetchCache` (`BigBuffer` audio payloads).
   FlushBuffers();
+
+  // Sets the TFLite language detection model file in the utility process for
+  // post-distillation language identification when the page language is
+  // undetermined.
+  SetLanguageDetectionModel(mojo_base.mojom.ReadOnlyFile model_file);
 };
 
 // Interface for receiving status updates
@@ -132,6 +138,13 @@ interface ReadAloudPlaybackControllerClient {
   // `chunks` is a strictly ordered array of sentence segments up to a
   // limit of 10,000.
   OnTextChunked(array<mojo_base.mojom.String16> chunks);
+
+  // Notifies the browser of the language detected from the distilled text
+  // (e.g. "es", "fr") when a language detection model is loaded in the
+  // utility process. Empty strings, "und", and "und-*" (case-insensitive)
+  // are treated as undetermined and ignored.
+  OnLanguageDetermined(string language_code);
+
   // Synthesizes `text_chunk` into audio using the voice assigned to `speaker`.
   // `sequence_id` is a monotonically increasing request ID used by
   // the utility process to correlate responses and discard stale callbacks.

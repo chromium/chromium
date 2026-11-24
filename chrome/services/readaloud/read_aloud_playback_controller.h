@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -97,6 +98,7 @@ class ReadAloudPlaybackController
   void SetVoice(const std::string& voice_id) override;
   void SetPlaybackRate(float rate) override;
   void FlushBuffers() override;
+  void SetLanguageDetectionModel(base::File model_file) override;
 
  private:
   // Mojo disconnect handlers:

@@ -130,6 +130,8 @@ class MockReadAloudPlaybackControllerClient
     }
   }
 
+  void OnLanguageDetermined(const std::string& language_code) override {}
+
   void ClearLastState() { last_state_.reset(); }
 
   void ClearStateHistory() { state_history_.clear(); }

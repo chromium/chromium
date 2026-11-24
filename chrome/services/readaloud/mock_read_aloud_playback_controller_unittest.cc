@@ -42,6 +42,10 @@ class MockClient : public read_aloud::mojom::ReadAloudPlaybackControllerClient {
               OnTextChunked,
               (const std::vector<std::u16string>& chunks),
               (override));
+  MOCK_METHOD(void,
+              OnLanguageDetermined,
+              (const std::string& language_code),
+              (override));
 
   void RequestSpeechSynthesis(
       const std::u16string& text_chunk,

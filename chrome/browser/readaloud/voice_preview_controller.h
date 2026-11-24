@@ -98,6 +98,7 @@ class VoicePreviewController
   void OnWordBoundaryReached(uint32_t start_character_offset,
                              uint32_t end_character_offset) override {}
   void OnTextChunked(const std::vector<std::u16string>& chunks) override {}
+  void OnLanguageDetermined(const std::string& language_code) override {}
   void RequestSpeechSynthesis(const std::u16string& text_chunk,
                               read_aloud::mojom::Speaker speaker,
                               uint64_t sequence_id,

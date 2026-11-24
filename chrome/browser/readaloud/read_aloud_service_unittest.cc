@@ -226,6 +226,8 @@ class FakePlaybackController
     playback_mode_ = mode;
   }
 
+  void SetLanguageDetectionModel(base::File model_file) override {}
+
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override {
     received_segments_ = std::move(segments);
@@ -3743,4 +3745,31 @@ TEST_F(ReadAloudServiceTest, SendFeedbackDropsUngatedSubmissions) {
       "Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason", 0);
   EXPECT_EQ(last_report(), nullptr);
 }
+TEST_F(ReadAloudServiceTest, OnLanguageDeterminedRejectsTooLongLanguageCode) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnLanguageDetermined(
+      std::string(kMaxLanguageCodeLength + 1, 'a'));
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "ReadAloudService: invalid language_code received from utility");
+}
+
+TEST_F(ReadAloudServiceTest, OnLanguageDeterminedRejectsInvalidCharacters) {
+  for (const std::string& invalid_code : {"en us", "en_US", "en!"}) {
+    NavigateAndCommit(GURL("https://www.example.com/article"));
+    SetFakeController(std::make_unique<FakePlaybackController>());
+    service()->Initialize(web_contents());
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    fake_controller()->client()->OnLanguageDetermined(invalid_code);
+
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              "ReadAloudService: invalid language_code received from utility");
+  }
+}
+
 }  // namespace readaloud

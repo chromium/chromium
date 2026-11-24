@@ -981,6 +981,24 @@ void ReadAloudService::OnTextChunked(
   }
 }
 
+void ReadAloudService::OnLanguageDetermined(const std::string& language_code) {
+  const bool has_valid_chars = std::ranges::all_of(language_code, [](char c) {
+    return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-';
+  });
+  if (language_code.size() > kMaxLanguageCodeLength || !has_valid_chars) {
+    utility_observer_receiver_.ReportBadMessage(
+        "ReadAloudService: invalid language_code received from utility");
+    return;
+  }
+  if (language_code.empty() ||
+      base::EqualsCaseInsensitiveASCII(language_code, "und") ||
+      base::StartsWith(language_code, "und-",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return;
+  }
+  // TODO(crbug.com/584369839): Implement language detection handling.
+}
+
 void ReadAloudService::RequestSpeechSynthesis(
     const std::u16string& text_chunk,
     read_aloud::mojom::Speaker speaker,

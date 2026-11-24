@@ -84,6 +84,7 @@ class FakePlaybackController
   }
 
   void SetPlaybackMode(read_aloud::mojom::PlaybackMode mode) override {}
+  void SetLanguageDetectionModel(base::File model_file) override {}
 
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override {

@@ -746,6 +746,12 @@ void ReadAloudPlaybackController::ResetSession() {
   session_weak_factory_.InvalidateWeakPtrs();
 }
 
+void ReadAloudPlaybackController::SetLanguageDetectionModel(
+    base::File model_file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/584369839): Implement language detection model loading.
+}
+
 void ReadAloudPlaybackController::OnPrefetchSynthesisRequest(
     uint32_t chunk_index,
     std::u16string_view text,

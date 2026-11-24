@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -81,6 +82,10 @@ class MockReadAloudPlaybackController
   MOCK_METHOD(void, SetVoice, (const std::string& voice_id), (override));
   MOCK_METHOD(void, SetPlaybackRate, (float rate), (override));
   MOCK_METHOD(void, FlushBuffers, (), (override));
+  MOCK_METHOD(void,
+              SetLanguageDetectionModel,
+              (base::File model_file),
+              (override));
 
   // Default fake implementation methods invoked by ON_CALL:
   void DefaultSetTextContent(
