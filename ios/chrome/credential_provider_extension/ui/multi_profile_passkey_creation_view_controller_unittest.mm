@@ -169,14 +169,12 @@ TEST_F(MultiProfilePasskeyCreationViewControllerTest,
   FaviconView* favicon_view = FindFaviconView(controller.view);
   ASSERT_TRUE(favicon_view);
 
-  // Favicons are fetched on a serial queue and the controller applies the
-  // result on the main queue, so once this second fetch has hopped to the main
-  // queue, the controller's fetch has been fully handled.
+  // Favicons are fetched on a serial queue and completions are invoked
+  // asynchronously on the main queue, so once this second fetch's completion
+  // runs, the controller's fetch has already been handled.
   __block bool done = false;
   FetchFaviconAsync(kMissingFaviconKey, ^(FaviconAttributes*) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      done = true;
-    });
+    done = true;
   });
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForFileOperationTimeout, ^{

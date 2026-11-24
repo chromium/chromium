@@ -4,6 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/favicon_util.h"
 
+#import "base/check.h"
 #import "base/check_is_test.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/favicon_file_key.h"
@@ -17,9 +18,8 @@ namespace {
 // about a screen, and accounts for `NSCache` not guaranteeing LRU eviction.
 constexpr NSUInteger kFaviconCacheCountLimit = 40;
 
-// Folder overriding the shared favicon folder in tests. Read on the thread
-// calling `FetchFaviconAsync` (the main thread in practice) and never on the
-// background queue, so that tests can reset it safely.
+// Folder overriding the shared favicon folder in tests. Read and written on the
+// main thread so that tests can reset it safely.
 NSURL* g_favicon_folder_for_testing = nil;
 
 // Returns the in-memory cache of decoded favicons, keyed by favicon file name.
@@ -74,6 +74,7 @@ FaviconAttributes* ReadFaviconAttributes(NSURL* folder, NSString* favicon) {
 
 void SetFaviconFolderForTesting(NSURL* folder) {
   CHECK_IS_TEST();
+  CHECK(NSThread.isMainThread);
   g_favicon_folder_for_testing = folder;
   // Cached favicons belong to the previous folder. Clear them on the favicon
   // queue so that a read already queued for the previous folder can't
@@ -92,25 +93,38 @@ FaviconAttributes* CachedFaviconAttributes(NSString* favicon) {
 
 void FetchFaviconAsync(NSString* favicon,
                        BlockWithFaviconAttributes completion) {
+  CHECK(NSThread.isMainThread);
+  CHECK(completion);
+  if (!IsValidFaviconFileKey(favicon)) {
+    // Dispatch asynchronously even for invalid keys to keep the main-queue
+    // async completion contract consistent and avoid synchronous reentrancy.
+    // GCD is used because Chromium task runners are not available in the
+    // extension.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completion(nil);
+    });
+    return;
+  }
+  // Copy in case a caller passes an `NSMutableString` and mutates it before
+  // the background block runs.
+  NSString* const favicon_key = [favicon copy];
   // Capture the test override before hopping to the background queue.
   NSURL* const folder_for_testing = g_favicon_folder_for_testing;
   dispatch_async(FaviconQueue(), ^{
-    // The key is used as a file name in the shared favicon folder. Reject
-    // anything that isn't a favicon file key so that malformed keys (e.g.
-    // containing "../") can't read files outside of that folder.
-    if (!IsValidFaviconFileKey(favicon)) {
-      completion(nil);
-      return;
-    }
-    FaviconAttributes* attributes = [FaviconCache() objectForKey:favicon];
+    FaviconAttributes* attributes = [FaviconCache() objectForKey:favicon_key];
     if (!attributes) {
       attributes = ReadFaviconAttributes(
           folder_for_testing ?: app_group::SharedFaviconAttributesFolder(),
-          favicon);
+          favicon_key);
       if (attributes) {
-        [FaviconCache() setObject:attributes forKey:favicon];
+        [FaviconCache() setObject:attributes forKey:favicon_key];
       }
     }
-    completion(attributes);
+    // Deliver results on the main queue so callers can update UI without
+    // hopping queues themselves. GCD is used because Chromium task runners are
+    // not available in the extension.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completion(attributes);
+    });
   });
 }

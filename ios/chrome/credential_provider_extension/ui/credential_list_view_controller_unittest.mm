@@ -70,9 +70,8 @@ class CredentialListViewControllerTest : public PlatformTest {
   }
 
  protected:
-  // Writes a monogram favicon to the favicon folder and loads it into the
-  // in-memory favicon cache.
-  void WriteAndCacheFavicon() {
+  // Writes a monogram favicon to the favicon folder without caching it.
+  void WriteFavicon() {
     FaviconAttributes* attributes =
         [FaviconAttributes attributesWithMonogram:kMonogram
                                         textColor:UIColor.whiteColor
@@ -85,6 +84,12 @@ class CredentialListViewControllerTest : public PlatformTest {
         URLByAppendingPathComponent:kFaviconKey
                         isDirectory:NO];
     ASSERT_TRUE([data writeToURL:file_url atomically:YES]);
+  }
+
+  // Writes a monogram favicon to the favicon folder and loads it into the
+  // in-memory favicon cache.
+  void WriteAndCacheFavicon() {
+    ASSERT_NO_FATAL_FAILURE(WriteFavicon());
 
     __block bool done = false;
     FetchFaviconAsync(kFaviconKey, ^(FaviconAttributes*) {
@@ -248,6 +253,32 @@ TEST_F(CredentialListViewControllerTest, ReusedCellDropsCachedFavicon) {
   ASSERT_EQ(reused_cell, cached_cell);
 
   EXPECT_FALSE(DisplayedMonogram(reused_cell.faviconView));
+}
+
+// Tests that an uncached favicon is loaded asynchronously from disk and
+// applied to the cell.
+TEST_F(CredentialListViewControllerTest, UncachedFaviconLoadsAsynchronously) {
+  ASSERT_NO_FATAL_FAILURE(WriteFavicon());
+  ASSERT_FALSE(CachedFaviconAttributes(kFaviconKey));
+
+  [controller_
+      presentSuggestedCredentials:@[]
+                   allCredentials:@[ MakeCredential(@"example.com", @"user",
+                                                    kFaviconKey) ]
+                    showSearchBar:NO
+            showNewPasswordOption:NO];
+
+  FaviconTableViewCell* favicon_cell =
+      base::apple::ObjCCastStrict<FaviconTableViewCell>(
+          [controller_.tableView cellForRowAtIndexPath:first_row_]);
+  ASSERT_TRUE(favicon_cell);
+  EXPECT_FALSE(DisplayedMonogram(favicon_cell.faviconView));
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, ^{
+        return [DisplayedMonogram(favicon_cell.faviconView)
+            isEqualToString:kMonogram];
+      }));
 }
 
 }  // namespace

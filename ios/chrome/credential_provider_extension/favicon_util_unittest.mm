@@ -33,13 +33,14 @@ class FaviconUtilTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  // Returns the file URL in the test favicon folder for `key`.
   NSURL* FileURLForKey(NSString* key) {
     return [base::apple::FilePathToNSURL(favicon_folder_.GetPath())
         URLByAppendingPathComponent:key
                         isDirectory:NO];
   }
 
-  // Writes favicon attributes with `monogram` to the favicon folder.
+  // Writes favicon attributes with `monogram` to `key` in the favicon folder.
   void WriteFavicon(NSString* key, NSString* monogram) {
     FaviconAttributes* attributes =
         [FaviconAttributes attributesWithMonogram:monogram
@@ -52,17 +53,19 @@ class FaviconUtilTest : public PlatformTest {
     ASSERT_TRUE([data writeToURL:FileURLForKey(key) atomically:YES]);
   }
 
-  // Fetches `key` and waits for the completion. Returns the fetched
-  // attributes.
+  // Fetches `key` and waits for completion on the main thread. Returns the
+  // fetched attributes.
   FaviconAttributes* FetchAndWait(NSString* key) {
     __block bool done = false;
     __block FaviconAttributes* result = nil;
     FetchFaviconAsync(key, ^(FaviconAttributes* attributes) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        result = attributes;
-        done = true;
-      });
+      EXPECT_TRUE(NSThread.isMainThread);
+      result = attributes;
+      done = true;
     });
+    // Completion must always be dispatched asynchronously rather than invoked
+    // synchronously on the caller's stack.
+    EXPECT_FALSE(done);
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForFileOperationTimeout, ^{
           return done;
@@ -74,7 +77,8 @@ class FaviconUtilTest : public PlatformTest {
   base::ScopedTempDir favicon_folder_;
 };
 
-// Tests that a favicon is read from the favicon folder.
+// Tests that a favicon is read from the favicon folder and delivered on the
+// main thread.
 TEST_F(FaviconUtilTest, FetchReadsFaviconFromDisk) {
   ASSERT_NO_FATAL_FAILURE(WriteFavicon(kFaviconKey, @"A"));
 
@@ -106,9 +110,23 @@ TEST_F(FaviconUtilTest, MissingFaviconIsNotCached) {
   EXPECT_NSEQ(FetchAndWait(kFaviconKey).monogramString, @"B");
 }
 
-// Tests that an empty favicon key results in nil.
-TEST_F(FaviconUtilTest, EmptyKeyReturnsNil) {
+// Tests that unreadable or corrupt archive data results in nil and is not
+// cached.
+TEST_F(FaviconUtilTest, CorruptFaviconIsNotCached) {
+  NSData* invalid_data =
+      [@"not_an_archive" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE([invalid_data writeToURL:FileURLForKey(kFaviconKey)
+                            atomically:YES]);
+
+  EXPECT_FALSE(FetchAndWait(kFaviconKey));
+  EXPECT_FALSE(CachedFaviconAttributes(kFaviconKey));
+}
+
+// Tests that nil and empty favicon keys result in nil.
+TEST_F(FaviconUtilTest, EmptyOrNilKeyReturnsNil) {
+  EXPECT_FALSE(FetchAndWait(nil));
   EXPECT_FALSE(FetchAndWait(@""));
+  EXPECT_FALSE(CachedFaviconAttributes(nil));
   EXPECT_FALSE(CachedFaviconAttributes(@""));
 }
 

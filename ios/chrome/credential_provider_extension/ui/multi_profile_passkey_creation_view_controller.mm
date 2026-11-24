@@ -126,16 +126,12 @@ NSAttributedString* AsAttributedString(NSString* text,
                 imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
                      renderingMode:UIImageRenderingModeAlwaysOriginal]];
 
-    // Attempt to fetch the favicon. `FetchFaviconAsync` calls its completion
-    // on a background queue, so hop to the main queue before touching state
-    // that is read by the UI. GCD is used because Chromium task runners are
-    // not available in the extension.
+    // Attempt to fetch the favicon. `FetchFaviconAsync` invokes its completion
+    // on the main queue.
     if (favicon.length) {
       __weak __typeof(self) weakSelf = self;
       FetchFaviconAsync(favicon, ^(FaviconAttributes* attributes) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf setFaviconAttributes:attributes];
-        });
+        [weakSelf setFaviconAttributes:attributes];
       });
     }
   }

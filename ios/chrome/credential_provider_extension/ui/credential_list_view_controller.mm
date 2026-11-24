@@ -273,17 +273,12 @@ bool AreCredentialArraysEqual(NSArray<id<Credential>>* first,
   NSString* serviceIdentifier = credential.serviceIdentifier;
 
   FetchFaviconAsync(credential.favicon, ^(FaviconAttributes* attributes) {
-    if (!attributes) {
+    // Only set favicon if one was found and the cell hasn't been reused.
+    if (!attributes ||
+        ![credentialCell.uniqueIdentifier isEqualToString:serviceIdentifier]) {
       return;
     }
-    // The cell must only be accessed on the main thread. Checking for reuse
-    // there also guarantees the cell can't be reused between the check and
-    // the update.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if ([credentialCell.uniqueIdentifier isEqualToString:serviceIdentifier]) {
-        [credentialCell.faviconView configureWithAttributes:attributes];
-      }
-    });
+    [credentialCell.faviconView configureWithAttributes:attributes];
   });
 }
 
