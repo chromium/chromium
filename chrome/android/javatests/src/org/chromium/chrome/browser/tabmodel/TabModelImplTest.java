@@ -903,11 +903,11 @@ public class TabModelImplTest {
                     tabsToGroup.add(tab1);
                     tabsToGroup.add(tab2);
 
-                    Token groupId = mTabModelJni.addTabsToGroup(null, tabsToGroup);
+                    TabGroupId groupId = mTabModelJni.addTabsToGroup(null, tabsToGroup);
                     assertNotNull(groupId);
 
-                    assertEquals(groupId, tab1.getTabGroupId());
-                    assertEquals(groupId, tab2.getTabGroupId());
+                    assertEquals(groupId.getToken(), tab1.getTabGroupId());
+                    assertEquals(groupId.getToken(), tab2.getTabGroupId());
                 });
     }
 
@@ -931,8 +931,10 @@ public class TabModelImplTest {
                     Token groupId = tab1.getTabGroupId();
                     List<Tab> tabsToGroup = List.of(tab3);
 
-                    Token returnedGroupId = mTabModelJni.addTabsToGroup(groupId, tabsToGroup);
-                    assertEquals(groupId, returnedGroupId);
+                    TabGroupId returnedGroupId =
+                            mTabModelJni.addTabsToGroup(
+                                    TabGroupId.fromRawToken(groupId), tabsToGroup);
+                    assertEquals(TabGroupId.fromRawToken(groupId), returnedGroupId);
 
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertEquals(groupId, tab2.getTabGroupId());
@@ -960,8 +962,10 @@ public class TabModelImplTest {
                     Token groupId = tab1.getTabGroupId();
                     List<Tab> tabsToGroup = List.of(tab2, tab3);
 
-                    Token returnedGroupId = mTabModelJni.addTabsToGroup(groupId, tabsToGroup);
-                    assertEquals(groupId, returnedGroupId);
+                    TabGroupId returnedGroupId =
+                            mTabModelJni.addTabsToGroup(
+                                    TabGroupId.fromRawToken(groupId), tabsToGroup);
+                    assertEquals(TabGroupId.fromRawToken(groupId), returnedGroupId);
 
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertEquals(groupId, tab2.getTabGroupId());
@@ -994,8 +998,10 @@ public class TabModelImplTest {
                     assertEquals(groupBId, tab4.getTabGroupId());
 
                     List<Tab> tabsToGroup = List.of(tab3);
-                    Token returnedGroupId = mTabModelJni.addTabsToGroup(groupAId, tabsToGroup);
-                    assertEquals(groupAId, returnedGroupId);
+                    TabGroupId returnedGroupId =
+                            mTabModelJni.addTabsToGroup(
+                                    TabGroupId.fromRawToken(groupAId), tabsToGroup);
+                    assertEquals(TabGroupId.fromRawToken(groupAId), returnedGroupId);
 
                     assertEquals(groupAId, tab3.getTabGroupId());
                     assertEquals(groupBId, tab4.getTabGroupId());
@@ -1023,9 +1029,9 @@ public class TabModelImplTest {
                     assertNull(tab2.getTabGroupId());
 
                     List<Tab> tabsToGroup = List.of(tab1, tab2);
-                    Token invalidGroupId = Token.createRandom();
+                    TabGroupId invalidGroupId = TabGroupId.generateNew();
 
-                    Token returnedGroupId =
+                    TabGroupId returnedGroupId =
                             mTabModelJni.addTabsToGroup(invalidGroupId, tabsToGroup);
                     assertNull(returnedGroupId);
 

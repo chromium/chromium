@@ -14,7 +14,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/android/token_android.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -24,7 +23,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
-#include "base/token.h"
 #include "base/types/pass_key.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
@@ -78,7 +76,7 @@
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
-// Must come after headers that provide symbols used by @JniType.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabModelJniBridge_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -666,8 +664,7 @@ tabs::TabInterface* TabModelJniBridge::InsertWebContentsAt(
   JNIEnv* env = AttachCurrentThread();
 
   TabAndroid* new_tab = Java_TabModelJniBridge_insertWebContentsAt(
-      env, java_object_.get(env), index, web_contents.get(), should_pin,
-      tab_groups::TabGroupId::ToOptionalToken(group));
+      env, java_object_.get(env), index, web_contents.get(), should_pin, group);
 
   // If new tab creation is successful, Java assumes ownership of the lifetime
   // of the WebContents.
@@ -840,17 +837,9 @@ bool TabModelJniBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
 std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  std::vector<base::Token> group_id_tokens =
-      Java_TabModelJniBridge_listTabGroups(env, jobj);
-
   // NOTE: Order is not guaranteed by the underlying API, but TabListInterface
   // requires returning a <vector> and not a <set>.
-  std::vector<tab_groups::TabGroupId> group_ids;
-  group_ids.reserve(group_id_tokens.size());
-  for (base::Token token : group_id_tokens) {
-    group_ids.push_back(tab_groups::TabGroupId::FromRawToken(token));
-  }
-  return group_ids;
+  return Java_TabModelJniBridge_listTabGroups(env, jobj);
 }
 
 std::set<split_tabs::SplitTabId> TabModelJniBridge::ListSplits() {
@@ -895,7 +884,7 @@ gfx::Range TabModelJniBridge::GetTabGroupTabIndices(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   std::vector<int32_t> range =
-      Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id.token());
+      Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id);
   if (range.empty()) {
     return {};
   }
@@ -911,9 +900,7 @@ std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   std::vector<TabAndroid*> tabs_to_add = GetAllTabsFromHandles(tabs);
-  std::optional<base::Token> group_id_token =
-      Java_TabModelJniBridge_createTabGroup(env, jobj, tabs_to_add);
-  return tab_groups::TabGroupId::FromOptionalToken(group_id_token);
+  return Java_TabModelJniBridge_createTabGroup(env, jobj, tabs_to_add);
 }
 
 std::optional<split_tabs::SplitTabId> TabModelJniBridge::CreateSplit(
@@ -939,16 +926,13 @@ void TabModelJniBridge::SetTabGroupVisualData(
   // The color cast is safe because the enum values are synced across C++ and
   // Java.
   Java_TabModelJniBridge_setTabGroupVisualData(
-      env, jobj, group_id.token(), visual_data.title(),
+      env, jobj, group_id, visual_data.title(),
       std::to_underlying(visual_data.color()), visual_data.is_collapsed());
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
-  std::optional<base::Token> requested_group_id =
-      tab_groups::TabGroupId::ToOptionalToken(group_id);
-
   // Order the tabs by index to ensure consistency with desktop.
   std::vector<TabAndroid*> tabs_to_add;
   tabs_to_add.reserve(tabs.size());
@@ -960,10 +944,8 @@ std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  std::optional<base::Token> final_group_id =
-      Java_TabModelJniBridge_addTabsToGroup(env, jobj, requested_group_id,
-                                            tabs_to_add);
-  return tab_groups::TabGroupId::FromOptionalToken(final_group_id);
+  return Java_TabModelJniBridge_addTabsToGroup(env, jobj, group_id,
+                                               tabs_to_add);
 }
 
 void TabModelJniBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
@@ -984,7 +966,7 @@ void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   std::vector<int32_t> range =
-      Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id.token());
+      Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id);
   if (range.empty()) {
     LOG(ERROR) << "No tab group found to move.";
     return;

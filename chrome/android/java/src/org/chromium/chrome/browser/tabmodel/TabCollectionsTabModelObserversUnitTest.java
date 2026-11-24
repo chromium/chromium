@@ -161,10 +161,10 @@ public class TabCollectionsTabModelObserversUnitTest {
                         invocation -> {
                             int oldIndex = invocation.getArgument(1);
                             int newIndex = invocation.getArgument(2);
-                            Token newGroupId = invocation.getArgument(3);
+                            TabGroupId newGroupId = invocation.getArgument(3);
                             boolean isPinned = invocation.getArgument(4);
                             Tab tab = mTabs.remove(oldIndex);
-                            tab.setTabGroupId(newGroupId);
+                            tab.setTabGroupId(TabGroupId.toOptionalToken(newGroupId));
                             tab.setIsPinned(isPinned);
                             mTabs.add(newIndex, tab);
                             return newIndex;
@@ -288,7 +288,10 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testWillAddTab_background() {
         MockTab tab = createMockTab(101, mProfile);
         mTabModel.addTab(
-                tab, 0, TabLaunchType.FROM_LONGPRESS_BACKGROUND, TabCreationState.LIVE_IN_BACKGROUND);
+                tab,
+                0,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                TabCreationState.LIVE_IN_BACKGROUND);
         verify(mTabModelObserver).willAddTab(eq(tab), eq(TabLaunchType.FROM_LONGPRESS_BACKGROUND));
     }
 
@@ -312,7 +315,8 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testDidAddTab_doNotSelectTab() {
         MockTab tab1 = createMockTab(101, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         MockTab tab2 = createMockTab(102, mProfile);
         when(mOrderController.willOpenInForeground(
@@ -320,7 +324,10 @@ public class TabCollectionsTabModelObserversUnitTest {
                 .thenReturn(false);
 
         mTabModel.addTab(
-                tab2, 1, TabLaunchType.FROM_LONGPRESS_BACKGROUND, TabCreationState.LIVE_IN_BACKGROUND);
+                tab2,
+                1,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                TabCreationState.LIVE_IN_BACKGROUND);
         verify(mTabModelObserver)
                 .didAddTab(
                         eq(tab2),
@@ -334,9 +341,11 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testDidSelectTab_fromUser() {
         MockTab tab1 = createMockTab(101, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.setIndex(0, TabSelectionType.FROM_USER);
@@ -347,9 +356,11 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testDidSelectTab_fromClose() {
         MockTab tab1 = createMockTab(101, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.setIndex(0, TabSelectionType.FROM_CLOSE);
@@ -373,9 +384,11 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabsSelectionChanged_setIndex() {
         MockTab tab1 = createMockTab(101, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.setIndex(0, TabSelectionType.FROM_USER);
@@ -437,8 +450,10 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testDidMoveTab_individualTab() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.moveTab(tab1.getId(), 1);
@@ -450,9 +465,12 @@ public class TabCollectionsTabModelObserversUnitTest {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
         MockTab tab3 = createMockTab(103, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         Token groupId = new Token(1L, 2L);
         tab1.setTabGroupId(groupId);
@@ -529,11 +547,13 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testWillCloseTabs_closeOneTab() {
         @TabId int tabId1 = 789;
         MockTab tab1 = createMockTab(tabId1, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         @TabId int tabId2 = 456;
         MockTab tab2 = createMockTab(tabId2, mProfile);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
 
@@ -544,15 +564,18 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testWillCloseTabs_closeMultipleTabs() {
         @TabId int tabId1 = 789;
         MockTab tab1 = createMockTab(tabId1, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         @TabId int tabId2 = 456;
         MockTab tab2 = createMockTab(tabId2, mProfile);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         @TabId int tabId3 = 123;
         MockTab tab3 = createMockTab(tabId3, mProfile);
-        mTabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         mTabModel.closeTabs(
                 TabClosureParams.closeTabs(List.of(tab1, tab2)).allowUndo(false).build());
@@ -576,8 +599,10 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testDidRemoveTabForClosure_multipleTabs() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.closeTabs(
@@ -604,9 +629,12 @@ public class TabCollectionsTabModelObserversUnitTest {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
         MockTab tab3 = createMockTab(103, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.closeTabs(
@@ -620,14 +648,15 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testOnTabClosePending_allTabs() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.closeTabs(TabClosureParams.closeAllTabs().allowUndo(true).build());
         verify(mTabModelObserver)
-                .onTabClosePending(
-                        eq(List.of(tab1, tab2)), eq(true), eq(TabClosingSource.UNKNOWN));
+                .onTabClosePending(eq(List.of(tab1, tab2)), eq(true), eq(TabClosingSource.UNKNOWN));
     }
 
     // willUndoTabClosure
@@ -673,8 +702,10 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testTabClosureCommitted_commitAllTabClosures() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         mTabModel.closeTabs(
                 TabClosureParams.closeTabs(List.of(tab1, tab2)).allowUndo(true).build());
 
@@ -726,8 +757,10 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testOnFinishingMultipleTabClosure_canRestore() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.closeTabs(
@@ -749,8 +782,10 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testOnFinishingMultipleTabClosure_cannotRestore() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabModelObserver);
         mTabModel.closeTabs(
@@ -932,8 +967,8 @@ public class TabCollectionsTabModelObserversUnitTest {
                 TabCreationState.LIVE_IN_FOREGROUND);
 
         reset(mTabGroupObserver);
-        Token groupId = mTabModel.createTabGroup(List.of(tab1, tab2));
-        verify(mTabGroupObserver).onTabGroupCreated(eq(groupId));
+        TabGroupId groupId = mTabModel.createTabGroup(List.of(tab1, tab2));
+        verify(mTabGroupObserver).onTabGroupCreated(eq(groupId.getToken()));
     }
 
     // onTabGroupRemoving
@@ -942,8 +977,10 @@ public class TabCollectionsTabModelObserversUnitTest {
     public void testOnTabGroupRemoving() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         Token groupId = new Token(1L, 2L);
         tab1.setTabGroupId(groupId);
@@ -962,9 +999,12 @@ public class TabCollectionsTabModelObserversUnitTest {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
         MockTab tab3 = createMockTab(103, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         Token groupId = new Token(1L, 2L);
         tab1.setTabGroupId(groupId);
@@ -1020,7 +1060,10 @@ public class TabCollectionsTabModelObserversUnitTest {
                 .thenReturn("Old Title");
 
         mTabModel.setTabGroupVisualData(
-                groupId, "New Title", TabGroupColorId.BLUE, /* isCollapsed= */ true);
+                TabGroupId.fromRawToken(groupId),
+                "New Title",
+                TabGroupColorId.BLUE,
+                /* isCollapsed= */ true);
         verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 

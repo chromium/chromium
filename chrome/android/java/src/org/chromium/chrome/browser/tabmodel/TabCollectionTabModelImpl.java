@@ -225,7 +225,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                                     assertNonNull(mNativeTabCollectionTabModelImplPtr),
                                     tab,
                                     insertIndex,
-                                    tabGroupId,
+                                    TabGroupId.fromOptionalToken(tabGroupId),
                                     restoredTabGroup,
                                     tab.getIsPinned());
             invalidateCache();
@@ -1104,21 +1104,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    protected List<Token> listTabGroups() {
+    protected List<TabGroupId> listTabGroups() {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return Collections.emptyList();
-        List<Token> tokens = new ArrayList<>();
-        for (TabGroupId id :
-                TabCollectionTabModelImplJni.get()
-                        .getAllTabGroupIds(mNativeTabCollectionTabModelImplPtr)) {
-            tokens.add(id.getToken());
-        }
-        return tokens;
+        return TabCollectionTabModelImplJni.get()
+                .getAllTabGroupIds(mNativeTabCollectionTabModelImplPtr);
     }
 
     @Override
-    protected int[] getTabGroupTabIndices(Token tabGroupId) {
-        List<Tab> tabs = getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
+    protected int[] getTabGroupTabIndices(TabGroupId tabGroupId) {
+        List<Tab> tabs = getTabsInGroup(tabGroupId);
         if (tabs.isEmpty()) return new int[] {};
 
         Tab firstTab = tabs.get(0);
@@ -1135,7 +1130,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    protected @Nullable Token createTabGroup(List<Tab> tabs) {
+    protected @Nullable TabGroupId createTabGroup(List<Tab> tabs) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return null;
         if (tabs.isEmpty()) return null;
@@ -1144,11 +1139,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             mergeListOfTabsToGroup(tabs, tab, /* notify= */ NOTIFY_IF_NOT_NEW_GROUP);
         }
         // All tabs will have the same group ID, so return the first one.
-        return tab.getTabGroupId();
+        return TabGroupId.fromOptionalToken(tab.getTabGroupId());
     }
 
     @Override
-    protected @Nullable Token addTabsToGroup(@Nullable Token tabGroupId, List<Tab> tabs) {
+    protected @Nullable TabGroupId addTabsToGroup(@Nullable TabGroupId tabGroupId, List<Tab> tabs) {
         assertOnUiThread();
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             return addTabsToGroupInternal(tabGroupId, tabs);
@@ -1157,13 +1152,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     protected void setTabGroupVisualData(
-            Token tabGroupId, String title, @TabGroupColorId int colorId, boolean isCollapsed) {
-        updateTabGroupVisualData(
-                TabGroupId.fromRawToken(tabGroupId),
-                title,
-                colorId,
-                isCollapsed,
-                /* animate= */ false);
+            TabGroupId tabGroupId,
+            String title,
+            @TabGroupColorId int colorId,
+            boolean isCollapsed) {
+        updateTabGroupVisualData(tabGroupId, title, colorId, isCollapsed, /* animate= */ false);
     }
 
     /**
@@ -1383,7 +1376,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (tabGroupId == null) return TabList.INVALID_TAB_INDEX;
         return TabCollectionTabModelImplJni.get()
                 .getIndexOfTabInGroup(
-                        assertNonNull(mNativeTabCollectionTabModelImplPtr), tab, tabGroupId);
+                        assertNonNull(mNativeTabCollectionTabModelImplPtr),
+                        tab,
+                        TabGroupId.fromRawToken(tabGroupId));
     }
 
     @Override
@@ -1764,7 +1759,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                                 assertNonNull(mNativeTabCollectionTabModelImplPtr),
                                 tab,
                                 index,
-                                tabGroupId,
+                                TabGroupId.fromOptionalToken(tabGroupId),
                                 createNewGroup,
                                 tab.getIsPinned());
         updateCacheOnAddTab(tab, finalIndex);
@@ -1852,7 +1847,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
     }
 
-    private @Nullable Token addTabsToGroupInternal(@Nullable Token tabGroupId, List<Tab> tabs) {
+    private @Nullable TabGroupId addTabsToGroupInternal(
+            @Nullable TabGroupId tabGroupId, List<Tab> tabs) {
         if (tabs.isEmpty()) return null;
 
         // In this method we explicitly use ungroup() before grouping to protect any collaborations
@@ -1863,11 +1859,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             ungroup(tabs);
             Tab destinationTab = tabs.get(0);
             mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ DONT_NOTIFY);
-            return destinationTab.getTabGroupId();
+            return TabGroupId.fromOptionalToken(destinationTab.getTabGroupId());
         }
 
         // Case 2: Add tabs to an existing group.
-        List<Tab> tabsInGroup = getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
+        List<Tab> tabsInGroup = getTabsInGroup(tabGroupId);
         if (tabsInGroup.isEmpty()) return null;
 
         List<Tab> tabsToUngroup = new ArrayList<>();
@@ -2148,7 +2144,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 /* isPinned= */ false,
                 /* isDestinationTab= */ false);
 
-        if (detachedTabGroupExists(oldTabGroupId)) {
+        if (detachedTabGroupExists(TabGroupId.fromRawToken(oldTabGroupId))) {
             closeDetachedTabGroup(oldTabGroupId);
         }
     }
@@ -2680,7 +2676,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                                 assertNonNull(mNativeTabCollectionTabModelImplPtr),
                                 index,
                                 newIndex,
-                                newTabGroupId,
+                                TabGroupId.fromOptionalToken(newTabGroupId),
                                 isPinned);
         invalidateCache();
 
@@ -2773,7 +2769,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         TabCollectionTabModelImplJni.get()
                 .createTabGroup(
                         assertNonNull(mNativeTabCollectionTabModelImplPtr),
-                        tabGroupId,
+                        TabGroupId.fromRawToken(tabGroupId),
                         title,
                         colorId,
                         isCollapsed);
@@ -2794,13 +2790,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     private @Nullable Tab getLastShownTabForGroup(Token tabGroupId) {
         return TabCollectionTabModelImplJni.get()
                 .getLastShownTabForGroup(
-                        assertNonNull(mNativeTabCollectionTabModelImplPtr), tabGroupId);
+                        assertNonNull(mNativeTabCollectionTabModelImplPtr),
+                        TabGroupId.fromRawToken(tabGroupId));
     }
 
     private void setLastShownTabForGroup(Token tabGroupId, @Nullable Tab tab) {
         TabCollectionTabModelImplJni.get()
                 .setLastShownTabForGroup(
-                        assertNonNull(mNativeTabCollectionTabModelImplPtr), tabGroupId, tab);
+                        assertNonNull(mNativeTabCollectionTabModelImplPtr),
+                        TabGroupId.fromRawToken(tabGroupId),
+                        tab);
     }
 
     private @Nullable Tab getNextLastShownTabForGroup(Token tabGroupId, List<Tab> tabsToExclude) {
@@ -2884,7 +2883,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             if (committing) {
                 if (removeHidingGroups) mHidingTabGroups.remove(tabGroupId);
-                if (detachedTabGroupExists(tabGroupId)) {
+                if (detachedTabGroupExists(TabGroupId.fromRawToken(tabGroupId))) {
                     closeDetachedTabGroup(tabGroupId);
                 }
             } else {
@@ -2902,7 +2901,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         TabGroupVisualDataStore.deleteAllVisualDataForGroup(tabGroupId);
         TabCollectionTabModelImplJni.get()
                 .closeDetachedTabGroup(
-                        assertNonNull(mNativeTabCollectionTabModelImplPtr), tabGroupId);
+                        assertNonNull(mNativeTabCollectionTabModelImplPtr),
+                        TabGroupId.fromRawToken(tabGroupId));
     }
 
     private void restoreTabGroupVisualData(Token tabGroupId) {
@@ -2918,7 +2918,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @VisibleForTesting
-    boolean detachedTabGroupExists(Token tabGroupId) {
+    boolean detachedTabGroupExists(TabGroupId tabGroupId) {
         assertOnUiThread();
         return TabCollectionTabModelImplJni.get()
                 .detachedTabGroupExists(
@@ -2944,14 +2944,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 JniPtr<NativeTabCollectionTabModelImpl> self,
                 int currentIndex,
                 int newIndex,
-                @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
+                @JniType("std::optional<tab_groups::TabGroupId>") @Nullable TabGroupId tabGroupId,
                 boolean isPinned);
 
         int addTabRecursive(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
                 @JniType("TabAndroid*") Tab tab,
                 int index,
-                @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
+                @JniType("std::optional<tab_groups::TabGroupId>") @Nullable TabGroupId tabGroupId,
                 boolean isAttachingGroup,
                 boolean isPinned);
 
@@ -2960,7 +2960,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         void createTabGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId,
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId,
                 @JniType("std::u16string") String title,
                 @TabGroupColorId int colorId,
                 boolean isCollapsed);
@@ -2990,7 +2990,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         int getIndexOfTabInGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
                 @JniType("TabAndroid*") Tab tab,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         void updateTabGroupVisualData(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
@@ -3014,11 +3014,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         boolean detachedTabGroupExists(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         void closeDetachedTabGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         @JniType("std::vector<TabAndroid*>")
         List<Tab> getAllTabs(JniPtr<NativeTabCollectionTabModelImpl> self);
@@ -3031,13 +3031,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         void setLastShownTabForGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId,
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId,
                 @JniType("TabAndroid*") @Nullable Tab tab);
 
         @JniType("TabAndroid*")
         @Nullable Tab getLastShownTabForGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         int getIndexOfFirstNonPinnedTab(JniPtr<NativeTabCollectionTabModelImpl> self);
 

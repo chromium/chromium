@@ -11,7 +11,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/token_android.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -68,10 +67,8 @@ TabCollectionTabModelImpl::~TabCollectionTabModelImpl() = default;
 int TabCollectionTabModelImpl::MoveTabRecursive(
     size_t current_index,
     size_t new_index,
-    const std::optional<base::Token>& token,
+    const std::optional<TabGroupId>& new_tab_group_id,
     bool new_is_pinned) {
-  std::optional<TabGroupId> new_tab_group_id =
-      tab_groups::TabGroupId::FromOptionalToken(token);
   new_index = GetSafeIndex(/*is_tab_group=*/false, current_index, new_index,
                            new_tab_group_id, new_is_pinned);
 
@@ -83,13 +80,10 @@ int TabCollectionTabModelImpl::MoveTabRecursive(
 int TabCollectionTabModelImpl::AddTabRecursive(
     TabAndroid* tab_android,
     size_t index,
-    const std::optional<base::Token>& token,
+    const std::optional<TabGroupId>& tab_group_id,
     bool is_attaching_group,
     bool is_pinned) {
   CHECK(tab_android);
-
-  std::optional<TabGroupId> tab_group_id =
-      tab_groups::TabGroupId::FromOptionalToken(token);
 
   index = GetSafeIndex(/*is_tab_group=*/false, /*current_index=*/std::nullopt,
                        index, tab_group_id, is_pinned);
@@ -113,14 +107,14 @@ void TabCollectionTabModelImpl::RemoveTab(TabAndroid* tab) {
 }
 
 void TabCollectionTabModelImpl::CreateTabGroup(
-    const base::Token& tab_group_id,
+    const TabGroupId& tab_group_id,
     const std::u16string& tab_group_title,
     int32_t j_color_id,
     bool is_collapsed) {
   TabGroupAndroid::Factory factory(profile_);
   std::unique_ptr<TabGroupTabCollection> group_collection =
       std::make_unique<TabGroupTabCollection>(
-          factory, TabGroupId::FromRawToken(tab_group_id),
+          factory, tab_group_id,
           TabGroupVisualData(tab_group_title,
                              static_cast<TabGroupColorId>(j_color_id),
                              is_collapsed));
@@ -177,12 +171,11 @@ int TabCollectionTabModelImpl::GetTabGroupCount() const {
 
 int TabCollectionTabModelImpl::GetIndexOfTabInGroup(
     TabAndroid* tab_android,
-    const base::Token& tab_group_id) const {
+    const TabGroupId& tab_group_id) const {
   CHECK(tab_android);
 
   TabGroupTabCollection* group_collection =
-      tab_strip_collection_->GetTabGroupCollection(
-          TabGroupId::FromRawToken(tab_group_id));
+      tab_strip_collection_->GetTabGroupCollection(tab_group_id);
 
   if (!group_collection) {
     return kInvalidTabIndex;
@@ -274,25 +267,23 @@ bool TabCollectionTabModelImpl::GetTabGroupCollapsed(
 }
 
 bool TabCollectionTabModelImpl::DetachedTabGroupExists(
-    const base::Token& tab_group_id) const {
-  TabGroupId group_id = TabGroupId::FromRawToken(tab_group_id);
+    const TabGroupId& tab_group_id) const {
   TabGroupTabCollection* detached_group =
-      tab_strip_collection_->GetDetachedTabGroup(group_id);
+      tab_strip_collection_->GetDetachedTabGroup(tab_group_id);
   return detached_group != nullptr;
 }
 
 void TabCollectionTabModelImpl::CloseDetachedTabGroup(
-    const base::Token& tab_group_id) {
-  TabGroupId group_id = TabGroupId::FromRawToken(tab_group_id);
+    const TabGroupId& tab_group_id) {
   TabGroupTabCollection* detached_group =
-      tab_strip_collection_->GetDetachedTabGroup(group_id);
+      tab_strip_collection_->GetDetachedTabGroup(tab_group_id);
   if (!detached_group) {
-    CHECK(!tab_strip_collection_->GetTabGroupCollection(group_id))
+    CHECK(!tab_strip_collection_->GetTabGroupCollection(tab_group_id))
         << "Tried to close an attached tab group.";
     LOG(WARNING) << "Detached tab group already closed.";
     return;
   }
-  tab_strip_collection_->CloseDetachedTabGroup(group_id);
+  tab_strip_collection_->CloseDetachedTabGroup(tab_group_id);
 }
 
 std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs() const {
@@ -347,10 +338,10 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetRepresentativeTabList()
 }
 
 void TabCollectionTabModelImpl::SetLastShownTabForGroup(
-    const base::Token& tab_group_id,
+    const TabGroupId& tab_group_id,
     TabAndroid* tab_android) {
-  TabGroupAndroid* group = static_cast<TabGroupAndroid*>(GetTabGroupChecked(
-      TabGroupId::FromRawToken(tab_group_id), /*allow_detached=*/true));
+  TabGroupAndroid* group = static_cast<TabGroupAndroid*>(
+      GetTabGroupChecked(tab_group_id, /*allow_detached=*/true));
   if (tab_android) {
     group->set_last_shown_tab(tab_android->GetHandle());
   } else {
@@ -359,10 +350,9 @@ void TabCollectionTabModelImpl::SetLastShownTabForGroup(
 }
 
 TabAndroid* TabCollectionTabModelImpl::GetLastShownTabForGroup(
-    const base::Token& tab_group_id) const {
+    const TabGroupId& tab_group_id) const {
   TabGroupAndroid* group = static_cast<TabGroupAndroid*>(
-      GetTabGroupChecked(TabGroupId::FromRawToken(tab_group_id),
-                         /*allow_detached=*/true));
+      GetTabGroupChecked(tab_group_id, /*allow_detached=*/true));
   auto handle = group->last_shown_tab();
   if (!handle) {
     return nullptr;

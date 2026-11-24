@@ -205,10 +205,10 @@ public class TabCollectionTabModelImplUnitTest {
                         invocation -> {
                             int oldIndex = invocation.getArgument(1);
                             int newIndex = invocation.getArgument(2);
-                            Token newGroupId = invocation.getArgument(3);
+                            TabGroupId newGroupId = invocation.getArgument(3);
                             Tab tab = mTabs.get(oldIndex);
                             mTabs.remove(oldIndex);
-                            tab.setTabGroupId(newGroupId);
+                            tab.setTabGroupId(TabGroupId.toOptionalToken(newGroupId));
                             mTabs.add(newIndex, tab);
                             return newIndex;
                         });
@@ -449,7 +449,7 @@ public class TabCollectionTabModelImplUnitTest {
         verify(mTabCollectionTabModelImplJni)
                 .createTabGroup(
                         any(),
-                        eq(tabGroupId),
+                        eq(TabGroupId.fromRawToken(tabGroupId)),
                         eq(groupTitle),
                         eq(groupColor),
                         /* isCollapsed= */ eq(false));
@@ -1687,7 +1687,8 @@ public class TabCollectionTabModelImplUnitTest {
         assertEquals(groupId, restoredTab.getTabGroupId());
         assertEquals(restoredTab, mTabModel.getCurrentTabSupplier().get());
         verify(mTabCollectionTabModelImplJni)
-                .createTabGroup(any(), eq(groupId), any(), anyInt(), anyBoolean());
+                .createTabGroup(
+                        any(), eq(TabGroupId.fromRawToken(groupId)), any(), anyInt(), anyBoolean());
         verify(mTabModelObserver)
                 .didSelectTab(
                         restoredTab, TabSelectionType.FROM_UNDO, /* lastId= */ Tab.INVALID_TAB_ID);

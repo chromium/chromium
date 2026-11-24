@@ -19,7 +19,6 @@ import org.jni_zero.JniTypeToken;
 import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.WarmupManager;
@@ -409,7 +408,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             int index,
             @JniType("content::WebContents*") WebContents webContents,
             boolean shouldPin,
-            @JniType("std::optional<base::Token>") @Nullable Token tabGroupId) {
+            @JniType("std::optional<tab_groups::TabGroupId>") @Nullable TabGroupId tabGroupId) {
         Tab tab =
                 createTabWithWebContents(
                         null,
@@ -654,8 +653,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract void moveTabToIndex(@JniType("TabAndroid*") Tab tab, int newIndex);
 
-    @CalledByNative
     @Override
+    @CalledByNative
     public abstract void moveGroupToIndex(
             @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId, int newIndex);
 
@@ -673,7 +672,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     /** Returns a list of tab groups in this tab model. Order is not guaranteed. */
     @CalledByNative
-    protected abstract @JniType("std::vector<base::Token>") List<Token> listTabGroups();
+    protected abstract @JniType("std::vector<tab_groups::TabGroupId>") List<TabGroupId>
+            listTabGroups();
 
     @Override
     @CalledByNative
@@ -695,11 +695,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     protected abstract @JniType("std::vector<int32_t>") int[] getTabGroupTabIndices(
-            @JniType("base::Token") Token tabGroupId);
+            @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
     @CalledByNative
-    protected abstract @JniType("std::optional<base::Token>") @Nullable Token createTabGroup(
-            @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
+    protected abstract @JniType("std::optional<tab_groups::TabGroupId>") @Nullable TabGroupId
+            createTabGroup(@JniType("std::vector<TabAndroid*>") List<Tab> tabs);
 
     /**
      * Sets the visual data for the specified tab group.
@@ -711,15 +711,17 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     protected abstract void setTabGroupVisualData(
-            @JniType("base::Token") Token tabGroupId,
+            @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId,
             @JniType("std::u16string") String title,
             @TabGroupColorId int colorId,
             boolean isCollapsed);
 
     @CalledByNative
-    protected abstract @JniType("std::optional<base::Token>") @Nullable Token addTabsToGroup(
-            @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
-            @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
+    protected abstract @JniType("std::optional<tab_groups::TabGroupId>") @Nullable TabGroupId
+            addTabsToGroup(
+                    @JniType("std::optional<tab_groups::TabGroupId>")
+                            @Nullable TabGroupId tabGroupId,
+                    @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
 
     @CalledByNative
     protected void ungroup(@JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
