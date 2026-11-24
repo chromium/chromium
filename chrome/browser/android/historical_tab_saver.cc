@@ -25,7 +25,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context_wrapper.h"

@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFac
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorage;
@@ -341,7 +340,6 @@ public class TabListViewHolderTest {
         doReturn(false).when(mProfile).isOffTheRecord();
         doReturn(mProfile).when(mProfile).getOriginalProfile();
 
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);

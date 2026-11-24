@@ -17,7 +17,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -46,7 +45,7 @@ public class TabGroupSyncServiceFactoryTest {
                     public void run() {
                         TabGroupSyncService tabGroupSyncService =
                                 TabGroupSyncServiceFactory.getForProfile(
-                                        ProfileManager.getLastUsedRegularProfile());
+                                        mActivityTestRule.getProfile(false));
                         Assert.assertNotNull(tabGroupSyncService);
                         Assert.assertEquals(tabGroupSyncService, testService);
                     }
@@ -65,7 +64,7 @@ public class TabGroupSyncServiceFactoryTest {
                     public void run() {
                         TabGroupSyncService tabGroupSyncService =
                                 TabGroupSyncServiceFactory.getForProfile(
-                                        ProfileManager.getLastUsedRegularProfile());
+                                        mActivityTestRule.getProfile(false));
                         Assert.assertNotNull(tabGroupSyncService);
                     }
                 });

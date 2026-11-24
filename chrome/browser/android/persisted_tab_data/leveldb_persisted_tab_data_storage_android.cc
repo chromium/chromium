@@ -6,7 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace {
 

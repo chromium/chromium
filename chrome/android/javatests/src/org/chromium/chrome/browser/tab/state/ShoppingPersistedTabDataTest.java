@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.PriceDropMetricsLogger.MetricsResult;
@@ -82,7 +81,6 @@ public class ShoppingPersistedTabDataTest {
         doReturn(ShoppingPersistedTabDataTestUtils.IS_INCOGNITO)
                 .when(mProfileMock)
                 .isOffTheRecord();
-        ProfileManager.setLastUsedProfileForTesting(mProfileMock);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
@@ -100,7 +98,6 @@ public class ShoppingPersistedTabDataTest {
                         }
                     }
                     mTabsToDestroy.clear();
-                    ProfileManager.resetForTesting();
                 });
     }
 

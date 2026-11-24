@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataTestUtils.ShoppingServiceResponse;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -62,7 +61,6 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);
                 });
-        ProfileManager.setLastUsedProfileForTesting(mProfileMock);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
         ShoppingPersistedTabDataService.setServiceForTesting(mShoppingPersistedTabDataService);
