@@ -11,21 +11,70 @@
  * #include=cr-icons-lit cr-shared-style-lit settings-columned-section-lit settings-shared-lit
  * #css_wrapper_metadata_end */
 
+#introDescription {
+  padding-bottom: 12px;
+  padding-top: 4px;
+}
+
 #devicePolicyButton {
+  flex-shrink: 0;
   margin-inline-end: var(--cr-section-padding);
   margin-inline-start: var(--cr-section-padding);
 }
 
-:host-context([settings-refresh-2026]) #devicePolicyRow {
-  margin: 4px var(--cr-section-padding) 0;
+#devicePolicyConsider {
+  padding-bottom: 16px;
+  padding-top: 8px;
 }
 
-:host-context([settings-refresh-2026]) #devicePolicyButton {
-  margin-inline-end: 0;
+#devicePolicyConsider .description-header {
+  font-weight: 500;
+}
+
+#devicePolicyConsider .icon-bulleted-list {
+  padding-inline-start: var(--cr-section-padding);
+}
+
+#devicePolicyConsider .icon-bulleted-list li {
+  align-items: flex-start;
+}
+
+:host-context([settings-refresh-2026]) {
+  #introHeading {
+    padding-bottom: 4px;
+  }
+
+  #introDescription {
+    padding: 0 var(--cr-section-padding) 16px;
+  }
+
+  #devicePolicySection {
+    border-radius: 4px;
+    border-top: none;
+    margin: 4px var(--cr-section-padding) 0;
+    overflow: hidden;
+  }
+
+  #devicePolicyRow {
+    border-radius: 0;
+  }
+
+  #devicePolicyButton {
+    margin-inline-end: 0;
+  }
+
+  #devicePolicyConsider {
+    padding: 0 var(--cr-section-padding) 20px;
+  }
+
+  #devicePolicyConsider .icon-bulleted-list {
+    padding-inline-start: 0;
+  }
 }
 
 #devicePolicyLabel {
   font-weight: 500;
+  margin-bottom: 4px;
 }
 
 .section {

@@ -172,11 +172,82 @@ suite('GeicSubpage', function() {
               .value);
     });
 
+    test('IntroSectionAlwaysVisible', () => {
+      const introSection =
+          page.shadowRoot.querySelector<HTMLElement>('#introSection');
+      assertTrue(!!introSection);
+      assertTrue(isVisible(introSection));
+      const introHeading =
+          page.shadowRoot.querySelector<HTMLElement>('#introHeading');
+      const introDescription =
+          page.shadowRoot.querySelector<HTMLElement>('#introDescription');
+      assertTrue(!!introHeading);
+      assertTrue(!!introDescription);
+      assertEquals(
+          page.i18n('geicIntroHeading'), introHeading.textContent.trim());
+      assertEquals(
+          page.i18n('geicIntroDescription'),
+          introDescription.textContent.trim());
+    });
+
     test('DevicePolicyRowHiddenByDefault', () => {
       assertFalse(
+          !!page.shadowRoot.querySelector<HTMLElement>('#devicePolicySection'));
+      assertFalse(
           !!page.shadowRoot.querySelector<HTMLElement>('#devicePolicyRow'));
+      assertFalse(!!page.shadowRoot.querySelector<HTMLElement>(
+          '#devicePolicyConsider'));
       assertFalse(!!page.shadowRoot.querySelector<CrButtonElement>(
           '#devicePolicyButton'));
+    });
+
+    test('DevicePolicyConsiderBulletsShown', async () => {
+      await createPage(/*showDevicePolicyToggle=*/ true);
+
+      const label =
+          page.shadowRoot.querySelector<HTMLElement>('#devicePolicyLabel');
+      const sublabel =
+          page.shadowRoot.querySelector<HTMLElement>('#devicePolicySublabel');
+      const button =
+          page.shadowRoot.querySelector<CrButtonElement>('#devicePolicyButton');
+      assertTrue(!!label);
+      assertTrue(!!sublabel);
+      assertTrue(!!button);
+      assertEquals(
+          page.i18n('geicDevicePolicyToggle'), label.textContent.trim());
+      assertEquals(
+          page.i18n('geicDevicePolicyToggleSublabel'),
+          sublabel.textContent.trim());
+      assertEquals(
+          page.i18n('geicDevicePolicyButton'), button.textContent.trim());
+
+      const consider =
+          page.shadowRoot.querySelector<HTMLElement>('#devicePolicyConsider');
+      assertTrue(!!consider);
+      assertTrue(isVisible(consider));
+      assertEquals(
+          page.i18n('columnHeadingConsider'),
+          consider.querySelector('.description-header')?.textContent.trim());
+      const bullets = consider.querySelectorAll('ul.icon-bulleted-list > li');
+      assertEquals(3, bullets.length);
+      assertEquals(
+          'settings20:draft-spark',
+          bullets[0]!.querySelector('cr-icon')?.getAttribute('icon'));
+      assertEquals(
+          'settings20:shield-spark',
+          bullets[1]!.querySelector('cr-icon')?.getAttribute('icon'));
+      assertEquals(
+          'settings20:chat-spark',
+          bullets[2]!.querySelector('cr-icon')?.getAttribute('icon'));
+      assertEquals(
+          page.i18n('geicDevicePolicyConsider1'),
+          bullets[0]!.querySelector('.secondary')?.textContent.trim());
+      assertEquals(
+          page.i18n('geicDevicePolicyConsider2'),
+          bullets[1]!.querySelector('.secondary')?.textContent.trim());
+      assertEquals(
+          page.i18n('geicSwitchConsiderChatHistory'),
+          bullets[2]!.querySelector('.secondary')?.textContent.trim());
     });
 
     test('DevicePolicyButtonDisablesGeicAndRestarts', async () => {

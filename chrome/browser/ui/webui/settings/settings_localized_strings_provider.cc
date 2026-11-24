@@ -39,6 +39,7 @@
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -102,6 +103,11 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/personal_context/core/url_constants.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -865,35 +871,92 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-void AddGeicStrings(content::WebUIDataSource* html_source) {
+std::optional<policy::PolicyScope> GetGeminiEnterpriseUrlPolicyScope(
+    Profile* profile) {
+  if (!profile || !profile->GetProfilePolicyConnector() ||
+      !profile->GetProfilePolicyConnector()->policy_service()) {
+    return std::nullopt;
+  }
+  const policy::PolicyMap& policies =
+      profile->GetProfilePolicyConnector()->policy_service()->GetPolicies(
+          policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+  const policy::PolicyMap::Entry* entry =
+      policies.Get(policy::key::kGeminiEnterpriseUrl);
+  return entry ? std::optional(entry->scope) : std::nullopt;
+}
+
+void AddGeicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   // Also registers the GEiC switcher strings shown on `glic_subpage` so that
   // `GetDeviceManagerIdentity()` is only queried once.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"geicSectionTitle", IDS_SETTINGS_GEIC_SECTION_TITLE},
       {"geicRowSublabel", IDS_SETTINGS_GEIC_ROW_SUBLABEL},
-      {"geicDevicePolicyToggle",
-       IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE},
+      {"geicIntroHeading", IDS_SETTINGS_GEIC_INTRO_HEADING},
       {"geicDevicePolicyButton",
        IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_BUTTON},
-      {"glicSwitchToGeicToggle", IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE},
+      {"geicSwitchConsiderChatHistory",
+       IDS_SETTINGS_GEIC_SWITCH_CONSIDER_CHAT_HISTORY},
+      {"glicSwitchToGeicConsider1",
+       IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_CONSIDER_1},
+      {"glicSwitchToGeicConsider2",
+       IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_CONSIDER_2},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  const std::u16string default_domain =
+      l10n_util::GetStringUTF16(IDS_SETTINGS_GEIC_DEFAULT_MANAGEMENT_DOMAIN);
   std::optional<std::string> device_manager = GetDeviceManagerIdentity();
-  const std::u16string manager_domain =
+  const std::u16string device_manager_domain =
       device_manager && !device_manager->empty()
           ? base::UTF8ToUTF16(*device_manager)
-          : l10n_util::GetStringUTF16(
-                IDS_SETTINGS_GEIC_DEFAULT_MANAGEMENT_DOMAIN);
+          : default_domain;
+  std::optional<std::string> account_manager =
+      GetAccountManagerIdentity(profile);
+  const std::u16string account_manager_domain =
+      account_manager && !account_manager->empty()
+          ? base::UTF8ToUTF16(*account_manager)
+          : default_domain;
+  std::u16string intro_manager_domain;
+  const std::optional<policy::PolicyScope> policy_scope =
+      GetGeminiEnterpriseUrlPolicyScope(profile);
+  if (policy_scope == policy::POLICY_SCOPE_MACHINE) {
+    intro_manager_domain = device_manager_domain;
+  } else if (policy_scope == policy::POLICY_SCOPE_USER) {
+    intro_manager_domain = account_manager_domain;
+  } else {
+    intro_manager_domain = account_manager && !account_manager->empty()
+                               ? base::UTF8ToUTF16(*account_manager)
+                               : device_manager_domain;
+  }
+  html_source->AddString(
+      "geicIntroDescription",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_GEIC_INTRO_DESCRIPTION,
+                                 intro_manager_domain));
+  html_source->AddString("geicDevicePolicyToggle",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE,
+                             device_manager_domain));
   html_source->AddString(
       "geicDevicePolicyToggleSublabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE_SUBLABEL,
-          manager_domain));
+          device_manager_domain));
   html_source->AddString(
-      "glicSwitchToGeicToggleSublabel",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE_SUBLABEL, manager_domain));
+      "geicDevicePolicyConsider1",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_GEIC_SWITCH_TO_GIC_CONSIDER_1,
+                                 device_manager_domain));
+  html_source->AddString(
+      "geicDevicePolicyConsider2",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_GEIC_SWITCH_TO_GIC_CONSIDER_2,
+                                 device_manager_domain));
+  html_source->AddString(
+      "glicSwitchToGeicToggle",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE,
+                                 device_manager_domain));
+  html_source->AddString("glicSwitchToGeicToggleSublabel",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE_SUBLABEL,
+                             device_manager_domain));
 
   html_source->AddString(
       "geicDefaultTabAccessToggleLearnMoreUrl",
@@ -4565,6 +4628,11 @@ void AddAutofillStringsForTesting(content::WebUIDataSource* html_source,
   AddAutofillStrings(html_source, profile, web_contents);
 }
 
+void AddGeicStringsForTesting(content::WebUIDataSource* html_source,
+                              Profile* profile) {
+  AddGeicStrings(html_source, profile);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 std::string GetPeopleSignInPromptSecondaryWithAccountForTesting(
     Profile* profile) {
@@ -4584,7 +4652,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddCommonStrings(html_source, profile);
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
-  AddGeicStrings(html_source);
+  AddGeicStrings(html_source, profile);
   AddGeneralStrings(html_source);
   AddGlicStrings(html_source, profile);
   AddPerformanceStrings(html_source);

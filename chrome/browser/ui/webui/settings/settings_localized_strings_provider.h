@@ -35,6 +35,9 @@ void AddAutofillStringsForTesting(content::WebUIDataSource* html_source,
                                   Profile* profile,
                                   content::WebContents* web_contents);
 
+void AddGeicStringsForTesting(content::WebUIDataSource* html_source,
+                              Profile* profile);
+
 #if !BUILDFLAG(IS_CHROMEOS)
 std::string GetPeopleSignInPromptSecondaryWithAccountForTesting(
     Profile* profile);

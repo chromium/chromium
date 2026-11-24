@@ -796,4 +796,25 @@
   <message name="IDS_SETTINGS_GEIC_ROW_SUBLABEL" desc="Sublabel of the Gemini Enterprise row button in Chrome settings leading to the Gemini Enterprise subpage.">
     Ask Gemini anything as you browse, and get answers grounded in files and services across your organization, all with enterprise-level protections
   </message>
+  <message name="IDS_SETTINGS_GEIC_INTRO_HEADING" desc="Intro section heading at the top of a Gemini Enterprise settings subpage introducing the enterprise assistant.">
+    Gemini Enterprise
+  </message>
+  <message name="IDS_SETTINGS_GEIC_INTRO_DESCRIPTION" desc="Intro section description at the top of a Gemini Enterprise settings subpage explaining that the assistant was set up for work by a managing organization. DOMAIN is the managing organization's domain name (e.g. example.com) or the fallback phrase 'your organization'.">
+    Browse with Gemini, set up by <ph name="DOMAIN">$1<ex>example.com</ex></ph> for work. Ask questions as you browse by sharing tabs as context and get answers grounded in your organization’s files and services.
+  </message>
+  <message name="IDS_SETTINGS_GEIC_SWITCH_TO_GIC_CONSIDER_1" desc="First bullet under 'Things to consider' in the assistant-switching section on a Gemini Enterprise settings subpage, warning the user that switching to unmanaged consumer Gemini removes grounding in the organization's files and services. DOMAIN is the managing organization's domain name (e.g. example.com) or the fallback phrase 'your organization'.">
+    Responses won’t be grounded in files or services managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_GEIC_SWITCH_TO_GIC_CONSIDER_2" desc="Second bullet under 'Things to consider' in the assistant-switching section on a Gemini Enterprise settings subpage, warning the user that switching to unmanaged consumer Gemini may remove enterprise protections and change data privacy terms. DOMAIN is the managing organization's domain name (e.g. example.com) or the fallback phrase 'your organization'.">
+    Your interactions with Gemini may not have the protections set up by <ph name="DOMAIN">$1<ex>example.com</ex></ph>, and different data privacy terms might apply
+  </message>
+  <message name="IDS_SETTINGS_GEIC_SWITCH_CONSIDER_CHAT_HISTORY" desc="Bullet item under 'Things to consider' in the assistant-switching section of Gemini settings explaining that chat history does not transfer when switching between Gemini Enterprise and consumer Gemini.">
+    Your chat history won’t transfer
+  </message>
+  <message name="IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_CONSIDER_1" desc="First bullet under 'Things to consider' in the assistant-switching section on a consumer Gemini settings subpage explaining that using Gemini Enterprise on an unmanaged profile may not be recommended.">
+    Using Gemini Enterprise with an unmanaged profile may not be recommended
+  </message>
+  <message name="IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_CONSIDER_2" desc="Second bullet under 'Things to consider' in the assistant-switching section on a consumer Gemini settings subpage noting that different data privacy terms may apply when switching to Gemini Enterprise.">
+    Different data privacy terms may apply
+  </message>
 </grit-part>
