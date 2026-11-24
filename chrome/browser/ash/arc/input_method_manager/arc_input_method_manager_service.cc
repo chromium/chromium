@@ -466,8 +466,13 @@ void ArcInputMethodManagerService::Shutdown() {
 void ArcInputMethodManagerService::OnActiveImeChanged(
     const std::string& ime_id) {
   if (ime_id == kChromeOSIMEIdInArcContainer) {
-    // Chrome OS Keyboard is selected in Android side.
-    SwitchToChromeOSIme();
+    // Chrome OS Keyboard is selected in Android side. Switch the host IME only
+    // when an ARC IME is active.
+    auto* imm = ash::input_method::InputMethodManager::Get();
+    if (ash::extension_ime_util::IsArcIME(
+            imm->GetActiveIMEState()->GetCurrentInputMethod().id())) {
+      SwitchToChromeOSIme();
+    }
     return;
   }
 

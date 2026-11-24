@@ -1697,6 +1697,13 @@ TEST_F(ArcInputMethodManagerServiceHostSideSettingsTest,
   imm()->state()->AddEnabledInputMethodId(extension_ime_id2);
   imm()->state()->AddEnabledInputMethodId(arc_ime_id);
 
+  // A ChromeOS IME is active. Switching to the ChromeOS IME in Android doesn't
+  // change the host IME.
+  imm()->state()->SetCurrentInputMethod(extension_ime_id2);
+  service()->OnActiveImeChanged(arc_ime_service_id);
+  EXPECT_TRUE(imm()->state()->change_input_method_calls_.empty());
+  EXPECT_EQ(extension_ime_id2, imm()->state()->GetCurrentInputMethod().id());
+
   // An ARC IME is active. Switching to the ChromeOS IME in Android deactivates
   // the ARC IME on the host.
   imm()->state()->SetCurrentInputMethod(arc_ime_id);
