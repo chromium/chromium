@@ -2997,7 +2997,7 @@
   {
     "name": "device-trust-connector-desktop-form-factors",
     "owners": [ "mwalachowski@google.com", "szymonkurek@google.com" ],
-    "expiry_milestone": 162
+    "expiry_milestone": 167
   },
   {
     "name": "devtools-aria-live-recording",
