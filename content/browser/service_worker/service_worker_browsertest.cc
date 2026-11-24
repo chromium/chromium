@@ -2208,6 +2208,79 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), script_tao));
 }
 
+// A navigation that the fetch handler passes through with
+// `respondWith(fetch(event.request))` and that is redirected to an external
+// scheme must still reach the external protocol handler. The browser computes
+// the redirect target from the Location header of the opaque-redirect
+// response, so that header must reach the browser unchanged.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       PassThroughNavigationRedirectToExternalScheme) {
+  const GURL kExternalUrl("myapp://callback?code=123");
+
+  class ExternalProtocolRecordingClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    const std::optional<GURL>& external_url() const { return external_url_; }
+
+    bool HandleExternalProtocol(
+        const GURL& url,
+        WebContents::Getter web_contents_getter,
+        FrameTreeNodeId frame_tree_node_id,
+        NavigationUIData* navigation_data,
+        bool is_primary_main_frame,
+        bool is_in_fenced_frame_tree,
+        network::mojom::WebSandboxFlags sandbox_flags,
+        ui::PageTransition page_transition,
+        bool has_user_gesture,
+        const std::optional<url::Origin>& initiating_origin,
+        RenderFrameHost* initiator_document,
+        const net::IsolationInfo& isolation_info,
+        mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
+        override {
+      external_url_ = url;
+      return true;
+    }
+
+   private:
+    std::optional<GURL> external_url_;
+  };
+
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/service_worker/redirect_to_external") {
+          return nullptr;
+        }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_FOUND);
+        response->AddCustomHeader("Location", kExternalUrl.spec());
+        return response;
+      }));
+  StartServerAndNavigateToSetup();
+
+  // Register a service worker that controls /service_worker/ and passes
+  // requests through with `respondWith(fetch(event.request))`.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('fetch_event_respond_with_fetch.js');"));
+
+  ExternalProtocolRecordingClient browser_client;
+  base::HistogramTester histogram_tester;
+  TestNavigationObserver observer(shell()->web_contents());
+  shell()->LoadURL(
+      embedded_test_server()->GetURL("/service_worker/redirect_to_external"));
+  observer.Wait();
+
+  // The fetch handler handled the navigation request.
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.FetchEvent.MainResource.Status",
+      blink::ServiceWorkerStatusCode::kOk, 1);
+  // The redirect to the external scheme reached the external protocol handler.
+  EXPECT_EQ(browser_client.external_url(), kExternalUrl);
+}
+
 // A document that commits with a non-opaque origin because its response carries
 // a `Content-Security-Policy: sandbox allow-same-origin` header must keep its
 // service worker container in the browser process and remain controlled by the
