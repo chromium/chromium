@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 
+#import <optional>
+#import <string>
+
+#import "base/check.h"
 #import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -280,7 +284,22 @@ GeminiPageContext* GeminiTabHelper::GetPartialPageContext(
     bool is_background_tab) {
   bool is_eligible = CanExtractPageContextForGemini(is_background_tab);
 
-  return gemini::CreatePartialPageContextForWebState(web_state_, is_eligible);
+  GeminiPageContext* context =
+      gemini::CreatePartialPageContextForWebState(web_state_, is_eligible);
+  context.modelQualityClientID = ModelQualityClientIDForWebState(web_state_);
+  return context;
+}
+
+// static
+NSString* GeminiTabHelper::ModelQualityClientIDForWebState(
+    web::WebState* web_state) {
+  CHECK(web_state);
+  // `GeminiServiceFactory` returns null for off-the-record profiles.
+  GeminiService* gemini_service = GeminiServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
+  std::optional<std::string> client_id =
+      gemini_service ? gemini_service->GetModelQualityClientID() : std::nullopt;
+  return client_id ? base::SysUTF8ToNSString(*client_id) : nil;
 }
 
 bool GeminiTabHelper::ShouldBlockFloatyFromShowing() {
@@ -646,6 +665,8 @@ void GeminiTabHelper::PopulatePageContextFields() {
 void GeminiTabHelper::OnPageContextWrapperResponse(
     PageContextWrapperCallbackResponse expected_page_context) {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
+  gemini_page_context.modelQualityClientID =
+      ModelQualityClientIDForWebState(web_state_);
   gemini_page_context.geminiPageContextComputationState =
       ios::provider::GeminiPageContextComputationState::kSuccess;
   std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto =

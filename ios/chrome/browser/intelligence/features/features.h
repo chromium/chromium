@@ -623,4 +623,11 @@ BASE_DECLARE_FEATURE(kGeminiNativeHeader);
 // `kIOSGeminiBottomSheetMigration` are enabled.
 bool IsGeminiNativeHeaderEnabled();
 
+// Passes the Model Quality Logging Service (MQLS) client ID to the embedded
+// Gemini iOS SDK for donated logs.
+BASE_DECLARE_FEATURE(kGeminiModelQualityClientID);
+
+// Returns true if `kGeminiModelQualityClientID` is enabled.
+bool IsGeminiModelQualityClientIDEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

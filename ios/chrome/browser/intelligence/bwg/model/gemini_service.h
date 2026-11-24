@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_H_
 
 #import <optional>
+#import <string>
 
 #import "base/observer_list_types.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -55,6 +56,12 @@ class GeminiService : public KeyedService {
   // Returns whether the account capabilities permit standard model execution
   // features.
   virtual bool HasModelExecutionCapability() = 0;
+
+  // Returns the daily-rotating Model Quality Logging Service (MQLS) client ID
+  // used to join donated feedback reports with conversation logs, or
+  // `std::nullopt` if `kGeminiModelQualityClientID`, account capabilities, or
+  // enterprise policies do not allow it.
+  virtual std::optional<std::string> GetModelQualityClientID() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_H_

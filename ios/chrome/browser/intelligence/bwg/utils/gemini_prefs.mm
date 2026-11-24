@@ -64,6 +64,21 @@ bool GeminiAllowedByEnterprise(PrefService* prefs) {
          static_cast<int>(gemini::SettingsPolicy::kNotAllowed);
 }
 
+bool GeminiModelQualityLoggingAllowedByPolicy(PrefService* prefs,
+                                              bool is_enterprise_managed) {
+  if (!GeminiAllowedByEnterprise(prefs) ||
+      prefs->GetInteger(::prefs::kGenAiEnabledByPolicy) !=
+          static_cast<int>(
+              gemini::GenAiDefaultSettingsPolicy::kAllowedImprovingModels)) {
+    return false;
+  }
+  // `kGenAiEnabledByPolicy` is registered with a static default of
+  // `kAllowedImprovingModels`, but `GenAiDefaultSettings` defaults to
+  // `kAllowedWithoutImprovingModels` for enterprise users.
+  return !is_enterprise_managed ||
+         prefs->IsManagedPreference(::prefs::kGenAiEnabledByPolicy);
+}
+
 void ResetGeminiConsent(PrefService* prefs) {
   UpdateUserConsentPrefs(false, prefs);
 }

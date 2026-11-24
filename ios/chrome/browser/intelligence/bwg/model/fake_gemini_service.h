@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_FAKE_GEMINI_SERVICE_H_
 
 #import <optional>
+#import <string>
 
 #import "base/observer_list.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -25,6 +26,7 @@ class FakeGeminiService : public GeminiService {
       override;
   bool IsWorkspacePolicyCheckPending() override;
   void CheckGeminiEnterpriseEligibilityIfNeeded() override;
+  std::optional<std::string> GetModelQualityClientID() override;
 
   // Test helpers:
   void SetIsEligible(bool is_eligible) {

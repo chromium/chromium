@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -28,7 +31,10 @@ std::unique_ptr<KeyedService> BuildGeminiService(ProfileIOS& profile) {
   return std::make_unique<GeminiServiceImpl>(
       AuthenticationServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), profile.GetPrefs(),
-      OptimizationGuideServiceFactory::GetForProfile(profile));
+      OptimizationGuideServiceFactory::GetForProfile(profile),
+      policy::BrowserManagementServiceFactory::GetForProfile(profile),
+      policy::BrowserManagementServiceFactory::GetForPlatform(),
+      GetApplicationContext()->GetLocalState());
 }
 
 }  // namespace
@@ -38,6 +44,7 @@ GeminiServiceFactory::GeminiServiceFactory(PassKey key)
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
+  DependsOn(policy::BrowserManagementServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService> GeminiServiceFactory::BuildServiceInstanceFor(

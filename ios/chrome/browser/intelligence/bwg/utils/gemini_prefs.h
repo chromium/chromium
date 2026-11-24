@@ -26,6 +26,13 @@ bool GeminiAllowedByPolicy(PrefService* prefs);
 bool GenAiAllowedByEnterprise(PrefService* prefs);
 bool GeminiAllowedByEnterprise(PrefService* prefs);
 
+// Returns whether enterprise policies allow Gemini to log data for improving
+// AI models. `GenAiDefaultSettings` defaults to allowing model improvement only
+// for unmanaged users, so when `is_enterprise_managed` is true the policy must
+// be explicitly set by an administrator.
+bool GeminiModelQualityLoggingAllowedByPolicy(PrefService* prefs,
+                                              bool is_enterprise_managed);
+
 // Functions that interact with the Gemini consent.
 void ResetGeminiConsent(PrefService* prefs);
 // Returns the current `FirstRunState` for Gemini based on user prefs.

@@ -1097,3 +1097,9 @@ bool IsGeminiNativeHeaderEnabled() {
   return IsIOSGeminiBottomSheetMigrationEnabled() &&
          base::FeatureList::IsEnabled(kGeminiNativeHeader);
 }
+
+BASE_FEATURE(kGeminiModelQualityClientID, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiModelQualityClientIDEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiModelQualityClientID);
+}

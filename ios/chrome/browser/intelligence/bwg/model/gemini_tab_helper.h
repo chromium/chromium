@@ -155,6 +155,10 @@ class GeminiTabHelper : public web::WebStateObserver,
   // eligibility checks related to this tab's visibility, NextIA or Gemini Live.
   GeminiPageContext* GetPartialPageContext(bool is_background_tab = false);
 
+  // Returns the Model Quality Logging Service (MQLS) client ID for the profile
+  // of `web_state`, or `nil` if it is unavailable.
+  static NSString* ModelQualityClientIDForWebState(web::WebState* web_state);
+
   // Returns true if a show floaty trigger should be blocked resulting in an
   // early return and the floaty remaining hidden. Used when the floaty is
   // forced to be hidden such as an overlay, alert, or banner being presented

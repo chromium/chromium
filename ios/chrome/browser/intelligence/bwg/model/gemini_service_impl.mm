@@ -6,12 +6,16 @@
 
 #import <optional>
 
+#import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/optimization_guide/core/model_quality/model_quality_util.h"
+#import "components/policy/core/common/management/management_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -31,11 +35,20 @@ GeminiServiceImpl::GeminiServiceImpl(
     AuthenticationService* auth_service,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    OptimizationGuideService* optimization_guide) {
+    OptimizationGuideService* optimization_guide,
+    policy::ManagementService* profile_management_service,
+    policy::ManagementService* platform_management_service,
+    PrefService* local_state) {
+  CHECK(profile_management_service);
+  CHECK(platform_management_service);
+  CHECK(local_state);
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
   identity_manager_observation_.Observe(identity_manager_);
   pref_service_ = pref_service;
+  profile_management_service_ = profile_management_service;
+  platform_management_service_ = platform_management_service;
+  local_state_ = local_state;
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       prefs::kGeminiEnabledByPolicy,
@@ -246,6 +259,16 @@ bool GeminiServiceImpl::HasModelExecutionCapability() {
   return gemini::HasModelExecutionCapability(PrimaryAccountInfo());
 }
 
+std::optional<std::string> GeminiServiceImpl::GetModelQualityClientID() {
+  if (!IsGeminiModelQualityClientIDEnabled() ||
+      !HasModelExecutionCapability() ||
+      !gemini::GeminiModelQualityLoggingAllowedByPolicy(
+          pref_service_, IsEnterpriseManaged())) {
+    return std::nullopt;
+  }
+  return optimization_guide::GetOrCreateGlicModelQualityClientId(local_state_);
+}
+
 void GeminiServiceImpl::ClearConsentPref() {
   pref_service_->ClearPref(prefs::kIOSBwgConsent);
   pref_service_->ClearPref(prefs::kIOSGeminiLiveConsent);
@@ -279,4 +302,12 @@ void GeminiServiceImpl::SetIsDisabledByGeminiPolicy(
 AccountInfo GeminiServiceImpl::PrimaryAccountInfo() const {
   return identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+}
+
+bool GeminiServiceImpl::IsEnterpriseManaged() const {
+  // Treat an account whose hosted domain is not yet known as managed, so that
+  // enterprise accounts never use the consumer default while it is fetched.
+  return profile_management_service_->IsManaged() ||
+         platform_management_service_->IsManaged() ||
+         PrimaryAccountInfo().IsManaged() != signin::Tribool::kFalse;
 }

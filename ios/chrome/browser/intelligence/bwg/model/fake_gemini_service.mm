@@ -39,3 +39,7 @@ bool FakeGeminiService::HasGeminiInChromeCapability() {
 bool FakeGeminiService::HasModelExecutionCapability() {
   return has_model_execution_capability_;
 }
+
+std::optional<std::string> FakeGeminiService::GetModelQualityClientID() {
+  return std::nullopt;
+}

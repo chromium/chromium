@@ -3200,6 +3200,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFixVcnStrikeDatabaseFallback)},
+    {"gemini-model-quality-client-id",
+     flag_descriptions::kGeminiModelQualityClientIDName,
+     flag_descriptions::kGeminiModelQualityClientIDDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiModelQualityClientID)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

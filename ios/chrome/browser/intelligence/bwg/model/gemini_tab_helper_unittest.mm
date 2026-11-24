@@ -13,6 +13,7 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
@@ -21,9 +22,15 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/feature_engagement/test/scoped_iph_feature_list.h"
 #import "components/feature_engagement/test/test_tracker.h"
+#import "components/optimization_guide/core/model_quality/model_quality_util.h"
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/signin/public/identity_manager/signin_constants.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -60,6 +67,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "mojo/public/cpp/bindings/remote.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -150,6 +158,20 @@ class GeminiTabHelperTest : public PlatformTest {
     tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
     run_loop_.Run();
     return tracker;
+  }
+
+  // Marks the primary account as a consumer (unmanaged) account. Accounts whose
+  // hosted domain is unknown are treated as managed for MQLS logging.
+  void MarkPrimaryAccountAsConsumer() {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
+    AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+    signin::UpdateAccountInfoForAccount(
+        identity_manager,
+        AccountInfo::Builder(account_info)
+            .SetHostedDomain(signin::constants::kNoHostedDomainFound)
+            .Build());
   }
 
   void AddOptimizationGuideHint(const GURL& url) {
@@ -887,4 +909,35 @@ TEST_F(GeminiTabHelperTest, GetPartialPageContext_Ntp) {
   ASSERT_NE(result.context, nil);
   EXPECT_EQ(result.context.geminiPageContextComputationState,
             ios::provider::GeminiPageContextComputationState::kBlocked);
+}
+
+// Tests that `GetPartialPageContext` populates `modelQualityClientID` when the
+// feature is enabled.
+TEST_F(GeminiTabHelperTest,
+       GetPartialPageContext_PopulatesModelQualityClientIDWhenEnabled) {
+  feature_list_.InitWithFeatures({kGeminiModelQualityClientID, kPageActionMenu},
+                                 {});
+  MarkPrimaryAccountAsConsumer();
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+
+  GeminiPageContext* context = tab_helper()->GetPartialPageContext();
+  ASSERT_NE(context, nil);
+  EXPECT_NSEQ(context.modelQualityClientID,
+              base::SysUTF8ToNSString(
+                  optimization_guide::GetOrCreateGlicModelQualityClientId(
+                      GetApplicationContext()->GetLocalState())));
+}
+
+// Tests that `GetPartialPageContext` does not populate `modelQualityClientID`
+// when the feature is disabled.
+TEST_F(GeminiTabHelperTest,
+       GetPartialPageContext_DoesNotPopulateModelQualityClientIDWhenDisabled) {
+  feature_list_.InitWithFeatures({kPageActionMenu},
+                                 {kGeminiModelQualityClientID});
+  MarkPrimaryAccountAsConsumer();
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+
+  GeminiPageContext* context = tab_helper()->GetPartialPageContext();
+  ASSERT_NE(context, nil);
+  EXPECT_EQ(context.modelQualityClientID, nil);
 }

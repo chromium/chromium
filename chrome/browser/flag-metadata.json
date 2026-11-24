@@ -5576,6 +5576,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "gemini-model-quality-client-id",
+    "owners": [ "liuandrew@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "gemini-multi-tab-context",
     "owners": [ "joepeplowski@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 166

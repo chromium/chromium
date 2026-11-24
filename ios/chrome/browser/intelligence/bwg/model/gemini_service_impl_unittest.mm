@@ -5,11 +5,18 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 
 #import <memory>
+#import <optional>
+#import <string>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
+#import "components/optimization_guide/core/model_quality/model_quality_util.h"
+#import "components/policy/core/common/management/management_service.h"
+#import "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -18,6 +25,7 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
@@ -25,8 +33,12 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -51,7 +63,10 @@ std::unique_ptr<KeyedService> BuildGeminiServiceImpl(ProfileIOS& profile) {
   return std::make_unique<GeminiServiceImpl>(
       AuthenticationServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), profile.GetPrefs(),
-      OptimizationGuideServiceFactory::GetForProfile(profile));
+      OptimizationGuideServiceFactory::GetForProfile(profile),
+      policy::BrowserManagementServiceFactory::GetForProfile(profile),
+      policy::BrowserManagementServiceFactory::GetForPlatform(),
+      GetApplicationContext()->GetLocalState());
 }
 
 }  // namespace
@@ -483,4 +498,152 @@ TEST_F(GeminiServiceImplTest, OnPolicyPrefChanged_UpdatesEligibility) {
 
   // User should now be ineligible again.
   EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+}
+
+// Tests that the MQLS client ID is returned by default for an unmanaged account
+// with the model execution capability.
+TEST_F(GeminiServiceImplTest, GetModelQualityClientID_UnmanagedAccount) {
+  scoped_feature_list_.InitAndEnableFeature(kGeminiModelQualityClientID);
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(),
+            optimization_guide::GetOrCreateGlicModelQualityClientId(
+                GetApplicationContext()->GetLocalState()));
+}
+
+// Tests that no MQLS client ID is returned when `kGeminiModelQualityClientID`
+// is disabled.
+TEST_F(GeminiServiceImplTest, GetModelQualityClientID_NulloptWhenDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(kGeminiModelQualityClientID);
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(), std::nullopt);
+}
+
+// Tests that no MQLS client ID is returned when the account lacks the model
+// execution capability.
+TEST_F(GeminiServiceImplTest,
+       GetModelQualityClientID_NulloptWithoutModelExecutionCapability) {
+  scoped_feature_list_.InitAndEnableFeature(kGeminiModelQualityClientID);
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kFalse);
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(), std::nullopt);
+}
+
+// Tests that no MQLS client ID is returned when `GenAiDefaultSettings` does not
+// allow improving models.
+TEST_F(GeminiServiceImplTest,
+       GetModelQualityClientID_NulloptWhenPolicyDisallowsImprovingModels) {
+  scoped_feature_list_.InitAndEnableFeature(kGeminiModelQualityClientID);
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+  pref_service_->SetInteger(
+      prefs::kGenAiEnabledByPolicy,
+      static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedWithoutImprovingModels));
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(), std::nullopt);
+}
+
+// Tests that a managed browser requires `GenAiDefaultSettings` to be explicitly
+// set to allow improving models.
+TEST_F(GeminiServiceImplTest,
+       GetModelQualityClientID_ManagedBrowserRequiresExplicitPolicy) {
+  scoped_feature_list_.InitAndEnableFeature(kGeminiModelQualityClientID);
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+  policy::ScopedManagementServiceOverrideForTesting management_override(
+      policy::BrowserManagementServiceFactory::GetForProfile(profile_.get()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(), std::nullopt);
+
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kGenAiEnabledByPolicy,
+      base::Value(static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedImprovingModels)));
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(),
+            optimization_guide::GetOrCreateGlicModelQualityClientId(
+                GetApplicationContext()->GetLocalState()));
+}
+
+// Tests that a platform-managed device requires `GenAiDefaultSettings` to be
+// explicitly set to allow improving models.
+TEST_F(GeminiServiceImplTest,
+       GetModelQualityClientID_PlatformManagedRequiresExplicitPolicy) {
+  scoped_feature_list_.InitAndEnableFeature(kGeminiModelQualityClientID);
+  SignInUnmanagedAccountWithCapability(signin::Tribool::kTrue);
+  policy::ScopedManagementServiceOverrideForTesting management_override(
+      policy::BrowserManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(), std::nullopt);
+
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kGenAiEnabledByPolicy,
+      base::Value(static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedImprovingModels)));
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(),
+            optimization_guide::GetOrCreateGlicModelQualityClientId(
+                GetApplicationContext()->GetLocalState()));
+}
+
+// Tests that a managed account requires `GenAiDefaultSettings` to be explicitly
+// set to allow improving models.
+TEST_F(GeminiServiceImplTest,
+       GetModelQualityClientID_ManagedAccountRequiresExplicitPolicy) {
+  scoped_feature_list_.InitAndEnableFeature(kGeminiModelQualityClientID);
+  SignInManagedAccountWithCapability(signin::Tribool::kTrue);
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(), std::nullopt);
+
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kGenAiEnabledByPolicy,
+      base::Value(static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedImprovingModels)));
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(),
+            optimization_guide::GetOrCreateGlicModelQualityClientId(
+                GetApplicationContext()->GetLocalState()));
+}
+
+// Tests that an account whose hosted domain is not yet known is treated as
+// managed and requires `GenAiDefaultSettings` to be explicitly set to allow
+// improving models.
+TEST_F(GeminiServiceImplTest,
+       GetModelQualityClientID_UnknownHostedDomainRequiresExplicitPolicy) {
+  scoped_feature_list_.InitAndEnableFeature(kGeminiModelQualityClientID);
+  // Prevent hosted domain fetches from completing so the account's managed
+  // status stays `kUnknown`.
+  base::ScopedClosureRunner reset_hosted_domain_override =
+      fake_system_identity_manager()->OverrideGetHostedDomainImplementation(
+          base::BindRepeating(
+              [](id<SystemIdentity>,
+                 SystemIdentityManager::HostedDomainCallback) {}));
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(identity);
+  profile_manager_.GetProfileAttributesStorage()
+      ->UpdateAttributesForProfileWithName(
+          profile_->GetProfileName(),
+          base::BindOnce(
+              [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
+                auto gaia_ids = attr.GetAttachedGaiaIds();
+                gaia_ids.insert(gaia_id);
+                attr.SetAttachedGaiaIds(gaia_ids);
+              },
+              identity.gaiaId));
+  auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+  const CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  SetCapabilityForAccount(account_id, /*capability=*/true);
+  ASSERT_EQ(identity_manager_->FindExtendedAccountInfoByAccountId(account_id)
+                .IsManaged(),
+            signin::Tribool::kUnknown);
+
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(), std::nullopt);
+
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kGenAiEnabledByPolicy,
+      base::Value(static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedImprovingModels)));
+  EXPECT_EQ(gemini_service_->GetModelQualityClientID(),
+            optimization_guide::GetOrCreateGlicModelQualityClientId(
+                GetApplicationContext()->GetLocalState()));
 }

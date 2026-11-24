@@ -9,7 +9,9 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -134,4 +136,34 @@ TEST_F(GeminiPrefsTest, CurrentFirstRunState_CompletedWithoutPromo) {
   gemini::UpdateUserConsentPrefs(/*consent=*/true, prefs);
   EXPECT_EQ(gemini::CurrentFirstRunState(prefs),
             gemini::FirstRunState::kCompleted);
+}
+
+// Tests that `GeminiModelQualityLoggingAllowedByPolicy` allows logging for
+// unmanaged users only while `GenAiDefaultSettings` allows improving models.
+TEST_F(GeminiPrefsTest, GeminiModelQualityLoggingAllowedByPolicy_Unmanaged) {
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_TRUE(gemini::GeminiModelQualityLoggingAllowedByPolicy(
+      prefs, /*is_enterprise_managed=*/false));
+
+  prefs->SetInteger(
+      prefs::kGenAiEnabledByPolicy,
+      static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedWithoutImprovingModels));
+  EXPECT_FALSE(gemini::GeminiModelQualityLoggingAllowedByPolicy(
+      prefs, /*is_enterprise_managed=*/false));
+}
+
+// Tests that `GeminiModelQualityLoggingAllowedByPolicy` requires an explicitly
+// managed `GenAiDefaultSettings` value for enterprise-managed users.
+TEST_F(GeminiPrefsTest, GeminiModelQualityLoggingAllowedByPolicy_Managed) {
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_FALSE(gemini::GeminiModelQualityLoggingAllowedByPolicy(
+      prefs, /*is_enterprise_managed=*/true));
+
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kGenAiEnabledByPolicy,
+      base::Value(static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedImprovingModels)));
+  EXPECT_TRUE(gemini::GeminiModelQualityLoggingAllowedByPolicy(
+      prefs, /*is_enterprise_managed=*/true));
 }

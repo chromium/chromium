@@ -1014,6 +1014,12 @@ inline constexpr char kGeminiLuminousName[] = "Gemini Luminous";
 inline constexpr char kGeminiLuminousDescription[] =
     "Enables Gemini Luminous UI.";
 
+inline constexpr char kGeminiModelQualityClientIDName[] =
+    "Gemini Feedback Data Donation";
+inline constexpr char kGeminiModelQualityClientIDDescription[] =
+    "When enabled, Gemini feedback offers an option to donate conversation "
+    "data to help improve Gemini.";
+
 inline constexpr char kGeminiMultiTabContextName[] = "Gemini Multi Tab Context";
 inline constexpr char kGeminiMultiTabContextDescription[] =
     "Enables attaching multiple tabs in Gemini.";

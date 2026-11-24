@@ -447,8 +447,11 @@ GeminiPageContext* GeminiSharedTabsManagerImpl::CreatePartialPageContext(
 
   // If `web_state` is unrealized, the tab has cached APC and we can bypass
   // page context extraction eligibility checks.
-  return gemini::CreatePartialPageContextForWebState(web_state,
-                                                     /*is_eligible=*/true);
+  GeminiPageContext* context = gemini::CreatePartialPageContextForWebState(
+      web_state, /*is_eligible=*/true);
+  context.modelQualityClientID =
+      GeminiTabHelper::ModelQualityClientIDForWebState(web_state);
+  return context;
 }
 
 void GeminiSharedTabsManagerImpl::OnPersistTabContextLookupComplete(
@@ -551,6 +554,7 @@ void GeminiSharedTabsManagerImpl::CompleteCachedPageContextForTab(
 
   GeminiPageContext* full_context = [[GeminiPageContext alloc] init];
   full_context.favicon = partial_context.favicon;
+  full_context.modelQualityClientID = partial_context.modelQualityClientID;
   full_context.geminiPageContextComputationState =
       ios::provider::GeminiPageContextComputationState::kSuccess;
   full_context.uniquePageContext = std::move(proto_context);

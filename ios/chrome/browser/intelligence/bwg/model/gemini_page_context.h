@@ -38,6 +38,10 @@ class PageContext;
 // The favicon of the attached page. Uses a default icon if it's unavailable.
 @property(nonatomic, strong) UIImage* favicon;
 
+// The daily-rotating Model Quality Logging Service (MQLS) client ID used to
+// join donated feedback reports with conversation logs, or `nil` if disabled.
+@property(nonatomic, copy) NSString* modelQualityClientID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_PAGE_CONTEXT_H_

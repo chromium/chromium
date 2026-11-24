@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_IMPL_H_
 
 #import <optional>
+#import <string>
 
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
@@ -21,6 +22,9 @@ namespace gemini {
 struct IneligibilityReasons;
 enum class FirstRunState;
 }  // namespace gemini
+namespace policy {
+class ManagementService;
+}  // namespace policy
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -34,7 +38,10 @@ class GeminiServiceImpl : public GeminiService,
   GeminiServiceImpl(AuthenticationService* auth_service,
                     signin::IdentityManager* identity_manager,
                     PrefService* pref_service,
-                    OptimizationGuideService* optimization_guide);
+                    OptimizationGuideService* optimization_guide,
+                    policy::ManagementService* profile_management_service,
+                    policy::ManagementService* platform_management_service,
+                    PrefService* local_state);
   ~GeminiServiceImpl() override;
   void Shutdown() override;
 
@@ -48,6 +55,7 @@ class GeminiServiceImpl : public GeminiService,
   void CheckGeminiEnterpriseEligibilityIfNeeded() override;
   bool HasGeminiInChromeCapability() override;
   bool HasModelExecutionCapability() override;
+  std::optional<std::string> GetModelQualityClientID() override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -78,6 +86,17 @@ class GeminiServiceImpl : public GeminiService,
   // The optimization guide service for model execution and page metadata.
   raw_ptr<OptimizationGuideService> optimization_guide_;
 
+  // The profile's browser management service, used to determine whether the
+  // profile is enterprise-managed.
+  raw_ptr<policy::ManagementService> profile_management_service_;
+
+  // The platform management service, used to determine whether the device is
+  // enterprise-managed.
+  raw_ptr<policy::ManagementService> platform_management_service_;
+
+  // The application-wide local state, which stores the MQLS client ID.
+  raw_ptr<PrefService> local_state_;
+
   // Whether the user is ineligible by the Gemini Enterprise policy (not Chrome
   // Enterprise).
   std::optional<bool> is_disabled_by_gemini_policy_;
@@ -100,6 +119,10 @@ class GeminiServiceImpl : public GeminiService,
 
   // Returns the extended AccountInfo for the primary account.
   AccountInfo PrimaryAccountInfo() const;
+
+  // Returns whether the profile, device, or primary account is
+  // enterprise-managed.
+  bool IsEnterpriseManaged() const;
 
   // List of observers.
   base::ObserverList<GeminiService::Observer> observers_;
