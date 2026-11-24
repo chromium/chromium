@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -82,19 +81,6 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
                 image:image
                  type:MenuActionType::CopyURL
                 block:block];
-}
-
-- (UIAction*)actionToShowFullURL:(NSString*)URLString
-                           block:(ProceduralBlock)block {
-  UIAction* action = [self actionWithTitle:nil
-                                     image:nil
-                                      type:MenuActionType::ShowFullURL
-                                     block:block];
-  action.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_SHOW_FULL_URL_BUTTON_ACCESSIBILITY_LABEL);
-  action.attributes = UIMenuElementAttributesKeepsMenuPresented;
-  action.subtitle = ios::provider::StyledContextMenuStringForString(URLString);
-  return action;
 }
 
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block {

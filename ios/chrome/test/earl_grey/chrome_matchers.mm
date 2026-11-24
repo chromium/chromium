@@ -287,10 +287,6 @@ id<GREYMatcher> ShareButton() {
   return [ChromeMatchersAppInterface shareButton];
 }
 
-id<GREYMatcher> ContextMenuButtonContainingText(NSString* text) {
-  return [ChromeMatchersAppInterface contextMenuButtonContainingText:text];
-}
-
 id<GREYMatcher> TabShareButton() {
   return [ChromeMatchersAppInterface tabShareButton];
 }

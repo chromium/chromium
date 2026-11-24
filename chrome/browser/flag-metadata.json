@@ -6570,11 +6570,6 @@
     "expiry_milestone": 163
   },
   {
-    "name": "ios-web-context-menu-new-title",
-    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 154
-  },
-  {
     "name": "iph-autofill-credit-card-benefit-feature",
     "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145

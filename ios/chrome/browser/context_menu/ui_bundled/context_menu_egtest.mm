@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/buildflags.h"
@@ -99,11 +98,6 @@ const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
 const char kInitialPageDestinationLinkText[] = "link";
 
-// The DOM element ID of the long link to the destination page.
-const char kInitialPageDestinationLongLinkID[] = "LongLink";
-// The text of the long link to the destination page.
-const char kInitialPageDestinationLongLinkText[] = "LongLink";
-
 // Returns an ElementSelector for the chromium image on the logo page.
 ElementSelector* LogoPageChromiumImageIdSelector() {
   return [ElementSelector selectorWithElementID:kLogoPageChromiumImageId];
@@ -113,12 +107,6 @@ ElementSelector* LogoPageChromiumImageIdSelector() {
 // initial page.
 ElementSelector* InitialPageDestinationLinkIdSelector() {
   return [ElementSelector selectorWithElementID:kInitialPageDestinationLinkId];
-}
-
-// Returns an ElementSelector for the long link to the destination page.
-ElementSelector* InitialPageDestinationLongLinkIDSelector() {
-  return
-      [ElementSelector selectorWithElementID:kInitialPageDestinationLongLinkID];
 }
 
 // URL to a page with a link with a javascript: scheme.
@@ -158,8 +146,6 @@ NSString* const kTruncationTestPageTemplateHtml =
 const char kShortTruncationPageUrl[] = "/shortTruncation";
 
 const char kLongTruncationPageUrl[] = "/longTruncation";
-
-const char kLongLinkPageURL[] = "/longLink";
 
 NSString* const kShortLinkHref = @"/destination";
 
@@ -202,18 +188,6 @@ NSString* const kLongImgTitle =
      "characters, so formulated as to test the very limits of the context "
      "menu layout system, and to ensure that all users can enjoy the full "
      "majesty of image titles, however sesquipedalian they may be!";
-
-// Template HTML, URLs, and link and title values for title truncation tests.
-// (Use NSString for easier format printing and matching).
-// Template params:
-//    [0] NSString - link href.
-//    [1] char[]   - link element ID.
-NSString* const kLongLinkTestPageTemplateHtml =
-    @"<html><head><meta name='viewport' content='width=device-width, "
-     "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
-     "/></head><body><p style='margin-bottom:50px'>Short title test.</p>"
-     "<p><a style='margin-left:150px' href='%@' id='%s'>LongLink</a></p>"
-     "</body></html>";
 
 // Returns an ElementSelector for long pressing the first link in the page.
 ElementSelector* ElementSelectorToLongPressLink() {
@@ -317,11 +291,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    kInitialPageDestinationLinkId,
                                    kShortImgTitle, kLogoPageChromiumImageId];
     http_response->set_content(base::SysNSStringToUTF8(content));
-  } else if (request.relative_url == kLongLinkPageURL) {
-    NSString* content =
-        [NSString stringWithFormat:kLongLinkTestPageTemplateHtml, kLongLinkHref,
-                                   kInitialPageDestinationLongLinkText];
-    http_response->set_content(base::SysNSStringToUTF8(content));
 #if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
   } else if (request.relative_url == kInvalidImagePageUrl) {
     http_response->set_content(
@@ -400,10 +369,6 @@ void CheckAndAcceptSystemDialog(base::TimeDelta timeout) {
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
-
-  if ([self isRunningTest:@selector(testShowFullURLInWebContextMenu)]) {
-    config.features_disabled.push_back(kIOSWebContextMenuNewTitle);
-  }
 
   return config;
 }
@@ -1237,39 +1202,6 @@ TAG_SMOKE_TEST(ContextMenuTestCase, testCopyLink);
   [[EarlGrey selectElementWithMatcher:ShareButton()]
       assertWithMatcher:grey_nil()];
   [DataControlsAppInterface clearDataControlRules];
-}
-
-// Tests that one (and only one, meaning the menu title is not present) button
-// partially containing the url is present and tapping on it shows an alert
-// showing the full URL.
-- (void)testShowFullURLInWebContextMenu {
-  const GURL pageURL = self.testServer->GetURL(kLongLinkPageURL);
-  const GURL longURL =
-      self.testServer->GetURL(base::SysNSStringToUTF8(kLongLinkHref));
-
-  [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:kInitialPageDestinationLongLinkText];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  [ChromeEarlGreyUI
-      longPressElementOnWebView:InitialPageDestinationLongLinkIDSelector()];
-
-  std::u16string formattedURL = url_formatter::FormatUrl(longURL);
-  NSString* stringURL = base::SysUTF16ToNSString(formattedURL);
-
-  [ChromeEarlGrey waitForForegroundWindowCount:1];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ContextMenuButtonContainingText([stringURL
-                     substringToIndex:20])] performAction:grey_tap()];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
-                                              @"AlertAccessibilityIdentifier")),
-                                          chrome_test_util::ContainsPartialText(
-                                              stringURL),
-                                          nil)]
-      assertWithMatcher:grey_notNil()];
 }
 
 // Tests "Share Image" action in the web context menu when long

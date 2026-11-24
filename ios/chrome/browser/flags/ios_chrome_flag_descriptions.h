@@ -1251,12 +1251,6 @@ inline constexpr char kIOSUnifiedManualFallbackSheetDescription[] =
     "Enables the unified manual fallback bottom sheet with a single entry "
     "point, all Autofill entity categories, and entity detail views on iOS.";
 
-inline constexpr char kIOSWebContextMenuNewTitleName[] =
-    "Use the new title for the Web context menu";
-inline constexpr char kIOSWebContextMenuNewTitleDescription[] =
-    "Enables actions in context menu title instead of customized action for "
-    "web context menu.";
-
 inline constexpr char kIdentityConfirmationSnackbarName[] =
     "Identity Confirmation Snackbar";
 inline constexpr char kIdentityConfirmationSnackbarDescription[] =

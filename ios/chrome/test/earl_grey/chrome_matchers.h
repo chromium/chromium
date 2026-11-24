@@ -232,9 +232,6 @@ id<GREYMatcher> NewTabButton();
 // Returns a matcher for the Share menu button.
 id<GREYMatcher> ShareButton();
 
-// Returns a matcher for a context menu button that contains `text`.
-id<GREYMatcher> ContextMenuButtonContainingText(NSString* text);
-
 // Returns a matcher for the tab Share button (either in the omnibox or
 // toolbar).
 id<GREYMatcher> TabShareButton();

@@ -65,7 +65,7 @@ enum class MenuActionType {
   RemoveTabFromGroup = 52,
   OpenLinkInNewGroup = 53,
   ShowDetails = 54,
-  ShowFullURL = 55,
+  ShowFullURL = 55,  // Obsolete
   SortDriveItemsByName = 56,
   SortDriveItemsByModificationTime = 57,
   SortDriveItemsByOpeningTime = 58,

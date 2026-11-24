@@ -761,21 +761,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_not([self tabShareButton]), grey_sufficientlyVisible(), nil);
 }
 
-+ (id<GREYMatcher>)contextMenuButtonContainingText:(NSString*)text {
-  GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
-      matcherWithMatchesBlock:^BOOL(UILabel* element) {
-        return [element.text containsString:text];
-      }
-      descriptionBlock:^void(id<GREYDescription> description) {
-        [description
-            appendText:[NSString
-                           stringWithFormat:@"Label contains text '%@'", text]];
-      }];
-
-  return grey_allOf(grey_kindOfClassName(@"UILabel"), matcher,
-                    grey_sufficientlyVisible(), nil);
-}
-
 + (id<GREYMatcher>)tabShareButton {
   return grey_allOf(
       grey_anyOf(grey_accessibilityID(kLegacyToolbarShareButtonIdentifier),

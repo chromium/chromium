@@ -355,9 +355,6 @@
 // corresponding to `messageID`.
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabelID:(int)messageID;
 
-// Returns a matcher for a context menu button that contains `text`.
-+ (id<GREYMatcher>)contextMenuButtonContainingText:(NSString*)text;
-
 // Matcher for the Open in New Tab option in the context menu when long pressing
 // a link.
 + (id<GREYMatcher>)openLinkInNewTabButton;

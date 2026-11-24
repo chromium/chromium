@@ -35,7 +35,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/window_activities/model",
-    "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public/ui",
     "//net",

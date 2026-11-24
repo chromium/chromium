@@ -12073,21 +12073,6 @@
             ]
         }
     ],
-    "IOSWebContextMenuNewTitle": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSWebContextMenuNewTitle"
-                    ]
-                }
-            ]
-        }
-    ],
     "IPH_GMCSaveVideoFrame": [
         {
             "platforms": [

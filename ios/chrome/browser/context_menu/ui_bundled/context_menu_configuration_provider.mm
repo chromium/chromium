@@ -224,38 +224,22 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   NSString* menuTitle = nil;
-  UIAction* showFullURL = nil;
 
   if (isLink || isImage) {
     menuTitle = GetContextMenuTitle(params);
 
     if (!IsImageTitle(params) &&
         menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-      if (IsIOSWebContextMenuNewTitleEnabled()) {
-        NSString* fullURL = menuTitle;
-        // Truncate context menu titles that originate from URLs, leaving text
-        // titles untruncated.
-        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-            stringByAppendingString:kContextMenuEllipsis];
-        __weak __typeof(self) weakSelf = self;
-        ProceduralBlock block = ^{
-          [weakSelf showFullURLPopUp:params URLString:fullURL];
-        };
-        ios::provider::AttachBlockToContextMenu(menuTitle, block);
-      } else {
-        // "Show URL action" at the top of the context menu.
-        __weak __typeof(self) weakSelf = self;
-        BrowserActionFactory* actionFactory =
-            [[BrowserActionFactory alloc] initWithBrowser:self.browser
-                                                 scenario:menuScenario];
-        showFullURL = [actionFactory
-            actionToShowFullURL:menuTitle
-                          block:^{
-                            [weakSelf showFullURLPopUp:params
-                                             URLString:menuTitle];
-                          }];
-        menuTitle = nil;
-      }
+      NSString* fullURL = menuTitle;
+      // Truncate context menu titles that originate from URLs, leaving text
+      // titles untruncated.
+      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+          stringByAppendingString:kContextMenuEllipsis];
+      __weak __typeof(self) weakSelf = self;
+      ProceduralBlock block = ^{
+        [weakSelf showFullURLPopUp:params URLString:fullURL];
+      };
+      ios::provider::AttachBlockToContextMenu(menuTitle, block);
     }
   }
 
@@ -265,8 +249,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                     scenario:menuScenario
                                                     referrer:referrer
                                               isOffTheRecord:isOffTheRecord
-                                                      params:params
-                                           showFullURLAction:showFullURL]];
+                                                      params:params]];
   }
   if (isImage) {
     [menuElements
@@ -405,8 +388,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                       scenario:(MenuScenarioHistogram)scenario
                       referrer:(web::Referrer)referrer
                 isOffTheRecord:(BOOL)isOffTheRecord
-                        params:(web::ContextMenuParams)params
-             showFullURLAction:(UIAction*)showFullURLAction {
+                        params:(web::ContextMenuParams)params {
   BrowserActionFactory* actionFactory =
       [[BrowserActionFactory alloc] initWithBrowser:self.browser
                                            scenario:scenario];
@@ -419,10 +401,6 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // Array for the actions/menus used to open a link.
   NSMutableArray<UIMenuElement*>* linkOpeningElements =
       [[NSMutableArray alloc] init];
-
-  if (showFullURLAction) {
-    [linkOpeningElements addObject:showFullURLAction];
-  }
 
   _URLToLoad = linkURL;
   base::RecordAction(
