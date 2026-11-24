@@ -4,10 +4,10 @@
   <title>ReLayout test</title>
   <script>
     window.has_resized = false;
-    window.resize_count = 0;
+    window.resize_sizes = [];
     window.addEventListener("resize", function (event) {
       window.has_resized = true;
-      window.resize_count++;
+      window.resize_sizes.push([window.innerWidth, window.innerHeight]);
       console.log(
         document.body.clientWidth + ', ' + document.body.clientHeight);
     })

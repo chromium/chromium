@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 
+#include <vector>
+
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -43,16 +47,19 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/ozone_buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/ozone/public/ozone_platform.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#endif
 
 using testing::Return;
 using testing::ReturnRef;
@@ -403,8 +410,31 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
     }
   }
 
-  int GetResizeCount(content::WebContents* web_contents) {
-    return content::EvalJs(web_contents, "window.resize_count").ExtractInt();
+  std::vector<gfx::Size> GetResizeSizes(content::WebContents* web_contents) {
+    const content::EvalJsResult result =
+        content::EvalJs(web_contents, "window.resize_sizes");
+    std::vector<gfx::Size> sizes;
+    for (const base::Value& entry : result.ExtractList()) {
+      const base::ListValue& pair = entry.GetList();
+      CHECK_EQ(pair.size(), 2u);
+      sizes.emplace_back(pair[0].GetInt(), pair[1].GetInt());
+    }
+    return sizes;
+  }
+
+  gfx::Size GetViewportSize(content::WebContents* web_contents) {
+    const content::EvalJsResult result = content::EvalJs(
+        web_contents, "[window.innerWidth, window.innerHeight]");
+    const base::ListValue& pair = result.ExtractList();
+    CHECK_EQ(pair.size(), 2u);
+    return gfx::Size(pair[0].GetInt(), pair[1].GetInt());
+  }
+
+  bool WaitForAnimationFrame(content::WebContents* web_contents) {
+    return content::ExecJs(web_contents,
+                           "new Promise(resolve => "
+                           "requestAnimationFrame(() => "
+                           "requestAnimationFrame(resolve)))");
   }
 
   void CreateSplitTabAndLoadReLayoutTestPage() {
@@ -525,10 +555,15 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
-                       EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
-  auto* tab_strip_model = browser()->GetTabStripModel();
+                       EnterAndExitFullscreenInSplitTabShouldResizeDirectly) {
+#if BUILDFLAG(IS_MAC)
+  // Native macOS fullscreen animations emit intermediate NSWindow bounds that
+  // vary asynchronously across runs; fake fullscreen keeps transitions
+  // deterministic in tests.
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+#endif
 
-  const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
+  auto* tab_strip_model = browser()->GetTabStripModel();
 
   CreateSplitView();
 
@@ -541,66 +576,80 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
   RunScheduledLayouts();
 
   // Focus on the split tab.
-  tab_strip_model->GetWebContentsAt(1)->Focus();
+  content::WebContents* split_tab = tab_strip_model->GetWebContentsAt(1);
+  split_tab->Focus();
   RunScheduledLayouts();
+
+  // Wait for an initial compositor frame so any pending navigation visual
+  // properties ACKs settle before entering fullscreen.
+  const gfx::Size initial_size = split_tab->GetSize();
+  ASSERT_TRUE(base::test::RunUntil([this, split_tab, initial_size]() {
+    return GetViewportSize(split_tab) == initial_size;
+  }));
+  ASSERT_TRUE(WaitForAnimationFrame(split_tab));
+  ASSERT_TRUE(GetResizeSizes(split_tab).empty());
+
+  const int pre_fullscreen_contents_width = multi_contents_view()->width();
+  ASSERT_LT(initial_size.width(), pre_fullscreen_contents_width / 2);
 
   // Enter fullscreen in the split tab.
-  content::WebContents* split_tab = tab_strip_model->GetWebContentsAt(1);
-  split_tab->GetDelegate()->EnterFullscreenModeForTab(
-      split_tab->GetPrimaryMainFrame(), {});
-  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
+  {
+    auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser());
+    split_tab->GetDelegate()->EnterFullscreenModeForTab(
+        split_tab->GetPrimaryMainFrame(), {});
+    ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
+    waiter.Wait();
+  }
   RunScheduledLayouts();
 
-  int expected_entering_resize = 1;
-#if BUILDFLAG(IS_OZONE)
-  // On Wayland, the 2nd resize is for xdg_toplevel.set_fullscreen, so 2 is
-  // required to enter fullscreen.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    expected_entering_resize = 2;
-  }
-#endif
-  EXPECT_TRUE(
-      base::test::RunUntil([this, split_tab, expected_entering_resize]() {
-        return GetResizeCount(split_tab) >= expected_entering_resize;
+  // Wait until Blink commits the settled fullscreen viewport size.
+  ASSERT_TRUE(base::test::RunUntil(
+      [this, split_tab, pre_fullscreen_contents_width, initial_size]() {
+        const gfx::Size target_size = split_tab->GetSize();
+        return !GetResizeSizes(split_tab).empty() &&
+               target_size.width() >= pre_fullscreen_contents_width - 2 &&
+               target_size.height() > initial_size.height() &&
+               GetViewportSize(split_tab) == target_size;
       }));
+  ASSERT_TRUE(WaitForAnimationFrame(split_tab));
+
+  const std::vector<gfx::Size> enter_resizes = GetResizeSizes(split_tab);
+  ASSERT_FALSE(enter_resizes.empty());
+  for (const gfx::Size& size : enter_resizes) {
+    // Entering fullscreen from split view may emit multiple compositor-driven
+    // resizes on Wayland (immediate layout + async configure), but must never
+    // size split_tab to single-tab width while the toolbar is still visible or
+    // at split width with fullscreen height.
+    EXPECT_GE(size.width(), pre_fullscreen_contents_width - 2);
+    EXPECT_GT(size.height(), initial_size.height());
+  }
 
   // Exit fullscreen in the split tab.
-  split_tab->GetDelegate()->ExitFullscreenModeForTab(split_tab);
-  ui_test_utils::FullscreenWaiter(
-      browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen)
-      .Wait();
-  RunScheduledLayouts();
-
-  int expected_resize = 2;
-#if BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    // On Wayland, entering and exiting fullscreen each trigger 2 resizes. There
-    // is an immediate synchronous layout followed by an async layout after the
-    // Wayland compositor responds.
-    expected_resize = 4;
+  {
+    auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser());
+    split_tab->GetDelegate()->ExitFullscreenModeForTab(split_tab);
+    ui_test_utils::FullscreenWaiter(
+        browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen)
+        .Wait();
+    waiter.Wait();
   }
-#elif BUILDFLAG(IS_MAC)
-  // The WebContents is resized three times when entering and exiting fullscreen
-  // due to the layout process involving the new `main_container_`:
-  // 1. `BrowserViewLayout` sets the bounds of `main_container_`. The default
-  //    layout manager for `main_container_` immediately resizes its child,
-  //    `contents_container_`, to fit.
-  // 2. `BrowserViewLayout` then explicitly sets the bounds of
-  //    `contents_container_` itself, triggering a second layout.
-  // 3. `BrowserViewLayout` also updates separators in `MultiContentsView`,
-  //    which calls `InvalidateLayout()`, scheduling a final, asynchronous
-  //    layout pass.
-  expected_resize = 3;
-#endif
-
-  EXPECT_TRUE(base::test::RunUntil([this, split_tab, expected_resize]() {
-    return GetResizeCount(split_tab) >= expected_resize;
-  }));
   RunScheduledLayouts();
 
-  // The WebContents is resized two times, one each when entering and exiting
-  // fullscreen.
-  EXPECT_EQ(GetResizeCount(split_tab), expected_resize);
+  ASSERT_TRUE(
+      base::test::RunUntil([this, split_tab, &enter_resizes, initial_size]() {
+        return GetResizeSizes(split_tab).size() > enter_resizes.size() &&
+               GetViewportSize(split_tab) == initial_size;
+      }));
+  ASSERT_TRUE(WaitForAnimationFrame(split_tab));
+
+  const std::vector<gfx::Size> all_resizes = GetResizeSizes(split_tab);
+  ASSERT_GT(all_resizes.size(), enter_resizes.size());
+  for (size_t i = enter_resizes.size(); i < all_resizes.size(); ++i) {
+    // Exiting fullscreen must restore the split ratio directly without an
+    // intermediate single-tab-width re-layout.
+    EXPECT_LT(all_resizes[i].width(), pre_fullscreen_contents_width / 2);
+  }
+  EXPECT_EQ(all_resizes.back(), initial_size);
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
