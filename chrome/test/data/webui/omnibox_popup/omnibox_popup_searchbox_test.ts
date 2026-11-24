@@ -414,11 +414,12 @@ suite('OmniboxPopupSearchboxTest', function() {
         }));
   }
 
-  // Presses Enter while Ctrl is held, with no suggestion selected.
-  function pressCtrlEnter() {
+  // Presses Enter while Ctrl and `modifiers` are held.
+  function pressCtrlEnter(modifiers: Partial<KeyboardEventInit> = {}) {
     searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
       key: 'Enter',
       ctrlKey: true,
+      ...modifiers,
       cancelable: true,
     }));
   }
@@ -460,10 +461,6 @@ suite('OmniboxPopupSearchboxTest', function() {
           await microtasksFinished();
 
           assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
-          assertEquals(
-              0,
-              testProxy.handler.getCallCount(
-                  'openPopupSelectionWithDisposition'));
           const [, line, , , , modifiers, viaKeyboard] =
               await testProxy.handler.whenCalled('openAutocompleteMatch');
           assertEquals(-1, line);
@@ -486,8 +483,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     // native omnibox, that acts as a normal Enter.
     pressCtrlEnter();
     await microtasksFinished();
-    assertEquals(
-        0, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+    assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
     const [, line, , , , modifiers] =
         await testProxy.handler.whenCalled('openAutocompleteMatch');
     assertEquals(-1, line);
@@ -499,7 +495,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     pressCtrlEnter();
     await microtasksFinished();
     const [, selection] =
-        await testProxy.handler.whenCalled('openPopupSelectionWithDisposition');
+        await testProxy.handler.whenCalled('openPopupSelection');
     assertEquals(-1, selection.line);
     assertEquals(SelectionLineState.kCtrlEnter, selection.state);
   });
@@ -529,12 +525,123 @@ suite('OmniboxPopupSearchboxTest', function() {
     await microtasksFinished();
     pressCtrlEnter();
     await microtasksFinished();
-    assertEquals(
-        0, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+    assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
     const [, line, , , , modifiers] =
         await testProxy.handler.whenCalled('openAutocompleteMatch');
     assertEquals(-1, line);
     assertTrue(modifiers.ctrlKey);
+  });
+
+  test('CtrlEnterWithModifiersForwardsThemWhenNoMatchSelected', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: '',
+      userInputInProgress: true,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    assertFalse(searchbox.inKeywordMode);
+    assertEquals(-1, searchbox.selectedMatchIndex);
+
+    pressCtrlInOmnibox();
+    await microtasksFinished();
+    await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      ctrlKey: true,
+      shiftKey: true,
+      altKey: true,
+      cancelable: true,
+    }));
+    await microtasksFinished();
+
+    // Like the native omnibox, Ctrl+Enter adds 'www.' and '.com' even with
+    // other modifiers, which are forwarded to compute the disposition.
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+    const [, selection, modifiers] =
+        await testProxy.handler.whenCalled('openPopupSelection');
+    assertEquals(-1, selection.line);
+    assertEquals(SelectionLineState.kCtrlEnter, selection.state);
+    assertTrue(modifiers.ctrlKey);
+    assertTrue(modifiers.shiftKey);
+    assertTrue(modifiers.altKey);
+    assertFalse(modifiers.metaKey);
+  });
+
+  // Types 'a', shows matches and arrows down to preview the second match,
+  // 'apple', in the input.
+  async function previewSecondMatch() {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: '',
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    const inputEl = searchbox.getInputElement().inputElement;
+    inputEl.value = 'a';
+    inputEl.dispatchEvent(
+        new InputEvent('input', {bubbles: true, composed: true}));
+    await microtasksFinished();
+    searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      input: 'a',
+      matches: [
+        createSearchMatch({allowedToBeDefaultMatch: true, fillIntoEdit: 'a'}),
+        createSearchMatch({fillIntoEdit: 'apple'}),
+      ],
+    }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'ArrowDown',
+    }));
+    await microtasksFinished();
+    assertEquals(1, searchbox.selectedMatchIndex);
+    assertEquals('apple', inputEl.value);
+  }
+
+  test('CtrlShiftEnterOnPreviewedMatchFillsInputAndClearsMatches', async () => {
+    await previewSecondMatch();
+
+    pressCtrlInOmnibox();
+    await microtasksFinished();
+    pressCtrlEnter({shiftKey: true});
+    await microtasksFinished();
+
+    // Opens the previewed match with 'www.' and '.com' added in a new window,
+    // so the input shows the match and the matches are cleared.
+    const [, selection, modifiers] =
+        await testProxy.handler.whenCalled('openPopupSelection');
+    assertEquals(1, selection.line);
+    assertEquals(SelectionLineState.kCtrlEnter, selection.state);
+    assertTrue(modifiers.ctrlKey);
+    assertTrue(modifiers.shiftKey);
+    assertEquals('apple', searchbox.getInputElement().inputElement.value);
+    assertFalse(searchbox.dropdownIsVisible);
+    assertEquals(null, searchbox.result);
+  });
+
+  test('CtrlAltShiftEnterOnPreviewedMatchKeepsInputAndMatches', async () => {
+    await previewSecondMatch();
+
+    pressCtrlInOmnibox();
+    await microtasksFinished();
+    pressCtrlEnter({altKey: true, shiftKey: true});
+    await microtasksFinished();
+
+    // Opens the previewed match with 'www.' and '.com' added in a background
+    // tab, so the input and the matches stay as they were.
+    const [, selection, modifiers] =
+        await testProxy.handler.whenCalled('openPopupSelection');
+    assertEquals(1, selection.line);
+    assertEquals(SelectionLineState.kCtrlEnter, selection.state);
+    assertTrue(modifiers.ctrlKey);
+    assertTrue(modifiers.altKey);
+    assertTrue(modifiers.shiftKey);
+    assertEquals('apple', searchbox.getInputElement().inputElement.value);
+    assertTrue(searchbox.dropdownIsVisible);
+    assertEquals(2, searchbox.result?.matches.length);
+    assertEquals(1, searchbox.selectedMatchIndex);
   });
 
   test('HandlesSelectionChange', async () => {
@@ -4035,9 +4142,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
      // Like the native omnibox, Ctrl+L consumed Ctrl, so Enter opens the
      // default match instead of the input with 'www.' and '.com' added.
-     assertEquals(
-         0,
-         testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+     assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
      const [, line] =
          await testProxy.handler.whenCalled('openAutocompleteMatch');
      assertEquals(0, line);
