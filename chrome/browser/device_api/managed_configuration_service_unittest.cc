@@ -9,14 +9,11 @@
 #include <tuple>
 
 #include "base/check_deref.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -165,19 +162,9 @@ TEST_F(ManagedConfigurationServiceGuestTest, IsNotBoundInGuestProfile) {
 
 class ManagedConfigurationServiceEnterpriseIsolatedModeTest
     : public ManagedConfigurationServiceTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-    ManagedConfigurationServiceTest::SetUp();
-    profile()->GetPrefs()->SetInteger(
-        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-        static_cast<int>(
-            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 TEST_F(ManagedConfigurationServiceEnterpriseIsolatedModeTest, IsNotBound) {

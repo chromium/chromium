@@ -240,8 +240,6 @@ source_set("unit_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
-    "//components/enterprise/isolated_mode",
-    "//components/prefs",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",
@@ -254,6 +252,10 @@ source_set("unit_tests") {
 
   if (is_win) {
     deps += [ ":test_support" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//components/enterprise/isolated_mode:test_support" ]
   }
 
   if (is_chromeos) {

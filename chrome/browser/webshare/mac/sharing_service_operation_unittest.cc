@@ -7,14 +7,11 @@
 #include "base/files/safe_base_name.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webshare/store_file_task.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
@@ -61,12 +58,6 @@ class SharingServiceOperationIncognitoUnitTest
   bool IsEnterpriseIsolatedMode() const { return GetParam(); }
 
   void SetIncognito() {
-    if (IsEnterpriseIsolatedMode()) {
-      profile()->GetPrefs()->SetInteger(
-          enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-          static_cast<int>(
-              enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-    }
     Profile* const otr_profile =
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsOffTheRecord());
@@ -80,8 +71,8 @@ class SharingServiceOperationIncognitoUnitTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode};
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{IsEnterpriseIsolatedMode()};
 };
 
 INSTANTIATE_TEST_SUITE_P(

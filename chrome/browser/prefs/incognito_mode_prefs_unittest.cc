@@ -4,13 +4,10 @@
 
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 
-#include <optional>
-
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -64,15 +61,17 @@ TEST_F(IncognitoModePrefsTest, GetAvailability) {
             IncognitoModePrefs::GetAvailability(&profile_));
 }
 
+class IncognitoModePrefsIsolatedModeTest : public testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
+  TestingProfile profile_;
+};
+
 // Tests that the Enterprise Isolated Mode setting has higher priority than the
 // Incognito mode availability preference.
-TEST_F(IncognitoModePrefsTest, IsolatedModeHasHigherPriority) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile_.GetTestingPrefService()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+TEST_F(IncognitoModePrefsIsolatedModeTest, IsolatedModeHasHigherPriority) {
   profile_.GetTestingPrefService()->SetInteger(
       policy::policy_prefs::kIncognitoModeAvailability,
       static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
@@ -88,20 +87,18 @@ struct TypeTestCase {
   IncognitoModePrefs::IncognitoModeType expected_type;
 };
 
-class IncognitoModePrefsTypeTest
-    : public IncognitoModePrefsTest,
-      public testing::WithParamInterface<TypeTestCase> {};
+class IncognitoModePrefsTypeTest : public testing::TestWithParam<TypeTestCase> {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{
+          GetParam().isolated_mode_setting ==
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled};
+  TestingProfile profile_;
+};
 
 TEST_P(IncognitoModePrefsTypeTest, GetType) {
   const TypeTestCase& test_case = GetParam();
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-
-  profile_.GetTestingPrefService()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(test_case.isolated_mode_setting));
 
   profile_.GetTestingPrefService()->SetInteger(
       policy::policy_prefs::kIncognitoModeAvailability,
