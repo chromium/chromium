@@ -147,7 +147,10 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
 
       for (const std::string& sub_dir :
            GetPackageInstallSubDirNamesForVerification(lang_pack)) {
-        CHECK(base::CreateDirectory(component_dir.AppendASCII(sub_dir)));
+        const base::FilePath sub_dir_path = component_dir.AppendASCII(sub_dir);
+        ASSERT_TRUE(base::CreateDirectory(sub_dir_path));
+        ASSERT_TRUE(
+            base::WriteFile(sub_dir_path.AppendASCII("model.bin"), "data"));
       }
       CHECK(base::WriteFile(component_dir.AppendASCII("manifest.json"), R"({
         "name": "FakeInstallation",

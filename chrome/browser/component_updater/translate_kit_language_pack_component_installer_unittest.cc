@@ -5,7 +5,9 @@
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -30,6 +32,7 @@
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,7 +105,9 @@ void CreateFakeInstallation(const base::FilePath& base_dir,
   })";
   for (const std::string& sub_dir :
        GetPackageInstallSubDirNamesForVerification(lang_pack)) {
-    CHECK(base::CreateDirectory(component_dir.AppendASCII(sub_dir)));
+    const base::FilePath sub_dir_path = component_dir.AppendASCII(sub_dir);
+    ASSERT_TRUE(base::CreateDirectory(sub_dir_path));
+    ASSERT_TRUE(base::WriteFile(sub_dir_path.AppendASCII("model.bin"), "data"));
   }
   CHECK(base::WriteFile(component_dir.AppendASCII("manifest.json"),
                         absl::StrFormat(kManifestData.data(),
@@ -188,6 +193,8 @@ TEST_F(TranslateKitLanguagePackComponentTest,
           on_device_translation::LanguagePackKey::kEn_Es);
 
   // `en_fr` has no installed path yet, while `en_es` is already on disk.
+  CreateFakeInstallation(install_dir(),
+                         on_device_translation::LanguagePackKey::kEn_Es);
   pref_service()->SetBoolean(
       on_device_translation::GetRegisteredFlagPrefName(en_fr_config), true);
   pref_service()->SetBoolean(
@@ -204,6 +211,134 @@ TEST_F(TranslateKitLanguagePackComponentTest,
       on_device_translation::GetRegisteredFlagPrefName(en_fr_config)));
   EXPECT_TRUE(pref_service()->GetBoolean(
       on_device_translation::GetRegisteredFlagPrefName(en_es_config)));
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
+       RegisterComponentsForUpdateClearsStaleMissingPack) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  const auto& en_es_config =
+      on_device_translation::GetLanguagePackComponentConfig(
+          on_device_translation::LanguagePackKey::kEn_Es);
+  const std::string en_es_id =
+      crx_file::id_util::GenerateIdFromHash(en_es_config.public_key_sha);
+  EXPECT_CALL(*service, GetComponentIDs()).Times(testing::AnyNumber());
+  EXPECT_CALL(*service, RegisterComponent(_)).WillOnce(testing::Return(true));
+  EXPECT_CALL(*service, UnregisterComponent(en_es_id))
+      .WillOnce(testing::Return(true));
+
+  pref_service()->SetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_es_config), true);
+  pref_service()->SetFilePath(
+      on_device_translation::GetComponentPathPrefName(en_es_config),
+      install_dir().AppendASCII("missing_en_es"));
+
+  RegisterTranslateKitLanguagePackComponentsForUpdate(
+      service.get(), pref_service(), /*resume_unfinished_downloads=*/false);
+  env().RunUntilIdle();
+
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_es_config)));
+  EXPECT_TRUE(pref_service()
+                  ->GetFilePath(on_device_translation::GetComponentPathPrefName(
+                      en_es_config))
+                  .empty());
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
+       RegisterComponentsForUpdateClearsPackWithMissingManifest) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  const auto& en_es_config =
+      on_device_translation::GetLanguagePackComponentConfig(
+          on_device_translation::LanguagePackKey::kEn_Es);
+  const std::string en_es_id =
+      crx_file::id_util::GenerateIdFromHash(en_es_config.public_key_sha);
+  EXPECT_CALL(*service, GetComponentIDs()).Times(testing::AnyNumber());
+  EXPECT_CALL(*service, RegisterComponent(_)).WillOnce(testing::Return(true));
+  EXPECT_CALL(*service, UnregisterComponent(en_es_id))
+      .WillOnce(testing::Return(true));
+
+  CreateFakeInstallation(install_dir(),
+                         on_device_translation::LanguagePackKey::kEn_Es);
+  const base::FilePath component_dir = install_dir().Append(
+      on_device_translation::GetLanguagePackRelativeInstallDir().AppendASCII(
+          on_device_translation::GetPackageInstallDirName(
+              on_device_translation::LanguagePackKey::kEn_Es)));
+  ASSERT_TRUE(base::DeleteFile(component_dir.AppendASCII("manifest.json")));
+
+  pref_service()->SetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_es_config), true);
+  pref_service()->SetFilePath(
+      on_device_translation::GetComponentPathPrefName(en_es_config),
+      component_dir);
+
+  RegisterTranslateKitLanguagePackComponentsForUpdate(
+      service.get(), pref_service(), /*resume_unfinished_downloads=*/false);
+  env().RunUntilIdle();
+
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_es_config)));
+  EXPECT_TRUE(pref_service()
+                  ->GetFilePath(on_device_translation::GetComponentPathPrefName(
+                      en_es_config))
+                  .empty());
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
+       ComponentReadyCommitsOnlyWhenPathChanges) {
+  TranslateKitLanguagePackComponentInstallerPolicy policy(
+      pref_service(), on_device_translation::LanguagePackKey::kEn_Es,
+      base::RepeatingClosure());
+  const base::FilePath pack_dir = install_dir().AppendASCII("en_es");
+
+  policy.ComponentReady(version(), pack_dir, manifest().Clone());
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+
+  // Mark the store dirty via another pref; calling `ComponentReady()` again
+  // with the unchanged install path should not trigger another flush.
+  const auto& en_fr_config =
+      on_device_translation::GetLanguagePackComponentConfig(
+          on_device_translation::LanguagePackKey::kEn_Fr);
+  pref_service()->SetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_fr_config), true);
+  ASSERT_FALSE(pref_service_.user_prefs_store()->committed());
+
+  policy.ComponentReady(version(), pack_dir, manifest().Clone());
+  EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
+       RegisterAndUninstallCommitPendingWrite) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  const auto& en_es_config =
+      on_device_translation::GetLanguagePackComponentConfig(
+          on_device_translation::LanguagePackKey::kEn_Es);
+  const std::string en_es_id =
+      crx_file::id_util::GenerateIdFromHash(en_es_config.public_key_sha);
+  EXPECT_CALL(*service, GetComponentIDs())
+      .WillOnce(testing::Return(std::vector<std::string>()));
+  EXPECT_CALL(*service, RegisterComponent(_)).WillOnce(testing::Return(true));
+  EXPECT_CALL(*service, UnregisterComponent(en_es_id))
+      .WillOnce(testing::Return(true));
+
+  RegisterTranslateKitLanguagePackComponent(
+      service.get(), pref_service(),
+      on_device_translation::LanguagePackKey::kEn_Es, base::OnceClosure(),
+      base::RepeatingClosure());
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+  env().RunUntilIdle();
+
+  pref_service()->SetFilePath(
+      on_device_translation::GetComponentPathPrefName(en_es_config),
+      install_dir().AppendASCII("en_es"));
+  ASSERT_FALSE(pref_service_.user_prefs_store()->committed());
+
+  UninstallTranslateKitLanguagePackComponent(
+      service.get(), pref_service(),
+      on_device_translation::LanguagePackKey::kEn_Es);
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest,
@@ -229,16 +364,30 @@ TEST_F(TranslateKitLanguagePackComponentTest, VerifyInstallation) {
       pref_service(), on_device_translation::LanguagePackKey::kEn_Es,
       base::RepeatingClosure());
 
-  // Verify that the installation is not valid if the sub-directories are
-  // missing.
+  // Missing sub-directories are rejected.
   EXPECT_FALSE(policy.VerifyInstallation(manifest(), install_dir()));
-  ASSERT_TRUE(
-      base::CreateDirectory(install_dir().AppendASCII("en_es_dictionary")));
+
+  // A regular file where a sub-directory is expected is rejected.
+  const base::FilePath dict_dir = install_dir().AppendASCII("en_es_dictionary");
+  ASSERT_TRUE(base::WriteFile(dict_dir, "not a dir"));
   EXPECT_FALSE(policy.VerifyInstallation(manifest(), install_dir()));
-  ASSERT_TRUE(base::CreateDirectory(install_dir().AppendASCII("en_es_nmt")));
+  ASSERT_TRUE(base::DeleteFile(dict_dir));
+
+  // Empty sub-directories and 0-byte files are rejected.
+  const base::FilePath en_es_dir = install_dir().AppendASCII("en_es_nmt");
+  const base::FilePath es_en_dir = install_dir().AppendASCII("es_en_nmt");
+  ASSERT_TRUE(base::CreateDirectory(dict_dir));
+  ASSERT_TRUE(base::CreateDirectory(en_es_dir));
+  ASSERT_TRUE(base::CreateDirectory(es_en_dir));
   EXPECT_FALSE(policy.VerifyInstallation(manifest(), install_dir()));
-  ASSERT_TRUE(base::CreateDirectory(install_dir().AppendASCII("es_en_nmt")));
-  // Verify that the installation is valid if the sub-directories are present.
+
+  ASSERT_TRUE(base::WriteFile(dict_dir.AppendASCII("dictionary.bin"), ""));
+  ASSERT_TRUE(base::WriteFile(en_es_dir.AppendASCII("model.tflite"), "data"));
+  ASSERT_TRUE(base::WriteFile(es_en_dir.AppendASCII("model.tflite"), "data"));
+  EXPECT_FALSE(policy.VerifyInstallation(manifest(), install_dir()));
+
+  // Non-empty files in every sub-directory pass verification.
+  ASSERT_TRUE(base::WriteFile(dict_dir.AppendASCII("dictionary.bin"), "data"));
   EXPECT_TRUE(policy.VerifyInstallation(manifest(), install_dir()));
 }
 

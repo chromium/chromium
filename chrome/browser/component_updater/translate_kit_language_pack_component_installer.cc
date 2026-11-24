@@ -15,11 +15,15 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -29,6 +33,7 @@
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/paths.h"
+#include "components/prefs/pref_service.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -40,6 +45,28 @@ using ::on_device_translation::LanguagePackKey;
 // The manifest name prefix of the TranslateKit language pack component.
 constexpr char kTranslateKitLanguagePackManifestNamePrefix[] =
     "Chrome TranslateKit ";
+
+bool VerifyLanguagePackDirectory(LanguagePackKey language_pack_key,
+                                 const base::FilePath& install_dir) {
+  return std::ranges::all_of(
+      on_device_translation::GetPackageInstallSubDirNamesForVerification(
+          language_pack_key),
+      [&install_dir](const std::string& sub_dir_name) {
+        const base::FilePath sub_dir = install_dir.AppendASCII(sub_dir_name);
+        if (!base::DirectoryExists(sub_dir)) {
+          return false;
+        }
+        base::FileEnumerator enumerator(sub_dir, /*recursive=*/true,
+                                        base::FileEnumerator::FILES);
+        for (base::FilePath file = enumerator.Next(); !file.empty();
+             file = enumerator.Next()) {
+          if (enumerator.GetInfo().GetSize() > 0) {
+            return true;
+          }
+        }
+        return false;
+      });
+}
 
 }  // namespace
 
@@ -58,12 +85,7 @@ TranslateKitLanguagePackComponentInstallerPolicy::
 bool TranslateKitLanguagePackComponentInstallerPolicy::VerifyInstallation(
     const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
-  // Check that the sub-directories of the package install directory exist.
-  return std::ranges::all_of(
-      GetPackageInstallSubDirNamesForVerification(language_pack_key_),
-      [&install_dir](const std::string& sub_dir_name) {
-        return base::PathExists(install_dir.AppendASCII(sub_dir_name));
-      });
+  return VerifyLanguagePackDirectory(language_pack_key_, install_dir);
 }
 
 bool TranslateKitLanguagePackComponentInstallerPolicy::
@@ -99,9 +121,13 @@ void TranslateKitLanguagePackComponentInstallerPolicy::ComponentReady(
     const base::FilePath& install_dir,
     base::DictValue manifest) {
   CHECK(pref_service_);
-  pref_service_->SetFilePath(
-      on_device_translation::GetComponentPathPrefName(GetConfig()),
-      install_dir);
+  const std::string path_pref =
+      on_device_translation::GetComponentPathPrefName(GetConfig());
+  const bool changed = pref_service_->GetFilePath(path_pref) != install_dir;
+  pref_service_->SetFilePath(path_pref, install_dir);
+  if (changed) {
+    pref_service_->CommitPendingWrite();
+  }
   if (on_ready_callback_) {
     on_ready_callback_.Run();
   }
@@ -185,11 +211,14 @@ void RegisterTranslateKitLanguagePackComponent(
     return;
   }
 
-  pref_service->SetBoolean(
+  const std::string registered_pref =
       on_device_translation::GetRegisteredFlagPrefName(
           *on_device_translation::kLanguagePackComponentConfigMap.at(
-              language_pack_key)),
-      true);
+              language_pack_key));
+  if (!pref_service->GetBoolean(registered_pref)) {
+    pref_service->SetBoolean(registered_pref, true);
+    pref_service->CommitPendingWrite();
+  }
   base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<TranslateKitLanguagePackComponentInstallerPolicy>(
           pref_service, language_pack_key, std::move(on_ready_callback)))
@@ -201,13 +230,13 @@ void RegisterTranslateKitLanguagePackComponentsForUpdate(
     PrefService* pref_service,
     bool resume_unfinished_downloads) {
   int installed_pack_count = 0;
+  bool cleared_uninstalled_flag = false;
   for (const auto& [language_pack_key, config] :
        on_device_translation::kLanguagePackComponentConfigMap) {
-    const bool installed =
-        !pref_service
-             ->GetFilePath(
-                 on_device_translation::GetComponentPathPrefName(*config))
-             .empty();
+    const std::string path_pref =
+        on_device_translation::GetComponentPathPrefName(*config);
+    const base::FilePath installed_path = pref_service->GetFilePath(path_pref);
+    const bool installed = !installed_path.empty();
     if (installed) {
       ++installed_pack_count;
     }
@@ -220,11 +249,55 @@ void RegisterTranslateKitLanguagePackComponentsForUpdate(
       // next `create()` registers it again.
       pref_service->SetBoolean(
           on_device_translation::GetRegisteredFlagPrefName(*config), false);
+      cleared_uninstalled_flag = true;
       continue;
     }
-    RegisterTranslateKitLanguagePackComponent(
-        cus, pref_service, language_pack_key, base::OnceClosure(),
-        base::RepeatingClosure());
+    if (installed) {
+      auto ready_called =
+          base::MakeRefCounted<base::RefCountedData<bool>>(false);
+      // `ComponentInstaller::StartRegistration` verifies `manifest.json` and
+      // calls `VerifyInstallation()` before `FinishRegistration()` invokes
+      // `ComponentReady()` (setting `ready_called->data`) and then
+      // `registered_callback`. `base::Unretained(cus)` and
+      // `base::Unretained(pref_service)` are safe because both pointers belong
+      // to `g_browser_process` (`component_updater()` and `local_state()`),
+      // which outlive the UI thread task queue running registration callbacks.
+      RegisterTranslateKitLanguagePackComponent(
+          cus, pref_service, language_pack_key,
+          /*registered_callback=*/
+          base::BindOnce(
+              [](ComponentUpdateService* cus, PrefService* pref_service,
+                 LanguagePackKey key, base::FilePath expected_path,
+                 scoped_refptr<base::RefCountedData<bool>> ready_called) {
+                if (ready_called->data) {
+                  return;
+                }
+                const auto* config =
+                    on_device_translation::kLanguagePackComponentConfigMap.at(
+                        key);
+                if (pref_service->GetFilePath(
+                        on_device_translation::GetComponentPathPrefName(
+                            *config)) == expected_path) {
+                  UninstallTranslateKitLanguagePackComponent(cus, pref_service,
+                                                             key);
+                }
+              },
+              base::Unretained(cus), base::Unretained(pref_service),
+              language_pack_key, installed_path, ready_called),
+          /*on_ready_callback=*/
+          base::BindRepeating(
+              [](scoped_refptr<base::RefCountedData<bool>> ready_called) {
+                ready_called->data = true;
+              },
+              ready_called));
+    } else {
+      RegisterTranslateKitLanguagePackComponent(
+          cus, pref_service, language_pack_key, base::OnceClosure(),
+          base::RepeatingClosure());
+    }
+  }
+  if (cleared_uninstalled_flag) {
+    pref_service->CommitPendingWrite();
   }
   if (installed_pack_count > 0) {
     base::UmaHistogramExactLinear(
@@ -286,11 +359,17 @@ void UninstallTranslateKitLanguagePackComponent(
   const auto* config =
       on_device_translation::kLanguagePackComponentConfigMap.at(
           language_pack_key);
-  pref_service->SetBoolean(
-      on_device_translation::GetRegisteredFlagPrefName(*config), false);
-  pref_service->SetFilePath(
-      on_device_translation::GetComponentPathPrefName(*config),
-      base::FilePath());
+  const std::string registered_pref =
+      on_device_translation::GetRegisteredFlagPrefName(*config);
+  const std::string path_pref =
+      on_device_translation::GetComponentPathPrefName(*config);
+  const bool changed = pref_service->GetBoolean(registered_pref) ||
+                       !pref_service->GetFilePath(path_pref).empty();
+  pref_service->SetBoolean(registered_pref, false);
+  pref_service->SetFilePath(path_pref, base::FilePath());
+  if (changed) {
+    pref_service->CommitPendingWrite();
+  }
   cus->UnregisterComponent(crx_file::id_util::GenerateIdFromHash(
       on_device_translation::GetLanguagePackComponentConfig(language_pack_key)
           .public_key_sha));
