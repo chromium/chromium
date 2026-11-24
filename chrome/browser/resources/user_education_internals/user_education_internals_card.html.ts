@@ -59,9 +59,9 @@ export function getHtml(this: UserEducationInternalsCardElement) {
         <b>${item.name}</b> ${item.value}
       </p>
     `)}
-    ${this.getAdditionalActions_().map(action => html`
-      <cr-button actionkey="${action.key}" @click="${this.onPromoActionClick_}">
-        ${action.caption}
+    ${this.getAdditionalActions_().map(item => html`
+      <cr-button actionkey="${item.key}" @click="${this.onPromoActionClick_}">
+        ${item.caption}
       </cr-button>
     `)}
   </div>

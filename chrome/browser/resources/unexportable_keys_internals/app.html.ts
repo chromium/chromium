@@ -21,11 +21,11 @@ export function getHtml(this: UnexportableKeysInternalsAppElement) {
 </div>
 <table>
   <tr>
-    ${this.columns_.map(col => html`
-      <th class="sort-header" data-sort-key="${col.key}"
+    ${this.columns_.map(item => html`
+      <th class="sort-header" data-sort-key="${item.key}"
           @click="${this.onSortClick_}" @keydown="${this.onSortKeydown_}"
-          tabindex="0" aria-sort="${this.getSortAttribute_(col.key)}">
-        ${col.label}
+          tabindex="0" aria-sort="${this.getSortAttribute_(item.key)}">
+        ${item.label}
       </th>
     `)}
     <th>Actions</th>

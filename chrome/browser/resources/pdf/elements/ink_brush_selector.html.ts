@@ -16,9 +16,9 @@ export function getHtml(this: InkBrushSelectorElement) {
 <cr-radio-group selectable-elements="selectable-icon-button"
     .selected="${this.currentType}" aria-label="$i18n{ink2Tool}"
     @selected-changed="${this.onSelectedChanged_}">
-  ${BRUSH_TYPES.map(brush => html`
-    <selectable-icon-button id="${brush}" icon="${this.getIcon_(brush)}"
-        name="${brush}" label="${this.getLabel_(brush)}">
+  ${BRUSH_TYPES.map(item => html`
+    <selectable-icon-button id="${item}" icon="${this.getIcon_(item)}"
+        name="${item}" label="${this.getLabel_(item)}">
     </selectable-icon-button>
   `)}
 </cr-radio-group>

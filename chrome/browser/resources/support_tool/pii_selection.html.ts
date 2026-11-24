@@ -45,8 +45,8 @@ export function getHtml(this: PiiSelectionElement) {
         </cr-expand-button>
         <cr-collapse class="pii-item-collapse" ?opened="${item.expandDetails}">
           <div class="pii-details" tabindex="0">
-            ${item.detectedData.map(item => html`
-              <div>${item}</div>
+            ${item.detectedData.map(dataItem => html`
+              <div>${dataItem}</div>
             `)}
           </div>
         </cr-collapse>

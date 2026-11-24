@@ -63,10 +63,10 @@ ${this.profilesList_.map((item, index) => html`
         <td>KeepAlives</td>
         <td>
           <table>
-            ${item.profileState.keepAlives.map(item => html`
+            ${item.profileState.keepAlives.map(keepAlive => html`
               <tr>
-                <td>${item.origin}</td>
-                <td>${item.count}</td>
+                <td>${keepAlive.origin}</td>
+                <td>${keepAlive.count}</td>
               </tr>
             `)}
           </table>

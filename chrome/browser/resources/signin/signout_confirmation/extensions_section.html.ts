@@ -31,12 +31,12 @@ export function getHtml(this: ExtensionsSectionElement) {
   </cr-tooltip>
   <cr-collapse id="collapse" ?opened="${this.expanded_}">
     <div id="account-extensions-list" class="custom-scrollbar">
-      ${this.accountExtensions.map((extension) => html`
+      ${this.accountExtensions.map((item) => html`
         <div class="account-extension">
           <div class="item-icon-container">
-            <img class="item-icon" alt="" src="${extension.iconUrl}">
+            <img class="item-icon" alt="" src="${item.iconUrl}">
           </div>
-          <span class="name text-elide">${extension.name}</span>
+          <span class="name text-elide">${item.name}</span>
         </div>
       `)}
     </div>

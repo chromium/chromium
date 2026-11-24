@@ -12,12 +12,12 @@ export function getHtml(this: ScopeDialogElement) {
   return html`
 <!--_html_template_start_-->
 <filter-dialog .anchorElement="${this.anchorElement}" @close="${this.onClose}">
-  ${SCOPES.map(scope => html`
+  ${SCOPES.map(item => html`
     <cr-checkbox class="filter-menu-item"
-        ?checked="${this.pendingSelections.has(scope)}" data-scope="${scope}"
+        ?checked="${this.pendingSelections.has(item)}" data-scope="${item}"
         @checked-changed="${this.onCheckedChanged}"
         @keydown="${this.onKeydown}">
-      ${localizeScope(scope)}
+      ${localizeScope(item)}
     </cr-checkbox>
   `)}
   <filter-dialog-footer @apply-click="${this.onApplyClick}"

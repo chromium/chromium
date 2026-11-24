@@ -14,9 +14,9 @@ export function getHtml(this: TabSearchSplitItemElement) {
       class="split-favicons ${
                this.data.layout === SplitTabLayout.kStacked ? 'stacked' :
                                                               'side-by-side'}">
-    ${this.data.tabUrls.slice(0, 2).map((url: string, index: number) => html`
+    ${this.data.tabUrls.slice(0, 2).map((item: string, index: number) => html`
       <div class="split-favicon"
-          .style="background-image: ${this.getFaviconUrl_(url, index)}">
+          .style="background-image: ${this.getFaviconUrl_(item, index)}">
       </div>
     `)}
   </div>
@@ -38,12 +38,12 @@ export function getHtml(this: TabSearchSplitItemElement) {
     <tab-group-dot id="groupDot" ?hidden="${!this.data.tabGroup}"
         .color="${this.data.tabGroup?.color ?? 0}">
     </tab-group-dot>
-    ${this.domainTexts_.slice(0, 2).map((domainText, index) => html`
+    ${this.domainTexts_.slice(0, 2).map((item, index) => html`
       ${index > 0 ? html`
         <div class="separator">•</div>
       ` : ''}
-      <div class="domain-text" title="${domainText}">
-        <bdi>${domainText}</bdi>
+      <div class="domain-text" title="${item}">
+        <bdi>${item}</bdi>
       </div>
     `)}
     <div class="separator">•</div>

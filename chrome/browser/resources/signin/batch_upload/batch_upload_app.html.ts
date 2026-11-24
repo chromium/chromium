@@ -21,8 +21,8 @@ export function getHtml(this: BatchUploadAppElement) {
 
   <div id="dataContainer" class="custom-scrollbar">
     <div id="dataSections">
-      ${this.dataSections_.map((section, sectionIndex) => html`
-        <data-section .dataContainer="${section}" data-index="${sectionIndex}"
+      ${this.dataSections_.map((item, index) => html`
+        <data-section .dataContainer="${item}" data-index="${index}"
             @update-view-height="${this.onUpdateViewHeight_}"
             @toggle-changed="${this.onSectionToggleChanged_}">
         </data-section>

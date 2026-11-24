@@ -47,8 +47,8 @@ export function getHtml(this: AppElement) {
     </suggest-request>
   ` : ''}
   ${this.requests_.filter(request => this.requestFilter_(request))
-      .map(request => html`
-    <suggest-request .request="${request}" @show-toast="${this.onShowToast_}"
+      .map(item => html`
+    <suggest-request .request="${item}" @show-toast="${this.onShowToast_}"
         @open-hardcode-response-dialog="${this.onOpenHardcodeResponseDialog_}"
         @chip-click="${this.onChipClick_}">
     </suggest-request>

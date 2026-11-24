@@ -17,10 +17,10 @@ export function getHtml(this: CrIconsDemoElement) {
       --iron-icon-height: ${this.iconSize_}px;
       --iron-icon-width: ${this.iconSize_}px;
   ">
-    ${this.icons_.map(icon => html`
+    ${this.icons_.map(item => html`
       <div class="icon">
-        <cr-icon icon="${icon}"></cr-icon>
-        <div class="label">${icon}</div>
+        <cr-icon icon="${item}"></cr-icon>
+        <div class="label">${item}</div>
       </div>
     `)}
   </div>
@@ -51,10 +51,10 @@ export function getHtml(this: CrIconsDemoElement) {
       --cr-icon-ripple-size: ${this.iconSize_}px;
       --cr-icon-size: ${this.iconSize_}px;
   ">
-    ${this.crIcons_.map(icon => html`
+    ${this.crIcons_.map(item => html`
       <div class="icon">
-        <div class="cr-icon no-overlap ${icon}"></div>
-        <div class="label">.${icon}</div>
+        <div class="cr-icon no-overlap ${item}"></div>
+        <div class="label">.${item}</div>
       </div>
     `)}
   </div>

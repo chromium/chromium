@@ -8,14 +8,13 @@ import type {ExtensionsElement} from './extensions.js';
 
 export function getHtml(this: ExtensionsElement) {
   return html`<!--_html_template_start_-->
-${repeat(
-    this.keyedStates, (keyedState) => keyedState.key, (keyedState) => html`
-  <webui-toolbar-extension .state="${keyedState.state}"
-      class="${keyedState.animateIn ? 'animate-in' : ''}
-             ${keyedState.exiting ? 'exiting' : ''}
-             ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"
-      data-key="${keyedState.key}"
-      ?extension-action="${this.isExtensionAction(keyedState.state)}"
+${repeat(this.keyedStates, (item) => item.key, (item) => html`
+  <webui-toolbar-extension .state="${item.state}"
+      class="${item.animateIn ? 'animate-in' : ''}
+             ${item.exiting ? 'exiting' : ''}
+             ${item.dragPlaceholder ? 'drag-placeholder' : ''}"
+      data-key="${item.key}"
+      ?extension-action="${this.isExtensionAction(item.state)}"
       @dragover="${this.onActionDragover}" @drop="${this.onActionDrop}">
   </webui-toolbar-extension>
 `)}

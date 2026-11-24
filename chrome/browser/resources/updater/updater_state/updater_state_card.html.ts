@@ -66,8 +66,8 @@ export function getHtml(this: UpdaterStateCardElement) {
       <div class="label">$i18n{inactiveVersions}</div>
       <div class="value">
         <ul>
-          ${this.inactiveVersions.map(version => html`
-            <li>${version}</li>
+          ${this.inactiveVersions.map(item => html`
+            <li>${item}</li>
           `)}
         </ul>
       </div>

@@ -29,13 +29,13 @@ ${this.shouldShowTable() ? html`
         </tr>
       </thead>
       <tbody>
-        ${this.apps.map(app => html`
+        ${this.apps.map(item => html`
           <tr>
-            <td class="app-name">${app.displayName}</td>
+            <td class="app-name">${item.displayName}</td>
             <td class="scope">
-              <scope-icon .scope="${app.scope}"></scope-icon>
+              <scope-icon .scope="${item.scope}"></scope-icon>
             </td>
-            <td class="version">${app.version}</td>
+            <td class="version">${item.version}</td>
           </tr>
         `)}
       </tbody>

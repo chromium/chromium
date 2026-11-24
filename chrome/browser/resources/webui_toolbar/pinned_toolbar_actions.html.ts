@@ -9,22 +9,20 @@ import type {PinnedToolbarActionsElement} from './pinned_toolbar_actions.js';
 
 export function getHtml(this: PinnedToolbarActionsElement) {
   return html`<!--_html_template_start_-->
-${repeat(
-    this.keyedStates, (keyedState) => keyedState.key,
-    (keyedState, index) => html`
-  ${keyedState.state.action === PinnedToolbarAction.kDivider ? html`
+${repeat(this.keyedStates, (item) => item.key, (item, index) => html`
+  ${item.state.action === PinnedToolbarAction.kDivider ? html`
     <toolbar-divider
-        class="${keyedState.animateIn ? 'animate-in' : ''}
-                   ${keyedState.exiting ? 'exiting' : ''}"
-        data-key="${keyedState.key}">
+        class="${item.animateIn ? 'animate-in' : ''}
+                   ${item.exiting ? 'exiting' : ''}"
+        data-key="${item.key}">
     </toolbar-divider>
   ` : html`
-    <pinned-toolbar-action .state="${keyedState.state}"
+    <pinned-toolbar-action .state="${item.state}"
         .poppedOut="${index > this.dividerIndex}"
-        class="${keyedState.animateIn ? 'animate-in' : ''}
-                   ${keyedState.exiting ? 'exiting' : ''}
-                   ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"
-        data-key="${keyedState.key}" @dragover="${this.onActionDragover}"
+        class="${item.animateIn ? 'animate-in' : ''}
+                   ${item.exiting ? 'exiting' : ''}
+                   ${item.dragPlaceholder ? 'drag-placeholder' : ''}"
+        data-key="${item.key}" @dragover="${this.onActionDragover}"
         @drop="${this.onActionDrop}">
     </pinned-toolbar-action>
   `}

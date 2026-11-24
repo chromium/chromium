@@ -12,12 +12,12 @@ import type {TextStylesSelectorElement} from './text_styles_selector.js';
 export function getHtml(this: TextStylesSelectorElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-${this.getTextStyles_().map(style => html`
-  <cr-icon-button class="${this.getActiveClass_(style)}"
-      @click="${this.onStyleButtonClick_}" data-style="${style}"
-      iron-icon="${this.getIcon_(style)}"
-      aria-pressed="${this.getAriaPressed_(style)}"
-      aria-label="${this.getTitle_(style)}" title="${this.getTitle_(style)}">
+${this.getTextStyles_().map(item => html`
+  <cr-icon-button class="${this.getActiveClass_(item)}"
+      @click="${this.onStyleButtonClick_}" data-style="${item}"
+      iron-icon="${this.getIcon_(item)}"
+      aria-pressed="${this.getAriaPressed_(item)}"
+      aria-label="${this.getTitle_(item)}" title="${this.getTitle_(item)}">
   </cr-icon-button>
 `)}
 <!--_html_template_end_-->`;

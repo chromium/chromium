@@ -167,19 +167,19 @@ ${this.inspirationCardEnabled_ ? html`
     </sp-heading>
     <cr-collapse .opened="${this.openInspirations_}">
       <div class="inspirations-content">
-        ${this.inspirationGroups_.map((item, groupIndex) => html`
+        ${this.inspirationGroups_.map((group, groupIndex) => html`
           <h3>
             <div class="inspiration-title" role="button" tabindex="0"
                 data-index="${groupIndex}"
                 @click="${this.onInspirationGroupTitleClick_}"
                 @keydown="${this.onButtonKeydown_}"
                 aria-current="${this.getInspirationDescriptorsCheckedStatus_(
-                    item.descriptors)}">
-              ${this.getInspirationGroupTitle_(item.descriptors)}
+                    group.descriptors)}">
+              ${this.getInspirationGroupTitle_(group.descriptors)}
             </div>
           </h3>
           <cr-grid columns="3" role="radiogroup">
-            ${item.inspirations.map((item, index) => html`
+            ${group.inspirations.map((item, index) => html`
               <div class="tile result" data-group-index="${groupIndex}"
                   data-index="${index}"
                   @click="${this.onInspirationImageClick_}" tabindex="0"

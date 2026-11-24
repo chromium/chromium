@@ -27,29 +27,29 @@ export function getHtml(this: WebnnInternalsInfoPageElement) {
     <div class="category-title">Available Execution Providers</div>
     ${this.availableExecutionProviders_.length > 0 ? html`
       <div class="grid-container-available-eps">
-        ${this.availableExecutionProviders_.map(ep => html`
+        ${this.availableExecutionProviders_.map(item => html`
           <div class="item">
             <div class="description">Name:</div>
-            <div>${ep.name}</div>
+            <div>${item.name}</div>
             <div class="description">EP Vendor:</div>
-            <div>${ep.vendor}</div>
+            <div>${item.vendor}</div>
             <div class="description">Hardware Vendor ID:</div>
-            <div>${ep.vendorId}</div>
+            <div>${item.vendorId}</div>
             <div class="description">Hardware Device ID:</div>
-            <div>${ep.deviceId}</div>
+            <div>${item.deviceId}</div>
             <div class="description">Hardware Type:</div>
-            <div>${ep.hardwareType}</div>
-            ${ep.version ? html`
+            <div>${item.hardwareType}</div>
+            ${item.version ? html`
               <div class="description">EP Version:</div>
-              <div>${ep.version}</div>
+              <div>${item.version}</div>
             ` : ''}
-            ${ep.driverVersion ? html`
+            ${item.driverVersion ? html`
               <div class="description">Driver Version:</div>
-              <div>${ep.driverVersion}</div>
+              <div>${item.driverVersion}</div>
             ` : ''}
-            ${ep.libraryPath ? html`
+            ${item.libraryPath ? html`
               <div class="description">Library Path:</div>
-              <div class="library-path">${ep.libraryPath}</div>
+              <div class="library-path">${item.libraryPath}</div>
             ` : ''}
           </div>
         `)}

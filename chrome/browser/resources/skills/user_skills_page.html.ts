@@ -48,8 +48,8 @@ ${this.shouldShowNoSearchResults_() ? html`
     </div>
   ` : html`
     <div class="skill-cards-container">
-      ${Array.from(this.filteredSkills_()).map((skill) => html`
-        <skill-card .skill="${skill}" .cardType="${CardType.USER_SKILL_CARD}">
+      ${Array.from(this.filteredSkills_()).map((item) => html`
+        <skill-card .skill="${item}" .cardType="${CardType.USER_SKILL_CARD}">
         </skill-card>
       `)}
     </div>

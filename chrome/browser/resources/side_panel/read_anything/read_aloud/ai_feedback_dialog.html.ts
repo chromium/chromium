@@ -18,11 +18,11 @@ export function getHtml(this: AiFeedbackDialogElement) {
 
   <div slot="body" class="feedback-body" role="group"
       aria-label="$i18n{aiPlaybackFeedbackDialogSubtitle}">
-    ${this.reasonOptions_.map(option => html`
-      <cr-checkbox class="reason-checkbox" data-reason="${option.id}"
-          ?checked="${this.selectedReasons_.includes(option.id)}"
+    ${this.reasonOptions_.map(item => html`
+      <cr-checkbox class="reason-checkbox" data-reason="${item.id}"
+          ?checked="${this.selectedReasons_.includes(item.id)}"
           @checked-changed="${this.onReasonCheckedChanged_}">
-        ${option.label}
+        ${item.label}
       </cr-checkbox>
     `)}
   </div>

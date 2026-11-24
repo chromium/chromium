@@ -18,17 +18,17 @@ export function getHtml(this: ViewerTextSidePanelElement) {
   <select id="typefaceSelect" class="md-select"
       @change="${this.onTypefaceChange_}" .value="${this.currentTypeface}"
       aria-label="$i18n{ink2TextFont}">
-    ${this.fontNames.map(typeface => html`
-      <option value="${typeface}">
-        ${this.i18n(this.getLabelForTypeface(typeface))}
+    ${this.fontNames.map(item => html`
+      <option value="${item}">
+        ${this.i18n(this.getLabelForTypeface(item))}
       </option>
     `)}
   </select>
   <select id="sizeSelect" class="md-select" @change="${this.onSizeChange_}"
       .value="${this.currentSize.toString()}"
       aria-label="$i18n{ink2TextFontSize}">
-    ${this.sizes.map(size => html`
-      <option value="${size}">${size}</option>
+    ${this.sizes.map(item => html`
+      <option value="${item}">${item}</option>
     `)}
   </select>
 </div>

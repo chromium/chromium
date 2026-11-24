@@ -33,10 +33,10 @@ export function getHtml(this: TabsFromOtherDevicesAppElement) {
         <cr-icon icon="cr:arrow-drop-down"></cr-icon>
       </cr-button>
       <cr-action-menu id="deviceMenu">
-        ${this.syncedDevices_.map(device => html`
+        ${this.syncedDevices_.map(item => html`
           <button class="dropdown-item" @click="${this.onDeviceItemClick_}"
-              data-tag="${device.tag}">
-            ${device.name}
+              data-tag="${item.tag}">
+            ${item.name}
           </button>
         `)}
       </cr-action-menu>
@@ -44,36 +44,37 @@ export function getHtml(this: TabsFromOtherDevicesAppElement) {
   ` : ''}
 
   <div id="tabs" class="${this.showScreenshots_ ? 'grid' : ''}">
-    ${this.getFilteredTabs_().map((tab: TabInfo) => html`
+    ${this.getFilteredTabs_().map((item: TabInfo) => html`
       <div class="tab ${this.showScreenshots_ ? 'grid' : ''}"
           @click="${this.onTabClick_}" @auxclick="${this.onTabAuxclick_}"
-          data-session-tag="${tab.sessionTag}" data-tab-id="${tab.sessionId}">
+          data-session-tag="${item.sessionTag}" data-tab-id="${item.sessionId}">
         <div class="tab-header">
           <div class="tab-favicon-container">
             <div class="tab-favicon"
                 style="background-image:
-                        ${getFaviconForPageURL(tab.url, true)}">
+                        ${getFaviconForPageURL(item.url, true)}">
             </div>
           </div>
           <div class="tab-info">
-            <span class="tab-title">${tab.title}</span>
+            <span class="tab-title">${item.title}</span>
             ${!this.showScreenshots_ ? html`
               <div class="tab-details">
-                <span class="tab-url">${this.getHostname_(tab.url)}</span>
+                <span class="tab-url">${this.getHostname_(item.url)}</span>
                 <span class="tab-timestamp-separator">•</span>
-                <span class="tab-timestamp">${tab.timestampDisplayStr}</span>
+                <span class="tab-timestamp">${item.timestampDisplayStr}</span>
               </div>
             ` : ''}
           </div>
         </div>
         ${this.showScreenshots_ ? html`
-          ${tab.screenshotUrl &&
-                  !this.screenshotLoadFailed_(tab.sessionTag, tab.sessionId) ?
+          ${item.screenshotUrl &&
+                  !this.screenshotLoadFailed_(
+                      item.sessionTag, item.sessionId) ?
               html`
-            <img class="tab-screenshot" src="${tab.screenshotUrl}"
+            <img class="tab-screenshot" src="${item.screenshotUrl}"
                 @error="${this.onScreenshotError_}"
-                data-session-tag="${tab.sessionTag}"
-                data-tab-id="${tab.sessionId}">
+                data-session-tag="${item.sessionTag}"
+                data-tab-id="${item.sessionId}">
           ` : html`
             <div class="tab-screenshot fallback"></div>
           `}

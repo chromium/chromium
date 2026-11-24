@@ -11,13 +11,13 @@ export function getHtml(this: InkTextAnnotationsElement) {
   return html`<!--_html_template_start_-->
 <div id="container" role="list" aria-label="$i18n{ink2TextAnnotationsAxLabel}"
     @focusout="${this.onContainerFocusout_}">
-  ${this.placeholders_.map((placeholder, index) => html`
-    <div class="placeholder" style="${this.getStyles_(placeholder)}"
-        data-index="${index}" data-rotations="${placeholder.rotations}"
-        aria-hidden="${this.isPlaceholderAriaHidden_(placeholder)}"
+  ${this.placeholders_.map((item, index) => html`
+    <div class="placeholder" style="${this.getStyles_(item)}"
+        data-index="${index}" data-rotations="${item.rotations}"
+        aria-hidden="${this.isPlaceholderAriaHidden_(item)}"
         aria-setsize="${this.placeholders_.length}" aria-posinset="${index + 1}"
-        role="listitem" aria-label="${placeholder.label}"
-        tabindex="${this.getPlaceholderTabIndex_(placeholder)}"
+        role="listitem" aria-label="${item.label}"
+        tabindex="${this.getPlaceholderTabIndex_(item)}"
         @focus="${this.onPlaceholderFocus_}"
         @keydown="${this.onPlaceholderKeydown_}">
     </div>

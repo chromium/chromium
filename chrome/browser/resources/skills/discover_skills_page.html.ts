@@ -18,11 +18,11 @@ ${this.shouldShowNoSearchResults_() ? html`
     ${this.skillsByTopic_(categoryName).length > 0 ? html`
       <h2 class="page-title">${displayName}</h2>
       <skills-carousel>
-        ${this.skillsByTopic_(categoryName).map(skill => html`
-          <skill-card slot="items" .skill="${skill}"
+        ${this.skillsByTopic_(categoryName).map(item => html`
+          <skill-card slot="items" .skill="${item}"
               .cardType="${CardType.DISCOVER_SKILL_CARD}"
-              class="${skill.imageUrl ? 'skill-with-image' : ''}"
-              .saveDisabled="${this.shouldDisableSave_(skill)}"
+              class="${item.imageUrl ? 'skill-with-image' : ''}"
+              .saveDisabled="${this.shouldDisableSave_(item)}"
               .hideTooltip="${true}">
           </skill-card>
         `)}
@@ -32,24 +32,23 @@ ${this.shouldShowNoSearchResults_() ? html`
   ${this.getOtherCategories_().length > 0 ? html`
     <h2 class="page-title" id="browseSkillsTitle">$i18n{browseSkillsTitle}</h2>
     <div id="discoverCategories">
-      ${this.getOtherCategories_().map(category => html`
-        <cr-chip ?selected="${this.isCategorySelected_(category)}"
-            data-category="${category}" @click="${this.onCategoryClick_}">
+      ${this.getOtherCategories_().map(item => html`
+        <cr-chip ?selected="${this.isCategorySelected_(item)}"
+            data-category="${item}" @click="${this.onCategoryClick_}">
           <cr-icon
-              icon="${this.isCategorySelected_(category) ?
+              icon="${this.isCategorySelected_(item) ?
                   'cr:check' :
-                  this.getIconForCategory_(category)}">
+                  this.getIconForCategory_(item)}">
           </cr-icon>
-          ${category}
+          ${item}
         </cr-chip>
       `)}
     </div>
     <div class="skill-cards-container">
-      ${this.getSelectedSkills_().map(skill => html`
-        <skill-card .skill="${skill}"
-            .cardType="${CardType.DISCOVER_SKILL_CARD}"
-            class="${skill.imageUrl ? 'skill-with-image' : ''}"
-            .saveDisabled="${this.shouldDisableSave_(skill)}">
+      ${this.getSelectedSkills_().map(item => html`
+        <skill-card .skill="${item}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
+            class="${item.imageUrl ? 'skill-with-image' : ''}"
+            .saveDisabled="${this.shouldDisableSave_(item)}">
         </skill-card>
       `)}
     </div>

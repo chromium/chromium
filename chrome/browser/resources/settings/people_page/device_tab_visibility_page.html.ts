@@ -19,20 +19,20 @@ export function getHtml(this: SettingsDeviceTabVisibilityPageElement) {
   </div>
   ${this.devices_.length > 0 ? html`
     <div id="deviceList" class="list-frame">
-      ${this.devices_.map((device, index) => html`
+      ${this.devices_.map((item, index) => html`
         <div class="list-item device-row">
-          <cr-icon icon="${this.getDeviceIcon_(device.formFactor)}"></cr-icon>
+          <cr-icon icon="${this.getDeviceIcon_(item.formFactor)}"></cr-icon>
           <div class="device-content">
             <div class="cr-padded-text">
-              <div class="device-name">${device.deviceName}</div>
+              <div class="device-name">${item.deviceName}</div>
               <div class="cr-secondary-text" id="deviceTime_${index}">
-                ${device.lastActiveTime}
+                ${item.lastActiveTime}
               </div>
             </div>
-            <cr-toggle .checked="${device.visible}"
-                aria-label="${device.deviceName}"
+            <cr-toggle .checked="${item.visible}"
+                aria-label="${item.deviceName}"
                 aria-describedby="deviceTime_${index}"
-                data-session-tag="${device.sessionTag}"
+                data-session-tag="${item.sessionTag}"
                 @change="${this.onDeviceVisibilityToggleChange_}">
             </cr-toggle>
           </div>
