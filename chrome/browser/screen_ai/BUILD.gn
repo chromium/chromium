@@ -130,6 +130,8 @@ source_set("unit_tests") {
     ":screen_ai_service_router_factory",
     "//base",
     "//base/test:test_support",
+    "//net",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 

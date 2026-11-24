@@ -13,14 +13,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_library_provider.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/mojom/base/file_path.mojom.h"
@@ -31,32 +29,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif
-
-namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// If any value is added, please update `ComponentAvailability` in `enums.xml`.
-enum class ComponentAvailability {
-  kAvailable = 0,
-  kUnavailableWithNetwork = 1,
-  kUnavailableWithoutNetwork = 2,
-
-  kMaxValue = kUnavailableWithoutNetwork,
-};
-
-
-void RecordComponentAvailability(bool available) {
-  bool network = !content::GetNetworkConnectionTracker()->IsOffline();
-  base::UmaHistogramEnumeration(
-      "Accessibility.ScreenAI.Component.Available2",
-      available
-          ? ComponentAvailability::kAvailable
-          : (network ? ComponentAvailability::kUnavailableWithNetwork
-                     : ComponentAvailability::kUnavailableWithoutNetwork));
-}
-
-}  // namespace
 
 namespace screen_ai {
 
@@ -90,47 +62,7 @@ ScreenAIServiceHandlerBase* ScreenAIServiceRouter::GetHandler(Service service) {
 void ScreenAIServiceRouter::GetServiceStateAsync(
     Service service,
     ServiceStateCallback callback) {
-  std::optional<bool> service_state =
-      GetHandler(service)->GetServiceStateAsync(std::move(callback));
-
-  // If `service_state` has value, either the service is already initialized or
-  // disabled. In both cases we can can assume the component was ready.
-  // Otherwise its download should be triggered.
-  if (service_state) {
-    RecordComponentAvailability(true);
-    return;
-  }
-
-  // Ask for the library, unless an earlier request already waits for it.
-  if (waiting_for_library_) {
-    return;
-  }
-  waiting_for_library_ = true;
-  base::WeakPtr<ScreenAIServiceRouter> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  base::CallbackListSubscription subscription =
-      library_provider_->EnsureLibraryAvailable(base::BindOnce(
-          &ScreenAIServiceRouter::OnLibraryAvailabilityChanged, weak_this));
-  // The provider can answer before it returns. The callbacks that are then
-  // told that the service is not available can destroy this object, or ask
-  // for the service again, which stores a new subscription. So keep this
-  // subscription only if it is still the request to wait for.
-  if (weak_this && waiting_for_library_ && !library_subscription_) {
-    library_subscription_ = std::move(subscription);
-  }
-}
-
-void ScreenAIServiceRouter::OnLibraryAvailabilityChanged(bool available) {
-  waiting_for_library_ = false;
-  library_subscription_ = {};
-
-  if (mce_handler_) {
-    mce_handler_->OnLibraryAvailablityChanged(available);
-  }
-  if (ocr_handler_) {
-    ocr_handler_->OnLibraryAvailablityChanged(available);
-  }
-  RecordComponentAvailability(available);
+  GetHandler(service)->GetServiceStateAsync(std::move(callback));
 }
 
 void ScreenAIServiceRouter::BindScreenAIAnnotator(

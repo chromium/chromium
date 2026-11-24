@@ -8,9 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_ocr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -59,25 +57,12 @@ class ScreenAIServiceRouter : public KeyedService {
 
   ScreenAIServiceHandlerBase* GetHandler(Service service);
 
-  // Tells the handlers if the library is available. Called by the library
-  // provider when it has an answer.
-  void OnLibraryAvailabilityChanged(bool available);
-
-  // Gives access to the library. Not owned: the provider outlives this object.
-  // In production it is a singleton that is never destroyed.
+  // Gives the handlers access to the library. Not owned: the provider outlives
+  // this object. In production it is a singleton that is never destroyed.
   const raw_ptr<ScreenAILibraryProvider> library_provider_;
 
   std::unique_ptr<ScreenAIServiceHandlerOCR> ocr_handler_;
   std::unique_ptr<ScreenAIServiceHandlerMainContentExtraction> mce_handler_;
-
-  // True from the time the library provider is asked for the library until it
-  // answers.
-  bool waiting_for_library_ = false;
-
-  // Keeps the request to the library provider alive while it is pending.
-  base::CallbackListSubscription library_subscription_;
-
-  base::WeakPtrFactory<ScreenAIServiceRouter> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai
