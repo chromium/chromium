@@ -186,7 +186,10 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
             Matcher<View>[] matchersArray = new Matcher[matchers.size()];
             matchers.toArray(matchersArray);
 
-            suggestionElement = declareView(BaseSuggestionView.class, matchersArray);
+            suggestionElement =
+                    declareView(
+                            viewSpec(BaseSuggestionView.class, matchersArray),
+                            ViewElement.initialSettleTimeOption(250));
         }
 
         public WebPageStation openPage() {

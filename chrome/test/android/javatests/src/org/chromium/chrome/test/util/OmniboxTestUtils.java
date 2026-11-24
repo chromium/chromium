@@ -746,7 +746,25 @@ public class OmniboxTestUtils {
                 return notFulfilled("suggestion list is not shown");
             }
             int count = dropdown.getDropdownItemViewCountForTest();
-            return whether(count > 0, "suggestion list has %d entries", count);
+            int childCount = dropdown.getChildCount();
+            boolean hasPendingAdapterUpdates = dropdown.hasPendingAdapterUpdates();
+            boolean containerLayoutRequested = container.isLayoutRequested();
+            boolean dropdownLayoutRequested = dropdown.isLayoutRequested();
+            if (count <= 0
+                    || childCount == 0
+                    || hasPendingAdapterUpdates
+                    || containerLayoutRequested
+                    || dropdownLayoutRequested) {
+                return notFulfilled(
+                        "suggestion list has %d entries (children=%d, pendingAdapterUpdates=%b,"
+                                + " containerLayoutRequested=%b, dropdownLayoutRequested=%b)",
+                        count,
+                        childCount,
+                        hasPendingAdapterUpdates,
+                        containerLayoutRequested,
+                        dropdownLayoutRequested);
+            }
+            return fulfilled("suggestion list has %d entries", count);
         }
 
         @Override
