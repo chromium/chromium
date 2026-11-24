@@ -133,7 +133,8 @@ BASE_FEATURE(kActorTypeToolObservationStartDelay,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta>
     kActorTypeToolObservationStartDelayDuration{
-        &kActorTypeToolObservationStartDelay, "start_delay", base::Seconds(1)};
+        &kActorTypeToolObservationStartDelay, "start_delay",
+        base::Milliseconds(500)};
 
 BASE_FEATURE(kActorSendBrowserSignalForAction,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -203,21 +204,22 @@ const base::FeatureParam<base::TimeDelta> kActorPageStabilityTimeout{
 // The minimum amount of time to wait for page stability before invoking the
 // callback.
 const base::FeatureParam<base::TimeDelta> kActorPageStabilityMinWait{
-    &kActorPageStability, "actor-page-stability-min-wait", base::Seconds(1)};
+    &kActorPageStability, "actor-page-stability-min-wait",
+    base::Milliseconds(500)};
 
 // Timeout controlling how long the paint stability monitor waits after the
 // initial contentful paint before considering the UI to have stabilized.
 const base::FeatureParam<base::TimeDelta>
     kActorPaintStabilityInitialPaintTimeout{
         &kActorPageStability, "actor-paint-stability-initial-paint-timeout",
-        base::Seconds(1)};
+        base::Milliseconds(500)};
 
 // Timeout controlling how long the paint stability monitor waits for subsequent
 // contenful paints before considering the UI to have stabilized.
 const base::FeatureParam<base::TimeDelta>
     kActorPaintStabilitySubsequentPaintTimeout{
         &kActorPageStability, "actor-paint-stability-subsequent-paint-timeout",
-        base::Seconds(1)};
+        base::Milliseconds(500)};
 
 // Experiment with different observation delays and timeouts for Actor.
 BASE_FEATURE(kActorObservationDelay, base::FEATURE_ENABLED_BY_DEFAULT);

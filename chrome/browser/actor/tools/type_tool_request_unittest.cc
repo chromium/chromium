@@ -35,7 +35,7 @@ TEST(TypeToolRequestTest, GetObservationPageStabilityConfig_Default) {
                           TypeToolRequest::Mode::kAppend);
   auto config = request.GetObservationPageStabilityConfig();
   EXPECT_TRUE(config.supports_paint_stability);
-  EXPECT_EQ(config.start_delay, base::Seconds(1));
+  EXPECT_EQ(config.start_delay, base::Milliseconds(500));
 }
 
 TEST(TypeToolRequestTest, GetObservationPageStabilityConfig_FeatureEnabled) {
