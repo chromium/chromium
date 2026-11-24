@@ -541,17 +541,12 @@ void HistoryClustersService::WriteShortCacheToPrefs() {
     return;
   }
 
-  base::ElapsedTimer write_short_cache_timer;
   base::DictValue short_cache_dict;
   short_cache_dict.Set("short_keywords",
                        KeywordsCacheToDict(&short_keyword_cache_));
   short_cache_dict.Set("short_timestamp",
                        base::TimeToValue(short_keyword_cache_timestamp_));
   pref_service_->SetDict(prefs::kShortCache, std::move(short_cache_dict));
-  base::UmaHistogramCustomTimes(
-      "History.Clusters.KeywordCache.WriteCache.Short.Latency",
-      write_short_cache_timer.Elapsed(), base::Microseconds(50),
-      base::Seconds(2), 50);
 }
 
 void HistoryClustersService::WriteAllCacheToPrefs() {
@@ -559,16 +554,11 @@ void HistoryClustersService::WriteAllCacheToPrefs() {
     return;
   }
 
-  base::ElapsedTimer write_all_cache_timer;
   base::DictValue all_cache_dict;
   all_cache_dict.Set("all_keywords", KeywordsCacheToDict(&all_keywords_cache_));
   all_cache_dict.Set("all_timestamp",
                      base::TimeToValue(all_keywords_cache_timestamp_));
   pref_service_->SetDict(prefs::kAllCache, std::move(all_cache_dict));
-  base::UmaHistogramCustomTimes(
-      "History.Clusters.KeywordCache.WriteCache.All.Latency",
-      write_all_cache_timer.Elapsed(), base::Microseconds(50), base::Seconds(2),
-      50);
 }
 
 }  // namespace history_clusters

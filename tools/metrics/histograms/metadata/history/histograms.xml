@@ -669,24 +669,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.KeywordCache.WriteCache.{CacheType}.Latency"
-    units="ms" expires_after="2024-10-06">
-  <owner>pnoland@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Records the amount of time spent serializing and writing a keyword cache to
-    the pref service. Recorded every time a cache is written to prefs, which is
-    every time one is updated. This is not recorded if the pref service is null.
-  </summary>
-  <token key="CacheType">
-    <variant name="All"
-        summary="Records time spent writing the 'all keywords' cache."/>
-    <variant name="Short"
-        summary="Records time spent writing the short keyword cache."/>
-  </token>
-</histogram>
-
 <histogram name="History.Clusters.MaxClusterLabelDuplicates" units="clusters"
     expires_after="2027-09-24">
   <owner>fdoray@chromium.org</owner>
