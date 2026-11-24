@@ -17,12 +17,15 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/core/browser/device_authorization/mock_device_authorization_service.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
@@ -32,6 +35,9 @@
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_device_authorization_service_factory.h"
+#import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -50,8 +56,6 @@
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/signin/public/base/consent_level.h"
-#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "ios/chrome/browser/credential_provider/model/fake_credential_provider_settings_handler.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -100,6 +104,46 @@ using ::testing::Return;
 
 constexpr int32_t kDeviceAuthorizationKeyVersion = 1;
 constexpr std::string_view kDeviceAuthorizationKey = "device_authorization_key";
+
+// Configurable fake `PasskeyKeychainProvider` for testing
+// `FetchTrustedVaultKeys()`.
+class TestPasskeyKeychainProvider : public PasskeyKeychainProvider {
+ public:
+  TestPasskeyKeychainProvider(bool is_enrolled,
+                              webauthn::SharedKeyList keys,
+                              bool in_degraded_recoverability)
+      : PasskeyKeychainProvider(/*metrics_reporting_enabled=*/false),
+        is_enrolled_(is_enrolled),
+        keys_(std::move(keys)),
+        in_degraded_recoverability_(in_degraded_recoverability) {}
+
+  void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback) override {
+    std::move(callback).Run(is_enrolled_, /*error=*/nil);
+  }
+
+  void FetchKeys(NSString* gaia,
+                 webauthn::ReauthenticatePurpose purpose,
+                 webauthn::KeysFetchedCallback callback) override {
+    std::move(callback).Run(keys_, /*error=*/nil);
+  }
+
+  void CheckDegradedRecoverability(
+      NSString* gaia,
+      CheckDegradedRecoverabilityCallback callback) override {
+    check_degraded_recoverability_called_ = true;
+    std::move(callback).Run(in_degraded_recoverability_, /*error=*/nil);
+  }
+
+  bool check_degraded_recoverability_called() const {
+    return check_degraded_recoverability_called_;
+  }
+
+ private:
+  bool is_enrolled_;
+  webauthn::SharedKeyList keys_;
+  bool in_degraded_recoverability_;
+  bool check_degraded_recoverability_called_ = false;
+};
 
 class IOSChromePasskeyClientTest : public PlatformTest {
  public:
@@ -193,6 +237,55 @@ class IOSChromePasskeyClientTest : public PlatformTest {
     client_->SetIOSPasskeyClientCommandsHandler(
         HandlerForProtocol(command_dispatcher_, IOSPasskeyClientCommands));
     return reauth_command_target_;
+  }
+
+  // Signs in a primary account, overrides `PasskeyKeychainProviderBridge` with
+  // a `TestPasskeyKeychainProvider`, configures an `OCMStrictProtocolMock`
+  // commands handler, and invokes `FetchTrustedVaultKeys()`.
+  std::pair<webauthn::SharedKeyList, bool>
+  FetchTrustedVaultKeysWithTestProvider(
+      bool is_enrolled,
+      webauthn::SharedKeyList keys,
+      bool in_degraded_recoverability,
+      bool allow_ui,
+      bool expect_dismiss_welcome_screen,
+      bool* out_check_degraded_recoverability_called = nullptr) {
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        "user@example.com", signin::ConsentLevel::kSignin);
+
+    auto provider = std::make_unique<TestPasskeyKeychainProvider>(
+        is_enrolled, std::move(keys), in_degraded_recoverability);
+    TestPasskeyKeychainProvider* provider_ptr = provider.get();
+    PasskeyKeychainProviderBridge* bridge =
+        [[PasskeyKeychainProviderBridge alloc]
+            initWithPasskeyKeychainProvider:std::move(provider)];
+    std::unique_ptr<ScopedPasskeyKeychainProviderBridgeOverride>
+        bridge_override =
+            ScopedPasskeyKeychainProviderBridgeOverride::MakeAndArmForTesting(
+                bridge);
+
+    id<IOSPasskeyClientCommands> strict_commands_handler =
+        OCMStrictProtocolMock(@protocol(IOSPasskeyClientCommands));
+    if (expect_dismiss_welcome_screen) {
+      OCMExpect([strict_commands_handler dismissPasskeyWelcomeScreen]);
+    }
+    client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
+
+    base::test::TestFuture<webauthn::SharedKeyList, bool> future;
+    client_->FetchTrustedVaultKeys(
+        webauthn::ReauthenticatePurpose::kEncrypt,
+        webauthn::PasskeyUserVerificationStatus::kNotRequired, allow_ui,
+        future.GetCallback());
+
+    std::pair<webauthn::SharedKeyList, bool> result(future.Get<0>(),
+                                                    future.Get<1>());
+    if (out_check_degraded_recoverability_called) {
+      *out_check_degraded_recoverability_called =
+          provider_ptr->check_degraded_recoverability_called();
+    }
+    EXPECT_OCMOCK_VERIFY((OCMockObject*)strict_commands_handler);
+    return result;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -512,6 +605,65 @@ TEST_F(IOSChromePasskeyClientTest, DeviceAuthorizationServiceNull) {
 
   EXPECT_EQ(future.Get().status(),
             webauthn::DeviceAuthFetchResult::Status::kError);
+}
+
+// Tests that when `allow_ui` is `false` and the account is not enrolled,
+// `FetchTrustedVaultKeys` returns empty keys without presenting UI.
+TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysNotEnrolledSilent) {
+  auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
+      /*is_enrolled=*/false, webauthn::SharedKeyList{},
+      /*in_degraded_recoverability=*/false, /*allow_ui=*/false,
+      /*expect_dismiss_welcome_screen=*/false);
+
+  EXPECT_TRUE(keys.empty());
+  EXPECT_FALSE(did_complete_uv);
+}
+
+// Tests that when `allow_ui` is `false` and fetched keys are empty,
+// `FetchTrustedVaultKeys` returns empty keys without presenting UI.
+TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysEmptyKeysSilent) {
+  auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
+      /*is_enrolled=*/true, webauthn::SharedKeyList{},
+      /*in_degraded_recoverability=*/false, /*allow_ui=*/false,
+      /*expect_dismiss_welcome_screen=*/false);
+
+  EXPECT_TRUE(keys.empty());
+  EXPECT_FALSE(did_complete_uv);
+}
+
+// Tests that when `allow_ui` is `false` and the account is in degraded
+// recoverability, `FetchTrustedVaultKeys` skips the degraded recoverability
+// check and returns the fetched keys without presenting UI.
+TEST_F(IOSChromePasskeyClientTest,
+       FetchTrustedVaultKeysDegradedRecoverabilitySilent) {
+  const webauthn::SharedKey test_key(32u, 1);
+  bool check_degraded_recoverability_called = true;
+  auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
+      /*is_enrolled=*/true, webauthn::SharedKeyList{test_key},
+      /*in_degraded_recoverability=*/true, /*allow_ui=*/false,
+      /*expect_dismiss_welcome_screen=*/false,
+      &check_degraded_recoverability_called);
+
+  EXPECT_FALSE(check_degraded_recoverability_called);
+  EXPECT_EQ(keys, webauthn::SharedKeyList{test_key});
+  EXPECT_FALSE(did_complete_uv);
+}
+
+// Tests that when `allow_ui` is `true` and valid keys are fetched cleanly,
+// `FetchTrustedVaultKeys` checks degraded recoverability and dismisses any
+// welcome screen on completion.
+TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysInteractiveSuccess) {
+  const webauthn::SharedKey test_key(32u, 1);
+  bool check_degraded_recoverability_called = false;
+  auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
+      /*is_enrolled=*/true, webauthn::SharedKeyList{test_key},
+      /*in_degraded_recoverability=*/false, /*allow_ui=*/true,
+      /*expect_dismiss_welcome_screen=*/true,
+      &check_degraded_recoverability_called);
+
+  EXPECT_TRUE(check_degraded_recoverability_called);
+  EXPECT_EQ(keys, webauthn::SharedKeyList{test_key});
+  EXPECT_FALSE(did_complete_uv);
 }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)

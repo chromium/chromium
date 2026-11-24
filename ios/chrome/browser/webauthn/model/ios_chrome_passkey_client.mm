@@ -7,10 +7,11 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_op.h"
 #import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
@@ -76,7 +77,7 @@ CoreAccountInfo GetPrimaryAccountInfo(ProfileIOS* profile) {
 @interface IOSChromePasskeyClientBridgeDelegate
     : NSObject <PasskeyKeychainProviderBridgeDelegate>
 
-- (instancetype)initWithClient:(IOSChromePasskeyClient*)client
+- (instancetype)initWithClient:(base::WeakPtr<IOSChromePasskeyClient>)client
                   reauthModule:(id<ReauthenticationProtocol>)reauthModule;
 
 - (void)setUserVerificationStatus:
@@ -87,16 +88,19 @@ CoreAccountInfo GetPrimaryAccountInfo(ProfileIOS* profile) {
 @end
 
 @implementation IOSChromePasskeyClientBridgeDelegate {
-  raw_ptr<IOSChromePasskeyClient> _client;
+  // Weak reference because Objective-C retain cycles or autorelease pools (for
+  // example in tests) may outlive `IOSChromePasskeyClient`.
+  base::WeakPtr<IOSChromePasskeyClient> _client;
   __weak id<ReauthenticationProtocol> _reauthModule;
   webauthn::PasskeyUserVerificationStatus _userVerificationStatus;
 }
 
-- (instancetype)initWithClient:(IOSChromePasskeyClient*)client
+- (instancetype)initWithClient:(base::WeakPtr<IOSChromePasskeyClient>)client
                   reauthModule:(id<ReauthenticationProtocol>)reauthModule {
   self = [super init];
   if (self) {
-    _client = client;
+    CHECK(client);
+    _client = std::move(client);
     _reauthModule = reauthModule;
   }
   return self;
@@ -140,6 +144,9 @@ CoreAccountInfo GetPrimaryAccountInfo(ProfileIOS* profile) {
             (webauthn::PasskeyWelcomeScreenPurpose)purpose
                           completion:
                               (webauthn::PasskeyWelcomeScreenAction)completion {
+  if (!_client) {
+    return;
+  }
   [_client->GetCommandHandler() showPasskeyWelcomeScreenForPurpose:purpose
                                                         completion:completion];
 }
@@ -187,7 +194,7 @@ IOSChromePasskeyClient::GetPasskeyKeychainProviderBridge() {
       ReauthenticationServiceFactory::GetForProfile(profile_)
           ->GetReauthModule();
   bridge_delegate_ = [[IOSChromePasskeyClientBridgeDelegate alloc]
-      initWithClient:this
+      initWithClient:weak_ptr_factory_.GetWeakPtr()
         reauthModule:reauthModule];
   passkey_keychain_provider_bridge_.delegate = bridge_delegate_;
 
@@ -206,7 +213,13 @@ id<IOSPasskeyClientCommands> IOSChromePasskeyClient::GetCommandHandler() const {
 void IOSChromePasskeyClient::FetchTrustedVaultKeys(
     webauthn::ReauthenticatePurpose purpose,
     webauthn::PasskeyUserVerificationStatus user_verification_status,
+    bool allow_ui,
     webauthn::FetchTrustedVaultKeysCallback callback) {
+  if (!allow_ui) {
+    CHECK_NE(user_verification_status,
+             webauthn::PasskeyUserVerificationStatus::kRequired);
+  }
+
   IOSChromePasskeyClientBridgeDelegate* delegate =
       base::apple::ObjCCast<IOSChromePasskeyClientBridgeDelegate>(
           GetPasskeyKeychainProviderBridge().delegate);
@@ -217,7 +230,7 @@ void IOSChromePasskeyClient::FetchTrustedVaultKeys(
 
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       [](id<IOSPasskeyClientCommands> handler,
-         IOSChromePasskeyClientBridgeDelegate* delegate,
+         IOSChromePasskeyClientBridgeDelegate* delegate, bool allow_ui,
          webauthn::FetchTrustedVaultKeysCallback inner_callback,
          webauthn::SharedKeyList trusted_vault_keys, NSError* error) {
         bool did_complete_uv =
@@ -225,13 +238,16 @@ void IOSChromePasskeyClient::FetchTrustedVaultKeys(
             webauthn::PasskeyUserVerificationStatus::kCompleted;
         std::move(inner_callback)
             .Run(std::move(trusted_vault_keys), did_complete_uv);
-        [handler dismissPasskeyWelcomeScreen];
+        if (allow_ui) {
+          [handler dismissPasskeyWelcomeScreen];
+        }
       },
-      command_handler_, delegate, std::move(callback)));
+      command_handler_, delegate, allow_ui, std::move(callback)));
   [GetPasskeyKeychainProviderBridge()
       fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
                         credential:nil
                            purpose:purpose
+                           allowUI:allow_ui
                         completion:completion_block];
 }
 

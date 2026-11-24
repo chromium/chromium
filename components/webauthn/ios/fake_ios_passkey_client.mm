@@ -23,16 +23,21 @@ void FakeIOSPasskeyClient::SetIOSPasskeyClientCommandsHandler(
 void FakeIOSPasskeyClient::FetchTrustedVaultKeys(
     ReauthenticatePurpose purpose,
     PasskeyUserVerificationStatus user_verification_status,
+    bool allow_ui,
     FetchTrustedVaultKeysCallback callback) {
-  static const size_t kKeyLength = 32u;
+  static constexpr size_t kKeyLength = 32u;
   fetch_trusted_vault_keys_called_ = true;
   last_user_verification_status_ = user_verification_status;
+  last_allow_trusted_vault_ui_ = allow_ui;
   if (!callback.is_null()) {
-    // Return a single 32 bytes key (zeroed out).
+    // Return a single 32 bytes key (zeroed out) by default.
     bool did_complete_uv =
         user_verification_status == PasskeyUserVerificationStatus::kCompleted;
-    std::move(callback).Run({std::vector<uint8_t>(kKeyLength, 0)},
-                            did_complete_uv);
+    SharedKeyList keys =
+        trusted_vault_keys_.has_value()
+            ? *trusted_vault_keys_
+            : SharedKeyList{std::vector<uint8_t>(kKeyLength, 0)};
+    std::move(callback).Run(std::move(keys), did_complete_uv);
   }
 }
 
@@ -85,6 +90,14 @@ FakeIOSPasskeyClient::last_infobar_passkey() const {
 
 bool FakeIOSPasskeyClient::DidFetchTrustedVaultKeys() const {
   return fetch_trusted_vault_keys_called_;
+}
+
+void FakeIOSPasskeyClient::SetTrustedVaultKeys(SharedKeyList keys) {
+  trusted_vault_keys_ = std::move(keys);
+}
+
+std::optional<bool> FakeIOSPasskeyClient::last_allow_trusted_vault_ui() const {
+  return last_allow_trusted_vault_ui_;
 }
 
 bool FakeIOSPasskeyClient::DidFetchDeviceAuthorizationKeys() const {

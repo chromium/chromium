@@ -20,6 +20,20 @@ NSString* const kPasskeyKeychainProviderBridgeErrorDomain =
 
 namespace {
 
+// Controls whether trusted vault key fetching may present user-facing prompts.
+enum class KeyFetchInteractionMode {
+  // Allow enrollment, reauthentication, degraded-recoverability, and user
+  // verification UI.
+  kInteractive,
+  // Allow degraded-recoverability and user verification UI, but do not
+  // re-prompt for reauthentication (used after enrollment or reauthentication
+  // already ran).
+  kInteractiveNoReauth,
+  // Never present enrollment, reauthentication, degraded-recoverability, or
+  // user verification UI.
+  kSilent,
+};
+
 // Returns whether there's at least one valid key in the keys array.
 bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                       id<Credential> credential) {
@@ -78,6 +92,26 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
 - (void)fetchTrustedVaultKeysForGaia:(NSString*)gaia
                           credential:(id<Credential>)credential
                              purpose:(webauthn::ReauthenticatePurpose)purpose
+                             allowUI:(BOOL)allowUI
+                          completion:(FetchTrustedVaultKeysCompletionBlock)
+                                         fetchTrustedVaultKeysCompletion {
+  [self fetchTrustedVaultKeysForGaia:gaia
+                          credential:credential
+                             purpose:purpose
+                     interactionMode:allowUI
+                                         ? KeyFetchInteractionMode::kInteractive
+                                         : KeyFetchInteractionMode::kSilent
+                          completion:fetchTrustedVaultKeysCompletion];
+}
+
+#pragma mark - Private
+
+// Shared implementation for fetching trusted vault keys using the specified
+// `interactionMode`.
+- (void)fetchTrustedVaultKeysForGaia:(NSString*)gaia
+                          credential:(id<Credential>)credential
+                             purpose:(webauthn::ReauthenticatePurpose)purpose
+                     interactionMode:(KeyFetchInteractionMode)interactionMode
                           completion:(FetchTrustedVaultKeysCompletionBlock)
                                          fetchTrustedVaultKeysCompletion {
   // Ensure that the completion is invoked only once, since for the main app,
@@ -97,14 +131,13 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
     [weakSelf onIsEnrolledForGaia:gaia
                        credential:credential
                           purpose:purpose
+                  interactionMode:interactionMode
                        completion:completion
                        isEnrolled:is_enrolled
                             error:error];
   };
   [self checkEnrolledForGaia:gaia completion:checkEnrolledCompletion];
 }
-
-#pragma mark - Private
 
 // Marks the trusted vault keys as stale and calls the completion block.
 - (void)markKeysAsStaleForGaia:(NSString*)gaia
@@ -125,11 +158,13 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
 }
 
 // Handles the enrollment status of the account associated with the provided
-// gaia ID. If enrolled, fetches the keys for that account. If not, enrolls the
-// account.
+// `gaia` ID. If enrolled, fetches the keys for that account. If not and
+// `interactionMode` is interactive, enrolls the account; otherwise completes
+// with empty keys.
 - (void)onIsEnrolledForGaia:(NSString*)gaia
                  credential:(id<Credential>)credential
                     purpose:(webauthn::ReauthenticatePurpose)purpose
+            interactionMode:(KeyFetchInteractionMode)interactionMode
                  completion:(FetchTrustedVaultKeysCompletionBlock)
                                 fetchTrustedVaultKeysCompletion
                  isEnrolled:(BOOL)isEnrolled
@@ -145,9 +180,11 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                 credential:credential
         canMarkKeysAsStale:YES
                    purpose:purpose
-         canReauthenticate:YES
+           interactionMode:interactionMode
                 completion:fetchTrustedVaultKeysCompletion
                      error:nil];
+  } else if (interactionMode == KeyFetchInteractionMode::kSilent) {
+    fetchTrustedVaultKeysCompletion(/*trustedVaultKeys=*/{}, /*error=*/nil);
   } else {
     __weak __typeof(self) weakSelf = self;
     auto enrollCompletion = ^(NSError* enroll_error) {
@@ -155,7 +192,7 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                       credential:credential
               canMarkKeysAsStale:YES
                          purpose:purpose
-               canReauthenticate:NO
+                 interactionMode:KeyFetchInteractionMode::kInteractiveNoReauth
                       completion:fetchTrustedVaultKeysCompletion
                            error:enroll_error];
     };
@@ -183,16 +220,14 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                                    }));
 }
 
-// Attempts to fetch the keys for the account associated with the provided gaia
-// ID if no error occurred at the previous stage. `canReauthenticate` indicates
-// whether the user can be asked to reauthenticate by entering their GPM PIN.
-// This argument should only be set to `NO` if the user has already been asked
-// to reauthenticate.
+// Attempts to fetch the keys for the account associated with the provided
+// `gaia` ID if no error occurred at the previous stage. `interactionMode`
+// controls whether reauthentication or degraded-recoverability UI may be shown.
 - (void)fetchKeysForGaia:(NSString*)gaia
               credential:(id<Credential>)credential
       canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
                  purpose:(webauthn::ReauthenticatePurpose)purpose
-       canReauthenticate:(BOOL)canReauthenticate
+         interactionMode:(KeyFetchInteractionMode)interactionMode
               completion:(FetchTrustedVaultKeysCompletionBlock)
                              fetchTrustedVaultKeysCompletion
                    error:(NSError*)error {
@@ -209,9 +244,9 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                             credential:credential
                     canMarkKeysAsStale:canMarkKeysAsStale
                                purpose:purpose
+                       interactionMode:interactionMode
                             completion:fetchTrustedVaultKeysCompletion
                                keyList:std::move(key_list)
-                     canReauthenticate:canReauthenticate
                                  error:fetchKeysError];
       };
   [self fetchKeysForGaia:gaia purpose:purpose completion:fetchKeysCompletion];
@@ -231,15 +266,16 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
 }
 
 // Handles the outcome of the key fetch process.
-// If `sharedKeys` is empty, triggers the reauthentication process.
-// If not, triggers the `completion`.
+// If `keyList` is empty and `interactionMode` is `kInteractive`, triggers the
+// reauthentication process. If not empty, checks degraded recoverability when
+// interactive and finishes via `completion`.
 - (void)onKeysFetchedForGaia:(NSString*)gaia
                   credential:(id<Credential>)credential
           canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
                      purpose:(webauthn::ReauthenticatePurpose)purpose
+             interactionMode:(KeyFetchInteractionMode)interactionMode
                   completion:(FetchTrustedVaultKeysCompletionBlock)completion
                      keyList:(webauthn::SharedKeyList)keyList
-           canReauthenticate:(BOOL)canReauthenticate
                        error:(NSError*)error {
   __weak __typeof(self) weakSelf = self;
   if (!keyList.empty()) {
@@ -254,10 +290,18 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                                           credential:credential
                                   canMarkKeysAsStale:NO
                                              purpose:purpose
-                                   canReauthenticate:canReauthenticate
+                                     interactionMode:interactionMode
                                           completion:completion
                                                error:nil];
                         }];
+      return;
+    }
+
+    if (interactionMode == KeyFetchInteractionMode::kSilent) {
+      // Skip degraded-recoverability and user verification prompts during
+      // silent fetches so conditional passkey creation succeeds silently
+      // whenever valid keys are present.
+      completion(std::move(keyList), /*error=*/nil);
       return;
     }
 
@@ -276,7 +320,7 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
     [self checkDegradedRecoverabilityForGaia:gaia
                                   completion:degradedRecoverabilityCompletion];
   } else {
-    if (canReauthenticate) {
+    if (interactionMode == KeyFetchInteractionMode::kInteractive) {
       [self.delegate
           showWelcomeScreenWithPurpose:webauthn::PasskeyWelcomeScreenPurpose::
                                            kReauthenticate
@@ -314,14 +358,15 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
           [weakSelf.delegate providerDidCompleteReauthentication];
         }
 
-        [weakSelf onKeysFetchedForGaia:gaia
-                            credential:credential
-                    canMarkKeysAsStale:canMarkKeysAsStale
-                               purpose:purpose
-                            completion:completion
-                               keyList:std::move(key_list)
-                     canReauthenticate:NO
-                                 error:error];
+        [weakSelf
+            onKeysFetchedForGaia:gaia
+                      credential:credential
+              canMarkKeysAsStale:canMarkKeysAsStale
+                         purpose:purpose
+                 interactionMode:KeyFetchInteractionMode::kInteractiveNoReauth
+                      completion:completion
+                         keyList:std::move(key_list)
+                           error:error];
       }));
 }
 

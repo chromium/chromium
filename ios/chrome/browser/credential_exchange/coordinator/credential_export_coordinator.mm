@@ -199,6 +199,7 @@
       fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
                         credential:nil
                            purpose:webauthn::ReauthenticatePurpose::kDecrypt
+                           allowUI:YES
                         completion:completion_block];
 }
 

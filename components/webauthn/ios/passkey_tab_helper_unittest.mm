@@ -774,6 +774,28 @@ TEST_F(PasskeyTabHelperTest, ShouldPerformUserVerification) {
   }
 }
 
+// Tests that conditional create requests never require user verification, even
+// when biometric authentication is enabled and the RP requests `kRequired`.
+TEST_F(PasskeyTabHelperTest, ConditionalCreateDoesNotPerformUserVerification) {
+  for (device::UserVerificationRequirement requirement :
+       {device::UserVerificationRequirement::kPreferred,
+        device::UserVerificationRequirement::kRequired,
+        device::UserVerificationRequirement::kDiscouraged}) {
+    PasskeyRequestParams request_params(
+        IOSPasskeyClient::RequestInfo(web::kMainFakeFrameId, kFakeRequestId),
+        device::PublicKeyCredentialRpEntity(kRpId), /*challenge=*/{},
+        requirement, PasskeyRequestParams::RequestType::kConditionalCreate,
+        PasskeyExtensionData());
+    RegistrationRequestParams params(std::move(request_params),
+                                     device::PublicKeyCredentialUserEntity(),
+                                     /*exclude_credentials=*/{});
+    EXPECT_FALSE(params.ShouldPerformUserVerification(
+        /*is_biometric_authentication_enabled=*/true));
+    EXPECT_FALSE(params.ShouldPerformUserVerification(
+        /*is_biometric_authentication_enabled=*/false));
+  }
+}
+
 TEST_F(PasskeyTabHelperTest, MaybeShowInterstitialAndRegisterAndContinue) {
   fake_browser_state_.SetOffTheRecord(true);
   SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
@@ -1209,6 +1231,57 @@ TEST_F(PasskeyTabHelperTest,
   EXPECT_EQ(kUsername, client_->last_infobar_passkey()->user_name());
   EXPECT_FALSE(client_->DidShowCreationBottomSheet());
   EXPECT_FALSE(client_->DidOnPasskeyCreated());
+  EXPECT_EQ(client_->last_allow_trusted_vault_ui(), std::optional<bool>(false));
+  EXPECT_EQ(client_->last_user_verification_status(),
+            PasskeyUserVerificationStatus::kNotRequired);
+}
+
+// Tests that a conditional create request defers to the renderer without
+// creating a passkey when silent trusted vault key fetching returns no keys.
+TEST_F(PasskeyTabHelperTest,
+       ConditionalCreateWithEmptyTrustedVaultKeysDefersToRenderer) {
+  client_->SetTrustedVaultKeys({});
+  passkey_tab_helper()->RecordPasswordLogin(
+      kUsername, url::Origin::Create(GURL(kOriginURL)));
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  password_manager::PasswordForm form;
+  form.username_value = kUsername16;
+  form.url = GURL(kOriginURL);
+  form.date_last_used = base::Time::Now();
+  base::test::TestFuture<void> add_login_future;
+  test_password_store_->AddLogin(password_manager::FromPasswordForm(form),
+                                 add_login_future.GetCallback());
+  ASSERT_TRUE(add_login_future.Wait());
+
+  IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                             kFakeRequestId);
+  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
+  PasskeyRequestParams request_params(
+      std::move(request_info), std::move(rp_entity), /*challenge=*/{},
+      device::UserVerificationRequirement::kPreferred,
+      PasskeyRequestParams::RequestType::kConditionalCreate,
+      PasskeyExtensionData());
+  device::PublicKeyCredentialUserEntity user_entity({1, 2, 3}, kUsername,
+                                                    kUserDisplayName);
+  RegistrationRequestParams params(std::move(request_params),
+                                   std::move(user_entity),
+                                   /*exclude_credentials=*/{});
+
+  passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return client_->DidFetchTrustedVaultKeys(); }));
+  EXPECT_EQ(client_->last_allow_trusted_vault_ui(), std::optional<bool>(false));
+  EXPECT_EQ(client_->last_user_verification_status(),
+            PasskeyUserVerificationStatus::kNotRequired);
+  EXPECT_FALSE(client_->DidShowPasskeyCreationInfobar());
+  EXPECT_FALSE(client_->DidShowCreationBottomSheet());
+  EXPECT_FALSE(client_->DidOnPasskeyCreated());
+  EXPECT_TRUE(passkey_model_->IsEmpty());
+  EXPECT_NE(GetLastJavaScriptCall().find(kDeferToRendererJsCall),
+            std::u16string::npos);
 }
 
 // Tests that a conditional create request in off-the-record mode defers to the
@@ -1338,6 +1411,7 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationFromCrossOriginIframe) {
   passkey_tab_helper()->StartPasskeyCreation(kFakeRequestId,
                                              /*did_complete_uv=*/false);
   EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
+  EXPECT_EQ(client_->last_allow_trusted_vault_ui(), std::optional<bool>(true));
   ASSERT_TRUE(client_->DidShowPasskeyCreationInfobar());
   EXPECT_EQ(1u, client_->show_passkey_creation_infobar_count());
   ASSERT_TRUE(client_->last_infobar_passkey());
@@ -1934,6 +2008,7 @@ TEST_F(PasskeyTabHelperTest,
                                               passkey.credential_id(),
                                               /*did_complete_uv=*/false);
   EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
+  EXPECT_EQ(client_->last_allow_trusted_vault_ui(), std::optional<bool>(true));
 
   // Verify that resolveAssertionRequest was called on the frame.
   web::FakeWebFramesManager* frames_manager =

@@ -31,6 +31,7 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   void FetchTrustedVaultKeys(
       webauthn::ReauthenticatePurpose purpose,
       webauthn::PasskeyUserVerificationStatus user_verification_status,
+      bool allow_ui,
       webauthn::FetchTrustedVaultKeysCallback callback) override;
   void FetchDeviceAuthorizationKeys(
       webauthn::FetchDeviceAuthKeysCallback callback) override;

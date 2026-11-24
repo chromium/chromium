@@ -1263,6 +1263,7 @@ enum class PasskeyCreationEligibility {
   [self.passkeyKeychainProviderBridge fetchTrustedVaultKeysForGaia:gaia
                                                         credential:credential
                                                            purpose:purpose
+                                                           allowUI:YES
                                                         completion:completion];
 }
 

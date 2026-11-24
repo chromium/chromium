@@ -77,6 +77,10 @@ const std::string& PasskeyRequestParams::RpId() const {
 
 bool PasskeyRequestParams::ShouldPerformUserVerification(
     bool is_biometric_authentication_enabled) const {
+  // Conditional create runs silently without prompting for user verification.
+  if (request_type_ == RequestType::kConditionalCreate) {
+    return false;
+  }
   return GpmWillDoUserVerification(user_verification_,
                                    is_biometric_authentication_enabled);
 }
