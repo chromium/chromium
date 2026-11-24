@@ -44,6 +44,8 @@ void SafeMediaMetadataParser::OnMediaParserCreated() {
 }
 
 void SafeMediaMetadataParser::OnConnectionError() {
+  ResetMediaParser();
+  media_data_source_.reset();
   chrome::mojom::MediaMetadataPtr metadata =
       chrome::mojom::MediaMetadata::New();
   auto attached_images =
@@ -69,7 +71,12 @@ void SafeMediaMetadataParser::ParseMediaMetadataDone(
 
 void SafeMediaMetadataParser::OnMediaDataReady(
     chrome::mojom::MediaDataSource::ReadCallback callback,
+    bool success,
     std::string data) {
+  if (!success) {
+    OnConnectionError();
+    return;
+  }
   if (media_parser()) {
     std::move(callback).Run(std::vector<uint8_t>(data.begin(), data.end()));
   }

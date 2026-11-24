@@ -56,7 +56,9 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
   void OnBlobReaderDone(chrome::mojom::MediaDataSource::ReadCallback callback,
                         std::string data,
                         int64_t /*size*/) {
-    callback_.Run(std::move(callback), std::move(data));
+    // BlobReader does not expose read status separately from an empty blob.
+    // Preserve its existing behavior until it can report failures.
+    callback_.Run(std::move(callback), /*success=*/true, std::move(data));
   }
 
   mojo::Receiver<chrome::mojom::MediaDataSource> receiver_;

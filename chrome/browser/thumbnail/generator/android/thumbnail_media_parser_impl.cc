@@ -283,7 +283,12 @@ void ThumbnailMediaParserImpl::OnDecoderConnectionError() {
 
 void ThumbnailMediaParserImpl::OnMediaDataReady(
     chrome::mojom::MediaDataSource::ReadCallback callback,
+    bool success,
     std::string data) {
+  if (!success) {
+    OnError(MediaParserEvent::kReadFileError);
+    return;
+  }
   // TODO(xingliu): Change media_parser.mojom to move the data instead of copy.
   if (media_parser()) {
     std::move(callback).Run(std::vector<uint8_t>(data.begin(), data.end()));
@@ -291,6 +296,10 @@ void ThumbnailMediaParserImpl::OnMediaDataReady(
 }
 
 void ThumbnailMediaParserImpl::NotifyComplete(SkBitmap bitmap) {
+  weak_factory_.InvalidateWeakPtrs();
+  ResetMediaParser();
+  media_data_source_.reset();
+  timer_.Stop();
   CHECK(metadata_, base::NotFatalUntil::M163);
   CHECK(parse_complete_cb_, base::NotFatalUntil::M163);
   RecordMediaParserEvent(MediaParserEvent::kSuccess);
@@ -301,6 +310,10 @@ void ThumbnailMediaParserImpl::NotifyComplete(SkBitmap bitmap) {
 }
 
 void ThumbnailMediaParserImpl::OnError(MediaParserEvent event) {
+  weak_factory_.InvalidateWeakPtrs();
+  ResetMediaParser();
+  media_data_source_.reset();
+  timer_.Stop();
   CHECK(parse_complete_cb_, base::NotFatalUntil::M163);
   RecordMediaParserEvent(MediaParserEvent::kFailure);
   RecordMediaParserEvent(event);

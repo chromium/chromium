@@ -81,6 +81,7 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
   // Overlays media data source read operation. Gradually read data from media
   // file.
   void OnMediaDataReady(chrome::mojom::MediaDataSource::ReadCallback callback,
+                        bool success,
                         std::string data);
 
   void NotifyComplete(SkBitmap bitmap);

@@ -20,6 +20,10 @@ class MediaParserProvider {
 
   virtual ~MediaParserProvider();
 
+  // Uses this parser on the next retrieval instead of launching a service.
+  void SetMediaParserForTesting(
+      mojo::PendingRemote<chrome::mojom::MediaParser> parser);
+
  protected:
   // Acquires the remote MediaParser interface asynchronously from a new
   // service process. |OnMediaParserCreated()| is called if and when the media
@@ -46,6 +50,7 @@ class MediaParserProvider {
   void OnMediaParserCreatedImpl(
       mojo::PendingRemote<chrome::mojom::MediaParser> remote_media_parser);
 
+  mojo::PendingRemote<chrome::mojom::MediaParser> media_parser_for_testing_;
   mojo::Remote<chrome::mojom::MediaParserFactory> remote_media_parser_factory_;
   mojo::Remote<chrome::mojom::MediaParser> remote_media_parser_;
 };

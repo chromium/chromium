@@ -38,3 +38,17 @@ source_set("media_gallery_util") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "local_media_data_source_factory_unittest.cc",
+    "safe_media_metadata_parser_unittest.cc",
+  ]
+  deps = [
+    ":media_gallery_util",
+    "//base/test:test_support",
+    "//media:media_buildflags",
+    "//testing/gtest",
+  ]
+}

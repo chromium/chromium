@@ -34,8 +34,11 @@ class SafeMediaMetadataParser : public MediaParserProvider {
   // may read from different kinds of storage.
   class MediaDataSourceFactory {
    public:
+    // A successful read may return empty data at EOF. A failed read must
+    // terminate parsing rather than being forwarded as EOF.
     using MediaDataCallback = base::RepeatingCallback<void(
         chrome::mojom::MediaDataSource::ReadCallback callback,
+        bool success,
         std::string data)>;
 
     virtual std::unique_ptr<chrome::mojom::MediaDataSource>
@@ -74,6 +77,7 @@ class SafeMediaMetadataParser : public MediaParserProvider {
   // Invoked when the media data has been read, which will be sent back to
   // utility process soon. |data| might be partial content of the media data.
   void OnMediaDataReady(chrome::mojom::MediaDataSource::ReadCallback callback,
+                        bool success,
                         std::string data);
 
   const int64_t size_;

@@ -4,6 +4,8 @@
 
 #include "components/media_gallery_util/media_parser_provider.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "components/strings/grit/components_strings.h"
@@ -22,9 +24,19 @@ MediaParserProvider::MediaParserProvider() = default;
 
 MediaParserProvider::~MediaParserProvider() = default;
 
+void MediaParserProvider::SetMediaParserForTesting(
+    mojo::PendingRemote<chrome::mojom::MediaParser> parser) {
+  media_parser_for_testing_ = std::move(parser);
+}
+
 void MediaParserProvider::RetrieveMediaParser() {
   DCHECK(!remote_media_parser_factory_);
   DCHECK(!remote_media_parser_);
+
+  if (media_parser_for_testing_) {
+    OnMediaParserCreatedImpl(std::move(media_parser_for_testing_));
+    return;
+  }
 
   content::ServiceProcessHost::Launch(
       remote_media_parser_factory_.BindNewPipeAndPassReceiver(),
