@@ -277,8 +277,9 @@ void NetErrorTabHelper::StartDnsProbe() {
 
 void NetErrorTabHelper::OnDnsProbeFinished(DnsProbeStatus result) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK_EQ(error_page::DNS_PROBE_STARTED, dns_probe_status_,
-           base::NotFatalUntil::M161);
+  // TODO(crbug.com/589281093): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(error_page::DNS_PROBE_STARTED, dns_probe_status_);
   CHECK(error_page::DnsProbeStatusIsFinished(result),
         base::NotFatalUntil::M161);
 
