@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
@@ -204,13 +205,17 @@ class ServiceWorkerTestHelper::ServiceWorkerVersionStateManager
  public:
   ServiceWorkerVersionStateManager(ServiceWorkerTestHelper* parent,
                                    ServiceWorkerVersion* version)
-      : parent_(parent), sw_version_(version) {
-    scoped_observation_.Observe(sw_version_);
+      : parent_(parent),
+        sw_version_(version ? version->GetWeakPtr() : nullptr) {
+    if (sw_version_) {
+      sw_version_->AddObserver(this);
+    }
   }
 
   ~ServiceWorkerVersionStateManager() override {
-    // Release potential dangling pointers.
-    sw_version_ = nullptr;
+    if (sw_version_) {
+      sw_version_->RemoveObserver(this);
+    }
     parent_ = nullptr;
   }
 
@@ -222,9 +227,9 @@ class ServiceWorkerTestHelper::ServiceWorkerVersionStateManager
   }
 
   raw_ptr<ServiceWorkerTestHelper> parent_;
-  raw_ptr<ServiceWorkerVersion> sw_version_;
-  base::ScopedObservation<ServiceWorkerVersion, ServiceWorkerVersion::Observer>
-      scoped_observation_{this};
+  // WeakPtr because the observed ServiceWorkerVersion may be destroyed (e.g.
+  // after stopping) before this test helper is torn down.
+  base::WeakPtr<ServiceWorkerVersion> sw_version_;
 };
 
 ServiceWorkerTestHelper::ServiceWorkerTestHelper(ServiceWorkerContext* context,
