@@ -33,6 +33,10 @@ void ActivatePopupForEmojiPanelOnMac(gfx::NativeWindow native_window);
 // WebUI elements inside `-webkit-app-region: drag` containers still receive
 // hover and non-drag events on macOS.
 bool ShouldTreatCurrentEventAsDraggableOnMac();
+
+// Returns false while a window move loop is running or a window holds mouse
+// capture.
+bool CanStartWindowMoveLoopOnMac();
 #endif
 
 }  // namespace omnibox_everywhere

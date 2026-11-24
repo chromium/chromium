@@ -49,6 +49,7 @@ source_set("omnibox_everywhere") {
     "omnibox_everywhere_icon.h",
     "omnibox_everywhere_region_select_overlay.h",
     "omnibox_everywhere_ui_manager.h",
+    "omnibox_everywhere_window_drag_controller.h",
   ]
   public_deps = [
     ":icon",
@@ -86,6 +87,7 @@ source_set("impl") {
     "omnibox_everywhere_ui_manager.cc",
     "omnibox_everywhere_widget_delegate.cc",
     "omnibox_everywhere_widget_delegate.h",
+    "omnibox_everywhere_window_drag_controller.cc",
   ]
   if (is_mac) {
     sources += [ "mac_window_util.mm" ]
@@ -125,6 +127,7 @@ source_set("impl") {
     "//components/search_engines",
     "//components/url_formatter",
     "//components/vector_icons",
+    "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/base/clipboard",
@@ -139,6 +142,9 @@ source_set("impl") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
+  if (is_mac) {
+    deps += [ "//components/remote_cocoa/app_shim" ]
+  }
   if (use_aura) {
     sources += [
       "omnibox_everywhere_event_handler_aura.cc",
@@ -174,6 +180,7 @@ if (is_mac || is_win) {
       "omnibox_everywhere_region_select_overlay_unittest.cc",
       "omnibox_everywhere_ui_manager_unittest.cc",
       "omnibox_everywhere_widget_delegate_unittest.cc",
+      "omnibox_everywhere_window_drag_controller_unittest.cc",
     ]
     if (use_aura) {
       sources += [ "omnibox_everywhere_event_handler_aura_unittest.cc" ]
@@ -213,6 +220,7 @@ if (is_mac || is_win) {
       "//content/test:test_support",
       "//skia",
       "//testing/gtest",
+      "//third_party/blink/public/common:headers",
       "//ui/base/emoji",
       "//ui/base/mojom:ui_base_types",
       "//ui/color",
