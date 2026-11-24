@@ -1062,18 +1062,19 @@ void ChromeAutofillClient::TriggerAtMemoryPersonalizationAndTrustSurvey(
 void ChromeAutofillClient::
     TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey(
         const HatsSurveyStringData& product_specific_data) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      GetProfile(), /*create_if_necessary=*/true);
   if (!hats_service) {
     return;
   }
 
-  hats_service->LaunchSurvey(
+  // Launch survey asynchronously with 0ms delay to avoid blocking when called
+  // during teardown. Use variant that binds to `web_contents()` because
+  // `LaunchSurvey()` without web contents is not implemented on Android.
+  hats_service->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordDismissed,
-      /*success_callback=*/base::DoNothing(),
-      /*failure_callback=*/base::DoNothing(),
+      web_contents(),
+      /*timeout_ms=*/0,
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/product_specific_data);
 }
