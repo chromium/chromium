@@ -65,6 +65,9 @@ interface AutofillAgent {
 
   // Extracts the form that contains the given field and responds with the
   // FormData, if that form can be found and extracted.
+  // This operation is currently unsupported for `field_id`s of custom form
+  // controls.
+  // TODO(crbug.com/583682385): Add support for custom form controls.
   ExtractFormWithField(FieldRendererId field_id) => (FormData? form);
 
   // Tries to extract the node value from the DOM and returns the extracted
