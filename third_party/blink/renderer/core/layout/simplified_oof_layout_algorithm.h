@@ -46,7 +46,9 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
     container_builder_.SetHasSubsequentChildren();
   }
 
-  void AppendOutOfFlowResult(const LayoutResult*, LogicalOffset);
+  void AppendOutOfFlowResult(const LayoutResult*,
+                             LogicalOffset,
+                             const BoxStrut& margins);
 };
 
 }  // namespace blink

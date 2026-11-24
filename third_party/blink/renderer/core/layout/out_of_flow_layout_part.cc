@@ -1543,14 +1543,19 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
       const auto* fragment = child.get();
       LogicalOffset offset =
           converter.ToLogical(child.Offset(), fragment->Size());
+      BoxStrut margins;
       if (fragment->IsFragmentainerBox()) {
         current_column_break_token =
             To<BlockBreakToken>(fragment->GetBreakToken());
         current_column_index = multicol_children.size();
         last_fragment_with_fragmentainer = multicol_box_fragment;
+      } else {
+        DCHECK(fragment->IsCSSBox());
+        margins = To<PhysicalBoxFragment>(fragment)->Margins().ConvertToLogical(
+            writing_direction);
       }
 
-      limited_multicol_container_builder.AddChild(*fragment, offset);
+      limited_multicol_container_builder.AddChild(*fragment, offset, margins);
       multicol_children.emplace_back(MulticolChildInfo());
     }
 
@@ -3354,7 +3359,12 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
         &descendant.node_info.fixedpos_inline_container,
         additional_fixedpos_offset);
   }
-  algorithm->AppendOutOfFlowResult(result, adjusted_offset);
+  const BoxStrut margins =
+      descendant.offset_info.node_dimensions.margins
+          .ConvertToPhysical(
+              descendant.node_info.node.Style().GetWritingDirection())
+          .ConvertToLogical(container_builder_.GetWritingDirection());
+  algorithm->AppendOutOfFlowResult(result, adjusted_offset, margins);
 }
 
 ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
