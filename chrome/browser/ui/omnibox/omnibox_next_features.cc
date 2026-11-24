@@ -138,6 +138,10 @@ BASE_FEATURE(kOmniboxEverywhere, DISABLED);
 // context menu during `Profile` initialization until browser startup is
 // complete.
 BASE_FEATURE(kOmniboxEverywhereDeferStatusIcon, ENABLED);
+// If enabled, Omnibox Everywhere drags its window from
+// WebContentsDelegate::PreHandleMouseEvent() on all platforms. If disabled,
+// it falls back to the legacy Aura pre-target handler and macOS HTCAPTION.
+BASE_FEATURE(kOmniboxEverywherePreHandleMouseDrag, DISABLED);
 // If enabled, submitting a query with screenshots attached in Omnibox
 // Everywhere opens the result in a new browser window aligned with the
 // Omnibox Everywhere popup.

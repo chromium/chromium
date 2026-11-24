@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_icon.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -64,7 +66,9 @@ int OmniboxEverywhereWidgetDelegate::NonClientHitTest(
   // be shown when right-clicking, and we use custom event handling to implement
   // the window dragging. Ignore hover events so WebUI still receives mouse-move
   // events for `:hover` states inside draggable regions.
-  if (IsPointInDraggableRegion(point) &&
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxEverywherePreHandleMouseDrag) &&
+      IsPointInDraggableRegion(point) &&
       ShouldTreatCurrentEventAsDraggableOnMac()) {
     return HTCAPTION;
   }

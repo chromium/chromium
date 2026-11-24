@@ -21514,6 +21514,7 @@ from previous Chrome versions.
   <int value="1909961759" label="SurfaceSyncFullscreenKillswitch:enabled"/>
   <int value="1910240042" label="enable-experimental-fullscreen-exit-ui"/>
   <int value="1910562940" label="SharedHighlightingRefinedBlocklist:disabled"/>
+  <int value="1910841107" label="OmniboxEverywherePreHandleMouseDrag:enabled"/>
   <int value="1911002680" label="TFLiteLanguageDetectionEnabled:enabled"/>
   <int value="1911558169" label="AppToAppLinkCapturingWorkspaceApps:enabled"/>
   <int value="1911617153" label="SegmentationSurveyPage:enabled"/>
@@ -21601,6 +21602,7 @@ from previous Chrome versions.
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
   <int value="1935448090"
       label="OmniboxContextualSearchOnFocusSuggestions:disabled"/>
+  <int value="1935760780" label="OmniboxEverywherePreHandleMouseDrag:disabled"/>
   <int value="1935968341" label="(Obsolete) LacrosExtensionPrinting:enabled"/>
   <int value="1936099143" label="RemotePlaybackBackend:enabled"/>
   <int value="1936308950" label="ExoConsumedByImeByFlag:disabled"/>

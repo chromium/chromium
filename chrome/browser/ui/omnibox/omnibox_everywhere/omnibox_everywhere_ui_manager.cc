@@ -215,6 +215,13 @@ class OmniboxEverywhereContentsWrapper
       ui_manager->OnDragExited();
     }
   }
+
+  bool PreHandleMouseEvent(content::WebContents* /*source*/,
+                           const blink::WebMouseEvent& event) override {
+    auto* ui_manager =
+        static_cast<OmniboxEverywhereUIManager*>(GetHost().get());
+    return ui_manager && ui_manager->PreHandleMouseEvent(event);
+  }
 };
 
 // Supplies baseline color mixer overrides for the Omnibox Everywhere widget and
@@ -700,7 +707,10 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   CHECK(widget_->GetNativeView());
   wm::SetWindowVisibilityAnimationTransition(widget_->GetNativeView(),
                                              wm::ANIMATE_NONE);
-  widget_->GetNativeView()->AddPreTargetHandler(event_handler_.get());
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxEverywherePreHandleMouseDrag)) {
+    widget_->GetNativeView()->AddPreTargetHandler(event_handler_.get());
+  }
 #endif
   UpdateModalInteractionState();
 }
@@ -862,6 +872,9 @@ void OmniboxEverywhereUIManager::Close() {
       // running AutoResize offscreen before entering `kHidden`.
       KeepWebContentsPaintingBriefly();
     }
+    // Hidden widgets stop receiving mouse events, so the release that ends a
+    // pending drag hold would never arrive.
+    window_drag_controller_.Reset();
 #if defined(USE_AURA)
     // Aura does not deliver events to hidden windows, so the handler may never
     // see the release or capture loss that ends a pending drag hold.
@@ -874,6 +887,7 @@ void OmniboxEverywhereUIManager::Close() {
 }
 
 void OmniboxEverywhereUIManager::Demote() {
+  window_drag_controller_.Reset();
   CancelTransientUiState();
   if (!widget_ || !widget_->IsVisible() || is_demoted_ ||
       HasOpenModalDialog()) {
@@ -933,6 +947,7 @@ void OmniboxEverywhereUIManager::DestroyWidgetAndWebContents() {
   if (widget_) {
     static_cast<OmniboxEverywhereWidget*>(widget_.get())->ResetThemeObserver();
     widget_observation_.Reset();
+    window_drag_controller_.Reset();
 #if defined(USE_AURA)
     if (auto* native_view = widget_->GetNativeView()) {
       native_view->RemovePreTargetHandler(event_handler_.get());
@@ -1042,6 +1057,7 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     }
     return;
   }
+  window_drag_controller_.Reset();
   if (!HasOpenModalDialog() && !context_menu_controller_->IsOpen()) {
     HandleWidgetDeactivated();
   }
@@ -1510,6 +1526,9 @@ void OmniboxEverywhereUIManager::UpdateModalInteractionState() {
     if (!scoped_ignore_input_events_ && web_contents()) {
       scoped_ignore_input_events_ =
           web_contents()->IgnoreInputEvents(std::nullopt);
+      // Ignored input never reaches `PreHandleMouseEvent()`, so the release
+      // that ends a pending drag hold would never arrive.
+      window_drag_controller_.Reset();
     }
   } else {
     scoped_ignore_input_events_.reset();
@@ -1580,6 +1599,33 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
     const content::ContextMenuParams& params) {
   context_menu_controller_->HandleContextMenu(params);
   return true;
+}
+
+bool OmniboxEverywhereUIManager::PreHandleMouseEvent(
+    const blink::WebMouseEvent& event) {
+  return base::FeatureList::IsEnabled(
+             omnibox::kOmniboxEverywherePreHandleMouseDrag) &&
+         window_drag_controller_.PreHandleMouseEvent(event);
+}
+
+views::Widget* OmniboxEverywhereUIManager::GetWindowDragWidget() {
+  return widget_.get();
+}
+
+bool OmniboxEverywhereUIManager::CanStartWindowDrag() const {
+  return !HasOpenModalDialog() && !context_menu_controller_->IsOpen();
+}
+
+bool OmniboxEverywhereUIManager::IsWindowDragging() const {
+  return is_dragging_;
+}
+
+void OmniboxEverywhereUIManager::OnWindowDragStarted() {
+  OnWidgetUserDragStarted(widget_.get());
+}
+
+void OmniboxEverywhereUIManager::OnWindowDragEnded() {
+  OnWidgetUserDragEnded(widget_.get());
 }
 
 // Forwards unhandled keyboard events from the renderer process (such as

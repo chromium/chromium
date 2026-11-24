@@ -7104,6 +7104,13 @@ inline constexpr char kLensOverlayVirtualFocusNavigationDescription[] =
     "Enables virtual focus keyboard navigation within the Lens Overlay "
     "searchbox.";
 
+inline constexpr char kOmniboxEverywherePreHandleMouseDragName[] =
+    "Omnibox Everywhere PreHandleMouseEvent Drag";
+inline constexpr char kOmniboxEverywherePreHandleMouseDragDescription[] =
+    "When enabled, Omnibox Everywhere window dragging is handled before mouse "
+    "events reach the page, so clicks inside draggable areas still work. "
+    "Disable to restore the previous dragging behavior.";
+
 inline constexpr char kOmniboxEverywhereScreenshotNewWindowName[] =
     "Omnibox Everywhere Screenshot New Window";
 inline constexpr char kOmniboxEverywhereScreenshotNewWindowDescription[] =

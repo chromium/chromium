@@ -47,6 +47,8 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/drop_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/themes.mojom.h"
@@ -1679,7 +1681,10 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 // cannot latch onto the held button (b/576129731). The suppression must end as
 // soon as the press ends, and must never outlive the widget.
 TEST_F(OmniboxEverywhereUIManagerTest,
-       PreThresholdDragHoldSuppressesRendererDataDrags) {
+       LegacyPreThresholdDragHoldSuppressesRendererDataDrags) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kOmniboxEverywherePreHandleMouseDrag);
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
@@ -1811,6 +1816,66 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_FALSE(is_suppressed());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+// The manager must end a pending drag whenever the release may not reach it:
+// on deactivation, demotion, hiding, and when a modal blocks input.
+TEST_F(OmniboxEverywhereUIManagerTest, PendingDragEndsWithWidgetLifecycle) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kOmniboxEverywherePreHandleMouseDrag);
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  auto drag_region = blink::mojom::DraggableRegion::New();
+  drag_region->bounds = gfx::Rect(0, 0, 800, 600);
+  drag_region->draggable = true;
+  regions.push_back(std::move(drag_region));
+  ui_manager->DraggableRegionsChanged(regions, nullptr);
+
+  // Sends a left-button `type` event at (`x`, 10). Returns whether it was
+  // hidden from the renderer.
+  auto send = [&](blink::WebInputEvent::Type type, int x) {
+    blink::WebMouseEvent event(type, blink::WebInputEvent::kLeftButtonDown,
+                               base::TimeTicks::Now());
+    event.button = blink::WebMouseEvent::Button::kLeft;
+    event.SetPositionInWidget(x, 10);
+    const gfx::Point origin =
+        ui_manager->widget()->GetWindowBoundsInScreen().origin();
+    event.SetPositionInScreen(origin.x() + x, origin.y() + 10);
+    return ui_manager->PreHandleMouseEvent(event);
+  };
+  auto press = [&] { send(blink::WebInputEvent::Type::kMouseDown, 10); };
+  // A move past the drag threshold starts a drag only while a press is
+  // pending.
+  auto starts_drag = [&] {
+    return send(blink::WebInputEvent::Type::kMouseMove, 60);
+  };
+
+  press();
+  EXPECT_TRUE(starts_drag());
+  ui_manager->OnWidgetActivationChanged(ui_manager->widget(), false);
+
+  press();
+  ui_manager->OnWidgetActivationChanged(ui_manager->widget(), false);
+  EXPECT_FALSE(starts_drag());
+
+  press();
+  ui_manager->Demote();
+  EXPECT_FALSE(starts_drag());
+
+  press();
+  ui_manager->Close();
+  EXPECT_FALSE(starts_drag());
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  press();
+  ui_manager->OnFileChooserOpened();
+  EXPECT_FALSE(starts_drag());
+
+  ui_manager->Shutdown();
+}
 
 TEST_F(OmniboxEverywhereUIManagerTest,
        NonDraggableRegionTakesPrecedenceOverSubsequentDraggableRegion) {

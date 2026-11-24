@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_context_menu_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_window_drag_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -48,6 +49,10 @@ class Profile;
 class ScopedKeepAlive;
 class SkBitmap;
 
+namespace blink {
+class WebMouseEvent;
+}  // namespace blink
+
 namespace views {
 class UnhandledKeyboardEventHandler;
 }  // namespace views
@@ -67,6 +72,7 @@ class OmniboxEverywhereUIManager
       public WebUIContentsWrapper::Host,
       public BrowserCollectionObserver,
       public OmniboxEverywhereContextMenuController::Delegate,
+      public OmniboxEverywhereWindowDragController::Delegate,
       public PermissionPromptObserver::Observer {
  public:
   // Modal surfaces owned by the widget that keep it from being dismissed on
@@ -252,7 +258,12 @@ class OmniboxEverywhereUIManager
   OmniboxEverywhereWidgetDelegate* widget_delegate();
   const OmniboxEverywhereWidgetDelegate* widget_delegate() const;
 
-  bool IsPointInDraggableRegion(const gfx::Point& point) const;
+  // OmniboxEverywhereWindowDragController::Delegate:
+  bool IsPointInDraggableRegion(const gfx::Point& point) const override;
+
+  // Called from the WebContents delegate before mouse events reach the
+  // renderer. Returns true if `event` should not reach the renderer.
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
 
 #if BUILDFLAG(IS_WIN)
   // Creates the Start Menu shortcut the Shell requires for taskbar pinning,
@@ -390,6 +401,13 @@ class OmniboxEverywhereUIManager
   void SetModalOpen(Modal modal, bool open);
   void UpdateModalInteractionState();
 
+  // OmniboxEverywhereWindowDragController::Delegate:
+  views::Widget* GetWindowDragWidget() override;
+  bool CanStartWindowDrag() const override;
+  bool IsWindowDragging() const override;
+  void OnWindowDragStarted() override;
+  void OnWindowDragEnded() override;
+
 #if defined(USE_AURA)
   std::unique_ptr<OmniboxEverywhereEventHandlerAura> event_handler_;
 #endif
@@ -466,6 +484,8 @@ class OmniboxEverywhereUIManager
   // See DisableTaskbarPinning().
   bool taskbar_pinning_disabled_ = false;
 #endif
+
+  OmniboxEverywhereWindowDragController window_drag_controller_{*this};
 
   base::WeakPtrFactory<OmniboxEverywhereUIManager> weak_factory_{this};
 };
