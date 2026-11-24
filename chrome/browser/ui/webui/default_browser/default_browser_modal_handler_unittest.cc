@@ -10,7 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
-#include "chrome/browser/shell_integration.h"
+#include "chrome/browser/default_browser/test_support/scoped_fake_default_browser_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal.mojom.h"
@@ -53,11 +53,6 @@ class TestDefaultBrowserModalHandler : public DefaultBrowserModalHandler {
 
 class DefaultBrowserModalHandlerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    // Stops the setter run by `HandleAccept()` from opening Windows Settings.
-    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
-  }
-
   void TearDown() override {
     DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
         DefaultBrowserPromptManager::CloseReason::kDismiss);
@@ -73,6 +68,7 @@ class DefaultBrowserModalHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  default_browser::ScopedFakeDefaultBrowserManager default_browser_manager_;
   content::TestWebUI web_ui_;
   mojo::Remote<default_browser_modal::mojom::PageHandler> handler_remote_;
 };

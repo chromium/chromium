@@ -9,12 +9,13 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_monitor.h"
+#include "chrome/browser/default_browser/default_browser_setter.h"
 #include "chrome/browser/default_browser/default_browser_time_after_setter_failure_tracker.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
@@ -62,11 +63,18 @@ class DefaultBrowserManager {
 #endif  // BUILDFLAG(IS_WIN)
   };
 
+  // Creates a setter of `setter_type`.
+  using SetterFactory =
+      base::RepeatingCallback<std::unique_ptr<DefaultBrowserSetter>(
+          DefaultBrowserSetterType)>;
+
+  // `monitor` and `setter_factory` default to the real ones when null.
   explicit DefaultBrowserManager(
       BrowserProcess* browser_process,
       std::unique_ptr<ShellDelegate> shell_delegate,
       ProfileProviderCallback profile_provider_callback,
-      std::unique_ptr<DefaultBrowserMonitor> monitor = nullptr);
+      std::unique_ptr<DefaultBrowserMonitor> monitor = nullptr,
+      SetterFactory setter_factory = {});
   ~DefaultBrowserManager();
 
   DefaultBrowserManager(const DefaultBrowserManager&) = delete;
@@ -77,7 +85,7 @@ class DefaultBrowserManager {
 
   // Selects an appropriate setter, and create and returns a unique pointer to a
   // controller instance.
-  static std::unique_ptr<DefaultBrowserController> CreateControllerFor(
+  std::unique_ptr<DefaultBrowserController> CreateControllerFor(
       DefaultBrowserEntrypointType ui_entrypoint);
 
   Profile& GetProfile();
@@ -105,6 +113,9 @@ class DefaultBrowserManager {
                              DefaultBrowserSetterType setter);
 
  private:
+  std::unique_ptr<DefaultBrowserSetter> CreateSetter(
+      DefaultBrowserSetterType setter_type);
+
   void OnDefaultBrowserStateChangedForTracker(DefaultBrowserState state);
 
   void OnDefaultBrowserCheckResult(
@@ -146,6 +157,8 @@ class DefaultBrowserManager {
 
   std::unique_ptr<TimeAfterSetterFailureTracker> tracker_;
   base::CallbackListSubscription tracker_subscription_;
+
+  SetterFactory setter_factory_;
 
   base::WeakPtrFactory<DefaultBrowserManager> weak_ptr_factory_{this};
 };

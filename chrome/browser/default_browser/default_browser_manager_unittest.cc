@@ -16,8 +16,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
-#include "chrome/browser/default_browser/default_browser_monitor.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
+#include "chrome/browser/default_browser/test_support/fake_default_browser_monitor.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
 #include "chrome/browser/global_features.h"
@@ -62,16 +62,6 @@ void CreateDefaultBrowserKey(const std::wstring& prog_id) {
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
-
-class FakeDefaultBrowserMonitor : public DefaultBrowserMonitor {
- public:
-  FakeDefaultBrowserMonitor() = default;
-  ~FakeDefaultBrowserMonitor() override = default;
-
-  void StartMonitor() override {}
-
-  void TriggerChange() { NotifyObservers(); }
-};
 
 class DefaultBrowserManagerTest : public testing::Test {
  protected:
@@ -265,7 +255,7 @@ TEST_F(DefaultBrowserManagerTest, TrackTimeAfterSetterFailureDestruction) {
 }
 
 TEST_F(DefaultBrowserManagerTest, CreateControllerForSettingsPage) {
-  auto controller = DefaultBrowserManager::CreateControllerFor(
+  auto controller = default_browser_manager().CreateControllerFor(
       DefaultBrowserEntrypointType::kSettingsPage);
 
   ASSERT_NE(controller, nullptr);
@@ -274,7 +264,7 @@ TEST_F(DefaultBrowserManagerTest, CreateControllerForSettingsPage) {
 }
 
 TEST_F(DefaultBrowserManagerTest, CreateControllerForStartupInfobar) {
-  auto controller = DefaultBrowserManager::CreateControllerFor(
+  auto controller = default_browser_manager().CreateControllerFor(
       DefaultBrowserEntrypointType::kStartupInfobar);
 
   ASSERT_NE(controller, nullptr);

@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/default_browser/test_support/scoped_fake_default_browser_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -103,6 +104,7 @@ class DefaultBrowserPromptManagerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  default_browser::ScopedFakeDefaultBrowserManager default_browser_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:

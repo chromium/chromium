@@ -10,9 +10,10 @@
 #include "base/callback_list.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
-#include "chrome/browser/shell_integration.h"
+#include "chrome/browser/default_browser/test_support/scoped_fake_default_browser_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
@@ -51,8 +52,6 @@ class TestDefaultBrowserSurfaceManager : public DefaultBrowserSurfaceManager {
 class DefaultBrowserSurfaceManagerTest : public testing::Test {
  protected:
   void SetUp() override {
-    // Stops the setter run by `HandleAccept()` from opening Windows Settings.
-    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     profile_ = TestingProfile::Builder().Build();
     browser_window_interface_ =
         std::make_unique<::testing::NiceMock<MockBrowserWindowInterface>>();
@@ -69,6 +68,7 @@ class DefaultBrowserSurfaceManagerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  default_browser::ScopedFakeDefaultBrowserManager default_browser_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
 };
@@ -175,6 +175,22 @@ TEST_F(DefaultBrowserSurfaceManagerTest, HandleAcceptNotifiesObservers) {
 
   manager.Show(/*can_pin_to_taskbar=*/false);
   EXPECT_FALSE(manager.has_accepted());
+}
+
+TEST_F(DefaultBrowserSurfaceManagerTest, AcceptRunsTheManagerSetter) {
+  base::HistogramTester histogram_tester;
+  TestDefaultBrowserSurfaceManager manager;
+  manager.Show(/*can_pin_to_taskbar=*/false);
+
+  manager.HandleAccept();
+
+  // The fake setter reports asynchronously.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "DefaultBrowser.InfoBar.ShellIntegration.OutcomeV2", true) == 1;
+  }));
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.InfoBar.ShellIntegration.OutcomeV2", true, 1);
 }
 
 TEST_F(DefaultBrowserSurfaceManagerTest, RecordsRetryCountOnCloseAfterAccept) {

@@ -77,19 +77,18 @@ void DefaultBrowserSurfaceManager::Show(bool can_pin_to_taskbar) {
   has_accepted_ = false;
   retry_count_.reset();
 
-  controller_ = default_browser::DefaultBrowserManager::CreateControllerFor(
-      GetEntrypointType());
+  auto* manager =
+      default_browser::DefaultBrowserManager::From(g_browser_process);
+  CHECK(manager);
+  controller_ = manager->CreateControllerFor(GetEntrypointType());
   CHECK(controller_);
   controller_->OnShown();
 
   if (IsStickyModalEntrypoint(GetEntrypointType())) {
-    if (auto* manager =
-            default_browser::DefaultBrowserManager::From(g_browser_process)) {
-      default_browser_subscription_ =
-          manager->RegisterDefaultBrowserChanged(base::BindRepeating(
-              &DefaultBrowserSurfaceManager::OnDefaultBrowserStateChanged,
-              base::Unretained(this)));
-    }
+    default_browser_subscription_ =
+        manager->RegisterDefaultBrowserChanged(base::BindRepeating(
+            &DefaultBrowserSurfaceManager::OnDefaultBrowserStateChanged,
+            base::Unretained(this)));
   }
 
   auto* global_browser_collection = GlobalBrowserCollection::GetInstance();

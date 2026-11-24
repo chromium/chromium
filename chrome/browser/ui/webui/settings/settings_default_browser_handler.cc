@@ -73,8 +73,9 @@ void DefaultBrowserHandler::OnJavascriptAllowed() {
                           base::Unretained(this)));
 
   default_browser_controller_ =
-      default_browser::DefaultBrowserManager::CreateControllerFor(
-          default_browser::DefaultBrowserEntrypointType::kSettingsPage);
+      default_browser::DefaultBrowserManager::From(g_browser_process)
+          ->CreateControllerFor(
+              default_browser::DefaultBrowserEntrypointType::kSettingsPage);
   CHECK(default_browser_controller_);
 
   default_browser_controller_->OnShown();

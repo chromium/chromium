@@ -17,6 +17,7 @@ source_set("default_browser") {
     "default_browser_controller.h",
     "default_browser_features.h",
     "default_browser_manager.h",
+    "default_browser_setter.h",
   ]
 
   sources = [
@@ -28,7 +29,6 @@ source_set("default_browser") {
     "default_browser_monitor.h",
     "default_browser_notification_observer.cc",
     "default_browser_notification_observer.h",
-    "default_browser_setter.h",
     "default_browser_time_after_setter_failure_tracker.cc",
     "default_browser_time_after_setter_failure_tracker.h",
     "setters/default_browser_annotated_shell_integration_setter.cc",
@@ -96,16 +96,21 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test_support/fake_default_browser_monitor.cc",
+    "test_support/fake_default_browser_monitor.h",
     "test_support/fake_default_browser_setter.cc",
     "test_support/fake_default_browser_setter.h",
     "test_support/fake_shell_delegate.cc",
     "test_support/fake_shell_delegate.h",
+    "test_support/scoped_fake_default_browser_manager.cc",
+    "test_support/scoped_fake_default_browser_manager.h",
   ]
 
   deps = [
     ":default_browser",
     "//chrome/browser:shell_integration",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
   ]
 }
 

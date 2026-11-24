@@ -165,7 +165,8 @@ DefaultBrowserManager::DefaultBrowserManager(
     BrowserProcess* browser_process,
     std::unique_ptr<ShellDelegate> shell_delegate,
     ProfileProviderCallback profile_provider_callback,
-    std::unique_ptr<DefaultBrowserMonitor> monitor)
+    std::unique_ptr<DefaultBrowserMonitor> monitor,
+    SetterFactory setter_factory)
     : shell_delegate_(std::move(shell_delegate)),
       profile_provider_callback_(std::move(profile_provider_callback)),
       scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
@@ -173,6 +174,10 @@ DefaultBrowserManager::DefaultBrowserManager(
   CHECK(!profile_provider_callback_.is_null());
   monitor_ =
       monitor ? std::move(monitor) : std::make_unique<DefaultBrowserMonitor>();
+  setter_factory_ =
+      setter_factory ? std::move(setter_factory)
+                     : base::BindRepeating(&DefaultBrowserManager::CreateSetter,
+                                           base::Unretained(this));
 
   monitor_subscription_ = monitor_->RegisterDefaultBrowserChanged(
       base::BindRepeating(&DefaultBrowserManager::OnMonitorDetectedChange,
@@ -204,29 +209,24 @@ DefaultBrowserManager::CreateDefaultDelegate() {
   return std::make_unique<ShellDelegateImpl>();
 }
 
-// static
 std::unique_ptr<DefaultBrowserController>
 DefaultBrowserManager::CreateControllerFor(
     DefaultBrowserEntrypointType entrypoint) {
-  std::unique_ptr<DefaultBrowserSetter> setter;
-  switch (GetDefaultBrowserSetterType()) {
-    case DefaultBrowserSetterType::kShellIntegration:
-      setter = std::make_unique<ShellIntegrationDefaultBrowserSetter>();
-      break;
-    case DefaultBrowserSetterType::kVisualGuide:
-      setter = std::make_unique<DefaultBrowserVisualGuidedSetter>(
-          DefaultBrowserManager::From(g_browser_process)->GetProfile());
-      break;
-    case DefaultBrowserSetterType::kAnnotatedShellIntegration:
-      setter =
-          std::make_unique<DefaultBrowserAnnotatedShellIntegrationSetter>();
-      break;
-    default:
-      NOTREACHED();
-  }
+  return std::make_unique<DefaultBrowserController>(
+      setter_factory_.Run(GetDefaultBrowserSetterType()), entrypoint);
+}
 
-  return std::make_unique<DefaultBrowserController>(std::move(setter),
-                                                    entrypoint);
+std::unique_ptr<DefaultBrowserSetter> DefaultBrowserManager::CreateSetter(
+    DefaultBrowserSetterType setter_type) {
+  switch (setter_type) {
+    case DefaultBrowserSetterType::kShellIntegration:
+      return std::make_unique<ShellIntegrationDefaultBrowserSetter>();
+    case DefaultBrowserSetterType::kVisualGuide:
+      return std::make_unique<DefaultBrowserVisualGuidedSetter>(GetProfile());
+    case DefaultBrowserSetterType::kAnnotatedShellIntegration:
+      return std::make_unique<DefaultBrowserAnnotatedShellIntegrationSetter>();
+  }
+  NOTREACHED();
 }
 
 Profile& DefaultBrowserManager::GetProfile() {
