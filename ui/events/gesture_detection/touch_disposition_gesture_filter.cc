@@ -459,7 +459,9 @@ void TouchDispositionGestureFilter::SendGesture(
       CancelFlingIfNecessary(packet_being_sent);
       break;
     case EventType::kGestureTapDown:
-      CHECK(!needs_tap_ending_event_, base::NotFatalUntil::M163);
+      // TODO(crbug.com/582454376): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!needs_tap_ending_event_);
       ending_event_motion_event_id_ = event.motion_event_id;
       ending_event_primary_tool_type_ = event.primary_tool_type;
       ending_event_flags_ = event.flags;
