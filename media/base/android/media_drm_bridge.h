@@ -257,7 +257,8 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb);
 
   // Completes initialization by setting the security origin and triggering
-  // MediaCrypto creation.
+  // MediaCrypto creation. `media_crypto_ready_cb` will be called asynchronously
+  // on `task_runner_` once MediaCrypto is created or initialization fails.
   void CompleteInitialization(const std::string& origin_id,
                               MediaCryptoReadyCB media_crypto_ready_cb);
 
@@ -266,6 +267,10 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // key system, or if there is an issue with the property_value.
   bool SetPropertyStringForTesting(const std::string& property_name,
                                    const std::string& property_value);
+
+  // Makes the next security origin update in Java fail, so tests can drive
+  // CompleteInitialization() down its failure path.
+  void SetFailSetOriginForTesting(bool fail);
 
   // All the OnXxx functions below are called from Java. The implementation must
   // only do minimal work and then post tasks to avoid reentrancy issues.
@@ -338,6 +343,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
  private:
   friend class MediaDrmBridgeFactory;
+  friend class MediaDrmBridgeFactoryTest;
   FRIEND_TEST_ALL_PREFIXES(MediaDrmBridgeTest, MaybeParseCdmVersion);
   FRIEND_TEST_ALL_PREFIXES(MediaDrmBridgeTest,
                            ProvisionAfterDestroyedWhileProvisioning_Widevine);
@@ -386,6 +392,11 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   // Called on the |task_runner_| when there is additional usable key.
   void OnHasAdditionalUsableKey();
+
+  // Converts `last_create_error_` to `CreateCdmStatus` using
+  // `security_level_`. Returns `CreateCdmStatus::kSuccess` if no create error
+  // was recorded.
+  CreateCdmStatus GetLastCreateErrorStatus() const;
 
   // UUID of the key system.
   std::vector<uint8_t> scheme_uuid_;
@@ -436,8 +447,8 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   MediaCryptoContextImpl media_crypto_context_;
 
-  // Error recorded when creating MediaDrmBridge Java object. Only set if
-  // create() returns null.
+  // Error recorded when creating MediaDrmBridge Java object or completing its
+  // initialization. Only set on failure.
   MediaDrmCreateError last_create_error_ = MediaDrmCreateError::SUCCESS;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

@@ -125,12 +125,15 @@ void MediaDrmBridgeFactory::OnStorageInitialized(bool success) {
 void MediaDrmBridgeFactory::OnMediaCryptoReady(
     base::android::ScopedJavaGlobalRef<jobject> media_crypto,
     bool requires_secure_video_codec) {
-  DCHECK(media_crypto);
+  DCHECK(media_drm_bridge_);
 
   if (!media_crypto) {
+    CreateCdmStatus status = media_drm_bridge_->GetLastCreateErrorStatus();
+    if (status == CreateCdmStatus::kSuccess) {
+      status = CreateCdmStatus::kMediaCryptoNotAvailable;
+    }
     media_drm_bridge_ = nullptr;
-    std::move(cdm_created_cb_)
-        .Run(nullptr, CreateCdmStatus::kMediaCryptoNotAvailable);
+    std::move(cdm_created_cb_).Run(nullptr, status);
     return;
   }
 

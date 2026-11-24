@@ -430,8 +430,7 @@ MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateInternal(
   if (!media_drm_bridge->j_media_drm_) {
     DCHECK_NE(media_drm_bridge->last_create_error_,
               MediaDrmCreateError::SUCCESS);
-    return base::unexpected(ConvertMediaDrmCreateError(
-        media_drm_bridge->last_create_error_, security_level));
+    return base::unexpected(media_drm_bridge->GetLastCreateErrorStatus());
   }
 
   return media_drm_bridge;
@@ -765,6 +764,7 @@ void MediaDrmBridge::CompleteInitialization(
   }
 
   DVLOG(1) << __func__;
+  DCHECK(j_media_drm_);
 
   SetMediaCryptoReadyCB(std::move(media_crypto_ready_cb));
 
@@ -772,15 +772,17 @@ void MediaDrmBridge::CompleteInitialization(
   ScopedJavaLocalRef<jstring> j_security_origin =
       ConvertUTF8ToJavaString(env, origin_id);
 
-  bool success = Java_MediaDrmBridge_initializeWithOriginAndCrypto(
-      env, j_media_drm_, j_security_origin);
-
-  if (!success) {
+  if (!Java_MediaDrmBridge_initializeWithOriginAndCrypto(env, j_media_drm_,
+                                                         j_security_origin)) {
+    // Java calls onCreateError() and release() -> onMediaCryptoReady(null) on
+    // failure, so wait for NotifyMediaCryptoReady(nullptr) to emit
+    // Media.EME.MediaCryptoAvailable and invoke `media_crypto_ready_cb_` once.
     LOG(ERROR) << "Failed to complete JNI MediaDrmBridge initialization.";
-    if (media_crypto_ready_cb_) {
-      std::move(media_crypto_ready_cb_).Run(nullptr, false);
-    }
   }
+}
+
+CreateCdmStatus MediaDrmBridge::GetLastCreateErrorStatus() const {
+  return ConvertMediaDrmCreateError(last_create_error_, security_level_);
 }
 
 bool MediaDrmBridge::SetPropertyStringForTesting(
@@ -796,6 +798,11 @@ bool MediaDrmBridge::SetPropertyStringForTesting(
 
   return Java_MediaDrmBridge_setPropertyStringForTesting(  // IN-TEST
       env, j_media_drm_, j_property_name_string, j_property_value_string);
+}
+
+void MediaDrmBridge::SetFailSetOriginForTesting(bool fail) {
+  Java_MediaDrmBridge_setFailSetOriginForTesting(  // IN-TEST
+      AttachCurrentThread(), j_media_drm_, fail);
 }
 
 //------------------------------------------------------------------------------

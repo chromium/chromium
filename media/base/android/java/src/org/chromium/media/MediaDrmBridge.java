@@ -137,6 +137,9 @@ public class MediaDrmBridge {
     // Boolean to track if 'ORIGIN' is set in MediaDrm.
     private boolean mOriginSet;
 
+    // Whether setOrigin() should fail. Only set by tests.
+    private boolean mFailSetOriginForTesting;
+
     private @Nullable SessionEventDeferrer mSessionEventDeferrer;
 
     // Defer the creation of MediaCryptor creation. Only used when mRequiresMediaCrypto is true.
@@ -568,6 +571,13 @@ public class MediaDrmBridge {
         return mediaDrmBridge;
     }
 
+    /**
+     * Set the security origin and create a MediaCrypto object.
+     *
+     * @return false upon fatal error. Native CompleteInitialization() waits for Java to notify a
+     *     null MediaCrypto on failure, so every false return must call onCreateError() and
+     *     release() first, like createMediaCrypto() does.
+     */
     @CalledByNative
     private boolean initializeWithOriginAndCrypto(String originId) {
         mRequiresMediaCrypto = true;
@@ -614,6 +624,11 @@ public class MediaDrmBridge {
      */
     private boolean setOrigin(String origin) {
         Log.d(TAG, "Set origin: %s", origin);
+
+        if (mFailSetOriginForTesting) {
+            Log.e(TAG, "Failing setOrigin() for testing");
+            return false;
+        }
 
         if (!isWidevine()) {
             Log.d(TAG, "Property %s isn't supported", ORIGIN);
@@ -1402,6 +1417,11 @@ public class MediaDrmBridge {
             Log.e(TAG, "Failed to get property %s", property, e);
             return "";
         }
+    }
+
+    @CalledByNativeForTesting
+    private void setFailSetOriginForTesting(boolean fail) {
+        mFailSetOriginForTesting = fail;
     }
 
     @CalledByNativeForTesting

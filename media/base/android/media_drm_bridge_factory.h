@@ -42,10 +42,12 @@ class MEDIA_EXPORT MediaDrmBridgeFactory final : public CdmFactory {
               CdmCreatedCB cdm_created_cb) override;
 
  private:
+  friend class MediaDrmBridgeFactoryTest;
+
   // Callback for Initialize() on storage.
   void OnStorageInitialized(bool success);
 
-  // Callback for SetMediaCryptoReadyCB() on |media_drm_bridge_|.
+  // Callback for MediaCrypto readiness on |media_drm_bridge_|.
   void OnMediaCryptoReady(
       base::android::ScopedJavaGlobalRef<jobject> media_crypto,
       bool requires_secure_video_codec);
