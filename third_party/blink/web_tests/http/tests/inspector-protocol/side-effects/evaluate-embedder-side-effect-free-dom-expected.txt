@@ -1,0 +1,32 @@
+Tests that evaluating V8-embedder callbacks allows side-effect-free DOM methods.
+Expression `document.createRange()`
+has side effect: false, expected: false
+Expression `div.getRootNode()`
+has side effect: false, expected: false
+Expression `div.getRootNode({composed: true})`
+has side effect: false, expected: false
+Expression `div.isEqualNode(otherDiv)`
+has side effect: false, expected: false
+Expression `div.isSameNode(div)`
+has side effect: false, expected: false
+Expression `div.compareDocumentPosition(span)`
+has side effect: false, expected: false
+Expression `div.lookupPrefix(ns)`
+has side effect: false, expected: false
+Expression `div.lookupNamespaceURI(null)`
+has side effect: false, expected: false
+Expression `div.isDefaultNamespace(ns)`
+has side effect: false, expected: false
+Expression `textNode.substringData(0, 3)`
+has side effect: false, expected: false
+Expression `namedNodeMap.getNamedItemNS(null, 'attr1')`
+has side effect: false, expected: false
+Expression `location.ancestorOrigins.item(0)`
+has side effect: false, expected: false
+Expression `location.ancestorOrigins.contains('http://example.com')`
+has side effect: false, expected: false
+Expression `div.getRootNode({ get composed() { window.pwned = 1; return true; } })`
+has side effect: true, expected: true
+Expression `namedNodeMap.removeNamedItem('attr1')`
+has side effect: true, expected: true
+

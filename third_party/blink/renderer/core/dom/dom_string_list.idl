@@ -28,6 +28,6 @@
 [Exposed=(Window,Worker)]
 interface DOMStringList {
     readonly attribute unsigned long length;
-    getter DOMString? item(unsigned long index);
-    boolean contains(DOMString string);
+    [Affects=Nothing] getter DOMString? item(unsigned long index);
+    [Affects=Nothing] boolean contains(DOMString string);
 };
