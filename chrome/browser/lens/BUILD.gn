@@ -139,6 +139,43 @@ if (is_android) {
 }
 
 if (!is_android) {
+  source_set("google_search_prompt_endpoint") {
+    sources = [
+      "google_search_prompt_endpoint.cc",
+      "google_search_prompt_endpoint.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/lens/core/mojom:mojo_bindings",
+      "//chrome/browser/selection",
+      "//components/contextual_search:public",
+      "//ui/gfx/geometry",
+      "//url",
+    ]
+    deps = [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/lens:backend_logic_impl",
+      "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//components/contextual_tasks/public",
+      "//components/lens",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/pdf/common:constants",
+      "//components/sessions",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//skia",
+      "//third_party/lens_server_proto:lens_overlay_proto",
+      "//third_party/omnibox_proto",
+      "//ui/base",
+    ]
+  }
+
   source_set("lens_suggestion_tool") {
     sources = [
       "lens_suggestion_tool.cc",
@@ -187,21 +224,44 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "lens_suggestion_tool_unittest.cc" ]
+    sources += [
+      "google_search_prompt_endpoint_unittest.cc",
+      "lens_suggestion_tool_unittest.cc",
+    ]
     deps += [
+      ":google_search_prompt_endpoint",
       ":lens_suggestion_tool",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks:test_support",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/lens/core/mojom:mojo_bindings",
+      "//chrome/browser/search_engines",
       "//chrome/browser/selection",
+      "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/lens",
+      "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//components/contextual_search:prefs",
+      "//components/contextual_search:public",
+      "//components/contextual_search:test_support",
+      "//components/contextual_tasks/public",
       "//components/lens",
+      "//components/omnibox/browser:test_support",
       "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/pdf/common:constants",
+      "//components/prefs",
+      "//components/sessions",
       "//components/tabs:test_support",
+      "//components/version_info:channel",
       "//content/test:test_support",
       "//mojo/public/cpp/bindings",
       "//skia",
       "//testing/gmock",
+      "//third_party/lens_server_proto:lens_overlay_proto",
       "//ui/base/unowned_user_data",
       "//ui/gfx/geometry",
+      "//url",
     ]
   }
 }

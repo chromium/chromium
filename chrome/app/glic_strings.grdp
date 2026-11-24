@@ -658,6 +658,12 @@
   <message name="IDS_GLIC_SELECTION_ENDPOINT_GEMINI" desc="Display name for the Gemini prompt endpoint in the selection overlay prompt box.">
     Gemini
   </message>
+  <message name="IDS_GLIC_SELECTION_ENDPOINT_GOOGLE_SEARCH" desc="Display name for the Google Search prompt endpoint in the selection overlay prompt box.">
+    Google Search
+  </message>
+  <message name="IDS_GLIC_SELECTION_ASK_GOOGLE_PLACEHOLDER" desc="Placeholder text in the selection overlay prompt input box when Google Search is the active endpoint.">
+    Ask Google
+  </message>
   <message name="IDS_GLIC_SELECTION_FETCHING_PAGE_CONTENT" desc="Tooltip for the disabled arrow button in the selection prompt box while Chrome is still getting the page content to send with the prompt.">
     Fetching the page content
   </message>
