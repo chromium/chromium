@@ -239,9 +239,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   readonly additionalContextSubject = new Subject<AdditionalContext>();
   readonly dataTransferActionsBlockedNoticesSubject =
       new Subject<DataTransferActionsBlockedNotice>();
-  pageMetadataObservers: Map<string, ObservableValueImpl<PageMetadata>> =
-      new Map();
-
+  private readonly pageMetadataObservableSet: PageMetadataObservableSet;
   private readonly getTabByIdObservableSet: TabDataObservableSet;
   private readonly getTabFaviconByIdObservableSet: TabFaviconObservableSet;
   notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
@@ -271,6 +269,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     this.toolsClient = new GlicBrowserHostTools();
     this.geicClient = new GlicBrowserHostGeic();
 
+    this.pageMetadataObservableSet =
+        new PageMetadataObservableSet(this.handler);
     this.getTabByIdObservableSet = new TabDataObservableSet(this.handler);
     this.getTabFaviconByIdObservableSet =
         new TabFaviconObservableSet(this.handler);
@@ -636,21 +636,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   notifyPageMetadataChanged(tabId: number, metadata: PageMetadataMojo|null):
       void {
-    const tabIdStr = idToClient(tabId);
-    const observable = this.pageMetadataObservers.get(tabIdStr);
-    if (!observable) {
-      return;
-    }
-
-    const clientMetadata = pageMetadataToClient(metadata);
-    if (clientMetadata) {
-      observable.assignAndSignal(clientMetadata);
-    } else {
-      if (!observable.isStopped()) {
-        observable.complete();
-      }
-      this.pageMetadataObservers.delete(tabIdStr);
-    }
+    this.pageMetadataObservableSet.notifyPageMetadataChanged(tabId, metadata);
   }
 
   notifyAdditionalContext(context: AdditionalContextMojo): void {
@@ -1215,31 +1201,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   getPageMetadata?
       (tabId: string, names: string[]): ObservableValueImpl<PageMetadata> {
-    if (this.pageMetadataObservers.has(tabId)) {
-      // Currently, we assume that names do not change and keep only
-      // one observer per tabId.
-      return this.pageMetadataObservers.get(tabId)!;
-    }
-
-    if (names.length === 0) {
-      throw Error('names must not be empty');
-    }
-
-    const observableValue = ObservableValueImpl.withNoValue<PageMetadata>(
-        async (isActive: boolean) => {
-          // If the client subscribes to an Observable with an invalid tabId,
-          // it will emit nothing, even if the tab later becomes valid.
-          const {success} = await this.handler.subscribeToPageMetadata(
-              idFromClient(tabId), isActive ? names : []);
-          if (!success) {
-            if (!observableValue.isStopped()) {
-              observableValue.complete();
-            }
-            this.pageMetadataObservers.delete(tabId);
-          }
-        });
-    this.pageMetadataObservers.set(tabId, observableValue);
-    return observableValue;
+    return this.pageMetadataObservableSet.getObservable(tabId, names);
   }
 
   setOnboardingCompleted?(): void {
@@ -1695,5 +1657,158 @@ export class TabFaviconObservable extends TabObservable<Blob|undefined>
       }
     }
     this.assignAndSignal(blob);
+  }
+}
+
+export interface PageMetadataHandler {
+  subscribeToPageMetadata(tabId: number, names: string[]):
+      Promise<{success: boolean}>;
+}
+
+// Kept separate from `TabObservableSet` because `getPageMetadata()` requires
+// validating and passing `names` on initial creation, and updates arrive over
+// `WebClient.notifyPageMetadataChanged()` (requiring a non-creating lookup by
+// `tabId`) rather than on a per-tab Mojo receiver.
+export class PageMetadataObservableSet {
+  private observables = new Map<string, PageMetadataObservable>();
+
+  constructor(private handler: PageMetadataHandler) {}
+
+  getObservable(tabId: string, names: string[]):
+      ObservableValueImpl<PageMetadata> {
+    const existing = this.observables.get(tabId);
+    if (existing) {
+      // Currently, we assume that names do not change and keep only
+      // one observer per tabId.
+      return existing;
+    }
+
+    if (names.length === 0) {
+      throw Error('names must not be empty');
+    }
+
+    const observable =
+        new PageMetadataObservable(tabId, names, this.handler, () => {
+          if (this.observables.get(tabId) === observable) {
+            this.observables.delete(tabId);
+          }
+        });
+    this.observables.set(tabId, observable);
+    return observable;
+  }
+
+  notifyPageMetadataChanged(tabId: number, metadata: PageMetadataMojo|null):
+      void {
+    const tabIdStr = idToClient(tabId);
+    const observable = this.observables.get(tabIdStr);
+    if (!observable) {
+      return;
+    }
+
+    const clientMetadata = pageMetadataToClient(metadata);
+    if (clientMetadata) {
+      observable.onMetadataChanged(clientMetadata);
+    } else {
+      observable.complete();
+    }
+  }
+}
+
+// Kept separate from `TabObservable` so that unsubscribing resets the stored
+// value and tears down the browser observer synchronously rather than after a
+// debounce delay. Because `PageMetadataManager` drops mid-navigation `nullptr`
+// updates, retaining the prior value across a grace window would replay stale
+// metadata from the previous page if a client unsubscribes and re-subscribes
+// while a navigation is in flight.
+class PageMetadataObservable extends ObservableValueImpl<PageMetadata> {
+  private readonly names: string[];
+  private subscriptionState: 'unsubscribed'|'subscribed'|'unsubscribing'|
+      'completed' = 'unsubscribed';
+  private wantsSubscription = false;
+
+  constructor(
+      private readonly tabId: string, names: readonly string[],
+      private readonly handler: PageMetadataHandler,
+      private readonly onComplete: () => void) {
+    super(/*isSet=*/ false);
+    this.names = [...names];
+  }
+
+  onMetadataChanged(metadata: PageMetadata): void {
+    if (this.subscriptionState !== 'subscribed' || this.isStopped()) {
+      return;
+    }
+    this.assignAndSignal(metadata);
+  }
+
+  protected override activeSubscriptionChanged(hasActiveSubscription: boolean):
+      void {
+    super.activeSubscriptionChanged(hasActiveSubscription);
+    if (this.subscriptionState === 'completed' || this.isStopped()) {
+      this.wantsSubscription = false;
+      return;
+    }
+    this.wantsSubscription = hasActiveSubscription;
+    if (hasActiveSubscription) {
+      this.maybeSubscribe();
+      return;
+    }
+    this.reset();
+    if (this.subscriptionState !== 'subscribed') {
+      return;
+    }
+    this.subscriptionState = 'unsubscribing';
+    // Passing [] unsubscribes on the host. Defer any re-subscription until this
+    // resolves so in-flight updates from the prior browser observer are ignored
+    // (full ordering across the separate WebClient and WebClientHandler Mojo
+    // pipes would require a subscription ID or per-subscription receiver).
+    this.handler.subscribeToPageMetadata(idFromClient(this.tabId), [])
+        .then(
+            ({success}) => {
+              if (this.subscriptionState !== 'unsubscribing') {
+                return;
+              }
+              this.subscriptionState = 'unsubscribed';
+              if (!success) {
+                this.complete();
+                return;
+              }
+              this.maybeSubscribe();
+            },
+            () => {
+              this.complete();
+            });
+  }
+
+  private maybeSubscribe(): void {
+    if (!this.wantsSubscription || this.subscriptionState !== 'unsubscribed' ||
+        this.isStopped()) {
+      return;
+    }
+    this.subscriptionState = 'subscribed';
+    // If the client subscribes to an Observable with an invalid tabId,
+    // it will emit nothing, even if the tab later becomes valid.
+    this.handler
+        .subscribeToPageMetadata(idFromClient(this.tabId), [...this.names])
+        .then(
+            ({success}) => {
+              if (!success) {
+                this.complete();
+              }
+            },
+            () => {
+              this.complete();
+            });
+  }
+
+  override complete(): void {
+    if (this.subscriptionState === 'completed' || this.isStopped()) {
+      return;
+    }
+    this.subscriptionState = 'completed';
+    this.wantsSubscription = false;
+    this.reset();
+    this.onComplete();
+    super.complete();
   }
 }

@@ -1935,6 +1935,55 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   /**
+   * Verifies that unsubscribing from getPageMetadata clears the cached metadata
+   * so re-subscribing after a navigation does not replay stale metadata from
+   * the previous page.
+   */
+  async testGetPageMetadataResubscribeAfterNavigation() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable =
+        this.host.getPageMetadata(tabId, ['author', 'description']);
+    assertDefined(metadataObservable);
+    const metadataSequence1 = observeSequence(metadataObservable);
+
+    // Initial page has author="George".
+    const metadata1: PageMetadata = await metadataSequence1.next();
+    assertEquals(1, metadata1.frameMetadata.length);
+    const authorTag =
+        metadata1.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('George', authorTag.content);
+
+    // Unsubscribe and verify the stored value is cleared immediately.
+    metadataSequence1.unsubscribe();
+    assertTrue(metadataObservable.getCurrentValue() === undefined);
+
+    // Navigate while unsubscribed to a page with no meta tags.
+    assertTrue(
+        await this.browser.navigateTab(tabId, this.getUrl('/title1.html')));
+
+    // Re-requesting the observable for the same tab returns the cached
+    // instance without a stale stored value, and subscribing emits the new
+    // page's metadata first rather than replaying 'George'.
+    const metadataObservable2 =
+        this.host.getPageMetadata(tabId, ['author', 'description']);
+    assertTrue(metadataObservable === metadataObservable2);
+    assertTrue(metadataObservable2.getCurrentValue() === undefined);
+
+    const metadataSequence2 = observeSequence(metadataObservable2);
+    const metadata2: PageMetadata = await metadataSequence2.next();
+    assertEquals(1, metadata2.frameMetadata.length);
+    assertEquals(0, metadata2.frameMetadata[0]!.metaTags.length);
+    metadataSequence2.unsubscribe();
+  }
+
+  /**
    * Verifies that metadata updates are still received after a tab's
    * WebContents has been discarded and recreated.
    */

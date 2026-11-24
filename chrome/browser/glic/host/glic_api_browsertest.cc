@@ -4927,6 +4927,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetPageMetadataOnNavigation) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testGetPageMetadataResubscribeAfterNavigation) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetPageMetadataWebContentsChanged) {
   // Navigate the first tab.

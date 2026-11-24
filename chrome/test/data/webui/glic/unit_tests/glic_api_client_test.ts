@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {PageMetadata as PageMetadataMojo} from '//webui-test/glic/ai_page_content_metadata.mojom-webui.js';
 import {DrivePickerErrorReason as DrivePickerErrorReasonMojo, HostCapability as HostCapabilityMojo} from '//webui-test/glic/glic.mojom-webui.js';
 import type {WebClientHandlerRemote, WebClientInitialState} from '//webui-test/glic/glic.mojom-webui.js';
 import {DrivePickerErrorReason, ExecuteToolErrorReason} from '//webui-test/glic/glic_api/glic_api.js';
+import type {PageMetadata} from '//webui-test/glic/glic_api/glic_api.js';
 import {driveFileSelectionToClient, drivePickerOptionsFromClient, drivePickerResultToClient, numberToClient} from '//webui-test/glic/glic_api_impl/conversions.js';
-import {GlicBrowserHostImpl, GlicClientStorageImpl} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
-import type {ClientStorageHandler} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
+import {GlicBrowserHostImpl, GlicClientStorageImpl, PageMetadataObservableSet} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
+import type {ClientStorageHandler, PageMetadataHandler} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
 import {TabObservable, TabObservableSet} from '//webui-test/glic/glic_api_impl/observable_set_by_tab_id.js';
 import {GlicBrowserHostTools} from '//webui-test/glic/glic_api_impl/tools/tools_client.js';
 import {AiOverlayToolsReceiver} from '//webui-test/glic/tools.mojom-webui.js';
 import type {AiOverlayToolsInterface, AiOverlayToolsPendingReceiver} from '//webui-test/glic/tools.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {sleep, waitUntilEqual} from './test_helpers.js';
 
@@ -826,5 +828,463 @@ suite('GlicBrowserHostTools', () => {
         const res = await preInitToolsHost.executeTool!('go_back', '{}');
         assertEquals(ExecuteToolErrorReason.EXECUTION_FAILED, res.errorReason);
         assertEquals(0, env.getCreateCalls());
+      });
+});
+
+interface PendingSubscribeCall {
+  tabId: number;
+  names: string[];
+  resolve: (result: {success: boolean}) => void;
+  reject: (reason?: unknown) => void;
+}
+
+class FakePageMetadataHandler implements PageMetadataHandler {
+  calls: PendingSubscribeCall[] = [];
+
+  subscribeToPageMetadata(tabId: number, names: string[]):
+      Promise<{success: boolean}> {
+    const {promise, resolve, reject} =
+        Promise.withResolvers<{success: boolean}>();
+    this.calls.push({tabId, names, resolve, reject});
+    return promise;
+  }
+}
+
+function makeMojoMetadata(url: string, author?: string): PageMetadataMojo {
+  return {
+    frameMetadata: [{
+      url,
+      metaTags: author !== undefined ? [{name: 'author', content: author}] : [],
+      hasMediaTranscripts: false,
+    }],
+  };
+}
+
+suite('PageMetadataObservableSet', () => {
+  test('throws on empty names and deduplicates observable per tabId', () => {
+    const handler = new FakePageMetadataHandler();
+    const metadataSet = new PageMetadataObservableSet(handler);
+
+    assertThrows(() => metadataSet.getObservable('123', []));
+
+    const obs1 = metadataSet.getObservable('123', ['author']);
+    const obs2 = metadataSet.getObservable('123', ['description']);
+    assertEquals(obs1, obs2);
+    assertEquals(handler.calls.length, 0);
+  });
+
+  test(
+      'resets stored value on unsubscribe and does not replay stale metadata',
+      async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+        const obs = metadataSet.getObservable('123', ['author']);
+
+        const received1: PageMetadata[] = [];
+        const sub1 = obs.subscribe(v => received1.push(v));
+        assertEquals(handler.calls.length, 1);
+        assertEquals(handler.calls[0]!.tabId, 123);
+        assertDeepEquals(handler.calls[0]!.names, ['author']);
+        handler.calls[0]!.resolve({success: true});
+        await Promise.resolve();
+
+        metadataSet.notifyPageMetadataChanged(
+            123, makeMojoMetadata('https://a.example/', 'George'));
+        assertEquals(received1.length, 1);
+        assertEquals(
+            obs.getCurrentValue()?.frameMetadata[0]?.metaTags[0]?.content,
+            'George');
+
+        // Unsubscribing the last subscriber immediately resets the stored value
+        // and tears down the browser-side observer, while keeping the
+        // observable active and cached for future subscriptions.
+        sub1.unsubscribe();
+        assertFalse(obs.isStopped());
+        assertEquals(obs.getCurrentValue(), undefined);
+        assertEquals(handler.calls.length, 2);
+        assertEquals(handler.calls[1]!.tabId, 123);
+        assertDeepEquals(handler.calls[1]!.names, []);
+        handler.calls[1]!.resolve({success: true});
+        await Promise.resolve();
+
+        // Re-subscribing (both via getObservable and the cached instance) must
+        // not synchronously emit the old page's metadata.
+        const cachedObs = metadataSet.getObservable('123', ['author']);
+        assertEquals(obs, cachedObs);
+
+        const received2: PageMetadata[] = [];
+        const sub2 = cachedObs.subscribe(v => received2.push(v));
+        assertEquals(received2.length, 0);
+        assertEquals(handler.calls.length, 3);
+        assertEquals(handler.calls[2]!.tabId, 123);
+        assertDeepEquals(handler.calls[2]!.names, ['author']);
+        handler.calls[2]!.resolve({success: true});
+        await Promise.resolve();
+
+        metadataSet.notifyPageMetadataChanged(
+            123, makeMojoMetadata('https://b.example/', 'Ruth'));
+        assertEquals(received2.length, 1);
+        assertEquals(
+            received2[0]!.frameMetadata[0]!.metaTags[0]!.content, 'Ruth');
+
+        sub2.unsubscribe();
+      });
+
+  test(
+      'ignores in-flight metadata updates arriving after unsubscribe',
+      async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+        const obs = metadataSet.getObservable('123', ['author']);
+
+        const sub1 = obs.subscribe(() => {});
+        handler.calls[0]!.resolve({success: true});
+        await Promise.resolve();
+
+        metadataSet.notifyPageMetadataChanged(
+            123, makeMojoMetadata('https://a.example/', 'George'));
+        sub1.unsubscribe();
+        assertEquals(obs.getCurrentValue(), undefined);
+
+        // Simulate an in-flight NotifyPageMetadataChanged arriving before the
+        // browser processes SubscribeToPageMetadata(123, []).
+        metadataSet.notifyPageMetadataChanged(
+            123, makeMojoMetadata('https://a.example/', 'StaleInFlight'));
+        assertEquals(obs.getCurrentValue(), undefined);
+
+        handler.calls[1]!.resolve({success: true});
+        await Promise.resolve();
+
+        const received: PageMetadata[] = [];
+        const sub2 = obs.subscribe(v => received.push(v));
+        assertEquals(received.length, 0);
+        sub2.unsubscribe();
+      });
+
+  test('completes and removes observable when tab is destroyed', async () => {
+    const handler = new FakePageMetadataHandler();
+    const metadataSet = new PageMetadataObservableSet(handler);
+    const obs1 = metadataSet.getObservable('123', ['author']);
+
+    let completed = false;
+    let reSubscribedObs: unknown = null;
+    obs1.subscribe({
+      next() {},
+      complete() {
+        completed = true;
+        reSubscribedObs = metadataSet.getObservable('123', ['author']);
+      },
+    });
+    assertEquals(handler.calls.length, 1);
+    handler.calls[0]!.resolve({success: true});
+    await Promise.resolve();
+
+    metadataSet.notifyPageMetadataChanged(
+        123, makeMojoMetadata('https://a.example/', 'George'));
+    assertTrue(obs1.getCurrentValue() !== undefined);
+
+    // Null metadata signals tab destruction.
+    metadataSet.notifyPageMetadataChanged(123, null);
+    assertTrue(completed);
+    assertTrue(obs1.isStopped());
+    assertEquals(obs1.getCurrentValue(), undefined);
+    // Should not send a redundant unsubscribe RPC when completing.
+    assertEquals(handler.calls.length, 1);
+    assertNotEquals(obs1, reSubscribedObs);
+  });
+
+  test(
+      'completes and removes observable when subscribe fails after resubscribe',
+      async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+        const obs1 = metadataSet.getObservable('123', ['author']);
+
+        const sub1 = obs1.subscribe(() => {});
+        handler.calls[0]!.resolve({success: true});
+        await Promise.resolve();
+        metadataSet.notifyPageMetadataChanged(
+            123, makeMojoMetadata('https://a.example/', 'George'));
+
+        sub1.unsubscribe();
+        handler.calls[1]!.resolve({success: true});
+        await Promise.resolve();
+
+        // Tab was closed while unsubscribed; re-subscribing fails on host.
+        const received: PageMetadata[] = [];
+        let completed = false;
+        obs1.subscribe({
+          next: v => received.push(v),
+          complete() {
+            completed = true;
+          },
+        });
+        assertEquals(received.length, 0);
+        assertEquals(handler.calls.length, 3);
+        handler.calls[2]!.resolve({success: false});
+        await Promise.resolve();
+
+        assertTrue(completed);
+        assertTrue(obs1.isStopped());
+        assertEquals(received.length, 0);
+        // Should not send a redundant unsubscribe RPC after failure.
+        assertEquals(handler.calls.length, 3);
+        assertNotEquals(obs1, metadataSet.getObservable('123', ['author']));
+      });
+
+  test(
+      'multiple concurrent subscribers share subscription until last leaves',
+      async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+        const obs = metadataSet.getObservable('123', ['author']);
+
+        const received1: PageMetadata[] = [];
+        const received2: PageMetadata[] = [];
+        const sub1 = obs.subscribe(v => received1.push(v));
+        assertEquals(handler.calls.length, 1);
+        assertDeepEquals(handler.calls[0]!.names, ['author']);
+        handler.calls[0]!.resolve({success: true});
+        await Promise.resolve();
+
+        metadataSet.notifyPageMetadataChanged(
+            123, makeMojoMetadata('https://a.example/', 'George'));
+        assertEquals(received1.length, 1);
+
+        // Second subscriber joins: no duplicate subscribe RPC, and current
+        // value is immediately replayed.
+        const sub2 = obs.subscribe(v => received2.push(v));
+        assertEquals(handler.calls.length, 1);
+        assertEquals(received2.length, 1);
+        assertEquals(
+            received2[0]!.frameMetadata[0]!.metaTags[0]!.content, 'George');
+
+        // First subscriber leaves while second remains active: stored value is
+        // kept and no unsubscribe RPC is sent.
+        sub1.unsubscribe();
+        assertEquals(handler.calls.length, 1);
+        assertEquals(
+            obs.getCurrentValue()?.frameMetadata[0]?.metaTags[0]?.content,
+            'George');
+
+        metadataSet.notifyPageMetadataChanged(
+            123, makeMojoMetadata('https://a.example/', 'Ruth'));
+        assertEquals(received1.length, 1);
+        assertEquals(received2.length, 2);
+        assertEquals(
+            received2[1]!.frameMetadata[0]!.metaTags[0]!.content, 'Ruth');
+
+        // Last subscriber leaves: stored value resets and unsubscribe is sent.
+        sub2.unsubscribe();
+        assertEquals(obs.getCurrentValue(), undefined);
+        assertEquals(handler.calls.length, 2);
+        assertDeepEquals(handler.calls[1]!.names, []);
+      });
+
+  test(
+      'copies names array so caller mutations do not affect subscriptions',
+      async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+        const callerNames = ['author', 'description'];
+        const obs = metadataSet.getObservable('123', callerNames);
+
+        // Mutating (including clearing) the caller's array must not turn
+        // subsequent subscriptions into unsubscriptions.
+        callerNames.length = 0;
+
+        const sub1 = obs.subscribe(() => {});
+        assertEquals(handler.calls.length, 1);
+        assertDeepEquals(handler.calls[0]!.names, ['author', 'description']);
+        handler.calls[0]!.resolve({success: true});
+        await Promise.resolve();
+
+        sub1.unsubscribe();
+        assertEquals(handler.calls.length, 2);
+        assertDeepEquals(handler.calls[1]!.names, []);
+        handler.calls[1]!.resolve({success: true});
+        await Promise.resolve();
+
+        callerNames.push('keywords');
+        const sub2 = obs.subscribe(() => {});
+        assertEquals(handler.calls.length, 3);
+        assertDeepEquals(handler.calls[2]!.names, ['author', 'description']);
+        sub2.unsubscribe();
+      });
+
+  test('defers resubscription until pending unsubscribe resolves', async () => {
+    const handler = new FakePageMetadataHandler();
+    const metadataSet = new PageMetadataObservableSet(handler);
+    const obs = metadataSet.getObservable('123', ['author']);
+
+    const sub1 = obs.subscribe(() => {});
+    handler.calls[0]!.resolve({success: true});
+    await Promise.resolve();
+
+    metadataSet.notifyPageMetadataChanged(
+        123, makeMojoMetadata('https://a.example/', 'George'));
+
+    // Unsubscribe and immediately re-subscribe before unsubscribe resolves.
+    sub1.unsubscribe();
+    assertEquals(handler.calls.length, 2);
+    assertDeepEquals(handler.calls[1]!.names, []);
+
+    const received2: PageMetadata[] = [];
+    const sub2 = obs.subscribe(v => received2.push(v));
+    // Re-subscription RPC must wait for the pending unsubscribe to finish.
+    assertEquals(handler.calls.length, 2);
+    assertEquals(received2.length, 0);
+
+    // Stale in-flight update from the prior browser observer arriving
+    // before the unsubscribe completes must be ignored.
+    metadataSet.notifyPageMetadataChanged(
+        123, makeMojoMetadata('https://a.example/', 'StaleInFlight'));
+    assertEquals(received2.length, 0);
+    assertEquals(obs.getCurrentValue(), undefined);
+
+    // Once unsubscribe resolves, the deferred re-subscription is sent and
+    // subsequent updates are delivered to the new subscriber.
+    handler.calls[1]!.resolve({success: true});
+    await Promise.resolve();
+    assertEquals(handler.calls.length, 3);
+    assertDeepEquals(handler.calls[2]!.names, ['author']);
+
+    metadataSet.notifyPageMetadataChanged(
+        123, makeMojoMetadata('https://b.example/', 'Ruth'));
+    assertEquals(received2.length, 1);
+    assertEquals(received2[0]!.frameMetadata[0]!.metaTags[0]!.content, 'Ruth');
+    handler.calls[2]!.resolve({success: true});
+    await Promise.resolve();
+
+    // Subscribing and unsubscribing again while an unsubscribe is still in
+    // flight must not send extra subscribe or unsubscribe RPCs.
+    sub2.unsubscribe();
+    assertEquals(handler.calls.length, 4);
+    assertDeepEquals(handler.calls[3]!.names, []);
+
+    const sub3 = obs.subscribe(() => {});
+    sub3.unsubscribe();
+    assertEquals(handler.calls.length, 4);
+
+    handler.calls[3]!.resolve({success: true});
+    await Promise.resolve();
+    assertEquals(handler.calls.length, 4);
+  });
+
+  test(
+      'completes waiting resubscriber when pending unsubscribe fails',
+      async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+        const obs = metadataSet.getObservable('123', ['author']);
+
+        const sub1 = obs.subscribe(() => {});
+        handler.calls[0]!.resolve({success: true});
+        await Promise.resolve();
+
+        sub1.unsubscribe();
+        let completed = false;
+        obs.subscribe({
+          next() {},
+          complete() {
+            completed = true;
+          },
+        });
+
+        handler.calls[1]!.resolve({success: false});
+        await Promise.resolve();
+
+        assertTrue(completed);
+        assertTrue(obs.isStopped());
+        assertEquals(handler.calls.length, 2);
+        assertNotEquals(obs, metadataSet.getObservable('123', ['author']));
+      });
+
+  test(
+      'completes on subscribe and pending unsubscribe rejections', async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+
+        const obs1 = metadataSet.getObservable('123', ['author']);
+        let obs1Completed = false;
+        obs1.subscribe({
+          next() {},
+          complete() {
+            obs1Completed = true;
+          },
+        });
+        handler.calls[0]!.reject(new Error('pipe closed'));
+        await Promise.resolve();
+        assertTrue(obs1Completed);
+        assertTrue(obs1.isStopped());
+        assertEquals(handler.calls.length, 1);
+
+        const obs2 = metadataSet.getObservable('123', ['author']);
+        assertNotEquals(obs1, obs2);
+        const sub = obs2.subscribe(() => {});
+        handler.calls[1]!.resolve({success: true});
+        await Promise.resolve();
+
+        sub.unsubscribe();
+        let obs2Completed = false;
+        obs2.subscribe({
+          next() {},
+          complete() {
+            obs2Completed = true;
+          },
+        });
+        handler.calls[2]!.reject(new Error('pipe closed'));
+        await Promise.resolve();
+        assertTrue(obs2Completed);
+        assertTrue(obs2.isStopped());
+        assertEquals(handler.calls.length, 3);
+      });
+
+  test(
+      'completes during pending unsubscribe on subscribe failure or null',
+      async () => {
+        const handler = new FakePageMetadataHandler();
+        const metadataSet = new PageMetadataObservableSet(handler);
+
+        const obs1 = metadataSet.getObservable('123', ['author']);
+        const sub1 = obs1.subscribe(() => {});
+        sub1.unsubscribe();
+        let obs1Completed = false;
+        obs1.subscribe({
+          next() {},
+          complete() {
+            obs1Completed = true;
+          },
+        });
+        assertEquals(handler.calls.length, 2);
+
+        handler.calls[0]!.resolve({success: false});
+        await Promise.resolve();
+        assertTrue(obs1Completed);
+
+        handler.calls[1]!.resolve({success: true});
+        await Promise.resolve();
+        assertEquals(handler.calls.length, 2);
+
+        const obs2 = metadataSet.getObservable('123', ['author']);
+        assertNotEquals(obs1, obs2);
+        const sub2 = obs2.subscribe(() => {});
+        handler.calls[2]!.resolve({success: true});
+        await Promise.resolve();
+
+        sub2.unsubscribe();
+        let obs2Completed = false;
+        obs2.subscribe({
+          next() {},
+          complete() {
+            obs2Completed = true;
+          },
+        });
+        metadataSet.notifyPageMetadataChanged(123, null);
+        assertTrue(obs2Completed);
+
+        handler.calls[3]!.resolve({success: true});
+        await Promise.resolve();
+        assertEquals(handler.calls.length, 4);
       });
 });
