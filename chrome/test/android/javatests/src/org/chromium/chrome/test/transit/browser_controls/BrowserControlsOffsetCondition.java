@@ -12,10 +12,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 
 import java.util.function.Supplier;
 
-/** Condition to check the physical offset of browser controls (shown or hidden). */
+/**
+ * Condition to check the physical offset of browser controls (shown or hidden).
+ *
+ * <p>Checks the controls at their current {@link ControlsPosition}, top or bottom. Use {@link
+ * BrowserControlsPositionCondition} to also expect a position.
+ */
 @NullMarked
 public class BrowserControlsOffsetCondition<ActivityT extends ChromeActivity> extends Condition {
     private final Supplier<@Nullable ActivityT> mActivitySupplier;
@@ -57,38 +64,54 @@ public class BrowserControlsOffsetCondition<ActivityT extends ChromeActivity> ex
     protected ConditionStatus checkWithSuppliers() {
         BrowserControlsStateProvider provider =
                 assumeNonNull(mActivitySupplier.get()).getBrowserControlsManager();
-        int topControlsHeight = provider.getTopControlsHeight();
-        int topControlsMinHeight = provider.getTopControlsMinHeight();
-        int contentOffset = provider.getContentOffset();
+        @ControlsPosition int position = provider.getControlsPosition();
+        boolean isBottom = position == ControlsPosition.BOTTOM;
+        int controlsHeight =
+                isBottom ? provider.getBottomControlsHeight() : provider.getTopControlsHeight();
+        int controlsMinHeight =
+                isBottom
+                        ? provider.getBottomControlsMinHeight()
+                        : provider.getTopControlsMinHeight();
+        int contentOffset =
+                isBottom
+                        ? BrowserControlsUtils.getBottomContentOffset(provider)
+                        : provider.getContentOffset();
 
         if (mHeightSynced) {
-            if (topControlsHeight != topControlsMinHeight) {
+            if (controlsHeight != controlsMinHeight) {
                 return notFulfilled(
                         "Expected controls height and minHeight to be in sync."
                                 + " (height: %d) (minHeight: %d)",
-                        topControlsHeight, topControlsMinHeight);
+                        controlsHeight, controlsMinHeight);
             }
         }
 
         if (mExpectPhysicallyShown) {
-            if (contentOffset != topControlsHeight) {
+            // The offsets are clamped to 0 when the height is 0, so the check below would pass.
+            if (controlsHeight <= 0) {
+                return notFulfilled("Expected controls height > 0, but got %d", controlsHeight);
+            }
+            if (contentOffset != controlsHeight) {
                 return notFulfilled(
                         "Expected controls to be fully shown (content offset %d), but got %d"
                                 + " (height: %d)",
-                        topControlsHeight, contentOffset, topControlsHeight);
+                        controlsHeight, contentOffset, controlsHeight);
             }
         } else {
-            if (contentOffset != topControlsMinHeight) {
+            if (contentOffset != controlsMinHeight) {
                 return notFulfilled(
                         "Expected controls to be fully hidden (content offset %d), but got %d"
                                 + " (min height: %d)",
-                        topControlsMinHeight, contentOffset, topControlsMinHeight);
+                        controlsMinHeight, contentOffset, controlsMinHeight);
             }
         }
 
         return fulfilled(
-                "Content Offset: %d, Height: %d, MinHeight: %d",
-                contentOffset, topControlsHeight, topControlsMinHeight);
+                "Position: %s, Content Offset: %d, Height: %d, MinHeight: %d",
+                BrowserControlsPositionCondition.positionToString(position),
+                contentOffset,
+                controlsHeight,
+                controlsMinHeight);
     }
 
     @Override

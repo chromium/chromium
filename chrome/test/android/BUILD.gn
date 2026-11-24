@@ -158,6 +158,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/bookmarks/BookmarksTabletStation.java",
     "javatests/src/org/chromium/chrome/test/transit/browser_controls/BrowserControlsFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/browser_controls/BrowserControlsOffsetCondition.java",
+    "javatests/src/org/chromium/chrome/test/transit/browser_controls/BrowserControlsPositionCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/browser_controls/BrowserControlsStateCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/context_menu/ContextMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/context_menu/LinkContextMenuFacility.java",
