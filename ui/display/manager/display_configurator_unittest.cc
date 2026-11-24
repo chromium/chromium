@@ -380,7 +380,6 @@ class DisplayConfiguratorTest : public testing::Test {
   raw_ptr<TestNativeDisplayDelegate> native_display_delegate_;  // not owned
   DisplayConfigurator::TestApi test_api_{&configurator_};
   ConfigurationWaiter config_waiter_{&test_api_};
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   CallbackResult display_control_result_ = CALLBACK_NOT_CALLED;
 
@@ -966,10 +965,6 @@ TEST_F(DisplayConfiguratorTest, InvalidMultipleDisplayStates) {
 }
 
 TEST_F(DisplayConfiguratorTest, GetMultipleDisplayStateForSWMirroredDisplays) {
-  // Disable hardware mirroring.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kEnableHardwareMirrorMode);
   UpdateOutputs(2, false);
   Init(false);
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);

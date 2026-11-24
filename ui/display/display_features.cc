@@ -67,15 +67,6 @@ bool IsOledScaleFactorEnabled() {
   return base::FeatureList::IsEnabled(kOledScaleFactorEnabled);
 }
 
-// A temporary flag to control hardware mirroring until it is decided whether to
-// permanently remove hardware mirroring support. See crbug.com/1161556 for
-// details.
-BASE_FEATURE(kEnableHardwareMirrorMode, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsHardwareMirrorModeEnabled() {
-  return base::FeatureList::IsEnabled(kEnableHardwareMirrorMode);
-}
-
 // A temporary flag to require Content Protection to use provisioned key as the
 // kernel doesn't expose that it requires this yet.(b/112172923)
 BASE_FEATURE(kRequireHdcpKeyProvisioning, base::FEATURE_DISABLED_BY_DEFAULT);
