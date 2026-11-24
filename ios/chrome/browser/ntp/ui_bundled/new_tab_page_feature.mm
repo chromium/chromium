@@ -152,6 +152,24 @@ AimButtonRefactorArm GetAimButtonRefactorArm() {
   return AimButtonRefactorArm::kDisabled;
 }
 
+bool AreNTPQuickActionsEnabled() {
+  if (!IsAimEnabledInNtp()) {
+    return false;
+  }
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
+    case AimButtonRefactorArm::kDisabled:
+      return true;
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+      return false;
+  }
+}
+
 bool IsImageGenerationQuickActionEnabled() {
   switch (GetAimButtonRefactorArm()) {
     case AimButtonRefactorArm::kImageGenerationQuickAction:

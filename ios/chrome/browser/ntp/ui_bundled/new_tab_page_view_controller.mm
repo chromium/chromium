@@ -256,19 +256,21 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   self.view.accessibilityIdentifier = kNTPViewIdentifier;
 
-  _quickActionsViewController =
-      [[NewTabPageQuickActionsViewController alloc] init];
-  _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
-  _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
-  [_quickActionsViewController setIncognitoAllowed:_incognitoAllowed];
-  [_quickActionsViewController setAIMTitle:_aimTitle
-                                      icon:_aimIcon
-                        accessibilityLabel:_aimAccessibilityLabel];
+  if (AreNTPQuickActionsEnabled()) {
+    _quickActionsViewController =
+        [[NewTabPageQuickActionsViewController alloc] init];
+    _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
+    _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
+    [_quickActionsViewController setIncognitoAllowed:_incognitoAllowed];
+    [_quickActionsViewController setAIMTitle:_aimTitle
+                                        icon:_aimIcon
+                          accessibilityLabel:_aimAccessibilityLabel];
 
-  if (AreAimMerchandisingQuickActionsEnabled()) {
-    [_quickActionsViewController
-        setAIMImageGenerationAllowed:_aimImageGenerationAllowed
-                 attachImagesAllowed:_aimAttachImagesAllowed];
+    if (AreAimMerchandisingQuickActionsEnabled()) {
+      [_quickActionsViewController
+          setAIMImageGenerationAllowed:_aimImageGenerationAllowed
+                   attachImagesAllowed:_aimAttachImagesAllowed];
+    }
   }
 
   // TODO(crbug.com/40799579): Remove this when bug is fixed.
@@ -1387,21 +1389,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 // Whether the quick actions button row is visible.
 - (BOOL)quickActionsVisible {
-  if (!_isAIMAllowed || !IsAimEnabledInNtp()) {
-    return NO;
-  }
-  switch (GetAimButtonRefactorArm()) {
-    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
-    case AimButtonRefactorArm::kImageGenerationQuickAction:
-    case AimButtonRefactorArm::kAttachImageQuickAction:
-    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
-    case AimButtonRefactorArm::kDisabled:
-      return YES;
-    case AimButtonRefactorArm::kAimAsModule:
-    case AimButtonRefactorArm::kAimAsMvt:
-    case AimButtonRefactorArm::kNoChips:
-      return NO;
-  }
+  return _isAIMAllowed && AreNTPQuickActionsEnabled();
 }
 
 // Applies the horizontal constraints for the quick actions row.

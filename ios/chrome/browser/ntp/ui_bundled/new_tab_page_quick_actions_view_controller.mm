@@ -57,6 +57,7 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
 }
 
 - (instancetype)init {
+  CHECK(AreNTPQuickActionsEnabled());
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _incognitoAllowed = YES;
@@ -198,7 +199,7 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
     case AimButtonRefactorArm::kAimAsMvt:
     case AimButtonRefactorArm::kNoChips:
       // No quick actions row.
-      return;
+      NOTREACHED();
   }
 
   [self.layoutGuideCenter referenceView:_aimButton
@@ -252,10 +253,11 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
       break;
     case AimButtonRefactorArm::kImageGenerationQuickAction:
     case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
+      break;
     case AimButtonRefactorArm::kAimAsModule:
     case AimButtonRefactorArm::kAimAsMvt:
     case AimButtonRefactorArm::kNoChips:
-      break;
+      NOTREACHED();
   }
   return stackView;
 }

@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -1134,6 +1135,49 @@ TEST_F(NewTabPageCoordinatorTest, OpenIncognitoSearchIgnoredWhenDisabled) {
       "IOS.Home.Click", IOSHomeActionType::kQuickActionIncognito, 1);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kNTPIncognitoButtonTappedAction));
+
+  [coordinator_ stop];
+}
+
+// Tests that starting the NTP with the `kAimAsMvt` arm and incognito mode
+// disabled does not create the Quick Actions view controller or crash.
+TEST_F(NewTabPageCoordinatorTest,
+       AimAsMvtWithIncognitoDisabledDoesNotCreateQuickActions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kAimButtonRefactor,
+        {{kAimButtonRefactorArmParam, base::NumberToString(static_cast<int>(
+                                          AimButtonRefactorArm::kAimAsMvt))}}},
+       {kAIMNTPEntrypointTablet, {}}},
+      /*disabled_features=*/{kNewTabPageRedesign});
+
+  static_cast<TestProfileIOS*>(GetProfile())
+      ->GetTestingPrefService()
+      ->SetSupervisedUserPref(
+          policy::policy_prefs::kIncognitoModeAvailability,
+          base::Value(static_cast<int>(IncognitoModePrefs::kDisabled)));
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
+
+  EXPECT_EQ(nil, chrome_test_util::FindViewById<UIButton>(
+                     coordinator_.NTPViewController.view,
+                     kNTPAIMQuickActionIdentifier));
+  EXPECT_EQ(nil, chrome_test_util::FindViewById<UIButton>(
+                     coordinator_.NTPViewController.view,
+                     kNTPIncognitoQuickActionIdentifier));
+
+  // Verify dynamic incognito availability changes do not crash either.
+  static_cast<TestProfileIOS*>(GetProfile())
+      ->GetTestingPrefService()
+      ->RemoveSupervisedUserPref(
+          policy::policy_prefs::kIncognitoModeAvailability);
+  static_cast<TestProfileIOS*>(GetProfile())
+      ->GetTestingPrefService()
+      ->SetSupervisedUserPref(
+          policy::policy_prefs::kIncognitoModeAvailability,
+          base::Value(static_cast<int>(IncognitoModePrefs::kDisabled)));
 
   [coordinator_ stop];
 }

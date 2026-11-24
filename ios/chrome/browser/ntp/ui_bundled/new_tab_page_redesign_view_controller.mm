@@ -314,7 +314,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   [_fakeLocationBar applyBackgroundTheme];
   [_fakeLocationBar updateColorsWithProgress:0.0 colorPalette:nil];
 
-  if (IsAimEnabledInNtp()) {
+  if (AreNTPQuickActionsEnabled()) {
     _quickActionsViewController =
         [[NewTabPageQuickActionsViewController alloc] init];
     _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
@@ -393,7 +393,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         constraintEqualToAnchor:_fakeLocationBar.centerYAnchor],
   ]];
 
-  if (IsAimEnabledInNtp()) {
+  if (AreNTPQuickActionsEnabled()) {
     _qaTopConstraint = [_quickActionsViewController.view.topAnchor
         constraintEqualToAnchor:_fakeLocationBar.bottomAnchor
                        constant:content_suggestions::QuickActionsTopPadding(
@@ -1424,7 +1424,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 
 // Whether the quick actions button row is visible.
 - (BOOL)quickActionsVisible {
-  return _isAIMAllowed && IsAimEnabledInNtp();
+  return _isAIMAllowed && AreNTPQuickActionsEnabled();
 }
 
 - (void)setAIMAllowed:(BOOL)allowed {

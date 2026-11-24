@@ -162,6 +162,9 @@ bool IsAimEnabledInNtp();
 // Returns the active arm for the AimButtonRefactor feature.
 AimButtonRefactorArm GetAimButtonRefactorArm();
 
+// Whether the NTP quick actions row is enabled.
+bool AreNTPQuickActionsEnabled();
+
 // Whether the current AimButtonRefactor arm surfaces the image generation quick
 // action chip.
 bool IsImageGenerationQuickActionEnabled();

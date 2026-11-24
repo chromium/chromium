@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_redesign_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
@@ -1022,4 +1023,31 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   ASSERT_NE(nil, incognito_button);
   EXPECT_FALSE(aim_button.hidden);
   EXPECT_TRUE(incognito_button.hidden);
+}
+
+// Tests that enabling the `kAimAsMvt` arm with incognito disallowed does not
+// create the Quick Actions view controller or crash.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestAimAsMvtWithIncognitoDisallowedDoesNotCreateQuickActions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kNewTabPageRedesign, {}},
+       {kAIMNTPEntrypointTablet, {}},
+       {kAimButtonRefactor,
+        {{kAimButtonRefactorArmParam, base::NumberToString(static_cast<int>(
+                                          AimButtonRefactorArm::kAimAsMvt))}}}},
+      /*disabled_features=*/{});
+
+  [view_controller_ setIncognitoAllowed:NO];
+  [view_controller_ setAIMAllowed:YES];
+  [view_controller_ loadViewIfNeeded];
+
+  EXPECT_EQ(nil, FindViewById<UIButton>(view_controller_.view,
+                                        kNTPAIMQuickActionIdentifier));
+  EXPECT_EQ(nil, FindViewById<UIButton>(view_controller_.view,
+                                        kNTPIncognitoQuickActionIdentifier));
+
+  // Verify dynamic incognito availability changes do not crash either.
+  [view_controller_ setIncognitoAllowed:YES];
+  [view_controller_ setIncognitoAllowed:NO];
 }
