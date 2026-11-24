@@ -82,6 +82,49 @@ void LogDecision(ReadAnythingOmniboxChipDecision decision) {
   base::UmaHistogramEnumeration(kOmniboxDecisionHistogram, decision);
 }
 
+// Marks the omnibox promo as used when Reading Mode opens, so it doesn't keep
+// coming back.
+void NotifyPageActionPromoUsed(BrowserWindowInterface* bwi,
+                               ReadAnythingOpenTrigger open_trigger) {
+  if (!features::IsReadAnythingOmniboxChipEnabled()) {
+    return;
+  }
+  auto* user_ed = BrowserUserEducationInterface::From(bwi);
+  if (!user_ed) {
+    return;
+  }
+
+  switch (open_trigger) {
+    // The user already found the omnibox entry point.
+    case ReadAnythingOpenTrigger::kOmniboxChip:
+      break;
+    // These only reopen or move Reading Mode that was already open.
+    case ReadAnythingOpenTrigger::kTabSwitch:
+    case ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton:
+      return;
+    // Only close a showing promo as used, so it still shows the first time.
+    // Otherwise, opening Reading Mode aborts the promo, which lets it show
+    // again.
+    case ReadAnythingOpenTrigger::kAppMenu:
+    case ReadAnythingOpenTrigger::kReadAnythingContextMenu:
+    case ReadAnythingOpenTrigger::kReadAnythingNavigationThrottle:
+    case ReadAnythingOpenTrigger::kPinnedSidePanelEntryToolbarButton:
+    case ReadAnythingOpenTrigger::kKeyboardShortcut:
+    case ReadAnythingOpenTrigger::kListenToThisPageContextMenu:
+    case ReadAnythingOpenTrigger::kPdfTranslation:
+    case ReadAnythingOpenTrigger::kUnknown:
+      if (!user_ed->IsFeaturePromoActive(
+              feature_engagement::kIPHReadingModePageActionLabelFeature)) {
+        return;
+      }
+      break;
+  }
+
+  user_ed->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHReadingModePageActionLabelFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+}
+
 #if BUILDFLAG(ENABLE_PDF)
 size_t g_min_pdf_text_length_for_omnibox = 1100;
 constexpr float kMaxNonAlphaFraction = 0.33;
@@ -240,10 +283,6 @@ void ReadAnythingEntryPointController::InvokePageAction(
     // Reset the ignored count for the omnibox entrypoint because it was used.
     bwi->GetProfile()->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 0);
-    auto* const user_ed = BrowserUserEducationInterface::From(bwi);
-    user_ed->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHReadingModePageActionLabelFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   } else {
     open_trigger = SidePanelToReadAnythingOpenTrigger(
         static_cast<SidePanelOpenTrigger>(side_panel_trigger));
@@ -271,6 +310,7 @@ void ReadAnythingEntryPointController::ShowUI(
   if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
     auto* controller = ReadAnythingController::From(tab);
     CHECK(controller);
+    NotifyPageActionPromoUsed(bwi, open_trigger);
     switch (presentation) {
       case Presentation::kPreferred:
         controller->ShowInPreferredUI(
@@ -306,7 +346,8 @@ void ReadAnythingEntryPointController::ToggleUI(
     return;
   }
 
-  if (!IsUIShowing(bwi)) {
+  const bool is_opening = !IsUIShowing(bwi);
+  if (is_opening) {
     base::UmaHistogramEnumeration("Accessibility.ReadAnything.ShowTriggered",
                                   open_trigger);
   }
@@ -314,6 +355,9 @@ void ReadAnythingEntryPointController::ToggleUI(
   if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
     auto* controller = ReadAnythingController::From(tab);
     CHECK(controller);
+    if (is_opening) {
+      NotifyPageActionPromoUsed(bwi, open_trigger);
+    }
     // Tell user education the keyboard shortcut was used, whether it opens or
     // closes Reading Mode.
     if (open_trigger == ReadAnythingOpenTrigger::kKeyboardShortcut) {

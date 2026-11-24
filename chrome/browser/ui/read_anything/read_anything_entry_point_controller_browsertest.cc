@@ -286,6 +286,38 @@ class ReadAnythingEntryPointControllerOmniboxBrowserTest
         {});
   }
 
+  void ShowPageActionPromo() {
+    base::test::TestFuture<user_education::FeaturePromoResult> future;
+    ReadAnythingEntryPointController::UpdatePageActionVisibility(
+        true, browser()->GetActiveTabInterface(), future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    ASSERT_EQ(future.Get(), user_education::FeaturePromoResult::Success());
+    ASSERT_TRUE(IsPageActionPromoActive());
+  }
+
+  bool IsPageActionPromoActive() {
+    return BrowserUserEducationInterface::From(browser())->IsFeaturePromoActive(
+        feature_engagement::kIPHReadingModePageActionLabelFeature);
+  }
+
+  // Closes Reading Mode, then tries to show the promo again.
+  user_education::FeaturePromoResult CloseUIAndShowPromo() {
+    ReadAnythingEntryPointController::CloseUI(
+        browser(), ReadAnythingCloseReason::kClosedByUser);
+    base::test::TestFuture<user_education::FeaturePromoResult> future;
+    ReadAnythingEntryPointController::UpdatePageActionVisibility(
+        true, browser()->GetActiveTabInterface(), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    return future.Get();
+  }
+
+  void VerifyPromoClosedAsUsed(const base::HistogramTester& histogram_tester) {
+    EXPECT_FALSE(IsPageActionPromoActive());
+    histogram_tester.ExpectUniqueSample(
+        "UserEducation.MessageAction.IPH_ReadingModePageActionLabel",
+        user_education::FeaturePromoClosedReason::kFeatureEngaged, 1);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::AutoReset<size_t> test_min_pdf_text_length_for_omnibox_;
@@ -325,22 +357,100 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        ShowSidePanelFromOmnibox_HidesPromoAsUsed) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<user_education::FeaturePromoResult> future;
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
-  auto* const user_ed = BrowserUserEducationInterface::From(browser());
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser()->GetActiveTabInterface(), future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(user_ed->IsFeaturePromoActive(
-      feature_engagement::kIPHReadingModePageActionLabelFeature));
+  ShowPageActionPromo();
 
   ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   VerifyUIState();
-  histogram_tester.ExpectUniqueSample(
-      "UserEducation.MessageAction.IPH_ReadingModePageActionLabel",
-      user_education::FeaturePromoClosedReason::kFeatureEngaged, 1);
+  VerifyPromoClosedAsUsed(histogram_tester);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       ShowUI_NonOmniboxHidesPromoAsUsed) {
+  base::HistogramTester histogram_tester;
+  ShowPageActionPromo();
+
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+
+  VerifyUIState();
+  VerifyPromoClosedAsUsed(histogram_tester);
+  EXPECT_EQ(CloseUIAndShowPromo(),
+            user_education::FeaturePromoResult::kPermanentlyDismissed);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       ShowUI_SidePanelHidesPromoAsUsed) {
+  base::HistogramTester histogram_tester;
+  ShowPageActionPromo();
+
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu,
+      ReadAnythingEntryPointController::Presentation::kSidePanel);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  EXPECT_EQ(ReadAnythingController::From(browser()->GetActiveTabInterface())
+                ->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+  VerifyPromoClosedAsUsed(histogram_tester);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       ToggleUI_NonOmniboxHidesPromoAsUsed) {
+  base::HistogramTester histogram_tester;
+  ShowPageActionPromo();
+
+  ReadAnythingEntryPointController::ToggleUI(browser(),
+                                             ReadAnythingOpenTrigger::kAppMenu);
+
+  VerifyUIState();
+  VerifyPromoClosedAsUsed(histogram_tester);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       OpenFromOmnibox_SuppressesFuturePromo) {
+  actions::ActionInvocationContext context;
+  context.SetProperty(page_actions::kPageActionTriggerKey, 1);
+
+  ReadAnythingEntryPointController::InvokePageAction(browser(), context);
+
+  VerifyUIState();
+  EXPECT_EQ(CloseUIAndShowPromo(),
+            user_education::FeaturePromoResult::kBlockedByConfig);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       ShowUI_NonOmniboxDoesNotSuppressUnshownPromo) {
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+
+  VerifyUIState();
+  EXPECT_EQ(CloseUIAndShowPromo(),
+            user_education::FeaturePromoResult::Success());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       ShowUI_TabSwitchDoesNotMarkPromoUsed) {
+  ShowPageActionPromo();
+
+  ReadAnythingEntryPointController::ShowUI(browser(),
+                                           ReadAnythingOpenTrigger::kTabSwitch);
+
+  VerifyUIState();
+  EXPECT_TRUE(IsPageActionPromoActive());
+
+  // Close Reading Mode and the promo, then check the promo can show again.
+  ReadAnythingEntryPointController::CloseUI(
+      browser(), ReadAnythingCloseReason::kClosedByUser);
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      false, browser()->GetActiveTabInterface());
+  ASSERT_FALSE(IsPageActionPromoActive());
+  ShowPageActionPromo();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
@@ -457,24 +567,14 @@ IN_PROC_BROWSER_TEST_F(
     ReadAnythingEntryPointControllerOmniboxBrowserTest,
     UpdatePageActionVisibility_DoesNotAbortPromoIfAlreadyHidden) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<user_education::FeaturePromoResult> future;
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
-  auto* const user_ed = BrowserUserEducationInterface::From(browser());
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser()->GetActiveTabInterface(), future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(user_ed->IsFeaturePromoActive(
-      feature_engagement::kIPHReadingModePageActionLabelFeature));
+  ShowPageActionPromo();
 
   ReadAnythingEntryPointController::InvokePageAction(browser(), context);
 
   VerifyUIState();
-  histogram_tester.ExpectUniqueSample(
-      "UserEducation.MessageAction.IPH_ReadingModePageActionLabel",
-      user_education::FeaturePromoClosedReason::kFeatureEngaged, 1);
-  EXPECT_FALSE(user_ed->IsFeaturePromoActive(
-      feature_engagement::kIPHReadingModePageActionLabelFeature));
+  VerifyPromoClosedAsUsed(histogram_tester);
 
   ReadAnythingEntryPointController::UpdatePageActionVisibility(
       false, browser()->GetActiveTabInterface());
@@ -882,6 +982,10 @@ class ReadAnythingEntryPointControllerUserEducationBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerUserEducationBrowserTest,
                        ToggleUI_KeyboardShortcutNotifiesFeatureUsed) {
+  // Opening Reading Mode from the omnibox also marks its promo as used.
+  EXPECT_CALL(*mock_user_education_interface(),
+              NotifyFeaturePromoFeatureUsed(testing::_, testing::_))
+      .Times(testing::AnyNumber());
   EXPECT_CALL(
       *mock_user_education_interface(),
       NotifyFeaturePromoFeatureUsed(
