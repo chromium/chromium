@@ -997,10 +997,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return;
       }
 
+      // Ctrl+Enter only adds 'www.' and '.com' if Ctrl was pressed while the
+      // searchbox had focus and wasn't used for another key. E.g. not if Ctrl
+      // was held to focus the searchbox with Ctrl+L from the page, which the
+      // searchbox doesn't see.
       const isPureCtrlEnter = this.shouldAppendDotComOnCtrlEnter() &&
           !this.inKeywordMode && e.ctrlKey && !e.shiftKey && !e.altKey &&
-          !e.metaKey &&
-          this.controlKeyState !== ControlKeyState.DOWN_AND_CONSUMED;
+          !e.metaKey && this.controlKeyState === ControlKeyState.DOWN;
 
       e.preventDefault();
       if (this.handleVirtualFocusEnter(e)) {

@@ -1921,6 +1921,9 @@ export class OmniboxPopupSearchboxElement extends
     this.selectAllOnMouseRelease_ = false;
     this.queryZpsOnMouseRelease_ = false;
     this.clickQueriedZps_ = false;
+    // Ctrl may be released while the omnibox doesn't have focus, so forget
+    // it was pressed.
+    this.controlKeyState = ControlKeyState.UP;
     this.getInputElement().setSelectionRange(0, 0);
     this.getInputElement().blur();
     // Show the start of the text, so that the #mirror elides its end. Blink
@@ -2502,8 +2505,7 @@ export class OmniboxPopupSearchboxElement extends
       // verbatim input text (or reload the permanent URL).
       e.preventDefault();
       if (!this.inKeywordMode && e.ctrlKey && !e.shiftKey && !e.altKey &&
-          !e.metaKey &&
-          this.controlKeyState !== ControlKeyState.DOWN_AND_CONSUMED) {
+          !e.metaKey && this.controlKeyState === ControlKeyState.DOWN) {
         this.openCtrlEnterMatch(-1);
       } else {
         this.pageHandler().openAutocompleteMatch(

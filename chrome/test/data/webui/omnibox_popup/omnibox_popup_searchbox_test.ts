@@ -402,6 +402,28 @@ suite('OmniboxPopupSearchboxTest', function() {
     }
   });
 
+  // Dispatches a keydown for Ctrl itself, as when the user presses Ctrl while
+  // the omnibox has focus.
+  function pressCtrlInOmnibox() {
+    searchbox.getInputElement().inputElement.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Control',
+          ctrlKey: true,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        }));
+  }
+
+  // Presses Enter while Ctrl is held, with no suggestion selected.
+  function pressCtrlEnter() {
+    searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      ctrlKey: true,
+      cancelable: true,
+    }));
+  }
+
   test(
       'CtrlEnterInKeywordModeSubmitsVerbatimMatchWhenNoMatchSelected',
       async () => {
@@ -427,6 +449,10 @@ suite('OmniboxPopupSearchboxTest', function() {
           assertTrue(searchbox.inKeywordMode);
           assertEquals(-1, searchbox.selectedMatchIndex);
 
+          // Press Ctrl in the omnibox first, so that keyword mode is why
+          // Ctrl+Enter acts as a normal Enter.
+          pressCtrlInOmnibox();
+          await microtasksFinished();
           await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
             key: 'Enter',
             ctrlKey: true,
@@ -446,6 +472,71 @@ suite('OmniboxPopupSearchboxTest', function() {
           assertTrue(viaKeyboard);
         }
       });
+
+  test('CtrlEnterAddsDotComOnlyIfCtrlWasPressedInOmnibox', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'zxqv',
+      userInputInProgress: true,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    assertEquals(-1, searchbox.selectedMatchIndex);
+
+    // Ctrl was pressed before the omnibox had focus, e.g. to focus it with
+    // Ctrl+L from the page, so only Enter is seen with Ctrl held. Like the
+    // native omnibox, that acts as a normal Enter.
+    pressCtrlEnter();
+    await microtasksFinished();
+    assertEquals(
+        0, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+    const [, line, , , , modifiers] =
+        await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(-1, line);
+    assertTrue(modifiers.ctrlKey);
+
+    // Pressing Ctrl in the omnibox, then Enter, adds 'www.' and '.com'.
+    pressCtrlInOmnibox();
+    await microtasksFinished();
+    pressCtrlEnter();
+    await microtasksFinished();
+    const [, selection] =
+        await testProxy.handler.whenCalled('openPopupSelectionWithDisposition');
+    assertEquals(-1, selection.line);
+    assertEquals(SelectionLineState.kCtrlEnter, selection.state);
+  });
+
+  test('LosingFocusForgetsCtrlWasPressed', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'zxqv',
+      userInputInProgress: true,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+
+    // Press Ctrl, then lose focus, e.g. by clicking the page. Ctrl may then
+    // be released without the omnibox seeing it.
+    pressCtrlInOmnibox();
+    await microtasksFinished();
+    callbackRouter.setFocus(
+        false, /*queryZps=*/ false, /*selectAll=*/ false,
+        /*showFullUrl=*/ false);
+    await microtasksFinished();
+
+    // After refocusing, e.g. with Ctrl+L from the page, Ctrl+Enter acts as a
+    // normal Enter.
+    callbackRouter.setFocus(
+        true, /*queryZps=*/ false, /*selectAll=*/ true,
+        /*showFullUrl=*/ false);
+    await microtasksFinished();
+    pressCtrlEnter();
+    await microtasksFinished();
+    assertEquals(
+        0, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+    const [, line, , , , modifiers] =
+        await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(-1, line);
+    assertTrue(modifiers.ctrlKey);
+  });
 
   test('HandlesSelectionChange', async () => {
     // Focus the input so it's the active element.
