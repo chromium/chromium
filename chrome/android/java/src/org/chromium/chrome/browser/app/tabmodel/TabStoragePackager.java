@@ -8,6 +8,10 @@ import static org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchest
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_TASK_ID;
 
+import android.util.Pair;
+
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
@@ -110,7 +114,8 @@ public class TabStoragePackager {
         }
     }
 
-    private TabStoragePackager() {}
+    @VisibleForTesting
+    TabStoragePackager() {}
 
     @CalledByNative
     private static TabStoragePackager create() {
@@ -157,28 +162,25 @@ public class TabStoragePackager {
 
     private @Nullable TabModelInfo resolveTabModelInfo(
             Profile profile, JniPtr<TabStripCollection> collection) {
-        TabModelInfo info = getArchivedModelInfo(profile, collection);
+        Profile originalProfile = resolveOriginalProfile(profile);
+        TabModelInfo info = getArchivedModelInfo(originalProfile, collection);
         if (info != null) return info;
-        info = getWindowScopedModelInfo(collection);
+        info = getWindowScopedModelInfo(originalProfile, collection);
         if (info != null) return info;
-        info = getCustomTabModelInfo(collection);
+        info = getCustomTabModelInfo(originalProfile, collection);
         return info;
     }
 
-    private @Nullable TabModelInfo getCustomTabModelInfo(JniPtr<TabStripCollection> collection) {
+    private @Nullable TabModelInfo getCustomTabModelInfo(
+            Profile originalProfile, JniPtr<TabStripCollection> collection) {
         Collection<TabModelSelector> selectors =
                 TabWindowManagerSingleton.getInstance().getCustomTabsTabModelSelectors();
-        TabModel tabModel = null;
-        TabModelSelector selector = null;
-        for (TabModelSelector currentSelector : selectors) {
-            tabModel = currentSelector.getTabModelForTabStripCollection(collection);
-            if (tabModel != null) {
-                selector = currentSelector;
-                break;
-            }
-        }
-        if (tabModel == null || selector == null) return null;
+        Pair<TabModelSelector, TabModel> match =
+                findMatchingSelectorAndModel(selectors, originalProfile, collection);
+        if (match == null) return null;
 
+        TabModelSelector selector = match.first;
+        TabModel tabModel = match.second;
         int taskId = TabWindowManagerSingleton.getInstance().getTaskIdForCustomTab(selector);
         if (taskId == INVALID_TASK_ID) return null;
 
@@ -187,27 +189,20 @@ public class TabStoragePackager {
                         taskId,
                         tabModel.isOffTheRecord(),
                         (Supplier<@Nullable Tab>) tabModel.getCurrentTabSupplier());
-        JniPtr<TabStripCollection> modelCollection = tabModel.getTabStripCollection();
-        assert modelCollection != null;
-        mTabModelInfoMap.put(modelCollection, info);
-        configureRemoveFromCacheOnDestroy(tabModel, modelCollection);
+        cacheTabModelInfo(tabModel, info);
         return info;
     }
 
-    private @Nullable TabModelInfo getWindowScopedModelInfo(JniPtr<TabStripCollection> collection) {
-        TabModel tabModel = null;
-        TabModelSelector selector = null;
+    private @Nullable TabModelInfo getWindowScopedModelInfo(
+            Profile originalProfile, JniPtr<TabStripCollection> collection) {
         Collection<TabModelSelector> selectors =
                 TabWindowManagerSingleton.getInstance().getAllTabModelSelectors();
-        for (TabModelSelector currentSelector : selectors) {
-            tabModel = currentSelector.getTabModelForTabStripCollection(collection);
-            if (tabModel != null) {
-                selector = currentSelector;
-                break;
-            }
-        }
-        if (tabModel == null || selector == null) return null;
+        Pair<TabModelSelector, TabModel> match =
+                findMatchingSelectorAndModel(selectors, originalProfile, collection);
+        if (match == null) return null;
 
+        TabModelSelector selector = match.first;
+        TabModel tabModel = match.second;
         @WindowId
         int windowId = TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) return null;
@@ -217,10 +212,7 @@ public class TabStoragePackager {
                         windowId,
                         tabModel.isOffTheRecord(),
                         (Supplier<@Nullable Tab>) tabModel.getCurrentTabSupplier());
-        JniPtr<TabStripCollection> modelCollection = tabModel.getTabStripCollection();
-        assert modelCollection != null;
-        mTabModelInfoMap.put(modelCollection, info);
-        configureRemoveFromCacheOnDestroy(tabModel, modelCollection);
+        cacheTabModelInfo(tabModel, info);
         return info;
     }
 
@@ -236,10 +228,8 @@ public class TabStoragePackager {
         JniPtr<TabStripCollection> archivedCollection = tabModel.getTabStripCollection();
         if (!Objects.equals(archivedCollection, collection)) return null;
 
-        assert archivedCollection != null;
         TabModelInfo info = TabModelInfo.createForArchivedModel();
-        mTabModelInfoMap.put(archivedCollection, info);
-        configureRemoveFromCacheOnDestroy(tabModel, archivedCollection);
+        cacheTabModelInfo(tabModel, info);
         return info;
     }
 
@@ -272,6 +262,13 @@ public class TabStoragePackager {
         return info.windowTag;
     }
 
+    private void cacheTabModelInfo(TabModel tabModel, TabModelInfo info) {
+        JniPtr<TabStripCollection> modelCollection = tabModel.getTabStripCollection();
+        assert modelCollection != null;
+        mTabModelInfoMap.put(modelCollection, info);
+        configureRemoveFromCacheOnDestroy(tabModel, modelCollection);
+    }
+
     private void configureRemoveFromCacheOnDestroy(
             TabModel tabModel, JniPtr<TabStripCollection> collection) {
         tabModel.addObserver(
@@ -282,6 +279,29 @@ public class TabStoragePackager {
                         tabModel.removeObserver(this);
                     }
                 });
+    }
+
+    private static @Nullable Pair<TabModelSelector, TabModel> findMatchingSelectorAndModel(
+            Collection<TabModelSelector> selectors,
+            Profile originalProfile,
+            JniPtr<TabStripCollection> collection) {
+        for (TabModelSelector selector : selectors) {
+            if (!selectorMatchesProfile(selector, originalProfile)) continue;
+            TabModel tabModel = selector.getTabModelForTabStripCollection(collection);
+            if (tabModel != null) {
+                return Pair.create(selector, tabModel);
+            }
+        }
+        return null;
+    }
+
+    private static boolean selectorMatchesProfile(
+            TabModelSelector selector, Profile originalProfile) {
+        return Objects.equals(selector.getProfile(/* offTheRecord= */ false), originalProfile);
+    }
+
+    private static Profile resolveOriginalProfile(Profile profile) {
+        return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
     }
 
     @NativeMethods
