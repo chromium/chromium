@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/threading_features.h"
-#include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -72,19 +77,18 @@ IN_PROC_BROWSER_TEST_F(ChromeMainDelegateHangWatcherTest, MonitorsProcess) {
       "HangWatcher.IsThreadHung.RendererProcess.MainThread",
   };
 
-  // Wait for the hang watcher to start monitoring all processes, or abort after
-  // a timeout.
-  base::ElapsedTimer timer;
-  while (!histograms_left_to_observe.empty() &&
-         timer.Elapsed() < TestTimeouts::action_max_timeout()) {
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  // Wake the UI thread periodically so RunUntil re-polls histograms emitted on
+  // background threads and in subprocess shared memory.
+  base::RepeatingTimer poll_timer;
+  poll_timer.Start(FROM_HERE, TestTimeouts::tiny_timeout(), base::DoNothing());
+  EXPECT_TRUE(base::test::RunUntil([&] {
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
     absl::erase_if(histograms_left_to_observe,
                    [this](const std::string& histogram) {
                      return !histogram_tester_.GetAllSamples(histogram).empty();
                    });
-  }
+    return histograms_left_to_observe.empty();
+  }));
 
   EXPECT_THAT(histograms_left_to_observe, IsEmpty());
 }
