@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <limits>
+#include <optional>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -2018,9 +2019,38 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
         base::debug::Alias(&pos_size);
 
         renderer->SetForegroundColor(it->second);
-        renderer->DrawPosText(
-            &positions[colored_glyphs.start() - glyphs_range.start()],
-            &run.shape.glyphs[colored_glyphs.start()], colored_glyphs.length());
+        const SkPoint* colored_positions =
+            &positions[colored_glyphs.start() - glyphs_range.start()];
+        const uint16_t* glyphs = &run.shape.glyphs[colored_glyphs.start()];
+
+        // A cluster of several graphemes (e.g. the "fi" ligature) may be split
+        // between two colors, e.g. when only part of it is selected. Such a
+        // cluster gets drawn once per color, so clip each drawing to the
+        // bounds of the graphemes in `intersection`.
+        Range first_cluster;
+        Range last_cluster;
+        Range unused_glyphs;
+        run.GetClusterAt(intersection.start(), &first_cluster, &unused_glyphs);
+        run.GetClusterAt(intersection.end() - 1, &last_cluster, &unused_glyphs);
+        bool clip_left = first_cluster.start() < intersection.start();
+        bool clip_right = last_cluster.end() > intersection.end();
+        if (run.font_params.is_rtl) {
+          std::swap(clip_left, clip_right);
+        }
+        const bool clip = clip_left || clip_right;
+        if (clip) {
+          const RangeF span =
+              run.GetGraphemeSpanForCharRange(this, intersection);
+          const SkScalar span_offset =
+              SkIntToScalar(origin.x()) + offset_x - run.preceding_run_widths;
+          renderer->SaveAndClipHorizontally(
+              clip_left ? std::make_optional(span_offset + span.start())
+                        : std::nullopt,
+              clip_right ? std::make_optional(span_offset + span.end())
+                         : std::nullopt);
+        }
+        renderer->DrawPosText(colored_positions, glyphs,
+                              colored_glyphs.length());
         int start_x = SkScalarRoundToInt(
             positions[colored_glyphs.start() - glyphs_range.start()].x());
         int end_x = SkScalarRoundToInt(
@@ -2035,6 +2065,9 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
         if (run.font_params.strike)
           renderer->DrawStrike(start_x, origin.y(), end_x - start_x,
                                strike_thickness_factor());
+        if (clip) {
+          renderer->Restore();
+        }
       }
       preceding_segment_widths += SkFloatToScalar(segment.width());
     }

@@ -390,6 +390,19 @@ void SkiaTextRenderer::DrawPosText(const SkPoint* pos,
   canvas_skia_->drawTextBlob(builder.make(), 0, 0, flags_);
 }
 
+void SkiaTextRenderer::SaveAndClipHorizontally(std::optional<SkScalar> left,
+                                               std::optional<SkScalar> right) {
+  constexpr SkScalar kUnbounded = 1e9f;
+  canvas_skia_->save();
+  canvas_skia_->clipRect(
+      SkRect::MakeLTRB(left.value_or(-kUnbounded), -kUnbounded,
+                       right.value_or(kUnbounded), kUnbounded));
+}
+
+void SkiaTextRenderer::Restore() {
+  canvas_skia_->restore();
+}
+
 void SkiaTextRenderer::DrawUnderline(int x,
                                      int y,
                                      int width,

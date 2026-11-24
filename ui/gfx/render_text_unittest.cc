@@ -1252,6 +1252,71 @@ TEST_F(RenderTextTest, SelectWithTranslucentBackground) {
   rect_buffer.EnsureRectIsAllSameColor(0, 0, text_rect.width() - 1, 1);
 }
 
+// Gelasio ("fi") and DejaVu Sans (lam-alef) are only available through the
+// fontconfig test fonts.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Ensure that when only part of a ligature is selected, the selection color
+// covers only the selected part of the ligature glyph, including the
+// underline. See crbug.com/40894449.
+TEST_F(RenderTextTest, SelectPartOfLigature) {
+  struct {
+    const char* font;
+    const char16_t* text;
+    Range selection;
+  } kTestCases[] = {
+      {"Gelasio, 40px", u"fi", Range(1, 2)},
+      {"DejaVu Sans, 40px", u"\u0644\u0627", Range(0, 1)},
+  };
+  constexpr Size kCanvasSize(100, 60);
+  SkBitmap bitmap;
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32Premul(kCanvasSize.width(), kCanvasSize.height()));
+  cc::SkiaPaintCanvas paint_canvas(bitmap);
+  Canvas canvas(&paint_canvas, 1.0f);
+
+  RenderText* render_text = GetRenderText();
+  render_text->SetColor(SK_ColorBLACK);
+  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_background_focused_color(SK_ColorWHITE);
+  render_text->set_focused(true);
+  render_text->SetDisplayRect(Rect(kCanvasSize));
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.font);
+    render_text->SetFontList(FontList(test_case.font));
+    render_text->SetStyle(TEXT_STYLE_UNDERLINE, true);
+    render_text->SetText(test_case.text);
+    render_text->SelectRange(Range());
+    Draw();
+    // The text must be drawn as a single ligature glyph for this test.
+    ASSERT_EQ(1u, text_log().size());
+    ASSERT_EQ(1u, text_log()[0].glyphs().size());
+
+    paint_canvas.clear(SkColors::kWhite);
+    render_text->SelectRange(test_case.selection);
+    render_text->Draw(&canvas);
+
+    const Rect selection = GetSubstringBoundsUnion(test_case.selection);
+    bool red_outside_selection = false;
+    bool red_in_selection = false;
+    for (int y = 0; y < kCanvasSize.height(); ++y) {
+      for (int x = 0; x < kCanvasSize.width(); ++x) {
+        const SkColor color = bitmap.getColor(x, y);
+        if (SkColorGetR(color) <= SkColorGetG(color) + 0x40) {
+          continue;
+        }
+        if (x < selection.x() - 1 || x > selection.right() + 1) {
+          red_outside_selection = true;
+        } else if (x > selection.x() + 1 && x < selection.right() - 1) {
+          red_in_selection = true;
+        }
+      }
+    }
+    EXPECT_FALSE(red_outside_selection);
+    EXPECT_TRUE(red_in_selection);
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(RenderTextTest, SelectRangeColoredGrapheme) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"xe\u0301y");

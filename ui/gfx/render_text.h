@@ -85,6 +85,11 @@ class COMPONENT_EXPORT(GFX) SkiaTextRenderer {
   virtual void DrawPosText(const SkPoint* pos,
                            const uint16_t* glyphs,
                            size_t glyph_count);
+  // Limits drawing to the horizontal range [`left`, `right`) until the
+  // matching Restore(). A missing bound leaves that side unclipped.
+  void SaveAndClipHorizontally(std::optional<SkScalar> left,
+                               std::optional<SkScalar> right);
+  void Restore();
   void DrawUnderline(int x, int y, int width, SkScalar thickness_factor = 1.0);
   void DrawStrike(int x, int y, int width, SkScalar thickness_factor);
 
