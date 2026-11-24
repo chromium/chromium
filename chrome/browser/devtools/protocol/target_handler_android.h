@@ -11,6 +11,10 @@
 #include "chrome/browser/devtools/protocol/target.h"
 #include "net/base/host_port_pair.h"
 
+namespace content {
+class DevToolsAgentHostClientChannel;
+}  // namespace content
+
 using RemoteLocations = std::set<net::HostPortPair>;
 
 class BrowserHandlerAndroid;
@@ -20,7 +24,8 @@ class TargetHandlerAndroid : public protocol::Target::Backend {
   TargetHandlerAndroid(protocol::UberDispatcher* dispatcher,
                        bool is_trusted,
                        bool may_read_local_files,
-                       BrowserHandlerAndroid* browser_handler);
+                       BrowserHandlerAndroid* browser_handler,
+                       content::DevToolsAgentHostClientChannel* channel);
 
   TargetHandlerAndroid(const TargetHandlerAndroid&) = delete;
   TargetHandlerAndroid& operator=(const TargetHandlerAndroid&) = delete;
@@ -33,6 +38,10 @@ class TargetHandlerAndroid : public protocol::Target::Backend {
   protocol::Response SetRemoteLocations(
       std::unique_ptr<protocol::Array<protocol::Target::RemoteLocation>>
           in_locations) override;
+  // Creates a new target. For Browser-level sessions, creates the target in
+  // `browser_context_id` if specified or the default profile otherwise. For
+  // non-Browser sessions, rejects `browser_context_id` and creates the target
+  // in the attached target's own BrowserContext.
   protocol::Response CreateTarget(
       const std::string& url,
       std::optional<int> left,
@@ -53,6 +62,8 @@ class TargetHandlerAndroid : public protocol::Target::Backend {
   bool is_trusted_ = false;
   bool may_read_local_files_ = false;
   raw_ptr<BrowserHandlerAndroid> browser_handler_;
+  // Owned by the enclosing `content::DevToolsSession`, which outlives `this`.
+  const raw_ptr<content::DevToolsAgentHostClientChannel> channel_;
   RemoteLocations remote_locations_;
 };
 

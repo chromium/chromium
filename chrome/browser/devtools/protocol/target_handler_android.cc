@@ -23,6 +23,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -37,10 +38,12 @@ TargetHandlerAndroid::TargetHandlerAndroid(
     protocol::UberDispatcher* dispatcher,
     bool is_trusted,
     bool may_read_local_files,
-    BrowserHandlerAndroid* browser_handler)
+    BrowserHandlerAndroid* browser_handler,
+    content::DevToolsAgentHostClientChannel* channel)
     : is_trusted_(is_trusted),
       may_read_local_files_(may_read_local_files),
-      browser_handler_(browser_handler) {
+      browser_handler_(browser_handler),
+      channel_(channel) {
   protocol::Target::Dispatcher::wire(dispatcher, this);
 }
 
@@ -97,25 +100,78 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
 
   Profile* const default_profile = Profile::FromBrowserContext(
       DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext());
-  TabModel* tab_model = nullptr;
-  if (default_profile) {
-    TabModelList::ForEach(default_profile, [enforce_incognito_isolation,
-                                            &tab_model](TabModel* model) {
+
+  Profile* profile = nullptr;
+  content::DevToolsAgentHost* const agent_host =
+      channel_ ? channel_->GetAgentHost() : nullptr;
+  if (!agent_host ||
+      agent_host->GetType() != content::DevToolsAgentHost::kTypeBrowser) {
+    if (!agent_host) {
+      return protocol::Response::InternalError();
+    }
+    if (browser_context_id.has_value()) {
+      return protocol::Response::InvalidParams(
+          "browserContextId is only allowed for Browser target");
+    }
+    // Non-browser targets must only create targets in their own browser
+    // context; never fall back to the default profile.
+    profile = Profile::FromBrowserContext(agent_host->GetBrowserContext());
+    if (!profile) {
+      return protocol::Response::ServerError(
+          "Failed to find browser context for target");
+    }
+  } else if (browser_context_id.has_value()) {
+    if (default_profile && *browser_context_id == default_profile->UniqueId()) {
+      profile = default_profile;
+    } else {
+      profile = DevToolsBrowserContextManager::GetInstance().GetProfileById(
+          *browser_context_id);
+      if (!profile) {
+        return protocol::Response::ServerError(
+            "Failed to find browser context with id " + *browser_context_id);
+      }
+    }
+  } else {
+    profile = default_profile;
+  }
+
+  auto find_tab_model = [enforce_incognito_isolation](Profile* target_profile) {
+    TabModel* result = nullptr;
+    if (!target_profile) {
+      return result;
+    }
+    TabModelList::ForEach(target_profile, [enforce_incognito_isolation,
+                                           &result](TabModel* model) {
       if (model->GetTabModelType() != TabModel::TabModelType::kStandard ||
           model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
         return true;
       }
       if (model->activity_type() == chrome::android::ActivityType::kTabbed) {
-        tab_model = model;
+        result = model;
         return false;
       }
-      if (!enforce_incognito_isolation && !tab_model) {
-        tab_model = model;
+      if (!enforce_incognito_isolation && !result) {
+        result = model;
       }
       return true;
     });
+    return result;
+  };
+
+  const bool is_devtools_otr_profile =
+      profile && profile != default_profile && profile->IsOffTheRecord() &&
+      DevToolsBrowserContextManager::GetInstance().GetProfileById(
+          profile->UniqueId()) == profile;
+
+  TabModel* tab_model = find_tab_model(profile);
+  if (!tab_model && !enforce_incognito_isolation &&
+      profile != default_profile) {
+    tab_model = find_tab_model(default_profile);
   }
-  if (!default_profile || (!tab_model && !enforce_incognito_isolation)) {
+  const bool can_create_without_tab_model =
+      enforce_incognito_isolation &&
+      (is_devtools_otr_profile || profile == default_profile);
+  if (!profile || (!tab_model && !can_create_without_tab_model)) {
     return protocol::Response::ServerError("Could not find TabModelList");
   }
 
@@ -135,20 +191,6 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
         "Creating a target with a local URL is not allowed");
   }
 
-  Profile* profile = default_profile;
-  if (browser_context_id.has_value()) {
-    if (*browser_context_id == default_profile->UniqueId()) {
-      profile = default_profile;
-    } else {
-      profile = DevToolsBrowserContextManager::GetInstance().GetProfileById(
-          *browser_context_id);
-      if (!profile) {
-        return protocol::Response::ServerError(
-            "Failed to find browser context with id " + *browser_context_id);
-      }
-    }
-  }
-
   std::unique_ptr<WebContents> owned_web_contents =
       WebContents::Create(WebContents::CreateParams(profile));
   if (!owned_web_contents) {
@@ -158,8 +200,7 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
   DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
 
   bool needs_load_url = true;
-  if (enforce_incognito_isolation && profile != default_profile &&
-      profile->IsOffTheRecord()) {
+  if (enforce_incognito_isolation && is_devtools_otr_profile) {
     tabs::TabInterface* new_tab =
         DevToolsBrowserContextManager::GetInstance().CreateTabForBrowserContext(
             profile, std::move(owned_web_contents));

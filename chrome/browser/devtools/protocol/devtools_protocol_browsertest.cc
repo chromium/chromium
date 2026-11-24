@@ -896,6 +896,71 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_FALSE(agent_host->GetWebContents());
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       CreateTargetOnPageSessionUsesPageBrowserContext) {
+  AttachToBrowserTarget();
+  const std::string default_context_id =
+      chrome_test_utils::GetProfile(this)->UniqueId();
+
+  const base::DictValue* create_context_result =
+      SendCommandSync("Target.createBrowserContext");
+  ASSERT_TRUE(create_context_result);
+  const std::string* isolated_context_id_ptr =
+      create_context_result->FindString("browserContextId");
+  ASSERT_TRUE(isolated_context_id_ptr);
+  const std::string isolated_context_id = *isolated_context_id_ptr;
+
+  const base::DictValue* create_page_result = SendCommandSync(
+      "Target.createTarget", base::DictValue()
+                                 .Set("url", "about:blank")
+                                 .Set("newWindow", true)
+                                 .Set("browserContextId", isolated_context_id));
+  ASSERT_TRUE(create_page_result);
+  const std::string* page_target_id_ptr =
+      create_page_result->FindString("targetId");
+  ASSERT_TRUE(page_target_id_ptr);
+  const std::string page_target_id = *page_target_id_ptr;
+
+  const base::DictValue* attach_result = SendCommandSync(
+      "Target.attachToTarget",
+      base::DictValue().Set("targetId", page_target_id).Set("flatten", true));
+  ASSERT_TRUE(attach_result);
+  const std::string* page_session_id_ptr =
+      attach_result->FindString("sessionId");
+  ASSERT_TRUE(page_session_id_ptr);
+  const std::string page_session_id = *page_session_id_ptr;
+
+  // Calling Target.createTarget without browserContextId on a page session
+  // creates the new target in that page's BrowserContext, not the default one.
+  const base::DictValue* new_target_result = SendSessionCommand(
+      "Target.createTarget", base::DictValue().Set("url", "about:blank"),
+      page_session_id, /*wait=*/true);
+  ASSERT_TRUE(new_target_result);
+  const std::string* new_target_id = new_target_result->FindString("targetId");
+  ASSERT_TRUE(new_target_id);
+  scoped_refptr<content::DevToolsAgentHost> new_target_host =
+      content::DevToolsAgentHost::GetForId(*new_target_id);
+  ASSERT_TRUE(new_target_host);
+  ASSERT_TRUE(new_target_host->GetBrowserContext());
+  EXPECT_EQ(isolated_context_id,
+            new_target_host->GetBrowserContext()->UniqueId());
+
+  // Passing browserContextId on a non-Browser session is rejected.
+  EXPECT_FALSE(
+      SendSessionCommand("Target.createTarget",
+                         base::DictValue()
+                             .Set("url", "about:blank")
+                             .Set("browserContextId", default_context_id),
+                         page_session_id, /*wait=*/true));
+  ASSERT_TRUE(error());
+  EXPECT_EQ("browserContextId is only allowed for Browser target",
+            *error()->FindString("message"));
+
+  ASSERT_TRUE(SendCommandSync(
+      "Target.disposeBrowserContext",
+      base::DictValue().Set("browserContextId", isolated_context_id)));
+}
+
 // TODO(https://crbug.com/580985658): Re-enable after fixing OwningTestTabModel
 // outliving the disposed OTR Profile.
 IN_PROC_BROWSER_TEST_F(

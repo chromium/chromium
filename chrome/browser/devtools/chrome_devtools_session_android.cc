@@ -68,7 +68,8 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
       channel->GetClient()->IsTrusted()) {
     target_handler_ = std::make_unique<TargetHandlerAndroid>(
         dispatcher(), channel->GetClient()->IsTrusted(),
-        channel->GetClient()->MayReadLocalFiles(), browser_handler_.get());
+        channel->GetClient()->MayReadLocalFiles(), browser_handler_.get(),
+        channel);
   }
 }
 
