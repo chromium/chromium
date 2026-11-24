@@ -63,6 +63,7 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/navigation_type.h"
@@ -120,6 +121,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
 #include "content/test/render_document_feature.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -7377,6 +7379,152 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnMoveWindowTo) {
       "Prerender.CanceledForInactivePageRestriction.DisallowActivationReason."
       "SpeculationRule",
       DisallowActivationReasonId::kWindowPlacement, 1);
+}
+
+class PrerenderAudioOutputBrowserTest : public PrerenderBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableAudioOutput);
+    command_line->AppendSwitchASCII(
+        switches::kAutoplayPolicy,
+        switches::autoplay::kNoUserGestureRequiredPolicy);
+  }
+
+ protected:
+  static constexpr std::string_view kStartWebAudioScript = R"(
+    window.audioCtx = new AudioContext();
+    const osc = window.audioCtx.createOscillator();
+    osc.connect(window.audioCtx.destination);
+    osc.start();
+    window.audioCtx.state;
+  )";
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      kDisallowAudioOutputDuringPrerendering};
+};
+
+// Tests that a prerendered page creating a WebAudio AudioContext defers audio
+// playback during prerendering and becomes audible upon activation once
+// RenderFrameHostImpl::RendererWillActivateForPrerendering() releases the audio
+// output stream restriction.
+IN_PROC_BROWSER_TEST_F(PrerenderAudioOutputBrowserTest,
+                       AudioContextPlaysAfterActivation) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  RenderFrameHostImpl* prerender_main_frame =
+      GetPrerenderedMainFrameHost(host_id);
+
+  EXPECT_EQ("suspended", EvalJs(prerender_main_frame, kStartWebAudioScript,
+                                EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(web_contents()->IsCurrentlyAudible());
+  EXPECT_TRUE(HasHostForUrl(prerendering_url));
+
+  NavigatePrimaryPage(prerendering_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return web_contents()->IsCurrentlyAudible(); }));
+  EXPECT_EQ("running", EvalJs(web_contents(), "window.audioCtx.state;"));
+}
+
+// Tests that a child iframe in a prerendered page creating a WebAudio
+// AudioContext defers audio playback during prerendering and becomes audible
+// upon activation once RendererWillActivateForPrerendering() releases the
+// per-frame restriction.
+IN_PROC_BROWSER_TEST_F(PrerenderAudioOutputBrowserTest,
+                       SubframeAudioContextPlaysAfterActivation) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  RenderFrameHostImpl* prerender_main_frame =
+      GetPrerenderedMainFrameHost(host_id);
+  RenderFrameHost* child_frame = ChildFrameAt(prerender_main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  EXPECT_EQ("suspended", EvalJs(child_frame, kStartWebAudioScript,
+                                EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(web_contents()->IsCurrentlyAudible());
+  EXPECT_TRUE(HasHostForUrl(prerendering_url));
+
+  NavigatePrimaryPage(prerendering_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return web_contents()->IsCurrentlyAudible(); }));
+  EXPECT_EQ("running", EvalJs(child_frame, "window.audioCtx.state;"));
+}
+
+// Tests that requesting an audio output stream while prerendering cancels
+// prerendering with kAudioOutput.
+IN_PROC_BROWSER_TEST_F(PrerenderAudioOutputBrowserTest,
+                       CancelOnAudioOutputStreamDuringPrerendering) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  RenderFrameHostImpl* prerender_main_frame =
+      GetPrerenderedMainFrameHost(host_id);
+
+  // Unlike HTMLMediaElement URL loads and WebAudio, playing a live audio
+  // MediaStream via srcObject is not deferred by Blink during prerendering and
+  // attempts to acquire an audio output stream immediately.
+  constexpr std::string_view kPlayMediaStreamAudioScript = R"(
+    (async () => {
+      const generator = new MediaStreamTrackGenerator({kind: 'audio'});
+      window.audio = new Audio();
+      window.audio.srcObject = new MediaStream([generator]);
+      await window.audio.play();
+      const writer = generator.writable.getWriter();
+      await writer.write(new AudioData({
+        format: 'f32',
+        sampleRate: 48000,
+        numberOfFrames: 480,
+        numberOfChannels: 1,
+        timestamp: 0,
+        data: new Float32Array(480),
+      }));
+    })();
+  )";
+  ExecuteScriptAsyncWithoutUserGesture(prerender_main_frame,
+                                       kPlayMediaStreamAudioScript);
+
+  host_observer.WaitForDestroyed();
+  EXPECT_FALSE(host_observer.was_activated());
+  EXPECT_FALSE(HasHostForUrl(prerendering_url));
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kAudioOutput);
+}
+
+// Tests that constructing an AudioContext with a non-default sinkId while
+// prerendering rejects device authorization and cancels prerendering with
+// kAudioOutput.
+IN_PROC_BROWSER_TEST_F(PrerenderAudioOutputBrowserTest,
+                       CancelOnNonDefaultAudioContextSinkIdDuringPrerendering) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  RenderFrameHostImpl* prerender_main_frame =
+      GetPrerenderedMainFrameHost(host_id);
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      prerender_main_frame,
+      "new AudioContext({sinkId: 'non-default-sink-id'});");
+
+  host_observer.WaitForDestroyed();
+  EXPECT_FALSE(host_observer.was_activated());
+  EXPECT_FALSE(HasHostForUrl(prerendering_url));
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kAudioOutput);
 }
 
 // Tests that prerendering cannot request the browser to create a popup widget.

@@ -141,6 +141,9 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kCrossDocumentRestart:
     case PrerenderFinalStatus::kPrefetchFailedCrossOriginSubframe:
       return false;
+    // The prerendered page requested audio output before activation.
+    case PrerenderFinalStatus::kAudioOutput:
+      return true;
   }
 }
 

@@ -194,6 +194,7 @@ experimental domain Preload
       CrossDocumentRestart
       PrefetchFailedCrossOriginSubframe
       UnexpectedMainFrameNavigation
+      AudioOutput
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

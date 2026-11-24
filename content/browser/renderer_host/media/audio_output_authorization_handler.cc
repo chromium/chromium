@@ -10,11 +10,14 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/media/media_devices_util.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
-#include "content/public/browser/render_frame_host.h"
 #include "media/audio/audio_system.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -22,13 +25,16 @@ using blink::mojom::MediaDeviceType;
 
 namespace content {
 
+BASE_FEATURE(kDisallowAudioOutputDuringPrerendering,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 void GotSaltAndOrigin(
     GlobalRenderFrameHostId render_frame_host_id,
     bool override_permissions,
     bool permissions_override_value,
-    base::OnceCallback<void(MediaDeviceSaltAndOrigin, bool)> cb,
+    base::OnceCallback<void(std::optional<MediaDeviceSaltAndOrigin>, bool)> cb,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
   if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id.child_id,
@@ -52,19 +58,71 @@ void GotSaltAndOrigin(
           MediaDeviceType::kMediaAudioOutput, render_frame_host_id));
 }
 
+// Returns true if the frame identified by `render_frame_host_id` is allowed to
+// authorize non-default or session-matched audio output devices. Calling
+// `GetMediaDeviceSaltAndOrigin()` for a prerendering frame hits a CHECK, and
+// any frame in a prerendering FrameTree must not authorize non-default devices
+// or receive device salts, so authorization is always rejected while
+// `frame_tree()->is_prerendering()` is true. Unless the
+// `kDisallowAudioOutputDuringPrerendering` kill switch is disabled,
+// prerendering is also canceled.
+bool CanAuthorizeOutputDeviceOnUIThread(
+    GlobalRenderFrameHostId render_frame_host_id) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* frame_host = RenderFrameHostImpl::FromID(render_frame_host_id);
+  if (!frame_host) {
+    return false;
+  }
+  if (!frame_host->frame_tree()->is_prerendering()) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(kDisallowAudioOutputDuringPrerendering)) {
+    // Cancels prerendering even for frames in `frame_tree()` that are not in
+    // `LifecycleState::kPrerendering` (e.g. unloading subframes).
+    frame_host->CancelPrerendering(
+        PrerenderCancellationReason(PrerenderFinalStatus::kAudioOutput));
+  }
+  return false;
+}
+
 // Returns (by callback) the MediaDeviceSaltAndOrigin for the frame and
-// whether it may request nondefault audio devices.
+// whether it may request nondefault audio devices. The MediaDeviceSaltAndOrigin
+// is std::nullopt if `CanAuthorizeOutputDeviceOnUIThread()` returns false.
 void CheckAccessOnUIThread(
     GlobalRenderFrameHostId render_frame_host_id,
     bool override_permissions,
     bool permissions_override_value,
-    base::OnceCallback<void(MediaDeviceSaltAndOrigin, bool)> cb) {
+    base::OnceCallback<void(std::optional<MediaDeviceSaltAndOrigin>, bool)>
+        cb) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
+  if (!CanAuthorizeOutputDeviceOnUIThread(render_frame_host_id)) {
+    std::move(cb).Run(std::nullopt, false);
+    return;
+  }
   GetMediaDeviceSaltAndOrigin(
       render_frame_host_id,
       base::BindOnce(&GotSaltAndOrigin, render_frame_host_id,
                      override_permissions, permissions_override_value,
                      std::move(cb)));
+}
+
+void GetSaltAndOriginForSessionOnUIThread(
+    GlobalRenderFrameHostId render_frame_host_id,
+    base::OnceCallback<void(std::optional<MediaDeviceSaltAndOrigin>)> cb) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!CanAuthorizeOutputDeviceOnUIThread(render_frame_host_id)) {
+    std::move(cb).Run(std::nullopt);
+    return;
+  }
+  GetMediaDeviceSaltAndOrigin(
+      render_frame_host_id,
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<MediaDeviceSaltAndOrigin>)>
+                 cb,
+             const MediaDeviceSaltAndOrigin& salt_and_origin) {
+            std::move(cb).Run(salt_and_origin);
+          },
+          std::move(cb)));
 }
 
 }  // namespace
@@ -185,7 +243,7 @@ void AudioOutputAuthorizationHandler::RequestDeviceAuthorization(
       GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &GetMediaDeviceSaltAndOrigin, render_frame_host_id_,
+              &GetSaltAndOriginForSessionOnUIThread, render_frame_host_id_,
               base::BindPostTaskToCurrentDefault(base::BindOnce(
                   &AudioOutputAuthorizationHandler::HashDeviceId,
                   weak_factory_.GetWeakPtr(), std::move(trace_scope),
@@ -239,11 +297,18 @@ void AudioOutputAuthorizationHandler::HashDeviceId(
     std::unique_ptr<TraceScope> trace_scope,
     AuthorizationCompletedCallback cb,
     const std::string& raw_device_id,
-    const MediaDeviceSaltAndOrigin& salt_and_origin) const {
+    std::optional<MediaDeviceSaltAndOrigin> salt_and_origin) const {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
   CHECK(!raw_device_id.empty(), base::NotFatalUntil::M152);
+  if (!salt_and_origin.has_value()) {
+    trace_scope->SimpleEvent("Frame cannot authorize output device");
+    std::move(cb).Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
+                      media::AudioParameters::UnavailableDeviceParams(),
+                      std::string(), std::string());
+    return;
+  }
   std::string hashed_device_id =
-      GetHMACForRawMediaDeviceID(salt_and_origin, raw_device_id);
+      GetHMACForRawMediaDeviceID(*salt_and_origin, raw_device_id);
   trace_scope->StartedGettingAudioParameters(raw_device_id);
   audio_system_->GetOutputStreamParameters(
       raw_device_id,
@@ -256,10 +321,19 @@ void AudioOutputAuthorizationHandler::AccessChecked(
     std::unique_ptr<TraceScope> trace_scope,
     AuthorizationCompletedCallback cb,
     const std::string& device_id,
-    MediaDeviceSaltAndOrigin salt_and_origin,
+    std::optional<MediaDeviceSaltAndOrigin> salt_and_origin,
     bool has_access) const {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
   trace_scope->AccessChecked(has_access);
+
+  if (!salt_and_origin.has_value()) {
+    // The frame no longer exists or is prerendering.
+    trace_scope->SimpleEvent("Frame cannot authorize output device");
+    std::move(cb).Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
+                      media::AudioParameters::UnavailableDeviceParams(),
+                      std::string(), std::string());
+    return;
+  }
 
   // If this device has been explicitly allowed by the browser, overwrite the
   // result of the permission check.
@@ -289,7 +363,7 @@ void AudioOutputAuthorizationHandler::AccessChecked(
       devices_to_enumerate,
       base::BindOnce(&AudioOutputAuthorizationHandler::TranslateDeviceID,
                      weak_factory_.GetWeakPtr(), std::move(trace_scope),
-                     std::move(cb), device_id, std::move(salt_and_origin)));
+                     std::move(cb), device_id, std::move(*salt_and_origin)));
 }
 
 void AudioOutputAuthorizationHandler::TranslateDeviceID(
