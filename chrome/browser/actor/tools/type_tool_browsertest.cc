@@ -805,13 +805,22 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
       EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
+class ActorTypeToolIncrementalTypingBrowserTest
+    : public ActorTypeToolBrowserTest {
+ public:
+  ActorTypeToolIncrementalTypingBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kGlicActorIncrementalTyping);
+  }
+  ~ActorTypeToolIncrementalTypingBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Ensure the type tool emits events at the expected intervals when typing
 // incrementally.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_IncrementalTyping) {
-  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
-    GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
-  }
-
+IN_PROC_BROWSER_TEST_F(ActorTypeToolIncrementalTypingBrowserTest,
+                       TypeTool_IncrementalTyping) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -868,12 +877,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_IncrementalTyping) {
 // Ensure the type tool functions when typing long string. It should boost the
 // typing speed but testing the speed is going to be flaky. Ensure we at least
 // have coverage that it works.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorTypeToolIncrementalTypingBrowserTest,
                        TypeTool_IncrementalTypingLong) {
-  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
-    GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
-  }
-
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -898,7 +903,8 @@ class ActorTypeToolBrowserTestWithLongDelay : public ActorTypeToolBrowserTest {
  public:
   ActorTypeToolBrowserTestWithLongDelay() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{::features::kGlicActor,
+        {{::features::kGlicActor, {}},
+         {::features::kGlicActorIncrementalTyping,
           {{::features::kGlicActorKeyDownDuration.name, "10s"}}},
          {features::kGlicActorPolicyControlExemption, {}}},
         {});
@@ -913,10 +919,6 @@ class ActorTypeToolBrowserTestWithLongDelay : public ActorTypeToolBrowserTest {
 // finishes before time out indicates the usage of direct paste for long text.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTestWithLongDelay,
                        TypeTool_IncrementalTypingLongTextPaste) {
-  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
-    GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
-  }
-
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -939,7 +941,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTestWithLongDelay,
 }
 
 // Ensure the type tool delays the final enter key by the expected amount.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolIncrementalTypingBrowserTest,
+                       TypeTool_FollowByEnterDelay) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

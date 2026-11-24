@@ -341,9 +341,10 @@ class ActorPageToolLongKeyDownDelayBrowserTest
   ActorPageToolLongKeyDownDelayBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicActor,
+        {{features::kGlicActor, {}},
+         {features::kGlicActorIncrementalTyping,
           // Delay holding down the keyboard key.
-          {{"glic-actor-incremental-typing-key-down-duration", "2d"}}},
+          {{features::kGlicActorKeyDownDuration.name, "2d"}}},
          {features::kGlicActorPolicyControlExemption, {}},
          {kActorPageToolTimeout, {{kActorPageToolTimeoutParam.name, "2d"}}}},
         /*disabled_features=*/{});
