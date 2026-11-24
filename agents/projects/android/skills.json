@@ -20,6 +20,9 @@
     },
     {
       "path": "agents/skills/nullaway"
+    },
+    {
+      "path": "agents/skills/public-transit"
     }
   ]
 }

@@ -4,3 +4,10 @@ monorail: {
 buganizer_public: {
   component_id: 1834319
 }
+agentic_review: {
+  capability_groups: {
+    review_capability_skills: [
+      "agents/skills/public-transit/SKILL.md"
+    ]
+  }
+}
