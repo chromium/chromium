@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -200,6 +203,30 @@ TitleResources GetResourcesForType(EntityTypeName type_name) {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
+// Formats the Wallet notice for Android by wrapping link ranges in `<link>`
+// and `<privacy_link>` tags.
+std::u16string FormatWalletImportPromptNoticeForAndroid(
+    const WalletImportPromptNotice& notice) {
+  CHECK_LE(notice.wallet_link_range.start(), notice.wallet_link_range.end());
+  CHECK_LE(notice.wallet_link_range.end(), notice.text.size());
+  std::u16string_view text = notice.text;
+  std::u16string formatted =
+      base::StrCat({text.substr(0, notice.wallet_link_range.start()), u"<link>",
+                    text.substr(notice.wallet_link_range.start(),
+                                notice.wallet_link_range.length()),
+                    u"</link>", text.substr(notice.wallet_link_range.end())});
+  if (notice.privacy_policy_link_text) {
+    base::StrAppend(&formatted,
+                    {u"\n\n<privacy_link>", *notice.privacy_policy_link_text,
+                     u"</privacy_link>"});
+  }
+  return formatted;
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 std::u16string GetPromptTitle(EntityTypeName type_name,
@@ -286,5 +313,24 @@ WalletImportPromptNotice GetWalletImportPromptNotice(
       NOTREACHED() << "Unsupported Wallet notice: " << notice_id;
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+AndroidWalletSourceNotice GetAndroidWalletSourceNotice(
+    EntityType /*entity_type*/,
+    bool is_save_prompt,
+    std::u16string_view account_email) {
+  if (account_email.empty()) {
+    return {};
+  }
+  WalletImportPromptNotice notice = GetWalletImportPromptNotice(
+      is_save_prompt ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW
+                     : IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+      std::u16string(account_email));
+  return {.text = FormatWalletImportPromptNoticeForAndroid(notice),
+          .string_ids = std::move(notice.string_ids)};
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

@@ -46,6 +46,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -57,6 +58,8 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.WalletSourceNotice;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldValidator;
@@ -107,6 +110,7 @@ class EntityEditorMediator {
     private final Map<AttributeType, PropertyModel> mAttributeFields = new HashMap<>();
     private @Nullable EditorItem mRequiredSourceNotice;
     private @Nullable EditorItem mEntitySourceNotice;
+    private int[] mSourceNoticeStringIds = new int[0];
 
     EntityEditorMediator(
             Context context,
@@ -205,11 +209,7 @@ class EntityEditorMediator {
         commitChanges();
         mDelegate.onDone(
                 mEntityInstance,
-                new int[] {
-                    mEntityInstance.getRecordType() == RecordType.LOCAL
-                            ? R.string.autofill_ai_save_or_update_local_entity_source_notice
-                            : R.string.autofill_ai_save_entity_in_wallet_source_notice
-                },
+                mSourceNoticeStringIds,
                 R.string.done,
                 hasLegalMessage() ? mLegalMessageToken : null);
     }
@@ -483,7 +483,9 @@ class EntityEditorMediator {
             ListModel<EditorItem> editorFields,
             @RecordType int recordType,
             boolean isPrivateEntity) {
-        CharSequence sourceNotice = getEntitySourceNotice(recordType, isPrivateEntity);
+        Pair<CharSequence, int[]> notice = getEntitySourceNotice(recordType, isPrivateEntity);
+        mSourceNoticeStringIds = notice.second;
+        CharSequence sourceNotice = notice.first;
         if (TextUtils.isEmpty(sourceNotice)) {
             return;
         }
@@ -526,34 +528,38 @@ class EntityEditorMediator {
         return mLegalMessageLines != null && !mLegalMessageLines.isEmpty();
     }
 
-    private CharSequence getEntitySourceNotice(
+    /** Returns the formatted source notice text and its shown string resource IDs. */
+    private Pair<CharSequence, int[]> getEntitySourceNotice(
             @RecordType int recordType, boolean isPrivateEntity) {
         switch (recordType) {
             case RecordType.LOCAL:
-                return mContext.getString(
-                        R.string.autofill_ai_save_or_update_local_entity_source_notice);
+                return new Pair<>(
+                        mContext.getString(
+                                R.string.autofill_ai_save_or_update_local_entity_source_notice),
+                        new int[] {R.string.autofill_ai_save_or_update_local_entity_source_notice});
             case RecordType.SERVER_WALLET:
                 String email = getUserEmail();
-                if (email == null) {
-                    return "";
+                if (TextUtils.isEmpty(email)) {
+                    return new Pair<>("", new int[0]);
                 }
-                String walletTitle = mContext.getString(R.string.autofill_google_wallet_title);
-                String sourceNotice =
-                        mContext.getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
-                                .replace("$1", walletTitle)
-                                .replace("$2", walletTitle)
-                                .replace("$3", email);
-                return SpanApplier.applySpans(
-                        sourceNotice,
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        mContext,
-                                        view -> mDelegate.onOpenGoogleWallet(isPrivateEntity))));
+                WalletSourceNotice sourceNotice =
+                        EntityDataManager.getWalletSaveEntityNotice(
+                                mEntityInstance.getEntityType().getTypeName(), email);
+                CharSequence formattedText =
+                        SpanApplier.applySpans(
+                                sourceNotice.text,
+                                new SpanApplier.SpanInfo(
+                                        "<link>",
+                                        "</link>",
+                                        new ChromeClickableSpan(
+                                                mContext,
+                                                view ->
+                                                        mDelegate.onOpenGoogleWallet(
+                                                                isPrivateEntity))));
+                return new Pair<>(formattedText, sourceNotice.stringIds);
         }
         assert false : "Invalid entity record type: " + recordType;
-        return "";
+        return new Pair<>("", new int[0]);
     }
 
     private @Nullable String getUserEmail() {

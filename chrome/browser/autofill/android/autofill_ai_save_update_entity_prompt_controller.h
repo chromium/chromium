@@ -10,8 +10,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -55,7 +57,7 @@ class AutofillAiSaveUpdateEntityPromptController {
 
   std::vector<EntityAttributeUpdateDetails> GetEntityUpdateDetails() const;
 
-  std::u16string GetSourceNotice() const;
+  const std::u16string& GetSourceNotice() const LIFETIME_BOUND;
   // Returns true if the entity to be saved or updated will be stored in the
   // wallet server.
   bool IsWalletableEntity() const;
@@ -75,6 +77,9 @@ class AutofillAiSaveUpdateEntityPromptController {
   void OnPromptDismissed(JNIEnv* env);
 
  private:
+  // Initializes `source_notice_` and `ui_context_` based on `entity_instance_`
+  // and the user's primary account.
+  void InitSourceNoticeAndUiContext();
   void RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult result);
 
   raw_ptr<content::WebContents> web_contents_;
@@ -83,6 +88,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   const std::optional<EntityInstance> old_entity_instance_;
   const LegalMessageLines public_passes_notice_;
   const base::i18n::LanguageTag app_locale_;
+  std::u16string source_notice_;
   AutofillClient::EntityImportUIContext ui_context_;
   // If the user explicitly accepted/dismissed the entity.
   bool had_user_interaction_ = false;

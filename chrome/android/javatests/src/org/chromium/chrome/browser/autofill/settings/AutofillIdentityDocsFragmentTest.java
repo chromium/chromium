@@ -1025,10 +1025,7 @@ public class AutofillIdentityDocsFragmentTest {
         Context context = mSettingsTestRule.getFragment().getContext();
         String walletTitle = context.getString(R.string.autofill_google_wallet_title);
         String expectedNoticeText =
-                context.getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
-                        .replace("$1", walletTitle)
-                        .replace("$2", walletTitle)
-                        .replace("$3", TestAccounts.ACCOUNT1.getEmail())
+                TestUtils.getSaveWalletSourceNotice(walletTitle, TestAccounts.ACCOUNT1.getEmail())
                         .replace("<link>", "")
                         .replace("</link>", "");
         onView(withText(expectedNoticeText)).check(matches(isDisplayed()));

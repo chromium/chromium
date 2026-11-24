@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,6 +45,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.autofill_ai.AutofillAiWalletNoticeFunnelEvents;
 import org.chromium.components.autofill.autofill_ai.EntityAttributeUpdateType;
+import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -244,16 +244,9 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Test
     public void walletNotice() {
-        String walletTitle =
-                RuntimeEnvironment.getApplication()
-                        .getString(R.string.autofill_google_wallet_title);
-        String email = "alexpark@gmail.com";
+        String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
         String sourceNotice =
-                RuntimeEnvironment.getApplication()
-                        .getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
-                        .replace("$1", walletTitle)
-                        .replace("$2", walletTitle)
-                        .replace("$3", email);
+                TestUtils.getSaveWalletSourceNotice(walletTitle, "alexpark@gmail.com");
 
         mPrompt.setSourceNotice(sourceNotice, /* insertWalletLink= */ true);
         mPrompt.show();

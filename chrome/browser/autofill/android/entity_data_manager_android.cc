@@ -8,12 +8,15 @@
 #include <cstdint>
 #include <optional>
 #include <ranges>
+#include <string>
 #include <variant>
+#include <vector>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -35,6 +38,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -144,6 +148,19 @@ void EntityDataManagerAndroid::SetPersonalContextEnabled(JNIEnv* env,
 static std::string
 JNI_EntityDataManager_GetPersonalContextManageConnectedAppsUrl(JNIEnv* env) {
   return personal_context::kPersonalContextConnectedAppsURL;
+}
+
+static base::android::ScopedJavaLocalRef<jobject>
+JNI_EntityDataManager_GetWalletSaveEntityNotice(
+    JNIEnv* env,
+    int32_t entity_type,
+    const std::u16string& account_email) {
+  std::optional<EntityTypeName> type_name = ToSafeEntityTypeName(entity_type);
+  CHECK(type_name);
+  AndroidWalletSourceNotice notice = GetAndroidWalletSourceNotice(
+      EntityType(*type_name), /*is_save_prompt=*/true, account_email);
+  return Java_WalletSourceNotice_Constructor(env, notice.text,
+                                             notice.string_ids);
 }
 
 static int64_t JNI_EntityDataManager_Init(JNIEnv* env,

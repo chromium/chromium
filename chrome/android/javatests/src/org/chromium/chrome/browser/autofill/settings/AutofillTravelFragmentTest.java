@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
@@ -86,6 +87,8 @@ import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.MockitoHelper;
 
@@ -111,6 +114,7 @@ public class AutofillTravelFragmentTest {
 
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private SettingsIndexData mSearchIndexDataMock;
+    @Mock private IdentityManager mIdentityManagerMock;
     @Mock private EntityDataManager mEntityDataManager;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
     @Mock private SettingsNavigation mSettingsNavigation;
@@ -323,6 +327,10 @@ public class AutofillTravelFragmentTest {
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_WALLET_DISCLOSURE_NOTICE_PUBLIC_PASS)
     public void testAutofillAiEntities_publicWalletEntitiesConsumeDetailsForUpsert()
             throws Exception {
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
+        when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
+
         EntityType vehicleType =
                 TestUtils.getVehicleEntityType(
                         /* isReadOnly= */ false,
@@ -371,14 +379,10 @@ public class AutofillTravelFragmentTest {
                         eq(EntityTypeName.VEHICLE), eq(RecordType.SERVER_WALLET));
 
         onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withText("Done")).inRoot(isDialog()).perform(click());
+        onView(withText("Done")).inRoot(isDialog()).perform(scrollTo(), click());
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
-                        any(),
-                        eq(new int[] {R.string.autofill_ai_save_entity_in_wallet_source_notice}),
-                        eq(R.string.done),
-                        eq(legalMessageToken),
-                        any());
+                        any(), any(), eq(R.string.done), eq(legalMessageToken), any());
 
         // Second entity addition extracts `ineligibleUserResponse` (empty legal message and
         // legal message token) and still saves to Wallet, passing a null legal message token.
@@ -389,14 +393,9 @@ public class AutofillTravelFragmentTest {
         verify(mEntityDataManager, times(2))
                 .extractPreloadedDetailsForUpsertPass(EntityTypeName.VEHICLE);
         onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withText("Done")).inRoot(isDialog()).perform(click());
+        onView(withText("Done")).inRoot(isDialog()).perform(scrollTo(), click());
         verify(mEntityDataManager)
-                .addOrUpdateEntityInstance(
-                        any(),
-                        eq(new int[] {R.string.autofill_ai_save_entity_in_wallet_source_notice}),
-                        eq(R.string.done),
-                        eq(null),
-                        any());
+                .addOrUpdateEntityInstance(any(), any(), eq(R.string.done), eq(null), any());
 
         // Third entity addition gets `null` from `extractPreloadedDetailsForUpsertPass` and falls
         // back to `RecordType.LOCAL`.

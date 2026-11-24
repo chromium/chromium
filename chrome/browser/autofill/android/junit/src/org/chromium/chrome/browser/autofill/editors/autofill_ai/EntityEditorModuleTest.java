@@ -34,6 +34,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownValue;
+import static org.chromium.components.autofill.autofill_ai.utils.TestUtils.getSaveWalletSourceNotice;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
@@ -69,6 +70,9 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.WalletSourceNotice;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType;
@@ -116,6 +120,7 @@ import java.util.List;
 })
 public class EntityEditorModuleTest {
     private static final String USER_EMAIL = "example@gmail.com";
+    private static final int[] WALLET_SOURCE_NOTICE_STRING_IDS = new int[] {101, 102, 103};
     private static final AttributeType PASSPORT_NAME_ATTRIBUTE_TYPE =
             new AttributeType(
                     /* typeName= */ AttributeTypeName.PASSPORT_NAME,
@@ -310,10 +315,12 @@ public class EntityEditorModuleTest {
 
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
+    @Mock private EntityDataManager.Natives mEntityDataManagerJni;
 
     @Captor private ArgumentCaptor<EntityInstance> mEntityInstanceCaptor;
 
     private TestActivity mActivity;
+    private String mWalletSourceNoticeText;
     private EntityEditorCoordinator mCoordinator;
     private View mContainerView;
 
@@ -322,10 +329,18 @@ public class EntityEditorModuleTest {
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
         when(mAutofillProfileBridgeJni.getSupportedCountries()).thenReturn(mSupportedCountries);
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
+        EntityDataManagerJni.setInstanceForTesting(mEntityDataManagerJni);
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mWalletSourceNoticeText =
+                getSaveWalletSourceNotice(
+                        mActivity.getString(R.string.autofill_google_wallet_title), USER_EMAIL);
+        when(mEntityDataManagerJni.getWalletSaveEntityNotice(anyInt(), any()))
+                .thenReturn(
+                        new WalletSourceNotice(
+                                mWalletSourceNoticeText, WALLET_SOURCE_NOTICE_STRING_IDS));
     }
 
     @Test
@@ -549,18 +564,13 @@ public class EntityEditorModuleTest {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
         showEditorDialog(WALLET_PASSPORT);
 
-        String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
         String expectedNoticeText =
-                mActivity
-                        .getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
-                        .replace("$1", walletTitle)
-                        .replace("$2", walletTitle)
-                        .replace("$3", USER_EMAIL)
-                        .replace("<link>", "")
-                        .replace("</link>", "");
+                mWalletSourceNoticeText.replace("<link>", "").replace("</link>", "");
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
         verifySourceNotice(model.get(EntityEditorProperties.EDITOR_FIELDS), expectedNoticeText);
+        verify(mEntityDataManagerJni)
+                .getWalletSaveEntityNotice(EntityTypeName.PASSPORT, USER_EMAIL);
     }
 
     @Test
@@ -580,15 +590,8 @@ public class EntityEditorModuleTest {
         showEditorDialog(NEW_WALLET_VEHICLE, response);
         shownWatcher.assertExpected();
 
-        String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
         String expectedSourceNotice =
-                mActivity
-                        .getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
-                        .replace("$1", walletTitle)
-                        .replace("$2", walletTitle)
-                        .replace("$3", USER_EMAIL)
-                        .replace("<link>", "")
-                        .replace("</link>", "");
+                mWalletSourceNoticeText.replace("<link>", "").replace("</link>", "");
 
         String expectedFullText = expectedSourceNotice + "\n\nLegal disclaimer with link.";
         PropertyModel model = mCoordinator.getEditorModelForTest();
@@ -629,7 +632,7 @@ public class EntityEditorModuleTest {
         verify(mDelegate)
                 .onDone(
                         mEntityInstanceCaptor.capture(),
-                        eq(new int[] {R.string.autofill_ai_save_entity_in_wallet_source_notice}),
+                        eq(WALLET_SOURCE_NOTICE_STRING_IDS),
                         eq(R.string.done),
                         eq(legalMessageToken));
         histogramWatcher.assertExpected();
@@ -658,7 +661,7 @@ public class EntityEditorModuleTest {
         verify(mDelegate)
                 .onDone(
                         mEntityInstanceCaptor.capture(),
-                        eq(new int[] {R.string.autofill_ai_save_entity_in_wallet_source_notice}),
+                        eq(WALLET_SOURCE_NOTICE_STRING_IDS),
                         eq(R.string.done),
                         eq(null));
         histogramWatcher.assertExpected();

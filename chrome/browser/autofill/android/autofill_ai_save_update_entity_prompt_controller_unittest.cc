@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/i18n/language_tag.h"
@@ -211,23 +212,30 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
 
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
        PopulatesUiContext_WalletEntity) {
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
   CreateController(EntityInstance::RecordType::kServerWallet);
 
   EXPECT_CALL(
       prompt_closed_callback(),
       Run(AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
           EqualsEntityImportUIContext(
-              ElementsAre(IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE),
+              ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK),
               Optional(
                   IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON))));
 
   prompt_controller().OnUserAccepted(env());
 }
 
-// Tests that the UI context is populated with the update subtitle string ID
+// Tests that the UI context is populated with the update subtitle string IDs
 // when accepting an update prompt for a wallet entity.
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
        PopulatesUiContext_UpdateWalletEntity) {
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
   CreateController(EntityInstance::RecordType::kServerWallet,
                    /*entity_updated=*/true);
 
@@ -236,7 +244,8 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
       Run(AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
           EqualsEntityImportUIContext(
               ElementsAre(
-                  IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE),
+                  IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE),
               Optional(
                   IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON))));
 
@@ -300,9 +309,13 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
 
   const std::u16string google_wallet =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  const std::u16string manage_your_info =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE,
-                google_wallet, google_wallet,
+                IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                google_wallet,
+                base::StrCat({u"<link>", manage_your_info, u"</link>"}),
+                google_wallet,
                 base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName)),
             prompt_controller().GetSourceNotice());
 }

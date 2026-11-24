@@ -33,7 +33,7 @@ found in the LICENSE file.
             android:layout_marginStart="@dimen/dialog_padding_sides"
             android:layout_below="@id/autofill_ai_attribute_infos"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-            android:breakStrategy="balanced" />
+            android:breakStrategy="simple" />
 
         <org.chromium.ui.widget.TextViewWithClickableSpans
             android:id="@+id/autofill_ai_public_passes_notice"

@@ -4,16 +4,23 @@
 
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 
+#include <string>
+
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
+
+using ::testing::ElementsAre;
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 // Tests that GetPromptTitle returns unbranded strings when is_server_wallet is false,
 // when is_banner_prompt is true, or when kAutofillAiWalletPassBranding2026 feature is disabled.
@@ -227,6 +234,41 @@ TEST(AutofillAiImportStringUtilsTest, GetPrimaryButtonTextId) {
       GetPrimaryButtonTextId(/*is_save_prompt=*/false),
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+// Tests that `GetAndroidWalletSourceNotice()` returns the correct Wallet
+// notices for private passes.
+TEST(AutofillAiImportStringUtilsTest, GetAndroidWalletSourceNotice) {
+  EXPECT_EQ(GetAndroidWalletSourceNotice(EntityType(EntityTypeName::kPassport),
+                                         /*is_save_prompt=*/true,
+                                         /*account_email=*/u""),
+            AndroidWalletSourceNotice{});
+
+  AndroidWalletSourceNotice save_notice =
+      GetAndroidWalletSourceNotice(EntityType(EntityTypeName::kPassport),
+                                   /*is_save_prompt=*/true, u"user@gmail.com");
+  EXPECT_THAT(
+      save_notice.string_ids,
+      ElementsAre(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
+  EXPECT_THAT(base::UTF16ToUTF8(save_notice.text),
+              AllOf(HasSubstr("<link>manage your info</link>"),
+                    Not(HasSubstr("<link>Google Wallet</link>"))));
+
+  AndroidWalletSourceNotice update_notice =
+      GetAndroidWalletSourceNotice(EntityType(EntityTypeName::kPassport),
+                                   /*is_save_prompt=*/false, u"user@gmail.com");
+  EXPECT_THAT(
+      update_notice.string_ids,
+      ElementsAre(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE));
+  EXPECT_THAT(base::UTF16ToUTF8(update_notice.text),
+              HasSubstr("<link>Google Wallet</link>"));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace autofill

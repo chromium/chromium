@@ -48,6 +48,20 @@ public class EntityDataManager implements Destroyable {
         void onEntityInstancesChanged();
     }
 
+    /** Wallet source notice text (with XML link tags) and shown string resource IDs. */
+    public static final class WalletSourceNotice {
+        public final String text;
+        public final int[] stringIds;
+
+        @CalledByNative
+        public WalletSourceNotice(
+                @JniType("std::u16string") String text,
+                @JniType("std::vector<int32_t>") int[] stringIds) {
+            this.text = text;
+            this.stringIds = stringIds;
+        }
+    }
+
     private final List<EntityDataManagerObserver> mDataObservers = new ArrayList<>();
     private long mNativeEntityDataManagerAndroid;
 
@@ -330,6 +344,16 @@ public class EntityDataManager implements Destroyable {
                 .isEligibleForWalletNotice(mNativeEntityDataManagerAndroid, entityType, recordType);
     }
 
+    /**
+     * Returns the Wallet source notice text (with XML link tags) and shown string resource IDs when
+     * saving an entity of `entityType` for `accountEmail`.
+     */
+    public static WalletSourceNotice getWalletSaveEntityNotice(
+            @EntityTypeName int entityType, String accountEmail) {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get().getWalletSaveEntityNotice(entityType, accountEmail);
+    }
+
     public boolean isPersonalContextPreferenceVisible() {
         ThreadUtils.assertOnUiThread();
         return EntityDataManagerJni.get()
@@ -398,6 +422,9 @@ public class EntityDataManager implements Destroyable {
                 long nativeEntityDataManagerAndroid,
                 @EntityTypeName int entityType,
                 @RecordType int recordType);
+
+        WalletSourceNotice getWalletSaveEntityNotice(
+                @EntityTypeName int entityType, @JniType("std::u16string") String accountEmail);
 
         boolean isPersonalContextPreferenceVisible(long nativeEntityDataManagerAndroid);
 

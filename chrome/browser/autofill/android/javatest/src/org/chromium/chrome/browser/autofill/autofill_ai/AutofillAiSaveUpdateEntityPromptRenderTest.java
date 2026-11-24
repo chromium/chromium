@@ -33,6 +33,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.autofill_ai.EntityAttributeUpdateType;
+import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -60,8 +61,8 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(5)
-                    .setDescription("Remove edit button from entity save/update prompt")
+                    .setRevision(6)
+                    .setDescription("Change android:breakStrategy to simple")
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -206,7 +207,7 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     context.getString(R.string.autofill_google_wallet_title);
                             String email = "alexpark@gmail.com";
                             mPrompt.setSourceNotice(
-                                    getUpdateWalletSourceNotice(walletTitle, email),
+                                    TestUtils.getUpdateWalletSourceNotice(walletTitle, email),
                                     /* insertWalletLink= */ true);
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
@@ -263,19 +264,11 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     context.getString(R.string.autofill_google_wallet_title);
                             String email = "alexpark@gmail.com";
                             mPrompt.setSourceNotice(
-                                    getUpdateWalletSourceNotice(walletTitle, email),
+                                    TestUtils.getUpdateWalletSourceNotice(walletTitle, email),
                                     /* insertWalletLink= */ true);
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
                         });
         mRenderTestRule.render(dialogView, "autofill_ai_update_entity_without_new_attributes");
-    }
-
-    // Returns the notice text when updating a Wallet entity. This is necessary because the
-    // `IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE` string resource is resolved
-    // in C++ and thus not exported to Java to avoid increasing APK size.
-    private static String getUpdateWalletSourceNotice(String walletTitle, String email) {
-        String walletNotice = "Your info is saved in <link>%1$s</link> for %2$s";
-        return String.format(walletNotice, walletTitle, email);
     }
 }

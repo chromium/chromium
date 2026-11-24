@@ -7,28 +7,23 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
-#include "base/notimplemented.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/optional_util.h"
 #include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_view.h"
 #include "chrome/browser/autofill/android/autofill_fallback_surface_launcher.h"
-#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
-#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -61,14 +56,7 @@ AutofillAiSaveUpdateEntityPromptController::
           base::android::AttachCurrentThread(),
           jni_zero::MakeRaw(this))) {
   CHECK(prompt_view_);
-  ui_context_.accepted_consent_string_ids = {
-      IsWalletableEntity()
-          ? (IsUpdatePrompt()
-                 ? IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
-                 : IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE)
-          : IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE};
-  ui_context_.accept_button_string_id =
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON;
+  InitSourceNoticeAndUiContext();
 }
 
 AutofillAiSaveUpdateEntityPromptController::
@@ -107,32 +95,9 @@ AutofillAiSaveUpdateEntityPromptController::GetEntityUpdateDetails() const {
       entity_instance_, old_entity_instance_, app_locale_);
 }
 
-std::u16string AutofillAiSaveUpdateEntityPromptController::GetSourceNotice()
-    const {
-  if (!IsWalletableEntity()) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE);
-  }
-
-  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
-      web_contents_->GetBrowserContext());
-  if (!account) {
-    return std::u16string();
-  }
-  const std::u16string google_wallet_text =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
-  if (IsUpdatePrompt()) {
-    // Since this string resource is used across all platforms, it does not
-    // include unique XML tags for the contained links (required by Java's
-    // `SpanApplier.applySpans()`), making necessary to manually wrap them.
-    return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
-        base::StrCat({u"<link>", google_wallet_text, u"</link>"}),
-        base::UTF8ToUTF16(account->GetEmail()));
-  }
-  return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE, google_wallet_text,
-      google_wallet_text, base::UTF8ToUTF16(account->GetEmail()));
+const std::u16string&
+AutofillAiSaveUpdateEntityPromptController::GetSourceNotice() const {
+  return source_notice_;
 }
 
 bool AutofillAiSaveUpdateEntityPromptController::IsWalletableEntity() const {
@@ -189,6 +154,27 @@ void AutofillAiSaveUpdateEntityPromptController::OnPromptDismissed(
     JNIEnv* env) {
   RunPromptClosedCallback(
       AutofillClient::AutofillAiBubbleResult::kNotInteracted);
+}
+
+void AutofillAiSaveUpdateEntityPromptController::
+    InitSourceNoticeAndUiContext() {
+  if (IsWalletableEntity()) {
+    std::optional<AccountInfo> account =
+        GetPrimaryAccountInfoFromBrowserContext(
+            web_contents_->GetBrowserContext());
+    AndroidWalletSourceNotice notice = GetAndroidWalletSourceNotice(
+        entity_instance_.type(), /*is_save_prompt=*/!IsUpdatePrompt(),
+        account ? base::UTF8ToUTF16(account->GetEmail()) : std::u16string());
+    source_notice_ = std::move(notice.text);
+    ui_context_.accepted_consent_string_ids = std::move(notice.string_ids);
+  } else {
+    source_notice_ = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE);
+    ui_context_.accepted_consent_string_ids = {
+        IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE};
+  }
+  ui_context_.accept_button_string_id =
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON;
 }
 
 void AutofillAiSaveUpdateEntityPromptController::RunPromptClosedCallback(

@@ -7,8 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "ui/gfx/range/range.h"
 
@@ -41,6 +43,25 @@ struct WalletImportPromptNotice {
 WalletImportPromptNotice GetWalletImportPromptNotice(
     int notice_id,
     const std::u16string& account_email);
+
+#if BUILDFLAG(IS_ANDROID)
+// Android Wallet notice text (with `<link>` / `<privacy_link>` tags for
+// `SpanApplier`) and all shown string resource IDs.
+struct AndroidWalletSourceNotice {
+  friend bool operator==(const AndroidWalletSourceNotice&,
+                         const AndroidWalletSourceNotice&) = default;
+
+  std::u16string text;
+  std::vector<int> string_ids;
+};
+
+// Returns the Android Wallet source notice text and shown string IDs for
+// `entity_type` and `account_email`.
+AndroidWalletSourceNotice GetAndroidWalletSourceNotice(
+    EntityType entity_type,
+    bool is_save_prompt,
+    std::u16string_view account_email);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
 
