@@ -13481,6 +13481,30 @@
             ]
         }
     ],
+    "MojoIpczParcelCapacityPolicy": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_ExpandOnce",
+                    "params": {
+                        "policy": "expand-once"
+                    },
+                    "enable_features": [
+                        "MojoIpczParcelCapacityPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "MultipleSpareRPHs": [
         {
             "platforms": [
