@@ -827,8 +827,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 }
 
+// TODO(crbug.com/525148580): Re-enable once BFCache restore flake is fixed.
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
-                       RestoreNavigationToNextPaint) {
+                       DISABLED_RestoreNavigationToNextPaint) {
   if (!IsBackForwardCacheEnabled()) {
     return;
   }
