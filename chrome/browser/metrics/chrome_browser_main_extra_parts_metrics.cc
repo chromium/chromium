@@ -113,6 +113,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -134,6 +136,16 @@ BASE_FEATURE(kWindowsIsPinnedToTaskbar3, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Callback to update the metrics reporting state when the Chrome OS metrics
+// reporting setting changes.
+void OnCrosMetricsReportingSettingChange(
+    metrics::ChangeMetricsReportingStateCalledFrom called_from) {
+  bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
+  metrics::ChangeMetricsReportingState(enable_metrics, called_from);
+}
+#endif
 
 // The number of restarts to wait until removing the enable-benchmarking flag.
 constexpr int kEnableBenchmarkingCountdownDefault = 3;
@@ -1009,6 +1021,19 @@ ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
     default;
 
 void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Listen for changes to metrics reporting state.
+  cros_reporting_setting_subscription_ =
+      ash::StatsReportingController::Get()->AddObserver(
+          base::BindRepeating(&OnCrosMetricsReportingSettingChange,
+                              metrics::ChangeMetricsReportingStateCalledFrom::
+                                  kCrosMetricsSettingsChange));
+  // Invoke the callback once initially to set the metrics reporting state.
+  OnCrosMetricsReportingSettingChange(
+      metrics::ChangeMetricsReportingStateCalledFrom::
+          kCrosMetricsSettingsCreated);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Initialize the TabStatsTracker singleton instance. Must be initialized
   // before `responsiveness::Watcher`, which happens in
   // BrowserMainLoop::PreMainMessageLoopRun(), thus the decision to use
@@ -1241,6 +1266,12 @@ void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
         }));
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void ChromeBrowserMainExtraPartsMetrics::PostMainMessageLoopRun() {
+  cros_reporting_setting_subscription_ = {};
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ChromeBrowserMainExtraPartsMetrics::PostDestroyThreads() {
   if (metrics::TabStatsTracker::HasInstance()) {

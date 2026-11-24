@@ -73,7 +73,6 @@
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -361,10 +360,6 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
               *local_state_)),
       metrics_services_manager_(startup_data->chrome_feature_list_creator()
                                     ->TakeMetricsServicesManager()),
-      metrics_services_manager_client_(
-          static_cast<ChromeMetricsServicesManagerClient*>(
-              startup_data->chrome_feature_list_creator()
-                  ->GetMetricsServicesManagerClient())),
 #if BUILDFLAG(IS_ANDROID)
       device_parental_controls_(
           std::make_unique<supervised_user::AndroidParentalControls>()),
@@ -380,7 +375,6 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
   g_browser_process = this;
 
   CHECK(metrics_services_manager_);
-  CHECK(metrics_services_manager_client_);
 
   features_->Init();
 
@@ -407,11 +401,6 @@ const ui::UnownedUserDataHost& BrowserProcessImpl::GetUnownedUserDataHost()
 void BrowserProcessImpl::Init() {
 #if BUILDFLAG(IS_ANDROID)
   device_parental_controls_->Init();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  CHECK(metrics_services_manager_client_);
-  metrics_services_manager_client_->OnCrosSettingsCreated();
 #endif
 
   download_status_updater_ = std::make_unique<DownloadStatusUpdater>();
@@ -642,7 +631,6 @@ void BrowserProcessImpl::StartTearDown() {
   CHECK(IsShuttingDown(), base::NotFatalUntil::M162);
 
   features_->PostMainMessageLoopRun();
-  metrics_services_manager_client_ = nullptr;
   metrics_services_manager_.reset();
   intranet_redirect_detector_.reset();
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

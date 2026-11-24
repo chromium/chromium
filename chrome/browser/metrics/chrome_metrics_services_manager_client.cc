@@ -60,11 +60,6 @@
 #include "components/crash/core/app/crashpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "components/metrics/structured/recorder.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace metrics {
 namespace internal {
 
@@ -139,16 +134,6 @@ bool IsClientInSampleImpl(PrefService* local_state) {
   return base::FeatureList::IsEnabled(
       metrics::internal::kMetricsReportingFeature);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Callback to update the metrics reporting state when the Chrome OS metrics
-// reporting setting changes.
-void OnCrosMetricsReportingSettingChange(
-    metrics::ChangeMetricsReportingStateCalledFrom called_from) {
-  bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
-  metrics::ChangeMetricsReportingState(enable_metrics, called_from);
-}
-#endif
 
 // Returns the name of a key under HKEY_CURRENT_USER that can be used to store
 // backups of metrics data. Unused except on Windows.
@@ -278,21 +263,6 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
 
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
-  // Listen for changes to metrics reporting state.
-  reporting_setting_subscription_ =
-      ash::StatsReportingController::Get()->AddObserver(
-          base::BindRepeating(&OnCrosMetricsReportingSettingChange,
-                              metrics::ChangeMetricsReportingStateCalledFrom::
-                                  kCrosMetricsSettingsChange));
-  // Invoke the callback once initially to set the metrics reporting state.
-  OnCrosMetricsReportingSettingChange(
-      metrics::ChangeMetricsReportingStateCalledFrom::
-          kCrosMetricsSettingsCreated);
-}
-#endif
 
 std::unique_ptr<variations::VariationsService>
 ChromeMetricsServicesManagerClient::CreateVariationsService() {

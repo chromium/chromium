@@ -46,7 +46,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class BatteryMetrics;
-class ChromeMetricsServicesManagerClient;
 class DevToolsAutoOpener;
 class GlobalFeatures;
 class IntranetRedirectDetector;
@@ -332,14 +331,9 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
       active_primary_accounts_metrics_recorder_;
 
-  // Must be destroyed before |local_state_| and after
-  // |metrics_services_manager_client_|.
+  // Must be destroyed before |local_state_|.
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
-
-  // |metrics_services_manager_| owns this.
-  raw_ptr<ChromeMetricsServicesManagerClient> metrics_services_manager_client_ =
-      nullptr;
 
   // Must be destroyed before |local_state_|.
   std::unique_ptr<accessibility::AccessibilityPrefsController>

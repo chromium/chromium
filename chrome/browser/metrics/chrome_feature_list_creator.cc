@@ -85,11 +85,6 @@ void ChromeFeatureListCreator::SetApplicationLocale(const std::string& locale) {
   metrics_services_manager_->GetVariationsService()->EnsureLocaleEquals(locale);
 }
 
-metrics_services_manager::MetricsServicesManagerClient*
-ChromeFeatureListCreator::GetMetricsServicesManagerClient() {
-  return metrics_services_manager_client_;
-}
-
 std::unique_ptr<PrefService> ChromeFeatureListCreator::TakePrefService() {
   return std::move(local_state_);
 }
@@ -214,7 +209,6 @@ ChromeFeatureListCreator::GetOrCreateMetricsServicesManager() {
 
   auto client = std::make_unique<ChromeMetricsServicesManagerClient>(
       local_state_.get(), std::move(initial_seed));
-  metrics_services_manager_client_ = client.get();
   metrics_services_manager_ =
       std::make_unique<metrics_services_manager::MetricsServicesManager>(
           std::move(client));

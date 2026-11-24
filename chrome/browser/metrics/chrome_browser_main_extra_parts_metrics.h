@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -74,6 +75,9 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   void PreBrowserStart() override;
   void PostBrowserStart() override;
   void PreMainMessageLoopRun() override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void PostMainMessageLoopRun() override;
+#endif
   void PostDestroyThreads() override;
 
   // Registers local state prefs used by this class.
@@ -139,6 +143,10 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // Reports pressure metrics.
   std::unique_ptr<PressureMetricsReporter> pressure_metrics_reporter_;
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::CallbackListSubscription cros_reporting_setting_subscription_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_BROWSER_MAIN_EXTRA_PARTS_METRICS_H_

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -35,8 +34,6 @@ class NetworkTimeTracker;
 namespace variations {
 class VariationsIdsProvider;
 }  // namespace variations
-
-class ChromeMetricsServicesManagerClient;
 
 // The ChromeFeatureListCreator creates the FeatureList and classes required for
 // setting up field trials, e.g. VariationsService, MetricsServicesManager etc.
@@ -76,10 +73,6 @@ class ChromeFeatureListCreator : public variations::FeatureListCreatorClient {
   // Sets the application locale and verifies (via a CHECK) that it matches
   // what was used when creating field trials.
   void SetApplicationLocale(const std::string& locale);
-
-  // Gets the MetricsServicesManagerClient* used in this class.
-  metrics_services_manager::MetricsServicesManagerClient*
-  GetMetricsServicesManagerClient();
 
   // Passes ownership of the |local_state_| to the caller.
   std::unique_ptr<PrefService> TakePrefService();
@@ -143,10 +136,6 @@ class ChromeFeatureListCreator : public variations::FeatureListCreatorClient {
   // The locale used by the application. It is set when initializing the
   // ResouceBundle.
   std::string actual_locale_;
-
-  // This is owned by |metrics_services_manager_| but we need to expose it.
-  raw_ptr<ChromeMetricsServicesManagerClient, AcrossTasksDanglingUntriaged>
-      metrics_services_manager_client_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 

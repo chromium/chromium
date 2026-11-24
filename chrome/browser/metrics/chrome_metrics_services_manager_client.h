@@ -15,10 +15,6 @@
 #include "components/variations/seed_response.h"
 #include "components/variations/synthetic_trial_registry.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#endif
-
 class PrefService;
 
 namespace metrics {
@@ -72,10 +68,6 @@ class ChromeMetricsServicesManagerClient
   // eligible for sampling.
   static bool GetSamplingRatePerMille(int* rate);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnCrosSettingsCreated();
-#endif
-
   // metrics_services_manager::MetricsServicesManagerClient:
   std::unique_ptr<variations::VariationsService> CreateVariationsService()
       override;
@@ -113,10 +105,6 @@ class ChromeMetricsServicesManagerClient
 
   // Initial variations seed from first run, if present.
   std::unique_ptr<variations::SeedResponse> initial_seed_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  base::CallbackListSubscription reporting_setting_subscription_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICES_MANAGER_CLIENT_H_
