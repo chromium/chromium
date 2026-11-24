@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -17,10 +17,10 @@ namespace {
 
 const char gABC[] = "abcdefghijklmnopqrstuvwxyz";
 
-void check_abcs(const char buffer[], size_t size) {
-  ASSERT_EQ(size % 26, 0u);
-  for (size_t offset = 0; offset < size; offset += 26) {
-    UNSAFE_TODO(EXPECT_TRUE(!memcmp(&buffer[offset], gABC, 26)));
+void check_abcs(base::span<const char> buffer) {
+  ASSERT_EQ(buffer.size() % 26, 0u);
+  for (size_t offset = 0; offset < buffer.size(); offset += 26) {
+    EXPECT_EQ(buffer.subspan(offset, 26u), base::span_from_cstring(gABC));
   }
 }
 
@@ -40,7 +40,7 @@ void check_alphabet_buffer(const ROBuffer* reader) {
     dest = dest.subspan(src.size());
   } while (iter.Next());
   ASSERT_TRUE(dest.empty());
-  check_abcs(storage.data(), size);
+  check_abcs(storage);
 }
 
 size_t write_into_buffer(size_t reps, base::span<uint8_t> buffer) {
