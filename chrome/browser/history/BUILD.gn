@@ -190,10 +190,12 @@ if (is_android) {
     sources = [
       "java/res/layout/filter_sheet_content.xml",
       "java/res/layout/filter_sheet_header.xml",
+      "java/res/layout/history_filter_chips.xml",
       "java/res/layout/history_item_critical_action.xml",
       "java/res/layout/history_item_critical_actions.xml",
       "java/res/layout/incognito_history_disclaimer_popup.xml",
       "java/res/values/dimens.xml",
+      "java/res/values/ids.xml",
     ]
     deps = [
       "//chrome/app:java_strings_grd",

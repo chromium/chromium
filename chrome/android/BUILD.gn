@@ -163,6 +163,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/educational_tip:java_resources",
       "//chrome/browser/feed/android:feed_java_resources",
       "//chrome/browser/feedback/android:java_resources",
+      "//chrome/browser/history:java_resources",
       "//chrome/browser/hub/internal:java_resources",
       "//chrome/browser/image_descriptions:java_resources",
       "//chrome/browser/lens:java_resources",
