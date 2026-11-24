@@ -9,15 +9,9 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/functional/function_ref.h"
-#include "base/location.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -188,44 +182,6 @@ class GlicApiBundleV8CodeCacheBrowserTest
             /*disabled_features=*/{}) {
     SetGlicPagePath("/nested/v8_cache_client.html");
   }
-
- protected:
-  // Opens a fresh guest, waits for readiness, merges child histograms, and
-  // flushes the thread pool before closing the tab so pending code-cache tasks
-  // complete before the next load.
-  void OpenFreshGuestAndRecordHistograms() {
-    tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
-    ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
-    ASSERT_OK(WaitForGlicClient(instance));
-    content::FetchHistogramsFromChildProcesses();
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    GetTabListInterface()->CloseTab(tab->GetHandle());
-  }
-
-  // Retries fresh guest loads using `base::test::RunUntil` because
-  // `CodeCacheHost::DidGenerateCacheableMetadata` persists asynchronously off
-  // the UI thread.
-  bool WaitForGuestCodeCacheHistograms(
-      base::FunctionRef<bool(const base::HistogramTester&)> predicate) {
-    bool matched = false;
-    const bool completed = base::test::RunUntil([&]() {
-      base::HistogramTester histogram_tester;
-      OpenFreshGuestAndRecordHistograms();
-      if (HasFatalFailure()) {
-        return true;
-      }
-      matched = predicate(histogram_tester);
-      if (!matched) {
-        // Ensure `RunUntil` wakes up for another attempt even if closing the
-        // tab left no pending UI-thread tasks.
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::DoNothing());
-      }
-      return matched;
-    });
-    return completed && matched && !HasFatalFailure();
-  }
 };
 
 class GlicApiHtmlScriptTagNewChromeBrowserTest
@@ -391,10 +347,19 @@ IN_PROC_BROWSER_TEST_F(GlicApiBundleV8CodeCacheBrowserTest,
                        MAYBE_CachesV8BytecodeAcrossGuestLoads) {
   coordinator().GetWebContentsWarmingPoolForTesting().Shutdown();
 
+  auto open_in_fresh_guest_and_record = [&]() {
+    tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+    ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+    ASSERT_OK(WaitForGlicClient(instance));
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    GetTabListInterface()->CloseTab(tab->GetHandle());
+  };
+
   // Load 1: Cold cache -> records hot timestamp for `chrome__glic_api.js`.
   {
     base::HistogramTester histogram_tester;
-    ASSERT_NO_FATAL_FAILURE(OpenFreshGuestAndRecordHistograms());
+    ASSERT_NO_FATAL_FAILURE(open_in_fresh_guest_and_record());
     EXPECT_GE(
         histogram_tester.GetBucketCount(
             "WebCore.Scripts.V8CodeCacheMetadata.Get", kV8CacheGetMetadataNone),
@@ -402,27 +367,31 @@ IN_PROC_BROWSER_TEST_F(GlicApiBundleV8CodeCacheBrowserTest,
   }
 
   // Load 2: Hot timestamp present -> produces and persists V8 bytecode.
-  ASSERT_TRUE(WaitForGuestCodeCacheHistograms(
-      [](const base::HistogramTester& histogram_tester) {
-        const int hot_timestamp_hits =
-            histogram_tester.GetBucketCount(
-                "WebCore.Scripts.V8CodeCacheMetadata.Get",
-                kV8CacheGetMetadataHotTimestamp) +
-            histogram_tester.GetBucketCount(
-                "WebCore.Scripts.V8CodeCacheMetadata.Get",
-                kV8CacheGetMetadataCompileHintsHotTimestamp);
-        return hot_timestamp_hits >= 1 &&
-               histogram_tester.GetTotalCountForPrefix(
-                   "V8.ProduceCodeCacheMicroseconds") >= 1;
-      }));
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_NO_FATAL_FAILURE(open_in_fresh_guest_and_record());
+    const int hot_timestamp_hits =
+        histogram_tester.GetBucketCount(
+            "WebCore.Scripts.V8CodeCacheMetadata.Get",
+            kV8CacheGetMetadataHotTimestamp) +
+        histogram_tester.GetBucketCount(
+            "WebCore.Scripts.V8CodeCacheMetadata.Get",
+            kV8CacheGetMetadataCompileHintsHotTimestamp);
+    EXPECT_GE(hot_timestamp_hits, 1);
+    EXPECT_GE(histogram_tester.GetTotalCountForPrefix(
+                  "V8.ProduceCodeCacheMicroseconds"),
+              1);
+  }
 
   // Load 3: Cached V8 bytecode is validated via source hash and consumed.
-  ASSERT_TRUE(WaitForGuestCodeCacheHistograms(
-      [](const base::HistogramTester& histogram_tester) {
-        return histogram_tester.GetBucketCount(
-                   "WebCore.Scripts.V8CodeCacheMetadata.Get",
-                   kV8CacheGetMetadataCodeCache) >= 1;
-      }));
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_NO_FATAL_FAILURE(open_in_fresh_guest_and_record());
+    EXPECT_GE(histogram_tester.GetBucketCount(
+                  "WebCore.Scripts.V8CodeCacheMetadata.Get",
+                  kV8CacheGetMetadataCodeCache),
+              1);
+  }
 
   EXPECT_EQ(bundle_server_hits(), 0);
 }
