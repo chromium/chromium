@@ -18,8 +18,10 @@ import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryItemView;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.PageLoadStoppedCondition;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** The History pane station. */
@@ -96,6 +98,10 @@ public class HistoryPaneStation extends HubBaseStation {
 
     /** One history entry in the history pane. */
     public static class HistoryEntryFacility extends Facility<HistoryPaneStation> {
+        // Waiting for PageHitTestDataCondition and Hub hide completion can exceed the
+        // 5 s default on slower x64 emulators; matches BasePageStation#loadUrlTo.
+        private static final long OPEN_WEB_PAGE_TIMEOUT_MS = 10000L;
+
         public final ViewElement<HistoryItemView> itemElement;
         public final ViewElement<View> titleElement;
         public final ViewElement<View> iconElement;
@@ -116,12 +122,14 @@ public class HistoryPaneStation extends HubBaseStation {
 
         /** Select the entry to open. */
         public WebPageStation selectToOpenWebPage(CtaPageStation previousPage, String url) {
+            Tab tab = previousPage.loadedTabElement.getFromPast();
             return itemElement
                     .clickTo()
+                    .withTimeout(OPEN_WEB_PAGE_TIMEOUT_MS)
+                    .waitForAnd(new PageLoadStoppedCondition(tab, /* expectedUrl= */ null))
                     .arriveAt(
                             WebPageStation.newBuilder()
-                                    .initFrom(previousPage)
-                                    .withExpectedUrlSubstring(url)
+                                    .initForLoadingUrlOnSameTab(url, previousPage)
                                     .build());
         }
     }
