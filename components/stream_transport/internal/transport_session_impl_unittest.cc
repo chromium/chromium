@@ -873,6 +873,129 @@ TEST(TransportSessionImplTest, OnMessageHandlesSessionDestructionSafely) {
   EXPECT_EQ(session, nullptr);
 }
 
+TEST(TransportSessionImplTest,
+     OnMessageDeduplicatesWakeAndIgnoresWakeAfterStreamAdvances) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory control_factory({PayloadType::kControl},
+                                              FactoryId::kControl);
+  MockTransportHandlerFactory triggering_factory(
+      {PayloadType::kExperimentalTriggering},
+      FactoryId::kExperimentalTriggering);
+  MockTransportHandlerFactory actuation_factory({PayloadType::kActuation},
+                                                FactoryId::kActuation);
+  registry.RegisterFactory(&control_factory);
+  registry.RegisterFactory(&triggering_factory);
+  registry.RegisterFactory(&actuation_factory);
+
+  std::unique_ptr<MockTransportHandler> control_handler =
+      std::make_unique<MockTransportHandler>();
+  MockTransportHandler* control_handler_ptr = control_handler.get();
+  std::unique_ptr<MockTransportHandler> triggering_handler =
+      std::make_unique<MockTransportHandler>();
+  MockTransportHandler* triggering_handler_ptr = triggering_handler.get();
+  EXPECT_CALL(control_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(control_handler)));
+  EXPECT_CALL(triggering_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(triggering_handler)));
+  EXPECT_CALL(actuation_factory, OnNewSession).Times(0);
+
+  // First sequence-0 wake via `OnMessage()` is dispatched and advances
+  // `last_seen_sequence_number()` to 0.
+  EXPECT_CALL(*control_handler_ptr, OnMessage(PayloadType::kControl, "wake-1"))
+      .Times(1);
+  session.OnMessage(PayloadType::kControl, "wake-1");
+  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+
+  // Duplicate sequence-0 wake for the same payload type is ignored.
+  EXPECT_CALL(*control_handler_ptr, OnMessage).Times(0);
+  session.OnMessage(PayloadType::kControl, "wake-duplicate");
+
+  // Empty wake-up ping and non-empty wake payload of the same payload type are
+  // each allowed once before the stream starts, and duplicates of either are
+  // ignored.
+  EXPECT_CALL(*triggering_handler_ptr,
+              OnMessage(PayloadType::kExperimentalTriggering, ""))
+      .Times(1);
+  EXPECT_CALL(*triggering_handler_ptr,
+              OnMessage(PayloadType::kExperimentalTriggering, "opt-in-wake"))
+      .Times(1);
+  session.OnMessage(PayloadType::kExperimentalTriggering, "");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "opt-in-wake");
+  session.OnMessage(PayloadType::kExperimentalTriggering, "opt-in-wake-dup");
+
+  // A sequence-0 message arriving on the stream after `OnMessage()` already
+  // advanced the sequencer to 0 is dropped as a duplicate.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), "stream-seq-0",
+      /*sequence_number=*/0)));
+
+  // Once the stream advances to sequence 1, late sequence-0 wake payloads via
+  // `OnMessage()` (even for a payload type not yet seen on `OnMessage()`) are
+  // ignored.
+  EXPECT_CALL(*triggering_handler_ptr,
+              OnMessage(PayloadType::kExperimentalTriggering, "stream-seq-1"))
+      .Times(1);
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      browser_actuator::
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+      ExpectedTypeUrl(PayloadType::kExperimentalTriggering), "stream-seq-1",
+      /*sequence_number=*/1)));
+  EXPECT_EQ(session.last_seen_sequence_number(), 1);
+
+  session.OnMessage(PayloadType::kActuation, "late-wake");
+}
+
+TEST(TransportSessionImplTest,
+     OnMessageIgnoredAfterOutOfOrderStreamMessageIsBuffered) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory control_factory({PayloadType::kControl},
+                                              FactoryId::kControl);
+  MockTransportHandlerFactory triggering_factory(
+      {PayloadType::kExperimentalTriggering},
+      FactoryId::kExperimentalTriggering);
+  registry.RegisterFactory(&control_factory);
+  registry.RegisterFactory(&triggering_factory);
+
+  std::unique_ptr<MockTransportHandler> control_handler =
+      std::make_unique<MockTransportHandler>();
+  MockTransportHandler* control_handler_ptr = control_handler.get();
+  EXPECT_CALL(control_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(control_handler)));
+  EXPECT_CALL(triggering_factory, OnNewSession).Times(0);
+
+  // Initial sequence-0 control wake succeeds.
+  EXPECT_CALL(*control_handler_ptr, OnMessage(PayloadType::kControl, "wake-1"))
+      .Times(1);
+  session.OnMessage(PayloadType::kControl, "wake-1");
+  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+
+  // Out-of-order sequence 2 arrives on the stream before sequence 1 and is
+  // buffered (so `deliverable` is empty and `last_seen` remains 0).
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), "stream-seq-2",
+      /*sequence_number=*/2)));
+  EXPECT_EQ(session.last_seen_sequence_number(), 0);
+
+  // A subsequent late `OnMessage()` wake for an unseen payload type must be
+  // ignored without hitting `AdvanceLastSeenTo(0)` or dispatching.
+  session.OnMessage(PayloadType::kExperimentalTriggering, "late-wake");
+}
+
 TEST(TransportSessionImplTest, OnMessageReportsWakeEnvelopeBeforeDispatch) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;

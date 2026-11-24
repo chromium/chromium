@@ -75,9 +75,10 @@ class DownstreamMessageSequencer {
   [[nodiscard]] std::vector<browser_actuator::ActuatorDownstreamMessage>
   Flush();
 
-  // Advances `last_seen_sequence_number_` to at least `sequence_number` when a
-  // terminating control command bypasses `AddMessage()`. `buffered_messages_`
-  // must be empty (e.g. after `Flush()`) before calling this method.
+  // Advances `last_seen_sequence_number_` to at least `sequence_number` when an
+  // out-of-band sequence-0 wake or a terminating control command bypasses
+  // `AddMessage()`. Any buffered out-of-order messages must remain strictly
+  // ahead of the resulting `next_expected_sequence_number()`.
   void AdvanceLastSeenTo(int64_t sequence_number);
 
   int64_t last_seen_sequence_number() const {

@@ -29,7 +29,13 @@ class TransportSession {
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) = 0;
 
-  // Dispatches an incoming message to handlers registered for payload_type.
+  // Dispatches an initial out-of-band sequence-0 wake payload (e.g., from FCM)
+  // to handlers registered for `payload_type` before the downstream stream
+  // starts. Advances the session's downstream sequence cursor to 0 on the first
+  // accepted wake and dispatches at most once per `payload_type` (tracking
+  // empty wake-up pings separately from non-empty payloads). Repeated calls or
+  // calls arriving after the downstream stream has accepted a message are
+  // ignored.
   virtual void OnMessage(PayloadType payload_type,
                          std::string_view serialized_payload) = 0;
 

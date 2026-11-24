@@ -346,5 +346,25 @@ TEST(DownstreamMessageSequencerTest, AdvanceLastSeenTo) {
   EXPECT_EQ(sequencer.buffered_message_count(), 0u);
 }
 
+TEST(DownstreamMessageSequencerTest,
+     AdvanceLastSeenToZeroPermitsBufferedMessagesAboveNextExpected) {
+  DownstreamMessageSequencer sequencer;
+  // Buffer an out-of-order message at sequence 2 while `last_seen == -1`.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 2), ValueIs(IsEmpty()));
+  EXPECT_EQ(sequencer.buffered_message_count(), 1u);
+
+  // Advancing `last_seen` to 0 leaves `next_expected == 1 < 2`, preserving the
+  // reorder buffer invariant.
+  sequencer.AdvanceLastSeenTo(0);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+  EXPECT_EQ(sequencer.buffered_message_count(), 1u);
+
+  // Sequence 0 is now dropped as a duplicate, and sequence 1 drains {1, 2}.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 0), ValueIs(IsEmpty()));
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1, 2)));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 2);
+  EXPECT_EQ(sequencer.buffered_message_count(), 0u);
+}
+
 }  // namespace
 }  // namespace stream_transport

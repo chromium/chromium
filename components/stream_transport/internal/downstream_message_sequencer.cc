@@ -120,9 +120,11 @@ DownstreamMessageSequencer::Flush() {
 void DownstreamMessageSequencer::AdvanceLastSeenTo(int64_t sequence_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsValidSequenceNumber(sequence_number));
-  CHECK(buffered_messages_.empty());
-  last_seen_sequence_number_ =
+  const int64_t new_last_seen =
       std::max(last_seen_sequence_number_, sequence_number);
+  CHECK(buffered_messages_.empty() ||
+        buffered_messages_.begin()->first > new_last_seen + 1);
+  last_seen_sequence_number_ = new_last_seen;
 }
 
 }  // namespace stream_transport

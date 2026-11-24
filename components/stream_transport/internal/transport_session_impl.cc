@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -131,11 +132,26 @@ TransportSessionImpl::SendUpstreamMessage(
 void TransportSessionImpl::OnMessage(PayloadType payload_type,
                                      std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  last_activity_time_ = base::TimeTicks::Now();
   // This entry point exists for the out-of-band FCM wake-up path, which
-  // carries `sequence_number = 0`. Setting `dispatching_sequence_number_ = 0`
-  // ensures synchronous control replies (e.g. `StartSessionAck`) populate
-  // `responding_to_sequence_number = 0`.
+  // carries `sequence_number = 0`. Ignore late or duplicate wake payloads once
+  // the session has already processed the payload type at sequence 0 or
+  // accepted any message on the downstream stream.
+  CHECK(static_cast<uint32_t>(payload_type) < 32u);
+  const uint32_t payload_bit = 1u << static_cast<uint32_t>(payload_type);
+  uint32_t& seen_mask = serialized_payload.empty()
+                            ? wake_empty_payload_types_seen_
+                            : wake_payload_types_seen_;
+  if (stream_message_seen_ || (seen_mask & payload_bit) != 0) {
+    return;
+  }
+  // Internal invariant: `sequencer_` only advances past 0 via
+  // `ProcessDownstreamMessage()`, which sets `stream_message_seen_` on every
+  // accepted message, so untrusted network input cannot violate this.
+  CHECK_LE(sequencer_.last_seen_sequence_number(), 0);
+  seen_mask |= payload_bit;
+  sequencer_.AdvanceLastSeenTo(0);
+  last_seen_sequence_number_ = std::max<int64_t>(last_seen_sequence_number_, 0);
+  last_activity_time_ = base::TimeTicks::Now();
   base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();
   if (on_downstream_message_) {
     // `BrowserActuatorMessageHandler` unpacks bundled FCM messages and calls
@@ -345,6 +361,7 @@ TransportSessionImpl::ProcessDownstreamMessage(
         });
     deliverable.insert(it, std::move(message));
     sequencer_.AdvanceLastSeenTo(deliverable.back().sequence_number());
+    stream_message_seen_ = true;
   } else {
     base::expected<std::vector<browser_actuator::ActuatorDownstreamMessage>,
                    DownstreamMessageSequencer::Error>
@@ -360,6 +377,7 @@ TransportSessionImpl::ProcessDownstreamMessage(
       }
       return base::unexpected(ready_messages.error());
     }
+    stream_message_seen_ = true;
     consecutive_invalid_sequence_numbers_ = 0;
     deliverable = std::move(*ready_messages);
     if (!deliverable.empty()) {

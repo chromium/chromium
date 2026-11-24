@@ -65,7 +65,7 @@ void BrowserActuatorMessageHandler::OnMessage(
       const browser_actuator::ActuatorDownstreamMessage& bundled_message =
           message.actuator_downstream_message();
       const std::string& session_id = bundled_message.session_id();
-      if (session_id.empty()) {
+      if (session_id.empty() || bundled_message.sequence_number() != 0) {
         // TODO(crbug.com/538161953): Handle invalid/empty session_id (e.g. via
         // UMA metrics).
         break;

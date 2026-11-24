@@ -353,6 +353,27 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   EXPECT_EQ(done_future.Get(), nullptr);
 }
 
+TEST_F(BrowserActuatorMessageHandlerTest, IgnoresNonZeroSequenceNumber) {
+  EXPECT_CALL(*mock_service_, CreateSession(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(*mock_service_, GetSession(testing::_)).Times(0);
+
+  components_sharing_message::SharingMessage message;
+  browser_actuator::ActuatorDownstreamMessage* bundled =
+      message.mutable_actuator_downstream_message();
+  bundled->set_session_id("bundled_session_123");
+  bundled->set_sequence_number(1);
+  browser_actuator::ControlCommand start_command;
+  start_command.mutable_start_session();
+  AddControlPayload(bundled, start_command);
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+  EXPECT_TRUE(done_future.Wait());
+  EXPECT_EQ(done_future.Get(), nullptr);
+}
+
 // End-to-end integration test: verifies that when an FCM
 // `gcm::IncomingMessage` carrying a `SharingMessage` arrives at
 // `SharingFCMHandler`, `BrowserActuatorMessageHandler` provisions the real

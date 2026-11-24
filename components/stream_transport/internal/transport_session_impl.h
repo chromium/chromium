@@ -208,6 +208,17 @@ class TransportSessionImpl : public TransportSession,
   // multi-message drain so synchronous handlers observe the sequence number of
   // the message currently being handled when sending an upstream reply.
   int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
+  // Set once `ProcessDownstreamMessage()` accepts any valid stream message
+  // (including out-of-order messages buffered in `sequencer_`), permanently
+  // ignoring late sequence-0 wake calls via `OnMessage()`.
+  bool stream_message_seen_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // Bitmasks of `PayloadType` values already dispatched via `OnMessage()` at
+  // sequence 0. Non-empty wake payloads and empty wake-up pings (used on
+  // `StartSession` to report live capabilities) are tracked separately so each
+  // can fire at most once per payload type before the stream begins.
+  uint32_t wake_payload_types_seen_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  uint32_t wake_empty_payload_types_seen_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   size_t consecutive_invalid_sequence_numbers_
       GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   size_t consecutive_buffer_full_errors_ GUARDED_BY_CONTEXT(sequence_checker_) =
