@@ -399,6 +399,18 @@
       <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_CORAL" desc="Display name of a text-to-speech voice named Coral.">
           Coral
       </message>
+      <message name="IDS_READALOUD_OPT_IN_DIALOG_TITLE" desc="Title of the opt-in dialog shown when the user activates Listen to this page.">
+        To continue, let Chrome use page content for Listen to this page?
+      </message>
+      <message name="IDS_READALOUD_OPT_IN_DIALOG_MESSAGE" desc="Body text of the opt-in dialog explaining that the content and URL of the page are shared with Google to generate audio.">
+        The content and URL of the page you’re on will be shared with Google to generate audio. You can update this choice in settings anytime.
+      </message>
+      <message name="IDS_READALOUD_OPT_IN_ACCEPT_BUTTON" desc="Positive button label on the Read Aloud opt-in dialog.">
+        Allow
+      </message>
+      <message name="IDS_READALOUD_OFF_TOAST_MESSAGE" desc="Toast message shown when the user declines the Read Aloud opt-in dialog.">
+        “Listen to this page” is off
+      </message>
     </messages>
   </release>
 </grit>
