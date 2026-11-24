@@ -349,8 +349,13 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpEnterpriseShortcutsBrowserTest,
 class WebUiNtpKeepAliveBrowserTest : public WebUiNtpBrowserTest {
  public:
   explicit WebUiNtpKeepAliveBrowserTest(bool enable = true) {
-    keep_alive_feature_list_.InitWithFeatureState(
-        ntp_features::kKeepNtpRendererAlive, enable);
+    // Disable the OneGoogleBar iframe so its cross-site
+    // `chrome-untrusted://new-tab-page` subframe does not consume the spare
+    // renderer.
+    keep_alive_feature_list_.InitWithFeatureStates({
+        {ntp_features::kKeepNtpRendererAlive, enable},
+        {ntp_features::kNtpOneGoogleBar, false},
+    });
   }
 
  private:
@@ -379,16 +384,8 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpKeepAliveDisabledBrowserTest,
   exit_watcher.Wait();
 }
 
-// TODO(crbug.com/588690906): Re-enable on MSan once fixed.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ReuseWarmProcessAcrossTabsAndWindows \
-  DISABLED_ReuseWarmProcessAcrossTabsAndWindows
-#else
-#define MAYBE_ReuseWarmProcessAcrossTabsAndWindows \
-  ReuseWarmProcessAcrossTabsAndWindows
-#endif
 IN_PROC_BROWSER_TEST_F(WebUiNtpKeepAliveBrowserTest,
-                       MAYBE_ReuseWarmProcessAcrossTabsAndWindows) {
+                       ReuseWarmProcessAcrossTabsAndWindows) {
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(content::NavigateToURL(tab, chrome::ChromeUINewTabURLAsGURL()));
   ExpectIsWebUiNtp(tab);
