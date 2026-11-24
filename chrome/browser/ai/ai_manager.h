@@ -246,14 +246,14 @@ class AIManager : public base::SupportsUserData::Data,
       DecisionModelBackend backend,
       mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
           client,
-      blink::mojom::AIDecisionModelCreateOptionsPtr options,
+      DecisionModelSchemaCompiler::CompiledSchema schema,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor);
   // Creates the Laya model on `model_client`, or replies with an error if the
   // model isn't available.
   void OnDecisionModelLayaReady(
       mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
           client,
-      blink::mojom::AIDecisionModelCreateOptionsPtr options,
+      DecisionModelSchemaCompiler::CompiledSchema schema,
       base::WeakPtr<optimization_guide::ModelClient> model_client);
 #endif
 

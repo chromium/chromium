@@ -165,34 +165,41 @@ std::vector<uint8_t> BuildMultiSigTestTflite(
         ::tflite::CreateTensorDirect(fbb, &shape_opts,
                                      ::tflite::TensorType_FLOAT32, weight_buf,
                                      "weights"),
-        ::tflite::CreateTensorDirect(fbb, &shape_opts,
-                                     ::tflite::TensorType_FLOAT32, 0, "logits",
-                                     /*quantization=*/0, /*is_variable=*/false,
-                                     /*sparsity=*/0, &sig_opts),
     };
 
-    // Cast marker_mask (3) to float (5), then multiply by weights (6) -> (7).
+    // Cast marker_mask (3) to float (5), then multiply by weights (6) ->
+    // (7..10) to populate `logits` and the auxiliary outputs
+    // (`out_1`..`out_3`).
     std::vector<int32_t> cast_in = {3};
     std::vector<int32_t> cast_out = {5};
     auto cast_opts = ::tflite::CreateCastOptions(
         fbb, ::tflite::TensorType_INT32, ::tflite::TensorType_FLOAT32);
 
-    std::vector<int32_t> mul_in = {5, 6};
-    std::vector<int32_t> mul_out = {7};
-    auto mul_opts =
-        ::tflite::CreateMulOptions(fbb, ::tflite::ActivationFunctionType_NONE);
-
     std::vector<flatbuffers::Offset<::tflite::Operator>> ops = {
         ::tflite::CreateOperatorDirect(fbb, 0, &cast_in, &cast_out,
                                        ::tflite::BuiltinOptions_CastOptions,
                                        cast_opts.Union()),
-        ::tflite::CreateOperatorDirect(fbb, 1, &mul_in, &mul_out,
-                                       ::tflite::BuiltinOptions_MulOptions,
-                                       mul_opts.Union()),
     };
+    std::vector<int32_t> mul_in = {5, 6};
+    std::vector<int32_t> sg_outputs;
+    std::vector<flatbuffers::Offset<::tflite::TensorMap>> sig_out_map;
+    for (const char* out_name : {"logits", "out_1", "out_2", "out_3"}) {
+      const int32_t out_idx = static_cast<int32_t>(tensors.size());
+      tensors.push_back(::tflite::CreateTensorDirect(
+          fbb, &shape_opts, ::tflite::TensorType_FLOAT32, 0, out_name,
+          /*quantization=*/0, /*is_variable=*/false, /*sparsity=*/0,
+          &sig_opts));
+      std::vector<int32_t> mul_out = {out_idx};
+      ops.push_back(::tflite::CreateOperatorDirect(
+          fbb, 1, &mul_in, &mul_out, ::tflite::BuiltinOptions_MulOptions,
+          ::tflite::CreateMulOptions(fbb, ::tflite::ActivationFunctionType_NONE)
+              .Union()));
+      sg_outputs.push_back(out_idx);
+      sig_out_map.push_back(
+          ::tflite::CreateTensorMapDirect(fbb, out_name, out_idx));
+    }
 
     std::vector<int32_t> sg_inputs = {0, 1, 2, 3, 4};
-    std::vector<int32_t> sg_outputs = {7};
     const std::string sig_name = "seq_" + base::NumberToString(seq_len);
     subgraphs.push_back(::tflite::CreateSubGraphDirect(
         fbb, &tensors, &sg_inputs, &sg_outputs, &ops, sig_name.c_str()));
@@ -203,9 +210,6 @@ std::vector<uint8_t> BuildMultiSigTestTflite(
         ::tflite::CreateTensorMapDirect(fbb, "marker_pos", 2),
         ::tflite::CreateTensorMapDirect(fbb, "marker_mask", 3),
         ::tflite::CreateTensorMapDirect(fbb, "qtype", 4),
-    };
-    std::vector<flatbuffers::Offset<::tflite::TensorMap>> sig_out_map = {
-        ::tflite::CreateTensorMapDirect(fbb, "logits", 7),
     };
     signatures.push_back(::tflite::CreateSignatureDefDirect(
         fbb, &sig_in_map, &sig_out_map, sig_name.c_str(),

@@ -185,6 +185,10 @@ void TestImageCaptionModelBroker::CreateSession(
   session_receivers_.Add(this, std::move(session));
 }
 
+void TestImageCaptionModelBroker::CreateDecisionSession(
+    on_device_model::mojom::DecisionQueryPtr query,
+    mojo::PendingReceiver<on_device_model::mojom::DecisionSession> session) {}
+
 void TestImageCaptionModelBroker::ReportHealthyCompletion() {
   reported_healthy_completion_ = true;
 }

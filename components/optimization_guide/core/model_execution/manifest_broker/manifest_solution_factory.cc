@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +31,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -279,8 +282,33 @@ class ManifestSolutionFactory::Solution : public ModelBrokerImpl::Solution {
     if (!IsValid()) {
       return;
     }
+    if (!SupportsModelInterface(
+            proto::BaseModelRecipe::MODEL_INTERFACE_LANGUAGE)) {
+      mojo::ReportBadMessage(base::StrCat(
+          {"Model recipe ", factory_->GetBaseModelRecipeId(solution_id_),
+           " does not support the language interface"}));
+      return;
+    }
     factory_->GetOrLoadModel(recipe().model_recipe_id())
         ->StartSession(std::move(pending), std::move(params));
+  }
+
+  void CreateDecisionSession(
+      on_device_model::mojom::DecisionQueryPtr query,
+      mojo::PendingReceiver<on_device_model::mojom::DecisionSession> pending)
+      override {
+    if (!IsValid()) {
+      return;
+    }
+    if (!SupportsModelInterface(
+            proto::BaseModelRecipe::MODEL_INTERFACE_DECISION)) {
+      mojo::ReportBadMessage(base::StrCat(
+          {"Model recipe ", factory_->GetBaseModelRecipeId(solution_id_),
+           " does not support the decision interface"}));
+      return;
+    }
+    factory_->GetOrLoadDecisionModel(recipe().model_recipe_id())
+        ->StartSession(std::move(query), std::move(pending));
   }
 
   void ReportHealthyCompletion() override {
@@ -290,6 +318,20 @@ class ManifestSolutionFactory::Solution : public ModelBrokerImpl::Solution {
       return;
     }
     factory_->access_controller_->OnResponseCompleted();
+  }
+
+  bool SupportsModelInterface(
+      proto::BaseModelRecipe::ModelInterface required_interface) {
+    const std::string& base_model_id =
+        factory_->GetBaseModelRecipeId(solution_id_);
+    const auto& base_model_recipe =
+        factory_->manifest_.GetRecipes().base_models().at(base_model_id);
+    if (base_model_recipe.model_interfaces().empty()) {
+      return required_interface ==
+             proto::BaseModelRecipe::MODEL_INTERFACE_LANGUAGE;
+    }
+    return std::ranges::contains(base_model_recipe.model_interfaces(),
+                                 static_cast<int>(required_interface));
   }
 
  private:
@@ -408,6 +450,7 @@ void ManifestSolutionFactory::UnloadAsset(const std::string& asset_id) {
   for (const auto& [model_id, recipe] : manifest_.GetRecipes().base_models()) {
     if (recipe.weights_file().asset_id() == asset_id) {
       base_models_.at(model_id).remote_.reset();
+      base_models_.at(model_id).decision_remote_.reset();
       base_models_.at(model_id).has_caches = false;
       for (const auto& [adaptation_id, adaptation_recipe] :
            manifest_.GetRecipes().adaptations()) {
@@ -808,6 +851,17 @@ ManifestSolutionFactory::GetOrLoadModel(const std::string& model_id) {
   NOTREACHED();
 }
 
+mojo::Remote<on_device_model::mojom::DecisionModel>&
+ManifestSolutionFactory::GetOrLoadDecisionModel(const std::string& model_id) {
+  auto it = base_models_.find(model_id);
+  CHECK(it != base_models_.end());
+  auto& state = it->second;
+  if (!state.decision_remote_) {
+    LoadDecisionModel(model_id, state);
+  }
+  return state.decision_remote_;
+}
+
 void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
                                             BaseModelState& state) {
   TRACE_EVENT("optimization_guide", "ManifestSolutionFactory::LoadBaseModel",
@@ -1003,6 +1057,65 @@ void ManifestSolutionFactory::LoadPostProcessor(
   state.remote_.reset_on_idle_timeout(kOnDeviceModelIdleTimeoutParam.Get());
 }
 
+void ManifestSolutionFactory::LoadDecisionModel(const std::string& model_id,
+                                                BaseModelState& state) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestSolutionFactory::LoadDecisionModel", "model_id",
+              model_id);
+  const auto& recipe = manifest_.GetRecipes().base_models().at(model_id);
+  on_device_model::ModelAssetPaths full_paths = GetModelAssetPaths(recipe);
+  // Only populate `weights` and `cache` so `LoadModelAssets` does not create
+  // or open unused `encoder_cache`, `adapter_cache`, or `program_cache` files.
+  on_device_model::ModelAssetPaths paths;
+  paths.weights = std::move(full_paths.weights);
+  paths.cache = std::move(full_paths.cache);
+
+  LogBaseModelInitialization(model_id, recipe, state);
+
+  service_client_->AddPendingUsage();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&on_device_model::LoadModelAssets, std::move(paths)),
+      base::BindOnce(
+          [](base::WeakPtr<ManifestSolutionFactory> factory,
+             const std::string& model_id,
+             mojo::PendingReceiver<on_device_model::mojom::DecisionModel> model,
+             on_device_model::ModelAssets assets) {
+            TRACE_EVENT("optimization_guide",
+                        "ManifestSolutionFactory::OnDecisionModelAssetsLoaded",
+                        "model_id", model_id);
+            if (!factory) {
+              CloseAssetsInBackground(std::move(assets));
+              return;
+            }
+            const auto& recipe =
+                factory->manifest_.GetRecipes().base_models().at(model_id);
+            if (!factory->assets_.at(recipe.weights_file().asset_id())
+                     .has_value() ||
+                !factory->base_models_.at(model_id)
+                     .decision_remote_.is_bound()) {
+              // Handle the case where the model was uninstalled while loading
+              // assets.
+              CloseAssetsInBackground(std::move(assets));
+              factory->service_client_->RemovePendingUsage();
+              return;
+            }
+            auto params = on_device_model::mojom::DecisionModelParams::New();
+            params->backend_type = ConvertBackendType(recipe.backend_type());
+            params->assets = std::move(assets);
+            factory->service_client_->Get()->LoadDecisionModel(
+                std::move(params), std::move(model), base::DoNothing());
+            factory->service_client_->RemovePendingUsage();
+          },
+          weak_ptr_factory_.GetWeakPtr(), model_id,
+          state.decision_remote_.BindNewPipeAndPassReceiver()));
+  state.decision_remote_.set_disconnect_with_reason_handler(
+      base::BindOnce(&ManifestSolutionFactory::OnBaseModelDisconnect,
+                     base::Unretained(this), model_id));
+  state.decision_remote_.reset_on_idle_timeout(
+      kOnDeviceModelIdleTimeoutParam.Get());
+}
+
 void ManifestSolutionFactory::OnBaseModelDisconnect(
     const std::string& model_id,
     uint32_t reason,
@@ -1013,6 +1126,7 @@ void ManifestSolutionFactory::OnBaseModelDisconnect(
   CHECK(it != base_models_.end())
       << "Base model disconnect for unknown model id: " << model_id;
   it->second.remote_.reset();
+  it->second.decision_remote_.reset();
   const bool is_idle =
       reason == static_cast<uint32_t>(
                     on_device_model::ModelDisconnectReason::kIdleShutdown);

@@ -74,6 +74,7 @@ class ManifestSolutionFactory {
     BaseModelState& operator=(BaseModelState&& other);
 
     mojo::Remote<on_device_model::mojom::OnDeviceModel> remote_;
+    mojo::Remote<on_device_model::mojom::DecisionModel> decision_remote_;
     bool has_caches = false;
   };
 
@@ -183,8 +184,11 @@ class ManifestSolutionFactory {
   // Gets or loads the model.
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrLoadModel(
       const std::string& model_id);
+  mojo::Remote<on_device_model::mojom::DecisionModel>& GetOrLoadDecisionModel(
+      const std::string& model_id);
 
   void LoadBaseModel(const std::string& model_id, BaseModelState& state);
+  void LoadDecisionModel(const std::string& model_id, BaseModelState& state);
   void LoadAdaptation(const std::string& model_id, AdaptationState& state);
   void LoadPostProcessor(const std::string& model_id,
                          PostprocessedModelState& state);

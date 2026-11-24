@@ -29,11 +29,13 @@ BaseModelRecipeArgs::BaseModelRecipeArgs(
     proto::BaseModelRecipe::BackendType backend_type,
     proto::BaseModelRecipe::PerformanceHint performance_hint,
     std::vector<int32_t> supported_ranks,
-    int32_t max_tokens)
+    int32_t max_tokens,
+    std::vector<proto::BaseModelRecipe::ModelInterface> model_interfaces)
     : backend_type(backend_type),
       performance_hint(performance_hint),
       supported_ranks(std::move(supported_ranks)),
-      max_tokens(max_tokens) {}
+      max_tokens(max_tokens),
+      model_interfaces(std::move(model_interfaces)) {}
 
 BaseModelRecipeArgs::~BaseModelRecipeArgs() = default;
 
@@ -52,6 +54,10 @@ proto::BaseModelRecipe BaseModelRecipe(proto::FileReference weights_file,
     recipe.add_supported_adaptation_ranks(rank);
   }
   recipe.set_max_tokens(args.max_tokens);
+  for (proto::BaseModelRecipe::ModelInterface model_interface :
+       args.model_interfaces) {
+    recipe.add_model_interfaces(model_interface);
+  }
   return recipe;
 }
 

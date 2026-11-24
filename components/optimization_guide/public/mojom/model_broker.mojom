@@ -41,6 +41,13 @@ interface ModelSolution {
   CreateSession(pending_receiver<on_device_model.mojom.Session> session,
                 on_device_model.mojom.SessionParams params);
 
+  // Creates a session for the decision model described by the
+  // ModelSolutionConfig. The session receiver will be bound in the ODM
+  // process.
+  CreateDecisionSession(
+      on_device_model.mojom.DecisionQuery query,
+      pending_receiver<on_device_model.mojom.DecisionSession> session);
+
   // Report to the broker that model execution worked correctly.
   ReportHealthyCompletion();
 };

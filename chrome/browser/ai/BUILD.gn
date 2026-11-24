@@ -42,6 +42,7 @@ source_set("ai") {
     sources += [
       "ai_embedding_gemma_v1_decision_model.h",
       "ai_language_model_decision_model.h",
+      "ai_laya_decision_model.h",
       "decision_model_prompt_builder.h",
       "decision_model_schema_compiler.h",
     ]
@@ -93,6 +94,7 @@ source_set("impl") {
     sources += [
       "ai_embedding_gemma_v1_decision_model.cc",
       "ai_language_model_decision_model.cc",
+      "ai_laya_decision_model.cc",
       "decision_model_prompt_builder.cc",
       "decision_model_schema_compiler.cc",
     ]
@@ -195,6 +197,7 @@ source_set("unit_tests") {
       "ai_embedding_gemma_v1_decision_model_unittest.cc",
       "ai_language_model_decision_model_unittest.cc",
       "ai_language_model_unittest.cc",
+      "ai_laya_decision_model_unittest.cc",
       "ai_proofreader_unittest.cc",
       "ai_rewriter_unittest.cc",
       "ai_semantic_embedder_service_launcher_unittest.cc",

@@ -884,6 +884,7 @@ if (build_with_model_execution && !is_chrome_for_testing) {
       "//components/sync_preferences:test_support",
       "//components/update_client",
       "//components/version_info",
+      "//mojo/public/cpp/test_support:test_utils",
       "//services/on_device_model/public/cpp",
       "//services/on_device_model/public/cpp/test_support",
       "//services/on_device_model/public/mojom",

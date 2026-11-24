@@ -85,6 +85,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ai/ai_embedding_gemma_v1_decision_model.h"
 #include "chrome/browser/ai/ai_language_model_decision_model.h"
+#include "chrome/browser/ai/ai_laya_decision_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -782,6 +783,16 @@ std::string GetLayaUseCase(AIManager::DecisionModelBackend backend) {
     case Backend::kLanguageModel:
       NOTREACHED();
   }
+}
+
+std::optional<size_t> FindExceedingLayaOptionCount(
+    const DecisionModelSchemaCompiler::CompiledSchema& schema) {
+  for (const auto& question : schema.questions) {
+    if (question.options.size() > AILayaDecisionModel::kMaxOptions) {
+      return question.options.size();
+    }
+  }
+  return std::nullopt;
 }
 
 // Only the manifest broker resolves the Prompt API's model from its feature
@@ -2181,9 +2192,8 @@ void AIManager::CanCreateDecisionModel(
     std::move(callback).Run(*pref_blocked_result);
     return;
   }
-  if (auto schema =
-          CheckDecisionModelOptions(options, /*require_questions=*/false);
-      !schema.has_value()) {
+  auto schema = CheckDecisionModelOptions(options, /*require_questions=*/false);
+  if (!schema.has_value()) {
     std::move(callback).Run(schema.error());
     return;
   }
@@ -2215,6 +2225,11 @@ void AIManager::CanCreateDecisionModel(
     }
     case DecisionModelBackend::kLayaEnWint8:
     case DecisionModelBackend::kLayaMlWint8:
+      if (FindExceedingLayaOptionCount(*schema).has_value()) {
+        std::move(callback).Run(
+            blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown);
+        return;
+      }
       CanCreateSession(GetLayaUseCase(*options->backend),
                        on_device_model::Capabilities(), std::move(callback));
       return;
@@ -2257,8 +2272,8 @@ void AIManager::CreateDecisionModel(
       return;
     case DecisionModelBackend::kLayaEnWint8:
     case DecisionModelBackend::kLayaMlWint8:
-      CreateLayaDecisionModel(backend, std::move(client), std::move(options),
-                              std::move(monitor));
+      CreateLayaDecisionModel(backend, std::move(client),
+                              std::move(schema).value(), std::move(monitor));
       return;
   }
 #else
@@ -2387,8 +2402,18 @@ void AIManager::CreateLayaDecisionModel(
     DecisionModelBackend backend,
     mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
         client,
-    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    DecisionModelSchemaCompiler::CompiledSchema schema,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
+  if (std::optional<size_t> exceeding_options =
+          FindExceedingLayaOptionCount(schema)) {
+    on_device_ai::SendClientRemoteError(
+        mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
+            std::move(client)),
+        blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge,
+        blink::mojom::QuotaErrorInfo::New(*exceeding_options,
+                                          AILayaDecisionModel::kMaxOptions));
+    return;
+  }
   if (!model_broker_client_) {
     on_device_ai::SendClientRemoteError(
         mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
@@ -2401,21 +2426,29 @@ void AIManager::CreateLayaDecisionModel(
       model_broker_client_.get(), GetLayaUseCase(backend), std::move(monitor),
       base::BindOnce(&AIManager::OnDecisionModelLayaReady,
                      weak_factory_.GetWeakPtr(), std::move(client),
-                     std::move(options)));
+                     std::move(schema)));
 }
 
 void AIManager::OnDecisionModelLayaReady(
     mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
         client,
-    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    DecisionModelSchemaCompiler::CompiledSchema schema,
     base::WeakPtr<optimization_guide::ModelClient> model_client) {
-  // TODO(crbug.com/565849508): Implement the Laya DecisionModel backend using
-  // `model_client`.
   mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient> client_remote(
       std::move(client));
-  on_device_ai::SendClientRemoteError(
-      client_remote,
-      blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+  if (!model_client) {
+    on_device_ai::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  mojo::PendingRemote<blink::mojom::AIDecisionModel> pending_remote;
+  context_bound_object_set_.AddContextBoundObject(
+      std::make_unique<AILayaDecisionModel>(
+          context_bound_object_set_, std::move(schema), model_client,
+          pending_remote.InitWithNewPipeAndPassReceiver()));
+  client_remote->OnSessionCreated(std::move(pending_remote));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

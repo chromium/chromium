@@ -68,6 +68,15 @@ message BaseModelRecipe {
   // Specifies the adaptation ranks that are supported by this model.
   repeated int32 supported_adaptation_ranks = 4;
   int32 max_tokens = 5;
+
+  enum ModelInterface {
+    MODEL_INTERFACE_UNSPECIFIED = 0;
+    MODEL_INTERFACE_LANGUAGE = 1;
+    MODEL_INTERFACE_DECISION = 2;
+  }
+  // Specifies the interfaces supported by this model. Defaults to
+  // [MODEL_INTERFACE_LANGUAGE] when empty.
+  repeated ModelInterface model_interfaces = 6;
 }
 
 // A recipe for a LoRA model.

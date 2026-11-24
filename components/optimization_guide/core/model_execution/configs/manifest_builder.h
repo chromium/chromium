@@ -36,7 +36,9 @@ struct BaseModelRecipeArgs {
   BaseModelRecipeArgs(proto::BaseModelRecipe::BackendType backend_type,
                       proto::BaseModelRecipe::PerformanceHint performance_hint,
                       std::vector<int32_t> supported_ranks,
-                      int32_t max_tokens);
+                      int32_t max_tokens,
+                      std::vector<proto::BaseModelRecipe::ModelInterface>
+                          model_interfaces = {});
   ~BaseModelRecipeArgs();
   BaseModelRecipeArgs(const BaseModelRecipeArgs&);
   BaseModelRecipeArgs& operator=(const BaseModelRecipeArgs&);
@@ -45,6 +47,7 @@ struct BaseModelRecipeArgs {
   proto::BaseModelRecipe::PerformanceHint performance_hint;
   std::vector<int32_t> supported_ranks;
   int32_t max_tokens;
+  std::vector<proto::BaseModelRecipe::ModelInterface> model_interfaces;
 };
 
 proto::BaseModelRecipe BaseModelRecipe(proto::FileReference weights_file,

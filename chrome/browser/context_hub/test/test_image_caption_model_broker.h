@@ -127,6 +127,10 @@ class TestImageCaptionModelBroker
   void CreateSession(
       mojo::PendingReceiver<on_device_model::mojom::Session> session,
       on_device_model::mojom::SessionParamsPtr params) override;
+  void CreateDecisionSession(
+      on_device_model::mojom::DecisionQueryPtr query,
+      mojo::PendingReceiver<on_device_model::mojom::DecisionSession> session)
+      override;
   void ReportHealthyCompletion() override;
 
   // on_device_model::mojom::Session:

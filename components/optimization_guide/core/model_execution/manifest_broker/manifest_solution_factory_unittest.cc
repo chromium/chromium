@@ -29,6 +29,7 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -617,6 +618,148 @@ TEST_F(ManifestSolutionFactoryTest,
                 .client()
                 ->base_model(),
             OnDeviceBaseModel::kSpeechRecognitionSmallExpert);
+}
+
+TEST_F(ManifestSolutionFactoryTest, CreateDecisionSession) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel(
+          "laya_en_wint8_component",
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {}, 100,
+              {proto::BaseModelRecipe::MODEL_INTERFACE_DECISION}))
+      .AddUnsafeSolution("laya_en_wint8", "laya_en_wint8_component")
+      .Finish();
+  fake_.Startup();
+
+  fake_.client().RequestAssetsFor("laya_en_wint8");
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  fake_.client()
+      .GetSubscriber("laya_en_wint8")
+      .WaitForClient(client_future.GetCallback());
+  base::WeakPtr<ModelClient> client = client_future.Take();
+  ASSERT_TRUE(client);
+  EXPECT_EQ(client->base_model(), OnDeviceBaseModel::kLayaEnWint8);
+
+  auto query = on_device_model::mojom::DecisionQuery::New();
+  auto question = on_device_model::mojom::DecisionQuestion::New();
+  question->id = "urgent";
+  question->prompt = "Is it urgent?";
+  question->type = on_device_model::mojom::DecisionQuestionType::kBoolean;
+  question->options.push_back(
+      on_device_model::mojom::DecisionOption::New("true", ""));
+  question->options.push_back(
+      on_device_model::mojom::DecisionOption::New("false", ""));
+  query->questions.push_back(std::move(question));
+
+  mojo::Remote<on_device_model::mojom::DecisionSession> decision_session;
+  client->solution().CreateDecisionSession(
+      std::move(query), decision_session.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<std::optional<
+      std::vector<on_device_model::mojom::DecisionQuestionResultPtr>>>
+      decide_future;
+  decision_session->Decide("true", decide_future.GetCallback());
+  auto results = decide_future.Take();
+  ASSERT_TRUE(results.has_value());
+  ASSERT_EQ(results->size(), 1u);
+  ASSERT_EQ((*results)[0]->probabilities.size(), 2u);
+  EXPECT_FLOAT_EQ((*results)[0]->probabilities[0], 0.8f);
+  EXPECT_FLOAT_EQ((*results)[0]->probabilities[1], 0.2f);
+}
+
+TEST_F(ManifestSolutionFactoryTest, CreateSessionRejectsDecisionOnlyInterface) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel(
+          "laya_en_wint8_component",
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {}, 100,
+              {proto::BaseModelRecipe::MODEL_INTERFACE_DECISION}))
+      .AddUnsafeSolution("laya_en_wint8", "laya_en_wint8_component")
+      .Finish();
+  fake_.Startup();
+
+  fake_.client().RequestAssetsFor("laya_en_wint8");
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  fake_.client()
+      .GetSubscriber("laya_en_wint8")
+      .WaitForClient(client_future.GetCallback());
+  base::WeakPtr<ModelClient> client = client_future.Take();
+  ASSERT_TRUE(client);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<on_device_model::mojom::Session> session;
+  client->solution().CreateSession(
+      session.BindNewPipeAndPassReceiver(),
+      on_device_model::mojom::SessionParams::New());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Model recipe laya_en_wint8_component_recipe does not support the "
+            "language interface");
+  session.FlushForTesting();
+  EXPECT_FALSE(session.is_connected());
+  EXPECT_FALSE(fake_.launcher().is_service_running());
+}
+
+TEST_F(ManifestSolutionFactoryTest,
+       CreateDecisionSessionRejectsLanguageOnlyInterface) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel(
+          "model_A",
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {}, 100,
+              {proto::BaseModelRecipe::MODEL_INTERFACE_LANGUAGE}))
+      .AddUnsafeSolution("test", "model_A")
+      .Finish();
+  fake_.Startup();
+
+  fake_.client().RequestAssetsFor("test");
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  fake_.client().GetSubscriber("test").WaitForClient(
+      client_future.GetCallback());
+  base::WeakPtr<ModelClient> client = client_future.Take();
+  ASSERT_TRUE(client);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<on_device_model::mojom::DecisionSession> decision_session;
+  client->solution().CreateDecisionSession(
+      on_device_model::mojom::DecisionQuery::New(),
+      decision_session.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "Model recipe model_A_recipe does not support the decision interface");
+  decision_session.FlushForTesting();
+  EXPECT_FALSE(decision_session.is_connected());
+  EXPECT_FALSE(fake_.launcher().is_service_running());
+}
+
+TEST_F(ManifestSolutionFactoryTest,
+       CreateDecisionSessionRejectsDefaultEmptyInterfaces) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddUnsafeSolution("test", "model_A")
+      .Finish();
+  fake_.Startup();
+
+  fake_.client().RequestAssetsFor("test");
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  fake_.client().GetSubscriber("test").WaitForClient(
+      client_future.GetCallback());
+  base::WeakPtr<ModelClient> client = client_future.Take();
+  ASSERT_TRUE(client);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<on_device_model::mojom::DecisionSession> decision_session;
+  client->solution().CreateDecisionSession(
+      on_device_model::mojom::DecisionQuery::New(),
+      decision_session.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "Model recipe model_A_recipe does not support the decision interface");
+  decision_session.FlushForTesting();
+  EXPECT_FALSE(decision_session.is_connected());
+  EXPECT_FALSE(fake_.launcher().is_service_running());
 }
 
 }  // namespace optimization_guide

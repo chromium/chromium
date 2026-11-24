@@ -13,6 +13,7 @@ namespace optimization_guide {
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 using ManifestTest = testing::Test;
@@ -250,6 +251,38 @@ TEST_F(ManifestTest, GetAssetByIdAndUseCasesRequiringAsset) {
   EXPECT_THAT(result->GetUseCasesRequiringAsset("second_component"),
               UnorderedElementsAre("second_feature"));
   EXPECT_TRUE(result->GetUseCasesRequiringAsset("unknown_asset").empty());
+}
+
+TEST_F(ManifestTest, BaseModelRecipeModelInterfaces) {
+  auto result = CreateCpuManifest(
+      ValidManifest()
+          .Add("multi_interface_base",
+               BaseModelRecipe(
+                   FileReference("valid_component", "multi.bin"),
+                   BaseModelRecipeArgs(
+                       proto::BaseModelRecipe::BACKEND_TYPE_CPU,
+                       proto::BaseModelRecipe::
+                           PERFORMANCE_HINT_FASTEST_INFERENCE,
+                       {}, 1024,
+                       {proto::BaseModelRecipe::MODEL_INTERFACE_LANGUAGE,
+                        proto::BaseModelRecipe::MODEL_INTERFACE_DECISION})))
+          .Add({DeviceCategory::kCpu, "multi_feature"},
+               SolutionRecipe(
+                   "multi_interface_base",
+                   FileReference(kManifestAssetName, "cpu_config.pb"))));
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_TRUE(result->GetRecipes()
+                  .base_models()
+                  .at("valid_base")
+                  .model_interfaces()
+                  .empty());
+  EXPECT_THAT(result->GetRecipes()
+                  .base_models()
+                  .at("multi_interface_base")
+                  .model_interfaces(),
+              ElementsAre(proto::BaseModelRecipe::MODEL_INTERFACE_LANGUAGE,
+                          proto::BaseModelRecipe::MODEL_INTERFACE_DECISION));
 }
 
 }  // namespace

@@ -160,6 +160,10 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
   void CreateSession(
       mojo::PendingReceiver<on_device_model::mojom::Session> pending,
       on_device_model::mojom::SessionParamsPtr params) override;
+  void CreateDecisionSession(
+      on_device_model::mojom::DecisionQueryPtr query,
+      mojo::PendingReceiver<on_device_model::mojom::DecisionSession> pending)
+      override;
   void ReportHealthyCompletion() override;
 
   base::WeakPtr<ModelBrokerAndroid> parent_;
@@ -201,6 +205,12 @@ void SolutionImpl::CreateSession(
     parent_->GetOrCreateModelRemote(adapter_->config().feature())
         ->StartSession(std::move(pending), std::move(params));
   }
+}
+
+void SolutionImpl::CreateDecisionSession(
+    on_device_model::mojom::DecisionQueryPtr query,
+    mojo::PendingReceiver<on_device_model::mojom::DecisionSession> pending) {
+  // Decision models are not supported on Android.
 }
 
 void SolutionImpl::ReportHealthyCompletion() {

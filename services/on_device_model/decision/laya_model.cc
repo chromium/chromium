@@ -392,7 +392,7 @@ class LayaModel::Impl {
       auto in_names = compiled_model_->GetSignatureInputNames(sig_idx);
       auto out_names = compiled_model_->GetSignatureOutputNames(sig_idx);
       if (!in_names || !out_names || in_names->size() != 5u ||
-          out_names->size() != 1u) {
+          out_names->size() != 4u) {
         return base::unexpected(base::StrCat(
             {"Unexpected input/output tensor count for signature ", sig_key}));
       }

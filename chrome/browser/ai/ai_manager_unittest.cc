@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -274,8 +275,18 @@ class AIManagerTest : public AITestUtils::AITestBase {
         .AddUnsafeSolution("prompt_api", "base", CreateSolution())
         .AddUnsafeSolution("writing_assistance_api", "base", CreateSolution())
         .AddUnsafeSolution("summarizer_api", "base", CreateSolution())
-        .AddBaseModel("laya_en_wint8")
-        .AddBaseModel("laya_ml_wint8")
+        .AddBaseModel(
+            "laya_en_wint8",
+            optimization_guide::BaseModelRecipeArgs(
+                proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
+                100, {proto::BaseModelRecipe::MODEL_INTERFACE_DECISION}))
+        .AddBaseModel(
+            "laya_ml_wint8",
+            optimization_guide::BaseModelRecipeArgs(
+                proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
+                100, {proto::BaseModelRecipe::MODEL_INTERFACE_DECISION}))
         .AddUnsafeSolution("laya_en_wint8", "laya_en_wint8")
         .AddUnsafeSolution("laya_ml_wint8", "laya_ml_wint8")
         .SetFeatureConfig("prompt_api",
@@ -906,6 +917,89 @@ TEST_F(AIManagerTest, CanCreateDecisionModelWithLayaBackend) {
              blink::mojom::ModelAvailabilityCheckResult::kAvailable;
     }));
     EXPECT_TRUE(fake_broker_->component_state().IsRegistered(component_key));
+  }
+}
+
+TEST_F(AIManagerTest, CreateDecisionModelWithLayaBackend) {
+  for (AIManager::DecisionModelBackend backend :
+       {AIManager::DecisionModelBackend::kLayaEnWint8,
+        AIManager::DecisionModelBackend::kLayaMlWint8}) {
+    base::test::ScopedFeatureList feature_list;
+    EnableDecisionModel(feature_list, backend);
+
+    TestCreateDecisionModelClient client;
+    GetAIManagerRemote()->CreateDecisionModel(client.BindNewPipeAndPassRemote(),
+                                              MakeBooleanDecisionModelOptions(),
+                                              /*monitor=*/mojo::NullRemote());
+    auto created = client.result().Take();
+    ASSERT_TRUE(created.has_value());
+    mojo::Remote<blink::mojom::AIDecisionModel> decision_model(
+        std::move(created).value());
+
+    base::test::TestFuture<
+        base::expected<blink::mojom::AIDecisionModelResultPtr,
+                       blink::mojom::AIDecisionModelDecideErrorPtr>>
+        decided;
+    decision_model->Decide("This is true.", decided.GetCallback());
+    auto result = decided.Take();
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(result.value()->decisions.size(), 1u);
+    const auto& decision = result.value()->decisions[0];
+    EXPECT_EQ(decision->question_id, "urgent");
+    EXPECT_EQ(decision->top_label, "true");
+    // FakeDecisionModel gives 0.8 to matching option labels ("true") and 0.2
+    // to non-matching options ("false").
+    ASSERT_EQ(decision->probabilities.size(), 2u);
+    EXPECT_FLOAT_EQ(decision->probabilities[0]->probability, 0.8f);
+    EXPECT_FLOAT_EQ(decision->probabilities[1]->probability, 0.2f);
+  }
+}
+
+TEST_F(AIManagerTest, LayaBackendRejectsMoreThanMaxOptions) {
+  base::test::ScopedFeatureList feature_list;
+  EnableDecisionModel(feature_list,
+                      AIManager::DecisionModelBackend::kLayaEnWint8);
+
+  auto make_choice_options = [](size_t num_options) {
+    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+    auto question = blink::mojom::AIDecisionModelQuestion::New();
+    question->id = "choice";
+    question->prompt = "Pick one";
+    question->type = blink::mojom::AIDecisionModelQuestionType::kChoice;
+    for (size_t i = 0; i < num_options; ++i) {
+      question->options.push_back(blink::mojom::AIDecisionModelOption::New(
+          "opt_" + base::NumberToString(i), std::nullopt));
+    }
+    options->questions.push_back(std::move(question));
+    return options;
+  };
+
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(make_choice_options(16),
+                                        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(make_choice_options(17),
+                                        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown);
+  }
+  {
+    TestCreateDecisionModelClient client;
+    GetAIManagerRemote()->CreateDecisionModel(client.BindNewPipeAndPassRemote(),
+                                              make_choice_options(17),
+                                              /*monitor=*/mojo::NullRemote());
+    auto created = client.result().Take();
+    ASSERT_FALSE(created.has_value());
+    EXPECT_EQ(created.error(),
+              blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+    ASSERT_TRUE(client.quota_error_info());
+    EXPECT_EQ(client.quota_error_info()->requested, 17u);
+    EXPECT_EQ(client.quota_error_info()->quota, 16u);
   }
 }
 
