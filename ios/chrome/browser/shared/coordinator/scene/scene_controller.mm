@@ -991,18 +991,21 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   WrangledBrowser* targetInterface = targetMode == ApplicationMode::NORMAL
                                          ? self.mainInterface
                                          : self.incognitoInterface;
-  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
-  // `self.startupParameters` is always nil.
-  AppStartupParameters* startupParameters = self.startupParameters;
-  _imageSearchData = [startupParameters imageSearchData];
-  if (startupParameters && startupParameters.remoteActorRequest) {
-    _remoteActorRequest = startupParameters.remoteActorRequest;
-  } else {
-    _remoteActorRequest.reset();
+  ProceduralBlock startupCompletion = nil;
+  // Only the legacy startup flow sets `self.startupParameters`. The new startup
+  // flow handles image searches, Remote Actor requests and post-opening actions
+  // in its task requests, which pass them in `completion`.
+  if (!IsEnableNewStartupFlowEnabled()) {
+    AppStartupParameters* startupParameters = self.startupParameters;
+    _imageSearchData = [startupParameters imageSearchData];
+    if (startupParameters && startupParameters.remoteActorRequest) {
+      _remoteActorRequest = startupParameters.remoteActorRequest;
+    } else {
+      _remoteActorRequest.reset();
+    }
+    startupCompletion = [self
+        completionBlockForTriggeringAction:startupParameters.postOpeningAction];
   }
-  ProceduralBlock startupCompletion =
-      [self completionBlockForTriggeringAction:[self.startupParameters
-                                                       postOpeningAction]];
 
   ProceduralBlock tabOpenedCompletion = nil;
   if (startupCompletion && completion) {
