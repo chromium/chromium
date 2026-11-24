@@ -38,7 +38,7 @@ class DisassemblerDex : public Disassembler {
     kMethodHandle,
     kTypeList,
     kAnnotationSetRefList,
-    kAnnotionSet,
+    kAnnotationSet,
     kClassData,
     kCode,
     kStringData,

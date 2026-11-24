@@ -111,7 +111,7 @@ constexpr Instruction kByteCode[] = {
     {0xB0, 1, FormatId::x, 32},
     {0xD0, 2, FormatId::s, 8},
     {0xD8, 2, FormatId::b, 11},
-    // {0xE3, 1, FormatId::x, 29}, unused
+    // {0xE3, 1, FormatId::x, 23}, unused
     {0xFA, 4, FormatId::c},
     {0xFB, 4, FormatId::c},
     {0xFC, 3, FormatId::c},
