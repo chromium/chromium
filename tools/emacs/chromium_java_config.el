@@ -1,4 +1,4 @@
-;; Chromium Java indentation is slightly different from Google java
+;; Chromium Java indentation is slightly different from Google java  -*- lexical-binding: t; -*-
 ;; indentation this config should help you adjust the conflict add
 ;; following to the init.el:
 ;;     (setq-default chrome-root "/path/to/chrome/src/")

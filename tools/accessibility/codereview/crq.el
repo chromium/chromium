@@ -1,4 +1,4 @@
-;;; TODO(plundblad):
+;;; TODO(plundblad):  -*- lexical-binding: t; -*-
 ;;; - Allow adding comments outside of the diff directly from a target
 ;;;   file.
 ;;; - Hide hunks with only imports etc.

@@ -1,4 +1,4 @@
-;;; gn-mode.el - A major mode for editing gn files.
+;;; gn-mode.el - A major mode for editing gn files.  -*- lexical-binding: t; -*-
 
 ;; Copyright 2015 The Chromium Authors
 ;; Use of this source code is governed by a BSD-style license that can be
