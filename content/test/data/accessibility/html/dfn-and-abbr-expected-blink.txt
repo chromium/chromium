@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++term name='LOL'
+++++++++abbr name='Laugh Out Loud' nameFrom=title
+++++++++++staticText name='LOL'
+++++++++++++inlineTextBox name='LOL'

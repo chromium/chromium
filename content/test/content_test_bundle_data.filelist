@@ -4846,6 +4846,11 @@ data/accessibility/html/details-name-expected-uia-win.txt
 data/accessibility/html/details-name-expected-win.txt
 data/accessibility/html/details-name.html
 data/accessibility/html/details.html
+data/accessibility/html/dfn-and-abbr-expected-android-external.txt
+data/accessibility/html/dfn-and-abbr-expected-android.txt
+data/accessibility/html/dfn-and-abbr-expected-blink.txt
+data/accessibility/html/dfn-and-abbr-new-class-feature-expected-android-external.txt
+data/accessibility/html/dfn-and-abbr.html
 data/accessibility/html/dfn-expected-android-assist-data.txt
 data/accessibility/html/dfn-expected-android-external.txt
 data/accessibility/html/dfn-expected-android.txt

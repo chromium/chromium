@@ -2551,6 +2551,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDfn) {
   RunHtmlTest(FILE_PATH_LITERAL("dfn.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDfnAndAbbr) {
+  RunHtmlTest(FILE_PATH_LITERAL("dfn-and-abbr.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDialog) {
   RunHtmlTest(FILE_PATH_LITERAL("dialog.html"));
 }

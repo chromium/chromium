@@ -2353,6 +2353,20 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_dfnAndAbbr() {
+        performHtmlTest("dfn-and-abbr.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_dfnAndAbbr_newClass() {
+        performHtmlTest("dfn-and-abbr.html", "dfn-and-abbr-new-class-feature");
+    }
+
+    @Test
+    @SmallTest
     public void test_dialog() {
         performHtmlTest("dialog.html");
     }
