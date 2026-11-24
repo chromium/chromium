@@ -41,7 +41,7 @@ void BuildStorageUnitInfo(const StorageInfo& info, StorageUnitInfo* unit) {
 }
 
 }  // namespace systeminfo
-#endif  // !BUILDFLAG(IS_ANROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 SystemInfoProvider::SystemInfoProvider()
     : is_waiting_for_completion_(false),
