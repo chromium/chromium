@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cmath>
 #include <iterator>
 #include <optional>
 #include <set>
@@ -173,7 +172,11 @@ class CodeItemParser {
 
     // TODO(huangs): Fail if |code_item->insns_size == 0| (Constraint A1).
     // Skip instruction bytes.
-    if (!source_.Skip(code_item->insns_size * sizeof(uint16_t))) {
+    size_t insns_bytes = 0;
+    if (!base::CheckMul<size_t>(code_item->insns_size,
+                                static_cast<size_t>(kInstrUnitSize))
+             .AssignIfValid(&insns_bytes) ||
+        !source_.Skip(insns_bytes)) {
       return kInvalidOffset;
     }
     // Skip padding if present.
@@ -201,11 +204,13 @@ class CodeItemParser {
         int32_t encoded_catch_handler_size = 0;
         if (!source_.GetSleb128(&encoded_catch_handler_size))
           return kInvalidOffset;
-        const size_type abs_size = std::abs(encoded_catch_handler_size);
-        if (source_.Remaining() < abs_size)  // Sanity check.
+        const uint32_t abs_size =
+            base::SafeUnsignedAbs(encoded_catch_handler_size);
+        if (source_.Remaining() < static_cast<size_type>(abs_size)) {
           return kInvalidOffset;
+        }
         // Skip (encoded_type_addr_pair) handlers[].
-        for (size_type j = 0; j < abs_size; ++j) {
+        for (uint32_t j = 0; j < abs_size; ++j) {
           if (!source_.SkipLeb128() || !source_.SkipLeb128())
             return kInvalidOffset;
         }
@@ -228,7 +233,11 @@ class CodeItemParser {
     BufferSource source(image, code_item_offset);
     const auto* code_item = source.GetPointer<const dex::CodeItem>();
     DCHECK(code_item);
-    BufferRegion insns{0, code_item->insns_size * kInstrUnitSize};
+    const size_t insns_bytes =
+        base::CheckMul<size_t>(code_item->insns_size,
+                               static_cast<size_t>(kInstrUnitSize))
+            .ValueOrDie();
+    BufferRegion insns{0, insns_bytes};
     DCHECK(source.covers(insns));
     return source[insns];
   }
