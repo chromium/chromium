@@ -5202,6 +5202,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
        DeviceOptInRequestFailsWhenChromeInBackground) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringBackgroundOptInNotification);
   OptOut();
   coordinator_->set_is_chrome_in_background(true);
 
@@ -5242,8 +5245,6 @@ class GlicExperimentalTriggeringCoordinatorBackgroundOptInTest
  public:
   void SetUp() override {
     GlicExperimentalTriggeringCoordinatorWithTabTest::SetUp();
-    background_opt_in_feature_.InitAndEnableFeature(
-        features::kGlicExperimentalTriggeringBackgroundOptInNotification);
     BackgroundOptInNotifier::Get().SetCallbacksForTesting(
         base::BindLambdaForTesting([this]() {
           if (!can_show_background_opt_in_notification_) {
@@ -5292,7 +5293,6 @@ class GlicExperimentalTriggeringCoordinatorBackgroundOptInTest
   }
 
  private:
-  base::test::ScopedFeatureList background_opt_in_feature_;
   bool can_show_background_opt_in_notification_ = true;
   bool is_background_opt_in_notification_showing_ = false;
 };

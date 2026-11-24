@@ -463,8 +463,9 @@ const base::FeatureParam<std::string> kGlicConversationSharingCaptureUrls{
 
 #if BUILDFLAG(IS_ANDROID)
 // crbug.com/577140928
+// Default-enabled platforms: Android only.
 BASE_FEATURE(kGlicExperimentalTriggeringBackgroundOptInNotification,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta>
     kGlicExperimentalTriggeringBackgroundOptInTimeout{
         &kGlicExperimentalTriggeringBackgroundOptInNotification,
