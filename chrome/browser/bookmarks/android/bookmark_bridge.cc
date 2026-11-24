@@ -891,7 +891,9 @@ void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
                                     int32_t type,
                                     const GURL& url) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/587560887): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
   bookmark_model_->SetURL(GetNodeByID(id, type), url,
                           bookmarks::metrics::BookmarkEditSource::kUser);
 }
