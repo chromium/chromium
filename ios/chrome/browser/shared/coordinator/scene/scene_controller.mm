@@ -858,6 +858,16 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
+// Returns whether the scene was opened with an external intent. In the new
+// startup flow, `self.startupParameters` is never set, so `SceneState` tells
+// it.
+- (BOOL)hasExternalIntent {
+  if (IsEnableNewStartupFlowEnabled()) {
+    return self.sceneState.startupHadExternalIntent;
+  }
+  return self.startupParameters != nil;
+}
+
 - (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser {
   // Check if there are pending actions that would result in opening a new tab.
   // In that case, it is not useful to open another tab.
@@ -868,10 +878,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     }
   }
 
-  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
-  // `self.startupParameters` is always nil, so an NTP may be opened in addition
-  // to the tab opened by an external intent.
-  if (self.startupParameters) {
+  if ([self hasExternalIntent]) {
     return NO;
   }
 
@@ -1866,9 +1873,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     return NO;
   }
   // Don't show promos if the app was launched from a URL.
-  // TODO(crbug.com/493816082): Adapt for the new startup flow, where
-  // `self.startupParameters` is always nil.
-  if (self.startupParameters) {
+  if ([self hasExternalIntent]) {
     return NO;
   }
   // Don't show the promo if the window is not active.

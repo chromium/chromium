@@ -771,4 +771,24 @@ TEST_F(SceneControllerTest,
   FirstRun::RemoveSentinel();
   FirstRun::ClearStateForTesting();
 }
+
+// Tests that no NTP is opened on activation when the scene was opened with an
+// external intent in the new startup flow.
+TEST_F(SceneControllerTest, NoNTPOnActivationWithExternalIntentInNewFlow) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(kEnableNewStartupFlow);
+  SaveEnableNewStartupFlowForNextStart();
+  ResetEnableNewStartupFlowEnabledForTesting();
+
+  EXPECT_TRUE(
+      [scene_controller_ shouldOpenNTPTabOnActivationOfBrowser:browser_.get()]);
+  scene_state_.startupHadExternalIntent = YES;
+  EXPECT_FALSE(
+      [scene_controller_ shouldOpenNTPTabOnActivationOfBrowser:browser_.get()]);
+
+  // Restores the legacy startup flow for the next tests.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(kEnableNewStartupFlow);
+  SaveEnableNewStartupFlowForNextStart();
+}
 }  // namespace
