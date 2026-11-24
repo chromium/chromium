@@ -339,7 +339,7 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   reported_cookies_notified_timer_.Stop();
   CHECK(cookie_refresh_completed_);
   if (result_ == Result::kSuccess && !non_refreshed_cookie_names_.empty()) {
-    result_ = Result::kServerUnexepectedResponse;
+    result_ = Result::kServerUnexpectedResponse;
   }
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult",

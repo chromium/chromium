@@ -1265,7 +1265,7 @@ TEST_F(BoundSessionCookieControllerImplTest, UpdateDebugInfo) {
   // TIMEOUT: 1
   // SUCCESS_WITH_MISSING_COOKIES: 1
   trigger_rotation();
-  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+  SimulateCompleteRefreshRequest(Result::kServerUnexpectedResponse,
                                  std::nullopt);
   AddFailureCounter(expected_info,
                     RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES);
@@ -1301,7 +1301,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
   // SUCCESS_WITH_MISSING_COOKIES: 1
   trigger_rotation();
-  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+  SimulateCompleteRefreshRequest(Result::kServerUnexpectedResponse,
                                  std::nullopt);
   AddFirstFailureInfo(
       expected_info, base::Time::Now(),
@@ -1314,7 +1314,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
 
   // SUCCESS_WITH_MISSING_COOKIES: 2
-  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+  SimulateCompleteRefreshRequest(Result::kServerUnexpectedResponse,
                                  std::nullopt);
   missing_cookies_error_counter->set_count(2);
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
@@ -1495,7 +1495,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
       Result::kConnectionError,
       Result::kServerTransientError,
       Result::kServerPersistentError,
-      Result::kServerUnexepectedResponse,
+      Result::kServerUnexpectedResponse,
       Result::kChallengeRequiredUnexpectedFormat,
       Result::kChallengeRequiredLimitExceeded,
       Result::kSignChallengeFailed,

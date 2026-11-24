@@ -75,10 +75,10 @@ void RecordNumberOfSuccessiveTimeoutIfAny(size_t successive_timeout) {
       successive_timeout);
 }
 
-struct TimeoutOccured {};
+struct TimeoutOccurred {};
 
 void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
-                     std::variant<Result, TimeoutOccured> last_result,
+                     std::variant<Result, TimeoutOccurred> last_result,
                      bool last_challenge_received,
                      const base::flat_set<std::string>& last_missing_cookies) {
   using bound_session_credentials::RotationDebugInfo;
@@ -91,7 +91,7 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
                 return RotationDebugInfo::CONNECTION_ERROR;
               case Result::kServerTransientError:
                 return RotationDebugInfo::SERVER_ERROR;
-              case Result::kServerUnexepectedResponse:
+              case Result::kServerUnexpectedResponse:
                 return RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES;
               case Result::kSuccess:
                 return std::nullopt;
@@ -99,7 +99,7 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
                 return RotationDebugInfo::OTHER;
             }
           },
-          [](TimeoutOccured) -> std::optional<RotationDebugInfo::FailureType> {
+          [](TimeoutOccurred) -> std::optional<RotationDebugInfo::FailureType> {
             return RotationDebugInfo::TIMEOUT;
           }},
       last_result);
@@ -358,7 +358,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
   UpdateDebugInfo(debug_info_, result,
                   refresh_cookie_fetcher_->IsChallengeReceived(),
                   result == BoundSessionRefreshCookieFetcher::Result::
-                                kServerUnexepectedResponse
+                                kServerUnexpectedResponse
                       ? refresh_cookie_fetcher_->GetNonRefreshedCookieNames()
                       : base::flat_set<std::string>());
   BoundSessionRefreshCookieFetcher::Trigger refresh_trigger =
@@ -546,7 +546,7 @@ void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
 }
 
 void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
-  UpdateDebugInfo(debug_info_, TimeoutOccured{},
+  UpdateDebugInfo(debug_info_, TimeoutOccurred{},
                   refresh_cookie_fetcher_->IsChallengeReceived(), {});
   // Reset the fetcher, it has been taking at least
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.

@@ -468,8 +468,9 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGaiaURL) {
 }
 
 // Tests that the no Mirror request is returned for on Drive/Docs origin when
-// the user is not opted in to sync (also tests DICE acount consistency as there
-// is special logic for the Mirror header for Drive URLs when DICE is enabled).
+// the user is not opted in to sync (also tests DICE account consistency as
+// there is special logic for the Mirror header for Drive URLs when DICE is
+// enabled).
 TEST_F(SigninHeaderHelperTest, TestMirrorHeaderRequestDriveSignedOut) {
   for (const GURL& url :
        {GURL("https://drive.google.com/"), GURL("https://docs.google.com/")}) {

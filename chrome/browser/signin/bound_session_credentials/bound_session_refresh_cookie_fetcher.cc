@@ -53,7 +53,7 @@ bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
     case Result::kSuccess:
     case Result::kConnectionError:
     case Result::kServerTransientError:
-    case Result::kServerUnexepectedResponse:
+    case Result::kServerUnexpectedResponse:
       return false;
     case Result::kServerPersistentError:
     case Result::kChallengeRequiredUnexpectedFormat:
@@ -68,7 +68,7 @@ bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
 bool BoundSessionRefreshCookieFetcher::IsTransientError(Result result) {
   return result == Result::kConnectionError ||
          result == Result::kServerTransientError ||
-         result == Result::kServerUnexepectedResponse;
+         result == Result::kServerUnexpectedResponse;
 }
 
 std::ostream& operator<<(
@@ -85,7 +85,7 @@ std::ostream& operator<<(
     case BoundSessionRefreshCookieFetcher::Result::kServerPersistentError:
       return os << "Cookie rotation request finished with Server Persistent "
                    "error.";
-    case BoundSessionRefreshCookieFetcher::Result::kServerUnexepectedResponse:
+    case BoundSessionRefreshCookieFetcher::Result::kServerUnexpectedResponse:
       return os << "Cookie rotation request didn't set the expected cookies.";
     case BoundSessionRefreshCookieFetcher::Result::
         kChallengeRequiredUnexpectedFormat:

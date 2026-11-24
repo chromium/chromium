@@ -27,8 +27,8 @@ class BoundSessionCookieObserver : public network::mojom::CookieChangeListener {
   using CookieExpirationDateUpdate =
       base::RepeatingCallback<void(const std::string&, base::Time)>;
 
-  // `storage_partition_` must outlive `this`.
-  BoundSessionCookieObserver(content::StoragePartition* storage_partion_,
+  // `storage_partition` must outlive `this`.
+  BoundSessionCookieObserver(content::StoragePartition* storage_partition,
                              const GURL& url,
                              const std::string& cookie_name,
                              CookieExpirationDateUpdate callback);

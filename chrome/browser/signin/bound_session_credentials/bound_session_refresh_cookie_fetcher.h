@@ -24,7 +24,7 @@ class BoundSessionRefreshCookieFetcher {
     kConnectionError = 1,
     kServerTransientError = 2,
     kServerPersistentError = 3,
-    kServerUnexepectedResponse = 4,
+    kServerUnexpectedResponse = 4,
     kChallengeRequiredUnexpectedFormat = 5,
     kChallengeRequiredLimitExceeded = 6,
     kSignChallengeFailed = 7,

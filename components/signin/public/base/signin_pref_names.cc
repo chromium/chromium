@@ -80,8 +80,8 @@ const char kGaiaCookieHash[] = "gaia_cookie.hash";
 // should be converted into base::Time.
 const char kGaiaCookieChangedTime[] = "gaia_cookie.changed_time";
 
-// The last time that periodic reporting occured, to allow us to report as close
-// to once per intended interval as possible, through restarts.
+// The last time that periodic reporting occurred, to allow us to report as
+// close to once per intended interval as possible, through restarts.
 const char kGaiaCookiePeriodicReportTime[] =
     "gaia_cookie.periodic_report_time_2";
 

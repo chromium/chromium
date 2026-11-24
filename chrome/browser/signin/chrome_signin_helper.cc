@@ -728,8 +728,8 @@ void FixAccountConsistencyRequestHeader(
       account_consistency, signin_scoped_device_id);
 
   // Block the AccountReconcilor while the Dice requests are in flight. This
-  // allows the DiceReponseHandler to process the response before the reconcilor
-  // starts.
+  // allows the `DiceResponseHandler` to process the response before the
+  // reconcilor starts.
   if (dice_header_added && ShouldBlockReconcilorForRequest(request)) {
     auto lock_wrapper = base::MakeRefCounted<AccountReconcilorLockWrapper>(
         request->GetWebContentsGetter());

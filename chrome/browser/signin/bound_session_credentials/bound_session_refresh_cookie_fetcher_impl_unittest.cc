@@ -447,8 +447,8 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, CookiesNotReported) {
   task_environment_.FastForwardBy(base::Milliseconds(100));
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(reported_cookies_notified());
-  EXPECT_EQ(future.Get(), Result::kServerUnexepectedResponse);
-  VerifyMetricsRecorded(Result::kServerUnexepectedResponse, {net::HTTP_OK});
+  EXPECT_EQ(future.Get(), Result::kServerUnexpectedResponse);
+  VerifyMetricsRecorded(Result::kServerUnexpectedResponse, {net::HTTP_OK});
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -472,8 +472,8 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
       pending_request->request.url.spec(), "");
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), Result::kServerUnexepectedResponse);
-  VerifyMetricsRecorded(Result::kServerUnexepectedResponse, {net::HTTP_OK});
+  EXPECT_EQ(future.Get(), Result::kServerUnexpectedResponse);
+  VerifyMetricsRecorded(Result::kServerUnexpectedResponse, {net::HTTP_OK});
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -497,8 +497,8 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
       pending_request->request.url.spec(), "");
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), Result::kServerUnexepectedResponse);
-  VerifyMetricsRecorded(Result::kServerUnexepectedResponse, {net::HTTP_OK});
+  EXPECT_EQ(future.Get(), Result::kServerUnexpectedResponse);
+  VerifyMetricsRecorded(Result::kServerUnexpectedResponse, {net::HTTP_OK});
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureNetError) {

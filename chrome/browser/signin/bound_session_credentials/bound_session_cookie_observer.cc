@@ -26,11 +26,11 @@ std::optional<const net::CanonicalCookie> GetCookie(
 }  // namespace
 
 BoundSessionCookieObserver::BoundSessionCookieObserver(
-    content::StoragePartition* storage_partion,
+    content::StoragePartition* storage_partition,
     const GURL& url,
     const std::string& cookie_name,
     CookieExpirationDateUpdate callback)
-    : storage_partition_(storage_partion),
+    : storage_partition_(storage_partition),
       url_(url),
       cookie_name_(cookie_name),
       callback_(std::move(callback)) {
