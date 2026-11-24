@@ -800,16 +800,14 @@ const ui::ImageModel MenuItemView::GetIcon() const {
 
 void MenuItemView::SetIconColor(std::optional<ui::ColorVariant> icon_color) {
   icon_color_ = icon_color;
-  if (GetWidget() && !IsScheduledForDeletion()) {
-    UpdateSelectionBasedState(last_paint_as_selected_);
-  }
+  RefreshSelectionBasedState();
 }
 
 void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
   {
     // See comment in `update_selection_based_state_in_view_herarchy_changed_`
     // as to why setting the field and explicitly calling
-    // UpdateSelectionBasedStateIfChanged() is necessary.
+    // RefreshSelectionBasedState() is necessary.
     base::AutoReset setter(
         &update_selection_based_state_in_view_herarchy_changed_, false);
     if (icon_view_) {
@@ -821,7 +819,9 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
     }
   }
 
-  UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
+  // Reapply disabled and selection colors to the new icon even when selection
+  // state has not changed.
+  RefreshSelectionBasedState();
 
   InvalidateLayout();
   SchedulePaint();
@@ -1220,6 +1220,7 @@ MenuItemView::MenuItemView(MenuItemView* parent,
           [](MenuItemView* item) {
             item->UpdateAccessibleSelection();
             item->UpdateAccessibleDefaultActionVerb();
+            item->RefreshSelectionBasedState();
           },
           base::Unretained(this)));
 
@@ -1981,6 +1982,14 @@ void MenuItemView::UpdateSelectionBasedStateIfChanged(PaintMode mode) {
   const bool paint_as_selected = ShouldPaintAsSelected(mode);
   if (paint_as_selected != last_paint_as_selected_) {
     UpdateSelectionBasedState(paint_as_selected);
+  }
+}
+
+void MenuItemView::RefreshSelectionBasedState() {
+  if (GetWidget() && !IsScheduledForDeletion()) {
+    UpdateSelectionBasedState(parent_menu_item_
+                                  ? ShouldPaintAsSelected(PaintMode::kNormal)
+                                  : last_paint_as_selected_);
   }
 }
 

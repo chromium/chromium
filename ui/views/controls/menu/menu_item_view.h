@@ -722,6 +722,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Updates any state that may changed based on the selection state.
   void UpdateSelectionBasedState(bool should_paint_as_selected);
 
+  // Reapplies selection and enabled-state colors when attached to a widget.
+  void RefreshSelectionBasedState();
+
   // Returns true if the MenuItemView should be painted as selected.
   bool ShouldPaintAsSelected(PaintMode mode) const;
 
@@ -900,7 +903,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // before `icon_view_` is set. This means NonIconChildViewsCount() may return
   // the wrong thing. In this case
   // `update_selection_based_state_in_view_herarchy_changed_` is set to false
-  // and SetIconView() explicitly calls UpdateSelectionBasedStateIfChanged().
+  // and SetIconView() explicitly calls RefreshSelectionBasedState().
   bool update_selection_based_state_in_view_herarchy_changed_ = true;
 
   std::optional<ui::ColorId> foreground_color_id_;

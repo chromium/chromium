@@ -1276,6 +1276,119 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionIconColors) {
                                                  .color());
 }
 
+TEST_F(MenuItemViewPaintUnitTest,
+       SetIconAppliesDisabledAndSelectedColorWhileShowing) {
+  MenuItemView* disabled_item =
+      menu_item_view()->AppendMenuItem(1, u"disabled");
+  disabled_item->SetEnabled(false);
+
+  MenuItemView* selected_item =
+      menu_item_view()->AppendMenuItem(2, u"selected");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kMouse);
+  selected_item->SetForcedVisualSelection(true);
+
+  const ui::ColorProvider* color_provider = disabled_item->GetColorProvider();
+  const SkColor disabled_color =
+      color_provider->GetColor(ui::kColorMenuIconDisabled);
+  const SkColor selected_color = color_utils::DeriveDefaultIconColor(
+      color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
+  const SkColor normal_color = color_provider->GetColor(ui::kColorMenuIcon);
+  ASSERT_NE(disabled_color, normal_color);
+  ASSERT_NE(selected_color, normal_color);
+
+  const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon
+                                        : views::kMenuCheckOldIcon,
+      ui::kColorMenuIcon);
+  disabled_item->SetIcon(icon);
+  selected_item->SetIcon(icon);
+
+  ASSERT_TRUE(disabled_item->icon_view());
+  EXPECT_EQ(disabled_item->icon_view()
+                ->GetImageModel()
+                .GetVectorIcon()
+                .color()
+                .ResolveToSkColor(color_provider),
+            disabled_color);
+  ASSERT_TRUE(selected_item->icon_view());
+  EXPECT_EQ(selected_item->icon_view()
+                ->GetImageModel()
+                .GetVectorIcon()
+                .color()
+                .ResolveToSkColor(color_provider),
+            selected_color);
+}
+
+TEST_F(MenuItemViewPaintUnitTest,
+       SetEnabledUpdatesIconAndSubmenuArrowColorsWhileShowing) {
+  MenuItemView* icon_item = menu_item_view()->AppendMenuItem(1, u"icon item");
+  icon_item->SetIcon(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon
+                                        : views::kMenuCheckOldIcon,
+      ui::kColorMenuIcon));
+  MenuItemView* submenu_item =
+      menu_item_view()->AppendSubMenu(2, u"submenu item");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kMouse);
+
+  const ui::ColorProvider* color_provider = icon_item->GetColorProvider();
+  const SkColor enabled_icon_color =
+      color_provider->GetColor(ui::kColorMenuIcon);
+  const SkColor disabled_icon_color =
+      color_provider->GetColor(ui::kColorMenuIconDisabled);
+  const SkColor enabled_arrow_color = color_utils::DeriveDefaultIconColor(
+      color_provider->GetColor(ui::kColorMenuItemForeground));
+  const SkColor disabled_arrow_color = color_utils::DeriveDefaultIconColor(
+      color_provider->GetColor(ui::kColorMenuItemForegroundDisabled));
+  ASSERT_NE(enabled_icon_color, disabled_icon_color);
+  ASSERT_NE(enabled_arrow_color, disabled_arrow_color);
+
+  ImageView* submenu_arrow =
+      TestMenuItemView::submenu_arrow_image_view(submenu_item);
+  ASSERT_TRUE(submenu_arrow);
+  EXPECT_EQ(icon_item->icon_view()
+                ->GetImageModel()
+                .GetVectorIcon()
+                .color()
+                .ResolveToSkColor(color_provider),
+            enabled_icon_color);
+  EXPECT_EQ(
+      submenu_arrow->GetImageModel().GetVectorIcon().color().ResolveToSkColor(
+          color_provider),
+      enabled_arrow_color);
+
+  icon_item->SetEnabled(false);
+  submenu_item->SetEnabled(false);
+  EXPECT_EQ(icon_item->icon_view()
+                ->GetImageModel()
+                .GetVectorIcon()
+                .color()
+                .ResolveToSkColor(color_provider),
+            disabled_icon_color);
+  EXPECT_EQ(
+      submenu_arrow->GetImageModel().GetVectorIcon().color().ResolveToSkColor(
+          color_provider),
+      disabled_arrow_color);
+
+  icon_item->SetEnabled(true);
+  submenu_item->SetEnabled(true);
+  EXPECT_EQ(icon_item->icon_view()
+                ->GetImageModel()
+                .GetVectorIcon()
+                .color()
+                .ResolveToSkColor(color_provider),
+            enabled_icon_color);
+  EXPECT_EQ(
+      submenu_arrow->GetImageModel().GetVectorIcon().color().ResolveToSkColor(
+          color_provider),
+      enabled_arrow_color);
+}
+
 // Tests to ensure that selection based state is not updated if a menu item or
 // an anscestor item has been scheduled for deletion. This guards against
 // removed but not-yet-deleted MenuItemViews using stale model data to update
