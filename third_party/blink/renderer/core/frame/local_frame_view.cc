@@ -5140,11 +5140,8 @@ void LocalFrameView::CrossOriginToParentFrameChanged() {
       }
       view.ScheduleVisualUpdateForPaintInvalidationIfNeeded();
     }
-    view.ForAllChildLocalFrameViews([&self](LocalFrameView& child_view) {
-      if (HasSameOriginLocalParentFrame(child_view.GetFrame())) {
-        self(self, child_view);
-      }
-    });
+    view.ForAllChildLocalFrameViews(
+        [&self](LocalFrameView& child_view) { self(self, child_view); });
   };
   invalidate_subtree(invalidate_subtree, *this);
 }

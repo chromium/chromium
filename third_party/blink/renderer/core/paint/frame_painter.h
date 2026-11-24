@@ -14,15 +14,15 @@ class GraphicsContext;
 class LocalFrame;
 class LocalFrameView;
 
-// Returns true if `frame` has a local parent frame and is HTML same-origin with
-// it (ignoring `document.domain` and requiring
-// `!frame.IsCrossOriginToParentOrOuterDocument()`).
-bool HasSameOriginLocalParentFrame(const LocalFrame& frame);
-
 class FramePainter {
   STACK_ALLOCATED();
 
  public:
+  // Returns true if `frame` has a local parent frame with the same HTML origin
+  // (ignoring `document.domain` and `universal_access_`) and the same non-empty
+  // agent cluster ID (ignoring `cross_agent_cluster_access_`).
+  static bool CanPaintSubframeForReadBack(const LocalFrame&);
+
   explicit FramePainter(const LocalFrameView& frame_view)
       : frame_view_(&frame_view) {}
   FramePainter(const FramePainter&) = delete;

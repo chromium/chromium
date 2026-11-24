@@ -135,8 +135,13 @@ EmbeddedContentPainter::RemoveSvgFilterPaint(
   DisplayItem::Type display_item_type = DisplayItem::kUninitializedType;
   switch (embedded_content_view->SvgFilterPaintedCounter()) {
     case mojom::blink::WebFeature::kSvgFilterPaintedOnLocalFrame:
-      // We only care about restricted local frames.
-      if (!To<LocalFrameView>(embedded_content_view)
+      // We only care about restricted local frames. Inside read-back allowed
+      // rendering (html-in-canvas), `FramePainter::Paint` already suppresses
+      // subframes that fail `FramePainter::CanPaintSubframeForReadBack`, and
+      // `PaintPropertyTreeBuilder::SetupContextForFrame` skips filter stripping
+      // only for subframes that pass `CanPaintSubframeForReadBack`.
+      if (paint_info.IsReadBackAllowedRendering() ||
+          !To<LocalFrameView>(embedded_content_view)
                ->GetFrame()
                .IsCrossOriginToParentOrOuterDocument()) {
         return std::nullopt;

@@ -4,6 +4,7 @@
 
 #include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/layers/picture_layer.h"
@@ -21,6 +22,8 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -46,6 +49,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -5119,18 +5123,18 @@ TEST_P(CompositingSimTest, CanvasDrawElementDocumentDomainIsolation) {
   EXPECT_EQ(initial.getColor(10, 10), SkColorSetRGB(255, 0, 0));
   EXPECT_EQ(initial.getColor(10, 60), SkColorSetRGB(0, 0, 255));
 
-  // Relaxing `document.domain` only on the parent makes `same` cross-origin to
-  // its parent, dynamically invalidating descendant PaintLayer subsequences and
-  // omitting `same`.
+  // Relaxing `document.domain` only on the parent does not affect strict
+  // HTML same-origin readback: `same` stays painted red (and is not spuriously
+  // composited out of the drawable record), while `cross` stays omitted.
   ClassicScript::CreateUnspecifiedScript("document.domain = 'example.com';")
       ->RunScript(GetDocument().domWindow());
   Compositor().BeginFrame();
   SkBitmap asymmetric = playback_target();
-  EXPECT_EQ(asymmetric.getColor(10, 10), SkColorSetRGB(0, 0, 255));
+  EXPECT_EQ(asymmetric.getColor(10, 10), SkColorSetRGB(255, 0, 0));
   EXPECT_EQ(asymmetric.getColor(10, 60), SkColorSetRGB(0, 0, 255));
 
-  // Relaxing `document.domain` on both subframes restores `same`, while `cross`
-  // (`b.example.com`) remains omitted despite `document.domain` access.
+  // Relaxing `document.domain` on both subframes leaves `same` painted, while
+  // `cross` (`b.example.com`) remains omitted despite `document.domain` access.
   ClassicScript::CreateUnspecifiedScript("document.domain = 'example.com';")
       ->RunScript(same_doc->domWindow());
   ClassicScript::CreateUnspecifiedScript("document.domain = 'example.com';")
@@ -5139,6 +5143,54 @@ TEST_P(CompositingSimTest, CanvasDrawElementDocumentDomainIsolation) {
   SkBitmap both_relaxed = playback_target();
   EXPECT_EQ(both_relaxed.getColor(10, 10), SkColorSetRGB(255, 0, 0));
   EXPECT_EQ(both_relaxed.getColor(10, 60), SkColorSetRGB(0, 0, 255));
+}
+
+TEST_P(CompositingSimTest, CanvasDrawElementSubframeAgentClusterIsolation) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  SimRequest main_resource("https://a.example.com/test.html", "text/html");
+  SimRequest same_origin_sub("https://a.example.com/same.html", "text/html");
+  LoadURL("https://a.example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; }</style>
+    <canvas id="canvas" width="100" height="100" content=drawable>
+      <div id="target" drawable
+           style="width: 100px; height: 100px; background: rgb(0, 0, 255);">
+        <iframe id="same" src="https://a.example.com/same.html"
+                style="display: block; width: 50px; height: 50px; border: none;"></iframe>
+      </div>
+    </canvas>
+  )HTML");
+  same_origin_sub.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; background: rgb(255, 0, 0); }</style>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetElementById("target");
+  Document* same_doc =
+      To<HTMLIFrameElement>(GetElementById("same"))->contentDocument();
+  auto target_color = [&]() {
+    auto record = paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
+        target->GetDomNodeId());
+    EXPECT_TRUE(record);
+    return PlaybackToBitmap(record->record, 100, 100).getColor(10, 10);
+  };
+
+  EXPECT_EQ(target_color(), SkColorSetRGB(255, 0, 0));
+
+  // A same-origin subframe in a different agent cluster is omitted.
+  same_doc->domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+      same_doc->domWindow()
+          ->GetMutableSecurityOrigin()
+          ->GetOriginForAgentCluster(base::UnguessableToken::Create()));
+  same_doc->GetLayoutView()->InvalidatePaintForViewAndDescendants();
+  To<LayoutBoxModelObject>(target->GetLayoutObject())
+      ->Layer()
+      ->SetNeedsRepaint();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(target_color(), SkColorSetRGB(0, 0, 255));
 }
 
 }  // namespace blink

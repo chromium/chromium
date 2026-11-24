@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/find_paint_offset_needing_update.h"
 #include "third_party/blink/renderer/core/paint/find_properties_needing_update.h"
+#include "third_party/blink/renderer/core/paint/frame_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -213,7 +214,20 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   // filters stripped at paint time in
   // `EmbeddedContentPainter::RemoveSvgFilterPaint` (which also records the
   // deprecation counter for both local and remote frames).
-  if (frame_view.GetFrame().IsCrossOriginToParentOrOuterDocument()) {
+  //
+  // Inside a drawable canvas subtree, skip filter stripping for subframes that
+  // pass `FramePainter::CanPaintSubframeForReadBack` (e.g., same-origin
+  // subframes after a `document.domain` change) so `current_effect` does not
+  // escape the drawable canvas effect subtree and leak hidden canvas content
+  // onto the screen. Subframes that fail `CanPaintSubframeForReadBack` still
+  // strip reference filters here (protecting non-canvas paint paths such as
+  // `NodeImage` and `<feImage>`), while `FramePainter::Paint` suppresses them
+  // completely during canvas painting. Top-layer elements inside `<canvas>` are
+  // reparented under `LayoutView` and therefore have
+  // `is_in_drawable_canvas_subtree == false`.
+  if (frame_view.GetFrame().IsCrossOriginToParentOrOuterDocument() &&
+      !(context.is_in_drawable_canvas_subtree &&
+        FramePainter::CanPaintSubframeForReadBack(frame_view.GetFrame()))) {
     const blink::EffectPaintPropertyNode* candidate_effect =
         GetFirstParentEffectWithoutReferenceFilter(context.current_effect);
     if (candidate_effect) {
@@ -4958,6 +4972,14 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       object_.Style().HasClipPath()) {
     context_.direct_compositing_reasons.Put(
         CompositingReason::kViewTransitionElementDescendantWithClipPath);
+  }
+
+  if (context_.fragment_context.is_in_drawable_canvas_subtree) {
+    // Prevent subframes inside a drawable canvas subtree (e.g., a same-origin
+    // iframe after a document.domain change) from being composited out of the
+    // drawable's layer. Top-layer elements inside <canvas> are reparented under
+    // LayoutView and have is_in_drawable_canvas_subtree == false.
+    context_.direct_compositing_reasons.Remove(CompositingReason::kIFrame);
   }
 
   context_.was_layout_shift_root =

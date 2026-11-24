@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -23,7 +24,10 @@
 
 namespace blink {
 
-bool HasSameOriginLocalParentFrame(const LocalFrame& frame) {
+bool FramePainter::in_paint_contents_ = false;
+
+// static
+bool FramePainter::CanPaintSubframeForReadBack(const LocalFrame& frame) {
   const auto* parent = DynamicTo<LocalFrame>(frame.Tree().Parent());
   if (!parent) {
     return false;
@@ -32,16 +36,19 @@ bool HasSameOriginLocalParentFrame(const LocalFrame& frame) {
   const SecurityOrigin* origin =
       security_context ? security_context->GetSecurityOrigin() : nullptr;
   const SecurityContext* parent_context = parent->GetSecurityContext();
-  return origin && parent_context &&
-         !frame.IsCrossOriginToParentOrOuterDocument() &&
-         origin->IsSameOriginWith(parent_context->GetSecurityOrigin());
+  const SecurityOrigin* parent_origin =
+      parent_context ? parent_context->GetSecurityOrigin() : nullptr;
+  if (!origin || !parent_origin) {
+    return false;
+  }
+  return origin->IsSameOriginWith(parent_origin) &&
+         !origin->AgentClusterId().is_empty() &&
+         origin->AgentClusterId() == parent_origin->AgentClusterId();
 }
-
-bool FramePainter::in_paint_contents_ = false;
 
 void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
   if ((paint_flags & PaintFlag::kReadBackAllowedRendering) &&
-      !HasSameOriginLocalParentFrame(GetFrameView().GetFrame())) {
+      !CanPaintSubframeForReadBack(GetFrameView().GetFrame())) {
     return;
   }
 
