@@ -42,16 +42,20 @@ var configs = [{time: 0, delay: 1000},
 
 function makeFontFaceDeclaration(family, config, display) {
     var url = '/resources/Ahem.ttf';
+    // Include `&t=` so each (delay, time) row has a distinct URL and requests
+    // are not coalesced across rows started at different times.
     if (config.delay > 0)
-        url = 'slow-ahem-loading.cgi?delay=' + config.delay + '&t=' + config.time;
+        url = 'resources/slow-ahem-loading.php?delay=' + config.delay + '&t=' + config.time;
     return '@font-face { font-family: ' + family + '; src: url(' + url + '); font-display: ' + display + '; }';
 }
 
 
-var maxTime = Math.max.apply(null, configs.map((config) => config.time));
+var maxTime = Math.max.apply(null, configs.map(function(config) { return config.time; }));
 var table = document.getElementById('container');
 
 window.onload = function() {
+    var mustLoadFamilies = {};
+    var zeroTimeRows = [];
     for (var config, i = 0; config = configs[i]; i++) {
         var tr = document.createElement('tr');
         tr.classList.add('hidden');
@@ -64,6 +68,10 @@ window.onload = function() {
 
         for (var display, j = 0; display = fontDisplayValues[j]; j++) {
             var family = [display, config.time, config.delay].join('-');
+            if (config.delay < config.time &&
+                !(display == 'optional' && config.delay > 0)) {
+                mustLoadFamilies[family] = true;
+            }
             var rule = makeFontFaceDeclaration(family, config, display);
             document.styleSheets[0].insertRule(rule, 0);
             var td = document.createElement('td');
@@ -73,15 +81,34 @@ window.onload = function() {
         }
         table.appendChild(tr);
         if (config.time == 0) {
-            setTimeout((function(tr){
-                tr.classList.remove('hidden');
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            }).bind(null, tr), maxTime);
+            zeroTimeRows.push(tr);
         } else {
-            setTimeout((function(tr){tr.classList.remove('hidden')}).bind(null, tr), maxTime - config.time);
+            setTimeout((function(tr) { tr.classList.remove('hidden'); }).bind(null, tr), maxTime - config.time);
         }
     }
-}
+
+    setTimeout(function() {
+        var pending = [];
+        document.fonts.forEach(function(face) {
+            var family = face.family.replace(/['"]/g, '');
+            if (mustLoadFamilies[family])
+                pending.push(face.loaded);
+        });
+        // Cap the extra wait well below the 2000ms margin before rows with
+        // delay >= time (e.g. {time: 1000, delay: 3000}) finish their
+        // block/load periods, and use allSettled so a rejected load still
+        // finishes the test instead of timing out.
+        var capTimer;
+        var capPromise = new Promise(function(resolve) {
+            capTimer = setTimeout(resolve, 1000);
+        });
+        Promise.race([Promise.allSettled(pending), capPromise]).then(function() {
+            clearTimeout(capTimer);
+            zeroTimeRows.forEach(function(tr) { tr.classList.remove('hidden'); });
+            if (window.testRunner)
+                testRunner.notifyDone();
+        });
+    }, maxTime);
+};
 
 </script>
