@@ -573,7 +573,6 @@ if (enable_vr) {
           ":vr_common",
           "//chrome/browser/content_settings:content_settings_factory",
           "//components/content_settings/core/browser",
-          "//device/vr:openxr_data",
         ]
         if (is_win) {
           deps += [ "//device/vr:directx_helpers" ]
@@ -582,6 +581,7 @@ if (enable_vr) {
 
       if (enable_openxr) {
         deps += [
+          "//device/vr:openxr_data",
           "//device/vr:openxr_test_helper",
           "//third_party/openxr",
         ]
