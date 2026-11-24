@@ -126,11 +126,12 @@ void BackForwardCacheDisablingFeatureTracker::Remove(
       BackForwardCacheDisablingFeatureTracker::TracingType::kEnd, feature);
 }
 
-HashSet<SchedulingPolicy::Feature> BackForwardCacheDisablingFeatureTracker::
-    GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
-  HashSet<SchedulingPolicy::Feature> result;
+base::EnumSet<SchedulingPolicy::Feature>
+BackForwardCacheDisablingFeatureTracker::
+    GetActiveFeaturesTrackedForBackForwardCacheMetrics() const {
+  base::EnumSet<SchedulingPolicy::Feature> result;
   for (const auto& it : back_forward_cache_disabling_feature_counts_) {
-    result.insert(it.first);
+    result.Put(it.first);
   }
   return result;
 }

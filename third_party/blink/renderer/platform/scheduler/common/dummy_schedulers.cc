@@ -137,9 +137,9 @@ class DummyFrameScheduler : public FrameScheduler {
       override {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  HashSet<SchedulingPolicy::Feature>
-  GetActiveFeaturesTrackedForBackForwardCacheMetrics() override {
-    return HashSet<SchedulingPolicy::Feature>();
+  base::EnumSet<SchedulingPolicy::Feature>
+  GetActiveFeaturesTrackedForBackForwardCacheMetrics() const override {
+    return {};
   }
   base::WeakPtr<FrameScheduler> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

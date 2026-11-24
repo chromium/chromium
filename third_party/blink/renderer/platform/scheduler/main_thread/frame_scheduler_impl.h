@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -187,8 +188,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   // Returns the list of active features which currently tracked by the
   // scheduler for back-forward cache metrics.
-  HashSet<SchedulingPolicy::Feature>
-  GetActiveFeaturesTrackedForBackForwardCacheMetrics() override;
+  base::EnumSet<SchedulingPolicy::Feature>
+  GetActiveFeaturesTrackedForBackForwardCacheMetrics() const override;
 
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingQueueType,

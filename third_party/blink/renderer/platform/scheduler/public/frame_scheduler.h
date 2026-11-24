@@ -7,13 +7,13 @@
 
 #include <memory>
 
+#include "base/containers/enum_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace base {
@@ -182,8 +182,8 @@ class FrameScheduler : public FrameOrWorkerScheduler {
 
   // Returns the list of active features which currently tracked by the
   // scheduler for back-forward cache metrics.
-  virtual HashSet<SchedulingPolicy::Feature>
-  GetActiveFeaturesTrackedForBackForwardCacheMetrics() = 0;
+  virtual base::EnumSet<SchedulingPolicy::Feature>
+  GetActiveFeaturesTrackedForBackForwardCacheMetrics() const = 0;
 
   // TODO(altimin): Move FrameScheduler object to oilpan.
   virtual base::WeakPtr<FrameScheduler> GetWeakPtr() = 0;

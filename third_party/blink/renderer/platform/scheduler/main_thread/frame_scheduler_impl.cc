@@ -1347,8 +1347,8 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
       static_cast<int32_t>(ipc_hash));
 }
 
-HashSet<SchedulingPolicy::Feature>
-FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
+base::EnumSet<SchedulingPolicy::Feature>
+FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetrics() const {
   return back_forward_cache_disabling_feature_tracker_
       .GetActiveFeaturesTrackedForBackForwardCacheMetrics();
 }

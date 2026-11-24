@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_BACK_FORWARD_CACHE_DISABLING_FEATURE_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_BACK_FORWARD_CACHE_DISABLING_FEATURE_TRACKER_H_
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 namespace scheduler {
@@ -65,9 +65,9 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // Called when one usage of feature is removed.
   void Remove(FeatureAndJSLocationBlockingBFCache feature_and_js_location);
 
-  // Gets a hash set of feature usages for metrics.
-  HashSet<SchedulingPolicy::Feature>
-  GetActiveFeaturesTrackedForBackForwardCacheMetrics();
+  // Gets a set of feature usages for metrics.
+  base::EnumSet<SchedulingPolicy::Feature>
+  GetActiveFeaturesTrackedForBackForwardCacheMetrics() const;
 
   // Gets a list of non sticky features and their JS locations.
   BFCacheBlockingFeatureAndLocations&

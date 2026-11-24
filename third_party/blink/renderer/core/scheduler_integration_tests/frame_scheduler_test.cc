@@ -35,7 +35,7 @@ TEST_F(FrameSchedulerTest, BackForwardCacheOptOut_FrameNavigated) {
       [&frame_scheduler](SchedulingPolicy::Feature feature) {
         return frame_scheduler
             ->GetActiveFeaturesTrackedForBackForwardCacheMetrics()
-            .Contains(feature);
+            .Has(feature);
       };
   EXPECT_FALSE(
       bf_cache_metrics_contains(SchedulingPolicy::Feature::kWebSocket));
