@@ -13,7 +13,6 @@ import android.os.Build.VERSION_CODES;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -31,7 +30,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -50,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
@@ -259,11 +259,13 @@ public class LauncherShortcutTest {
         // contain FLAG_ACTIVITY_MULTIPLE_TASK.
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
 
-        ChromeTabbedActivity newWindowActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.CREATED,
-                        () -> ContextUtils.getApplicationContext().startActivity(intent));
+        CtaPageStation newWindowPage =
+                Triggers.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(incognito)
+                                        .inNewWindow());
+        ChromeTabbedActivity newWindowActivity = newWindowPage.getActivity();
 
         // Verify that a new Chrome instance was created.
         Assert.assertEquals(
@@ -272,8 +274,7 @@ public class LauncherShortcutTest {
                 MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         // Verify NTP was created in the new activity.
-        CriteriaHelper.pollUiThread(() -> newWindowActivity.getActivityTab() != null);
-        Tab activityTab = ThreadUtils.runOnUiThreadBlocking(newWindowActivity::getActivityTab);
+        Tab activityTab = newWindowPage.getTab();
         Assert.assertEquals(
                 "Incorrect tab launch type.",
                 TabLaunchType.FROM_LAUNCHER_SHORTCUT,

@@ -4,9 +4,13 @@
 
 package org.chromium.base.test.transit;
 
+import android.content.Intent;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
+
+import org.chromium.base.ContextUtils;
 
 /** Common Triggers to start Transitions. */
 public class Triggers {
@@ -36,6 +40,21 @@ public class Triggers {
      */
     public static TripBuilder runOnUiThreadTo(Runnable runnable) {
         return new TripBuilder().withRunnableTrigger(runnable).withRunOnUiThread();
+    }
+
+    /**
+     * Start an Activity with an Intent from the application context to trigger a Transition.
+     *
+     * <p>The Intent needs {@link Intent#FLAG_ACTIVITY_NEW_TASK}, since it is started from the
+     * application context.
+     *
+     * @return a {@link TripBuilder} to perform the Transition.
+     */
+    public static TripBuilder startActivityTo(Intent intent) {
+        assert (intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0
+                : "Starting an Activity from the application context requires"
+                        + " FLAG_ACTIVITY_NEW_TASK";
+        return runTo(() -> ContextUtils.getApplicationContext().startActivity(intent));
     }
 
     /**

@@ -13,7 +13,6 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -24,7 +23,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -115,25 +113,18 @@ public class DragAndDropLauncherActivityTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DragDrop.Tab.Type", DragDropType.LINK_TO_NEW_INSTANCE);
         ChromeTabbedActivity lastAccessedActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.CREATED,
-                        () -> mContext.startActivity(intent));
+                mPage.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(/* incognito= */ false)
+                                        .inNewWindow())
+                        .getActivity();
 
         // Verify that a new Chrome instance is created.
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
                 MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab activityTab = lastAccessedActivity.getActivityTab();
-                    Criteria.checkThat(
-                            "Activity tab should be non-null.",
-                            activityTab,
-                            Matchers.notNullValue());
-                });
 
         // Verify that the link is opened in the activity tab of the new Chrome instance.
         Tab activityTab = ThreadUtils.runOnUiThreadBlocking(lastAccessedActivity::getActivityTab);
@@ -168,10 +159,12 @@ public class DragAndDropLauncherActivityTest {
         // existing instance.
         Intent intent = createLinkDragDropIntent(mLinkUrl, TabWindowManager.INVALID_WINDOW_ID);
         ChromeTabbedActivity lastAccessedActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.CREATED,
-                        () -> mContext.startActivity(intent));
+                mPage.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(/* incognito= */ false)
+                                        .inNewWindow())
+                        .getActivity();
         MultiWindowUtils.setMaxInstancesForTesting(2);
         int lastAccessedInstanceId =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -250,10 +243,12 @@ public class DragAndDropLauncherActivityTest {
         // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
         Intent intent = createTabDragDropIntent(draggedTab, sourceActivity);
         ChromeTabbedActivity newActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.CREATED,
-                        () -> mContext.startActivity(intent));
+                mPage.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(/* incognito= */ false)
+                                        .inNewWindow())
+                        .getActivity();
 
         // Verify that a new Chrome instance is created.
         Assert.assertEquals(
@@ -316,10 +311,12 @@ public class DragAndDropLauncherActivityTest {
         // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
         Intent intent = createTabGroupDragDropIntent(draggedTabGroup, sourceActivity);
         ChromeTabbedActivity newActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.CREATED,
-                        () -> mContext.startActivity(intent));
+                mPage.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(/* incognito= */ false)
+                                        .inNewWindow())
+                        .getActivity();
 
         // Verify that a new Chrome instance is created.
         Assert.assertEquals(
@@ -388,10 +385,12 @@ public class DragAndDropLauncherActivityTest {
         // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
         Intent intent = createMultiTabDragDropIntent(draggedTabs, sourceActivity);
         ChromeTabbedActivity newActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.CREATED,
-                        () -> mContext.startActivity(intent));
+                mPage.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(/* incognito= */ false)
+                                        .inNewWindow())
+                        .getActivity();
 
         // Verify that a new Chrome instance is created.
         Assert.assertEquals(

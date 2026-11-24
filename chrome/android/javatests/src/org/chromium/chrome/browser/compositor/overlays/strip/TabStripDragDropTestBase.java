@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import android.content.ClipDescription;
-import android.content.Intent;
 import android.os.Build;
 import android.view.DragEvent;
 import android.view.View;
@@ -19,7 +18,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -120,13 +118,10 @@ public abstract class TabStripDragDropTestBase {
 
     protected ChromeTabbedActivity setupDestinationWindow(
             ChromeTabbedActivity sourceActivity, int additionalTabs) {
-        Intent newWindowIntent = MultiWindowTestHelper.createNewWindowIntent(sourceActivity);
         CtaPageStation destStation =
                 mCurrentStation
-                        .runTo(
-                                () ->
-                                        ContextUtils.getApplicationContext()
-                                                .startActivity(newWindowIntent))
+                        .startActivityTo(
+                                MultiWindowTestHelper.createNewWindowIntent(sourceActivity))
                         .reach(CtaPageStation.newGenericBuilder().inNewWindow());
         if (additionalTabs > 0) {
             destStation =

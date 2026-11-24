@@ -27,8 +27,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -522,13 +523,14 @@ public class MultiInstanceManagerApi31Test {
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true);
         }
-        ChromeTabbedActivity activity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () -> ContextUtils.getApplicationContext().startActivity(intent));
-        waitForActivityReady(activity);
-        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
+        CtaPageStation page =
+                Triggers.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(addIncognitoExtras)
+                                        .inNewWindow());
+        ChromeTabbedActivity activity = page.getActivity();
+        Tab tab = page.getTab();
         if (loadCustomUrl) {
             ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
         }

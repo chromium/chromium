@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -500,6 +501,17 @@ public abstract class ConditionalState {
      */
     public TripBuilder runOnUiThreadTo(Runnable runnable) {
         return Triggers.runOnUiThreadTo(runnable).withContext(this);
+    }
+
+    /**
+     * Start an Activity with an Intent from the application context to trigger a Transition.
+     *
+     * <p>Adds this ConditionalState as context.
+     *
+     * @return a {@link TripBuilder} to perform the Transition.
+     */
+    public TripBuilder startActivityTo(Intent intent) {
+        return Triggers.startActivityTo(intent).withContext(this);
     }
 
     /**

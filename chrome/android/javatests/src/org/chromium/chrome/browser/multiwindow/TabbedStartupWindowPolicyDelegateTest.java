@@ -33,6 +33,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
@@ -343,16 +345,12 @@ public class TabbedStartupWindowPolicyDelegateTest {
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true);
         }
         ChromeTabbedActivity activity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () -> ContextUtils.getApplicationContext().startActivity(intent));
-        CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                "Activity tab should be non-null.",
-                                activity.getActivityTab(),
-                                notNullValue()));
+                Triggers.startActivityTo(intent)
+                        .reach(
+                                CtaPageStation.newGenericBuilder()
+                                        .withIncognito(addIncognitoExtras)
+                                        .inNewWindow())
+                        .getActivity();
         mExtraActivities.add(activity);
         return activity;
     }
