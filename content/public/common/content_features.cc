@@ -890,7 +890,7 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool>
     kPrefetchOffTheMainThreadCheckWillCreateURLLoaderFactory{
         &kPrefetchOffTheMainThread, "check_will_create_url_loader_factory",
-        false};
+        true};
 
 // Kill switch for attaching browser-initiated privacy request headers
 // (`Sec-GPC` and `DNT`) to prefetch requests.

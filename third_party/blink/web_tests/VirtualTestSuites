@@ -2809,7 +2809,7 @@
       "external/wpt/speculation-rules/prefetch/"
     ],
     "args": [
-      "--enable-features=PrefetchOffTheMainThread,PrefetchOffTheMainThreadForceForTesting"
+      "--enable-features=PrefetchOffTheMainThread:check_will_create_url_loader_factory/false,PrefetchOffTheMainThreadForceForTesting"
     ],
     "expires": "Dec 31, 2026"
   },
