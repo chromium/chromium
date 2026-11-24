@@ -4,17 +4,18 @@
 
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 
-#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
@@ -64,31 +65,33 @@ int GetSyncTransportOptInBitFieldForAccount(const PrefService* prefs,
   return found.value_or(0);
 }
 
-}  // namespace
-
 // The list of countries for which the credit card upload save feature is fully
 // launched. Last updated M143.
-const char* const kAutofillUpstreamLaunchedCountries[] = {
-    "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS", "AT",
-    "AU", "AW", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BI", "BJ",
-    "BL", "BM", "BN", "BQ", "BR", "BS", "BT", "BW", "BY", "BZ", "CA", "CC",
-    "CD", "CF", "CG", "CH", "CI", "CK", "CL", "CM", "CO", "CR", "CV", "CW",
-    "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE", "EG",
-    "EH", "ER", "ES", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "GB", "GD",
-    "GE", "GF", "GG", "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GT",
-    "GU", "GW", "GY", "HK", "HN", "HR", "HT", "HU", "ID", "IE", "IL", "IM",
-    "IO", "IS", "IT", "JM", "JO", "JP", "KE", "KG", "KH", "KI", "KM", "KN",
-    "KW", "KY", "KZ", "LA", "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU",
-    "LV", "LY", "MA", "MC", "MD", "ME", "MF", "MG", "MH", "MK", "ML", "MM",
-    "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU", "MV", "MW", "MX", "MY",
-    "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NP", "NR", "NU",
-    "NZ", "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM", "PN", "PR",
-    "PS", "PT", "PW", "PY", "QA", "RE", "RO", "RW", "SA", "SB", "SC", "SE",
-    "SG", "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR", "SS", "ST",
-    "SV", "SX", "SZ", "TC", "TD", "TG", "TH", "TJ", "TK", "TL", "TM", "TO",
-    "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "UZ", "VA", "VC",
-    "VE", "VG", "VI", "VN", "VU", "WF", "WS", "XK", "YE", "YT", "ZA", "ZM",
-    "ZW"};
+constexpr auto kAutofillUpstreamLaunchedCountries =
+    base::MakeFixedFlatSet<FixedCountryCode>(
+        base::sorted_unique,
+        {"AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS", "AT",
+         "AU", "AW", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BI", "BJ",
+         "BL", "BM", "BN", "BQ", "BR", "BS", "BT", "BW", "BY", "BZ", "CA", "CC",
+         "CD", "CF", "CG", "CH", "CI", "CK", "CL", "CM", "CO", "CR", "CV", "CW",
+         "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE", "EG",
+         "EH", "ER", "ES", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "GB", "GD",
+         "GE", "GF", "GG", "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GT",
+         "GU", "GW", "GY", "HK", "HN", "HR", "HT", "HU", "ID", "IE", "IL", "IM",
+         "IO", "IS", "IT", "JM", "JO", "JP", "KE", "KG", "KH", "KI", "KM", "KN",
+         "KW", "KY", "KZ", "LA", "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU",
+         "LV", "LY", "MA", "MC", "MD", "ME", "MF", "MG", "MH", "MK", "ML", "MM",
+         "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU", "MV", "MW", "MX", "MY",
+         "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NP", "NR", "NU",
+         "NZ", "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM", "PN", "PR",
+         "PS", "PT", "PW", "PY", "QA", "RE", "RO", "RW", "SA", "SB", "SC", "SE",
+         "SG", "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR", "SS", "ST",
+         "SV", "SX", "SZ", "TC", "TD", "TG", "TH", "TJ", "TK", "TL", "TM", "TO",
+         "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "UZ", "VA", "VC",
+         "VE", "VG", "VI", "VN", "VU", "WF", "WS", "XK", "YE", "YT", "ZA", "ZM",
+         "ZW"});
+
+}  // namespace
 
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
@@ -201,9 +204,7 @@ bool IsCreditCardUploadEnabled(
   }
 
   std::string country_code = base::ToUpperASCII(user_country);
-  auto* const* country_iter =
-      std::ranges::find(kAutofillUpstreamLaunchedCountries, country_code);
-  if (country_iter == std::end(kAutofillUpstreamLaunchedCountries)) {
+  if (!kAutofillUpstreamLaunchedCountries.contains(country_code)) {
     // |country_code| was not found in the list of launched countries.
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::kUnsupportedCountry,

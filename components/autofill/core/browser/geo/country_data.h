@@ -10,6 +10,7 @@
 
 #include <array>
 #include <compare>
+#include <concepts>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -31,7 +32,6 @@ struct FixedCountryCode {
   std::array<char, 2> chars{};
 
   constexpr FixedCountryCode() = default;
-  constexpr FixedCountryCode(char c0, char c1) : chars{c0, c1} {}
   consteval explicit FixedCountryCode(std::string_view sv) {
     CHECK_EQ(sv.size(), 2u);
     chars[0] = sv[0];
@@ -51,8 +51,24 @@ struct FixedCountryCode {
 
   friend constexpr bool operator==(FixedCountryCode,
                                    FixedCountryCode) = default;
-  friend constexpr auto operator<=>(FixedCountryCode,
-                                    FixedCountryCode) = default;
+  // Use unsigned char ordering consistently with heterogeneous std::string_view
+  // comparisons across signed/unsigned char platforms.
+  friend constexpr auto operator<=>(FixedCountryCode lhs,
+                                    FixedCountryCode rhs) {
+    return std::string_view(lhs) <=> std::string_view(rhs);
+  }
+  template <typename T>
+    requires(!std::same_as<T, FixedCountryCode> &&
+             std::convertible_to<const T&, std::string_view>)
+  friend constexpr bool operator==(FixedCountryCode lhs, const T& rhs) {
+    return std::string_view(lhs) == std::string_view(rhs);
+  }
+  template <typename T>
+    requires(!std::same_as<T, FixedCountryCode> &&
+             std::convertible_to<const T&, std::string_view>)
+  friend constexpr auto operator<=>(FixedCountryCode lhs, const T& rhs) {
+    return std::string_view(lhs) <=> std::string_view(rhs);
+  }
 };
 
 // The minimal required fields for an address to be complete for a given

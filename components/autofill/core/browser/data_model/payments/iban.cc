@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -165,7 +166,7 @@ bool Iban::IsIbanApplicableInCountry(const std::string& country_code) {
 Iban::IbanSupportedCountry Iban::GetIbanSupportedCountry(
     std::string_view country_code) {
   static constexpr auto kSupportedCountryMap =
-      base::MakeFixedFlatMap<std::string_view, IbanSupportedCountry>({
+      base::MakeFixedFlatMap<FixedCountryCode, IbanSupportedCountry>({
           {"AD", IbanSupportedCountry::kAD}, {"AE", IbanSupportedCountry::kAE},
           {"AL", IbanSupportedCountry::kAL}, {"AT", IbanSupportedCountry::kAT},
           {"AZ", IbanSupportedCountry::kAZ}, {"BA", IbanSupportedCountry::kBA},

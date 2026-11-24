@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -88,7 +89,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     const GeoIpCountryCode& country_code) {
   // List of countries where Wallet is supported.
   constexpr static auto kWalletSupportedCountries =
-      base::MakeFixedFlatSet<std::string_view>(
+      base::MakeFixedFlatSet<FixedCountryCode>(
+          base::sorted_unique,
           {"AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS",
            "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG",
            "BH", "BI", "BJ", "BL", "BM", "BN", "BO", "BQ", "BR", "BS", "BT",

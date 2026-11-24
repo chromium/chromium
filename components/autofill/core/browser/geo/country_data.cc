@@ -17,7 +17,7 @@ namespace {
 // Alias definitions. A request for the key is served with the `CountryData` for
 // the target.
 constexpr auto kCountryCodeAliases =
-    base::MakeFixedFlatMap<std::string_view, FixedCountryCode>({{"UK", "GB"}});
+    base::MakeFixedFlatMap<FixedCountryCode, FixedCountryCode>({{"UK", "GB"}});
 
 static_assert(std::ranges::all_of(kCountryCodeAliases, [](const auto& entry) {
   return kCountryAddressImportRequirementsData.contains(entry.second);
@@ -35,22 +35,15 @@ CountryDataMap::CountryDataMap() = default;
 CountryDataMap::~CountryDataMap() = default;
 
 bool CountryDataMap::HasCountryCode(std::string_view country_code) const {
-  if (country_code.size() != 2) {
-    return false;
-  }
-  return kCountryAddressImportRequirementsData.contains(
-      FixedCountryCode(country_code[0], country_code[1]));
+  return kCountryAddressImportRequirementsData.contains(country_code);
 }
 
 RequiredFieldsForAddressImport
 CountryDataMap::GetRequiredFieldsForAddressImport(
     std::string_view country_code) const {
-  if (country_code.size() == 2) {
-    if (const auto* required_fields = base::FindOrNull(
-            kCountryAddressImportRequirementsData,
-            FixedCountryCode(country_code[0], country_code[1]))) {
-      return *required_fields;
-    }
+  if (const auto* required_fields = base::FindOrNull(
+          kCountryAddressImportRequirementsData, country_code)) {
+    return *required_fields;
   }
   return RequiredFieldsForAddressImport::ADDRESS_REQUIREMENTS_UNKNOWN;
 }
