@@ -1669,10 +1669,15 @@ void AshNotificationView::UpdateIconViewBackground() {
 
 void AshNotificationView::AnimateResizeAfterRemoval(
     views::View* to_be_removed) {
+  auto weak_ptr = weak_factory_.GetWeakPtr();
+
   size_t removed_index =
       grouped_notifications_container_->GetIndexOf(to_be_removed).value();
 
   grouped_notifications_container_->RemoveChildViewT(to_be_removed).reset();
+  if (!weak_ptr) {
+    return;
+  }
 
   aura::Window* window = GetWidget() ? GetWidget()->GetNativeWindow() : nullptr;
   if (!window || window->is_destroying()) {
@@ -1697,10 +1702,16 @@ void AshNotificationView::AnimateResizeAfterRemoval(
       },
       weak_factory_.GetWeakPtr());
 
+  // `AnimateResize()` and the layout calls below can run the notifier collision
+  // handler, which may synchronously close the hosting popup widget and delete
+  // `this`.
   auto* notification_view_controller = message_center_utils::
       GetActiveNotificationViewControllerForNotificationView(this);
   if (notification_view_controller) {
     notification_view_controller->AnimateResize();
+    if (!weak_ptr) {
+      return;
+    }
   }
 
   if (shown_in_popup_) {
@@ -1709,6 +1720,9 @@ void AshNotificationView::AnimateResizeAfterRemoval(
     DeprecatedLayoutImmediately();
     PreferredSizeChanged();
   }
+  if (!weak_ptr) {
+    return;
+  }
 
   int grouped_container_height_reduction =
       group_container_previous_height -
@@ -1716,8 +1730,7 @@ void AshNotificationView::AnimateResizeAfterRemoval(
 
   views::AnimationBuilder animation_builder;
 
-  if (grouped_notifications_container_->children().begin() + removed_index >=
-      grouped_notifications_container_->children().end()) {
+  if (removed_index >= grouped_notifications_container_->children().size()) {
     return;
   }
   set_is_animating(true);

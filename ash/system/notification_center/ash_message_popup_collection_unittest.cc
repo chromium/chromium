@@ -52,6 +52,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -63,6 +64,7 @@
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view_tracker.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
@@ -1561,6 +1563,68 @@ TEST_F(AshMessagePopupCollectionMockTimeTest, PopupTimeouts) {
     message_center->RemoveNotification(id,
                                        /*by_user=*/false);
   }
+}
+
+TEST_F(AshMessagePopupCollectionTest,
+       GroupedNotificationRemovalResizeCollision) {
+  UpdateDisplay("1001x820");
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+  ASSERT_TRUE(popup_collection);
+
+  phone_hub_manager()->fake_feature_status_provider()->SetStatus(
+      phonehub::FeatureStatus::kEnabledAndConnected);
+  auto* phone_hub_tray =
+      GetPrimaryShelf()->status_area_widget()->phone_hub_tray();
+  phone_hub_tray->SetPhoneHubManager(phone_hub_manager());
+  ASSERT_TRUE(phone_hub_tray->GetVisible());
+
+  const GURL origin_url("https://example.com");
+  std::vector<std::string> ids;
+  for (int i = 0; i < 12; ++i) {
+    ids.push_back(AddNotification(/*has_image=*/true, origin_url));
+  }
+
+  AnimateUntilIdle();
+
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+
+  phone_hub_tray->ShowBubble();
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  system_tray->ShowVolumeSliderBubble();
+  ASSERT_TRUE(phone_hub_tray->GetBubbleView());
+  ASSERT_TRUE(system_tray->GetSliderView());
+
+  // Add a notification from another origin so `popup_collection` enters an
+  // active animation state while the collapsed grouped popup still fits above
+  // the Phone Hub bubble.
+  AddNotification(/*has_image=*/false, GURL("https://other.example"));
+  ASSERT_TRUE(IsAnimating());
+  ASSERT_TRUE(phone_hub_tray->GetBubbleView());
+
+  // Expand the grouped notification while `popup_collection` is animating, then
+  // remove a grouped child notification (`RemoveNotification`). When the
+  // slide-out finishes, `AnimateResizeAfterRemoval()` calls `AnimateResize()`,
+  // which triggers the notifier collision handler to synchronously close both
+  // the Phone Hub bubble and all notification popups (destroying
+  // `message_view`).
+  auto* message_view = static_cast<AshNotificationView*>(popup->message_view());
+  ASSERT_TRUE(message_view);
+  views::ViewTracker message_view_tracker(message_view);
+  LeftClickOn(message_view->expand_button_for_test());
+  ASSERT_TRUE(IsAnimating());
+  ASSERT_TRUE(phone_hub_tray->GetBubbleView());
+
+  {
+    gfx::ScopedAnimationDurationScaleMode zero_duration{
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
+    message_center::MessageCenter::Get()->RemoveNotification(ids[1],
+                                                             /*by_user=*/false);
+  }
+
+  EXPECT_FALSE(phone_hub_tray->GetBubbleView());
+  EXPECT_FALSE(message_view_tracker.view());
 }
 
 }  // namespace ash
