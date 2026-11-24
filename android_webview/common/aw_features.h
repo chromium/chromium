@@ -88,6 +88,7 @@ BASE_DECLARE_FEATURE(kWebViewPrefetchNativeLibrary);
 BASE_DECLARE_FEATURE(kWebViewPrefetchOffTheMainThread);
 BASE_DECLARE_FEATURE(kWebViewPrefetchPruneStaleWrappers);
 BASE_DECLARE_FEATURE(kWebViewPreloadServingMetrics);
+BASE_DECLARE_FEATURE(kWebViewPreserveGoogleAccountMirroring);
 enum class AwPrewarmDictionaryCleanupMode {
   kEventsOnly = 0,
   kTimerOnly = 1,

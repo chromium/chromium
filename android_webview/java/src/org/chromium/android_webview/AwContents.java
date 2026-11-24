@@ -444,6 +444,7 @@ public class AwContents implements SmartClipProvider {
     private final AwWebContentsDelegateAdapter mWebContentsDelegate;
     private AwActionModeCallback mAwActionModeCallback;
     private @Nullable Consumer<GoogleAccountsEvent> mGoogleAccountsCallback;
+    private String mGoogleAccountsGaiaId = "";
     private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
     private final AwContentsIoThreadClient mIoThreadClient;
     private final InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
@@ -1825,6 +1826,13 @@ public class AwContents implements SmartClipProvider {
         installWebContentsObservers();
         mSettings.setWebContents(mWebContents);
         mAwDarkMode.setWebContents(mWebContents);
+
+        if (mGoogleAccountsCallback != null
+                && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PRESERVE_GOOGLE_ACCOUNT_MIRRORING)) {
+            AwContentsJni.get()
+                    .setGoogleAccountMirroringEnabled(
+                            mNativeAwContents, true, mGoogleAccountsGaiaId);
+        }
 
         if (SafeModeController.getInstance()
                 .isActionEnabled(SafeModeActionIds.DISABLE_ANDROID_AUTOFILL)) {
@@ -3541,8 +3549,10 @@ public class AwContents implements SmartClipProvider {
         if (TRACE) Log.i(TAG, "%s configureGoogleAccountMirroring", this);
         if (isDestroyed(WARN)) return;
         mGoogleAccountsCallback = callback;
+        mGoogleAccountsGaiaId = gaiaId != null ? gaiaId : "";
         AwContentsJni.get()
-                .setGoogleAccountMirroringEnabled(mNativeAwContents, callback != null, gaiaId);
+                .setGoogleAccountMirroringEnabled(
+                        mNativeAwContents, callback != null, mGoogleAccountsGaiaId);
     }
 
     @CalledByNative

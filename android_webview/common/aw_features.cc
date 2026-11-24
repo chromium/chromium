@@ -349,6 +349,11 @@ BASE_FEATURE(kWebViewPrefetchPruneStaleWrappers,
 // Kill switch for reporting `PreloadServingMetrics` for WebView.
 BASE_FEATURE(kWebViewPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for preserving Google Account mirroring configuration when
+// AwContents adopts a new native instance (e.g., for popup windows).
+BASE_FEATURE(kWebViewPreserveGoogleAccountMirroring,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, preconnect requests trigger compression dictionary prewarming.
 BASE_FEATURE(kWebViewPrewarmDictionaryOnPreconnect,
              base::FEATURE_DISABLED_BY_DEFAULT);
