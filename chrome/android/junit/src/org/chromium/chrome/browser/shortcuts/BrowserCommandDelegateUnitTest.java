@@ -287,4 +287,18 @@ public class BrowserCommandDelegateUnitTest {
         assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.SHOW_APP_MENU));
         assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_LOCATION));
     }
+
+    @Test
+    public void testToggleVerticalTabsCollapse() {
+        assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.TOGGLE_VERTICAL_TABS_COLLAPSE));
+        verify(mController)
+                .onMenuOrKeyboardAction(eq(R.id.toggle_vertical_tabs_collapse), eq(false));
+
+        assertFalse(
+                mCustomTabDelegate.isCommandEnabled(
+                        ChromeCommandIds.TOGGLE_VERTICAL_TABS_COLLAPSE));
+        mIsCurrentTabVisible = false;
+        assertFalse(
+                mTabbedDelegate.isCommandEnabled(ChromeCommandIds.TOGGLE_VERTICAL_TABS_COLLAPSE));
+    }
 }

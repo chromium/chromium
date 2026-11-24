@@ -37,6 +37,7 @@ public final class ChromeCommandIds {
     public static final int RESTORE_TAB = IDC_RESTORE_TAB;
     public static final int EXIT = IDC_EXIT;
     public static final int TOGGLE_MULTISELECT = IDC_TOGGLE_MULTISELECT;
+    public static final int TOGGLE_VERTICAL_TABS_COLLAPSE = IDC_TOGGLE_VERTICAL_TABS_COLLAPSE;
     public static final int OPEN_TAB_STRIP_CONTEXT_MENU = IDC_OPEN_TAB_STRIP_CONTEXT_MENU;
     public static final int REORDER_TAB_STRIP_ITEM_LEFT = IDC_REORDER_TAB_STRIP_ITEM_LEFT;
     public static final int REORDER_TAB_STRIP_ITEM_RIGHT = IDC_REORDER_TAB_STRIP_ITEM_RIGHT;

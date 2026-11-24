@@ -174,6 +174,7 @@ public class BrowserCommandDelegate {
                 return isCurrentTabVisible && mTabbedBrowserCommandsSupported;
 
             case ChromeCommandIds.TOGGLE_MULTISELECT:
+            case ChromeCommandIds.TOGGLE_VERTICAL_TABS_COLLAPSE:
             case ChromeCommandIds.OPEN_TAB_STRIP_CONTEXT_MENU:
             case ChromeCommandIds.REORDER_TAB_STRIP_ITEM_LEFT:
             case ChromeCommandIds.REORDER_TAB_STRIP_ITEM_RIGHT:
@@ -296,6 +297,8 @@ public class BrowserCommandDelegate {
                 return R.id.esc_key;
             case ChromeCommandIds.TOGGLE_MULTISELECT:
                 return R.id.toggle_tab_strip_multiselect;
+            case ChromeCommandIds.TOGGLE_VERTICAL_TABS_COLLAPSE:
+                return R.id.toggle_vertical_tabs_collapse;
             case ChromeCommandIds.OPEN_TAB_STRIP_CONTEXT_MENU:
                 return R.id.open_tab_strip_context_menu;
             case ChromeCommandIds.REORDER_TAB_STRIP_ITEM_LEFT:
