@@ -245,7 +245,6 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabGroupUiFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabGroupUtil.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabGroupsExistCondition.java",
-    "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabModelChangedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabModelCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabModelSelectedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabModelSelectorCondition.java",
