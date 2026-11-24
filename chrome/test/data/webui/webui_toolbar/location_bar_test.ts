@@ -23,6 +23,8 @@ suite('LocationBar', function() {
     document.body.appendChild(document.createElement('input'));
     locationBar = document.createElement('location-bar');
     locationBar.setAttribute('id', 'location-bar');
+    // Prevent a real OS cursor from firing pointerenter on chips.
+    locationBar.style.pointerEvents = 'none';
     initialState = locationBar.locationBarState;
 
     document.body.appendChild(locationBar);
