@@ -1973,7 +1973,7 @@ public class PdfCoordinator
                         File originalFile = new File(path);
                         overwritten = overwriteOriginalFile(tempFile, originalFile);
                         if (overwritten) {
-                            updatedFilePath = originalFile.getAbsolutePath();
+                            updatedFilePath = Uri.fromFile(originalFile).toString();
                         }
                     }
                 } else if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
@@ -2027,7 +2027,12 @@ public class PdfCoordinator
         //    triggers a duplicate concurrent forceLoadDocument() alongside
         //    loadDocument().
         onDone.run();
-        if (shouldUpdate && mChromePdfViewerFragment != null && mUri != null) {
+        // Same-URI local overwrites skip setDocumentUri() and rely on onDone
+        // (finishExitingEditMode()) to reload the updated document from disk.
+        if (shouldUpdate
+                && mChromePdfViewerFragment != null
+                && mUri != null
+                && !mUri.equals(mChromePdfViewerFragment.getDocumentUri())) {
             mChromePdfViewerFragment.setDocumentUri(mUri);
         }
     }
@@ -2051,14 +2056,14 @@ public class PdfCoordinator
     private boolean overwriteOriginalContentUri(File tempFile, Uri uri) {
         if (mActivity == null) return false;
         try (FileInputStream is = new FileInputStream(tempFile);
-                OutputStream os = mActivity.getContentResolver().openOutputStream(uri, "w")) {
+                OutputStream os = mActivity.getContentResolver().openOutputStream(uri, "wt")) {
             if (os != null) {
                 FileUtils.copyStream(is, os);
                 return true;
             } else {
                 return false;
             }
-        } catch (SecurityException | IllegalArgumentException e) {
+        } catch (SecurityException | IllegalArgumentException | UnsupportedOperationException e) {
             Log.e(TAG, "No write permission for original URI", e);
             return false;
         } catch (IOException e) {

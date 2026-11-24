@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -124,6 +125,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -4912,6 +4914,126 @@ public class PdfCoordinatorUnitTest {
         }
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void testOnPdfEditsSaved_NonIncognito_OverwriteOriginalFileUriPreservesFileScheme()
+            throws Exception {
+        ChromeFileProvider.setGeneratedUriForTesting(null);
+
+        File originalFile = File.createTempFile("test_original_file_uri_pdf", ".pdf");
+        originalFile.deleteOnExit();
+        try (FileOutputStream fos = new FileOutputStream(originalFile)) {
+            fos.write(new byte[] {9, 8, 7, 6, 5});
+        }
+        Uri expectedFileUri = Uri.fromFile(originalFile);
+        String fileUriString = expectedFileUri.toString();
+        createPdfCoordinator(fileUriString, fileUriString);
+
+        Uri initialUri = Uri.parse("content://initial.test/pdf");
+        mPdfCoordinator.mChromePdfViewerFragment.setDocumentUri(initialUri);
+        mPdfCoordinator.mChromePdfViewerFragment.setFilePath(null);
+        mPdfCoordinator.mChromePdfViewerFragment.setFileName(null);
+
+        File tempFile = File.createTempFile("test_saved_file_uri_overwrite", ".pdf");
+        tempFile.deleteOnExit();
+        byte[] savedBytes = new byte[] {1, 2, 3};
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(savedBytes);
+        }
+
+        AtomicBoolean onDoneCalled = new AtomicBoolean(false);
+        AtomicReference<Uri> uriDuringOnDone = new AtomicReference<>();
+
+        mPdfCoordinator.onPdfEditsSaved(
+                tempFile,
+                /* pfd= */ null,
+                () -> {
+                    uriDuringOnDone.set(mPdfCoordinator.mChromePdfViewerFragment.getDocumentUri());
+                    onDoneCalled.set(true);
+                });
+
+        ShadowLooper.idleMainLooper();
+        assertTrue(onDoneCalled.get());
+        assertEquals(
+                "Document URI must not be updated before onDone (finishExitingEditMode()) executes",
+                initialUri,
+                uriDuringOnDone.get());
+        assertTrue(mPdfCoordinator.hasChanges());
+        assertFalse(mPdfCoordinator.hasUnsavedChanges());
+        assertNotNull(mPdfCoordinator.getUri());
+        assertEquals(expectedFileUri, mPdfCoordinator.getUri());
+        assertEquals(
+                expectedFileUri, mPdfCoordinator.mChromePdfViewerFragment.getDocumentUri());
+        assertEquals(PDF_TITLE, mPdfCoordinator.mChromePdfViewerFragment.getFileName());
+        assertEquals(fileUriString, mPdfCoordinator.mChromePdfViewerFragment.getFilePath());
+        assertFalse(tempFile.exists());
+        assertEquals(savedBytes.length, originalFile.length());
+        assertArrayEquals(savedBytes, Files.readAllBytes(originalFile.toPath()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void
+            testOnPdfEditsSaved_NonIncognito_OverwriteOriginalContentUriTruncatesAndSkipsSameUriSet()
+                    throws Exception {
+        createPdfCoordinator(TEST_CONTENT_URI, TEST_CONTENT_URI);
+
+        Uri initialUri = Uri.parse(TEST_CONTENT_URI);
+        assertEquals(initialUri, mPdfCoordinator.mChromePdfViewerFragment.getDocumentUri());
+        mPdfCoordinator.mChromePdfViewerFragment.setFilePath(null);
+        mPdfCoordinator.mChromePdfViewerFragment.setFileName(null);
+
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        shadowFragment.resetSetDocumentUriCallCount();
+
+        File targetFile = File.createTempFile("test_target_content_truncate_pdf", ".pdf");
+        targetFile.deleteOnExit();
+        try (FileOutputStream fos = new FileOutputStream(targetFile)) {
+            fos.write(new byte[] {10, 20, 30, 40, 50, 60, 70, 80, 90, 100});
+        }
+        assertEquals(10L, targetFile.length());
+
+        TestContentProvider provider = new TestContentProvider(targetFile);
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = "org.chromium.chrome.FileProvider";
+        provider.attachInfo(mActivity, providerInfo);
+        ShadowContentResolver.registerProviderInternal(
+                "org.chromium.chrome.FileProvider", provider);
+
+        File tempFile = File.createTempFile("test_saved_pdf_smaller_content", ".pdf");
+        tempFile.deleteOnExit();
+        byte[] smallerSavedBytes = new byte[] {1, 2, 3, 4};
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(smallerSavedBytes);
+        }
+
+        AtomicBoolean onDoneCalled = new AtomicBoolean(false);
+
+        mPdfCoordinator.onPdfEditsSaved(
+                tempFile, /* pfd= */ null, () -> onDoneCalled.set(true));
+
+        ShadowLooper.idleMainLooper();
+        assertTrue(onDoneCalled.get());
+        assertEquals("wt", provider.getLastOpenMode());
+        assertEquals(smallerSavedBytes.length, targetFile.length());
+        assertArrayEquals(smallerSavedBytes, Files.readAllBytes(targetFile.toPath()));
+        assertTrue(mPdfCoordinator.hasChanges());
+        assertFalse(mPdfCoordinator.hasUnsavedChanges());
+        assertNotNull(mPdfCoordinator.getUri());
+        assertEquals(initialUri, mPdfCoordinator.getUri());
+        assertEquals(initialUri, mPdfCoordinator.mChromePdfViewerFragment.getDocumentUri());
+        assertEquals(
+                "setDocumentUri() should be skipped when saved URI matches current document URI",
+                0,
+                shadowFragment.getSetDocumentUriCallCount());
+        assertEquals(PDF_TITLE, mPdfCoordinator.mChromePdfViewerFragment.getFileName());
+        assertEquals(TEST_CONTENT_URI, mPdfCoordinator.mChromePdfViewerFragment.getFilePath());
+        assertFalse(tempFile.exists());
+    }
+
     public static class TestChromePdfViewerFragment extends PdfCoordinator.ChromePdfViewerFragment {
         public TestChromePdfViewerFragment() {
             super();
@@ -5009,6 +5131,7 @@ public class PdfCoordinatorUnitTest {
     public static class ShadowPdfViewerFragment {
         @RealObject private PdfViewerFragment mRealFragment;
         private Uri mDocumentUri;
+        private int mSetDocumentUriCallCount;
         private boolean mIsTextSearchActive;
 
         @Implementation
@@ -5024,11 +5147,20 @@ public class PdfCoordinatorUnitTest {
         @Implementation
         public void setDocumentUri(Uri uri) {
             mDocumentUri = uri;
+            mSetDocumentUriCallCount++;
         }
 
         @Implementation
         public Uri getDocumentUri() {
             return mDocumentUri;
+        }
+
+        public int getSetDocumentUriCallCount() {
+            return mSetDocumentUriCallCount;
+        }
+
+        public void resetSetDocumentUriCallCount() {
+            mSetDocumentUriCallCount = 0;
         }
 
         @Implementation
@@ -5094,10 +5226,22 @@ public class PdfCoordinatorUnitTest {
     }
 
     private static class TestContentProvider extends ContentProvider {
-        private final ParcelFileDescriptor mPfd;
+        private final @Nullable ParcelFileDescriptor mPfd;
+        private final @Nullable File mFile;
+        private @Nullable String mLastOpenMode;
 
         TestContentProvider(ParcelFileDescriptor pfd) {
             mPfd = pfd;
+            mFile = null;
+        }
+
+        TestContentProvider(File file) {
+            mPfd = null;
+            mFile = file;
+        }
+
+        @Nullable String getLastOpenMode() {
+            return mLastOpenMode;
         }
 
         @Override
@@ -5137,7 +5281,31 @@ public class PdfCoordinatorUnitTest {
 
         @Override
         public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-            if ("w".equals(mode) || "rw".equals(mode) || "r".equals(mode)) {
+            mLastOpenMode = mode;
+            if (mFile != null) {
+                if ("wt".equals(mode) || "rwt".equals(mode)) {
+                    try {
+                        new FileOutputStream(mFile, /* append= */ false).close();
+                    } catch (IOException e) {
+                        throw new FileNotFoundException(e.getMessage());
+                    }
+                    return ParcelFileDescriptor.open(
+                            mFile, ParcelFileDescriptor.MODE_READ_WRITE);
+                }
+                if ("w".equals(mode) || "rw".equals(mode)) {
+                    return ParcelFileDescriptor.open(
+                            mFile, ParcelFileDescriptor.MODE_READ_WRITE);
+                }
+                if ("r".equals(mode)) {
+                    return ParcelFileDescriptor.open(
+                            mFile, ParcelFileDescriptor.MODE_READ_ONLY);
+                }
+            }
+            if ("w".equals(mode)
+                    || "wt".equals(mode)
+                    || "rw".equals(mode)
+                    || "rwt".equals(mode)
+                    || "r".equals(mode)) {
                 return mPfd;
             }
             return super.openFile(uri, mode);
