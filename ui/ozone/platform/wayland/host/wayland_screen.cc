@@ -144,6 +144,7 @@ void WaylandScreen::OnOutputAddedOrUpdated(
   }
 
   AddOrUpdateDisplay(copy);
+  UpdateFontRenderParamsDeviceScaleFactor();
 
   DISPLAY_LOG(EVENT) << "Displays updated, count: "
                      << display_list_.displays().size();
@@ -186,6 +187,7 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
   auto it = display_list_.FindDisplayById(display_id);
   if (it != display_list_.displays().end())
     display_list_.RemoveDisplay(display_id);
+  UpdateFontRenderParamsDeviceScaleFactor();
 
   DISPLAY_LOG(EVENT) << "Displays updated, count: "
                      << display_list_.displays().size();
@@ -582,6 +584,20 @@ void WaylandScreen::OnDeviceScaleFactorChanged() {
   const auto& linux_ui = *LinuxUi::instance();
   connection_->window_manager()->SetFontScale(
       linux_ui.display_config().font_scale);
+  UpdateFontRenderParamsDeviceScaleFactor();
+}
+
+void WaylandScreen::UpdateFontRenderParamsDeviceScaleFactor() {
+  if (display_list_.displays().empty()) {
+    return;
+  }
+  float scale = GetPrimaryDisplay().device_scale_factor();
+  // A forced scale factor already applies to the display.
+  if (connection_->IsUiScaleEnabled() &&
+      !display::Display::HasForceDeviceScaleFactor()) {
+    scale *= connection_->window_manager()->DetermineUiScale();
+  }
+  gfx::SetFontRenderParamsDeviceScaleFactor(scale);
 }
 
 void WaylandScreen::DumpState(std::ostream& out) const {

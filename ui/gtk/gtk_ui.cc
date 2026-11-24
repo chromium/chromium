@@ -337,8 +337,6 @@ bool GtkUi::Initialize() {
 }
 
 void GtkUi::InitializeFontSettings() {
-  gfx::SetFontRenderParamsDeviceScaleFactor(display_config().primary_scale);
-
   auto fake_label = TakeGObject(gtk_label_new(nullptr));
   PangoContext* pc = gtk_widget_get_pango_context(fake_label);
   const PangoFontDescription* desc = pango_context_get_font_description(pc);

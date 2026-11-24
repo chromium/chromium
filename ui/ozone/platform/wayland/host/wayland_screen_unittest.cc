@@ -18,6 +18,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
@@ -1329,6 +1330,22 @@ TEST_P(WaylandScreenTestXdgOutput, LogicalBoundsInDips) {
   const display::Display display = platform_screen_->GetPrimaryDisplay();
   EXPECT_EQ(2.f, display.device_scale_factor());
   EXPECT_EQ(gfx::Rect(0, 0, 1920, 1080), display.bounds());
+}
+
+// The primary display's scale is used for font render params, so that
+// fractional scales get subpixel glyph positioning (crbug.com/329543540).
+TEST_P(WaylandScreenTestXdgOutput, SetsFontRenderParamsDeviceScaleFactor) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* output = server->output();
+    output->SetPhysicalAndLogicalBounds(gfx::Rect(0, 0, 1280, 800));
+    output->SetLogicalSize(gfx::Size(1024, 640));
+    output->SetScale(2);
+    output->Flush();
+  });
+
+  EXPECT_EQ(1.25f, platform_screen_->GetPrimaryDisplay().device_scale_factor());
+  EXPECT_EQ(1.25f, gfx::GetFontRenderParamsDeviceScaleFactor());
+  gfx::SetFontRenderParamsDeviceScaleFactor(1.0f);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

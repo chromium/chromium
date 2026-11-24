@@ -124,6 +124,12 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
   };
 
   void AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics);
+
+  // Sets the scale factor that gfx::GetFontRenderParams() uses to decide
+  // whether to use subpixel positioning, from the primary display's scale and
+  // the UI scale.
+  void UpdateFontRenderParamsDeviceScaleFactor();
+
   raw_ptr<WaylandConnection> connection_ = nullptr;
 
   base::flat_map<WaylandOutput::Id, int64_t> display_id_map_;
