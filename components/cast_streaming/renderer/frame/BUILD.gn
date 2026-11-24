@@ -34,8 +34,12 @@ source_set("unit_tests") {
     ":frame",
     "//base",
     "//base/test:test_support",
+    "//components/cast_streaming/common:mojom",
+    "//components/cast_streaming/common/frame",
     "//media",
     "//media:test_support",
+    "//media/mojo/common",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
   ]

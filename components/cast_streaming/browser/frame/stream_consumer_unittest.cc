@@ -5,24 +5,33 @@
 #include "components/cast_streaming/browser/frame/stream_consumer.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
+#include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
+#include "components/cast_streaming/common/frame/frame_trace_flow.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/impl/receiver_packet_router.h"  // nogncheck
 #include "third_party/openscreen/src/cast/streaming/public/constants.h"
 #include "third_party/openscreen/src/cast/streaming/public/environment.h"
+#include "third_party/openscreen/src/cast/streaming/public/frame_trace_ids.h"
 #include "third_party/openscreen/src/cast/streaming/public/receiver.h"
 
 namespace cast_streaming {
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 using testing::Return;
 
 openscreen::Clock::time_point FakeNow() {
@@ -128,7 +137,8 @@ class StreamConsumerTest : public testing::Test {
     auto decoder_buffer_factory = std::make_unique<MockDecoderBufferFactory>();
     decoder_buffer_factory_ = decoder_buffer_factory.get();
     consumer_ = std::make_unique<StreamConsumer>(
-        &receiver_, std::move(producer_handle_),
+        &receiver_, media::DemuxerStream::Type::VIDEO,
+        std::move(producer_handle_),
         base::BindRepeating(&StreamConsumerTest::OnFrameReceived,
                             base::Unretained(this)),
         base::BindRepeating(&StreamConsumerTest::OnNewFrame,
@@ -304,6 +314,163 @@ TEST_F(StreamConsumerTest,
   EXPECT_CALL(receiver_, ReportPlayoutEvent(_, _, _)).Times(0);
 
   consumer_->ReadFrame(base::DoNothing());
+}
+
+class StreamConsumerTracingTest : public StreamConsumerTest {
+ protected:
+  using Row = std::vector<std::string>;
+
+  void StartTrace() { trace_processor_.StartTrace("cast.stream"); }
+
+  base::test::TestTraceProcessor::QueryResult StopAndQuery(
+      const std::string& query) {
+    const absl::Status status = trace_processor_.StopAndParseTrace();
+    EXPECT_TRUE(status.ok()) << status.message();
+    auto result = trace_processor_.RunQuery(query);
+    EXPECT_TRUE(result.has_value()) << result.error();
+    return result.value_or(base::test::TestTraceProcessor::QueryResult());
+  }
+
+ private:
+  base::test::TracingEnvironment tracing_environment_;
+  base::test::TestTraceProcessor trace_processor_;
+};
+
+TEST_F(StreamConsumerTracingTest,
+       TracesSkippedDroppedAndSentFramesWithFlowLinks) {
+  StartTrace();
+
+  const openscreen::cast::FrameId skipped_id =
+      openscreen::cast::FrameId::first() + 1;
+  const openscreen::cast::FrameId dropped_id =
+      openscreen::cast::FrameId::first() + 2;
+  const openscreen::cast::FrameId sent_id =
+      openscreen::cast::FrameId::first() + 3;
+
+  for (const auto id : {skipped_id, dropped_id, sent_id}) {
+    TRACE_EVENT_INSTANT(
+        "cast.stream", "Frame.Consumed", base::TimeTicks::Now(),
+        perfetto::Flow::Global(openscreen::cast::GetFrameIdFlowId(
+            receiver_.config().sender_ssrc, id)));
+  }
+
+  EXPECT_CALL(receiver_, AdvanceToNextFrame())
+      .WillOnce(Return(10))
+      .WillOnce(Return(10))
+      .WillOnce(Return(10))
+      .WillRepeatedly(Return(std::nullopt));
+
+  openscreen::cast::EncodedFrame skipped_frame;
+  skipped_frame.frame_id = skipped_id;
+  openscreen::cast::EncodedFrame dropped_frame;
+  dropped_frame.frame_id = dropped_id;
+  openscreen::cast::EncodedFrame sent_frame;
+  sent_frame.frame_id = sent_id;
+  EXPECT_CALL(receiver_, ConsumeNextFrame(_))
+      .WillOnce(Return(std::move(skipped_frame)))
+      .WillOnce(Return(std::move(dropped_frame)))
+      .WillOnce(Return(std::move(sent_frame)));
+
+  auto buffer = base::MakeRefCounted<media::DecoderBuffer>(4);
+  buffer->set_timestamp(base::Milliseconds(33));
+  EXPECT_CALL(*decoder_buffer_factory_, ToDecoderBuffer(_, _))
+      .WillOnce(Return(nullptr))
+      .WillOnce(Return(buffer));
+  EXPECT_CALL(receiver_, ReportPlayoutEvent(sent_id, _, _))
+      .WillOnce([&](openscreen::cast::FrameId, openscreen::cast::RtpTimeTicks,
+                    openscreen::Clock::time_point) {
+        TRACE_EVENT_INSTANT("cast.stream", "Frame.PlayedOut",
+                            base::TimeTicks::Now(),
+                            perfetto::TerminatingFlow::Global(
+                                openscreen::cast::GetFrameIdFlowId(
+                                    receiver_.config().sender_ssrc, sent_id)));
+        return openscreen::Error::None();
+      });
+
+  consumer_->FlushUntil(static_cast<uint32_t>(dropped_id.value()));
+  consumer_->ReadFrame(base::DoNothing());
+
+  TRACE_EVENT_INSTANT(
+      "cast.stream", "CastStreaming.Frame.Demuxed", base::TimeTicks::Now(),
+      perfetto::TerminatingFlow::Global(GetRendererHandoffFlowId(
+          media::DemuxerStream::Type::VIDEO, base::Milliseconds(33))));
+
+  EXPECT_THAT(
+      StopAndQuery(R"(
+        SELECT
+          slice_out.name AS from_name,
+          slice_in.name AS to_name,
+          EXTRACT_ARG(slice_in.arg_set_id, 'debug.frame_id') AS in_frame_id,
+          EXTRACT_ARG(
+              slice_in.arg_set_id, 'debug.skip_until_frame_id') AS skip_until
+        FROM flow
+        JOIN slice slice_out ON flow.slice_out = slice_out.id
+        JOIN slice slice_in ON flow.slice_in = slice_in.id
+        ORDER BY slice_out.id, slice_in.id
+      )"),
+      ElementsAre(
+          Row{"from_name", "to_name", "in_frame_id", "skip_until"},
+          Row{"Frame.Consumed", "CastStreaming.Frame.Skipped", "1", "2"},
+          Row{"Frame.Consumed", "CastStreaming.Frame.Dropped", "2", "[NULL]"},
+          Row{"Frame.Consumed", "CastStreaming.Frame.SentToRenderer", "3",
+              "[NULL]"},
+          Row{"CastStreaming.Frame.SentToRenderer", "Frame.PlayedOut", "[NULL]",
+              "[NULL]"},
+          Row{"CastStreaming.Frame.SentToRenderer",
+              "CastStreaming.Frame.Demuxed", "[NULL]", "[NULL]"}));
+}
+
+TEST_F(StreamConsumerTracingTest, HandlesEndOfStreamBufferWithoutHandoffFlow) {
+  StartTrace();
+
+  const openscreen::cast::FrameId eos_id =
+      openscreen::cast::FrameId::first() + 1;
+  EXPECT_CALL(receiver_, AdvanceToNextFrame())
+      .WillOnce(Return(1))
+      .WillRepeatedly(Return(std::nullopt));
+
+  openscreen::cast::EncodedFrame eos_frame;
+  eos_frame.frame_id = eos_id;
+  EXPECT_CALL(receiver_, ConsumeNextFrame(_))
+      .WillOnce(Return(std::move(eos_frame)));
+  EXPECT_CALL(*decoder_buffer_factory_, ToDecoderBuffer(_, _))
+      .WillOnce(Return(media::DecoderBuffer::CreateEOSBuffer()));
+
+  consumer_->ReadFrame(base::DoNothing());
+
+  EXPECT_THAT(
+      StopAndQuery(R"(
+        SELECT
+          name,
+          EXTRACT_ARG(arg_set_id, 'debug.end_of_stream') AS is_eos,
+          EXTRACT_ARG(arg_set_id, 'debug.timestamp_us') AS timestamp_us
+        FROM slice
+      )"),
+      ElementsAre(Row{"name", "is_eos", "timestamp_us"},
+                  Row{"CastStreaming.Frame.SentToRenderer", "1", "[NULL]"}));
+}
+
+TEST_F(StreamConsumerTracingTest, SkipsSentEventWhenPipeWriteFails) {
+  StartTrace();
+  consumer_handle_.reset();
+
+  EXPECT_CALL(receiver_, AdvanceToNextFrame())
+      .WillOnce(Return(10))
+      .WillRepeatedly(Return(std::nullopt));
+
+  openscreen::cast::EncodedFrame frame;
+  frame.frame_id = openscreen::cast::FrameId::first() + 1;
+  EXPECT_CALL(receiver_, ConsumeNextFrame(_))
+      .WillOnce(Return(std::move(frame)));
+
+  auto buffer = base::MakeRefCounted<media::DecoderBuffer>(4);
+  buffer->set_timestamp(base::Milliseconds(33));
+  EXPECT_CALL(*decoder_buffer_factory_, ToDecoderBuffer(_, _))
+      .WillOnce(Return(buffer));
+
+  consumer_->ReadFrame(base::DoNothing());
+
+  EXPECT_THAT(StopAndQuery("SELECT name FROM slice"), ElementsAre(Row{"name"}));
 }
 
 }  // namespace

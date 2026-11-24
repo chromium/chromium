@@ -11,22 +11,40 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
+#include "components/cast_streaming/common/frame/frame_trace_flow.h"
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/media_util.h"
 #include "media/mojo/common/media_type_converters.h"
+#include "third_party/openscreen/src/cast/streaming/public/frame_trace_ids.h"
 #include "third_party/openscreen/src/platform/api/time.h"
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace cast_streaming {
 
+namespace {
+
+// Returns the ID of the trace flow that follows a frame through the Open Screen
+// receiver (see third_party/openscreen/src/cast/docs/frame_flow_tracing.md).
+uint64_t GetOpenscreenFlowId(const openscreen::cast::Receiver& receiver,
+                             openscreen::cast::FrameId frame_id) {
+  return openscreen::cast::GetFrameIdFlowId(receiver.config().sender_ssrc,
+                                            frame_id);
+}
+
+}  // namespace
+
 StreamConsumer::StreamConsumer(
     openscreen::cast::Receiver* receiver,
+    media::DemuxerStream::Type stream_type,
     mojo::ScopedDataPipeProducerHandle data_pipe,
     FrameReceivedCB frame_received_cb,
     base::RepeatingClosure on_new_frame,
     std::unique_ptr<DecoderBufferFactory> decoder_buffer_factory)
     : receiver_(receiver),
+      stream_type_(stream_type),
       data_pipe_(std::move(data_pipe)),
       frame_received_cb_(std::move(frame_received_cb)),
       pipe_watcher_(FROM_HERE,
@@ -183,6 +201,13 @@ void StreamConsumer::MaybeSendNextFrame() {
   if (encoded_frame.frame_id <
       openscreen::cast::FrameId(int64_t{skip_until_frame_id_})) {
     VLOG(1) << "Skipping Frame " << encoded_frame.frame_id;
+    TRACE_EVENT_INSTANT(
+        "cast.stream", "CastStreaming.Frame.Skipped", base::TimeTicks::Now(),
+        perfetto::TerminatingFlow::Global(
+            GetOpenscreenFlowId(*receiver_, encoded_frame.frame_id)),
+        "stream_type", media::DemuxerStream::GetTypeName(stream_type_),
+        "frame_id", encoded_frame.frame_id.value(), "skip_until_frame_id",
+        skip_until_frame_id_);
 
     MaybeSendNextFrame();
     return;
@@ -193,6 +218,12 @@ void StreamConsumer::MaybeSendNextFrame() {
       decoder_buffer_factory_->ToDecoderBuffer(encoded_frame,
                                                frame_buffer_.as_span());
   if (!decoder_buffer) {
+    TRACE_EVENT_INSTANT(
+        "cast.stream", "CastStreaming.Frame.Dropped", base::TimeTicks::Now(),
+        perfetto::TerminatingFlow::Global(
+            GetOpenscreenFlowId(*receiver_, encoded_frame.frame_id)),
+        "stream_type", media::DemuxerStream::GetTypeName(stream_type_),
+        "frame_id", encoded_frame.frame_id.value());
     MaybeSendNextFrame();
     return;
   }
@@ -204,18 +235,46 @@ void StreamConsumer::MaybeSendNextFrame() {
   pending_buffer_ = std::move(decoder_buffer);
   pending_buffer_offset_ = 0;
 
-  // Write the frame's data to Mojo.
-  size_t bytes_written = 0;
-  auto result = data_pipe_->WriteData(*pending_buffer_,
-                                      MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
-  if (result == MOJO_RESULT_SHOULD_WAIT) {
-    pipe_watcher_.ArmOrNotify();
-    bytes_written = 0;
-  } else if (result != MOJO_RESULT_OK) {
-    CloseDataPipeOnError();
-    return;
+  // Write the frame's data to Mojo. End-of-stream buffers carry no payload
+  // bytes, and DecoderBuffer disallows calling size() on them.
+  if (!pending_buffer_->end_of_stream()) {
+    size_t bytes_written = 0;
+    auto result = data_pipe_->WriteData(
+        *pending_buffer_, MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      pipe_watcher_.ArmOrNotify();
+      bytes_written = 0;
+    } else if (result != MOJO_RESULT_OK) {
+      CloseDataPipeOnError();
+      return;
+    }
+    pending_buffer_offset_ += base::checked_cast<size_t>(bytes_written);
   }
-  pending_buffer_offset_ += base::checked_cast<size_t>(bytes_written);
+
+  if (pending_buffer_->end_of_stream()) {
+    TRACE_EVENT_INSTANT(
+        "cast.stream", "CastStreaming.Frame.SentToRenderer",
+        base::TimeTicks::Now(),
+        perfetto::Flow::Global(
+            GetOpenscreenFlowId(*receiver_, encoded_frame.frame_id)),
+        "stream_type", media::DemuxerStream::GetTypeName(stream_type_),
+        "frame_id", encoded_frame.frame_id.value(), "end_of_stream", true);
+  } else {
+    // Continue Open Screen's flow for this frame, and start the flow that the
+    // renderer process picks up when it reads the buffer.
+    TRACE_EVENT_INSTANT(
+        "cast.stream", "CastStreaming.Frame.SentToRenderer",
+        base::TimeTicks::Now(),
+        perfetto::Flow::Global(
+            GetOpenscreenFlowId(*receiver_, encoded_frame.frame_id)),
+        perfetto::Flow::Global(GetRendererHandoffFlowId(
+            stream_type_, pending_buffer_->timestamp())),
+        "stream_type", media::DemuxerStream::GetTypeName(stream_type_),
+        "frame_id", encoded_frame.frame_id.value(), "timestamp_us",
+        pending_buffer_->timestamp().InMicroseconds(), "size",
+        pending_buffer_->size(), "is_key_frame",
+        pending_buffer_->is_key_frame());
+  }
 
   // Return the frame.
   is_read_pending_ = false;
@@ -226,7 +285,8 @@ void StreamConsumer::MaybeSendNextFrame() {
 
   // Wait for the mojo pipe to be writable if there is still pending data to
   // write.
-  if (pending_buffer_offset_ < pending_buffer_->size()) {
+  if (!pending_buffer_->end_of_stream() &&
+      pending_buffer_offset_ < pending_buffer_->size()) {
     pipe_watcher_.ArmOrNotify();
   } else {
     pending_buffer_.reset();

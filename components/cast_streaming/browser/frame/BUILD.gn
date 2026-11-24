@@ -46,10 +46,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/cast_streaming/browser/common",
+    "//components/cast_streaming/common/frame",
     "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
     "//mojo/public/cpp/bindings",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

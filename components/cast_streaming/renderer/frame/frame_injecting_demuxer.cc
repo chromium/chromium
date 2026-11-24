@@ -14,7 +14,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/cast_streaming/common/frame/demuxer_stream_traits.h"
+#include "components/cast_streaming/common/frame/frame_trace_flow.h"
 #include "components/cast_streaming/renderer/common/buffer_requester.h"
 #include "components/cast_streaming/renderer/frame/demuxer_connector.h"
 #include "media/base/audio_decoder_config.h"
@@ -144,6 +146,16 @@ class FrameInjectingDemuxerStream
     } else if (buffer->end_of_stream()) {
       std::move(pending_read_cb_).Run(Status::kError, {});
     } else {
+      // Finish the flow that the browser process started when it sent this
+      // buffer. This must use the timestamp from the browser, so do it before
+      // the offset is applied below.
+      TRACE_EVENT_INSTANT(
+          "cast.stream", "CastStreaming.Frame.Demuxed", base::TimeTicks::Now(),
+          perfetto::TerminatingFlow::Global(
+              GetRendererHandoffFlowId(type(), buffer->timestamp())),
+          "stream_type", media::DemuxerStream::GetTypeName(type()),
+          "timestamp_us", buffer->timestamp().InMicroseconds());
+
       if (type() == Type::AUDIO) {
         timestamp_tracker_->ProcessAudioPacket(*buffer);
       }

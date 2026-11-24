@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
+#include "media/base/demuxer_stream.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -34,10 +35,13 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
       base::RepeatingCallback<void(media::mojom::DecoderBufferPtr)>;
 
   // `receiver` sends frames to this object. It must outlive this object.
+  // `stream_type` is the type of the frames that `receiver` sends, and is only
+  // used to label trace events.
   // `frame_received_cb` is called on every new frame, after a new frame has
   // been written to `data_pipe`. On error, `data_pipe` will be closed.
   // On every new frame, `on_new_frame` will be called.
   StreamConsumer(openscreen::cast::Receiver* receiver,
+                 media::DemuxerStream::Type stream_type,
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
                  base::RepeatingClosure on_new_frame,
@@ -106,6 +110,7 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   uint32_t skip_until_frame_id_ = 0;
 
   const raw_ptr<openscreen::cast::Receiver> receiver_;
+  const media::DemuxerStream::Type stream_type_;
   mojo::ScopedDataPipeProducerHandle data_pipe_;
   const FrameReceivedCB frame_received_cb_;
 

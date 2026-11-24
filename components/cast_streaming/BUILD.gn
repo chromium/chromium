@@ -19,6 +19,7 @@ group("unit_tests") {
   testonly = true
   public_deps = [
     "browser:unit_tests",
+    "common/frame:unit_tests",
     "renderer:unit_tests",
   ]
 }

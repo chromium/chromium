@@ -257,7 +257,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
   // this object and |client_| is guaranteed to outlive this object.
   audio_consumer_ = std::make_unique<StreamConsumer>(
       initialization_info.audio_stream_info->receiver,
-      std::move(data_pipe_producer),
+      media::DemuxerStream::Type::AUDIO, std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnAudioBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(
@@ -300,7 +300,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
   // StreamConsumers.
   video_consumer_ = std::make_unique<StreamConsumer>(
       initialization_info.video_stream_info->receiver,
-      std::move(data_pipe_producer),
+      media::DemuxerStream::Type::VIDEO, std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnVideoBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(

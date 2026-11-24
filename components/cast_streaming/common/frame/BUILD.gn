@@ -12,5 +12,26 @@ visibility = [
 ]
 
 source_set("frame") {
-  public = [ "demuxer_stream_traits.h" ]
+  public = [
+    "demuxer_stream_traits.h",
+    "frame_trace_flow.h",
+  ]
+  sources = [ "frame_trace_flow.cc" ]
+  public_deps = [
+    "//base",
+    "//media",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility += [ "//components/cast_streaming:unit_tests" ]
+  public = []
+  sources = [ "frame_trace_flow_unittest.cc" ]
+  deps = [
+    ":frame",
+    "//base",
+    "//media",
+    "//testing/gtest",
+  ]
 }
