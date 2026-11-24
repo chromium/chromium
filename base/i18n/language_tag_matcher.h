@@ -25,22 +25,22 @@ namespace base::i18n {
 // Example usage:
 //   const LanguageTagConverter& builder = LanguageTagConverter::GetInstance();
 //   LanguageTagMatcher matcher = LanguageTagMatcher::Create({
-//      GetKnownLanguageTag<"en-US">(),
-//      GetKnownLanguageTag<"fr-FR">(),
-//      GetKnownLanguageTag<"es-AR">(),
+//      GetKnownLanguageTag("en-US"),
+//      GetKnownLanguageTag("fr-FR"),
+//      GetKnownLanguageTag("es-AR"),
 //   });
 //
 //   // Exact match:
-//   matcher.Match(GetKnownLanguageTag<"en-US">()); // Returns "en-US"
+//   matcher.Match(GetKnownLanguageTag("en-US")); // Returns "en-US"
 //
 //   // Fallback match:
-//   matcher.Match(GetKnownLanguageTag<"en-GB">()); // Returns "en-US"
+//   matcher.Match(GetKnownLanguageTag("en-GB")); // Returns "en-US"
 //
 //   // Macro-region match:
-//   matcher.Match(GetKnownLanguageTag<"es-MX">()); // Returns "es-419"
+//   matcher.Match(GetKnownLanguageTag("es-MX")); // Returns "es-419"
 //
 //   // No match:
-//   matcher.Match(GetKnownLanguageTag<"de">()); // Returns nullopt
+//   matcher.Match(GetKnownLanguageTag("de")); // Returns nullopt
 class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTagMatcher {
  public:
   // Creates a new matcher for the given set of supported locales.
