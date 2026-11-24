@@ -16,7 +16,7 @@ This is a `no_std` crate.
 TL;DR: `Apache-2.0 OR MIT`
 
 Please see the file named
-[COPYRIGHT](https://github.com/hsivonen/utf16_iter/blob/master/COPYRIGHT).
+[COPYRIGHT](https://github.com/hsivonen/utf16_iter/blob/main/COPYRIGHT).
 
 ## Documentation
 
@@ -24,6 +24,12 @@ Generated [API documentation](https://docs.rs/utf16_iter/) is available
 online.
 
 ## Release Notes
+
+### 1.1.0
+
+* Increase MSRV to 1.83
+* Reformulate the crate in terms of a pluggable handler trait.
+* Depend on `utf_types` for making the handler interface safe.
 
 ### 1.0.5
 

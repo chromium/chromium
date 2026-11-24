@@ -1,0 +1,16 @@
+[package]
+name = "utf_types"
+version = "1.0.0"
+rust-version = "1.83" # const computation of the data table
+edition = "2021"
+description = "Types for UTF-8 and UTF-16 code units and code unit sequences"
+authors = ["Henri Sivonen <hsivonen@hsivonen.fi>"]
+license = "Apache-2.0 OR MIT"
+readme = "README.md"
+documentation = "https://docs.rs/utf_types/"
+homepage = "https://docs.rs/utf_types/"
+repository = "https://github.com/hsivonen/utf_types"
+keywords = ["encoding", "UTF-8", "Unicode", "UTF-16"]
+categories = ["text-processing", "internationalization"]
+
+[dependencies]

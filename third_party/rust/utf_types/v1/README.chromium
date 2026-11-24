@@ -1,0 +1,11 @@
+Name: utf_types
+URL: https://crates.io/crates/utf_types
+Version: 1.0.0
+Revision: 3e8dc643be477f9f0be8cfa21e519b742649fa80
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/utf_types-v1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Types for UTF-8 and UTF-16 code units and code unit sequences
