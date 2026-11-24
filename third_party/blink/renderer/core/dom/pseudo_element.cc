@@ -166,6 +166,36 @@ PseudoElement* PseudoElement::Create(Element* parent,
 
 const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
   switch (pseudo_id) {
+    case kPseudoIdSelection: {
+      static const base::NoDestructor<QualifiedName> selection(
+          AtomicString::FromLiteral<"::selection">());
+      return *selection;
+    }
+    case kPseudoIdTargetText: {
+      static const base::NoDestructor<QualifiedName> target_text(
+          AtomicString::FromLiteral<"::target-text">());
+      return *target_text;
+    }
+    case kPseudoIdSpellingError: {
+      static const base::NoDestructor<QualifiedName> spelling_error(
+          AtomicString::FromLiteral<"::spelling-error">());
+      return *spelling_error;
+    }
+    case kPseudoIdGrammarError: {
+      static const base::NoDestructor<QualifiedName> grammar_error(
+          AtomicString::FromLiteral<"::grammar-error">());
+      return *grammar_error;
+    }
+    case kPseudoIdSearchText: {
+      static const base::NoDestructor<QualifiedName> search_text(
+          AtomicString::FromLiteral<"::search-text">());
+      return *search_text;
+    }
+    case kPseudoIdHighlight: {
+      static const base::NoDestructor<QualifiedName> highlight(
+          AtomicString::FromLiteral<"::highlight">());
+      return *highlight;
+    }
     case kPseudoIdAfter: {
       static const base::NoDestructor<QualifiedName> after(
           AtomicString::FromLiteral<"::after">());

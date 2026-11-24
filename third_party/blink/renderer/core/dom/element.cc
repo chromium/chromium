@@ -201,6 +201,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
+#include "third_party/blink/renderer/core/highlight/highlight_pseudo_element.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
@@ -2291,6 +2292,21 @@ ElementAnimations* Element::GetElementAnimations() const {
 
 ElementAnimations& Element::EnsureElementAnimations() {
   return EnsureRareData().EnsureElementAnimations().RefreshNodeAndUnwrap(*this);
+}
+
+void Element::SetPseudoElement(PseudoId pseudo_id,
+                               PseudoElement* pseudo_element,
+                               const AtomicString& pseudo_argument) {
+  CHECK(!pseudo_element || pseudo_element->parentElement() == this);
+  if (!pseudo_element && !RareData()) {
+    return;
+  }
+  EnsureRareData()
+      .SetPseudoElement(pseudo_id, pseudo_element, pseudo_argument)
+      .RefreshNode(*this);
+  if (pseudo_element) {
+    pseudo_element->InsertedInto(*this);
+  }
 }
 
 bool Element::HasAnimations() const {
@@ -11314,9 +11330,7 @@ void Element::UpdateFirstLetterPseudoElement(
 
 void Element::ClearPseudoElement(PseudoId pseudo_id,
                                  const AtomicString& pseudo_argument) {
-  RareData()
-      ->SetPseudoElement(pseudo_id, nullptr, pseudo_argument)
-      .RefreshNode(*this);
+  SetPseudoElement(pseudo_id, nullptr, pseudo_argument);
   GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
 }
 
@@ -11482,17 +11496,12 @@ bool Element::SetAssociatedPseudoElement(
   DCHECK(pseudo_element);
   PseudoId pseudo_id = pseudo_element->GetPseudoId();
   const AtomicString& pseudo_argument = pseudo_element->GetPseudoArgument();
-  EnsureRareData()
-      .SetPseudoElement(pseudo_id, pseudo_element, pseudo_argument)
-      .RefreshNode(*this);
-  pseudo_element->InsertedInto(*this);
+  SetPseudoElement(pseudo_id, pseudo_element, pseudo_argument);
 
   const ComputedStyle* pseudo_style =
       pseudo_element->StyleForLayoutObject(style_recalc_context);
   if (!PseudoElementLayoutObjectIsNeeded(pseudo_id, pseudo_style, this)) {
-    RareData()
-        ->SetPseudoElement(pseudo_id, nullptr, pseudo_argument)
-        .RefreshNode(*this);
+    SetPseudoElement(pseudo_id, nullptr, pseudo_argument);
     // If the content property is relying on attr(), we add the pseudo-element's
     // ComputedStyle to the originating element's style cache, so that when the
     // attribute value changes we will cause a pseudo-element update via
@@ -11631,6 +11640,10 @@ bool Element::HasAXIncludedPseudosInternal() const {
 Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {
+  if (IsHighlightPseudoElement(pseudo_id)) {
+    StyleRequest request(pseudo_id, nullptr, nullptr, pseudo_argument);
+    return HighlightPseudoElement::FindTarget(*this, request);
+  }
   if (!IsTransitionPseudoElement(pseudo_id)) {
     if (pseudo_id == kPseudoIdScrollMarkerGroup) {
       if (const ComputedStyle* style = GetComputedStyle()) {
@@ -11723,7 +11736,8 @@ bool Element::PseudoElementStylesAffectCounters() const {
   }
 
   for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
-    if (pseudo_element->GetComputedStyle()->GetCounterDirectives()) {
+    const ComputedStyle* pseudo_style = pseudo_element->GetComputedStyle();
+    if (pseudo_style && pseudo_style->GetCounterDirectives()) {
       return true;
     }
   }
@@ -11779,8 +11793,10 @@ bool Element::PseudoElementStylesDependOnFunc(
   }
 
   for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
-    if (func(*pseudo_element->GetComputedStyle()) ||
-        pseudo_element->PseudoElementStylesDependOnFunc(func)) {
+    const ComputedStyle* pseudo_style = pseudo_element->GetComputedStyle();
+    if (pseudo_style &&
+        (func(*pseudo_style) ||
+         pseudo_element->PseudoElementStylesDependOnFunc(func))) {
       return true;
     }
   }
@@ -11856,11 +11872,30 @@ const ComputedStyle* Element::StyleForFirstLineInherited(
 const ComputedStyle* Element::StyleForPseudoElement(
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& request) {
-  GetDocument().GetStyleEngine().UpdateViewportSize();
-
   PseudoId pseudo_id = IsPseudoElement() && request.pseudo_id == kPseudoIdNone
                            ? GetPseudoIdForStyling()
                            : request.pseudo_id;
+  const bool is_highlight_target =
+      IsHighlightPseudoElement(pseudo_id) && IsPseudoElement();
+  StyleRecalcContext local_recalc_context(style_recalc_context);
+  if (is_highlight_target) {
+    // The incoming old style may belong to the originating element. Use the
+    // highlight target's style from the start of the lifecycle update.
+    local_recalc_context.old_style = PostStyleUpdateScope::GetOldStyle(*this);
+  }
+  if (IsHighlightPseudoElement(request.pseudo_id)) {
+    if (PseudoElement* pseudo =
+            HighlightPseudoElement::FindTarget(*this, request)) {
+      local_recalc_context.old_style =
+          PostStyleUpdateScope::GetOldStyle(*pseudo);
+      StyleRequest pseudo_request = request;
+      pseudo_request.pseudo_id = kPseudoIdNone;
+      return pseudo->StyleForPseudoElement(local_recalc_context,
+                                           pseudo_request);
+    }
+  }
+
+  GetDocument().GetStyleEngine().UpdateViewportSize();
 
   if (pseudo_id == kPseudoIdFirstLineInherited) {
     return StyleForFirstLineInherited(style_recalc_context, request);
@@ -11888,7 +11923,10 @@ const ComputedStyle* Element::StyleForPseudoElement(
   }
 
   const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
-      this, style_recalc_context, style_request);
+      this, local_recalc_context, style_request);
+  if (is_highlight_target) {
+    SetComputedStyle(result);
+  }
 
   if (result) {
     if (result->GetCounterDirectives()) {

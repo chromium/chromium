@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/highlight/highlight_pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -74,6 +75,9 @@ Element* ComputeStyledElement(const StyleRequest& style_request,
     styled_element = &element;
   }
   if (style_request.IsPseudoStyleRequest()) {
+    if (IsHighlightPseudoElement(style_request.pseudo_id)) {
+      return HighlightPseudoElement::FindTarget(*styled_element, style_request);
+    }
     styled_element = styled_element->GetStyledPseudoElement(
         style_request.pseudo_id, style_request.pseudo_argument);
   }
@@ -119,7 +123,10 @@ StyleResolverState::StyleResolverState(
           document.DevicePixelRatio()),
       pseudo_id_(style_request.pseudo_id),
       originating_element_style_(style_request.originating_element_style),
-      is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
+      is_for_highlight_(
+          IsHighlightPseudoElement(style_request.IsPseudoStyleRequest()
+                                       ? style_request.pseudo_id
+                                       : element.GetPseudoIdForStyling())),
       can_trigger_animations_(style_request.can_trigger_animations) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 

@@ -3260,6 +3260,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       // (because we don't know what it's supposed to mean).
       return false;
     case CSSSelector::kPseudoCurrent:
+      if (element.GetPseudoId() == kPseudoIdSearchText) {
+        return To<PseudoElement>(element).GetPseudoArgument() == "current";
+      }
       if (context.previously_matched_pseudo_element != kPseudoIdSearchText) {
         return false;
       }
@@ -3423,6 +3426,12 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       return true;
     }
     case CSSSelector::kPseudoHighlight: {
+      if (element.IsPseudoElement()) {
+        return element.GetPseudoId() == kPseudoIdHighlight &&
+               MatchesHighlightName(
+                   selector.Argument(),
+                   To<PseudoElement>(element).GetPseudoArgument());
+      }
       result.dynamic_pseudo = PseudoId::kPseudoIdHighlight;
       // We keep track of which pseudo-elements may match for the element
       // through result.dynamic_pseudo. For ::highlight() pseudo-elements we

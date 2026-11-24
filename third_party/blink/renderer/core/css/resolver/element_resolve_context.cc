@@ -101,7 +101,13 @@ ElementResolveContext::ElementResolveContext(Element& element)
               ? &To<PseudoElement>(element_)->UltimateOriginatingElement()
               : element_),
       pseudo_element_(element_->IsPseudoElement() ? element_ : nullptr),
-      element_link_state_(GetLinkStateForElement(element)),
+      // Highlight inheritance follows the parent's highlight, so obtain link
+      // state from the originating element rather than the backing pseudo.
+      element_link_state_(GetLinkStateForElement(
+          pseudo_element_ &&
+                  IsHighlightPseudoElement(element.GetPseudoIdForStyling())
+              ? *ultimate_originating_element_
+              : element)),
       pseudo_element_ancestors_(BuildPseudoElementAncestors(&element)) {
   parent_element_ = LayoutTreeBuilderTraversal::ParentElement(element);
   layout_parent_ = LayoutTreeBuilderTraversal::LayoutParentElement(element);

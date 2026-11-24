@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_DATA_H_
 
+#include <utility>
+
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
@@ -12,7 +14,9 @@
 #include "third_party/blink/renderer/core/dom/node_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -35,7 +39,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
-
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const {
     return column_pseudo_elements_;
   }
@@ -103,6 +106,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(skeleton_);
     visitor->Trace(transition_data_);
     visitor->Trace(column_pseudo_elements_);
+    visitor->Trace(highlight_pseudo_elements_);
     NodeRareDataField::Trace(visitor);
   }
 
@@ -133,6 +137,11 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   // no Element for column (fragmentainer), and they should appear somewhere for
   // focus and a11y.
   Member<ColumnPseudoElementsVector> column_pseudo_elements_;
+
+  using HighlightPseudoElementMap =
+      GCedHeapHashMap<std::pair<PseudoId, AtomicString>, Member<PseudoElement>>;
+  // Shared ownership does not make highlights pseudo-tree children.
+  Member<HighlightPseudoElementMap> highlight_pseudo_elements_;
 };
 
 inline bool PseudoElementData::HasPseudoElements() const {
@@ -147,7 +156,8 @@ inline bool PseudoElementData::HasPseudoElements() const {
          generated_scroll_button_inline_start_ ||
          generated_scroll_button_inline_end_ ||
          generated_scroll_button_block_end_ ||
-         (column_pseudo_elements_ && !column_pseudo_elements_->empty());
+         (column_pseudo_elements_ && !column_pseudo_elements_->empty()) ||
+         (highlight_pseudo_elements_ && !highlight_pseudo_elements_->empty());
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
@@ -177,6 +187,13 @@ inline void PseudoElementData::ClearPseudoElements() {
   if (TransitionPseudoElementData* transition_data =
           transition_data_.Release()) {
     transition_data->ClearPseudoElements();
+  }
+  if (HighlightPseudoElementMap* highlights =
+          highlight_pseudo_elements_.Release()) {
+    for (auto& entry : *highlights) {
+      entry.value->Dispose();
+    }
+    highlights->clear();
   }
 }
 
@@ -258,6 +275,27 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_first_letter_;
       generated_first_letter_ = element;
       break;
+    case kPseudoIdSelection:
+    case kPseudoIdSearchText:
+    case kPseudoIdTargetText:
+    case kPseudoIdHighlight:
+    case kPseudoIdSpellingError:
+    case kPseudoIdGrammarError: {
+      previous_element = GetPseudoElement(pseudo_id, pseudo_argument);
+      // Built-in highlights have a null argument, which cannot be hashed.
+      auto key = std::pair(
+          pseudo_id, pseudo_argument.IsNull() ? g_empty_atom : pseudo_argument);
+      if (element) {
+        if (!highlight_pseudo_elements_) {
+          highlight_pseudo_elements_ =
+              MakeGarbageCollected<HighlightPseudoElementMap>();
+        }
+        highlight_pseudo_elements_->Set(key, element);
+      } else if (highlight_pseudo_elements_) {
+        highlight_pseudo_elements_->erase(key);
+      }
+      break;
+    }
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionGroupChildren:
@@ -348,6 +386,11 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
                ? transition_data_->GetPseudoElement(pseudo_id, pseudo_argument)
                : nullptr;
   }
+  if (IsHighlightPseudoElement(pseudo_id) && highlight_pseudo_elements_) {
+    auto it = highlight_pseudo_elements_->find(std::pair(
+        pseudo_id, pseudo_argument.IsNull() ? g_empty_atom : pseudo_argument));
+    return it == highlight_pseudo_elements_->end() ? nullptr : it->value.Get();
+  }
   return nullptr;
 }
 
@@ -417,6 +460,9 @@ PseudoElementData::GetPseudoElements() const {
   }
   if (column_pseudo_elements_) {
     result.append_range(*column_pseudo_elements_);
+  }
+  if (highlight_pseudo_elements_) {
+    result.append_range(highlight_pseudo_elements_->Values());
   }
   DCHECK(result.empty() || HasPseudoElements());
   return result;

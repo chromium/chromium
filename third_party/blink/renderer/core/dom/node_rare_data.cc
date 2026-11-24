@@ -201,6 +201,7 @@ PseudoElementData::PseudoElementVector NodeRareData::GetPseudoElements() const {
   }
   return data->GetPseudoElements();
 }
+
 RareDataUpdate<void> NodeRareData::AddColumnPseudoElement(
     ColumnPseudoElement& column_pseudo_element) {
   auto update = EnsureField<PseudoElementData>(FieldId::kPseudoElementData);

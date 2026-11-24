@@ -1894,6 +1894,9 @@ class CORE_EXPORT Element : public ContainerNode {
 
   ElementAnimations* GetElementAnimations() const;
   ElementAnimations& EnsureElementAnimations();
+  void SetPseudoElement(PseudoId,
+                        PseudoElement*,
+                        const AtomicString& pseudo_argument = g_null_atom);
   bool HasAnimations() const;
 
   void SynchronizeAttribute(const AtomicString& local_name) const {

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -40,6 +41,9 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/highlight/highlight_pseudo_element.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
@@ -235,6 +239,225 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   ASSERT_TRUE(style1->GetBaseComputedStyle());
   EXPECT_EQ(20, style1->GetBaseComputedStyle()->FontSize());
   EXPECT_EQ(20, resolver.ResolveStyle(div, recalc_context)->FontSize());
+}
+
+TEST_F(StyleResolverTest, HighlightPseudoSelfResolutionAndLifecycle) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(true);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #target::highlight(one) { color: red; }
+      #target::before { content: "before"; }
+    </style>
+    <span id="target">Text</span>
+  )HTML");
+  auto* registry = HighlightRegistry::From(*GetDocument().domWindow());
+  registry->SetForTesting(AtomicString("one"), Highlight::Create({}));
+  UpdateAllLifecyclePhasesForTest();
+  Element* origin = GetElementById("target");
+  EXPECT_FALSE(
+      origin->GetPseudoElement(kPseudoIdHighlight, AtomicString("one")));
+  StyleRequest request(kPseudoIdHighlight, nullptr, origin->GetComputedStyle());
+  request.pseudo_argument = AtomicString("one");
+  {
+    ScopedCSSCustomHighlightExtensionsForTest disabled(false);
+    EXPECT_FALSE(HighlightPseudoElement::EnsureTarget(*origin, request));
+  }
+  StyleRequest ineligible = request;
+  ineligible.pseudo_argument = AtomicString("missing");
+  EXPECT_FALSE(HighlightPseudoElement::EnsureTarget(*origin, ineligible));
+  ineligible.pseudo_argument = CSSSelector::UniversalSelectorAtom();
+  EXPECT_FALSE(HighlightPseudoElement::EnsureTarget(*origin, ineligible));
+
+  PseudoElement* target =
+      HighlightPseudoElement::EnsureTarget(*origin, request);
+  ASSERT_TRUE(target);
+  EXPECT_EQ(target, origin->GetStyledPseudoElement(kPseudoIdHighlight,
+                                                   AtomicString("one")));
+  EXPECT_EQ(target, HighlightPseudoElement::FindTarget(*origin, request));
+  EXPECT_EQ(origin, target->parentNode());
+  EXPECT_EQ(&origin->GetTreeScope(), &target->GetTreeScope());
+  EXPECT_TRUE(target->isConnected());
+  EXPECT_FALSE(target->GetLayoutObject());
+  EXPECT_FALSE(origin->PseudoElementStylesAffectCounters());
+  EXPECT_FALSE(origin->PseudoElementStylesDependOnAttr());
+  StyleRequest self_request(kPseudoIdNone, nullptr, origin->GetComputedStyle());
+  self_request.can_trigger_animations = false;
+  const ComputedStyle* style =
+      target->StyleForPseudoElement(StyleRecalcContext(), self_request);
+  ASSERT_TRUE(style);
+  EXPECT_EQ(style, target->GetComputedStyle());
+  target->SetComputedStyle(nullptr);
+  request.can_trigger_animations = false;
+  style = origin->StyleForPseudoElement(StyleRecalcContext(), request);
+  ASSERT_TRUE(style);
+  EXPECT_EQ(style, target->GetComputedStyle());
+  EXPECT_FALSE(target->GetElementAnimations());
+  PseudoElement* before = origin->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+  EXPECT_EQ(before, origin->PseudoAwareFirstChild());
+  EXPECT_EQ(origin->firstChild(), before->PseudoAwareNextSibling());
+  EXPECT_FALSE(origin->firstChild()->PseudoAwareNextSibling());
+
+  origin->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->parentNode());
+  EXPECT_FALSE(target->isConnected());
+  EXPECT_FALSE(target->GetComputedStyle());
+}
+
+TEST_F(StyleResolverTest, HighlightPseudoBuiltinSelfResolution) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(true);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #target::selection, #target::target-text, #target::spelling-error,
+      #target::grammar-error, #target::search-text { color: rgb(200, 100, 0); }
+      #target::search-text:current { color: rgb(0, 100, 200); }
+    </style>
+    <span id="target">Text</span>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* origin = GetElementById("target");
+  for (PseudoId pseudo :
+       {kPseudoIdSelection, kPseudoIdTargetText, kPseudoIdSpellingError,
+        kPseudoIdGrammarError, kPseudoIdSearchText}) {
+    SCOPED_TRACE(pseudo);
+    EXPECT_FALSE(origin->GetPseudoElement(pseudo));
+    const ComputedStyle* parent_style =
+        origin->parentElement()->GetComputedStyle()->HighlightData().Style(
+            pseudo);
+    StyleRequest request(pseudo, parent_style, origin->GetComputedStyle());
+    PseudoElement* target =
+        HighlightPseudoElement::EnsureTarget(*origin, request);
+    ASSERT_TRUE(target);
+    for (bool resolve_on_origin : {false, true}) {
+      SCOPED_TRACE(resolve_on_origin);
+      target->SetComputedStyle(nullptr);
+      StyleRequest resolve_request(resolve_on_origin ? pseudo : kPseudoIdNone,
+                                   parent_style, origin->GetComputedStyle());
+      resolve_request.can_trigger_animations = false;
+      Element* resolve_element = resolve_on_origin ? origin : target;
+      const ComputedStyle* style = resolve_element->StyleForPseudoElement(
+          StyleRecalcContext(), resolve_request);
+      ASSERT_TRUE(style);
+      EXPECT_EQ(style, target->GetComputedStyle());
+      EXPECT_EQ(Color(200, 100, 0),
+                style->VisitedDependentColor(GetCSSPropertyColor()));
+    }
+    EXPECT_FALSE(target->GetLayoutObject());
+    EXPECT_FALSE(target->GetElementAnimations());
+  }
+  const ComputedStyle* current_parent = origin->parentElement()
+                                            ->GetComputedStyle()
+                                            ->HighlightData()
+                                            .SearchTextCurrent();
+  StyleRequest current_request(kPseudoIdSearchText, current_parent,
+                               origin->GetComputedStyle());
+  current_request.search_text_request = StyleRequest::kCurrent;
+  PseudoElement* current =
+      HighlightPseudoElement::EnsureTarget(*origin, current_request);
+  ASSERT_TRUE(current);
+  EXPECT_NE(current, origin->GetPseudoElement(kPseudoIdSearchText));
+  for (bool resolve_on_origin : {false, true}) {
+    SCOPED_TRACE(resolve_on_origin);
+    current->SetComputedStyle(nullptr);
+    StyleRequest resolve_request = current_request;
+    if (!resolve_on_origin) {
+      resolve_request.pseudo_id = kPseudoIdNone;
+    }
+    resolve_request.can_trigger_animations = false;
+    Element* resolve_element = resolve_on_origin ? origin : current;
+    const ComputedStyle* style = resolve_element->StyleForPseudoElement(
+        StyleRecalcContext(), resolve_request);
+    ASSERT_TRUE(style);
+    EXPECT_EQ(style, current->GetComputedStyle());
+    EXPECT_EQ(Color(0, 100, 200),
+              style->VisitedDependentColor(GetCSSPropertyColor()));
+  }
+}
+
+TEST_F(StyleResolverTest, HighlightPseudoSelfLinkState) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(true);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #target:link::highlight(test) { color: rgb(200, 0, 0); }
+      #target:visited::highlight(test) { color: rgb(0, 200, 0); }
+    </style>
+    <a id="target" href="">Text</a>
+  )HTML");
+  HighlightRegistry::From(*GetDocument().domWindow())
+      ->SetForTesting(AtomicString("test"), Highlight::Create({}));
+  Element* origin = GetElementById("target");
+  for (bool is_visited : {true, false}) {
+    SCOPED_TRACE(is_visited);
+    origin->setAttribute(
+        html_names::kHrefAttr,
+        AtomicString(is_visited ? "" : "https://example.test/unvisited"));
+    UpdateAllLifecyclePhasesForTest();
+    const ComputedStyle* parent_style =
+        origin->parentElement()
+            ->GetComputedStyle()
+            ->HighlightData()
+            .CustomHighlight(AtomicString("test"));
+    StyleRequest request(kPseudoIdHighlight, parent_style,
+                         origin->GetComputedStyle());
+    request.pseudo_argument = AtomicString("test");
+    PseudoElement* target =
+        HighlightPseudoElement::EnsureTarget(*origin, request);
+    ASSERT_TRUE(target);
+    StyleRequest self_request(kPseudoIdNone, parent_style,
+                              origin->GetComputedStyle());
+    self_request.can_trigger_animations = false;
+    const ComputedStyle* style =
+        target->StyleForPseudoElement(StyleRecalcContext(), self_request);
+    ASSERT_TRUE(style);
+    EXPECT_EQ(is_visited ? EInsideLink::kInsideVisitedLink
+                         : EInsideLink::kInsideUnvisitedLink,
+              style->InsideLink());
+    EXPECT_EQ(is_visited ? Color(0, 200, 0) : Color(200, 0, 0),
+              style->VisitedDependentColor(GetCSSPropertyColor()));
+  }
+}
+
+TEST_F(StyleResolverTest, HighlightPseudoUnregisteredTargetLookup) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(true);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #target::highlight(one) { color: red; }
+      #target.changed::highlight(one) { color: blue; }
+    </style>
+    <span id="target">Text</span>
+  )HTML");
+  auto* registry = HighlightRegistry::From(*GetDocument().domWindow());
+  auto* highlight = Highlight::Create({});
+  const AtomicString name("one");
+  registry->SetForTesting(name, highlight);
+  UpdateAllLifecyclePhasesForTest();
+  Element* origin = GetElementById("target");
+  StyleRequest request(kPseudoIdHighlight, nullptr, origin->GetComputedStyle(),
+                       name);
+  request.can_trigger_animations = false;
+  PseudoElement* target =
+      HighlightPseudoElement::EnsureTarget(*origin, request);
+  ASSERT_TRUE(target);
+  const ComputedStyle* initial_style =
+      origin->StyleForPseudoElement(StyleRecalcContext(), request);
+  ASSERT_TRUE(initial_style);
+  EXPECT_EQ(initial_style,
+            origin->EnsureComputedStyle(kPseudoIdHighlight, name));
+
+  registry->RemoveForTesting(name, highlight);
+  origin->setAttribute(html_names::kClassAttr, AtomicString("changed"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(target, origin->GetPseudoElement(kPseudoIdHighlight, name));
+  EXPECT_FALSE(HighlightPseudoElement::FindTarget(*origin, request));
+  EXPECT_FALSE(origin->GetStyledPseudoElement(kPseudoIdHighlight, name));
+  const ComputedStyle* queried_style =
+      origin->EnsureComputedStyle(kPseudoIdHighlight, name);
+  ASSERT_TRUE(queried_style);
+  EXPECT_NE(initial_style, queried_style);
+  EXPECT_EQ(Color(0, 0, 255),
+            queried_style->VisitedDependentColor(GetCSSPropertyColor()));
+  EXPECT_EQ(initial_style, target->GetComputedStyle());
 }
 
 TEST_F(StyleResolverTest, HasEmUnits) {
