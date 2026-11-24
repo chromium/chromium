@@ -20,11 +20,13 @@ BASE_DECLARE_FEATURE(kDictation);
 // usable for an eval.
 extern const base::FeatureParam<bool> kDictationEvalMode;
 
-// If true, uses the component extension for dictation. Can be set to false
+// If true, installs the component extension for dictation. Can be set to false
 // which prevents installation of the component extension and relies on the user
 // or test installing a regular extension to handle communication via the
 // dictationPrivate API. This is used in tests and for local development of the
-// extension.
+// extension. When another enabled extension has dictationPrivate API access,
+// dictation events are routed to it instead of the component extension
+// regardless of this param.
 extern const base::FeatureParam<bool> kUseComponentExtension;
 
 // If true, the dictation context is provided asynchronously after the stream is

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/dictation/listener_stream_provider.h"
 
+#include <algorithm>
 #include <optional>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
@@ -23,9 +25,15 @@
 #include "chrome/browser/dictation/stream_provider_delegate.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/common/extensions/api/dictation_private.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace dictation {
 
@@ -96,6 +104,46 @@ void DCheckStreamStateTransition(StreamProvider::StreamState old_state,
 #endif  // DCHECK_IS_ON()
 }
 
+// Returns the ID of the extension that should receive dictationPrivate events.
+// Since the stream is stateful, only one dictation implementation can handle a
+// stream. If any enabled extension other than the Dictation Connector component
+// extension has access to the dictationPrivate API, returns that extension's
+// ID. Otherwise returns the component extension's ID.
+extensions::ExtensionId GetTargetExtensionId(
+    content::BrowserContext* browser_context) {
+  CHECK(browser_context);
+  const extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser_context);
+  CHECK(registry);
+
+  std::vector<extensions::ExtensionId> candidates;
+  for (const auto& extension : registry->enabled_extensions()) {
+    if (extension->id() != extension_misc::kDictationConnectorExtensionId &&
+        extension->permissions_data()->HasAPIPermission(
+            extensions::mojom::APIPermissionID::kDictationPrivate)) {
+      candidates.push_back(extension->id());
+    }
+  }
+
+  if (candidates.empty()) {
+    return extension_misc::kDictationConnectorExtensionId;
+  }
+
+  if (candidates.size() == 1) {
+    VT_LOG(browser_context) << "Dictation test implementation found";
+    return candidates.front();
+  }
+
+  // It is unlikely that multiple test implementations would be installed, but
+  // if there are, select one deterministically by extension ID.
+  const extensions::ExtensionId& selected =
+      *std::ranges::min_element(candidates);
+  VT_LOG(browser_context)
+      << "Multiple dictation test implementations found; selecting "
+      << selected;
+  return selected;
+}
+
 }  // namespace
 
 ListenerStreamProvider::ListenerStreamProvider(
@@ -146,6 +194,8 @@ void ListenerStreamProvider::StartStream(
   extensions::api::dictation_private::StartStreamDetails details;
   details.stream_id = stream_id_.value();
 
+  target_extension_id_ = GetTargetExtensionId(browser_context_);
+
   VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__;
 
   if (result.has_value()) {
@@ -167,7 +217,7 @@ void ListenerStreamProvider::StartStream(
 
   needs_end_stream_ = true;
   extensions::EventRouter::Get(browser_context_)
-      ->BroadcastEvent(std::move(event));
+      ->DispatchEventToExtension(target_extension_id_, std::move(event));
 }
 
 void ListenerStreamProvider::OnStartContextCaptured(DictationContext result) {
@@ -184,6 +234,7 @@ void ListenerStreamProvider::ForwardSelectedTextToTarget(
 
 void ListenerStreamProvider::OnAsyncContextCaptured(DictationContext result) {
   CHECK(stream_id_);
+  CHECK(!target_extension_id_.empty());
   ForwardSelectedTextToTarget(result);
 
   extensions::api::dictation_private::ContextUpdateDetails details;
@@ -198,7 +249,7 @@ void ListenerStreamProvider::OnAsyncContextCaptured(DictationContext result) {
       std::move(event_args), browser_context_);
 
   extensions::EventRouter::Get(browser_context_)
-      ->BroadcastEvent(std::move(event));
+      ->DispatchEventToExtension(target_extension_id_, std::move(event));
 }
 
 void ListenerStreamProvider::Stop(DictationStreamEndTrigger trigger) {
@@ -214,6 +265,8 @@ void ListenerStreamProvider::Stop(DictationStreamEndTrigger trigger) {
     return;
   }
 
+  CHECK(!target_extension_id_.empty());
+
   extensions::api::dictation_private::EndStreamDetails details;
   details.stream_id = stream_id_.value();
 
@@ -226,7 +279,7 @@ void ListenerStreamProvider::Stop(DictationStreamEndTrigger trigger) {
 
   needs_end_stream_ = false;
   extensions::EventRouter::Get(browser_context_)
-      ->BroadcastEvent(std::move(event));
+      ->DispatchEventToExtension(target_extension_id_, std::move(event));
 }
 
 void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,

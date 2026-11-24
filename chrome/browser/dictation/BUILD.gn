@@ -178,6 +178,7 @@ source_set("unit_tests") {
     "dictation_page_eligibility_unittest.cc",
     "format_transcription_unittest.cc",
     "hotkey_manager_unittest.cc",
+    "listener_stream_provider_unittest.cc",
     "logging_unittest.cc",
     "scoped_global_hotkey_unittest.cc",
     "session_controller_unittest.cc",

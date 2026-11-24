@@ -15,6 +15,7 @@
 #include "chrome/browser/dictation/dictation_context.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/stream_provider.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -76,6 +77,7 @@ class ListenerStreamProvider : public StreamProvider {
   bool has_started_transcribing_ = false;
   bool has_recorded_text_outcome_ = false;
   DictationMultiplexer::StreamId stream_id_;
+  extensions::ExtensionId target_extension_id_;
   std::string latest_transcription_;
   StreamState state_ = StreamState::kInitializing;
 
