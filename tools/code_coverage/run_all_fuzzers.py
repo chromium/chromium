@@ -983,9 +983,9 @@ def _get_all_target_details(args):
   # of code in the Chrome binary being marked as 0 in the code coverage
   # report. Without doing this step, many of the files of Chrome source
   # code simply don't appear in the coverage report at all.
-  # TODO(crbug.com/570145474): Find a way to immediately exit Chrome while
-  # dumping a zero-coverage baseline profile on Windows (where DISPLAY is not
-  # used).
+  # Skip on Windows (where DISPLAY is not used); fuzz.py already passes
+  # chrome.dll to llvm-cov -object, which emits 0% coverage for untouched
+  # files without needing a baseline profdata run.
   if sys.platform != 'win32':
     chrome_target_binpath = _resolve_target_binary(
       args.fuzzer_binaries_dir, 'chrome'
