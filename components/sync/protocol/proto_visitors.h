@@ -668,7 +668,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SharingSpecificFields& proto) {
   VISIT_REP(enabled_features);
   VISIT(sender_id_fcm_token_v2);
   VISIT_BYTES(sender_id_p256dh_v2);
-  VISIT_BYTES(sender_id_auth_secret_v2);
+  VISIT_SECRET(sender_id_auth_secret_v2);
   VISIT(chime_representative_target_id);
 }
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -540,6 +541,30 @@ TEST(ProtoValueConversionsTest, SendTabToSelfSpecificsToValue) {
               Pointee(Eq("https://foo.com")));
   EXPECT_THAT((*navigation_list)[0].GetDict().FindString("title"),
               Pointee(Eq("foo")));
+}
+
+TEST(ProtoValueConversionsTest,
+     DeviceInfoSpecificsToValueRedactsSharingAuthSecret) {
+  const std::string fcm_token = "test_fcm_token";
+  const std::string p256dh_key = "test_p256dh_public_key";
+  const std::string auth_secret(16, 's');
+
+  sync_pb::DeviceInfoSpecifics specifics;
+  sync_pb::SharingSpecificFields* sharing_fields =
+      specifics.mutable_sharing_fields();
+  sharing_fields->set_sender_id_fcm_token_v2(fcm_token);
+  sharing_fields->set_sender_id_p256dh_v2(p256dh_key);
+  sharing_fields->set_sender_id_auth_secret_v2(auth_secret);
+
+  base::DictValue value = DeviceInfoSpecificsToValue(specifics).TakeDict();
+  const base::DictValue* sharing_dict = value.FindDict("sharing_fields");
+  ASSERT_TRUE(sharing_dict);
+  EXPECT_THAT(sharing_dict->FindString("sender_id_fcm_token_v2"),
+              Pointee(Eq(fcm_token)));
+  EXPECT_THAT(sharing_dict->FindString("sender_id_p256dh_v2"),
+              Pointee(Eq(base::Base64Encode(p256dh_key))));
+  EXPECT_THAT(sharing_dict->FindString("sender_id_auth_secret_v2"),
+              Pointee(Eq("<16-byte secret>")));
 }
 
 }  // namespace
