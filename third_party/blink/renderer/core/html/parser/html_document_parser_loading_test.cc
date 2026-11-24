@@ -640,4 +640,229 @@ TEST_F(HTMLDocumentParserYieldByUserTimingTest,
   histogram_tester().ExpectUniqueSample(
       "Blink.HTMLParsing.IsParserPausingCalledAfterResuming", true, 1);
 }
+
+TEST_P(HTMLDocumentParserLoadingTest, DisconnectedParserScriptStrictDynamic) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <meta http-equiv="Content-Security-Policy"
+          content="script-src 'nonce-abc' 'strict-dynamic'; object-src 'none'">
+    <div id="control">blocked</div>
+    <div id="inline_in_option">blocked</div>
+    <div id="external_in_option">blocked</div>
+    <div id="inline_module_in_option">blocked</div>
+    <div id="module_in_option">blocked</div>
+    <div id="dsd_in_option">blocked</div>
+    <div id="inline_reconnected_select">blocked</div>
+    <div id="svg_external">blocked</div>
+    <div id="nonced_reconnected">blocked</div>
+    <div id="dynamic_script">blocked</div>
+    <div id="template_script">blocked</div>
+    <div id="populated_script">blocked</div>
+
+    <script>
+      document.getElementById('control').textContent = 'ran';
+    </script>
+
+    <select>
+      <button>
+        <selectedcontent id="sc1">
+          <b>
+            <option selected>
+              <div id="moved1">
+                <script>
+                  document.getElementById('inline_in_option').textContent = 'ran';
+                </script>
+              </b>
+              </div>
+            </option>
+        </selectedcontent>
+      </button>
+    </select>
+
+    <select>
+      <button>
+        <selectedcontent>
+          <b>
+            <option selected>
+              <div>
+                <script src="data:text/javascript,document.getElementById('external_in_option').textContent='ran'"></script>
+              </b>
+              </div>
+            </option>
+        </selectedcontent>
+      </button>
+    </select>
+
+    <select>
+      <button>
+        <selectedcontent>
+          <b>
+            <option selected>
+              <div>
+                <script type="module">
+                  document.getElementById('inline_module_in_option').textContent = 'ran';
+                </script>
+                <script type="module" src="data:text/javascript,document.getElementById('module_in_option').textContent='ran'"></script>
+              </b>
+              </div>
+            </option>
+        </selectedcontent>
+      </button>
+    </select>
+
+    <select>
+      <button>
+        <selectedcontent>
+          <b>
+            <option selected>
+              <div>
+                <div id="dsd_host">
+                  <template shadowrootmode="open">
+                    <script>
+                      document.getElementById('dsd_in_option').textContent = 'ran';
+                    </script>
+                  </template>
+                </div>
+              </b>
+              </div>
+            </option>
+        </selectedcontent>
+      </button>
+    </select>
+
+    <select>
+      <selectedcontent></selectedcontent>
+      <i><div><option selected>one</option></i></div>
+      <button>
+        <selectedcontent id="sc2">
+          <b>
+            <div id="moved2">
+              <script></script>
+              <script>
+                document.getElementById('inline_reconnected_select').textContent = 'ran';
+              </script>
+          </b>
+            </div>
+        </selectedcontent>
+      </button>
+    </select>
+
+    <select>
+      <button>
+        <selectedcontent>
+          <b>
+            <option selected>
+              <div>
+                <svg>
+                  <script href="data:text/javascript,document.getElementById('svg_external').textContent='ran'"></script>
+                </svg>
+              </b>
+              </div>
+            </option>
+        </selectedcontent>
+      </button>
+    </select>
+
+    <select>
+      <button>
+        <selectedcontent>
+          <b>
+            <option selected>
+              <div>
+                <script nonce="abc">
+                  document.getElementById('nonced_reconnected').textContent = 'ran';
+                </script>
+              </b>
+              </div>
+            </option>
+        </selectedcontent>
+      </button>
+    </select>
+
+    <template id="tmpl">
+      <script>
+        document.getElementById('template_script').textContent = 'ran';
+      </script>
+    </template>
+    <script id="empty_script"></script>
+
+    <script nonce="abc">
+      const s = document.createElement('script');
+      s.textContent = "document.getElementById('dynamic_script').textContent = 'ran';";
+      document.body.appendChild(s);
+      document.body.appendChild(document.getElementById('tmpl').content);
+      document.getElementById('empty_script').textContent =
+          "document.getElementById('populated_script').textContent = 'ran';";
+    </script>
+  )HTML");
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return GetElementById("populated_script")->textContent() == "ran";
+  }));
+
+  ASSERT_TRUE(GetElementById("moved1"));
+  EXPECT_EQ(GetElementById("moved1")->parentNode(), GetElementById("sc1"));
+  ASSERT_TRUE(GetElementById("moved2"));
+  EXPECT_EQ(GetElementById("moved2")->parentNode(), GetElementById("sc2"));
+
+  EXPECT_EQ(GetElementById("control")->textContent(), "blocked");
+  EXPECT_EQ(GetElementById("inline_in_option")->textContent(), "blocked");
+  EXPECT_EQ(GetElementById("external_in_option")->textContent(), "blocked");
+  EXPECT_EQ(GetElementById("inline_module_in_option")->textContent(),
+            "blocked");
+  EXPECT_EQ(GetElementById("module_in_option")->textContent(), "blocked");
+  EXPECT_EQ(GetElementById("dsd_in_option")->textContent(), "blocked");
+  EXPECT_EQ(GetElementById("inline_reconnected_select")->textContent(),
+            "blocked");
+  EXPECT_EQ(GetElementById("svg_external")->textContent(), "blocked");
+
+  EXPECT_EQ(GetElementById("nonced_reconnected")->textContent(), "ran");
+  EXPECT_EQ(GetElementById("dynamic_script")->textContent(), "ran");
+  EXPECT_EQ(GetElementById("template_script")->textContent(), "ran");
+  EXPECT_EQ(GetElementById("populated_script")->textContent(), "ran");
+}
+
+TEST_P(HTMLDocumentParserLoadingTest, DisconnectedParserScriptWithoutCSP) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimSubresourceRequest external_script("https://example.com/external.js",
+                                        "application/javascript");
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <div id="inline_result">blocked</div>
+    <div id="external_result">blocked</div>
+    <select>
+      <button>
+        <selectedcontent id="target">
+          <b><option selected><div id="moved">
+            <script>
+              document.getElementById('inline_result').textContent = 'ran';
+            </script>
+            <script src="https://example.com/external.js"></script>
+          </b></div></option>
+        </selectedcontent>
+      </button>
+    </select>
+  )HTML");
+
+  const KURL external_url("https://example.com/external.js");
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return GetDocument().Fetcher()->AllResources().Contains(external_url);
+  }));
+  external_script.Complete(
+      "document.getElementById('external_result').textContent='ran';");
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return GetElementById("external_result")->textContent() == "ran";
+  }));
+
+  ASSERT_TRUE(GetElementById("moved"));
+  EXPECT_EQ(GetElementById("moved")->parentNode(), GetElementById("target"));
+  EXPECT_EQ(GetElementById("inline_result")->textContent(), "ran");
+  EXPECT_EQ(GetElementById("external_result")->textContent(), "ran");
+}
+
 }  // namespace blink

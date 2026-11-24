@@ -254,6 +254,9 @@ void ScriptLoader::DocumentBaseURLChanged() {
 
 namespace {
 
+BASE_FEATURE(kPreserveParserInsertedForCSPOnDisconnectedScript,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
 bool IsValidClassicScriptTypeAndLanguage(const String& type,
                                          const String& language) {
@@ -561,6 +564,15 @@ PendingScript* ScriptLoader::PrepareScript(
 
   // <spec step="7">If el is not connected, then return.</spec>
   if (!element_->IsConnected()) {
+    // Keep `parser_inserted_` false so `ScriptRunner` handles scheduling if the
+    // element is later connected, while preserving parser-inserted provenance
+    // for CSP checks when the script was parsed in its current document (as
+    // opposed to an inert `<template>` contents document).
+    if (was_parser_inserted && parser_document_ == &element_->GetDocument() &&
+        base::FeatureList::IsEnabled(
+            kPreserveParserInsertedForCSPOnDisconnectedScript)) {
+      was_parser_inserted_for_csp_ = true;
+    }
     return nullptr;
   }
 
@@ -714,7 +726,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // <spec step="28">Let parser metadata be "parser-inserted" if el is
   // ...</spec>
   ParserDisposition parser_state =
-      IsParserInserted() ? kParserInserted : kNotParserInserted;
+      IsParserInsertedForCSP() ? kParserInserted : kNotParserInserted;
 
   if (GetScriptType() == ScriptLoader::ScriptTypeAtPrepare::kModule) {
     UseCounter::Count(*context_window, WebFeature::kPrepareModuleScript);
