@@ -4,23 +4,22 @@
 
 import './category_setting_exceptions.js';
 import './settings_category_default_radio_group.js';
-import './site_settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
-import {ContentSettingsTypes} from './constants.js';
 import type {SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
-import {getTemplate} from './sound_page.html.js';
+import {getCss as getSiteSettingsSharedCss} from './site_settings_shared_lit.css.js';
+import {getHtml} from './sound_page.html.js';
 
 interface BlockAutoplayStatus {
   enabled: boolean;
@@ -30,56 +29,57 @@ interface BlockAutoplayStatus {
 const BLOCK_AUTOPLAY_PREF_KEY =
     'synthetic.settings.site_settings.block_autoplay';
 
+export interface SoundPageElement {
+  $: {
+    blockAutoplaySetting: SettingsToggleButtonElement,
+  };
+}
+
 const SoundPageElementBase =
-    SettingsViewMixin(WebUiListenerMixin(PolymerElement));
+    SettingsViewMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class SoundPageElement extends SoundPageElementBase {
   static get is() {
     return 'settings-sound-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getSettingsSharedCss(),
+      getSiteSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      searchTerm: String,
-
-      // Expose ContentSettingsTypes enum to the HTML template.
-      contentSettingsTypesEnum_: {
-        type: Object,
-        value: ContentSettingsTypes,
-      },
-
-      blockAutoplayEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      enableBlockAutoplayContentSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableBlockAutoplayContentSetting');
-        },
-      },
+      searchTerm_: {type: String},
+      blockAutoplayEnabled_: {type: Boolean},
     };
   }
 
-  declare searchTerm: string;
-  declare private blockAutoplayEnabled_: boolean;
-  declare private enableBlockAutoplayContentSetting_: boolean;
+  protected accessor searchTerm_: string = '';
+  protected accessor blockAutoplayEnabled_: boolean = false;
 
+  protected readonly enableBlockAutoplayContentSetting_: boolean =
+      loadTimeData.getBoolean('enableBlockAutoplayContentSetting');
   private browserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'onBlockAutoplayStatusChanged',
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
+  }
+
+  protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
+    this.searchTerm_ = e.detail.value;
   }
 
   // Called when the block autoplay status changes.
@@ -93,14 +93,14 @@ export class SoundPageElement extends SoundPageElementBase {
   }
 
   // Updates the block autoplay pref when the toggle is changed.
-  private onBlockAutoplayToggleChange_(event: Event) {
+  protected onSettingsBooleanControlChange_(event: Event) {
     const target = event.target as SettingsToggleButtonElement;
     this.browserProxy_.setBlockAutoplayEnabled(target.checked);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

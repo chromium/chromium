@@ -1,22 +1,25 @@
-<style include="cr-hidden-style settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes, SettingsState} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsCategoryNotifications}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsNotificationsDescription}
   </div>
 <settings-category-default-radio-group
     id="notificationDefaultRadioGroup"
-    category="[[contentSettingsTypesEnum_.NOTIFICATIONS]]"
+    .category="${ContentSettingsTypes.NOTIFICATIONS}"
     ask-option-label="$i18n{siteSettingsNotificationsAskState}"
     ask-option-icon="privacy:notifications"
     block-option-label="$i18n{siteSettingsNotificationsBlocked}"
     block-option-icon="privacy:notifications-off"
-    selected-value="{{notificationSettingValue_}}">
+    @selected-value-changed="${this.onSelectedValueChanged_}">
 </settings-category-default-radio-group>
 <div class="radio-group"
-    hidden$="[[!isEqualToAsk_(notificationSettingValue_)]]">
+    ?hidden="${!this.shouldShowCpssRadioGroup_()}">
   <h2 class="cpss-heading">$i18n{siteSettingsHowToShowRequests}</h2>
   <settings-radio-group
       id="notificationCpssRadioGroup"
@@ -24,21 +27,21 @@
       selectable-elements="settings-collapse-radio-button">
     <settings-collapse-radio-button
         id="notificationAskQuiet"
-        name="[[settingsStateEnum_.QUIET]]"
+        name="${SettingsState.QUIET}"
         pref-key="generated.notification"
         label="$i18n{siteSettingsNotificationsAskQuiet}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
         id="notificationAskCpss"
-        name="[[settingsStateEnum_.CPSS]]"
+        name="${SettingsState.CPSS}"
         pref-key="generated.notification"
         label="$i18n{siteSettingsNotificationsAskCPSS}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
         id="notificationAskLoud"
-        name="[[settingsStateEnum_.LOUD]]"
+        name="${SettingsState.LOUD}"
         pref-key="generated.notification"
         label="$i18n{siteSettingsNotificationsAskLoud}"
         no-collapse>
@@ -46,9 +49,9 @@
   </settings-radio-group>
 </div>
 <category-setting-exceptions
-    category="[[contentSettingsTypesEnum_.NOTIFICATIONS]]"
+    .category="${ContentSettingsTypes.NOTIFICATIONS}"
     allow-header="$i18n{siteSettingsNotificationsAllowedExceptions}"
     block-header="$i18n{siteSettingsNotificationsBlockedExceptions}"
-    search-filter="[[searchTerm]]">
+    .searchFilter="${this.searchTerm_}">
 </category-setting-exceptions>
 </settings-subpage>

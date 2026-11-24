@@ -2,29 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SoundPageElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {loadTimeData, PrefService, PrefsBrowserProxy, resetRouterForTesting} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
-// clang-format on
 
 suite('SoundPage', function() {
   let testSiteSettingsPrefsBrowserProxy: TestSiteSettingsBrowserProxy;
   let page: SoundPageElement;
-
-  function getToggleElement(): SettingsToggleButtonElement {
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#blockAutoplaySetting');
-    assertTrue(!!toggle);
-    return toggle;
-  }
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -46,22 +36,21 @@ suite('SoundPage', function() {
 
     page = document.createElement('settings-sound-page');
     document.body.appendChild(page);
-    return flushTasks();
   });
 
   test('UpdateStatus', async () => {
-    assertTrue(getToggleElement().disabled);
-    assertFalse(getToggleElement().checked);
+    assertTrue(page.$.blockAutoplaySetting.disabled);
+    assertFalse(page.$.blockAutoplaySetting.checked);
 
     webUIListenerCallback('onBlockAutoplayStatusChanged', {
       pref: {value: true},
       enabled: true,
     });
 
-    await flushTasks();
+    await microtasksFinished();
     // Check that we are on and enabled.
-    assertFalse(getToggleElement().disabled);
-    assertTrue(getToggleElement().checked);
+    assertFalse(page.$.blockAutoplaySetting.disabled);
+    assertTrue(page.$.blockAutoplaySetting.checked);
 
     // Toggle the pref off.
     webUIListenerCallback('onBlockAutoplayStatusChanged', {
@@ -69,10 +58,10 @@ suite('SoundPage', function() {
       enabled: true,
     });
 
-    await flushTasks();
+    await microtasksFinished();
     // Check that we are off and enabled.
-    assertFalse(getToggleElement().disabled);
-    assertFalse(getToggleElement().checked);
+    assertFalse(page.$.blockAutoplaySetting.disabled);
+    assertFalse(page.$.blockAutoplaySetting.checked);
 
     // Disable the autoplay status toggle.
     webUIListenerCallback('onBlockAutoplayStatusChanged', {
@@ -80,15 +69,15 @@ suite('SoundPage', function() {
       enabled: false,
     });
 
-    await flushTasks();
+    await microtasksFinished();
     // Check that we are off and disabled.
-    assertTrue(getToggleElement().disabled);
-    assertFalse(getToggleElement().checked);
+    assertTrue(page.$.blockAutoplaySetting.disabled);
+    assertFalse(page.$.blockAutoplaySetting.checked);
   });
 
-  test('Hidden', async () => {
+  test('Hidden', () => {
     assertTrue(loadTimeData.getBoolean('enableBlockAutoplayContentSetting'));
-    assertFalse(getToggleElement().hidden);
+    assertTrue(isVisible(page.$.blockAutoplaySetting));
 
     loadTimeData.overrideValues({enableBlockAutoplayContentSetting: false});
     resetRouterForTesting();
@@ -97,27 +86,26 @@ suite('SoundPage', function() {
     page = document.createElement('settings-sound-page');
     document.body.appendChild(page);
 
-    await flushTasks();
     assertFalse(loadTimeData.getBoolean('enableBlockAutoplayContentSetting'));
-    assertTrue(getToggleElement().hidden);
+    assertFalse(isVisible(page.$.blockAutoplaySetting));
   });
 
   test('Click', async () => {
-    assertTrue(getToggleElement().disabled);
-    assertFalse(getToggleElement().checked);
+    assertTrue(page.$.blockAutoplaySetting.disabled);
+    assertFalse(page.$.blockAutoplaySetting.checked);
 
     webUIListenerCallback('onBlockAutoplayStatusChanged', {
       pref: {value: true},
       enabled: true,
     });
 
-    await flushTasks();
+    await microtasksFinished();
     // Check that we are on and enabled.
-    assertFalse(getToggleElement().disabled);
-    assertTrue(getToggleElement().checked);
+    assertFalse(page.$.blockAutoplaySetting.disabled);
+    assertTrue(page.$.blockAutoplaySetting.checked);
 
     // Click on the toggle and wait for the proxy to be called.
-    getToggleElement().click();
+    page.$.blockAutoplaySetting.click();
     const enabled = await testSiteSettingsPrefsBrowserProxy.whenCalled(
         'setBlockAutoplayEnabled');
     assertFalse(enabled);

@@ -1,23 +1,26 @@
-<style include="cr-hidden-style settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes, SettingsState} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsCategoryLocation}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
 <div class="content-settings-header secondary">
   $i18n{siteSettingsLocationDescription}
 </div>
 <settings-category-default-radio-group
     id="locationDefaultRadioGroup"
-    category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
+    .category="${ContentSettingsTypes.GEOLOCATION}"
     ask-option-label="$i18n{siteSettingsLocationAsk}"
     ask-option-icon="settings:location-on"
     block-option-label="$i18n{siteSettingsLocationBlocked}"
     block-option-icon="privacy:location-off"
-    selected-value="{{locationSettingValue_}}">
+    @selected-value-changed="${this.onSelectedValueChanged_}">
 </settings-category-default-radio-group>
 <div class="radio-group"
     id="locationCpssRadioGroup"
-    hidden$="[[!isEqualToAsk_(locationSettingValue_)]]">
+    ?hidden="${!this.shouldShowCpssRadioGroup_()}">
   <h2 class="cpss-heading">
     $i18n{siteSettingsHowToShowRequests}
   </h2>
@@ -25,19 +28,19 @@
       pref-key="generated.geolocation"
       selectable-elements="settings-collapse-radio-button">
     <settings-collapse-radio-button
-        name="[[settingsStateEnum_.QUIET]]"
+        name="${SettingsState.QUIET}"
         pref-key="generated.geolocation"
         label="$i18n{siteSettingsLocationAskQuiet}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
-        name="[[settingsStateEnum_.CPSS]]"
+        name="${SettingsState.CPSS}"
         pref-key="generated.geolocation"
         label="$i18n{siteSettingsLocationAskCPSS}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
-        name="[[settingsStateEnum_.LOUD]]"
+        name="${SettingsState.LOUD}"
         pref-key="generated.geolocation"
         label="$i18n{siteSettingsLocationAskLoud}"
         no-collapse>
@@ -45,10 +48,10 @@
   </settings-radio-group>
 </div>
 <category-setting-exceptions
-    category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
+    .category="${ContentSettingsTypes.GEOLOCATION}"
     read-only-list
     allow-header="$i18n{siteSettingsLocationAllowedExceptions}"
     block-header="$i18n{siteSettingsLocationBlockedExceptions}"
-    search-filter="[[searchTerm]]">
+    .searchFilter="${this.searchTerm_}">
 </category-setting-exceptions>
 </settings-subpage>

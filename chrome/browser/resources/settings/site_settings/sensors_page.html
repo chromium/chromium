@@ -1,13 +1,16 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsSensors}"
     search-label="$i18n{siteSettingsAllSitesSearch}"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsSensorsDescription}
   </div>
-  <template is="dom-if" if="[[isSensorsAllowAskBlockPermissionModelEnabled_]]">
+  ${this.isSensorsAllowAskBlockPermissionModelEnabled_ ? html`
     <settings-category-default-radio-group
-        category="[[contentSettingsTypesEnum_.SENSORS]]"
+        .category="${ContentSettingsTypes.SENSORS}"
         allow-option-label="$i18n{siteSettingsSensorsAllowed}"
         allow-option-icon="privacy:sensors"
         ask-option-label="$i18n{siteSettingsSensorsAsk}"
@@ -17,10 +20,9 @@
             "$i18n{siteSettingsSensorsBlockedSubLabel}"
         block-option-icon="privacy:sensors-off">
     </settings-category-default-radio-group>
-  </template>
-  <template is="dom-if" if="[[!isSensorsAllowAskBlockPermissionModelEnabled_]]">
+  ` : html`
     <settings-category-default-radio-group
-        category="[[contentSettingsTypesEnum_.SENSORS]]"
+        .category="${ContentSettingsTypes.SENSORS}"
         allow-option-label="$i18n{siteSettingsSensorsAllowed}"
         allow-option-icon="privacy:sensors"
         block-option-label="$i18n{siteSettingsSensorsBlocked}"
@@ -28,11 +30,11 @@
             "$i18n{siteSettingsSensorsBlockedSubLabel}"
         block-option-icon="privacy:sensors-off">
     </settings-category-default-radio-group>
-  </template>
+  `}
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.SENSORS]]" read-only-list
+      .category="${ContentSettingsTypes.SENSORS}" read-only-list
       allow-header="$i18n{siteSettingsSensorsAllowedExceptions}"
       block-header="$i18n{siteSettingsSensorsBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

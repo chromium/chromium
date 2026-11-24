@@ -1,12 +1,15 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsSound}"
     search-label="$i18n{siteSettingsAllSitesSearch}"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsSoundDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.SOUND]]"
+      .category="${ContentSettingsTypes.SOUND}"
       allow-option-label="$i18n{siteSettingsSoundAllowed}"
       allow-option-icon="privacy:volume-up"
       block-option-label="$i18n{siteSettingsSoundBlocked}"
@@ -18,15 +21,15 @@
       class="hr"
       label="$i18n{siteSettingsBlockAutoplaySetting}"
       pref-key="synthetic.settings.site_settings.block_autoplay"
-      disabled="[[!blockAutoplayEnabled_]]"
-      hidden="[[!enableBlockAutoplayContentSetting_]]"
-      on-settings-boolean-control-change="onBlockAutoplayToggleChange_"
+      ?disabled="${!this.blockAutoplayEnabled_}"
+      ?hidden="${!this.enableBlockAutoplayContentSetting_}"
+      @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}"
       no-set-pref>
   </settings-toggle-button>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.SOUND]]"
+      .category="${ContentSettingsTypes.SOUND}"
       allow-header="$i18n{siteSettingsSoundAllowedExceptions}"
       block-header="$i18n{siteSettingsSoundBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>
