@@ -49,7 +49,7 @@ Any events and metrics you collect need to be defined in
   <summary>
     Recorded when a page teleports a goat.
   </summary>
-  <metric name="Duration">
+  <metric name="DurationSeconds">
     <summary>
       How long it took to teleport in seconds.
     </summary>
@@ -84,7 +84,7 @@ existing metric later or removed any time.
 
 ```xml
 <event name="Goat.Teleported">
-  <metric name="Duration">
+  <metric name="DurationSeconds">
     ...
     <aggregation>
       <history>
@@ -112,7 +112,7 @@ There can also be one or more `index` tags which define additional aggregation
 keys. These are a comma-separated list of keys that is appended to the
 [standard set](http://go/aggregated-ukm#history-table). These additional keys
 are optional but, if present, are always present together. In other words,
-"fields=profile.county,profile.form_factor" will cause all the standard
+"fields=profile.country,profile.form_factor" will cause all the standard
 aggregations plus each with *both* country *and* form_factor but **not** with
 all the standard aggregations (see above) plus only one of them. If individual
 and combined versions are desired, use multiple index tags.
@@ -191,43 +191,34 @@ There are three main ways of getting a UkmRecorder instance.
 
 1) Use `ukm::UkmRecorder::Get()`. This currently only works from the Browser process.
 
-2) Use a service connector and get a UkmRecorder.
-
-```cpp
-std::unique_ptr<ukm::UkmRecorder> ukm_recorder =
-    ukm::UkmRecorder::Create(context()->connector());
-ukm::builders::MyEvent(source_id)
-    .SetMyMetric(metric_value)
-    .Record(ukm_recorder.get());
-```
-
-3) Within blink/renderer, use one of the following methods:
+2) Within blink/renderer, use one of the following methods:
 
 * `blink::Document::UkmRecorder()`
 * `blink::ExecutionContext::UkmRecorder()`
 * `blink::ResourceFetcher::UkmRecorder()`
 
-4) If you do not have access to any of the methods in 3), establish a remote
-connection to a UkmRecorderInterface and use a MojoUkmRecorder to get a
-UkmRecorder.
+3) If you do not have access to any of the methods in 2), establish a remote
+connection to a `UkmRecorderFactory` and use `MojoUkmRecorder::Create()` to get
+a `UkmRecorder`.
 
 ```cpp
-mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
 
 // This step depends on how the Metrics service is embedded in the application.
-BindUkmRecorderSomewhere(recorder.InitWithNewPipeAndPassReceiver());
+BindUkmRecorderFactorySomewhere(factory.BindNewPipeAndPassReceiver());
 
-ukm_recorder = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder =
+    ukm::MojoUkmRecorder::Create(*factory);
 ukm::builders::MyEvent(source_id)
     .SetMyMetric(metric_value)
     .Record(ukm_recorder.get());
 ```
 Depending on which directory you are getting the UkmRecorder from, you need the
-correct interface binder to replace the `BindUkmRecorderSomewhere()` part above.
-Some options are:
+correct interface binder to replace the `BindUkmRecorderFactorySomewhere()` part
+above. Some options are:
 
-* blink/renderer: `Platform::Current()->GetBrowserInterfaceBroker()->GetInterface()`
-* content/renderer: `content::RenderThread::Get()->BindHostReceiver()`
+* blink/renderer: `Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(factory.BindNewPipeAndPassReceiver())`
+* content/renderer: `content::RenderThread::Get()->BindHostReceiver(factory.BindNewPipeAndPassReceiver())`
 
 Note: Establishing a new remote connection each time (i.e. per frame, etc.) has
 overhead, so try to avoid opening a new one each time.
@@ -290,14 +281,14 @@ Helper objects for recording your event are generated from the descriptions in u
 void OnGoatTeleported() {
   ...
   ukm::builders::Goat_Teleported(source_id)
-      .SetDuration(duration.InSeconds())
+      .SetDurationSeconds(duration.InSeconds())
       .SetGoatType(goat_type)
       .Record(ukm_recorder);
 }
 
 // You can also use the UKM builder as an interim data structure.
 void OnKangarooJumped() {
-  ukm::builder::Kangaroo_Jumped builder(source_id);
+  ukm::builders::Kangaroo_Jumped builder(source_id);
   builder.SetJumpHeight(3)
       .SetJumpLength(4);
 
@@ -325,18 +316,20 @@ Example:
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 // Create the SingularUkmEntry for an event.
-std::unique_ptr<SingularUkmEntry<ukm::builders::MyEvent>> entry =
-  SingularUkmEntry<ukm::builders::MyEvent>::Create(source_id);
+std::unique_ptr<ukm::SingularUkmEntry<ukm::builders::MyEvent>> entry =
+    ukm::SingularUkmEntry<ukm::builders::MyEvent>::Create(source_id);
 
 {
   // Create a builder for the entry to set the metrics.
-  SingularUkmEntry<ukm::builders::MyEvent>::EntryBuilder builder = entry->Builder();
+  ukm::SingularUkmEntry<ukm::builders::MyEvent>::EntryBuilder builder =
+      entry->Builder();
   builder->SetMyMetric(metric_value);
   // When `builder` goes out of scope, the constructed entry will be saved with the SingularUkmEntry.
 }
 
 {
-  SingularUkmEntry<ukm::builders::MyEvent>::EntryBuilder builder = entry->Builder();
+  ukm::SingularUkmEntry<ukm::builders::MyEvent>::EntryBuilder builder =
+      entry->Builder();
   builder->SetMyMetric(metric_value2);
 }
 ```
