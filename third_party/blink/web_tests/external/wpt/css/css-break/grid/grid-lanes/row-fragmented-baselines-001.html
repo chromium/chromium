@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Row grid lanes export baselines from both multicol fragments</title>
+<meta name="author" title="Kurt Catti-Schmidt" href="mailto:kschmi@microsoft.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#grid-axis-pagination">
+<link rel="help" href="https://drafts.csswg.org/css-align/#baseline-export">
+<link rel="match" href="row-fragmented-baselines-001-ref.html">
+<style>
+  .case { display: flex; line-height: 0; }
+  .first { align-items: first baseline; }
+  .last { align-items: last baseline; }
+  .multicol {
+    columns: 2;
+    column-fill: auto;
+    column-gap: 0;
+    width: 100px;
+    height: 50px;
+  }
+  .lanes { display: grid-lanes; grid-template-rows: 40px 40px; }
+  .row1 { grid-row: 1; }
+  .row2 { grid-row: 2; break-before: column; }
+  .marker, .row1 span, .row2 span { display: inline-block; width: 4px; }
+  .marker { height: 4px; background: green; }
+  .row1 span { height: 20px; background: blue; }
+  .row2 span { height: 10px; background: blue; }
+</style>
+<!-- The second column supplies the higher first baseline, and the first
+     column supplies the lower last baseline. -->
+<div class="case first">
+  <div class="multicol">
+    <div class="lanes">
+      <div class="row1"><span></span></div>
+      <div class="row2"><span></span></div>
+    </div>
+  </div>
+  <div><span class="marker"></span></div>
+</div>
+<div class="case last">
+  <div class="multicol">
+    <div class="lanes">
+      <div class="row1"><span></span></div>
+      <div class="row2"><span></span></div>
+    </div>
+  </div>
+  <div><span class="marker"></span></div>
+</div>

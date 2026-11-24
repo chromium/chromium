@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reference for baselines from fragmented row grid lanes</title>
+<meta name="author" title="Kurt Catti-Schmidt" href="mailto:kschmi@microsoft.com">
+<style>
+  .case { position: relative; height: 50px; }
+  .case > div { position: absolute; width: 4px; }
+  .row1 { top: 0; left: 0; height: 20px; background: blue; }
+  .row2 { top: 0; left: 50px; height: 10px; background: blue; }
+  .marker { left: 100px; height: 4px; background: green; }
+</style>
+<div class="case">
+  <div class="row1"></div>
+  <div class="row2"></div>
+  <div class="marker" style="top: 6px"></div>
+</div>
+<div class="case">
+  <div class="row1"></div>
+  <div class="row2"></div>
+  <div class="marker" style="top: 16px"></div>
+</div>

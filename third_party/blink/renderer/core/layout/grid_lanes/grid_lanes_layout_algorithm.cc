@@ -2063,6 +2063,7 @@ LayoutResult::EStatus GridLanesLayoutAlgorithm::FinishRowFragmentation(
   }
 
   LayoutUnit max_item_block_end;
+  GridBaselineAccumulator baseline_accumulator(Style().GetFontBaseline());
   // Commit rows before the breakpoint and defer every owning item in its row.
   // Any continuing parallel item keeps its lane unfinished.
   Vector<bool> has_continuation(grid_lanes.size(), false);
@@ -2088,6 +2089,14 @@ LayoutResult::EStatus GridLanesLayoutAlgorithm::FinishRowFragmentation(
         has_continuation[entry.lane_idx];
     container_builder_.AddResult(*entry.result, entry.offset,
                                  entry.data->PlacementData().margins);
+    baseline_accumulator.Accumulate(*entry.data->item, fragment,
+                                    entry.offset.block_offset);
+  }
+  if (auto first_baseline = baseline_accumulator.FirstBaseline()) {
+    container_builder_.SetFirstBaseline(*first_baseline);
+  }
+  if (auto last_baseline = baseline_accumulator.LastBaseline()) {
+    container_builder_.SetLastBaseline(*last_baseline);
   }
   if (!breakpoint && !container_builder_.HasInflowChildBreakInside()) {
     container_builder_.SetHasSeenAllChildren();
