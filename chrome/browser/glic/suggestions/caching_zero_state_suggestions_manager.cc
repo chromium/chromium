@@ -4,15 +4,21 @@
 
 #include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
 
+#include <algorithm>
+
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
+namespace {
 
 std::vector<std::string> EmptySuggestions() {
   return {};
@@ -21,6 +27,23 @@ std::vector<std::string> EmptySuggestions() {
 class CacheIdClass;
 using CacheId = base::IdType32<CacheIdClass>;
 constexpr size_t kCacheSize = 10;
+
+// Suggestions for a New Tab Page come from live recently visited pages rather
+// than static page content, so completed responses should not be cached across
+// history or tab-activation changes.
+bool ContainsNewTabPage(const std::vector<GURL>& urls) {
+  return std::ranges::any_of(urls, &IsNewTabPage) &&
+         base::FeatureList::IsEnabled(kGlicBrowsingHistoryZeroStateSuggestions);
+}
+
+bool IsActiveNewTabPage(content::WebContents* web_contents) {
+  if (!web_contents || !IsNewTabPage(web_contents->GetLastCommittedURL())) {
+    return false;
+  }
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab && tab->IsActivated();
+}
 
 class CachingContextualCueingServiceImpl
     : public CachingZeroStateSuggestionsManager {
@@ -39,14 +62,16 @@ class CachingContextualCueingServiceImpl
       urls.push_back(focused_tab->GetLastCommittedURL());
       focused_page.page = focused_tab->GetPrimaryPage().GetWeakPtr();
     }
+    const bool cache_result = !ContainsNewTabPage(urls);
     Entry* new_entry = TryCachedRequest(
         CacheKey{
             .is_focused_tab_request = true,
             .urls = std::move(urls),
             .is_fre = is_fre,
+            .has_active_ntp = !cache_result && IsActiveNewTabPage(focused_tab),
             .focused_page = focused_page,
         },
-        std::move(callback));
+        cache_result, std::move(callback));
     if (!new_entry) {
       return;
     }
@@ -80,14 +105,20 @@ class CachingContextualCueingServiceImpl
       }
     }
 
+    const bool cache_result = !ContainsNewTabPage(urls);
+    const bool has_active_ntp =
+        !cache_result &&
+        (IsActiveNewTabPage(focused_tab) ||
+         std::ranges::any_of(pinned_web_contents, &IsActiveNewTabPage));
     Entry* new_entry = TryCachedRequest(
         CacheKey{
             .is_focused_tab_request = false,
             .urls = std::move(urls),
             .is_fre = is_fre,
+            .has_active_ntp = has_active_ntp,
             .focused_page = focused_page,
         },
-        std::move(callback));
+        cache_result, std::move(callback));
     if (!new_entry) {
       return false;
     }
@@ -108,14 +139,19 @@ class CachingContextualCueingServiceImpl
 
  private:
   void OnResultReceived(CacheId id, std::vector<std::string> result) {
-    for (auto& e : entries_) {
-      if (e.id == id) {
+    for (auto it = entries_.begin(); it != entries_.end(); ++it) {
+      if (it->id == id) {
         auto callbacks =
-            std::exchange(*std::get_if<1>(&e.result_or_callbacks), {});
+            std::exchange(*std::get_if<1>(&it->result_or_callbacks), {});
+        if (it->cache_result) {
+          it->result_or_callbacks = result;
+        } else {
+          entries_.erase(it);
+        }
         for (auto& callback : callbacks) {
           std::move(callback).Run(result);
         }
-        e.result_or_callbacks = std::move(result);
+        return;
       }
     }
   }
@@ -141,6 +177,7 @@ class CachingContextualCueingServiceImpl
     bool is_focused_tab_request = false;
     std::vector<GURL> urls;
     bool is_fre = false;
+    bool has_active_ntp = false;
     PageReference focused_page;
 
     bool operator==(const CacheKey& other) const = default;
@@ -149,13 +186,16 @@ class CachingContextualCueingServiceImpl
   struct Entry {
     CacheId id;
     CacheKey request;
+    bool cache_result = true;
     std::variant<std::vector<std::string>, std::vector<GlicSuggestionsCallback>>
         result_or_callbacks;
   };
 
   // Either promises to call `callback` with a cached response, or returns
   // a new cache entry.
-  Entry* TryCachedRequest(CacheKey request, GlicSuggestionsCallback callback) {
+  Entry* TryCachedRequest(CacheKey request,
+                          bool cache_result,
+                          GlicSuggestionsCallback callback) {
     if (!cache_disabled_) {
       for (auto& entry : entries_) {
         if (entry.request == request) {
@@ -176,6 +216,7 @@ class CachingContextualCueingServiceImpl
     callbacks.push_back(std::move(callback));
     entries_.push_front(Entry{.id = id_generator_.GenerateNextId(),
                               .request = std::move(request),
+                              .cache_result = cache_result,
                               .result_or_callbacks = std::move(callbacks)});
     if (entries_.size() > kCacheSize) {
       auto* dropped_callbacks =
@@ -197,6 +238,8 @@ class CachingContextualCueingServiceImpl
   base::WeakPtrFactory<CachingContextualCueingServiceImpl> weak_ptr_factory_{
       this};
 };
+
+}  // namespace
 
 std::unique_ptr<CachingZeroStateSuggestionsManager>
 CreateCachingZeroStateSuggestionsManager(ContextualCueingService* service) {

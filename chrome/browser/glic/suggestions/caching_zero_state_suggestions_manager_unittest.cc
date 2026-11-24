@@ -7,9 +7,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/mock_contextual_cueing_service.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -62,7 +65,7 @@ class CachingContextualCueingServiceTest : public testing::Test {
   std::unique_ptr<content::WebContents> CreateWebContentsAt(GURL url) {
     std::unique_ptr<content::WebContents> contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    NavigateAndCommitContents(contents.get(), GURL("https://www.google.com"));
+    NavigateAndCommitContents(contents.get(), url);
     return contents;
   }
 
@@ -251,6 +254,39 @@ TEST_F(CachingContextualCueingServiceTest, EvictIncompleteCacheEntries) {
   ASSERT_THAT(suggestions_received,
               testing::ElementsAre("NONE", "NONE", "S2", "S3", "S4", "S5", "S6",
                                    "S7", "S8", "S9", "S10", "S11"));
+}
+
+TEST_F(CachingContextualCueingServiceTest,
+       NewTabPageCoalescesInFlightWithoutCachingCompletedResult) {
+  base::test::ScopedFeatureList features{
+      kGlicBrowsingHistoryZeroStateSuggestions};
+  TestContextualCueingService contextual_cueing_service;
+  contextual_cueing_service.will_generate_pinned_tab_suggestions_ = true;
+  auto cache =
+      CreateCachingZeroStateSuggestionsManager(&contextual_cueing_service);
+  auto ntp = CreateWebContentsAt(GURL(chrome::kChromeUINewTabURL));
+
+  // Two concurrent in-flight requests coalesce into a single backend call.
+  base::test::TestFuture<std::vector<std::string>> in_flight_1;
+  base::test::TestFuture<std::vector<std::string>> in_flight_2;
+  EXPECT_TRUE(cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      {ntp.get()}, false, std::nullopt, nullptr, in_flight_1.GetCallback()));
+  EXPECT_FALSE(cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      {ntp.get()}, false, std::nullopt, nullptr, in_flight_2.GetCallback()));
+  EXPECT_TRUE(contextual_cueing_service.pending_callbacks_.empty());
+
+  std::move(contextual_cueing_service.last_callback_).Run({"S1"});
+  EXPECT_THAT(in_flight_1.Get(), testing::ElementsAre("S1"));
+  EXPECT_THAT(in_flight_2.Get(), testing::ElementsAre("S1"));
+
+  // Once completed, a subsequent NTP request fetches fresh suggestions instead
+  // of returning the cached response.
+  base::test::TestFuture<std::vector<std::string>> after_update;
+  EXPECT_TRUE(cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      {ntp.get()}, false, std::nullopt, nullptr, after_update.GetCallback()));
+  ASSERT_TRUE(contextual_cueing_service.last_callback_);
+  std::move(contextual_cueing_service.last_callback_).Run({"S2"});
+  EXPECT_THAT(after_update.Get(), testing::ElementsAre("S2"));
 }
 
 }  // namespace

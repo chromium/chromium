@@ -137,6 +137,20 @@ class ZeroStateSuggestionsApiTests extends ApiTestFixtureBase {
     // After next navigation in focused tab occurs.
     await this.advanceToNextStep();
   }
+
+  async testGetZeroStateSuggestionsOnDaisyChainedNewTabPage() {
+    assertDefined(this.host.getZeroStateSuggestions);
+    const expected = (this.testParams as string) ?? 'a,b,c';
+    const sequence = observeSequence<ZeroStateSuggestionsV2>(
+        this.host.getZeroStateSuggestions());
+    const suggestions = await sequence.waitFor(s => !s.isPending);
+    assertEquals(
+        expected, suggestions.suggestions.map(s => s.suggestion).join(','));
+  }
+
+  async testGetZeroStateSuggestionsOnDaisyChainedNewTabPageRecentPagesDisabled() {
+    await this.testGetZeroStateSuggestionsOnDaisyChainedNewTabPage();
+  }
 }
 
 testMain([ZeroStateSuggestionsApiTests]);

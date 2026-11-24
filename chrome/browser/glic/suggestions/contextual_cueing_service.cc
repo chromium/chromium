@@ -145,13 +145,6 @@ void PopulateSupportedToolsForRequest(
                                              req_supported_tools.end()};
 }
 
-// Returns true if `url` is a New Tab Page.
-bool IsNewTabPage(const GURL& url) {
-  return (url.SchemeIs(content::kChromeUIScheme) &&
-          url.host() == chrome::kChromeUINewTabHost) ||
-         search::IsNTPURL(url);
-}
-
 // Returns true if recently visited pages can be used for suggestions for the
 // profile of `web_contents`. Logs the result for `web_contents`'s URL.
 bool CanUseRecentPages(content::WebContents& web_contents,
@@ -184,6 +177,12 @@ bool CanUseRecentPages(content::WebContents& web_contents,
 }
 
 }  // namespace
+
+bool IsNewTabPage(const GURL& url) {
+  return (url.SchemeIs(content::kChromeUIScheme) &&
+          url.host() == chrome::kChromeUINewTabHost) ||
+         search::IsNTPURL(url);
+}
 
 ContextualCueingService::ContextualCueingService(
     bool zero_state_suggestions_enabled,

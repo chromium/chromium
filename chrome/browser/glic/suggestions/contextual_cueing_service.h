@@ -46,6 +46,9 @@ using GlicSuggestionsCallbackList =
     base::OnceCallbackList<void(std::vector<std::string>)>;
 using GlicSuggestionsCallback = GlicSuggestionsCallbackList::CallbackType;
 
+// Returns true if `url` is a New Tab Page.
+bool IsNewTabPage(const GURL& url);
+
 class ContextualCueingService
     : public KeyedService,
       page_content_annotations::PageContentExtractionService::Observer {

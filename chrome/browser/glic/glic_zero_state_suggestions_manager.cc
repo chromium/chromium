@@ -452,6 +452,14 @@ void GlicZeroStateSuggestionsManager::FilterTabs(
               return false;
             }
             if (usage->pin_event.trigger == GlicPinTrigger::kNewTabDaisyChain) {
+              // New Tab Pages get suggestions from recently visited pages when
+              // active, so keep them even without a user navigation.
+              if (tab->IsActivated() &&
+                  IsNewTabPage(tab_contents->GetLastCommittedURL()) &&
+                  base::FeatureList::IsEnabled(
+                      kGlicBrowsingHistoryZeroStateSuggestions)) {
+                return false;
+              }
               return !HasUserNavigationBeyondInitial(*tab_contents);
             }
             return false;

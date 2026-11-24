@@ -8,18 +8,25 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/fake_contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -233,6 +240,106 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithContextualCueing,
 
   ContinueJsTest();
   EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), initial_calls);
+}
+
+class GlicApiTestWithDaisyChainZss : public GlicApiTestWithContextualCueing {
+ public:
+  GlicApiTestWithDaisyChainZss() {
+    daisy_chain_features_.InitWithFeatures(
+        {features::kGlicDaisyChainNewTabs},
+        {kGlicBrowsingHistoryZeroStateSuggestions});
+  }
+
+  void SetUpOnMainThread() override {
+    // Daisy chaining side panels across tabs is only supported on Desktop
+    // platforms (including Desktop Android).
+    SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
+    GlicApiTestWithContextualCueing::SetUpOnMainThread();
+    GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
+  }
+
+ private:
+  base::test::ScopedFeatureList daisy_chain_features_;
+};
+
+class GlicApiTestWithRecentPagesZss : public GlicApiTestWithDaisyChainZss {
+ public:
+  GlicApiTestWithRecentPagesZss() {
+    recent_pages_features_.InitAndEnableFeature(
+        kGlicBrowsingHistoryZeroStateSuggestions);
+  }
+
+ private:
+  base::test::ScopedFeatureList recent_pages_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithRecentPagesZss,
+                       testGetZeroStateSuggestionsOnDaisyChainedNewTabPage) {
+  fake_cueing_service()->SetFocusedTabSuggestions({"focused"});
+  fake_cueing_service()->SetPinnedTabsSuggestions({"a", "b", "c"});
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      active_contents, GURL(chrome::kChromeUINewTabURL),
+      /*number_of_navigations=*/1);
+  ASSERT_TRUE(IsNewTabPage(active_contents->GetLastCommittedURL()));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * first_instance,
+                       OpenGlicForActiveTab());
+  ExecuteJsTest({.params = base::Value("a,b,c"), .instance = first_instance});
+  EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), 1);
+
+  // Each New Tab Page opened while Glic is open is daisy chained and should
+  // get pinned-tab suggestions.
+  for (int i = 0; i < 2; ++i) {
+    tabs::TabInterface* new_tab =
+        CreateUserInitiatedTab(GURL(chrome::kChromeUINewTabURL));
+    GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(new_tab);
+    ASSERT_TRUE(instance);
+    auto usage = instance->GetSharingManagerInternal().GetPinnedTabUsage(
+        new_tab->GetHandle());
+    ASSERT_TRUE(usage);
+    EXPECT_EQ(usage->pin_event.trigger, GlicPinTrigger::kNewTabDaisyChain);
+    ExecuteJsTest({.params = base::Value("a,b,c"), .instance = instance});
+    EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), i + 2);
+  }
+
+  // Non-NTP daisy-chained tabs without further user navigation are still
+  // filtered out by IsNewTabPage in FilterTabs.
+  tabs::TabInterface* blank_tab =
+      CreateUserInitiatedTab(GURL(url::kAboutBlankURL));
+  GlicInstanceImpl* blank_instance =
+      coordinator().GetInstanceImplForTab(blank_tab);
+  ASSERT_TRUE(blank_instance);
+  auto blank_usage =
+      blank_instance->GetSharingManagerInternal().GetPinnedTabUsage(
+          blank_tab->GetHandle());
+  ASSERT_TRUE(blank_usage);
+  EXPECT_EQ(blank_usage->pin_event.trigger, GlicPinTrigger::kNewTabDaisyChain);
+  ExecuteJsTest({.params = base::Value(""), .instance = blank_instance});
+  EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicApiTestWithDaisyChainZss,
+    testGetZeroStateSuggestionsOnDaisyChainedNewTabPageRecentPagesDisabled) {
+  fake_cueing_service()->SetFocusedTabSuggestions({"focused"});
+  fake_cueing_service()->SetPinnedTabsSuggestions({"a", "b", "c"});
+  ASSERT_OK(OpenGlicForActiveTab());
+  const int initial_pinned_calls =
+      fake_cueing_service()->pinned_tabs_call_count();
+
+  tabs::TabInterface* new_tab =
+      CreateUserInitiatedTab(GURL(chrome::kChromeUINewTabURL));
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(new_tab);
+  ASSERT_TRUE(instance);
+  auto usage = instance->GetSharingManagerInternal().GetPinnedTabUsage(
+      new_tab->GetHandle());
+  ASSERT_TRUE(usage);
+  EXPECT_EQ(usage->pin_event.trigger, GlicPinTrigger::kNewTabDaisyChain);
+  ExecuteJsTest({.params = base::Value(""), .instance = instance});
+  EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(),
+            initial_pinned_calls);
 }
 
 }  // namespace glic
