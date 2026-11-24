@@ -136,13 +136,47 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.ui.bottombar"
 }
 
+android_library("container_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarAppMenuUpdateBadgeController.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarContainerCoordinator.java",
+  ]
+  deps = [
+    ":config_java",
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:supplier_java",
+    "//build/android:build_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/omaha/android:ui_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/actions:java",
+    "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:core_java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java_resources",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.ui.bottombar"
+}
+
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/bottombar/AppMenuActionButtonBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarActionEligibilityUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarAppMenuUpdateBadgeControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarContainerCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarEducationContentViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarEducationCoordinatorUnitTest.java",
@@ -159,7 +193,9 @@ robolectric_library("junit") {
   ]
   deps = [
     ":config_java",
+    ":container_java",
     ":java",
+    ":java_resources",
     ":metrics_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -173,6 +209,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/glic/android:jni_headers_java",
+    "//chrome/browser/omaha/android:ui_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:factory_java",
@@ -180,11 +217,13 @@ robolectric_library("junit") {
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/actions:java",
+    "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:core_java",
     "//chrome/browser/user_education:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
@@ -209,4 +248,6 @@ robolectric_library("junit") {
     "//url:gurl_junit_test_support",
     "//url:url_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.ui.bottombar"
 }
