@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
@@ -26,6 +27,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -47,6 +49,74 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
+
+// Private fork of `CanvasResource` for `CanvasNon2DResourceProvider` so that
+// `CanvasResource` can be eliminated incrementally for 2D canvas without
+// touching killswitch-guarded non-2D compositor/software paths. Once those
+// paths are removed and `CanvasNon2DResourceProvider` is reduced to an
+// accelerated snapshot provider, this class can be replaced directly with
+// `gpu::ClientImage`.
+class CanvasNon2DResourceProvider::Resource final : public gpu::ClientImage {
+ public:
+  explicit Resource(scoped_refptr<gpu::ClientSharedImage> shared_image)
+      : gpu::ClientImage(std::move(shared_image)) {
+    subclass_manages_destruction_sync_token_ = true;
+  }
+
+  ~Resource() override = default;
+
+  void InitializeSoftware(base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+                              shared_image_interface_provider) {
+    DCHECK(GetSharedImage());
+    DCHECK(!is_initialized_);
+    DCHECK(shared_image_interface_provider);
+
+    // This class doesn't currently have a way of verifying the sync token for
+    // software SharedImages at the time of vending it in VerifySyncToken(),
+    // so we instead ensure that it is verified now.
+    auto* shared_image_interface =
+        shared_image_interface_provider->SharedImageInterface();
+    DCHECK(shared_image_interface);
+    gpu::SyncToken sync_token = GetSharedImage()->creation_sync_token();
+    shared_image_interface->VerifySyncToken(sync_token);
+    SetReleaseSyncToken(sync_token);
+    GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+
+    is_initialized_ = true;
+  }
+
+  void Initialize() {
+    DCHECK(GetSharedImage());
+    DCHECK(!is_initialized_);
+
+    // Wait for the mailbox to be ready to be used.
+    WaitSyncToken(GetSharedImage()->creation_sync_token());
+
+    is_initialized_ = true;
+  }
+
+  bool IsInitialized() const { return is_initialized_; }
+
+  void WaitSyncToken(const gpu::SyncToken& sync_token) {
+    if (sync_token.HasData()) {
+      acquire_sync_token_ = sync_token;
+      GetSharedImage()->UpdateDestructionSyncToken(acquire_sync_token_);
+    }
+  }
+
+  const gpu::SyncToken& acquire_sync_token() const {
+    return acquire_sync_token_;
+  }
+
+  void NotifyResourceLost() { resource_is_lost_ = true; }
+
+  bool IsLost() const { return resource_is_lost_; }
+
+ private:
+  bool resource_is_lost_ = false;
+  gpu::SyncToken acquire_sync_token_;
+  bool is_initialized_ = false;
+};
 
 base::WeakPtr<CanvasNon2DResourceProvider>
 CanvasNon2DResourceProvider::CreateWeakPtr() {
@@ -215,7 +285,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
               ? std::make_optional(kUnusedResourceExpirationTime)
               : std::nullopt;
 
-      image_pool_ = gpu::SharedImagePool<CanvasResource>::Create(
+      image_pool_ = gpu::SharedImagePool<Resource>::Create(
           image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
           expiration_time);
     }
@@ -253,7 +323,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
           size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
           kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
           /*is_software=*/true);
-      image_pool_ = gpu::SharedImagePool<CanvasResource>::Create(
+      image_pool_ = gpu::SharedImagePool<Resource>::Create(
           image_info, sii, "CanvasResourceSharedImage",
           kMaxRecycledCanvasResources);
     }
@@ -277,7 +347,7 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
   }
 }
 
-scoped_refptr<CanvasResource>
+scoped_refptr<CanvasNon2DResourceProvider::Resource>
 CanvasNon2DResourceProvider::NewOrRecycledResource() {
   if (!image_pool_) {
     return nullptr;
@@ -436,7 +506,7 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
     return nullptr;
   }
 
-  scoped_refptr<CanvasResource> software_resource;
+  scoped_refptr<Resource> software_resource;
   if (IsSoftware()) {
     software_resource = NewOrRecycledResource();
     if (!software_resource) {
@@ -499,17 +569,17 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
 
 scoped_refptr<ExportedCanvasResource>
 CanvasNon2DResourceProvider::CreateExportedResource(
-    scoped_refptr<CanvasResource> resource) {
+    scoped_refptr<Resource> resource) {
   auto wait_sync_token = base::BindRepeating(
-      [](scoped_refptr<CanvasResource> resource, gpu::SyncToken sync_token) {
+      [](scoped_refptr<Resource> resource, gpu::SyncToken sync_token) {
         resource->WaitSyncToken(sync_token);
       },
       resource);
 
   auto release_callback = base::BindOnce(
-      [](base::WeakPtr<gpu::SharedImagePool<CanvasResource>> pool,
-         scoped_refptr<CanvasResource> resource,
-         const gpu::SyncToken& sync_token, bool is_lost) {
+      [](base::WeakPtr<gpu::SharedImagePool<Resource>> pool,
+         scoped_refptr<Resource> resource, const gpu::SyncToken& sync_token,
+         bool is_lost) {
         CHECK(resource);
         if (is_lost) {
           resource->NotifyResourceLost();
@@ -554,7 +624,7 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::ProduceCanvasResource");
   if (IsSoftware()) {
     DCHECK(GetSkSurface());
-    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
+    scoped_refptr<Resource> output_resource = NewOrRecycledResource();
     if (!output_resource) {
       return nullptr;
     }
@@ -612,9 +682,9 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
     // the ref-count on the resource as a proxy for a read lock to allow
     // recycling the resource once all refs have been released.
     auto release_callback = base::BindOnce(
-        [](base::WeakPtr<gpu::SharedImagePool<CanvasResource>> pool,
-           scoped_refptr<CanvasResource> resource,
-           const gpu::SyncToken& sync_token, bool lost_resource) {
+        [](base::WeakPtr<gpu::SharedImagePool<Resource>> pool,
+           scoped_refptr<Resource> resource, const gpu::SyncToken& sync_token,
+           bool lost_resource) {
           CHECK(resource);
           CHECK(!lost_resource);
 

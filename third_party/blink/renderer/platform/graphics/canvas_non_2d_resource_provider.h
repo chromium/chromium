@@ -24,7 +24,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -130,6 +129,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
+  class Resource;
+
   CanvasNon2DResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,
@@ -162,7 +163,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   SkSurfaceProps GetSkSurfaceProps() const;
 
-  scoped_refptr<CanvasResource> NewOrRecycledResource();
+  scoped_refptr<Resource> NewOrRecycledResource();
 
   // FlushForImageObserver implementation:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
@@ -191,7 +192,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void UploadSoftwareRenderingResults(gpu::ClientImage& resource);
 
   scoped_refptr<ExportedCanvasResource> CreateExportedResource(
-      scoped_refptr<CanvasResource> resource);
+      scoped_refptr<Resource> resource);
 
   const gfx::Size size_;
   const viz::SharedImageFormat format_;
@@ -213,9 +214,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
-  std::unique_ptr<gpu::SharedImagePool<CanvasResource>> image_pool_;
+  std::unique_ptr<gpu::SharedImagePool<Resource>> image_pool_;
 
-  scoped_refptr<CanvasResource> resource_;
+  scoped_refptr<Resource> resource_;
 
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
