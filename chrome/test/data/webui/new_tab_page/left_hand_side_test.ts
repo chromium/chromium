@@ -870,6 +870,7 @@ suite('NewTabPageLeftHandSideTest', () => {
             railBackground: 'rgba(241, 243, 244, 1)',
           },
           isDark: true,
+          iconSize: 20,
         },
         message);
     assertEquals(EXPANDED_LHS_ORIGIN, targetOrigin);
@@ -906,6 +907,7 @@ suite('NewTabPageLeftHandSideTest', () => {
             railBackground: 'rgba(241, 243, 244, 1)',
           },
           isDark: false,
+          iconSize: 20,
         },
         message);
     assertEquals(EXPANDED_LHS_ORIGIN, targetOrigin);
