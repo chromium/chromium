@@ -7,6 +7,7 @@
 import http.client
 import io
 import json
+import os
 import subprocess
 import unittest
 from unittest import mock
@@ -627,6 +628,123 @@ class ChromeBinaryPathTest(unittest.TestCase):
             with self.subTest(sender_os=sender_os):
                 sender = senders.make_sender(make_args(sender_os=sender_os))
                 self.assertEqual(sender.chrome_binary_path(app_path), binary)
+
+
+class LocalLinuxSenderTest(unittest.TestCase):
+    """The lab host acting as its own sender (--sender localhost)."""
+
+    def _sender(self, sender='localhost', sender_os='linux'):
+        return senders.make_sender(
+            make_args(sender=sender, sender_os=sender_os)
+        )
+
+    def test_local_linux_adds_headless_host_switches(self):
+        self.assertEqual(
+            self._sender().extra_chrome_args(),
+            [
+                '--no-sandbox',
+                '--window-size=1920,1080',
+                '--window-position=0,0',
+            ],
+        )
+
+    def test_local_linux_skips_hardware_h264_only(self):
+        sender = self._sender()
+        self.assertIn('H.264', sender.codec_skip_reason('H264'))
+        self.assertIsNone(sender.codec_skip_reason('VP8'))
+        self.assertIsNone(sender.codec_skip_reason('VP9'))
+        for other, sender_os in ((MAC_HOST, 'linux'), ('localhost', 'cros')):
+            with self.subTest(sender=other, sender_os=sender_os):
+                self.assertIsNone(
+                    self._sender(other, sender_os).codec_skip_reason('H264')
+                )
+
+    def test_other_senders_add_no_switches(self):
+        cases = (
+            (MAC_HOST, 'linux'),
+            ('localhost', 'cros'),
+            ('localhost', 'mac'),
+            (WIN_HOST, 'win'),
+        )
+        for sender, sender_os in cases:
+            with self.subTest(sender=sender, sender_os=sender_os):
+                self.assertEqual(
+                    self._sender(sender, sender_os).extra_chrome_args(), []
+                )
+
+    def test_virtual_display_is_noop_unless_local_linux_without_display(self):
+        cases = (
+            ((MAC_HOST, 'linux'), {}),
+            (('localhost', 'cros'), {}),
+            (('localhost', 'linux'), {'DISPLAY': ':0'}),
+        )
+        for (sender, sender_os), env in cases:
+            with self.subTest(sender=sender, sender_os=sender_os, env=env):
+                with (
+                    mock.patch.dict('os.environ', env, clear=True),
+                    mock.patch('senders.subprocess.Popen') as popen,
+                ):
+                    with self._sender(sender, sender_os).virtual_display():
+                        pass
+                popen.assert_not_called()
+
+    def test_virtual_display_starts_xvfb_and_restores_display(self):
+        proc = mock.MagicMock()
+
+        def fake_popen(argv, **kwargs):
+            self.assertEqual(argv[0], 'Xvfb')
+            self.assertIn('1920x1080x24', argv)
+            os.write(kwargs['pass_fds'][0], b'99\n')
+            return proc
+
+        with (
+            mock.patch.dict('os.environ', {}, clear=True),
+            mock.patch('senders.subprocess.Popen', side_effect=fake_popen),
+        ):
+            with self.assertLogs(level='INFO'):
+                with self._sender().virtual_display():
+                    self.assertEqual(os.environ['DISPLAY'], ':99')
+            self.assertNotIn('DISPLAY', os.environ)
+        proc.terminate.assert_called_once()
+
+    def test_virtual_display_raises_if_xvfb_exits_without_a_display(self):
+        proc = mock.MagicMock()
+        proc.poll.return_value = 1
+        with (
+            mock.patch.dict('os.environ', {}, clear=True),
+            mock.patch('senders.subprocess.Popen', return_value=proc),
+        ):
+            with self.assertRaisesRegex(RuntimeError, 'Xvfb did not start'):
+                with self._sender().virtual_display():
+                    pass
+            self.assertNotIn('DISPLAY', os.environ)
+        proc.terminate.assert_called_once()
+
+    def test_virtual_display_closes_pipe_fds_on_popen_failure(self):
+        opened_fds = []
+        orig_pipe = os.pipe
+
+        def tracking_pipe():
+            fds = orig_pipe()
+            opened_fds.extend(fds)
+            return fds
+
+        with (
+            mock.patch.dict('os.environ', {}, clear=True),
+            mock.patch('senders.os.pipe', side_effect=tracking_pipe),
+            mock.patch(
+                'senders.subprocess.Popen',
+                side_effect=FileNotFoundError('Xvfb'),
+            ),
+        ):
+            with self.assertRaises(FileNotFoundError):
+                with self._sender().virtual_display():
+                    pass
+
+        self.assertEqual(len(opened_fds), 2)
+        for fd in opened_fds:
+            with self.assertRaises(OSError):
+                os.fstat(fd)
 
 
 class LocalInstallTest(fakes.SenderTestCase):

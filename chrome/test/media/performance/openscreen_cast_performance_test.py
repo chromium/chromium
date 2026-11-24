@@ -11,6 +11,7 @@ like dropped frames and smoothness.
 """
 
 import argparse
+import contextlib
 import logging
 import os
 import platform
@@ -227,6 +228,8 @@ def setup_test_environment(
     chrome_options.add_argument('--trace-startup-duration=45')
 
     for option in chrome_options_list:
+        chrome_options.add_argument(option)
+    for option in sender.extra_chrome_args():
         chrome_options.add_argument(option)
 
     # Dynamically set the --log-file path.
@@ -769,6 +772,10 @@ def main():
         return _run_tests(reporter)
 
 
+def _case_name(codec_name, video):
+    return f"{codec_name}/{video['name']}"
+
+
 def _run_tests(reporter):
     """Runs every codec/video case, reporting each one to `reporter`."""
     parser = argparse.ArgumentParser(
@@ -974,32 +981,53 @@ def _run_tests(reporter):
 
         CONFIGURATIONS[codec] = config
 
-    def case_name(codec_name, video):
-        return f"{codec_name}/{video['name']}"
-
     reporter.plan(
-        case_name(codec_name, video)
+        _case_name(codec_name, video)
         for codec_name, config in CONFIGURATIONS.items()
         for video in config['videos']
     )
     # Reported up front so that they read as deliberate skips even if an
     # earlier case fails and stops the run.
+    sender = common.make_sender(args)
+    skip_reasons = {
+        codec: sender.codec_skip_reason(codec) for codec in CONFIGURATIONS
+    }
     if not run_vp9_tests:
-        for video in CONFIGURATIONS['VP9']['videos']:
-            reporter.skip(
-                case_name('VP9', video),
-                "Sender or receiver does not support VP9.",
-            )
+        skip_reasons['VP9'] = "Sender or receiver does not support VP9."
+    skip_reasons = {c: r for c, r in skip_reasons.items() if r}
+    for codec_name, reason in skip_reasons.items():
+        for video in CONFIGURATIONS[codec_name]['videos']:
+            reporter.skip(_case_name(codec_name, video), reason)
 
+    # A local Linux sender is a headless lab host, so it needs a virtual
+    # display for Chrome. Other senders return a no-op context.
+    with contextlib.ExitStack() as stack:
+        try:
+            stack.enter_context(sender.virtual_display())
+        except (OSError, RuntimeError) as e:
+            display_error = RuntimeError('Xvfb did not start on the lab host')
+            display_error.__cause__ = e
+            for codec_name, config in CONFIGURATIONS.items():
+                if codec_name in skip_reasons:
+                    continue
+                for video in config['videos']:
+                    reporter.fail(_case_name(codec_name, video), display_error)
+            raise display_error
+        _run_configurations(args, cv, reporter, CONFIGURATIONS, skip_reasons)
+
+
+def _run_configurations(args, cv, reporter, configurations, skip_reasons):
+    """Runs every planned codec/video case and cleans up the sender."""
     actual_version = None
     last_version = None
     first_clip_error = None
     try:
-        for codec_name, config in CONFIGURATIONS.items():
-            if codec_name == 'VP9' and not run_vp9_tests:
+        for codec_name, config in configurations.items():
+            if codec_name in skip_reasons:
                 logging.info(
-                    "Skipping VP9 tests: Sender or receiver does not "
-                    "support VP9 encoding/decoding."
+                    "Skipping %s tests: %s",
+                    codec_name,
+                    skip_reasons[codec_name],
                 )
                 continue
             logging.info(
@@ -1044,14 +1072,14 @@ def _run_tests(reporter):
                 if args.sender_os == 'cros' and 'HEVC' in video['name']:
                     logging.info("Skipping HEVC on ChromeOS: %s", video['name'])
                     reporter.skip(
-                        case_name(codec_name, video),
+                        _case_name(codec_name, video),
                         "HEVC is disabled on ChromeOS (b/512198717).",
                     )
                     continue
 
                 setup_done = False
                 try:
-                    with reporter.case(case_name(codec_name, video)) as case:
+                    with reporter.case(_case_name(codec_name, video)) as case:
                         # Reset first: setup may fail before reporting one.
                         actual_version = None
                         try:

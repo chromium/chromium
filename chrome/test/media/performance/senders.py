@@ -8,12 +8,14 @@ only place that looks at the OS name; everything else calls Sender methods.
 """
 
 import abc
+import contextlib
 import glob
 import http.client
 import json
 import logging
 import os
 import platform
+import select
 import shutil
 import subprocess
 import tempfile
@@ -41,6 +43,13 @@ _CFT_JSON_TIMEOUT_SECS = 30
 _CFT_JSON_ATTEMPTS = 3
 _CFT_JSON_RETRY_DELAY_SECS = 2
 CURL_DOWNLOAD_FLAGS = '-fL --retry 3 --retry-delay 2'
+
+# The Chromecast capture is 1080p, so the mirrored tab must fill a 1080p
+# window for the video analyzer to find its sync markers.
+_SCREEN_WIDTH = 1920
+_SCREEN_HEIGHT = 1080
+_XVFB_START_TIMEOUT_SECS = 30
+_XVFB_STOP_TIMEOUT_SECS = 10
 
 WIN_REMOTE_TMP_DIR = 'C:/cft_temp'
 WIN_SYSTEM32_TAR = 'C:/Windows/System32/tar.exe'
@@ -390,6 +399,23 @@ class Sender(abc.ABC):
         """
         return app_path
 
+    def extra_chrome_args(self):
+        """Returns Chrome switches this sender needs on top of the defaults."""
+        return []
+
+    def codec_skip_reason(self, codec):
+        """Returns why `codec` cannot be tested on this sender, or None."""
+        del codec
+        return None
+
+    def virtual_display(self):
+        """Returns a context manager that provides a display for Chrome.
+
+        Senders with a real desktop session need nothing, so the default does
+        nothing.
+        """
+        return contextlib.nullcontext()
+
     def _install_locally(self, chrome_url, driver_url):
         """Installs Chrome and starts chromedriver on this machine."""
         tmp_dir = '/tmp'
@@ -644,7 +670,12 @@ class MacSender(PosixSender):
 
 
 class LinuxSender(PosixSender):
-    """Desktop Linux sender."""
+    """Desktop Linux sender.
+
+    With --sender localhost, the lab host itself is the sender and casts to
+    its own Chromecast. The hosts are headless servers, so a local sender runs
+    Chrome on a virtual display.
+    """
 
     OS_NAME = 'linux'
     DISPLAY_NAME = 'Linux'
@@ -652,6 +683,92 @@ class LinuxSender(PosixSender):
 
     def _detect_os_version(self, probes):
         return self._probe('uname -r', probes)
+
+    def extra_chrome_args(self):
+        if not self.transport.is_local:
+            return []
+        return [
+            # Ubuntu 24.04 restricts unprivileged user namespaces through
+            # AppArmor, so Chrome's sandbox cannot start as `chrome-bot`.
+            '--no-sandbox',
+            # Xvfb has no window manager, so --start-fullscreen does nothing
+            # and the tab would not fill the 1080p capture.
+            f'--window-size={_SCREEN_WIDTH},{_SCREEN_HEIGHT}',
+            '--window-position=0,0',
+        ]
+
+    def virtual_display(self):
+        if not self.transport.is_local or os.environ.get('DISPLAY'):
+            return contextlib.nullcontext()
+        return _xvfb_display()
+
+    def codec_skip_reason(self, codec):
+        if self.transport.is_local and codec == 'H264':
+            # The H264 configuration forces hardware encode and disables the
+            # other video codecs, so the offer would carry audio only.
+            return 'The lab host has no hardware H.264 encoder.'
+        return None
+
+
+@contextlib.contextmanager
+def _xvfb_display():
+    """Runs Xvfb and points DISPLAY at it for as long as the context lasts.
+
+    Xvfb picks a free display number and writes it to -displayfd once it is
+    ready to accept clients.
+
+    Raises:
+        RuntimeError: Xvfb did not start.
+    """
+    read_fd, write_fd = os.pipe()
+    try:
+        proc = subprocess.Popen(  # pylint: disable=consider-using-with
+            [
+                'Xvfb',
+                '-displayfd',
+                str(write_fd),
+                '-screen',
+                '0',
+                f'{_SCREEN_WIDTH}x{_SCREEN_HEIGHT}x24',
+                '-nolisten',
+                'tcp',
+            ],
+            pass_fds=(write_fd,),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except BaseException:
+        os.close(read_fd)
+        raise
+    finally:
+        os.close(write_fd)
+
+    old_display = os.environ.get('DISPLAY')
+    try:
+        with os.fdopen(read_fd) as reader:
+            ready, _, _ = select.select(
+                [reader], [], [], _XVFB_START_TIMEOUT_SECS
+            )
+            number = reader.readline().strip() if ready else ''
+        if not number:
+            raise RuntimeError(
+                f'Xvfb did not start within {_XVFB_START_TIMEOUT_SECS}s '
+                f'(exit code {proc.poll()}).'
+            )
+        os.environ['DISPLAY'] = f':{number}'
+        logging.info('Started Xvfb on display :%s.', number)
+        yield
+    finally:
+        if old_display is None:
+            os.environ.pop('DISPLAY', None)
+        else:
+            os.environ['DISPLAY'] = old_display
+        proc.terminate()
+        try:
+            proc.wait(timeout=_XVFB_STOP_TIMEOUT_SECS)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait()
 
 
 class CrosSender(LinuxSender):
@@ -665,6 +782,17 @@ class CrosSender(LinuxSender):
 
     def _detect_os_version(self, probes):
         return 'cros'
+
+    def extra_chrome_args(self):
+        # The DUT has its own display and sandbox.
+        return []
+
+    def codec_skip_reason(self, codec):
+        del codec
+        return None
+
+    def virtual_display(self):
+        return contextlib.nullcontext()
 
     def _installed_test(self, app_path, driver_path):
         return f"[ -f '{app_path}' ]"

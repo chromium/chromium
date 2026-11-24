@@ -62,6 +62,7 @@ class MainLoopContinuationTest(unittest.TestCase):
             return mock.MagicMock()
 
         fake_sender = mock.MagicMock()
+        fake_sender.codec_skip_reason.return_value = None
         fake_sender.copy_from.side_effect = lambda src, dst, timeout=60: (
             copied_traces.append((src, dst))
         )
@@ -159,6 +160,7 @@ class MainLoopContinuationTest(unittest.TestCase):
             raise common.SenderUnreachableError('ssh lost')
 
         fake_sender = mock.MagicMock()
+        fake_sender.codec_skip_reason.return_value = None
         with tempfile.TemporaryDirectory() as tmp_dir:
             results_path = os.path.join(tmp_dir, 'output.json')
             reporter = test_results.TestReporter(output_path=results_path)
@@ -214,6 +216,7 @@ class MainLoopContinuationTest(unittest.TestCase):
             )
 
         fake_sender = mock.MagicMock()
+        fake_sender.codec_skip_reason.return_value = None
         with tempfile.TemporaryDirectory() as tmp_dir:
             results_path = os.path.join(tmp_dir, 'output.json')
             reporter = test_results.TestReporter(output_path=results_path)
@@ -321,6 +324,72 @@ class MainLoopContinuationTest(unittest.TestCase):
 
         self.assertEqual(call_order, ['dump_logs', 'cleanup'])
 
+    def test_xvfb_startup_error_fails_each_planned_case(self):
+        fake_sender = mock.MagicMock()
+        fake_sender.codec_skip_reason.side_effect = lambda codec: (
+            'The lab host has no hardware H.264 encoder.'
+            if codec == 'H264'
+            else None
+        )
+        fake_sender.virtual_display.return_value.__enter__.side_effect = (
+            RuntimeError('Xvfb did not start within 10s (exit code 1).')
+        )
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            results_path = os.path.join(tmp_dir, 'output.json')
+            reporter = test_results.TestReporter(output_path=results_path)
+            with (
+                mock.patch.object(common, 'RECORDINGS_DIR', f'{tmp_dir}/rec'),
+                mock.patch.object(common, 'TRACES_DIR', f'{tmp_dir}/traces'),
+                mock.patch.object(common, 'verify_receiver_connectivity'),
+                mock.patch.object(
+                    common, 'make_sender', return_value=fake_sender
+                ),
+                mock.patch.object(
+                    cast_test, 'should_run_vp9_tests', return_value=True
+                ),
+                mock.patch.object(
+                    cast_test.subprocess, 'run', return_value=completed()
+                ),
+                mock.patch.object(
+                    cast_test.sys,
+                    'argv',
+                    [
+                        'openscreen_cast_performance_test.py',
+                        '--sender=localhost',
+                        '--sender-os=linux',
+                        '--receiver=sink',
+                    ],
+                ),
+            ):
+                with self.assertRaisesRegex(
+                    RuntimeError, 'Xvfb did not start on the lab host'
+                ):
+                    with reporter:
+                        cast_test._run_tests(reporter)
+
+            with open(results_path, encoding='utf-8') as f:
+                results_json = json.load(f)
+
+        self.assertNotIn(test_results.HARNESS_CASE, results_json['tests'])
+        for video in (
+            '1080p30fpsH264_foodmarket_yt_sync.mp4',
+            '1080p60fpsH264_boat_yt_sync.mp4',
+        ):
+            self.assertEqual(
+                results_json['tests']['H264'][video]['actual'], 'SKIP'
+            )
+            self.assertNotIn(
+                'is_unexpected', results_json['tests']['H264'][video]
+            )
+            for codec in ('VP8', 'VP9'):
+                entry = results_json['tests'][codec][video]
+                self.assertEqual(entry['actual'], 'FAIL')
+                self.assertIn(
+                    'Xvfb did not start on the lab host',
+                    entry['failure_reason'],
+                )
+
 
 class SetupTestEnvironmentTest(unittest.TestCase):
     def test_desktop_uses_trace_startup_value_instead_of_unknown_flag(self):
@@ -364,6 +433,34 @@ class SetupTestEnvironmentTest(unittest.TestCase):
         self.assertFalse(
             any(a.startswith('--trace-startup-categories') for a in args)
         )
+
+    def test_desktop_adds_sender_specific_switches(self):
+        fake_sender = mock.MagicMock(TMP_DIR='/tmp', LOG_DIR=None)
+        fake_sender.install_chrome.return_value = ('/tmp/c/chrome', '160.0')
+        fake_sender.chrome_binary_path.return_value = '/tmp/c/chrome'
+        fake_sender.extra_chrome_args.return_value = ['--no-sandbox']
+        captured_opts = []
+
+        with (
+            mock.patch.object(common, 'make_sender', return_value=fake_sender),
+            mock.patch.object(
+                common,
+                'connect_to_remote_driver',
+                side_effect=lambda opts: captured_opts.append(opts),
+            ),
+            mock.patch.object(cast_test, 'enable_tab_mirroring'),
+        ):
+            cast_test.setup_test_environment(
+                make_args(sender='localhost', sender_os='linux'),
+                None,
+                ['--v=1'],
+                'VP8',
+                'clip.mp4',
+            )
+
+        args = captured_opts[0].arguments
+        self.assertIn('--v=1', args)
+        self.assertIn('--no-sandbox', args)
 
     def test_cros_writes_trace_and_log_to_shared_tmp_dir(self):
         fake_sender = mock.MagicMock(
