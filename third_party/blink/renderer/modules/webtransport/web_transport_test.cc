@@ -126,7 +126,6 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
         std::optional<uint16_t>
             anticipated_concurrent_incoming_bidirectional_streams,
         net::HttpRequestHeaders::HeaderVector additional_headers,
-        std::optional<base::UnguessableToken> throttling_profile_id,
         mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
@@ -138,7 +137,6 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
           anticipated_concurrent_incoming_bidirectional_streams(
               anticipated_concurrent_incoming_bidirectional_streams),
           additional_headers(std::move(additional_headers)),
-          throttling_profile_id(std::move(throttling_profile_id)),
           handshake_client(std::move(handshake_client)) {}
 
     KURL url;
@@ -151,7 +149,6 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
     std::optional<uint16_t>
         anticipated_concurrent_incoming_bidirectional_streams;
     net::HttpRequestHeaders::HeaderVector additional_headers;
-    std::optional<base::UnguessableToken> throttling_profile_id;
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
@@ -167,15 +164,13 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
       net::HttpRequestHeaders::HeaderVector additional_headers,
-      const std::optional<base::UnguessableToken>& throttling_profile_id,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
     connect_args_.push_back(ConnectArgs(
         url, std::move(fingerprints), application_protocols, congestion_control,
         anticipated_concurrent_incoming_unidirectional_streams,
         anticipated_concurrent_incoming_bidirectional_streams,
-        std::move(additional_headers), throttling_profile_id,
-        std::move(handshake_client)));
+        std::move(additional_headers), std::move(handshake_client)));
   }
 
   Vector<ConnectArgs> TakeConnectArgs() { return std::move(connect_args_); }

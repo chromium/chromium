@@ -707,7 +707,8 @@ void SharedWorkerHost::CreateWebTransportConnector(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcessHost()->GetDeprecatedID(), /*frame=*/nullptr,
           WeakDocumentPtr(), origin, GetNetworkAnonymizationKey(),
-          worker_client_security_state_->Clone(), network_restrictions_id_),
+          worker_client_security_state_->Clone(), network_restrictions_id_,
+          GetDevToolsToken()),
       std::move(receiver));
 }
 

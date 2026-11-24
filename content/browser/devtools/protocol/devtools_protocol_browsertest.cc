@@ -91,6 +91,7 @@
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -8153,6 +8154,111 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolPrerenderTracingTest,
   EXPECT_EQ(true, main_frame->FindBool("isOutermostMainFrame"));
   EXPECT_EQ(true, main_frame->FindBool("isInPrimaryMainFrame"));
   EXPECT_EQ(true, main_frame->FindBool("isOpaqueOrigin"));
+}
+
+class WebTransportDevToolsProtocolTest : public DevToolsProtocolTest {
+ public:
+  WebTransportDevToolsProtocolTest() { server_.Start(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsProtocolTest::SetUpCommandLine(command_line);
+    server_.SetUpCommandLine(command_line);
+  }
+
+ protected:
+  int port() const { return server_.server_address().port(); }
+
+  void SetWebTransportOfflineRule(bool offline) {
+    base::ListValue rules;
+    if (offline) {
+      base::DictValue rule;
+      rule.Set("urlPattern", "https://localhost:*");
+      rule.Set("latency", 0);
+      rule.Set("downloadThroughput", -1);
+      rule.Set("uploadThroughput", -1);
+      rule.Set("offline", true);
+      rules.Append(std::move(rule));
+    }
+    base::DictValue params;
+    params.Set("matchedNetworkConditions", std::move(rules));
+    SendCommandSync("Network.emulateNetworkConditionsByRule",
+                    std::move(params));
+  }
+
+ private:
+  WebTransportSimpleTestServer server_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebTransportDevToolsProtocolTest,
+                       WebTransportOfflineByRuleWithoutNetworkEnable) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  Attach();
+
+  SetWebTransportOfflineRule(/*offline=*/true);
+
+  const std::string connect_script = JsReplace(
+      R"(
+        (async () => {
+          try {
+            const wt = new WebTransport('https://localhost:' + $1 + '/echo');
+            await wt.ready;
+            wt.close();
+            return 'connected';
+          } catch (e) {
+            return e.name;
+          }
+        })()
+      )",
+      port());
+  EXPECT_EQ("WebTransportError", EvalJs(shell(), connect_script));
+
+  SetWebTransportOfflineRule(/*offline=*/false);
+  EXPECT_EQ("connected", EvalJs(shell(), connect_script));
+}
+
+IN_PROC_BROWSER_TEST_F(WebTransportDevToolsProtocolTest,
+                       WebTransportOfflineByRuleInWorkerWithoutNetworkEnable) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  Attach();
+
+  SetWebTransportOfflineRule(/*offline=*/true);
+
+  const std::string worker_connect_script = JsReplace(
+      R"(
+        new Promise((resolve) => {
+          const code = `
+            self.onmessage = async (e) => {
+              try {
+                const wt = new WebTransport(
+                    'https://localhost:' + e.data + '/echo');
+                await wt.ready;
+                wt.close();
+                self.postMessage('connected');
+              } catch (err) {
+                self.postMessage(err.name);
+              }
+            };
+          `;
+          const blobUrl = URL.createObjectURL(
+              new Blob([code], {type: 'application/javascript'}));
+          const worker = new Worker(blobUrl);
+          worker.onmessage = (e) => {
+            worker.terminate();
+            URL.revokeObjectURL(blobUrl);
+            resolve(e.data);
+          };
+          worker.postMessage($1);
+        })
+      )",
+      port());
+  EXPECT_EQ("WebTransportError", EvalJs(shell(), worker_connect_script));
+
+  SetWebTransportOfflineRule(/*offline=*/false);
+  EXPECT_EQ("connected", EvalJs(shell(), worker_connect_script));
 }
 
 }  // namespace content

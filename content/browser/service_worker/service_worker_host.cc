@@ -341,6 +341,11 @@ void ServiceWorkerHost::CompleteStartWorkerPreparation(
 void ServiceWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  base::UnguessableToken worker_devtools_id =
+      version_->embedded_worker()->WorkerDevtoolsId();
+  std::optional<base::UnguessableToken> devtools_token =
+      worker_devtools_id.is_empty() ? std::nullopt
+                                    : std::optional(worker_devtools_id);
   // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
@@ -348,7 +353,7 @@ void ServiceWorkerHost::CreateWebTransportConnector(
           WeakDocumentPtr(), version_->key().origin(),
           GetNetworkAnonymizationKey(),
           version_->BuildClientSecurityState()->Clone(),
-          version_->network_restrictions_id()),
+          version_->network_restrictions_id(), devtools_token),
       std::move(receiver));
 }
 

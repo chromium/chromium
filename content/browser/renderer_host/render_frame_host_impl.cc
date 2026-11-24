@@ -15467,6 +15467,15 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
       std::move(receiver));
 }
 
+RenderFrameHostImpl* RenderFrameHostImpl::GetLocalRoot() {
+  RenderFrameHostImpl* local_root = this;
+  while (!local_root->is_local_root()) {
+    local_root = local_root->GetParent();
+    CHECK(local_root);
+  }
+  return local_root;
+}
+
 void RenderFrameHostImpl::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   if (is_mhtml_document()) {
@@ -15482,7 +15491,8 @@ void RenderFrameHostImpl::CreateWebTransportConnector(
           GetProcess()->GetDeprecatedID(), weak_ptr_factory_.GetWeakPtr(),
           GetWeakDocumentPtr(), last_committed_origin_,
           isolation_info_.network_anonymization_key(),
-          BuildClientSecurityState(), GetNetworkRestrictionsID()),
+          BuildClientSecurityState(), GetNetworkRestrictionsID(),
+          GetLocalRoot()->GetDevToolsFrameToken()),
       std::move(receiver));
 }
 

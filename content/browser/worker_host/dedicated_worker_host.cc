@@ -1031,13 +1031,22 @@ void DedicatedWorkerHost::CreateWebTransportConnector(
     receiver.ResetWithReason(0, "The worker script has not loaded yet.");
     return;
   }
+  base::UnguessableToken devtools_token;
+  if (const auto* parent_worker_token =
+          std::get_if<blink::DedicatedWorkerToken>(&creator_)) {
+    devtools_token = parent_worker_token->value();
+  } else {
+    devtools_token =
+        ancestor_render_frame_host->GetLocalRoot()->GetDevToolsFrameToken();
+  }
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_host_->GetDeprecatedID(),
           ancestor_render_frame_host->GetWeakPtr(), ancestor_document_,
           GetWorkerStorageKey().origin(),
           isolation_info_.network_anonymization_key(),
-          worker_client_security_state_->Clone(), network_restrictions_id_),
+          worker_client_security_state_->Clone(), network_restrictions_id_,
+          devtools_token),
       std::move(receiver));
 }
 

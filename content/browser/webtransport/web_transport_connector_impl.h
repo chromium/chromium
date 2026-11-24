@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "content/browser/webtransport/web_transport_throttle_context.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,6 +34,11 @@ class WebTransportConnectorImpl final
   // |frame| is needed for devtools and the throttle context. For shared or
   // service workers, there is no appropriate frame to associate, and in that
   // case nullptr should be passed.
+  // |devtools_token| is used as the `throttling_profile_id` for DevTools
+  // network emulation/throttling and must be supplied from a trusted
+  // browser-side source (never the renderer): for frames, the local root
+  // RenderFrameHost's DevTools token; for workers, the worker's or parent's
+  // DevTools token.
   WebTransportConnectorImpl(
       int process_id,
       base::WeakPtr<RenderFrameHostImpl> frame,
@@ -40,7 +46,8 @@ class WebTransportConnectorImpl final
       const url::Origin& origin,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      const base::UnguessableToken& network_restrictions_id);
+      const base::UnguessableToken& network_restrictions_id,
+      std::optional<base::UnguessableToken> devtools_token);
   ~WebTransportConnectorImpl() override;
 
   void Connect(
@@ -55,7 +62,6 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_bidirectional_streams,
       std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
           additional_headers,
-      const std::optional<base::UnguessableToken>& throttling_profile_id,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client) override;
 
@@ -72,7 +78,6 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_bidirectional_streams,
       std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
           additional_headers,
-      std::optional<base::UnguessableToken> throttling_profile_id,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::unique_ptr<WebTransportThrottleContext::Tracker> tracker);
@@ -89,7 +94,6 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_bidirectional_streams,
       std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
           additional_headers,
-      std::optional<base::UnguessableToken> throttling_profile_id,
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       network::mojom::ClientSecurityStatePtr client_security_state,
@@ -115,6 +119,9 @@ class WebTransportConnectorImpl final
   const network::mojom::ClientSecurityStatePtr client_security_state_;
   const base::WeakPtr<WebTransportThrottleContext> throttle_context_;
   const base::UnguessableToken network_restrictions_id_;
+  // Trusted browser-side DevTools token passed as `throttling_profile_id` when
+  // creating the WebTransport session.
+  const std::optional<base::UnguessableToken> devtools_token_;
 
   base::WeakPtrFactory<WebTransportConnectorImpl> weak_factory_{this};
 };
