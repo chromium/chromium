@@ -2332,6 +2332,7 @@ source_set("browser_tests") {
 
     deps += [
       ":browser_desktop_window_tree_host_linux",
+      ":browser_frame_view_linux_native",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/test:test_support",

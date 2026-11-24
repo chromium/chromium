@@ -48,6 +48,11 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/frame/browser_frame_view_linux_native.h"
+#include "ui/views/view_utils.h"
+#endif
+
 namespace {
 
 class TestAutofillManager : public autofill::BrowserAutofillManager {
@@ -250,6 +255,31 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, IncognitoIsCorrectColor) {
 
   incognito_browser->GetWindow()->Close();
 }
+
+#if BUILDFLAG(IS_LINUX)
+// Incognito windows ignore the toolkit theme for their colors, so they must not
+// use the toolkit's frame and caption buttons either; otherwise the toolkit's
+// caption buttons are drawn on the dark incognito frame and can be invisible.
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
+                       IncognitoDoesNotUseNativeFrame) {
+  Profile* profile = browser()->GetProfile();
+  ThemeServiceFactory::GetForProfile(profile)->UseSystemTheme();
+
+  BrowserWindowInterface* regular_browser = CreateBrowser(profile);
+  if (!views::IsViewClass<BrowserFrameViewLinuxNative>(
+          BrowserView::GetBrowserViewForBrowser(regular_browser)
+              ->browser_widget()
+              ->GetFrameView())) {
+    GTEST_SKIP() << "The toolkit does not provide native caption buttons.";
+  }
+
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile);
+  EXPECT_FALSE(views::IsViewClass<BrowserFrameViewLinuxNative>(
+      BrowserView::GetBrowserViewForBrowser(incognito_browser)
+          ->browser_widget()
+          ->GetFrameView()));
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 // Checks that the title bar for hosted app windows is hidden when in fullscreen
 // for tab mode.

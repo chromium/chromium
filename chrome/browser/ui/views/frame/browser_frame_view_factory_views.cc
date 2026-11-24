@@ -17,6 +17,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
@@ -52,8 +53,14 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
       app_controller && (app_controller->AppUsesWindowControlsOverlay() ||
                          app_controller->AppUsesUnframedMode());
 
+  // Incognito and enterprise isolated mode windows ignore the toolkit theme
+  // for their colors (see BrowserWidget::SelectNativeTheme()), so they must
+  // not use the toolkit's frame and caption buttons either.
+  const bool ignores_toolkit_theme = profile->IsIncognitoProfile() ||
+                                     profile->IsEnterpriseIsolatedModeProfile();
+
   if (linux_ui_theme && theme_service_factory->UsingSystemTheme() &&
-      !app_uses_wco_or_unframed) {
+      !app_uses_wco_or_unframed && !ignores_toolkit_theme) {
     auto nav_button_provider =
         linux_ui_theme->CreateNavButtonProvider(ui::FrameType::kBrowser);
     if (nav_button_provider) {
