@@ -13,6 +13,7 @@ source_set("coordinator") {
     "credential_suggestion_bottom_sheet_mediator_base.mm",
     "passkey_creation_bottom_sheet_coordinator.h",
     "passkey_creation_bottom_sheet_coordinator.mm",
+    "passkey_creation_bottom_sheet_exit_reason.h",
     "passkey_creation_bottom_sheet_mediator.h",
     "passkey_creation_bottom_sheet_mediator.mm",
     "passkey_creation_bottom_sheet_mediator_delegate.h",

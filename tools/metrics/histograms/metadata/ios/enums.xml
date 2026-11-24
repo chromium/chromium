@@ -2642,6 +2642,21 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Partial translate failed, user pressed full translate"/>
 </enum>
 
+<!-- LINT.IfChange(PasskeyCreationBottomSheetExitReason) -->
+
+<enum name="PasskeyCreationBottomSheetExitReason">
+  <int value="0" label="Create passkey confirmed"/>
+  <int value="1" label="Save another way tapped"/>
+  <int value="2" label="Bottom sheet dismissed by user"/>
+  <int value="3" label="Reauthentication failed or cancelled"/>
+  <int value="4" label="Reauthentication not possible (deferred to OS)"/>
+  <int value="5" label="Bottom sheet could not be presented"/>
+  <int value="6" label="Dismissed externally (tab switch, abort, or teardown)"/>
+  <int value="7" label="Invalid or expired passkey request"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_exit_reason.h:PasskeyCreationBottomSheetExitReason) -->
+
 <enum name="PasswordSuggestionBottomSheetExitReason">
   <int value="0" label="Bottom Sheet dismissed"/>
   <int value="1" label="Used password suggestion"/>

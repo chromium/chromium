@@ -13,6 +13,7 @@
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/test_favicon_loader.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -188,9 +190,11 @@ class PasskeyCreationBottomSheetCoordinatorTest : public PlatformTest {
 };
 
 // Tests that interactively swiping down the passkey creation bottom sheet
-// cancels the pending passkey request and dispatches dismissal.
+// cancels the pending passkey request, dispatches dismissal, and logs
+// `kDismissed` exactly once even after `-stop`.
 TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
        SwipeDismissCancelsRequestAndDismisses) {
+  base::HistogramTester histogram_tester;
   StartCoordinatorWithValidRequest();
   ASSERT_TRUE(base_view_controller_.presentedViewController != nil);
   EXPECT_EQ(base_view_controller_.presentedViewController.presentationController
@@ -212,12 +216,20 @@ TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
                    .has_value());
   EXPECT_NE(main_frame_->GetLastJavaScriptCall().find(u"rejectPasskeyRequest"),
             std::u16string::npos);
+
+  // Stopping the coordinator afterwards must not log a second exit reason.
+  [coordinator_ stop];
+  coordinator_ = nil;
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kDismissed, 1);
 }
 
 // Tests that tapping the secondary action defers to the renderer, dispatches
-// dismissal once, and ignores subsequent double-taps.
+// dismissal once, ignores subsequent double-taps, and logs `kSaveAnotherWay`.
 TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
        SecondaryActionDefersAndIgnoresDoubleTap) {
+  base::HistogramTester histogram_tester;
   StartCoordinatorWithValidRequest();
 
   OCMExpect([mock_passkey_handler_ dismissPasskeyCreation]);
@@ -231,12 +243,19 @@ TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
   EXPECT_OCMOCK_VERIFY(mock_passkey_handler_);
   EXPECT_NE(main_frame_->GetLastJavaScriptCall().find(u"deferToRenderer"),
             std::u16string::npos);
+
+  [coordinator_ stop];
+  coordinator_ = nil;
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kSaveAnotherWay, 1);
 }
 
-// Tests that tapping the primary action triggers passkey creation once and
-// ignores subsequent double-taps.
+// Tests that tapping the primary action triggers passkey creation once,
+// ignores subsequent double-taps, and logs `kCreatePasskey`.
 TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
        PrimaryActionCreatesPasskeyAndIgnoresDoubleTap) {
+  base::HistogramTester histogram_tester;
   fake_client_->SetBiometricsEnabled(false);
   StartCoordinatorWithValidRequest();
 
@@ -250,12 +269,19 @@ TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
 
   EXPECT_OCMOCK_VERIFY(mock_passkey_handler_);
   EXPECT_TRUE(fake_client_->DidFetchTrustedVaultKeys());
+
+  [coordinator_ stop];
+  coordinator_ = nil;
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kCreatePasskey, 1);
 }
 
 // Tests that starting the coordinator for an unknown/expired request dismisses
-// immediately without presenting the bottom sheet.
+// immediately without presenting the bottom sheet and logs `kInvalidRequest`.
 TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
        InvalidRequestDismissesWithoutPresenting) {
+  base::HistogramTester histogram_tester;
   OCMExpect([mock_passkey_handler_ dismissPasskeyCreation])
       .andDo(^(NSInvocation*) {
         // Mirror `BrowserModalHost`, which synchronously stops and releases the
@@ -275,6 +301,53 @@ TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
   EXPECT_OCMOCK_VERIFY(mock_passkey_handler_);
   EXPECT_EQ(coordinator_, nil);
   EXPECT_EQ(base_view_controller_.presentedViewController, nil);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kInvalidRequest, 1);
+}
+
+// Tests that stopping the coordinator without user interaction on the sheet
+// logs `kDismissedExternally`.
+TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
+       StopWithoutUserActionLogsDismissedExternally) {
+  base::HistogramTester histogram_tester;
+  StartCoordinatorWithValidRequest();
+
+  [coordinator_ stop];
+  coordinator_ = nil;
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kDismissedExternally, 1);
+}
+
+// Tests that when the bottom sheet cannot be presented, `verifyPresentation()`
+// defers to the renderer, dismisses, and logs `kCouldNotPresent`.
+TEST_F(PasskeyCreationBottomSheetCoordinatorTest,
+       PresentationFailureDefersAndLogsCouldNotPresent) {
+  // Stub `-presentViewController:animated:completion:` to no-op, simulating
+  // UIKit rejecting the presentation (e.g. another modal already being
+  // presented).
+  id mock_base_view_controller = OCMPartialMock(base_view_controller_);
+  OCMStub([mock_base_view_controller presentViewController:[OCMArg any]
+                                                  animated:YES
+                                                completion:[OCMArg any]]);
+
+  OCMExpect([mock_passkey_handler_ dismissPasskeyCreation]);
+
+  base::HistogramTester histogram_tester;
+  StartCoordinatorWithValidRequest();
+
+  EXPECT_OCMOCK_VERIFY(mock_passkey_handler_);
+  EXPECT_NE(main_frame_->GetLastJavaScriptCall().find(u"deferToRenderer"),
+            std::u16string::npos);
+
+  [coordinator_ stop];
+  coordinator_ = nil;
+  [mock_base_view_controller stopMocking];
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kCouldNotPresent, 1);
 }
 
 // Tests that calling `-stop` without user interaction cancels the pending

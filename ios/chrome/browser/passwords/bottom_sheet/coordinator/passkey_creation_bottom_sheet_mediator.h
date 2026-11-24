@@ -13,6 +13,7 @@
 #import "url/gurl.h"
 
 class WebStateList;
+enum class PasskeyCreationBottomSheetExitReason;
 @protocol PasskeyCreationBottomSheetConsumer;
 @protocol PasskeyCreationBottomSheetMediatorDelegate;
 @protocol ReauthenticationProtocol;
@@ -43,6 +44,10 @@ class WebStateList;
 
 // Rejects the pending passkey creation request (e.g. on user dismissal).
 - (void)cancelPasskeyCreation;
+
+// Logs the exit reason for the passkey creation bottom sheet. At most one exit
+// reason is recorded per mediator instance.
+- (void)logExitReason:(PasskeyCreationBottomSheetExitReason)exitReason;
 
 // Returns whether this mediator is currently fulfilling the given request.
 - (BOOL)hasPendingRequest:

@@ -6417,6 +6417,20 @@ chromium-metrics-reviews@google.com.
   <summary>The length of the selection received from javascript.</summary>
 </histogram>
 
+<histogram name="IOS.PasskeyCreationBottomSheet.ExitReason"
+    enum="PasskeyCreationBottomSheetExitReason" expires_after="2027-04-11">
+  <owner>sugoi@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the mutually exclusive exit reason of the modal Passkey Creation
+    Bottom Sheet on iOS. Emitted once per bottom sheet lifecycle when the user
+    confirms creation, falls back to saving another way, dismisses the sheet,
+    fails reauthentication, or when the sheet fails to present or is dismissed
+    externally.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordBottomSheet.Details.ValidCredential"
     enum="Boolean" expires_after="2027-04-11">
   <owner>sugoi@chromium.org</owner>

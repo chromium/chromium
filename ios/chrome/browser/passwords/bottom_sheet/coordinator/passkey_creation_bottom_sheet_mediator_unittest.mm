@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_manager_driver.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -20,6 +21,7 @@
 #import "components/webauthn/ios/passkey_types.h"
 #import "device/fido/public/public_key_credential_rp_entity.h"
 #import "device/fido/public/public_key_credential_user_entity.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_mediator_delegate.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/passkey_creation_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -126,10 +128,14 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
                                             canReusePreviousAuth:YES
                                                          handler:[OCMArg any]];
 
+  base::HistogramTester histogram_tester;
   [mediator_ createPasskey];
 
   EXPECT_TRUE(fake_client_->DidFetchTrustedVaultKeys());
   [(OCMockObject*)mock_reauth_module_ verify];
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kCreatePasskey, 1);
 }
 
 // Tests that createPasskey attempts reauth when user verification is required
@@ -176,10 +182,14 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
   EXPECT_FALSE(fake_client_->DidFetchTrustedVaultKeys());
 
   // Trigger success.
+  base::HistogramTester histogram_tester;
   completionHandler(ReauthenticationResult::kSuccess);
 
   // Now client should have fetched keys.
   EXPECT_TRUE(fake_client_->DidFetchTrustedVaultKeys());
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kCreatePasskey, 1);
 }
 
 // Tests that createPasskey handles reauth failure correctly.
@@ -225,12 +235,16 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthFailure) {
   [[mock_delegate_ expect] dismissPasskeyCreation];
 
   // Trigger failure.
+  base::HistogramTester histogram_tester;
   completionHandler(ReauthenticationResult::kFailure);
 
   // Verify dismissal.
   [(OCMockObject*)mock_delegate_ verify];
   // Verify client did NOT fetch keys.
   EXPECT_FALSE(fake_client_->DidFetchTrustedVaultKeys());
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kReauthFailed, 1);
 }
 
 // Tests that createPasskey defers to the renderer and dismisses passkey
@@ -260,6 +274,7 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthNotPossible) {
   // Expect dismissal on fallback to renderer.
   [[mock_delegate_ expect] dismissPasskeyCreation];
 
+  base::HistogramTester histogram_tester;
   [mediator_ createPasskey];
 
   // Verify dismissal.
@@ -275,6 +290,9 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthNotPossible) {
       static_cast<web::FakeWebFrame*>(frames_manager->GetMainWebFrame());
   EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"deferToRenderer"),
             std::u16string::npos);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kReauthNotPossible, 1);
 }
 
 // Tests that switching to another WebState cancels the pending passkey request
@@ -301,6 +319,7 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
 
   [[mock_delegate_ expect] endPresentation];
 
+  base::HistogramTester histogram_tester;
   // Insert and activate a second WebState to trigger an active WebState change.
   auto second_web_state = std::make_unique<web::FakeWebState>();
   second_web_state->SetBrowserState(&fake_browser_state_);
@@ -318,6 +337,53 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
       static_cast<web::FakeWebFrame*>(frames_manager->GetMainWebFrame());
   EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"rejectPasskeyRequest"),
             std::u16string::npos);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kDismissedExternally, 1);
+}
+
+// Tests that `-createPasskey` logs `kInvalidRequest` when the request is
+// missing or expired.
+TEST_F(PasskeyCreationBottomSheetMediatorTest,
+       CreatePasskeyInvalidRequestLogsExitReason) {
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:webauthn::IOSPasskeyClient::RequestInfo(
+                               web::kMainFakeFrameId, "missing_request_id")
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  [[mock_delegate_ expect] dismissPasskeyCreation];
+
+  base::HistogramTester histogram_tester;
+  [mediator_ createPasskey];
+
+  [(OCMockObject*)mock_delegate_ verify];
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kInvalidRequest, 1);
+}
+
+// Tests that `-logExitReason:` emits at most one sample per mediator instance.
+TEST_F(PasskeyCreationBottomSheetMediatorTest, LogExitReasonEmitsAtMostOnce) {
+  mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
+      initWithWebStateList:&web_state_list_
+               requestInfo:webauthn::IOSPasskeyClient::RequestInfo(
+                               web::kMainFakeFrameId, "request_id")
+          accountForSaving:@"test@example.com"
+              reauthModule:mock_reauth_module_
+                  delegate:mock_delegate_];
+
+  base::HistogramTester histogram_tester;
+  [mediator_
+      logExitReason:PasskeyCreationBottomSheetExitReason::kSaveAnotherWay];
+  [mediator_
+      logExitReason:PasskeyCreationBottomSheetExitReason::kDismissedExternally];
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kSaveAnotherWay, 1);
 }
 
 // Tests that cancelling passkey creation while reauthentication is in flight
@@ -410,6 +476,7 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
                                  return YES;
                                }]]);
 
+  base::HistogramTester histogram_tester;
   [mediator_ createPasskey];
   [mediator_ createPasskey];
   EXPECT_EQ(reauth_call_count, 1);
@@ -421,6 +488,9 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
   [(OCMockObject*)mock_delegate_ verify];
   EXPECT_TRUE(fake_client_->DidFetchTrustedVaultKeys());
   EXPECT_FALSE([mediator_ hasPendingRequest:request_info]);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kCreatePasskey, 1);
 }
 
 // Tests that once `-deferPasskeyCreationToRenderer` consumes the request,
@@ -507,8 +577,12 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
                   delegate:mock_delegate_];
 
   [[mock_delegate_ expect] dismissPasskeyCreation];
+  base::HistogramTester histogram_tester;
   [mediator_ createPasskey];
 
   [(OCMockObject*)mock_delegate_ verify];
   EXPECT_FALSE([mediator_ hasPendingRequest:request_info]);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeyCreationBottomSheet.ExitReason",
+      PasskeyCreationBottomSheetExitReason::kInvalidRequest, 1);
 }

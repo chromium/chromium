@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_mediator_delegate.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/passkey_creation_bottom_sheet_view_controller.h"
@@ -117,6 +118,8 @@
                                                                completion:nil];
   _viewController = nil;
 
+  [_mediator
+      logExitReason:PasskeyCreationBottomSheetExitReason::kDismissedExternally];
   [_mediator cancelPasskeyCreation];
   [_mediator disconnect];
   _mediator.consumer = nil;
@@ -159,6 +162,7 @@
     return;
   }
   _actionStarted = YES;
+  [_mediator logExitReason:PasskeyCreationBottomSheetExitReason::kDismissed];
   [_mediator cancelPasskeyCreation];
   [self dismissPasskeyCreation];
 }
@@ -180,6 +184,8 @@
   }
   _actionStarted = YES;
   _viewController.view.userInteractionEnabled = NO;
+  [_mediator
+      logExitReason:PasskeyCreationBottomSheetExitReason::kSaveAnotherWay];
   [_mediator deferPasskeyCreationToRenderer];
   [self dismissPasskeyCreation];
 }
@@ -196,6 +202,8 @@
   if (!_viewController.presentingViewController &&
       !_viewController.beingPresented) {
     _actionStarted = YES;
+    [_mediator
+        logExitReason:PasskeyCreationBottomSheetExitReason::kCouldNotPresent];
     [_mediator deferPasskeyCreationToRenderer];
     [self dismissPasskeyCreation];
   }

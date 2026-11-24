@@ -6,9 +6,11 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_mediator_delegate.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/passkey_creation_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -51,6 +53,9 @@
 
   // Whether a reauthentication request is currently in flight.
   BOOL _reauthInProgress;
+
+  // Ensures at most one exit reason is logged per bottom sheet instance.
+  BOOL _exitReasonLogged;
 }
 
 - (instancetype)
@@ -98,6 +103,7 @@
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
   if (!passkeyTabHelper || !_requestInfo.has_value()) {
     _requestInfo.reset();
+    [self logExitReason:PasskeyCreationBottomSheetExitReason::kInvalidRequest];
     [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
@@ -110,6 +116,7 @@
     // is to, optionally, report an error to the user, and cancel the passkey
     // creation. We will discuss to see if this is the best approach.
     _requestInfo.reset();
+    [self logExitReason:PasskeyCreationBottomSheetExitReason::kInvalidRequest];
     [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
@@ -135,6 +142,7 @@
 
   // Defer to the OS to allow authentication methods that don't require a
   // passcode. (e.g., security keys, using a QR code).
+  [self logExitReason:PasskeyCreationBottomSheetExitReason::kReauthNotPossible];
   [self deferPasskeyCreationToRenderer];
   [_mediatorDelegate dismissPasskeyCreation];
 }
@@ -154,6 +162,7 @@
     // We could allow a certain number of retries. However, given that a user
     // can trigger passkey creation from the web later, dismissing passkey
     // creation isn't an irreversible action.
+    [self logExitReason:PasskeyCreationBottomSheetExitReason::kReauthFailed];
     [self cancelPasskeyCreation];
     [_mediatorDelegate dismissPasskeyCreation];
   }
@@ -163,9 +172,11 @@
   std::optional<std::string> requestId = [self takePendingRequestId];
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
   if (!passkeyTabHelper || !requestId.has_value()) {
+    [self logExitReason:PasskeyCreationBottomSheetExitReason::kInvalidRequest];
     [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
+  [self logExitReason:PasskeyCreationBottomSheetExitReason::kCreatePasskey];
   passkeyTabHelper->StartPasskeyCreation(std::move(*requestId), didCompleteUV);
   [_mediatorDelegate dismissPasskeyCreation];
 }
@@ -190,6 +201,15 @@
   passkeyTabHelper->RejectPendingRequest(*requestId);
 }
 
+- (void)logExitReason:(PasskeyCreationBottomSheetExitReason)exitReason {
+  if (_exitReasonLogged) {
+    return;
+  }
+  _exitReasonLogged = YES;
+  base::UmaHistogramEnumeration("IOS.PasskeyCreationBottomSheet.ExitReason",
+                                exitReason);
+}
+
 - (BOOL)hasPendingRequest:
     (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo {
   return _requestInfo.has_value() && *_requestInfo == requestInfo;
@@ -205,8 +225,9 @@
 
   NSString* rpId = [self rpId];
   if (!rpId) {
-    // The RP ID should not be empty; leave `_consumer` unset so the coordinator
-    // dismisses without presenting.
+    // The RP ID should not be empty; log the exit reason and leave `_consumer`
+    // unset so the coordinator dismisses without presenting.
+    [self logExitReason:PasskeyCreationBottomSheetExitReason::kInvalidRequest];
     return;
   }
 
@@ -271,6 +292,9 @@
 
 // Closes the currently open bottom sheet when the web state changes.
 - (void)onWebStateChanged {
+  [self
+      logExitReason:PasskeyCreationBottomSheetExitReason::kDismissedExternally];
+
   // Reject any pending passkey creation request on the originating WebState
   // before disconnecting so the page's promise does not hang until timeout.
   [self cancelPasskeyCreation];
