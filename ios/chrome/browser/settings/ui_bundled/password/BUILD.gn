@@ -37,6 +37,7 @@ source_set("password") {
     "//ios/chrome/browser/passwords/model:password_checkup_metrics",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/passwords/model/metrics",
+    "//ios/chrome/browser/settings/password/model:account_storage_utils",
     "//ios/chrome/browser/settings/password/public:features",
     "//ios/chrome/browser/settings/password/public:password_constants",
     "//ios/chrome/browser/settings/ui_bundled/cells",
@@ -70,8 +71,6 @@ source_set("password") {
 
 source_set("common") {
   sources = [
-    "account_storage_utils.cc",
-    "account_storage_utils.h",
     "saved_passwords_presenter_observer.h",
     "saved_passwords_presenter_observer.mm",
   ]

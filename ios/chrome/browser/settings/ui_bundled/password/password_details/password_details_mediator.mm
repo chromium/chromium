@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/account_storage_utils.h"
+#import "ios/chrome/browser/settings/password/model/account_storage_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_mediator+Testing.h"

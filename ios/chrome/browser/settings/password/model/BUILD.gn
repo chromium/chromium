@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("account_storage_utils") {
+  sources = [
+    "account_storage_utils.cc",
+    "account_storage_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/ui",
+    "//components/sync/service",
+  ]
+  visibility = [
+    "//ios/chrome/browser/settings/password/*",
+    "//ios/chrome/browser/settings/ui_bundled/password/*",
+  ]
+}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/password/account_storage_utils.h"
+#import "ios/chrome/browser/settings/password/model/account_storage_utils.h"
 
 #import <algorithm>
 
