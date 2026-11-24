@@ -333,6 +333,78 @@ public class BookmarkUtilsTest {
     }
 
     @Test
+    public void testAddOrEditBookmark_readingList_ignoresNormalLastUsedParent() {
+        BookmarkId normalFolder = mBookmarkModel.getDesktopFolderId();
+        BookmarkUtils.setLastUsedParent(normalFolder);
+
+        BookmarkId id = addOrEditSingleTabForReadingList();
+        assertNotNull(id);
+        assertEquals(BookmarkType.READING_LIST, id.getType());
+        assertEquals(
+                mBookmarkModel.getDefaultReadingListFolder(),
+                mBookmarkModel.getBookmarkById(id).getParentId());
+        assertTrue(mBookmarkModel.getChildIds(normalFolder).isEmpty());
+        assertEquals(
+                mBookmarkModel.getDefaultReadingListFolder(), BookmarkUtils.getLastUsedParent());
+    }
+
+    @Test
+    public void
+            testAddOrEditBookmark_readingList_accountFoldersActive_ignoresLocalLastUsedParent() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(/* active= */ true);
+        BookmarkId localReadingList = mBookmarkModel.getLocalOrSyncableReadingListFolder();
+        BookmarkUtils.setLastUsedParent(localReadingList);
+
+        BookmarkId id = addOrEditSingleTabForReadingList();
+        assertNotNull(id);
+        assertEquals(
+                mBookmarkModel.getAccountReadingListFolder(),
+                mBookmarkModel.getBookmarkById(id).getParentId());
+        assertTrue(mBookmarkModel.getChildIds(localReadingList).isEmpty());
+    }
+
+    @Test
+    public void testAddBookmarkInternal_readingList_replacesNonReadingListParent() {
+        BookmarkId normalFolder = mBookmarkModel.getDesktopFolderId();
+        BookmarkId id =
+                BookmarkUtils.addBookmarkInternal(
+                        mActivity,
+                        mProfile,
+                        mBookmarkModel,
+                        "Test title",
+                        new GURL("https://test.com"),
+                        normalFolder,
+                        BookmarkType.READING_LIST,
+                        /* isBookmarkBarVisible= */ false);
+        assertNotNull(id);
+        assertEquals(BookmarkType.READING_LIST, id.getType());
+        assertEquals(
+                mBookmarkModel.getDefaultReadingListFolder(),
+                mBookmarkModel.getBookmarkById(id).getParentId());
+        assertTrue(mBookmarkModel.getChildIds(normalFolder).isEmpty());
+    }
+
+    @Test
+    public void testAddBookmarkInternal_normal_usesReadingListLastUsedParent() {
+        BookmarkId readingListFolder = mBookmarkModel.getDefaultReadingListFolder();
+        BookmarkUtils.setLastUsedParent(readingListFolder);
+
+        BookmarkId id =
+                BookmarkUtils.addBookmarkInternal(
+                        mActivity,
+                        mProfile,
+                        mBookmarkModel,
+                        "Test title",
+                        new GURL("https://test.com"),
+                        /* parent= */ null,
+                        BookmarkType.NORMAL,
+                        /* isBookmarkBarVisible= */ false);
+        assertNotNull(id);
+        assertEquals(BookmarkType.READING_LIST, id.getType());
+        assertEquals(readingListFolder, mBookmarkModel.getBookmarkById(id).getParentId());
+    }
+
+    @Test
     @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
     public void testAddOrEditBookmark_desktopPopup() {
@@ -1254,5 +1326,27 @@ public class BookmarkUtilsTest {
                 popup.getContentView()
                         .findViewById(org.chromium.chrome.browser.bookmarks.R.id.popup_title);
         assertEquals(mActivity.getString(headerResId), header.getText());
+    }
+
+    private @Nullable BookmarkId addOrEditSingleTabForReadingList() {
+        doReturn("test title").when(mTab).getTitle();
+        doReturn(new GURL("https://test.com")).when(mTab).getOriginalUrl();
+        BookmarkUtils.addOrEditBookmark(
+                /* existingBookmarkItems= */ null,
+                mBookmarkModel,
+                Collections.singletonList(mTab),
+                /* snackbarManager= */ null,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.READING_LIST,
+                mBookmarkIdListCallback,
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager,
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
+        verify(mBookmarkIdListCallback).onResult(mBookmarkIdListCaptor.capture());
+        assertEquals(1, mBookmarkIdListCaptor.getValue().size());
+        return mBookmarkIdListCaptor.getValue().get(0);
     }
 }

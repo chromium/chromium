@@ -699,8 +699,10 @@ public class BookmarkUtils {
      * @param bookmarkModel The current {@link BookmarkModel} which talks to native.
      * @param title The title of the new bookmark.
      * @param url The {@link GURL} of the new bookmark.
-     * @param parent The {@link BookmarkId} which is the parent of the bookmark. If this is null,
-     *     then the last used parent is used, falling back to a default folder.
+     * @param parent The {@link BookmarkId} which is the parent of the bookmark. If this is null for
+     *     {@link BookmarkType#NORMAL}, the last used parent is used before falling back to a
+     *     default folder. If this is null or not a reading list folder for {@link
+     *     BookmarkType#READING_LIST}, the default reading list folder is used.
      * @param bookmarkType The {@link BookmarkType} of the bookmark.
      * @param isBookmarkBarVisible True when the user is currently showing the bookmark bar.
      */
@@ -713,8 +715,6 @@ public class BookmarkUtils {
             @Nullable BookmarkId parent,
             @BookmarkType int bookmarkType,
             boolean isBookmarkBarVisible) {
-        parent = parent == null ? getLastUsedParent() : parent;
-
         // When the user did not have a last used parent, then we will usually save into a default
         // folder, which for normal bookmarks is the default bookmark folder ("Mobile Bookmarks" on
         // mobile devices). In the special case of the Bookmark Bar being visible, we will instead
@@ -723,7 +723,8 @@ public class BookmarkUtils {
         // continue saving to it unless the user explicitly chose to from the Edit dialog.
         boolean shouldSetAsLastUsed = true;
         if (parent == null && bookmarkType == BookmarkType.NORMAL) {
-            if (isBookmarkBarVisible) {
+            parent = getLastUsedParent();
+            if (parent == null && isBookmarkBarVisible) {
                 parent =
                         bookmarkModel.areAccountBookmarkFoldersActive()
                                 ? bookmarkModel.getAccountDesktopFolderId()
@@ -740,7 +741,9 @@ public class BookmarkUtils {
         if (parent == null
                 || parentItem == null
                 || parentItem.isManaged()
-                || !parentItem.isFolder()) {
+                || !parentItem.isFolder()
+                || (bookmarkType == BookmarkType.READING_LIST
+                        && parent.getType() != BookmarkType.READING_LIST)) {
             parent =
                     bookmarkType == BookmarkType.READING_LIST
                             ? bookmarkModel.getDefaultReadingListFolder()
