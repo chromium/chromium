@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -26,7 +27,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -220,6 +224,11 @@ class MockNativeWorkMessagePumpForIO
   MOCK_METHOD(bool, ScheduleNativeWork, (), (override));
 };
 
+class MockIdlePollMessagePumpForIO : public MessagePumpForIOCompletionPortImpl {
+ public:
+  MOCK_METHOD(bool, PollForIOBeforeIdle, (), (override));
+};
+
 win::ScopedHandle CreateIOEventForTesting() {
   win::ScopedHandle event(::CreateEventW(nullptr, FALSE, FALSE, nullptr));
   PCHECK(event.is_valid());
@@ -246,6 +255,47 @@ class CallbackIOEventHandler : public MessagePumpForIO::IOEventHandler {
   RepeatingClosure callback_;
   const bool stop_watching_;
 };
+
+std::vector<std::unique_ptr<MessagePumpForIO::IOEventWatchController>>
+WatchIOEventsForTesting(size_t count,
+                        MessagePumpForIO::IOEventHandler* handler,
+                        MessagePumpForIO* pump = nullptr) {
+  std::vector<std::unique_ptr<MessagePumpForIO::IOEventWatchController>>
+      watches;
+  watches.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    watches.push_back(
+        std::make_unique<MessagePumpForIO::IOEventWatchController>(
+            CreateIOEventForTesting()));
+    if (pump) {
+      CHECK(pump->WatchIOEvent(watches.back().get(), handler));
+    } else {
+      CHECK(
+          CurrentIOThread::Get()->WatchIOEvent(watches.back().get(), handler));
+    }
+  }
+  return watches;
+}
+
+// Waits until `WaitShard` workers have queued at least `count` completions.
+// Polls the queue without running the pump, so the completions stay
+// undispatched. Fails, rather than hanging, if they aren't queued within
+// `TestTimeouts::action_timeout()`.
+[[nodiscard]] testing::AssertionResult WaitForQueuedShardCompletions(
+    const MessagePumpForIOEventImpl& pump,
+    size_t count = 1) {
+  const TimeTicks deadline = TimeTicks::Now() + TestTimeouts::action_timeout();
+  while (pump.GetPendingShardCompletionCountForTesting() < count) {
+    if (TimeTicks::Now() >= deadline) {
+      return testing::AssertionFailure()
+             << "Timed out waiting for " << count
+             << " queued shard completion(s); have "
+             << pump.GetPendingShardCompletionCountForTesting();
+    }
+    PlatformThread::YieldCurrentThread();
+  }
+  return testing::AssertionSuccess();
+}
 #endif
 
 }  // namespace
@@ -260,6 +310,27 @@ TEST(MessagePumpForIOTest, FailedWakeupAllowsRetry) {
   pump.ScheduleWork();
   pump.ScheduleWork();
   pump.ScheduleWork();
+}
+
+// PollForIOBeforeIdle() is skipped while DoWork() reports immediate work, and
+// a successful poll prevents DoIdleWork().
+TEST(MessagePumpForIOTest, PollsForIOOnlyBeforeIdle) {
+  testing::StrictMock<MockIdlePollMessagePumpForIO> pump;
+  testing::NiceMock<MockMessagePumpDelegate> delegate(MessagePumpType::IO);
+  testing::InSequence sequence;
+  EXPECT_CALL(delegate, DoWork).WillOnce([] {
+    return MessagePump::Delegate::NextWorkInfo();
+  });
+  EXPECT_CALL(delegate, DoWork).WillOnce([] {
+    return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
+  });
+  EXPECT_CALL(pump, PollForIOBeforeIdle).WillOnce(testing::Return(true));
+  EXPECT_CALL(delegate, DoWork).WillOnce([] {
+    return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
+  });
+  EXPECT_CALL(pump, PollForIOBeforeIdle).WillOnce(testing::Return(false));
+  EXPECT_CALL(delegate, DoIdleWork).WillOnce([&] { pump.Quit(); });
+  pump.Run(&delegate);
 }
 
 TEST(MessagePumpForIOEventTest, ScopedOverrideRestoresProductionBackend) {
@@ -329,23 +400,351 @@ TEST(MessagePumpForIOEventTest, PumpTeardownDetachesController) {
   controller.StopWatching();
 }
 
-TEST(MessagePumpForIOEventTest, WatchCapacityIsReleasedOnDestruction) {
-  MessagePumpForIOEventImpl pump;
+TEST(MessagePumpForIOEventTest, DispatchesAcrossMultipleShardsAndRearms) {
+  test::ScopedMessagePumpForIOEventFactoryForTesting factory;
+  SingleThreadTaskExecutor executor(MessagePumpType::IO);
+  RunLoop run_loop;
+  constexpr size_t kWatchCount = 3 * MAXIMUM_WAIT_OBJECTS;
+  std::vector<std::unique_ptr<CallbackIOEventHandler>> handlers;
+  handlers.reserve(kWatchCount);
+  std::vector<std::unique_ptr<MessagePumpForIO::IOEventWatchController>>
+      watches;
+  watches.reserve(kWatchCount);
+  std::vector<int> notifications(kWatchCount);
+  size_t completed = 0;
+  for (size_t i = 0; i < kWatchCount; ++i) {
+    watches.push_back(
+        std::make_unique<MessagePumpForIO::IOEventWatchController>(
+            CreateIOEventForTesting()));
+    handlers.push_back(std::make_unique<CallbackIOEventHandler>(
+        BindLambdaForTesting([&, i] {
+          if (++notifications[i] == 1) {
+            EXPECT_TRUE(::SetEvent(watches[i]->event_handle()));
+          } else {
+            EXPECT_EQ(notifications[i], 2);
+            watches[i]->StopWatching();
+            if (++completed == kWatchCount) {
+              run_loop.Quit();
+            }
+          }
+        }),
+        /*stop_watching=*/false));
+    ASSERT_TRUE(CurrentIOThread::Get()->WatchIOEvent(watches[i].get(),
+                                                     handlers[i].get()));
+    ASSERT_TRUE(::SetEvent(watches[i]->event_handle()));
+  }
+  run_loop.Run();
+  EXPECT_EQ(completed, kWatchCount);
+}
+
+TEST(MessagePumpForIOEventTest, ShardedWatchCanBeStoppedAndRewatched) {
+  test::ScopedMessagePumpForIOEventFactoryForTesting factory;
+  SingleThreadTaskExecutor executor(MessagePumpType::IO);
+  CallbackIOEventHandler unused_handler(BindRepeating([] { ADD_FAILURE(); }));
+  auto watches = WatchIOEventsForTesting(MAXIMUM_WAIT_OBJECTS, &unused_handler);
+  auto& controller = *watches.back();
+  for (int i = 0; i < 1000; ++i) {
+    controller.StopWatching();
+    ASSERT_TRUE(
+        CurrentIOThread::Get()->WatchIOEvent(&controller, &unused_handler));
+    ASSERT_TRUE(::SetEvent(controller.event_handle()));
+  }
+  for (int i = 0; i < 10; ++i) {
+    RunLoop run_loop;
+    CallbackIOEventHandler handler(run_loop.QuitClosure());
+    controller.StopWatching();
+    ASSERT_TRUE(CurrentIOThread::Get()->WatchIOEvent(&controller, &handler));
+    ASSERT_TRUE(::SetEvent(controller.event_handle()));
+    run_loop.Run();
+  }
+}
+
+TEST(MessagePumpForIOEventTest, BusyDirectWatchDoesNotStarveShards) {
+  test::ScopedMessagePumpForIOEventFactoryForTesting factory;
+  SingleThreadTaskExecutor executor(MessagePumpType::IO);
+  RunLoop run_loop;
+  MessagePumpForIO::IOEventWatchController busy(CreateIOEventForTesting());
+  CallbackIOEventHandler busy_handler(
+      BindLambdaForTesting(
+          [&] { EXPECT_TRUE(::SetEvent(busy.event_handle())); }),
+      /*stop_watching=*/false);
+  CallbackIOEventHandler shard_handler(run_loop.QuitClosure());
+  CallbackIOEventHandler unused_handler(BindRepeating([] { ADD_FAILURE(); }));
+  ScopedClosureRunner stop_busy(
+      BindLambdaForTesting([&] { busy.StopWatching(); }));
+  ASSERT_TRUE(CurrentIOThread::Get()->WatchIOEvent(&busy, &busy_handler));
+  auto watches =
+      WatchIOEventsForTesting(MAXIMUM_WAIT_OBJECTS - 1, &unused_handler);
+  MessagePumpForIO::IOEventWatchController shard_watch(
+      CreateIOEventForTesting());
+  ASSERT_TRUE(
+      CurrentIOThread::Get()->WatchIOEvent(&shard_watch, &shard_handler));
+  ASSERT_TRUE(::SetEvent(busy.event_handle()));
+  ASSERT_TRUE(::SetEvent(shard_watch.event_handle()));
+  run_loop.Run();
+}
+
+TEST(MessagePumpForIOEventTest, StoppedShardedWatchCanBeResetAndRewatched) {
+  test::ScopedMessagePumpForIOEventFactoryForTesting factory;
+  SingleThreadTaskExecutor executor(MessagePumpType::IO);
+  CallbackIOEventHandler unexpected_handler(
+      BindRepeating([] { ADD_FAILURE() << "A stopped signal was restored"; }),
+      /*stop_watching=*/false);
+  auto watches =
+      WatchIOEventsForTesting(MAXIMUM_WAIT_OBJECTS, &unexpected_handler);
+  auto& controller = *watches.back();
+  MessagePumpForIO::IOEventWatchController barrier(CreateIOEventForTesting());
+  for (int i = 0; i < 1000; ++i) {
+    ASSERT_TRUE(::SetEvent(controller.event_handle()));
+    controller.StopWatching();
+    ASSERT_TRUE(::ResetEvent(controller.event_handle()));
+    ASSERT_TRUE(
+        CurrentIOThread::Get()->WatchIOEvent(&controller, &unexpected_handler));
+
+    RunLoop run_loop;
+    CallbackIOEventHandler barrier_handler(run_loop.QuitClosure());
+    ScopedClosureRunner stop_barrier(
+        BindLambdaForTesting([&] { barrier.StopWatching(); }));
+    ASSERT_TRUE(
+        CurrentIOThread::Get()->WatchIOEvent(&barrier, &barrier_handler));
+    ASSERT_TRUE(::SetEvent(barrier.event_handle()));
+    run_loop.Run();
+  }
+}
+
+TEST(MessagePumpForIOEventTest, RemovesQueuedShardedCompletions) {
+  auto owned_pump = std::make_unique<MessagePumpForIOEventImpl>();
+  MessagePumpForIOEventImpl* pump = owned_pump.get();
+  SingleThreadTaskExecutor executor(std::move(owned_pump));
+  RunLoop run_loop;
+  std::vector<std::unique_ptr<MessagePumpForIO::IOEventWatchController>>
+      watches;
+  size_t callbacks = 0;
+  size_t retained_callbacks = 0;
+  CallbackIOEventHandler handler(BindLambdaForTesting([&] {
+    EXPECT_EQ(++callbacks, 1u);
+    // The other two completions are still queued; stopping must purge them.
+    EXPECT_EQ(pump->GetPendingShardCompletionCountForTesting(), 2u);
+    for (size_t i = 0; i + 1 < watches.size(); ++i) {
+      watches[i]->StopWatching();
+    }
+    EXPECT_EQ(pump->GetPendingShardCompletionCountForTesting(), 0u);
+    EXPECT_TRUE(::SetEvent(watches.back()->event_handle()));
+  }));
+  CallbackIOEventHandler retained_handler(BindLambdaForTesting([&] {
+    ++retained_callbacks;
+    run_loop.Quit();
+  }));
+  ScopedClosureRunner stop_watches(
+      BindLambdaForTesting([&] { watches.clear(); }));
+  watches =
+      WatchIOEventsForTesting(3 * MAXIMUM_WAIT_OBJECTS - 1, &handler, pump);
+  watches.push_back(std::make_unique<MessagePumpForIO::IOEventWatchController>(
+      CreateIOEventForTesting()));
+  ASSERT_TRUE(pump->WatchIOEvent(watches.back().get(), &retained_handler));
+  // Signal three watches on the first shard. The pump isn't running, so the
+  // shard worker queues all three completions. When the
+  // first completion is dispatched, its callback stops all other watches
+  // (purging the two still-queued completions) and signals the retained watch.
+  constexpr size_t kQueuedCompletions = 3;
+  for (size_t i = 0; i < kQueuedCompletions; ++i) {
+    ASSERT_TRUE(
+        ::SetEvent(watches[MessagePumpForIOEventImpl::kMaxDirectWatches + i]
+                       ->event_handle()));
+  }
+  ASSERT_TRUE(WaitForQueuedShardCompletions(*pump, kQueuedCompletions));
+  run_loop.Run();
+  for (const auto& controller : watches) {
+    ASSERT_TRUE(::SetEvent(controller->event_handle()));
+  }
+
+  RunLoop poll_loop;
+  CallbackIOEventHandler poll_handler(poll_loop.QuitClosure());
+  MessagePumpForIO::IOEventWatchController poll_controller(
+      CreateIOEventForTesting());
+  ASSERT_TRUE(pump->WatchIOEvent(&poll_controller, &poll_handler));
+  ASSERT_TRUE(::SetEvent(poll_controller.event_handle()));
+  poll_loop.Run();
+
+  EXPECT_EQ(callbacks, 1u);
+  EXPECT_EQ(retained_callbacks, 1u);
+}
+
+TEST(MessagePumpForIOEventTest, PumpTeardownDetachesShardedControllers) {
   CallbackIOEventHandler handler(BindRepeating([] { ADD_FAILURE(); }));
   std::vector<std::unique_ptr<MessagePumpForIO::IOEventWatchController>>
       watches;
-  watches.reserve(MAXIMUM_WAIT_OBJECTS - 1);
-  for (size_t i = 0; i < MAXIMUM_WAIT_OBJECTS - 1; ++i) {
-    auto controller =
-        std::make_unique<MessagePumpForIO::IOEventWatchController>(
-            CreateIOEventForTesting());
-    ASSERT_TRUE(pump.WatchIOEvent(controller.get(), &handler));
-    watches.push_back(std::move(controller));
+  watches.reserve(3 * MAXIMUM_WAIT_OBJECTS);
+  {
+    MessagePumpForIOEventImpl pump;
+    for (size_t i = 0; i < 3 * MAXIMUM_WAIT_OBJECTS; ++i) {
+      watches.push_back(
+          std::make_unique<MessagePumpForIO::IOEventWatchController>(
+              CreateIOEventForTesting()));
+      ASSERT_TRUE(pump.WatchIOEvent(watches.back().get(), &handler));
+      ASSERT_TRUE(::SetEvent(watches.back()->event_handle()));
+    }
   }
+  for (const auto& controller : watches) {
+    EXPECT_TRUE(::SetEvent(controller->event_handle()));
+    controller->StopWatching();
+  }
+}
+
+TEST(MessagePumpForIOEventTest, ReusesShardsAfterWatchDestruction) {
+  constexpr size_t kMaxDirectWatches =
+      MessagePumpForIOEventImpl::kMaxDirectWatches;
+  constexpr size_t kMaxShardWatches =
+      MessagePumpForIOEventImpl::kMaxShardWatches;
+
+  auto owned_pump = std::make_unique<MessagePumpForIOEventImpl>();
+  MessagePumpForIOEventImpl* pump = owned_pump.get();
+  SingleThreadTaskExecutor executor(std::move(owned_pump));
+  CallbackIOEventHandler unexpected_handler(
+      BindRepeating([] { ADD_FAILURE(); }));
+
+  auto direct_watches =
+      WatchIOEventsForTesting(kMaxDirectWatches, &unexpected_handler, pump);
+  EXPECT_EQ(pump->GetShardCountForTesting(), 0u);
+
+  auto first_shard_watches =
+      WatchIOEventsForTesting(kMaxShardWatches, &unexpected_handler, pump);
+  EXPECT_EQ(pump->GetShardCountForTesting(), 1u);
+  auto second_shard_watches =
+      WatchIOEventsForTesting(1, &unexpected_handler, pump);
+  EXPECT_EQ(pump->GetShardCountForTesting(), 2u);
+
+  // Stopping the second shard's watch while the first shard is above half
+  // capacity retains the empty second shard within the hysteresis window.
+  second_shard_watches.clear();
+  EXPECT_EQ(pump->GetShardCountForTesting(), 2u);
+
+  // Dropping the first shard to half capacity prunes the empty second shard.
+  first_shard_watches.resize(kMaxShardWatches / 2);
+  EXPECT_EQ(pump->GetShardCountForTesting(), 1u);
+
+  // Stopping the remaining sharded watches while keeping direct watches above
+  // half capacity retains the empty first shard for reuse.
+  first_shard_watches.clear();
+  EXPECT_EQ(pump->GetShardCountForTesting(), 1u);
+
+  RunLoop reused_shard_loop;
+  size_t callbacks = 0;
+  CallbackIOEventHandler handler(BindLambdaForTesting([&] {
+    ++callbacks;
+    reused_shard_loop.Quit();
+  }));
   MessagePumpForIO::IOEventWatchController extra(CreateIOEventForTesting());
-  EXPECT_FALSE(pump.WatchIOEvent(&extra, &handler));
-  watches.pop_back();
-  EXPECT_TRUE(pump.WatchIOEvent(&extra, &handler));
+  ASSERT_TRUE(pump->WatchIOEvent(&extra, &handler));
+  EXPECT_EQ(pump->GetShardCountForTesting(), 1u);
+  ASSERT_TRUE(::SetEvent(extra.event_handle()));
+  reused_shard_loop.Run();
+  EXPECT_EQ(callbacks, 1u);
+  EXPECT_EQ(pump->GetShardCountForTesting(), 1u);
+
+  // Dropping direct watches to half capacity while the first shard is empty
+  // prunes it, and re-filling past the direct limit spawns a new shard.
+  direct_watches.resize(kMaxDirectWatches / 2 + 1);
+  EXPECT_EQ(pump->GetShardCountForTesting(), 1u);
+  direct_watches.pop_back();
+  EXPECT_EQ(pump->GetShardCountForTesting(), 0u);
+
+  direct_watches.clear();
+  direct_watches =
+      WatchIOEventsForTesting(kMaxDirectWatches, &unexpected_handler, pump);
+  EXPECT_EQ(pump->GetShardCountForTesting(), 0u);
+
+  RunLoop respawned_shard_loop;
+  CallbackIOEventHandler respawned_handler(BindLambdaForTesting([&] {
+    ++callbacks;
+    respawned_shard_loop.Quit();
+  }));
+  ASSERT_TRUE(pump->WatchIOEvent(&extra, &respawned_handler));
+  EXPECT_EQ(pump->GetShardCountForTesting(), 1u);
+  ASSERT_TRUE(::SetEvent(extra.event_handle()));
+  respawned_shard_loop.Run();
+  EXPECT_EQ(callbacks, 2u);
+}
+
+// Threads such as BrowserProcessIOThread disallow blocking and //base sync
+// primitives. Sharded watches must still work there even though
+// StopWatching() waits for the worker to drop the handle, and pruning a shard
+// or tearing down the pump joins worker threads.
+TEST(MessagePumpForIOEventTest, ShardsWorkWhenSyncPrimitivesDisallowed) {
+  constexpr size_t kMaxDirectWatches =
+      MessagePumpForIOEventImpl::kMaxDirectWatches;
+  CallbackIOEventHandler unexpected_handler(
+      BindRepeating([] { ADD_FAILURE(); }));
+  // Outlives `pump` so that pump teardown joins a non-empty shard.
+  std::vector<std::unique_ptr<MessagePumpForIO::IOEventWatchController>>
+      retained_watches;
+
+  ScopedDisallowBlocking disallow_blocking;
+  ScopedDisallowBaseSyncPrimitives disallow_sync_primitives;
+  MessagePumpForIOEventImpl pump;
+  auto direct_watches =
+      WatchIOEventsForTesting(kMaxDirectWatches, &unexpected_handler, &pump);
+  auto sharded_watches = WatchIOEventsForTesting(1, &unexpected_handler, &pump);
+  ASSERT_EQ(pump.GetShardCountForTesting(), 1u);
+
+  // Stopping the only sharded watch with the direct tier at half capacity
+  // waits for the worker to apply the removal, then joins the empty shard.
+  direct_watches.resize(kMaxDirectWatches / 2);
+  sharded_watches.clear();
+  EXPECT_EQ(pump.GetShardCountForTesting(), 0u);
+
+  auto refill_watches = WatchIOEventsForTesting(
+      kMaxDirectWatches - direct_watches.size(), &unexpected_handler, &pump);
+  retained_watches = WatchIOEventsForTesting(1, &unexpected_handler, &pump);
+  EXPECT_EQ(pump.GetShardCountForTesting(), 1u);
+}
+
+// Verifies that sharded completions already queued on the pump get dispatched
+// before DoIdleWork(). That includes a completion queued from inside a sharded
+// callback.
+//
+// Both signals call WaitForQueuedShardCompletions() before the pump polls, so
+// `completion_available_event_` is already signaled when WaitForIOCompletion(0)
+// runs. The completion is therefore always dispatched via TakeCompletion(), and
+// PollForIOBeforeIdle() is never reached. This test does not cover the
+// ShardState::PollForCompletion() / WaitShard::PollForCompletion() hit path or
+// the `next_poll_shard_index_` cursor. Covering those would mean racing the
+// shard worker thread, and this test avoids that race so it stays
+// deterministic.
+TEST(MessagePumpForIOEventTest, DispatchesQueuedShardedCompletionBeforeIdle) {
+  MessagePumpForIOEventImpl pump;
+  testing::NiceMock<MockMessagePumpDelegate> delegate(MessagePumpType::IO);
+  CallbackIOEventHandler unexpected_handler(
+      BindRepeating([] { ADD_FAILURE(); }));
+  auto direct_watches = WatchIOEventsForTesting(
+      MessagePumpForIOEventImpl::kMaxDirectWatches, &unexpected_handler, &pump);
+
+  size_t callbacks = 0;
+  MessagePumpForIO::IOEventWatchController sharded_watch(
+      CreateIOEventForTesting());
+  CallbackIOEventHandler sharded_handler(
+      BindLambdaForTesting([&] {
+        if (++callbacks == 1u) {
+          // A completion queued from inside the callback must also be
+          // dispatched by the zero-timeout poll before DoIdleWork().
+          EXPECT_TRUE(::SetEvent(sharded_watch.event_handle()));
+          EXPECT_TRUE(WaitForQueuedShardCompletions(pump));
+        } else {
+          sharded_watch.StopWatching();
+          pump.Quit();
+        }
+      }),
+      /*stop_watching=*/false);
+  ASSERT_TRUE(::SetEvent(sharded_watch.event_handle()));
+  ASSERT_TRUE(pump.WatchIOEvent(&sharded_watch, &sharded_handler));
+  ASSERT_TRUE(WaitForQueuedShardCompletions(pump));
+
+  EXPECT_CALL(delegate, DoWork).WillRepeatedly([] {
+    return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
+  });
+  EXPECT_CALL(delegate, DoIdleWork).Times(0);
+  pump.Run(&delegate);
+  EXPECT_EQ(callbacks, 2u);
 }
 
 TEST(MessagePumpForIOEventTest, RejectsLegacyIOCPRegistration) {

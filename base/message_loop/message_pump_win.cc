@@ -883,6 +883,10 @@ bool MessagePumpForIOCompletionPortImpl::RegisterJobObject(HANDLE job_handle,
                                    &info, sizeof(info)) != FALSE;
 }
 
+bool MessagePumpForIO::PollForIOBeforeIdle() {
+  return false;
+}
+
 //-----------------------------------------------------------------------------
 // MessagePumpForIO private:
 
@@ -908,6 +912,13 @@ void MessagePumpForIO::DoRunLoop() {
     more_work_is_plausible |= WaitForIOCompletion(0);
     if (run_state_->should_quit) {
       break;
+    }
+
+    if (!more_work_is_plausible) {
+      more_work_is_plausible = PollForIOBeforeIdle();
+      if (run_state_->should_quit) {
+        break;
+      }
     }
 
     if (more_work_is_plausible) {

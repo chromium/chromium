@@ -441,11 +441,11 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   virtual bool SupportsIOEvents() const;
 
   // Adds the event in `controller` to the watched I/O events, notifying
-  // `handler` when it is signaled. The controller must remain alive until the
-  // watch is stopped or the pump is destroyed; the handler must outlive the
-  // watch. The controller and operation state must also outlive any pending
-  // I/O using the event, even after the watch stops. Returns false if the wait
-  // set is full. Only event-based pumps support this operation.
+  // `handler` when it is signaled. The controller must remain alive
+  // until the watch is stopped or the pump is destroyed; the handler must
+  // outlive the watch. The controller and operation state must also outlive any
+  // pending I/O using the event, even after the watch stops. Returns true on
+  // event-based pumps; only event-based pumps support this operation.
   [[nodiscard]] virtual bool WatchIOEvent(IOEventWatchController* controller,
                                           IOEventHandler* handler);
 
@@ -474,6 +474,12 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   // Waits up to `timeout` milliseconds for a completion or task wakeup.
   // Returns true if a notification was handled.
   virtual bool WaitForIOCompletion(DWORD timeout) = 0;
+
+  // Called by DoRunLoop() only when the loop would otherwise go idle, i.e. when
+  // DoWork() reported no immediate work and WaitForIOCompletion(0) handled
+  // nothing. Allows a pump to perform a more expensive check for ready I/O that
+  // would be wasted on every task. Returns true if a notification was handled.
+  virtual bool PollForIOBeforeIdle();
 
  private:
   // Signals native task work from any thread. Returns false on failure.

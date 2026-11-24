@@ -43,8 +43,6 @@
 
 #include "base/process/current_process.h"
 #include "base/process/current_process_test.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_message_pump_for_io_factory_win.h"
@@ -545,16 +543,6 @@ TEST(ChannelTest, PeerShutdownDuringRead) {
 #if BUILDFLAG(IS_WIN)
 namespace {
 
-class UnexpectedIOEventHandler : public base::MessagePumpForIO::IOEventHandler {
- public:
-  UnexpectedIOEventHandler() : IOEventHandler(FROM_HERE) {}
-
-  void OnIOEventSignaled(
-      base::MessagePumpForIO::IOEventWatchController* controller) override {
-    ADD_FAILURE() << "An unsignaled completion event was dispatched";
-  }
-};
-
 bool WaitForChannelTasks(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
   base::RunLoop run_loop;
@@ -805,56 +793,6 @@ TEST(ChannelTest, EventPumpCommunicatesWithCompletionPortPeer) {
   TestMemoryEqual(expected_payload.data(), expected_payload.size(),
                   sender_delegate.GetReceivedPayload(),
                   sender_delegate.GetReceivedPayloadSize());
-}
-
-TEST(ChannelTest, EventPumpPartialRegistrationFailureReleasesWatch) {
-  base::test::ScopedMessagePumpForIOEventFactoryForTesting factory;
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
-  UnexpectedIOEventHandler handler;
-  std::vector<std::unique_ptr<base::MessagePumpForIO::IOEventWatchController>>
-      watches;
-  watches.reserve(MAXIMUM_WAIT_OBJECTS - 2);
-  auto io_thread = base::CurrentIOThread::Get();
-  for (size_t i = 0; i < MAXIMUM_WAIT_OBJECTS - 2; ++i) {
-    base::win::ScopedHandle event(
-        ::CreateEventW(nullptr, FALSE, FALSE, nullptr));
-    ASSERT_TRUE(event.is_valid());
-    auto watch =
-        std::make_unique<base::MessagePumpForIO::IOEventWatchController>(
-            std::move(event));
-    ASSERT_TRUE(io_thread->WatchIOEvent(watch.get(), &handler));
-    watches.push_back(std::move(watch));
-  }
-
-  PlatformChannel platform_channel;
-  base::RunLoop registration_failed;
-  int errors = 0;
-  MockChannelDelegate delegate(
-      {}, base::BindLambdaForTesting([&](Channel::Error error) {
-        EXPECT_EQ(error, Channel::Error::kConnectionFailed);
-        ++errors;
-        registration_failed.Quit();
-      }));
-  auto channel = Channel::CreateForIpczDriver(
-      &delegate, platform_channel.TakeLocalEndpoint(),
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  WriteDefaultMessage(channel.get());
-  channel->Start();
-  registration_failed.Run();
-  EXPECT_EQ(errors, 1);
-
-  // The first channel watch must have been released when the second failed.
-  base::win::ScopedHandle event(::CreateEventW(nullptr, FALSE, FALSE, nullptr));
-  ASSERT_TRUE(event.is_valid());
-  base::MessagePumpForIO::IOEventWatchController available(std::move(event));
-  EXPECT_TRUE(io_thread->WatchIOEvent(&available, &handler));
-  available.StopWatching();
-  channel->ShutDown();
-  ASSERT_TRUE(
-      WaitForChannelTasks(base::SingleThreadTaskRunner::GetCurrentDefault()));
-  EXPECT_TRUE(channel->HasOneRef());
-  ReleaseChannelOnOtherThread(std::move(channel));
 }
 
 TEST(ChannelTest, EventPumpShutdownRetiresCompletionsWithoutReportingErrors) {

@@ -486,6 +486,7 @@ class StackTrace;
 namespace internal {
 class GetAppOutputScopedAllowBaseSyncPrimitives;
 class JobTaskSource;
+class MessagePumpForIOEventScopedAllowBaseSyncPrimitives;
 class TaskTracker;
 bool ReadProcFile(const FilePath& file,
                   const FilePath& proc_dir,
@@ -867,6 +868,8 @@ class BASE_EXPORT
   friend class base::ScopedAllowThreadRecallForStackSamplingProfiler;
   friend class base::StackSamplingProfiler;
   friend class base::internal::JobTaskSource;
+  friend class base::internal::
+      MessagePumpForIOEventScopedAllowBaseSyncPrimitives;
   friend class base::sequence_manager::internal::TaskQueueImpl;
   friend class base::sequence_manager::internal::WorkTracker;
   friend class base::win::ObjectWatcher;
