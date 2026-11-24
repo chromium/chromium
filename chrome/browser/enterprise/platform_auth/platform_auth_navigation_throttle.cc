@@ -7,6 +7,7 @@
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "net/base/net_errors.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 
@@ -53,6 +54,16 @@ PlatformAuthNavigationThrottle::WillRedirectRequest() {
   return FetchHeaders();
 }
 
+content::NavigationThrottle::ThrottleCheckResult
+PlatformAuthNavigationThrottle::WillFailRequest() {
+  // Drop any in-flight header fetch from a deferred `WillStartRequest()` or
+  // `WillRedirectRequest()` so its callback cannot attach headers or call
+  // `Resume()` after the navigation has transitioned to failing.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  is_deferred_ = false;
+  return content::NavigationThrottle::PROCEED;
+}
+
 const char* PlatformAuthNavigationThrottle::GetNameForLogging() {
   return "PlatformAuthNavigationThrottle";
 }
@@ -79,6 +90,14 @@ PlatformAuthNavigationThrottle::FetchHeaders() {
 
 void PlatformAuthNavigationThrottle::FetchHeadersCallback(
     net::HttpRequestHeaders auth_headers) {
+  // If the navigation has already failed (e.g., an earlier throttle deferred
+  // `WillFailRequest()` or `WillFailRequest()` was delayed/skipped), do not
+  // attach headers or call `Resume()`.
+  if (navigation_handle()->GetNetErrorCode() != net::OK) {
+    is_deferred_ = false;
+    return;
+  }
+
   CHECK(attached_headers_.empty(), base::NotFatalUntil::M161);
   attached_headers_.reserve(auth_headers.GetHeaderVector().size());
   net::HttpRequestHeaders::Iterator it(auth_headers);

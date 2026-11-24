@@ -29,6 +29,7 @@ class PlatformAuthNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillFailRequest() override;
   const char* GetNameForLogging() override;
 
  private:

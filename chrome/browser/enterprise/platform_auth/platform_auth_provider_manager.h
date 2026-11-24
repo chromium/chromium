@@ -76,6 +76,7 @@ class PlatformAuthProviderManager {
   friend class ScopedSetProviderForTesting;
   friend class PlatformAuthManagerBrowserTest;
   friend class PlatformAuthProviderManagerTestBase;
+  friend class PlatformAuthNavigationThrottleBrowserTest;
   friend class PlatformAuthNavigationThrottleTest;
   friend class PlatformAuthProxyingURLLoaderFactoryTest;
   FRIEND_TEST_ALL_PREFIXES(PlatformAuthProviderManagerTest, DefaultDisabled);

@@ -122,6 +122,7 @@ if (!is_android) {
 
     if (is_win || is_mac) {
       sources += [
+        "platform_auth_navigation_throttle_browsertest.cc",
         "platform_auth_policy_observer_browsertest.cc",
         "platform_auth_provider_manager_browsertest.cc",
       ]
@@ -159,6 +160,7 @@ if (is_android) {
 
     sources = [
       "entra_sso_android_browsertest.cc",
+      "platform_auth_navigation_throttle_browsertest.cc",
       "platform_auth_policy_observer_browsertest.cc",
       "platform_auth_provider_manager_browsertest.cc",
     ]
