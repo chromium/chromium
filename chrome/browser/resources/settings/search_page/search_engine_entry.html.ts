@@ -8,7 +8,7 @@ import type {SettingsSearchEngineEntryElement} from './search_engine_entry.js';
 
 export function getHtml(this: SettingsSearchEngineEntryElement) {
   return html`<!--_html_template_start_-->
-<div class="list-item cr-row" role="row">
+<div class="list-item cr-row" part="row" role="row">
   <span role="cell" id="name-column">
     <settings-search-engine-icon .engine="${this.engine}">
     </settings-search-engine-icon>

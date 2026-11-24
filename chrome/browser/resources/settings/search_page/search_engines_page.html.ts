@@ -11,132 +11,151 @@ export function getHtml(this: SettingsSearchEnginesPageElement) {
 <settings-subpage page-title="$i18n{searchEnginesManageSiteSearch}"
     route-path="${this.routePath}" search-label="$i18n{searchEnginesSearch}"
     search-icon="settings20:filter-list" .searchTerm="${this.filter_}"
-    @search-changed="${this.onSearchChanged_}">
-  <div class="cr-row first">
+    @search-changed="${this.onSearchChanged_}"
+    class="${this.settingsRefresh2026Enabled_ ? 'multi-card' : ''}">
+  <div id="pageExplanation" class="cr-row first">
     <div class="secondary">$i18n{searchEnginesPageExplanation}</div>
   </div>
-  <div class="cr-row first">
-    <div class="flex cr-padded-text">
-      <div id="keyboardShortcutsTitle">
-        $i18n{searchEnginesKeyboardShortcutsTitle}
+  <div class="section">
+    <div id="keyboardShortcutsCard" class="card">
+      <div class="cr-row first">
+        <div class="flex cr-padded-text">
+          <div id="keyboardShortcutsTitle">
+            $i18n{searchEnginesKeyboardShortcutsTitle}
+          </div>
+          <div class="secondary">
+            $i18n{searchEnginesKeyboardShortcutsDescription}
+          </div>
+        </div>
       </div>
-      <div class="secondary">
-        $i18n{searchEnginesKeyboardShortcutsDescription}
-      </div>
-    </div>
-  </div>
-  <div class="list-frame">
-    <settings-radio-group id="keyboardShortcutSettingGroup"
-        pref-key="omnibox.keyword_space_triggering_enabled"
-        @change="${this.onKeyboardShortcutSettingChange_}">
-      <controlled-radio-button class="list-item" name="true"
-          pref-key="omnibox.keyword_space_triggering_enabled"
-          label="$i18n{searchEnginesKeyboardShortcutsSpaceOrTab}"
-          aria-labelledby="keyboardShortcutsTitle" no-extension-indicator>
-      </controlled-radio-button>
-      <controlled-radio-button class="list-item" name="false"
-          pref-key="omnibox.keyword_space_triggering_enabled"
-          label="$i18n{searchEnginesKeyboardShortcutsTab}"
-          aria-labelledby="keyboardShortcutsTitle" no-extension-indicator>
-      </controlled-radio-button>
-    </settings-radio-group>
-  </div>
-
-  <div class="cr-row first">
-    <div class="flex cr-padded-text">
-      <h2>$i18n{searchEnginesSearchEngines}</h2>
-      <div class="secondary">
-        $i18n{searchEnginesSearchEnginesExplanation}
+      <div class="list-frame">
+        <settings-radio-group id="keyboardShortcutSettingGroup"
+            pref-key="omnibox.keyword_space_triggering_enabled"
+            @change="${this.onKeyboardShortcutSettingChange_}">
+          <controlled-radio-button class="list-item" name="true"
+              pref-key="omnibox.keyword_space_triggering_enabled"
+              label="$i18n{searchEnginesKeyboardShortcutsSpaceOrTab}"
+              aria-labelledby="keyboardShortcutsTitle" no-extension-indicator>
+          </controlled-radio-button>
+          <controlled-radio-button class="list-item" name="false"
+              pref-key="omnibox.keyword_space_triggering_enabled"
+              label="$i18n{searchEnginesKeyboardShortcutsTab}"
+              aria-labelledby="keyboardShortcutsTitle" no-extension-indicator>
+          </controlled-radio-button>
+        </settings-radio-group>
       </div>
     </div>
   </div>
-  <settings-search-engines-list
-      ?hidden="${!this.matchingDefaultEngines_.length}"
-      .engines="${this.matchingDefaultEngines_}" show-shortcut>
-  </settings-search-engines-list>
 
-  <div class="no-search-results list-frame"
-      ?hidden="${this.matchingDefaultEngines_.length > 0}">
-    $i18n{searchNoResults}
-  </div>
-
-  ${this.showEditDialog_ ? html`
-    <settings-search-engine-edit-dialog .model="${this.dialogModel_}"
-        @close="${this.onEditDialogClose_}">
-    </settings-search-engine-edit-dialog>
-  ` : ''}
-
-  ${this.showDeleteConfirmationDialog_ ? html`
-    <settings-simple-confirmation-dialog id="deleteConfirmDialog"
-        title-text="$i18n{searchEnginesDeleteConfirmationTitle}"
-        body-text="${this.getDeleteConfirmationBodyText_(this.dialogModel_)}"
-        confirm-text="$i18n{delete}"
-        @close="${this.onDeleteConfirmationDialogClose_}">
-    </settings-simple-confirmation-dialog>
-  ` : ''}
-
-  <div class="cr-row first">
-    <div class="flex cr-padded-text">
-      <h2>$i18n{searchEnginesSiteSearch}</h2>
-      <div class="secondary">$i18n{searchEnginesSiteSearchExplanation}</div>
+  <div class="section">
+    <div class="cr-row first section-header-row">
+      <div class="flex cr-padded-text">
+        <h2 class="section-header">$i18n{searchEnginesSearchEngines}</h2>
+        <div class="secondary">
+          $i18n{searchEnginesSearchEnginesExplanation}
+        </div>
+      </div>
     </div>
-    <cr-button class="secondary-button header-aligned-button"
-        aria-label="$i18n{searchEnginesAddButtonAriaLabel}"
-        @click="${this.onAddSearchEngineClick_}" id="addSearchEngine">
-      $i18n{add}
-    </cr-button>
-  </div>
-  <div id="noActiveEngines" class="list-frame"
-      ?hidden="${this.activeEngines.length > 0}">
-    $i18n{searchEnginesNoSitesAdded}
-  </div>
-  <div class="no-search-results list-frame"
-      ?hidden="${!this.showNoResultsMessage_(
-          this.activeEngines, this.matchingActiveEngines_)}">
-    $i18n{searchNoResults}
-  </div>
-  <settings-search-engines-list id="activeEngines"
-      ?hidden="${!this.matchingActiveEngines_.length}"
-      .engines="${this.matchingActiveEngines_}" show-shortcut collapse-list
-      expand-list-text="$i18n{searchEnginesAdditionalSites}">
-  </settings-search-engines-list>
+    <settings-search-engines-list
+        ?hidden="${!this.matchingDefaultEngines_.length}"
+        .engines="${this.matchingDefaultEngines_}" show-shortcut card-layout>
+    </settings-search-engines-list>
 
-  <div class="cr-row first">
-    <h2>$i18n{searchEnginesInactiveShortcuts}</h2>
-  </div>
-  <settings-search-engines-list ?hidden="${!this.matchingOtherEngines_.length}"
-      .engines="${this.matchingOtherEngines_}" show-query-url collapse-list
-      expand-list-text="$i18n{searchEnginesAdditionalInactiveSites}">
-  </settings-search-engines-list>
+    <div class="no-search-results list-frame"
+        ?hidden="${this.matchingDefaultEngines_.length > 0}">
+      $i18n{searchNoResults}
+    </div>
 
-  <div id="noOtherEngines" class="list-frame"
-      ?hidden="${this.otherEngines.length > 0}">
-    $i18n{searchEnginesNoOtherEngines}
+    ${this.showEditDialog_ ? html`
+      <settings-search-engine-edit-dialog .model="${this.dialogModel_}"
+          @close="${this.onEditDialogClose_}">
+      </settings-search-engine-edit-dialog>
+    ` : ''}
+
+    ${this.showDeleteConfirmationDialog_ ? html`
+      <settings-simple-confirmation-dialog id="deleteConfirmDialog"
+          title-text="$i18n{searchEnginesDeleteConfirmationTitle}"
+          body-text="${this.getDeleteConfirmationBodyText_(this.dialogModel_)}"
+          confirm-text="$i18n{delete}"
+          @close="${this.onDeleteConfirmationDialogClose_}">
+      </settings-simple-confirmation-dialog>
+    ` : ''}
+
   </div>
-  <div class="no-search-results list-frame"
-      ?hidden="${!this.showNoResultsMessage_(
-          this.otherEngines, this.matchingOtherEngines_)}">
-    $i18n{searchNoResults}
+
+  <div class="section">
+    <div class="cr-row first section-header-row">
+      <div class="flex cr-padded-text">
+        <h2 class="section-header">$i18n{searchEnginesSiteSearch}</h2>
+        <div class="secondary">$i18n{searchEnginesSiteSearchExplanation}</div>
+      </div>
+      <cr-button class="secondary-button header-aligned-button"
+          aria-label="$i18n{searchEnginesAddButtonAriaLabel}"
+          @click="${this.onAddSearchEngineClick_}" id="addSearchEngine">
+        $i18n{add}
+      </cr-button>
+    </div>
+    <div id="noActiveEngines" class="list-frame"
+        ?hidden="${this.activeEngines.length > 0}">
+      $i18n{searchEnginesNoSitesAdded}
+    </div>
+    <div class="no-search-results list-frame"
+        ?hidden="${!this.showNoResultsMessage_(
+            this.activeEngines, this.matchingActiveEngines_)}">
+      $i18n{searchNoResults}
+    </div>
+    <settings-search-engines-list id="activeEngines"
+        ?hidden="${!this.matchingActiveEngines_.length}"
+        .engines="${this.matchingActiveEngines_}" show-shortcut collapse-list
+        expand-list-text="$i18n{searchEnginesAdditionalSites}" card-layout>
+    </settings-search-engines-list>
+  </div>
+
+  <div class="section">
+    <div class="cr-row first section-header-row">
+      <h2 class="flex section-header">
+        $i18n{searchEnginesInactiveShortcuts}
+      </h2>
+    </div>
+    <settings-search-engines-list
+        ?hidden="${!this.matchingOtherEngines_.length}"
+        .engines="${this.matchingOtherEngines_}" show-query-url collapse-list
+        expand-list-text="$i18n{searchEnginesAdditionalInactiveSites}"
+        card-layout>
+    </settings-search-engines-list>
+
+    <div id="noOtherEngines" class="list-frame"
+        ?hidden="${this.otherEngines.length > 0}">
+      $i18n{searchEnginesNoOtherEngines}
+    </div>
+    <div class="no-search-results list-frame"
+        ?hidden="${!this.showNoResultsMessage_(
+            this.otherEngines, this.matchingOtherEngines_)}">
+      $i18n{searchNoResults}
+    </div>
   </div>
 
   ${this.showExtensionsList_ ? html`
-    <div class="cr-row first">
-      <div class="flex cr-padded-text">
-        <h2 class="flex">$i18n{searchEnginesExtension}</h2>
-        <div class="secondary"> $i18n{searchEnginesExtensionExplanation}</div>
+    <div class="section">
+      <div class="cr-row first section-header-row">
+        <div class="flex cr-padded-text">
+          <h2 class="flex section-header">$i18n{searchEnginesExtension}</h2>
+          <div class="secondary">$i18n{searchEnginesExtensionExplanation}</div>
+        </div>
       </div>
+      <div class="no-search-results list-frame"
+          ?hidden="${this.matchingExtensions_.length > 0}">
+        $i18n{searchNoResults}
+      </div>
+      <settings-focus-list-container id="extensions"
+          class="extension-engines list-frame card"
+          ?hidden="${!this.matchingExtensions_.length}">
+        ${this.matchingExtensions_.map(item => html`
+          <settings-omnibox-extension-entry .engine="${item}">
+          </settings-omnibox-extension-entry>
+        `)}
+      </settings-focus-list-container>
     </div>
-    <div class="no-search-results list-frame"
-        ?hidden="${this.matchingExtensions_.length > 0}">
-      $i18n{searchNoResults}
-    </div>
-    <settings-focus-list-container id="extensions"
-        class="extension-engines list-frame">
-      ${this.matchingExtensions_.map(item => html`
-        <settings-omnibox-extension-entry .engine="${item}">
-        </settings-omnibox-extension-entry>
-      `)}
-    </settings-focus-list-container>
   ` : ''}
 </settings-subpage>
 <!--_html_template_end_-->`;

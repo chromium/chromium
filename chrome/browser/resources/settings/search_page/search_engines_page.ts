@@ -24,6 +24,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
@@ -85,6 +86,7 @@ export class SettingsSearchEnginesPageElement extends
       dialogAnchorElement_: {type: Object},
       showEditDialog_: {type: Boolean},
       showDeleteConfirmationDialog_: {type: Boolean},
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -102,6 +104,8 @@ export class SettingsSearchEnginesPageElement extends
   private accessor dialogAnchorElement_: HTMLElement|null = null;
   protected accessor showEditDialog_: boolean = false;
   protected accessor showDeleteConfirmationDialog_: boolean = false;
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();

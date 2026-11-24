@@ -13,3 +13,74 @@
 settings-omnibox-extension-entry {
   border-top: var(--cr-separator-line);
 }
+
+:host-context([settings-refresh-2026]) {
+  settings-subpage.multi-card {
+    gap: 24px;
+  }
+
+  #pageExplanation {
+    background-color: transparent;
+    min-height: 0;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #keyboardShortcutsCard .cr-row {
+    border-radius: 0;
+  }
+
+  #keyboardShortcutsTitle,
+  .section-header-row .secondary {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #keyboardShortcutsCard .secondary {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+  }
+
+  .section-header-row {
+    padding-bottom: 24px;
+  }
+
+  .section-header-row > .cr-padded-text,
+  .section-header-row > .section-header {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .section-header-row .cr-padded-text .section-header {
+    padding: 0;
+  }
+
+  .section-header-row .secondary {
+    padding-top: 16px;
+  }
+
+  #noActiveEngines:not([hidden]),
+  #noOtherEngines:not([hidden]),
+  .no-search-results:not([hidden]) {
+    align-items: center;
+    border-radius: var(--cr-card-border-radius);
+    display: flex;
+    min-height: var(--cr-section-min-height);
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #keyboardShortcutsCard,
+  #extensions {
+    background-color: var(--color-settings-section-background);
+    row-gap: 0;
+  }
+
+  #extensions {
+    padding: 0;
+  }
+
+  settings-omnibox-extension-entry {
+    box-sizing: border-box;
+    padding: 0 var(--cr-section-padding);
+  }
+}

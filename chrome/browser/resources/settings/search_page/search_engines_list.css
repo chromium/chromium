@@ -64,3 +64,45 @@ settings-search-engine-entry {
 .list-frame {
   padding-inline-start: var(--cr-controlled-by-spacing);
 }
+
+:host-context([settings-refresh-2026]):host([card-layout]) {
+  #outer {
+    background-color: transparent;
+    padding: 0;
+  }
+
+  #headers {
+    padding: 0 var(--cr-section-padding) 8px;
+  }
+
+  #containerWithCollapsibleSection {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  #container,
+  #visibleEngines {
+    background-color: var(--color-settings-section-background);
+    row-gap: 0;
+  }
+
+  #container[scrollable] {
+    overflow-y: auto;
+  }
+
+  cr-collapse {
+    background-color: var(--color-settings-section-background);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .cr-row {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  settings-search-engine-entry::part(row) {
+    border-radius: 0;
+    padding: 0 var(--cr-section-padding);
+  }
+}

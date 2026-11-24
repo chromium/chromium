@@ -28,7 +28,8 @@ export function getHtml(this: SettingsSearchEnginesListElement) {
     </div>
   </div>
   ${!this.collapseList ? html`
-    <div id="container" class="scroll-container"
+    <div id="container"
+        class="scroll-container ${this.cardLayout ? 'card' : ''}"
         ?scrollable="${this.fixedHeight}">
       <div role="rowgroup">
         ${this.engines.map(item => html`
@@ -44,7 +45,8 @@ export function getHtml(this: SettingsSearchEnginesListElement) {
   ${this.collapseList ? html`
     <div id="containerWithCollapsibleSection" class="scroll-container"
         ?hidden="${!this.collapseList}" ?scrollable="${this.fixedHeight}">
-      <div role="rowgroup">
+      <div id="visibleEngines" class="${this.cardLayout ? 'card' : ''}"
+          role="rowgroup">
         ${this.visibleEngines_.map(item => html`
           <settings-search-engine-entry .engine="${item}"
               ?show-shortcut="${this.showShortcut}"
@@ -53,22 +55,25 @@ export function getHtml(this: SettingsSearchEnginesListElement) {
         `)}
       </div>
 
-      <cr-expand-button no-hover class="cr-row"
-          ?hidden="${!this.collapsedEngines_.length}"
-          ?expanded="${this.enginesListExpanded_}"
-          @expanded-changed="${this.onEnginesListExpandedChanged_}">
-        <div>${this.expandListText}</div>
-      </cr-expand-button>
-      <cr-collapse ?opened="${this.enginesListExpanded_}">
-        <div role="rowgroup">
-          ${this.collapsedEngines_.map(item => html`
-            <settings-search-engine-entry .engine="${item}"
-                ?show-shortcut="${this.showShortcut}"
-                ?show-query-url="${this.showQueryUrl}">
-            </settings-search-engine-entry>
-          `)}
-        </div>
-      </cr-collapse>
+      <div id="collapsedEngines" class="${this.cardLayout ? 'card' : ''}"
+          ?hidden="${!this.collapsedEngines_.length}">
+        <cr-expand-button no-hover class="cr-row"
+            ?hidden="${!this.collapsedEngines_.length}"
+            ?expanded="${this.enginesListExpanded_}"
+            @expanded-changed="${this.onEnginesListExpandedChanged_}">
+          <div>${this.expandListText}</div>
+        </cr-expand-button>
+        <cr-collapse ?opened="${this.enginesListExpanded_}">
+          <div role="rowgroup">
+            ${this.collapsedEngines_.map(item => html`
+              <settings-search-engine-entry .engine="${item}"
+                  ?show-shortcut="${this.showShortcut}"
+                  ?show-query-url="${this.showQueryUrl}">
+              </settings-search-engine-entry>
+            `)}
+          </div>
+        </cr-collapse>
+      </div>
     </div>
   ` : ''}
 </div>

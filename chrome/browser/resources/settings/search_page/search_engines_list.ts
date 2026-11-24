@@ -41,6 +41,7 @@ export class SettingsSearchEnginesListElement extends CrLitElement {
       collapsedEngines_: {type: Array},
       expandListText: {type: String},
       fixedHeight: {type: Boolean, reflect: true},
+      cardLayout: {type: Boolean, reflect: true},
       enginesListExpanded_: {type: Boolean},
     };
   }
@@ -52,6 +53,7 @@ export class SettingsSearchEnginesListElement extends CrLitElement {
   accessor visibleEnginesSize: number = 5;
   accessor expandListText: string = '';
   accessor fixedHeight: boolean = false;
+  accessor cardLayout: boolean = false;
   protected accessor enginesListExpanded_: boolean = false;
   protected accessor visibleEngines_: SearchEngine[] = [];
   protected accessor collapsedEngines_: SearchEngine[] = [];

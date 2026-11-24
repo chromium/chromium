@@ -117,6 +117,9 @@ suite('SearchEnginePageTests', function() {
   };
 
   setup(async function() {
+    loadTimeData.overrideValues({settingsRefresh2026: ''});
+    document.documentElement.toggleAttribute('settings-refresh-2026', false);
+
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
@@ -143,6 +146,8 @@ suite('SearchEnginePageTests', function() {
 
   teardown(function() {
     page.remove();
+    document.documentElement.removeAttribute('settings-refresh-2026');
+    loadTimeData.overrideValues({settingsRefresh2026: ''});
   });
 
   // Tests that the page is querying and displaying search engine info on
@@ -151,6 +156,9 @@ suite('SearchEnginePageTests', function() {
     searchEnginesLists =
         page.shadowRoot.querySelectorAll('settings-search-engines-list');
     assertEquals(3, searchEnginesLists.length);
+    const subpage = page.shadowRoot.querySelector('settings-subpage');
+    assertTrue(!!subpage);
+    assertFalse(subpage.classList.contains('multi-card'));
   });
 
   test('DefaultsList', function() {
@@ -450,5 +458,89 @@ suite('SearchEnginePageTests', function() {
     await microtasksFinished();
     assertTrue(messageActive.hasAttribute('hidden'));
     assertTrue(messageOther.hasAttribute('hidden'));
+  });
+
+  test('SettingsRefresh2026Layout', async function() {
+    loadTimeData.overrideValues({
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    document.documentElement.toggleAttribute('settings-refresh-2026', true);
+    browserProxy.resetResolver('getSearchEnginesList');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-search-engines-page');
+    document.body.appendChild(page);
+    await browserProxy.whenCalled('getSearchEnginesList');
+    await microtasksFinished();
+
+    const subpage = page.shadowRoot.querySelector('settings-subpage')!;
+    assertTrue(subpage.classList.contains('multi-card'));
+    assertEquals('24px', getComputedStyle(subpage).rowGap);
+
+    const lists =
+        page.shadowRoot.querySelectorAll('settings-search-engines-list');
+    assertEquals(3, lists.length);
+    lists.forEach((list) => {
+      assertTrue(list.cardLayout);
+      const headers = list.shadowRoot.querySelector<HTMLElement>('#headers')!;
+      const card = list.shadowRoot.querySelector<HTMLElement>(
+          list.collapseList ? '#visibleEngines' : '#container')!;
+      assertFalse(card.contains(headers));
+      assertTrue(
+          headers.getBoundingClientRect().bottom <=
+          card.getBoundingClientRect().top);
+      assertEquals('0px', getComputedStyle(card).rowGap);
+
+      const entryRow =
+          list.shadowRoot.querySelector('settings-search-engine-entry')!
+              .shadowRoot.querySelector<HTMLElement>('.list-item')!;
+      assertEquals('0px', getComputedStyle(entryRow).borderRadius);
+      assertEquals('20px', getComputedStyle(entryRow).paddingLeft);
+    });
+
+    // Other consumers of settings-search-engines-list without card-layout
+    // should not get card/header styling even under settings-refresh-2026.
+    const defaultList = lists[0]!;
+    defaultList.cardLayout = false;
+    await microtasksFinished();
+    const defaultOuter =
+        defaultList.shadowRoot.querySelector<HTMLElement>('#outer')!;
+    const defaultContainer =
+        defaultList.shadowRoot.querySelector<HTMLElement>('#container')!;
+    const defaultEntryRow =
+        defaultList.shadowRoot.querySelector('settings-search-engine-entry')!
+            .shadowRoot.querySelector<HTMLElement>('.list-item')!;
+    const defaultHeaders =
+        defaultList.shadowRoot.querySelector<HTMLElement>('#headers')!;
+    assertFalse(defaultContainer.classList.contains('card'));
+    assertEquals('20px', getComputedStyle(defaultOuter).paddingLeft);
+    assertEquals('10px', getComputedStyle(defaultHeaders).paddingTop);
+    assertEquals('4px', getComputedStyle(defaultEntryRow).borderRadius);
+    assertEquals('0px', getComputedStyle(defaultEntryRow).paddingLeft);
+    defaultList.cardLayout = true;
+    await microtasksFinished();
+
+    // Collapsible inactive shortcuts overflow should sit in a separate card
+    // below visible engines, keeping the 1px divider under cr-expand-button.
+    const visibleCard =
+        lists[2]!.shadowRoot.querySelector<HTMLElement>('#visibleEngines')!;
+    const collapsedCard =
+        lists[2]!.shadowRoot.querySelector<HTMLElement>('#collapsedEngines')!;
+    assertFalse(collapsedCard.hidden);
+    assertTrue(
+        collapsedCard.getBoundingClientRect().top -
+            visibleCard.getBoundingClientRect().bottom >=
+        24);
+    assertEquals('1px', getComputedStyle(collapsedCard).rowGap);
+
+    // Extensions card renders without row gaps and hides when unmatched.
+    const extensions =
+        page.shadowRoot.querySelector<HTMLElement>('#extensions')!;
+    assertFalse(extensions.hidden);
+    assertEquals('0px', getComputedStyle(extensions).rowGap);
+
+    subpage.shadowRoot.querySelector('cr-search-field')!.setValue(
+        'does not exist');
+    await microtasksFinished();
+    assertTrue(extensions.hidden);
   });
 });
