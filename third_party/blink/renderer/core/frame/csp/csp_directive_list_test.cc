@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -1297,6 +1298,83 @@ TEST_F(CSPDirectiveListTest, FillInCSPHashValues) {
   EXPECT_EQ(IntegrityAlgorithm::kSha256, hashes[0].algorithm);
   EXPECT_EQ(IntegrityAlgorithm::kSha384, hashes[1].algorithm);
   EXPECT_EQ(IntegrityAlgorithm::kSha512, hashes[2].algorithm);
+}
+
+TEST_F(CSPDirectiveListTest, AllowInline) {
+  struct TestCase {
+    const char* policy;
+    ContentSecurityPolicy::InlineType inline_type;
+    const char* nonce;
+    bool expected_enforced;
+  } cases[] = {
+      {"style-src 'none'", ContentSecurityPolicy::InlineType::kStyle, "",
+       false},
+      {"style-src 'none'", ContentSecurityPolicy::InlineType::kStyleAttribute,
+       "", false},
+      {"style-src 'nonce-abc' 'self'",
+       ContentSecurityPolicy::InlineType::kStyle, "", false},
+      {"style-src 'nonce-abc' 'self'",
+       ContentSecurityPolicy::InlineType::kStyle, "abc", true},
+      {"style-src 'nonce-abc' 'self'",
+       ContentSecurityPolicy::InlineType::kStyleAttribute, "", false},
+      {"style-src 'unsafe-inline'", ContentSecurityPolicy::InlineType::kStyle,
+       "", true},
+      {"style-src 'unsafe-inline'",
+       ContentSecurityPolicy::InlineType::kStyleAttribute, "", true},
+      {"script-src 'none'", ContentSecurityPolicy::InlineType::kScript, "",
+       false},
+      {"script-src 'none'", ContentSecurityPolicy::InlineType::kScriptAttribute,
+       "", false},
+      {"script-src 'none'", ContentSecurityPolicy::InlineType::kNavigation, "",
+       false},
+      {"default-src 'none'", ContentSecurityPolicy::InlineType::kStyle, "",
+       false},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message() << "Policy: `" << test.policy
+                                    << "`, Nonce: `" << test.nonce << "`");
+    for (auto reporting_disposition : {ReportingDisposition::kSuppressReporting,
+                                       ReportingDisposition::kReport}) {
+      ContentSecurityPolicy* context =
+          MakeGarbageCollected<ContentSecurityPolicy>();
+      TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+      context->BindToDelegate(*test_delegate);
+
+      // Report-only policies must never block inline content, even when
+      // reporting is suppressed.
+      network::mojom::blink::ContentSecurityPolicyPtr report_only_list =
+          CreateList(test.policy, ContentSecurityPolicyType::kReport);
+      EXPECT_TRUE(CSPDirectiveListAllowInline(
+          *report_only_list, context, test.inline_type, /*element=*/nullptr,
+          "color: red;", String(test.nonce), "https://example.test/index.html",
+          TextPosition::MinimumPosition(), reporting_disposition));
+      if (reporting_disposition == ReportingDisposition::kSuppressReporting ||
+          test.expected_enforced) {
+        EXPECT_TRUE(test_delegate->console_messages().empty());
+      } else {
+        EXPECT_EQ(1u, test_delegate->console_messages().size());
+      }
+
+      test_delegate->console_messages().clear();
+
+      // Enforcing policies enforce regardless of reporting disposition.
+      network::mojom::blink::ContentSecurityPolicyPtr enforce_list =
+          CreateList(test.policy, ContentSecurityPolicyType::kEnforce);
+      EXPECT_EQ(test.expected_enforced,
+                CSPDirectiveListAllowInline(
+                    *enforce_list, context, test.inline_type,
+                    /*element=*/nullptr, "color: red;", String(test.nonce),
+                    "https://example.test/index.html",
+                    TextPosition::MinimumPosition(), reporting_disposition));
+      if (reporting_disposition == ReportingDisposition::kSuppressReporting ||
+          test.expected_enforced) {
+        EXPECT_TRUE(test_delegate->console_messages().empty());
+      } else {
+        EXPECT_EQ(1u, test_delegate->console_messages().size());
+      }
+    }
+  }
 }
 
 }  // namespace blink

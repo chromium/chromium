@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Report-only CSP does not block inline styles in DOMParser documents</title>
+<link rel="help" href="https://w3c.github.io/webappsec-csp/#policy-disposition">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+'use strict';
+
+test(t => {
+  const doc = new DOMParser().parseFromString(
+    '<div style="color: red;"></div><style>.x { color: blue; }</style>',
+    'text/html');
+
+  const div = doc.querySelector('div');
+  const style = doc.querySelector('style');
+
+  assert_equals(div.style.color, 'red',
+    'style="" must not be blocked by a report-only CSP in a DOMParser document.');
+  assert_not_equals(style.sheet, null,
+    '<style> elements must not be blocked by a report-only CSP in a DOMParser document.');
+  assert_equals(style.sheet.cssRules.length, 1,
+    '<style> rules must be parsed under a report-only CSP in a DOMParser document.');
+
+  div.removeAttribute('style');
+  div.setAttribute('style', 'color: green;');
+  assert_equals(div.style.color, 'green',
+    'Dynamic setAttribute("style", ...) on a DOMParser element must not be blocked by a report-only CSP.');
+
+  document.body.appendChild(div);
+  t.add_cleanup(() => div.remove());
+  assert_equals(div.style.color, 'green',
+    'Moving a DOMParser-parsed element into a live document preserves its inline style under a report-only CSP.');
+  assert_equals(getComputedStyle(div).color, 'rgb(0, 128, 0)',
+    'Inline style from a DOMParser element applies in the live document under a report-only CSP.');
+}, 'Report-only CSP does not block inline styles parsed or set in a DOMParser document');
+
+promise_test(async t => {
+  const div = document.createElement('div');
+  document.body.appendChild(div);
+  t.add_cleanup(() => div.remove());
+
+  const violationPromise = new Promise(resolve => {
+    div.addEventListener('securitypolicyviolation', resolve, {once: true});
+  });
+
+  div.setAttribute('style', 'color: purple;');
+
+  assert_equals(div.style.color, 'purple',
+    'Inline style="" in the live document must not be blocked by a report-only CSP.');
+  assert_equals(getComputedStyle(div).color, 'rgb(128, 0, 128)',
+    'Inline style="" in the live document must apply under a report-only CSP.');
+
+  const e = await violationPromise;
+  assert_equals(e.disposition, 'report');
+  assert_equals(e.effectiveDirective, 'style-src-attr');
+  assert_equals(e.blockedURI, 'inline');
+}, 'Report-only CSP allows and reports inline style attributes in the live document');
+
+promise_test(async t => {
+  const style = document.createElement('style');
+  style.textContent = '.live-style-test { color: orange; }';
+
+  const violationPromise = new Promise(resolve => {
+    style.addEventListener('securitypolicyviolation', resolve, {once: true});
+  });
+
+  document.head.appendChild(style);
+  t.add_cleanup(() => style.remove());
+
+  assert_not_equals(style.sheet, null,
+    'Inline <style> in the live document must not be blocked by a report-only CSP.');
+  assert_equals(style.sheet.cssRules.length, 1,
+    'Inline <style> rules in the live document must be parsed under a report-only CSP.');
+
+  const e = await violationPromise;
+  assert_equals(e.disposition, 'report');
+  assert_equals(e.effectiveDirective, 'style-src-elem');
+  assert_equals(e.blockedURI, 'inline');
+}, 'Report-only CSP allows and reports inline <style> elements in the live document');
+</script>
+</body>

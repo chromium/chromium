@@ -799,7 +799,7 @@ bool CSPDirectiveListAllowInline(
                                          inline_type, hash_value, type);
   }
 
-  return !directive.source_list ||
+  return CSPDirectiveListIsReportOnly(csp) || !directive.source_list ||
          CSPSourceListAllowAllInline(directive.type, inline_type,
                                      *directive.source_list);
 }

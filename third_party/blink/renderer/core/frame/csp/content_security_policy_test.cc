@@ -488,57 +488,72 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
     SCOPED_TRACE(testing::Message() << "Policy: `" << test.policy
                                     << "`, Nonce: `" << test.nonce << "`");
 
-    unsigned expected_reports = test.allowed ? 0u : 1u;
-    auto* element = MakeGarbageCollected<HTMLScriptElement>(
-        *window->document(), CreateElementFlags());
+    for (auto reporting_disposition :
+         {ReportingDisposition::kReport,
+          ReportingDisposition::kSuppressReporting}) {
+      unsigned expected_reports =
+          (test.allowed ||
+           reporting_disposition == ReportingDisposition::kSuppressReporting)
+              ? 0u
+              : 1u;
+      auto* element = MakeGarbageCollected<HTMLScriptElement>(
+          *window->document(), CreateElementFlags());
 
-    // Enforce 'script-src'
-    Persistent<ContentSecurityPolicy> policy =
-        MakeGarbageCollected<ContentSecurityPolicy>();
-    policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
-    policy->AddPolicies(ParseContentSecurityPolicies(
-        String("script-src ") + test.policy,
-        ContentSecurityPolicyType::kEnforce, ContentSecurityPolicySource::kHTTP,
-        *secure_origin));
-    EXPECT_EQ(test.allowed,
-              policy->AllowInline(ContentSecurityPolicy::InlineType::kScript,
-                                  element, content, String(test.nonce),
-                                  context_url, context_position));
-    EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
+      // Enforce 'script-src'
+      Persistent<ContentSecurityPolicy> policy =
+          MakeGarbageCollected<ContentSecurityPolicy>();
+      policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
+      policy->AddPolicies(ParseContentSecurityPolicies(
+          String("script-src ") + test.policy,
+          ContentSecurityPolicyType::kEnforce,
+          ContentSecurityPolicySource::kHTTP, *secure_origin));
+      EXPECT_EQ(
+          test.allowed,
+          policy->AllowInline(ContentSecurityPolicy::InlineType::kScript,
+                              element, content, String(test.nonce), context_url,
+                              context_position, reporting_disposition));
+      EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
 
-    // Enforce 'style-src'
-    policy = MakeGarbageCollected<ContentSecurityPolicy>();
-    policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
-    policy->AddPolicies(ParseContentSecurityPolicies(
-        String("style-src ") + test.policy, ContentSecurityPolicyType::kEnforce,
-        ContentSecurityPolicySource::kHTTP, *secure_origin));
-    EXPECT_EQ(test.allowed,
-              policy->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
-                                  element, content, String(test.nonce),
-                                  context_url, context_position));
-    EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
+      // Enforce 'style-src'
+      policy = MakeGarbageCollected<ContentSecurityPolicy>();
+      policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
+      policy->AddPolicies(ParseContentSecurityPolicies(
+          String("style-src ") + test.policy,
+          ContentSecurityPolicyType::kEnforce,
+          ContentSecurityPolicySource::kHTTP, *secure_origin));
+      EXPECT_EQ(
+          test.allowed,
+          policy->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
+                              element, content, String(test.nonce), context_url,
+                              context_position, reporting_disposition));
+      EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
 
-    // Report 'script-src'
-    policy = MakeGarbageCollected<ContentSecurityPolicy>();
-    policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
-    policy->AddPolicies(ParseContentSecurityPolicies(
-        String("script-src ") + test.policy, ContentSecurityPolicyType::kReport,
-        ContentSecurityPolicySource::kHTTP, *secure_origin));
-    EXPECT_TRUE(policy->AllowInline(ContentSecurityPolicy::InlineType::kScript,
-                                    element, content, String(test.nonce),
-                                    context_url, context_position));
-    EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
+      // Report 'script-src'
+      policy = MakeGarbageCollected<ContentSecurityPolicy>();
+      policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
+      policy->AddPolicies(ParseContentSecurityPolicies(
+          String("script-src ") + test.policy,
+          ContentSecurityPolicyType::kReport,
+          ContentSecurityPolicySource::kHTTP, *secure_origin));
+      EXPECT_TRUE(
+          policy->AllowInline(ContentSecurityPolicy::InlineType::kScript,
+                              element, content, String(test.nonce), context_url,
+                              context_position, reporting_disposition));
+      EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
 
-    // Report 'style-src'
-    policy = MakeGarbageCollected<ContentSecurityPolicy>();
-    policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
-    policy->AddPolicies(ParseContentSecurityPolicies(
-        String("style-src ") + test.policy, ContentSecurityPolicyType::kReport,
-        ContentSecurityPolicySource::kHTTP, *secure_origin));
-    EXPECT_TRUE(policy->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
-                                    element, content, String(test.nonce),
-                                    context_url, context_position));
-    EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
+      // Report 'style-src'
+      policy = MakeGarbageCollected<ContentSecurityPolicy>();
+      policy->BindToDelegate(window->GetContentSecurityPolicyDelegate());
+      policy->AddPolicies(ParseContentSecurityPolicies(
+          String("style-src ") + test.policy,
+          ContentSecurityPolicyType::kReport,
+          ContentSecurityPolicySource::kHTTP, *secure_origin));
+      EXPECT_TRUE(policy->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
+                                      element, content, String(test.nonce),
+                                      context_url, context_position,
+                                      reporting_disposition));
+      EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
+    }
   }
 }
 
