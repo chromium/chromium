@@ -417,10 +417,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // The frame's document and all of its subresources succeeded to load.
   virtual void DidFinishLoad() {}
 
-  // The frame's document and all of its subresources succeeded to load for
-  // printing.
-  virtual void DidFinishLoadForPrinting() {}
-
   // The navigation resulted in no change to the documents within the page.
   // For example, the navigation may have just resulted in scrolling to a named
   // anchor or a PopState event may have been dispatched.
@@ -706,10 +702,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // than the document's URL because it will contain a data URL if a base URL
   // was used for its load or if an unreachable URL was used.
   virtual WebURL LastCommittedUrlForUKM() { return WebURL(); }
-
-  // Called when script in the frame (and it subframes) wishes to be printed via
-  // a window.print() call.
-  virtual void ScriptedPrint() {}
 
   // This method is ONLY for web tests and is not supposed to be overridden in
   // classes other than web_frame_test_proxy. It's called from accessibility and

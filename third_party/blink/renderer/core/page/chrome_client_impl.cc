@@ -788,7 +788,7 @@ void ChromeClientImpl::DispatchViewportPropertiesDidChange(
 void ChromeClientImpl::PrintDelegate(LocalFrame* frame) {
   NotifyPopupOpeningObservers();
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
-  web_frame->Client()->ScriptedPrint();
+  web_frame->ScriptedPrint();
 }
 
 ColorChooser* ChromeClientImpl::OpenColorChooser(

@@ -211,28 +211,12 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     }
   }
 
-  void DidFinishLoadForPrinting() override {
-    test_runner_->DidFinishLoadForPrinting(*frame_proxy());
-  }
-
   void DidHandleOnloadEvents() override {
     if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
       frame_proxy()->GetWebTestControlHostRemote()->PrintMessage(
           description + " - didHandleOnloadEventsForFrame\n");
     }
-  }
-
-  void ScriptedPrint(bool user_initiated) override {
-    // This is using the main frame for the size, but maybe it should be using
-    // the frame's size.
-    gfx::SizeF page_size_in_pixels(
-        frame_proxy()->GetLocalRootWebFrameWidget()->Size());
-    if (page_size_in_pixels.IsEmpty())
-      return;
-    blink::WebPrintParams print_params(page_size_in_pixels);
-    render_frame()->GetWebFrame()->PrintBegin(print_params, blink::WebNode());
-    render_frame()->GetWebFrame()->PrintEnd();
   }
 
   const raw_ptr<TestRunner> test_runner_;
@@ -255,6 +239,24 @@ class TestWebLocalFrameObserver : public blink::WebLocalFrameObserver {
  private:
   // blink::WebLocalFrameObserver overrides:
   void OnFrameDetached() override { delete this; }
+
+  void DidFinishLoadForPrinting() override {
+    test_runner_->DidFinishLoadForPrinting(*frame_proxy_);
+  }
+
+  void ScriptedPrint(bool user_initiated) override {
+    // This is using the main frame for the size, but maybe it should be using
+    // the frame's size.
+    gfx::SizeF page_size_in_pixels(
+        frame_proxy_->GetLocalRootWebFrameWidget()->Size());
+    if (page_size_in_pixels.IsEmpty()) {
+      return;
+    }
+    blink::WebPrintParams print_params(page_size_in_pixels);
+    blink::WebLocalFrame* web_frame = GetWebLocalFrame();
+    web_frame->PrintBegin(print_params, blink::WebNode());
+    web_frame->PrintEnd();
+  }
 
   void DidAddMessageToConsole(const blink::WebConsoleMessage& message,
                               const blink::WebString& source_name,

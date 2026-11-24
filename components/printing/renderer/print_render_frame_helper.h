@@ -29,6 +29,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/common/metafile_utils.h"
 #include "printing/mojom/print.mojom-forward.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_print_client.h"
 #include "third_party/blink/public/web/web_print_params.h"
@@ -105,6 +106,7 @@ class PrintRenderFrameHelper
     : public blink::WebPrintClient,
       public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<PrintRenderFrameHelper>,
+      public blink::WebLocalFrameObserver,
       public mojom::PrintRenderFrame {
  public:
   class Delegate {
@@ -250,6 +252,9 @@ class PrintRenderFrameHelper
       std::optional<blink::WebNavigationType> navigation_type) override;
   void DidFailProvisionalLoad() override;
   void DidFinishLoad() override;
+
+  // blink::WebLocalFrameObserver:
+  void OnFrameDetached() override;
   void DidFinishLoadForPrinting() override;
   void ScriptedPrint(bool user_initiated) override;
 

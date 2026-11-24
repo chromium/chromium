@@ -2818,10 +2818,6 @@ void WebLocalFrameImpl::DidFinish() {
   Client()->DidFinishLoad();
 }
 
-void WebLocalFrameImpl::DidFinishLoadForPrinting() {
-  Client()->DidFinishLoadForPrinting();
-}
-
 HitTestResult WebLocalFrameImpl::HitTestResultForVisualViewportPos(
     const gfx::Point& pos_in_viewport) {
   gfx::Point root_frame_point(
@@ -3862,6 +3858,20 @@ void WebLocalFrameImpl::DidAddMessageToConsole(const WebConsoleMessage& message,
 void WebLocalFrameImpl::OnStop() {
   for (auto& observer : observers_) {
     observer.OnStop();
+  }
+}
+
+void WebLocalFrameImpl::ScriptedPrint() {
+  WebFrameWidgetImpl* widget = LocalRootFrameWidget();
+  bool user_initiated = widget && widget->HandlingInputEvent();
+  for (auto& observer : observers_) {
+    observer.ScriptedPrint(user_initiated);
+  }
+}
+
+void WebLocalFrameImpl::DidFinishLoadForPrinting() {
+  for (auto& observer : observers_) {
+    observer.DidFinishLoadForPrinting();
   }
 }
 

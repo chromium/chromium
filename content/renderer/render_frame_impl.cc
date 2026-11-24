@@ -2143,13 +2143,6 @@ blink::WebFrameWidget* RenderFrameImpl::GetLocalRootWebFrameWidget() {
   return frame_->LocalRoot()->FrameWidget();
 }
 
-void RenderFrameImpl::ScriptedPrint() {
-  bool user_initiated = GetLocalRootWebFrameWidget()->HandlingInputEvent();
-  for (auto& observer : observers_) {
-    observer.ScriptedPrint(user_initiated);
-  }
-}
-
 void RenderFrameImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
@@ -4221,12 +4214,6 @@ void RenderFrameImpl::DidFinishLoad() {
 
   for (auto& observer : observers_) {
     observer.DidFinishLoad();
-  }
-}
-
-void RenderFrameImpl::DidFinishLoadForPrinting() {
-  for (auto& observer : observers_) {
-    observer.DidFinishLoadForPrinting();
   }
 }
 

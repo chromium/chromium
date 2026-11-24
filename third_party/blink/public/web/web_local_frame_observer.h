@@ -67,6 +67,13 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
   // Called when a load is explicitly stopped by the user or browser.
   virtual void OnStop() {}
 
+  // Called when script in the page calls window.print().
+  virtual void ScriptedPrint(bool user_initiated) {}
+
+  // The frame's document and all of its subresources succeeded to load for
+  // printing.
+  virtual void DidFinishLoadForPrinting() {}
+
   // Retrieves the WebLocalFrame that is being observed. Can be null.
   WebLocalFrame* GetWebLocalFrame() const;
 

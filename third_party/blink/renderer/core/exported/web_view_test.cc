@@ -83,6 +83,7 @@
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_non_composited_widget_client.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -4106,12 +4107,14 @@ TEST_F(WebViewTest, FullscreenRemovalTiming) {
   EXPECT_FALSE(element->IsInTopLayer());
 }
 
-class PrintWebFrameClient : public frame_test_helpers::TestWebFrameClient {
+class PrintWebLocalFrameObserver : public WebLocalFrameObserver {
  public:
-  PrintWebFrameClient() = default;
+  explicit PrintWebLocalFrameObserver(WebLocalFrame* frame)
+      : WebLocalFrameObserver(frame) {}
 
-  // WebLocalFrameClient overrides:
-  void ScriptedPrint() override { print_called_ = true; }
+  // WebLocalFrameObserver overrides:
+  void OnFrameDetached() override {}
+  void ScriptedPrint(bool user_initiated) override { print_called_ = true; }
 
   bool PrintCalled() const { return print_called_; }
 
@@ -4120,15 +4123,16 @@ class PrintWebFrameClient : public frame_test_helpers::TestWebFrameClient {
 };
 
 TEST_F(WebViewTest, PrintWithXHRInFlight) {
-  PrintWebFrameClient client;
   RegisterMockedHttpURLLoad("print_with_xhr_inflight.html");
-  WebViewImpl* web_view_impl = web_view_helper_.InitializeAndLoad(
-      base_url_ + "print_with_xhr_inflight.html", &client, nullptr);
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+  PrintWebLocalFrameObserver observer(web_view_impl->MainFrameImpl());
+  frame_test_helpers::LoadFrame(web_view_impl->MainFrameImpl(),
+                                base_url_ + "print_with_xhr_inflight.html");
 
   ASSERT_TRUE(To<LocalFrame>(web_view_impl->GetPage()->MainFrame())
                   ->GetDocument()
                   ->LoadEventFinished());
-  EXPECT_TRUE(client.PrintCalled());
+  EXPECT_TRUE(observer.PrintCalled());
   web_view_helper_.Reset();
 }
 

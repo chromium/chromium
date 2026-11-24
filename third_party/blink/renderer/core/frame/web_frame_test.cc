@@ -16561,4 +16561,69 @@ TEST_F(WebFrameTest, OnStop) {
   web_view_helper.Reset();
 }
 
+namespace {
+
+class MockPrintObserver : public WebLocalFrameObserver {
+ public:
+  explicit MockPrintObserver(WebLocalFrame* frame)
+      : WebLocalFrameObserver(frame) {}
+
+  MOCK_METHOD(void, ScriptedPrint, (bool user_initiated), (override));
+  MOCK_METHOD(void, DidFinishLoadForPrinting, (), (override));
+
+  void OnFrameDetached() override {}
+};
+
+}  // namespace
+
+TEST_F(WebFrameTest, ScriptedPrint) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+  testing::StrictMock<MockPrintObserver> observer(main_frame);
+  frame_test_helpers::LoadHTMLString(
+      main_frame, "<html><body></body></html>",
+      url_test_helpers::ToKURL("http://example.com/"));
+  RunPendingTasks();
+
+  EXPECT_CALL(observer, ScriptedPrint(false));
+  main_frame->ExecuteScript(WebScriptSource("window.print();"));
+  Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, ScriptedPrint(true));
+  WebFrameWidget* widget = main_frame->FrameWidgetImpl();
+  widget->SetHandlingInputEvent(true);
+  main_frame->ExecuteScript(WebScriptSource("window.print();"));
+  widget->SetHandlingInputEvent(false);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  web_view_helper.Reset();
+}
+
+TEST_F(WebFrameTest, DidFinishLoadForPrinting) {
+  RegisterMockedHttpURLLoad("white-1x1.png");
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+  testing::StrictMock<MockPrintObserver> observer(main_frame);
+  frame_test_helpers::LoadHTMLString(
+      main_frame,
+      "<html><head><style>"
+      "@media print { body { background-image: url('white-1x1.png'); } }"
+      "</style></head><body></body></html>",
+      url_test_helpers::ToKURL(base_url_));
+  RunPendingTasks();
+
+  EXPECT_TRUE(main_frame->WillPrintSoon());
+
+  EXPECT_CALL(observer, DidFinishLoadForPrinting());
+  url_test_helpers::ServeAsynchronousRequests();
+  RunPendingTasks();
+  Mock::VerifyAndClearExpectations(&observer);
+
+  web_view_helper.Reset();
+}
+
 }  // namespace blink

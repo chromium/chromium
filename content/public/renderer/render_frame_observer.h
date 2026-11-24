@@ -113,7 +113,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   virtual void DidCommitProvisionalLoad(ui::PageTransition transition) {}
   virtual void DidFailProvisionalLoad() {}
   virtual void DidFinishLoad() {}
-  virtual void DidFinishLoadForPrinting() {}
   virtual void DidDispatchDOMContentLoadedEvent() {}
   virtual void DidHandleOnloadEvents() {}
   virtual void DidCreateScriptContext(v8::Local<v8::Context> context,
@@ -188,9 +187,6 @@ class CONTENT_EXPORT RenderFrameObserver {
 
   // Called when accessibility is enabled or disabled.
   virtual void AccessibilityModeChanged(const ui::AXMode& mode) {}
-
-  // Called when script in the page calls window.print().
-  virtual void ScriptedPrint(bool user_initiated) {}
 
   // Called when a worker fetch context will be created.
   virtual void WillCreateWorkerFetchContext(blink::WebWorkerFetchContext*) {}

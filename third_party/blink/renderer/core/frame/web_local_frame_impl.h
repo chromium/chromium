@@ -551,7 +551,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   void DidCommitLoad();
   void DidFailLoad(const ResourceError&, WebHistoryCommitType);
   void DidFinish();
-  void DidFinishLoadForPrinting();
 
   void SetClient(WebLocalFrameClient* client) { client_ = client; }
 
@@ -640,6 +639,8 @@ class CORE_EXPORT WebLocalFrameImpl final
                               unsigned source_line,
                               const WebString& stack_trace);
   void OnStop();
+  void ScriptedPrint();
+  void DidFinishLoadForPrinting();
 
  protected:
   // WebLocalFrame protected overrides:

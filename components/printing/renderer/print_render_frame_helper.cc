@@ -1146,6 +1146,7 @@ PrintRenderFrameHelper::PrintRenderFrameHelper(
     std::unique_ptr<Delegate> delegate)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<PrintRenderFrameHelper>(render_frame),
+      blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       delegate_(std::move(delegate)),
       closures_for_mojo_responses_(
           base::MakeRefCounted<ClosuresForMojoResponse>()) {
@@ -1218,6 +1219,8 @@ void PrintRenderFrameHelper::DidFinishLoad() {
   if (!on_stop_loading_closure_.is_null())
     std::move(on_stop_loading_closure_).Run();
 }
+
+void PrintRenderFrameHelper::OnFrameDetached() {}
 
 void PrintRenderFrameHelper::DidFinishLoadForPrinting() {
   DidFinishLoad();
