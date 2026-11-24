@@ -597,9 +597,6 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
 
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.IsLookupSuccessful",
                                     GetMetricSuffix(), is_rt_lookup_successful);
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.RT.IsLookupSuccessful" + report_type_suffix,
-      is_rt_lookup_successful);
 
   MayBeCacheRealTimeUrlVerdict(*response);
 

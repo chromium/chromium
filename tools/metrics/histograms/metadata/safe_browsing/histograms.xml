@@ -2988,22 +2988,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.IsLookupSuccessful.{ReportType}"
-    enum="BooleanSuccess" expires_after="2024-11-08">
-  <owner>zackhan@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether the response of the real time URL lookup is successful when the
-    report type is {ReportType}. Logged on each resource check for which a
-    lookup request is sent to the server. A failure can be either a network
-    error or a parsing error.
-  </summary>
-  <token key="ReportType">
-    <variant name="NormalPing" summary="normal ping"/>
-    <variant name="SampledPing" summary="sampled ping"/>
-  </token>
-</histogram>
-
 <histogram name="SafeBrowsing.RT.IsLookupSuccessful{UserCategory}"
     enum="BooleanSuccess" expires_after="2027-05-09">
   <owner>xinghuilu@chromium.org</owner>
