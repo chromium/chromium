@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_METADATA_TRACK_H_
 #define MEDIA_BASE_METADATA_TRACK_H_
 
+#include <functional>
 #include <optional>
 
 #include "base/time/time.h"
@@ -47,11 +48,25 @@ class MEDIA_EXPORT MetadataTrack {
   void Reset();
 
  private:
+  // IntervalMap seeds its default interval at NumericLimits::min(). The
+  // default, std::numeric_limits<base::TimeDelta>, isn't specialized and
+  // returns a zero TimeDelta, so a negative timestamp would fall before the
+  // first interval and fail a CHECK in IntervalMap::find(). Use the real
+  // TimeDelta extremes so that the default interval covers every timestamp.
+  struct TimeDeltaLimits {
+    static constexpr base::TimeDelta min() { return base::TimeDelta::Min(); }
+    static constexpr base::TimeDelta max() { return base::TimeDelta::Max(); }
+  };
+
   IT35PrefixType it35_prefix_type_;
 
   // IntervalMap creates a default interval. In order to distinguish between
   // empty metadata and no metadata, use an optional as the data type.
-  IntervalMap<base::TimeDelta, std::optional<gfx::HDRMetadata>> metadata_;
+  IntervalMap<base::TimeDelta,
+              std::optional<gfx::HDRMetadata>,
+              std::less<>,
+              TimeDeltaLimits>
+      metadata_;
 };
 
 }  // namespace media

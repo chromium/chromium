@@ -101,6 +101,26 @@ TEST_F(MetadataTrackTest, RetainsRecentMetadataForReorderedBuffers) {
   EXPECT_EQ(GetAttachedReferenceWhite(*earlier_buffer), 200.f);
 }
 
+TEST_F(MetadataTrackTest, NegativeTimestampDoesNotCrash) {
+  metadata_track_.InsertMetadataBuffer(
+      *MakeBuffer(kMetadata400Nits, base::Seconds(1), base::Seconds(1)));
+
+  // A render buffer can have a negative timestamp, e.g. when an MP4 edit list
+  // offset is larger than the sample's composition offset. No metadata covers
+  // it, so none is attached, and the lookup must not crash
+  // (crbug.com/565256355).
+  auto render_buffer =
+      MakeBuffer(kRenderData, base::Microseconds(-1), base::Seconds(1));
+  EXPECT_FALSE(metadata_track_.TryAttachMetadata(*render_buffer));
+  EXPECT_FALSE(render_buffer->side_data());
+
+  // The most negative representable timestamp must behave the same way.
+  auto min_buffer =
+      MakeBuffer(kRenderData, base::TimeDelta::Min(), base::Seconds(1));
+  EXPECT_FALSE(metadata_track_.TryAttachMetadata(*min_buffer));
+  EXPECT_FALSE(min_buffer->side_data());
+}
+
 TEST_F(MetadataTrackTest, Reset) {
   metadata_track_.InsertMetadataBuffer(
       *MakeBuffer(kMetadata400Nits, base::Seconds(1), base::Seconds(1)));
