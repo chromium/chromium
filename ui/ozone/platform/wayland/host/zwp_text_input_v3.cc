@@ -183,15 +183,24 @@ void ZwpTextInputV3Impl::Reset() {
     zwp_text_input_v3_disable(obj_.get());
     Commit();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ZwpTextInputV3Impl::EnableAfterReset,
+        FROM_HERE, base::BindOnce(&ZwpTextInputV3Impl::SendEnable,
                                   enable_after_reset_factory_.GetWeakPtr()));
   }
 }
 
-void ZwpTextInputV3Impl::EnableAfterReset() {
-  if (enabled_content_type_) {
-    SendEnable(*enabled_content_type_);
+void ZwpTextInputV3Impl::ShowInputPanel() {
+  if (!enabled_content_type_) {
+    return;
   }
+  if (enable_after_reset_factory_.HasWeakPtrs()) {
+    SendEnable();
+  }
+  // text-input-v3 version 1 has no request to show the input panel.
+  // Compositors such as mutter show it when an already enabled text input is
+  // enabled again, which is also what GTK does on a click or tap. The input
+  // method keeps its composition, so keep the received input events for
+  // Reset().
+  SendEnableRequest();
 }
 
 void ZwpTextInputV3Impl::SetClient(ZwpTextInputV3Client* context) {
@@ -209,19 +218,23 @@ void ZwpTextInputV3Impl::OnClientDestroyed(ZwpTextInputV3Client* context) {
 void ZwpTextInputV3Impl::Enable(ui::TextInputType type,
                                 uint32_t flags,
                                 bool should_do_learning) {
-  SendEnable(GetContentType(type, flags, should_do_learning));
+  enabled_content_type_ = GetContentType(type, flags, should_do_learning);
+  SendEnable();
 }
 
-void ZwpTextInputV3Impl::SendEnable(const ContentType& content_type) {
+void ZwpTextInputV3Impl::SendEnable() {
   enable_after_reset_factory_.InvalidateWeakPtrs();
   // Pending state is reset on enable.
   pending_input_events_.Reset();
   applied_input_events_.Reset();
+  SendEnableRequest();
+}
+
+void ZwpTextInputV3Impl::SendEnableRequest() {
   sent_ime_data_.Reset();
 
   zwp_text_input_v3_enable(obj_.get());
-  SendContentType(content_type);
-  enabled_content_type_ = content_type;
+  SendContentType(*enabled_content_type_);
 
   // Per the protocol, all state is reset by the compositor on each committed
   // enable request, so any previously sent state is no longer valid. Resend the

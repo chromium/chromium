@@ -190,6 +190,7 @@ class MockZwpTextInputV3 : public ZwpTextInputV3 {
               (override));
   MOCK_METHOD(void, Disable, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
+  MOCK_METHOD(void, ShowInputPanel, (), (override));
   MOCK_METHOD(void, ClearCachedState, (), (override));
 
   MOCK_METHOD(void, SetCursorRect, (const gfx::Rect& rect), (override));
@@ -862,6 +863,62 @@ TEST_F(WaylandInputMethodContextV3Test, ActivateDeactivateInBubble) {
   attributes.input_type = TEXT_INPUT_TYPE_NONE;
   bubble_context->UpdateFocus(true, TEXT_INPUT_TYPE_TEXT, attributes,
                               ui::TextInputClient::FOCUS_REASON_NONE);
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->text_input_manager_v3()->text_input());
+  });
+}
+
+// text-input-v3 version 1 has no show_input_panel request, so the input panel
+// is requested by enabling the already enabled text input again.
+TEST_F(WaylandInputMethodContextV3Test, DisplayVirtualKeyboard) {
+  // Not activated yet: nothing to show the input panel for.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
+        .Times(0);
+  });
+  EXPECT_FALSE(input_method_context_->DisplayVirtualKeyboard());
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    // Activating enables text input only once, without requesting the panel.
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+  });
+
+  connection_->window_manager()->SetTextInputFocusedWindow(window_.get());
+  LinuxInputMethodContext::TextInputClientAttributes attributes;
+  attributes.input_type = TEXT_INPUT_TYPE_TEXT;
+  input_method_context_->UpdateFocus(true, TEXT_INPUT_TYPE_NONE, attributes,
+                                     ui::TextInputClient::FOCUS_REASON_MOUSE);
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(0);
+  });
+
+  EXPECT_TRUE(input_method_context_->DisplayVirtualKeyboard());
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(0);
+  });
+
+  // A request while focused but before zwp_text_input_v3.enter is replayed
+  // once text input is enabled.
+  connection_->window_manager()->SetTextInputFocusedWindow(nullptr);
+  EXPECT_TRUE(input_method_context_->DisplayVirtualKeyboard());
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(2);
+  });
+  connection_->window_manager()->SetTextInputFocusedWindow(window_.get());
   connection_->Flush();
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     Mock::VerifyAndClearExpectations(

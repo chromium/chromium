@@ -180,6 +180,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // compositor.
   bool activated_ = false;
 
+  // Whether DisplayVirtualKeyboard() was called for text-input-v3 while
+  // focused but not yet activated.
+  bool pending_display_virtual_keyboard_ = false;
+
   // Cache of current TextInputClient's attributes.
   TextInputClientAttributes attributes_;
 

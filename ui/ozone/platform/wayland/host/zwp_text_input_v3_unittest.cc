@@ -1375,6 +1375,51 @@ TEST_F(ZwpTextInputV3Test, ResetWithPreeditThenFocusChangeEnablesOnce) {
   });
 }
 
+TEST_F(ZwpTextInputV3Test, ShowInputPanelKeepsPreeditForReset) {
+  constexpr std::string_view kPreeditString("PreeditString");
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    InSequence s;
+    ExpectEnableWithDefaultContentType(
+        server->text_input_manager_v3()->text_input());
+  });
+  text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
+
+  EXPECT_CALL(test_client_, OnPreeditString(kPreeditString, _, _));
+  PostToServerAndWait([kPreeditString](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    zwp_text_input_v3_send_preedit_string(zwp_text_input->resource(),
+                                          kPreeditString.data(), 0, 0);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
+  });
+  VerifyAndClearExpectations();
+
+  // Showing the input panel enables text input again.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    InSequence s;
+    ExpectEnableWithDefaultContentType(
+        server->text_input_manager_v3()->text_input());
+  });
+  text_input_v3_->ShowInputPanel();
+  VerifyAndClearExpectations();
+
+  // The input method still has its preedit, so Reset() disables and enables.
+  // Showing the input panel while that enable is pending flushes it and enables
+  // once more.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Disable());
+    EXPECT_CALL(*zwp_text_input, Commit());
+    ExpectEnableWithDefaultContentType(zwp_text_input);
+    ExpectEnableWithDefaultContentType(zwp_text_input);
+  });
+  text_input_v3_->Reset();
+  text_input_v3_->ShowInputPanel();
+  FlushClientTasks();
+  VerifyAndClearExpectations();
+}
+
 TEST_F(ZwpTextInputV3Test, ResetWithPreeditThenDisableDisablesOnce) {
   constexpr std::string_view kPreeditString("PreeditString");
 

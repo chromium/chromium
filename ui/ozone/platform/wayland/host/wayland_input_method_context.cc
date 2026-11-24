@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -561,6 +562,7 @@ void WaylandInputMethodContext::Focus(bool skip_virtual_keyboard_update) {
 
 void WaylandInputMethodContext::Blur(bool skip_virtual_keyboard_update) {
   focused_ = false;
+  pending_display_virtual_keyboard_ = false;
   MaybeUpdateActivated(skip_virtual_keyboard_update);
 }
 
@@ -725,9 +727,15 @@ bool WaylandInputMethodContext::DisplayVirtualKeyboard() {
     return false;
   }
 
-  // Text-input-v3 does not support input panel show/hide yet.
   if (text_input_v1_) {
     text_input_v1_->ShowInputPanel();
+  } else if (activated_) {
+    text_input_v3_->ShowInputPanel();
+  } else if (focused_) {
+    // Show the input panel once zwp_text_input_v3.enter arrives.
+    pending_display_virtual_keyboard_ = true;
+  } else {
+    return false;
   }
   return true;
 }
@@ -737,7 +745,9 @@ void WaylandInputMethodContext::DismissVirtualKeyboard() {
     return;
   }
 
-  // Text-input-v3 does not support input panel show/hide yet.
+  pending_display_virtual_keyboard_ = false;
+  // text-input-v3 version 1 has no request to hide the input panel; it is
+  // hidden when text input is disabled.
   if (text_input_v1_) {
     text_input_v1_->HideInputPanel();
   }
@@ -1085,20 +1095,28 @@ void WaylandInputMethodContext::MaybeUpdateActivated(
       text_input_v3_->SetClient(text_input_v3_client_.get());
       text_input_v3_->Enable(attributes_.input_type, attributes_.flags,
                              attributes_.should_do_learning);
+      // For text-input-v3, the input panel is shown only on explicit requests
+      // (e.g. a click or tap in the text field), as enabling again would show
+      // it on every focus change.
+      if (std::exchange(pending_display_virtual_keyboard_, false)) {
+        text_input_v3_->ShowInputPanel();
+      }
     } else {
       text_input_v1_->SetClient(text_input_v1_client_.get());
       text_input_v1_->Activate(window_.get());
       text_input_v1_->SetContentType(attributes_.input_type, attributes_.flags,
                                      attributes_.should_do_learning);
+      if (!skip_virtual_keyboard_update) {
+        DisplayVirtualKeyboard();
+      }
     }
-    if (!skip_virtual_keyboard_update)
-      DisplayVirtualKeyboard();
   } else {
-    if (!skip_virtual_keyboard_update)
-      DismissVirtualKeyboard();
     if (text_input_v3_) {
       text_input_v3_->Disable();
     } else {
+      if (!skip_virtual_keyboard_update) {
+        DismissVirtualKeyboard();
+      }
       text_input_v1_->Deactivate();
     }
   }

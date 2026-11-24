@@ -72,6 +72,8 @@ class ZwpTextInputV3 {
                       bool should_do_learning) = 0;
   virtual void Disable() = 0;
   virtual void Reset() = 0;
+  // Asks the compositor to show the input panel, if text input is enabled.
+  virtual void ShowInputPanel() = 0;
   // Clears the cached surrounding text and cursor rectangle that would
   // otherwise be sent on the next Enable(). Should be called when the focused
   // text input client changes, as the cached state is no longer valid.
@@ -101,6 +103,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
               bool should_do_learning) override;
   void Disable() override;
   void Reset() override;
+  void ShowInputPanel() override;
   void ClearCachedState() override;
 
   void SetCursorRect(const gfx::Rect& rect) override;
@@ -170,12 +173,12 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
                                     uint32_t flags,
                                     bool should_do_learning);
 
-  // Sends an enable request along with `content_type` and the latest
-  // surrounding text and cursor rectangle.
-  void SendEnable(const ContentType& content_type);
-  // Enables text input again after Reset() disabled it, unless text input was
-  // disabled or enabled in the meantime.
-  void EnableAfterReset();
+  // Sends an enable request along with `enabled_content_type_` and the latest
+  // surrounding text and cursor rectangle. Also used to enable text input
+  // again after Reset() disabled it.
+  void SendEnable();
+  // Same as SendEnable(), but keeps the received input events.
+  void SendEnableRequest();
 
   // These send the request without committing it, and record the sent value
   // in `sent_ime_data_`.
