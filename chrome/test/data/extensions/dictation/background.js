@@ -124,8 +124,13 @@ async function startStream(streamId) {
   chrome.dictationPrivate.setStreamState(
       {streamId, state: chrome.dictationPrivate.StreamState.INITIALIZING});
 
-  const optionsItems = await chrome.storage.local.get(
-      {cannedResponse: '', wordDelay: 0, finalDelay: 0, failOnStart: false});
+  const optionsItems = await chrome.storage.local.get({
+    cannedResponse: '',
+    finalResponse: '',
+    wordDelay: 0,
+    finalDelay: 0,
+    failOnStart: false,
+  });
 
   if (optionsItems.failOnStart) {
     chrome.dictationPrivate.setStreamState({
@@ -140,6 +145,7 @@ async function startStream(streamId) {
     command: 'startStream',
     streamId,
     cannedResponse: optionsItems.cannedResponse,
+    finalResponse: optionsItems.finalResponse,
     wordDelay: optionsItems.wordDelay,
     finalDelay: optionsItems.finalDelay,
   });

@@ -11,7 +11,8 @@ function delay(ms) {
   });
 }
 
-async function replayCannedResponse(cannedResponse, wordDelay, finalDelay) {
+async function replayCannedResponse(
+    cannedResponse, finalResponse, wordDelay, finalDelay) {
   const streamId = streamIdQueue[0];
 
   const words = cannedResponse.split(' ');
@@ -30,15 +31,16 @@ async function replayCannedResponse(cannedResponse, wordDelay, finalDelay) {
   chrome.runtime.sendMessage({
     streamId,
     type: 'final',
-    data: cannedResponse,
+    data: finalResponse || cannedResponse,
   });
 }
 
-function startRecognition(streamId, cannedResponse, wordDelay, finalDelay) {
+function startRecognition(
+    streamId, cannedResponse, finalResponse, wordDelay, finalDelay) {
   streamIdQueue.push(streamId);
 
   if (cannedResponse) {
-    replayCannedResponse(cannedResponse, wordDelay, finalDelay);
+    replayCannedResponse(cannedResponse, finalResponse, wordDelay, finalDelay);
     return;
   }
 
@@ -88,9 +90,17 @@ function stopRecognition(streamId) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  const {command, streamId, cannedResponse, wordDelay, finalDelay} = message;
+  const {
+    command,
+    streamId,
+    cannedResponse,
+    finalResponse,
+    wordDelay,
+    finalDelay,
+  } = message;
   if (command === 'startStream') {
-    startRecognition(streamId, cannedResponse, wordDelay, finalDelay);
+    startRecognition(
+        streamId, cannedResponse, finalResponse, wordDelay, finalDelay);
     sendResponse({status: 'started', streamId});
   } else if (command === 'endStream') {
     stopRecognition(streamId);
