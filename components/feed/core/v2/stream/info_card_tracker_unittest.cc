@@ -100,6 +100,17 @@ TEST_F(InfoCardTrackerTest, ResetState) {
               testing::ElementsAre(EqualsProto(expected_state)));
 }
 
+TEST_F(InfoCardTrackerTest, ClearAllStates) {
+  int64_t timestamp = feedstore::ToTimestampMillis(base::Time::Now());
+  tracker_.OnViewed(kTestInfoCardType1, kMinimumViewIntervalSeconds);
+  tracker_.OnClicked(kTestInfoCardType2);
+  tracker_.OnDismissed(kTestInfoCardType1);
+  ASSERT_EQ(2u, tracker_.GetAllStates(timestamp, timestamp).size());
+
+  tracker_.ClearAllStates();
+  EXPECT_TRUE(tracker_.GetAllStates(timestamp, timestamp).empty());
+}
+
 TEST_F(InfoCardTrackerTest, ComboActions) {
   int64_t initial_timestamp = feedstore::ToTimestampMillis(base::Time::Now());
   int64_t type1_fisrt_view_time = initial_timestamp;

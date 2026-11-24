@@ -275,6 +275,13 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
 }
 
 void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
+  if (result.cleared_for_account_mismatch) {
+    has_stored_data_.SetValue(false);
+    persistent_key_value_store_->ClearAll(base::DoNothing());
+    ClearClientDataPrefs();
+    delegate_->ClearAll();
+  }
+
   metadata_ = *std::move(result.startup_data.metadata);
   delegate_->SetFeedLaunchCuiMetadata(metadata_.feed_launch_cui_metadata());
   for (const feedstore::StreamData& stream_data :
@@ -1296,10 +1303,8 @@ void FeedStream::ClearAll() {
 }
 
 void FeedStream::FinishClearAll() {
-  // Clear any experiments stored.
   has_stored_data_.SetValue(false);
-  feed::prefs::SetExperiments({}, *profile_prefs_);
-  feed::prefs::ClearClientInstanceId(*profile_prefs_);
+  ClearClientDataPrefs();
   SetMetadata(
       feedstore::MakeMetadata(delegate_->GetAccountInfo().gaia.ToString()));
 
@@ -1314,6 +1319,13 @@ void FeedStream::FinishClearAll() {
       TriggerStreamLoad(item.second.type);
     }
   }
+}
+
+void FeedStream::ClearClientDataPrefs() {
+  feed::prefs::SetExperiments({}, *profile_prefs_);
+  feed::prefs::ClearClientInstanceId(*profile_prefs_);
+  info_card_tracker_.ClearAllStates();
+  privacy_notice_card_tracker_.Clear();
 }
 
 ImageFetchId FeedStream::FetchImage(

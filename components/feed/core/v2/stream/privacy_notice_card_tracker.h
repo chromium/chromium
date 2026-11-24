@@ -37,6 +37,9 @@ class PrivacyNoticeCardTracker {
   // card to consider it as acknowledged by the user.
   bool HasAcknowledgedNoticeCard() const;
 
+  // Clears stored and in-memory notice card interaction data.
+  void Clear();
+
  private:
   void MaybeUpdateNoticeCardClicksCount(int index);
 

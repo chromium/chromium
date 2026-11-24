@@ -141,6 +141,10 @@ void InfoCardTracker::ResetState(int info_card_type) {
   SetState(info_card_type, state);
 }
 
+void InfoCardTracker::ClearAllStates() {
+  profile_prefs_->ClearPref(prefs::kInfoCardStates);
+}
+
 InfoCardTrackingState InfoCardTracker::GetState(int info_card_type) const {
   const base::DictValue& all_states =
       profile_prefs_->GetDict(prefs::kInfoCardStates);

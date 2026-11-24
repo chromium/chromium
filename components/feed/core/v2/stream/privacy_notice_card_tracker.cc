@@ -70,4 +70,11 @@ bool PrivacyNoticeCardTracker::HasAcknowledgedNoticeCard() const {
   return has_clicked_ || (views_count_ >= kViewsCountThreshold);
 }
 
+void PrivacyNoticeCardTracker::Clear() {
+  prefs::ClearNoticeCardData(*profile_prefs_);
+  views_count_ = 0;
+  has_clicked_ = false;
+  last_view_time_ = base::TimeTicks();
+}
+
 }  // namespace feed

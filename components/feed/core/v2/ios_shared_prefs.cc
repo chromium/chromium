@@ -53,6 +53,12 @@ int GetNoticeCardClicksCount(const PrefService& pref_service) {
   return pref_service.GetInteger(feed::prefs::kNoticeCardClicksCount);
 }
 
+void ClearNoticeCardData(PrefService& pref_service) {
+  pref_service.ClearPref(feed::prefs::kNoticeCardViewsCount);
+  pref_service.ClearPref(feed::prefs::kNoticeCardClicksCount);
+  pref_service.ClearPref(feed::prefs::kLastFetchHadNoticeCard);
+}
+
 void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
   base::DictValue dict;
   for (const auto& exp : experiments) {

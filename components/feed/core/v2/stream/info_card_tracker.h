@@ -50,6 +50,9 @@ class InfoCardTracker {
   // Reset the state of the info card.
   void ResetState(int info_card_type);
 
+  // Clears the states of all tracked info cards.
+  void ClearAllStates();
+
  private:
   feedwire::InfoCardTrackingState GetState(int info_card_type) const;
   void SetState(int info_card_type,

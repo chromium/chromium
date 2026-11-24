@@ -3006,6 +3006,80 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
                                       .info_card_tracking_state(1)));
 }
 
+TEST_F(FeedApiTest, AccountChangeClearsInfoCardStates) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  stream_->ReportInfoCardViewed(surface.GetSurfaceId(), kTestInfoCardType1,
+                                kMinimumViewIntervalSeconds);
+  stream_->ReportInfoCardClicked(surface.GetSurfaceId(), kTestInfoCardType1);
+  stream_->ReportInfoCardDismissedExplicitly(surface.GetSurfaceId(),
+                                             kTestInfoCardType2);
+
+  // Switch accounts; ClearAll() runs and automatically reloads the attached
+  // surface for the new user without leaking User A's info-card states.
+  account_info_ = AccountInfo{GaiaId("user_b_gaia"), "userb@foo"};
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->OnSignedIn();
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent.has_value());
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .feed_query()
+                  .chrome_fulfillment_info()
+                  .info_card_tracking_state()
+                  .empty());
+}
+
+TEST_F(FeedApiTest, ColdStartWrongUserClearsInfoCardAndNoticeCardStates) {
+  StreamModelUpdateRequestGenerator model_generator;
+  model_generator.privacy_notice_fulfilled = true;
+  response_translator_.InjectResponse(model_generator.MakeFirstPage());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Record both info-card and privacy-notice-card interactions for User A,
+  // plus a client instance ID and KV-store entry.
+  std::string notice_slice_id =
+      surface.initial_state->updated_slices(0).slice().slice_id();
+  stream_->ReportOpenAction(GURL(), surface.GetSurfaceId(), notice_slice_id,
+                            OpenActionType::kDefault);
+  stream_->ReportInfoCardViewed(surface.GetSurfaceId(), kTestInfoCardType1,
+                                kMinimumViewIntervalSeconds);
+  stream_->ReportInfoCardDismissedExplicitly(surface.GetSurfaceId(),
+                                             kTestInfoCardType1);
+  std::string user_a_instance_id = prefs::GetClientInstanceId(profile_prefs_);
+  ASSERT_FALSE(user_a_instance_id.empty());
+  CallbackReceiver<PersistentKeyValueStore::Result> put_result;
+  persistent_key_value_store_->Put("user_a_key", "secret", put_result.Bind());
+  put_result.RunUntilCalled();
+  surface.Detach();
+
+  // Simulate Chrome restarting after the primary account changed while
+  // FeedService was not instantiated (no OnSignedOut/OnSignedIn call).
+  account_info_ = AccountInfo{GaiaId("user_b_gaia"), "userb@foo"};
+  network_.query_request_sent.reset();
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  CreateStream();
+
+  TestForYouSurface user_b_surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent.has_value());
+  const auto& fulfillment_info = network_.query_request_sent->feed_request()
+                                     .feed_query()
+                                     .chrome_fulfillment_info();
+  EXPECT_TRUE(fulfillment_info.info_card_tracking_state().empty());
+  EXPECT_FALSE(fulfillment_info.notice_card_acknowledged());
+  EXPECT_NE(user_a_instance_id, prefs::GetClientInstanceId(profile_prefs_));
+
+  base::RunLoop run_loop;
+  CallbackReceiver<PersistentKeyValueStore::Result> kv_result(&run_loop);
+  persistent_key_value_store_->Get("user_a_key", kv_result.Bind());
+  EXPECT_FALSE(kv_result.RunAndGetResult().get_result.has_value());
+}
+
 TEST_F(FeedApiTest, InvalidateFeedCache_CauseRefreshOnNextLoad) {
   // Load the ForYou feed with initial content from the network.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());

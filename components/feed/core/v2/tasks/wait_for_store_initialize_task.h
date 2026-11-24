@@ -21,6 +21,7 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
  public:
   struct Result {
     FeedStore::StartupData startup_data;
+    bool cleared_for_account_mismatch = false;
   };
 
   explicit WaitForStoreInitializeTask(

@@ -61,6 +61,18 @@ TEST_F(IOSSharedPrefsTest, MigrateExperimentsV2) {
   EXPECT_EQ(e, prefs::GetExperiments(prefs_));
 }
 
+TEST_F(IOSSharedPrefsTest, ClearNoticeCardData) {
+  prefs::IncrementNoticeCardViewsCount(prefs_);
+  prefs::IncrementNoticeCardClicksCount(prefs_);
+  prefs::SetLastFetchHadNoticeCard(prefs_, false);
+
+  prefs::ClearNoticeCardData(prefs_);
+
+  EXPECT_EQ(0, prefs::GetNoticeCardViewsCount(prefs_));
+  EXPECT_EQ(0, prefs::GetNoticeCardClicksCount(prefs_));
+  EXPECT_TRUE(prefs::GetLastFetchHadNoticeCard(prefs_));
+}
+
 }  // namespace
 
 }  // namespace feed

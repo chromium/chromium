@@ -95,5 +95,31 @@ TEST_F(PrivacyNoticeCardTrackerTest,
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 
+TEST_F(PrivacyNoticeCardTrackerTest, ClearResetsAcknowledgementAndPrefs) {
+  PrivacyNoticeCardTracker tracker(&profile_prefs_);
+
+  tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
+  tracker.OnOpenAction(NoticeCardContentId());
+  prefs::SetLastFetchHadNoticeCard(profile_prefs_, false);
+  ASSERT_TRUE(tracker.HasAcknowledgedNoticeCard());
+
+  tracker.Clear();
+
+  EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
+  EXPECT_EQ(0, prefs::GetNoticeCardViewsCount(profile_prefs_));
+  EXPECT_EQ(0, prefs::GetNoticeCardClicksCount(profile_prefs_));
+  EXPECT_TRUE(prefs::GetLastFetchHadNoticeCard(profile_prefs_));
+
+  // Verify a newly constructed tracker also observes cleared prefs.
+  PrivacyNoticeCardTracker new_tracker(&profile_prefs_);
+  EXPECT_FALSE(new_tracker.HasAcknowledgedNoticeCard());
+
+  // Verify view cooldown and click gating were reset in memory and prefs.
+  tracker.OnCardViewed(/*is_signed_in=*/true, NoticeCardContentId());
+  EXPECT_EQ(1, prefs::GetNoticeCardViewsCount(profile_prefs_));
+  tracker.OnOpenAction(NoticeCardContentId());
+  EXPECT_TRUE(tracker.HasAcknowledgedNoticeCard());
+}
+
 }  // namespace
 }  // namespace feed

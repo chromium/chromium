@@ -31,6 +31,7 @@ void IncrementNoticeCardViewsCount(PrefService& pref_service);
 void IncrementNoticeCardClicksCount(PrefService& pref_service);
 int GetNoticeCardClicksCount(const PrefService& pref_service);
 int GetNoticeCardViewsCount(const PrefService& pref_service);
+void ClearNoticeCardData(PrefService& pref_service);
 
 // Set/get experiments into prefs.
 void SetExperiments(const Experiments& experiments, PrefService& pref_service);

@@ -425,6 +425,7 @@ class FeedStream : public FeedApi,
   void OnUserFeedbackPolicyChanged();
   void CheckDuplicatedContentsOnRefresh();
   void AddViewedContentHashes(const feedstore::Content& content);
+  void ClearClientDataPrefs();
 
   feedwire::DefaultSearchEngine::SearchEngine GetDefaultSearchEngine() const;
 

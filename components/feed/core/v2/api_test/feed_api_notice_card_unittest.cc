@@ -63,6 +63,31 @@ TEST_F(FeedApiNoticeCardTest, LoadStreamSendsNoticeCardAcknowledgement) {
                   .notice_card_acknowledged());
 }
 
+TEST_F(FeedApiNoticeCardTest, ClearAllResetsNoticeCardAcknowledgement) {
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
+
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  std::string slice_id =
+      surface.initial_state->updated_slices(0).slice().slice_id();
+  stream_->ReportOpenAction(GURL(), surface.GetSurfaceId(), slice_id,
+                            OpenActionType::kDefault);
+
+  // Simulate account sign-out / ClearAll; the refreshed request must not carry
+  // over the previous user's notice card acknowledgement.
+  account_info_ = {};
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
+  stream_->OnSignedOut();
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent.has_value());
+  EXPECT_FALSE(network_.query_request_sent->feed_request()
+                   .feed_query()
+                   .chrome_fulfillment_info()
+                   .notice_card_acknowledged());
+}
+
 TEST_F(FeedApiNoticeCardTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
   base::HistogramTester histograms;
 

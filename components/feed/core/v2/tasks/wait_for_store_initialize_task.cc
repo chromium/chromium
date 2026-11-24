@@ -38,6 +38,7 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
     FeedStore::StartupData startup_data) {
   if (startup_data.metadata &&
       GaiaId(startup_data.metadata->gaia()) != stream_->GetAccountInfo().gaia) {
+    result_.cleared_for_account_mismatch = true;
     store_->ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
                                     weak_ptr_factory_.GetWeakPtr()));
     return;
