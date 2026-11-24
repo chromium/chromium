@@ -52,9 +52,31 @@ interface NtpLhsSetThemeMessage {
 
 type ChromeToSearchLhsMessage = NtpLhsSetThemeMessage;
 
+// Maps each `NtpLhsThemePalette` key to its corresponding
+// `--color-new-tab-page-threads-rail-<suffix>` CSS variable from
+// `chrome_color_id.h`.
 const NTP_LHS_THEME_CSS_VARS: Record<NtpLhsThemeKey, string> = {
   'primaryFont': 'primary-font',
+  'secondaryFont': 'secondary-font',
   'railBackground': 'background',
+  'flyoutMenuBackground': 'flyout-menu-background',
+  'surfaceContainer': 'surface-container',
+  'surfaceContainerHigh': 'surface-container-high',
+  'surfaceContainerHighest': 'surface-container-highest',
+  'primary': 'primary',
+  'tooltipContainer': 'tooltip-container',
+  'hoverBackgroundColor': 'hover-background',
+  'selectedBackgroundColor': 'selected-background',
+  'loaderBaseColor': 'loader-base',
+  'loaderHighlightColor': 'loader-highlight',
+  'brandPrimaryFont': 'brand-primary-font',
+  'brandSecondaryFont': 'brand-secondary-font',
+  'menuOpenBackgroundColor': 'menu-open-background',
+  'containerBackground': 'container-background',
+  'dividerColor': 'divider',
+  'scrimColor': 'scrim',
+  'scrollbarThumbColor': 'scrollbar-thumb',
+  'updateDotColor': 'update-dot',
 };
 
 export enum NtpLhsMessageType {
@@ -86,9 +108,33 @@ export interface NtpLhsNavigateMessage {
 export type SearchToChromeLhsMessage = NtpLhsReadyMessage|NtpLhsCloseMessage|
     NtpLhsNewThreadMessage|NtpLhsNavigateMessage;
 
+/**
+ * Theme palette forwarded to the embedded Search AI Mode LHS iframe via
+ * `NTP_LHS_SET_THEME`. Property names must stay in sync with Search's
+ * `NtpLhsThemePalette` (`ntp_lhs_post_message.ts`).
+ */
 export interface NtpLhsThemePalette {
   primaryFont?: string;
+  secondaryFont?: string;
   railBackground?: string;
+  flyoutMenuBackground?: string;
+  surfaceContainer?: string;
+  surfaceContainerHigh?: string;
+  surfaceContainerHighest?: string;
+  primary?: string;
+  tooltipContainer?: string;
+  hoverBackgroundColor?: string;
+  selectedBackgroundColor?: string;
+  loaderBaseColor?: string;
+  loaderHighlightColor?: string;
+  brandPrimaryFont?: string;
+  brandSecondaryFont?: string;
+  menuOpenBackgroundColor?: string;
+  containerBackground?: string;
+  dividerColor?: string;
+  scrimColor?: string;
+  scrollbarThumbColor?: string;
+  updateDotColor?: string;
 }
 
 // The primary view of the LHS. #folded and #expanded stay rendered once the

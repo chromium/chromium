@@ -340,8 +340,26 @@
   E_CPONLY(kColorNewTabPageActionChipTextTitle) \
   E_CPONLY(kColorNewTabPageActionChipDeepSearchIcon) \
   E_CPONLY(kColorNewTabPageThreadsRailBackground) \
-  E_CPONLY(kColorNewTabPageThreadsRailPrimaryFont) \
+  E_CPONLY(kColorNewTabPageThreadsRailBrandPrimaryFont) \
+  E_CPONLY(kColorNewTabPageThreadsRailBrandSecondaryFont) \
+  E_CPONLY(kColorNewTabPageThreadsRailContainerBackground) \
+  E_CPONLY(kColorNewTabPageThreadsRailDivider) \
+  E_CPONLY(kColorNewTabPageThreadsRailFlyoutMenuBackground) \
   E_CPONLY(kColorNewTabPageThreadsRailHoverBackground) \
+  E_CPONLY(kColorNewTabPageThreadsRailLoaderBase) \
+  E_CPONLY(kColorNewTabPageThreadsRailLoaderHighlight) \
+  E_CPONLY(kColorNewTabPageThreadsRailMenuOpenBackground) \
+  E_CPONLY(kColorNewTabPageThreadsRailPrimary) \
+  E_CPONLY(kColorNewTabPageThreadsRailPrimaryFont) \
+  E_CPONLY(kColorNewTabPageThreadsRailScrim) \
+  E_CPONLY(kColorNewTabPageThreadsRailScrollbarThumb) \
+  E_CPONLY(kColorNewTabPageThreadsRailSecondaryFont) \
+  E_CPONLY(kColorNewTabPageThreadsRailSelectedBackground) \
+  E_CPONLY(kColorNewTabPageThreadsRailSurfaceContainer) \
+  E_CPONLY(kColorNewTabPageThreadsRailSurfaceContainerHigh) \
+  E_CPONLY(kColorNewTabPageThreadsRailSurfaceContainerHighest) \
+  E_CPONLY(kColorNewTabPageThreadsRailTooltipContainer) \
+  E_CPONLY(kColorNewTabPageThreadsRailUpdateDot) \
   E_CPONLY(kColorNewTabPageChipBackground) \
   E_CPONLY(kColorNewTabPageChipForeground) \
   E_CPONLY(kColorNewTabPageComposeboxSubmitButtonBackground) \
