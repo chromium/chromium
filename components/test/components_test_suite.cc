@@ -29,7 +29,7 @@
 
 #if !BUILDFLAG(USE_BLINK)
 #include "components/test/ios_components_test_initializer.h"
-#include "ios/testing/screen_time_util.h"
+#include "ios/testing/screen_time_util.h"  // nogncheck
 #else
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
